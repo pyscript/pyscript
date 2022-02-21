@@ -1,0 +1,37 @@
+{
+  "name": "pyscriptjs",
+  "version": "0.0.1",
+  "description": "My webpack project",
+  "scripts": {
+    "test": "test",
+    "build": "webpack --mode=production --node-env=production",
+    "build:dev": "webpack --mode=development",
+    "build:prod": "webpack --mode=production --node-env=production",
+    "watch": "webpack --watch",
+    "serve": "webpack serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anaconda/pyscript.git"
+  },
+  "keywords": [
+    "python"
+  ],
+  "author": "Anaconda",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/anaconda/pyscript/issues"
+  },
+  "homepage": "https://github.com/anaconda/pyscript#readme",
+  "devDependencies": {
+    "@webpack-cli/generators": "^2.4.2",
+    "html-webpack-plugin": "^5.5.0",
+    "prettier": "^2.5.1",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.5",
+    "webpack": "^5.69.1",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.7.4",
+    "workbox-webpack-plugin": "^6.4.2"
+  }
+}
