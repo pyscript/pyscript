@@ -33,5 +33,11 @@
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.7.4",
     "workbox-webpack-plugin": "^6.4.2"
+  },
+  "dependencies": {
+    "@codemirror/basic-setup": "^0.19.1",
+    "@codemirror/lang-javascript": "^0.19.7",
+    "@codemirror/lang-python": "^0.19.4",
+    "codemirror": "^5.65.2"
   }
 }
