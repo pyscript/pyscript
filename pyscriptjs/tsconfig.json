@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
     "noImplicitAny": true,
-    "module": "es6",
+    "module": "es2020",
     "target": "es5",
     "allowJs": true,
     "sourceMap": true,
