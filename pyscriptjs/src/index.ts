@@ -1,5 +1,15 @@
-let message: string = 'Hello World';
-console.log(message);
+import {EditorState} from "@codemirror/state";
+import {EditorView, keymap} from "@codemirror/view";
+import {defaultKeymap} from "@codemirror/commands";
+import {loadInterpreter} from "./interpreter";
+// import {EditorState, EditorView, basicSetup} from "@codemirror/basic-setup"
+// import {javascript} from "@codemirror/lang-javascript"
+
+let startState = EditorState.create({
+  doc: "Hello World",
+  extensions: [keymap.of(defaultKeymap)]
+})
+
 
 class PyScript extends HTMLElement {
     shadow: ShadowRoot;
@@ -35,7 +45,7 @@ class PyScript extends HTMLElement {
     }
   }
   
-  customElements.define('py-script', PyScript);
+  let xPyScript = customElements.define('py-script', PyScript);
 
 
   function create_menu (){
@@ -57,15 +67,20 @@ class PyScript extends HTMLElement {
       document.body.appendChild(div);
 
       document.querySelectorAll('py-script').forEach((elem: PyScript, i) => {
-            var code = elem.innerHTML;
+            let code = elem.innerHTML;
             elem.innerHTML = "";
             elem.code = code;
-            elem.cm = CodeMirror(elem, {
-                lineNumbers: true,
-                tabSize: 2,
-                value: code,
-                mode: 'python'
-            });
+            let view = new EditorView({
+  state: startState,
+  parent: elem
+})
+
+            // elem.cm = CodeMirror(elem, {
+            //     lineNumbers: true,
+            //     tabSize: 2,
+            //     value: code,
+            //     mode: 'python'
+            // });
             
             elem.btnRun = document.createElement('button');
             elem.btnRun.innerHTML = "run";
@@ -108,23 +123,14 @@ class PyScript extends HTMLElement {
     
     window.onload= create_menu;
 
-    async function main() {
-        let pyodide = await loadPyodide({
-          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.19.0/full/",
-        });
+    // async function main() {
+    //     let pyodide = await loadPyodide({ /* @ts-ignore */
+    //       indexURL: "https://cdn.jsdelivr.net/pyodide/v0.19.0/full/",
+    //     }); /* @ts-ignore */
     
-        return pyodide;
-      }
-    let pyodideReadyPromise = main();
+    //     return pyodide;
+    //   }
+    let pyodideReadyPromise = loadInterpreter();
 
-    async function evaluatePython() {
-        let pyodide = await pyodideReadyPromise;
-        try {
-        let output = pyodide.runPython(code.value);
-        addToOutput(output);
-        } catch (err) {
-        addToOutput(err);
-        }
-    }
     
 
