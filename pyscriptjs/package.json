@@ -38,6 +38,8 @@
     "@codemirror/basic-setup": "^0.19.1",
     "@codemirror/lang-javascript": "^0.19.7",
     "@codemirror/lang-python": "^0.19.4",
+    "@codemirror/theme-one-dark": "^0.19.1",
+    "@webcomponents/custom-elements": "^1.5.0",
     "codemirror": "^5.65.2"
   }
 }
