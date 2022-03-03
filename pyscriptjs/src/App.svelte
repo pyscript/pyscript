@@ -6,6 +6,13 @@
   import Tailwind from "./Tailwind.svelte";
 </script>
 
+<style>
+  :global(div.dev-buttons-group) {
+    margin-top: -12px;
+    z-index: 9999;
+  }
+</style>
+
 <Tailwind />
 
 <div class="min-h-full">
