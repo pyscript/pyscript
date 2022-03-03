@@ -27,6 +27,10 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
+    "@codemirror/basic-setup": "^0.19.1",
+    "@codemirror/lang-python": "^0.19.4",
+    "@codemirror/theme-one-dark": "^0.19.1",
+    "codemirror": "^5.65.2",
     "sirv-cli": "^1.0.0"
   }
 }
