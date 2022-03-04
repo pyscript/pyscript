@@ -4,7 +4,23 @@
   import Main from "./Main.svelte";
   import Header from "./Header.svelte";
   import Tailwind from "./Tailwind.svelte";
+  import { loadInterpreter } from './interpreter';
+  import { pyodideLoaded } from './stores';
+
+  let pyodideReadyPromise
+  const initializePyodide = () =>{
+    // @ts-ignore
+    // pyodideLoaded.set('loaded', true);
+    pyodideReadyPromise = loadInterpreter();
+    // @ts-ignore
+    pyodideLoaded.set(pyodideReadyPromise);
+  }
+
 </script>
+
+<svelte:head>
+	<script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js" on:load={initializePyodide}></script>
+</svelte:head>
 
 <style>
   :global(div.dev-buttons-group) {

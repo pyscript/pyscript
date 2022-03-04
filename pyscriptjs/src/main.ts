@@ -1,11 +1,12 @@
 import App from "./App.svelte";
 
 import {EditorState, EditorView , basicSetup} from "@codemirror/basic-setup"
-
 import { python } from "@codemirror/lang-python"
 import { keymap } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
 import { oneDarkTheme } from "@codemirror/theme-one-dark";
+
+import { pyodideLoaded } from './stores';
 
 function addClasses(element: HTMLElement, classes: Array<string>){
     for (let entry of classes) {
@@ -13,10 +14,16 @@ function addClasses(element: HTMLElement, classes: Array<string>){
     }
 }
 
+let pyodideReadyPromise;
+
+pyodideLoaded.subscribe(value => {
+  pyodideReadyPromise = value;
+});
+
 class PyScript extends HTMLElement {
   shadow: ShadowRoot;
   wrapper: HTMLElement;
-  // editor: EditorView;
+  editor: EditorView;
   editorNode: HTMLElement;
   code: string;
   cm: any;
@@ -54,7 +61,7 @@ class PyScript extends HTMLElement {
         ]
     })
 
-    let editor = new EditorView({
+    this.editor = new EditorView({
         state: startState,
         parent: this.editorNode
     })
@@ -94,21 +101,30 @@ class PyScript extends HTMLElement {
     mainDiv.appendChild(this.editorOut);
     this.appendChild(mainDiv);
 
-    function addToOutput(s: string) {
-      this.editorOut.value += ">>>" + s + "\n";
-    }
-    this.btnRun.onclick = evaluatePython;
 
-    async function evaluatePython() {
-      console.log('evaluate');
-        // let pyodide = await pyodideReadyPromise;
-        // try {
-        // let output = pyodide.runPython(elem.editor.state.doc.toString());
-        // addToOutput(output);
-        // } catch (err) {
-        // addToOutput(err);
-        // }
+    this.btnRun.onclick = wrap(this);
+
+    function wrap(el: any){
+      function addToOutput(s: string) {
+        el.editorOut.value += ">>> " + s + "\n";
+      }
+
+      async function evaluatePython() {
+        console.log('evaluate');
+          let pyodide = await pyodideReadyPromise;
+          // debugger
+          try {
+
+            // @ts-ignore
+            let output = pyodide.runPython(el.editor.state.doc.toString());
+              addToOutput(output);
+            } catch (err) {
+              addToOutput(err);
+          }
+      }
+      return evaluatePython;
     }
+
 
     console.log('connected');
   }
