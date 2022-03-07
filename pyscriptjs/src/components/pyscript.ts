@@ -1,11 +1,14 @@
-import {EditorState, EditorView , basicSetup} from "@codemirror/basic-setup"
+import {EditorState, EditorView, basicSetup} from "@codemirror/basic-setup"
 import { python } from "@codemirror/lang-python"
-import { keymap } from "@codemirror/view";
+import { StateCommand } from '@codemirror/state';
+import { keymap, ViewUpdate } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
 import { oneDarkTheme } from "@codemirror/theme-one-dark";
 
+
 import { pyodideLoaded } from '../stores';
 import { addClasses } from '../utils';
+import { debug } from "svelte/internal";
 
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
@@ -14,6 +17,16 @@ pyodideLoaded.subscribe(value => {
   pyodideReadyPromise = value;
 });
 
+function createCmdHandler(el){
+    // Creates a codemirror cmd handler that calls the el.evaluate when an event
+    // triggers that specific cmd
+    const toggleCheckbox:StateCommand = ({ state, dispatch }) => {
+        return el.evaluate(state)
+      }
+    return toggleCheckbox
+}
+
+
 export class PyScript extends HTMLElement {
     shadow: ShadowRoot;
     wrapper: HTMLElement;
@@ -21,9 +34,9 @@ export class PyScript extends HTMLElement {
     editorNode: HTMLElement;
     code: string;
     cm: any;
-    btnEdit: HTMLElement;
+    btnConfig: HTMLElement;
     btnRun: HTMLElement;
-    editorOut: HTMLTextAreaElement;
+    editorOut: HTMLElement; //HTMLTextAreaElement;
     // editorState: EditorState;
   
     constructor() {
@@ -42,16 +55,27 @@ export class PyScript extends HTMLElement {
         // this.code = this.wrapper.innerHTML;
         console.log("Woooohooo");
       }
+
     connectedCallback() {
-  
         this.code = this.innerHTML;
         this.innerHTML = '';
         let startState = EditorState.create({
           doc: this.code,
           extensions: [
-              keymap.of(defaultKeymap),
+              keymap.of([
+                    ...defaultKeymap,
+                    { key: "Ctrl-Enter", run: createCmdHandler(this) },
+                    { key: "Shift-Enter", run: createCmdHandler(this) }
+              ]),
               oneDarkTheme,
-              // python()
+              python(),
+              // Event listener function that is called every time an user types something on this editor
+            //   EditorView.updateListener.of((v:ViewUpdate) => {
+            //     if (v.docChanged) {
+            //       console.log(v.changes);
+
+            //     }
+            // })
           ]
       })
   
@@ -61,13 +85,12 @@ export class PyScript extends HTMLElement {
       })
   
       let mainDiv = document.createElement('div');
-      addClasses(mainDiv, ["flex", "flex-col"])
+      addClasses(mainDiv, ["flex", "flex-col", "border-4", "border-dashed", "border-gray-200", "rounded-lg"])
   
       mainDiv.appendChild(this.editorNode);
   
       // Butons DIV
       var eDiv = document.createElement('div');
-      // addClasses(eDiv, ["flex", "flex-row-reverse",  "justify-center", "rounded-lg", "text-lg", "mb-4"]);
       addClasses(eDiv, "flex flex-row-reverse space-x-reverse space-x-4 font-mono text-white text-sm font-bold leading-6 dev-buttons-group".split(" "))
       eDiv.setAttribute("role", "group");
   
@@ -77,50 +100,27 @@ export class PyScript extends HTMLElement {
       let buttonClasses = ["mr-2", "block", "py-2", "px-8", "rounded-full"];
       addClasses(this.btnRun, buttonClasses);
       addClasses(this.btnRun, ["text-green-100", "bg-green-500"])
-  
       eDiv.appendChild(this.btnRun);
   
   
-      this.btnEdit = document.createElement('button');
-      this.btnEdit.innerHTML = "edit";
-      addClasses(this.btnEdit, buttonClasses);
-      addClasses(this.btnEdit, ["text-blue-100", "bg-blue-500"])
-      eDiv.appendChild(this.btnEdit);
+      this.btnConfig = document.createElement('button');
+      this.btnConfig.innerHTML = "config";
+      addClasses(this.btnConfig, buttonClasses);
+      addClasses(this.btnConfig, ["text-blue-100", "bg-blue-500"])
+      eDiv.appendChild(this.btnConfig);
   
   
-      this.editorOut = document.createElement('textarea');
+      this.editorOut = document.createElement('div');
       this.editorOut.classList.add("output");
-      this.editorOut.disabled = true;
       this.editorOut.hidden = true;
       mainDiv.appendChild(eDiv);
       mainDiv.appendChild(this.editorOut);
       this.appendChild(mainDiv);
-  
-  
       this.btnRun.onclick = wrap(this);
   
       function wrap(el: any){
-        function addToOutput(s: string) {
-          el.editorOut.value += ">>> " + s + "\n";
-        }
-  
         async function evaluatePython() {
-          console.log('evaluate');
-            let pyodide = await pyodideReadyPromise;
-            // debugger
-            try {
-  
-              // @ts-ignore
-              let output = pyodide.runPython(el.editor.state.doc.toString());
-              if (output !== undefined){
-                addToOutput(output);
-                el.editorOut.hidden = false;
-              }
-                
-                // debugger
-              } catch (err) {
-                addToOutput(err);
-            }
+            el.evaluate()
         }
         return evaluatePython;
       }
@@ -128,6 +128,29 @@ export class PyScript extends HTMLElement {
   
       console.log('connected');
     }
+
+    addToOutput(s: string) {
+        this.editorOut.innerHTML = s;
+        this.editorOut.hidden = false;
+      }
+
+    async evaluate() {
+        console.log('evaluate');
+          let pyodide = await pyodideReadyPromise;
+          // debugger
+          try {
+
+            // @ts-ignore
+            let output = pyodide.runPython(this.editor.state.doc.toString());
+            if (output !== undefined){
+              this.addToOutput(output);
+            }
+
+              // debugger
+            } catch (err) {
+              this.addToOutput(err);
+          }
+      }
   
     render(){
       console.log('rendered');

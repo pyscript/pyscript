@@ -27,6 +27,11 @@
     margin-top: -12px;
     z-index: 9999;
   }
+
+  :global(div.output) {
+    margin-top: -25px;
+    z-index: 9999;
+  }
 </style>
 
 <Tailwind />
