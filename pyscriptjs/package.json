@@ -31,8 +31,10 @@
     "@codemirror/lang-python": "^0.19.4",
     "@codemirror/state": "^0.19.9",
     "@codemirror/theme-one-dark": "^0.19.1",
+    "@fortawesome/free-solid-svg-icons": "^6.0.0",
     "codemirror": "^5.65.2",
     "sirv-cli": "^1.0.0",
+    "svelte-fa": "^2.4.0",
     "svelte-promisable-stores": "^0.1.3"
   }
 }
