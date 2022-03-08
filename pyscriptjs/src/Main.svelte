@@ -18,11 +18,11 @@
       <!-- Replace with your content -->
       <div class="px-4 py-6 sm:px-0">
         <div id="dashboard" class="border-4 border-dashed border-gray-200 rounded-lg h-96">
-          <py-script>
-            sum([1, 2, 3, 4, 5])
-          </py-script>
-    
-
+          <py-repl>
+            <py-script auto-generate target="page:mydiv" source='./mycode.py'>
+              sum([1, 2, 3, 4, 5])
+            </py-script>
+          </py-repl>
         </div>
       </div>
 
