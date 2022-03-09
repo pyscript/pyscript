@@ -1,6 +1,7 @@
 <script lang="ts">
   import Fa from 'svelte-fa'
   import { faCog } from '@fortawesome/free-solid-svg-icons'
+  import { loadedEnvironments } from './stores';
 
   export let name = "PyScript";
   export let editMode = true;
@@ -21,6 +22,13 @@
   function addInterpreter(evt){
     console.log("add interpreter");
   }
+
+  function showSettings(evt){
+    console.log($loadedEnvironments);
+  }
+
+
+  let open = true;
   
 </script>
 
@@ -55,11 +63,12 @@
 
             <!-- Profile dropdown -->
             <div class="ml-3 relative">
-              <button type="button" class="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+              <button type="button" on:click={showSettings} class="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                 <span class="sr-only">View notifications</span>
                 <!-- Settings Icon -->
                 <Fa icon={faCog} />
               </button>
+
               <!-- <div>
                 <button type="button" class="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                   <span class="sr-only">Open user menu</span>
