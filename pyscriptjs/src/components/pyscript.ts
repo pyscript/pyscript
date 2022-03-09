@@ -6,15 +6,18 @@ import { defaultKeymap } from "@codemirror/commands";
 import { oneDarkTheme } from "@codemirror/theme-one-dark";
 
 
-import { pyodideLoaded } from '../stores';
+import { pyodideLoaded, loadedEnvironments } from '../stores';
 import { addClasses } from '../utils';
 import { debug } from "svelte/internal";
 
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
-
+let environments;
 pyodideLoaded.subscribe(value => {
   pyodideReadyPromise = value;
+});
+loadedEnvironments.subscribe(value => {
+    environments = value;
 });
 
 function createCmdHandler(el){
