@@ -8,6 +8,9 @@ export const pyodideLoaded = writable({
 	premise: null
 });
 
+export const loadedEnvironments = writable({})
+
+
 export const pyodideReadyPromise = promisable(
     loadInterpreter,
     // shouldRefreshPromise, // optional, but recommended
