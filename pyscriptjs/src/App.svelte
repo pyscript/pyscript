@@ -5,7 +5,7 @@
   import Header from "./Header.svelte";
   import Tailwind from "./Tailwind.svelte";
   import { loadInterpreter } from './interpreter';
-  import { pyodideLoaded } from './stores';
+  import { pyodideLoaded, loadedEnvironments } from './stores';
 
   let pyodideReadyPromise
   const initializePyodide = () =>{
@@ -13,7 +13,17 @@
     // pyodideLoaded.set('loaded', true);
     pyodideReadyPromise = loadInterpreter();
     // @ts-ignore
+    let newEnv = {
+      'id': 'a',
+      'promise': pyodideReadyPromise,
+      'state': 'loading',
+    }
     pyodideLoaded.set(pyodideReadyPromise);
+    loadedEnvironments.update((value: any): any => {
+      value[newEnv['id']] = newEnv;
+    });
+    // let environments = loadedEnvironments;
+    // debugger
   }
 
 </script>
