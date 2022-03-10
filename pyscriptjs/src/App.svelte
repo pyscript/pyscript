@@ -1,8 +1,7 @@
 <script lang="ts">
-  // import Button from "./Button.svelte";
-  // import Logo from "./Logo.svelte";
-  // import Main from "./OldMain.svelte";
-  // import Header from "./OldHeader.svelte";
+
+  import Fa from 'svelte-fa';
+  import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
   import Tailwind from "./Tailwind.svelte";
   import { loadInterpreter } from './interpreter';
   import { pyodideLoaded, loadedEnvironments, navBarOpen } from './stores';
@@ -10,10 +9,19 @@
   import Header from "./Header.svelte";
   import SideNav from "./SideNav.svelte";
 
+  let iconSize = 2;
   let pyodideReadyPromise
+
+  function bumpSize(evt){
+    iconSize = 4;
+  }
+
+  function downSize(evt){
+    iconSize = 2;
+  }
+
   const initializePyodide = () =>{
     // @ts-ignore
-    // pyodideLoaded.set('loaded', true);
     pyodideReadyPromise = loadInterpreter();
     // @ts-ignore
     let newEnv = {
@@ -25,8 +33,7 @@
     loadedEnvironments.update((value: any): any => {
       value[newEnv['id']] = newEnv;
     });
-    // let environments = loadedEnvironments;
-    // debugger
+
     let showNavBar = false;
     let main = document.querySelector("#main");
     navBarOpen.subscribe(value => {
@@ -56,11 +63,16 @@
 
 
 <div class="flex flex-wrap bg-grey-light min-h-screen">
-  <SideNav />
-
+  <div>
+    <SideNav />
+  </div>
   <div id="main" class="w-full min-h-full absolute pin-r flex flex-col">
     <Header />
+    <div id="add-component" class="lex flex-column w-full text-lg">
+      <div style="margin-left: 50%;" on:mouseenter={bumpSize} on:mouseleave={downSize}>
+        <Fa icon={faPlusCircle} class="grow-icon"style="transform: scale({iconSize});"/>
+      </div>
+    </div>
     <Main />
   </div>
-
 </div>

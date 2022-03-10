@@ -28,7 +28,7 @@
             inactive: ["sidebar-inactive"]
         },
         classesToApplyForMain = {
-            active: ["sm:w-2/3", "lg:w-3/4", 'main-squeezed'],
+            active: [], //["sm:w-2/3", "lg:w-3/4"],
             inactive: []
         },
         classesToApplyForMenuButton = {
