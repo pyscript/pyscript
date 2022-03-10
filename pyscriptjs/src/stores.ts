@@ -15,4 +15,6 @@ export const pyodideReadyPromise = promisable(
     loadInterpreter,
     // shouldRefreshPromise, // optional, but recommended
   );
+
+export const navBarOpen = writable(false);
   

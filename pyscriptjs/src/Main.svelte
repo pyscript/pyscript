@@ -1,33 +1,28 @@
 <script lang="ts">
-  import {EditorState, EditorView , basicSetup} from "@codemirror/basic-setup"
 
-  import { python } from "@codemirror/lang-python"
-  import { keymap } from "@codemirror/view";
-  import { defaultKeymap } from "@codemirror/commands";
-  import { oneDarkTheme } from "@codemirror/theme-one-dark";
-
+    import Fa from 'svelte-fa';
+    import { faWandMagic, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 
 </script>
-  <header class="bg-white shadow">
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-      <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-    </div>
-  </header>
-  <main>
-    <div  class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      <!-- Replace with your content -->
-      <div class="px-4 py-6 sm:px-0">
-        <div id="dashboard" class="border-4 border-dashed border-gray-200 rounded-lg h-96">
-          <py-repl>
-            <py-script auto-generate target="page:mydiv" source='./mycode.py'>
-              sum([1, 2, 3, 4, 5])
-            </py-script>
-          </py-repl>
-        </div>
+
+<div class="flex content-between flex-wrap min-h-full flex-grow">
+    <main class="w-full p-6">
+
+      <div role="alert" class="w-full p-2 rounded-full bg-teal-light text-teal-darker text-lg">
+        <py-script auto-generate target="page:mydiv" source='./mycode.py'>
+            sum([1, 2, 3, 4, 5])
+          </py-script>
       </div>
 
-      
+    </main>
+    <footer class="w-full p-6 bg-black text-white flex space-between">
+        <p class="logo-title text-center">PyScript</p>
+        <p class="w-full ml-6 text-center sm:text-left">Copyright &copy; 2019</p>
 
-      <!-- /End replace -->
-    </div>
-  </main>
+          <aside class="w-full sm:w-auto text-center sm:text-right">
+            <a href="https://github.com/SlawomirChabowski" title="My Github page" class="text-white block">
+                <Fa icon={faInfoCircle} style="transform: scale(2);"/>
+            </a>
+          </aside>
+    </footer>
+</div>

@@ -1,11 +1,14 @@
 <script lang="ts">
   // import Button from "./Button.svelte";
   // import Logo from "./Logo.svelte";
-  import Main from "./Main.svelte";
-  import Header from "./Header.svelte";
+  // import Main from "./OldMain.svelte";
+  // import Header from "./OldHeader.svelte";
   import Tailwind from "./Tailwind.svelte";
   import { loadInterpreter } from './interpreter';
-  import { pyodideLoaded, loadedEnvironments } from './stores';
+  import { pyodideLoaded, loadedEnvironments, navBarOpen } from './stores';
+  import Main from "./Main.svelte";
+  import Header from "./Header.svelte";
+  import SideNav from "./SideNav.svelte";
 
   let pyodideReadyPromise
   const initializePyodide = () =>{
@@ -24,6 +27,11 @@
     });
     // let environments = loadedEnvironments;
     // debugger
+    let showNavBar = false;
+    let main = document.querySelector("#main");
+    navBarOpen.subscribe(value => {
+        showNavBar = value;
+    });
   }
 
 </script>
@@ -46,9 +54,13 @@
 
 <Tailwind />
 
-<div class="min-h-full">
-  <Header />
 
-  <Main />
+<div class="flex flex-wrap bg-grey-light min-h-screen">
+  <SideNav />
+
+  <div id="main" class="w-full min-h-full absolute pin-r flex flex-col">
+    <Header />
+    <Main />
+  </div>
 
 </div>
