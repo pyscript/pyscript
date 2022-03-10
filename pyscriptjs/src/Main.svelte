@@ -1,7 +1,7 @@
 <script lang="ts">
 
     import Fa from 'svelte-fa';
-    import { faWandMagic, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
+    import { faWandMagic, faPlusCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 
 </script>
 
@@ -15,6 +15,9 @@
       </div>
 
     </main>
+    <div id="add-component" class="w-full p-6 bg-white text-black flex space-between">
+      <Fa icon={faPlusCircle} style="transform: scale(2);"/>
+    </div>
     <footer class="w-full p-6 bg-black text-white flex space-between">
         <p class="logo-title text-center">PyScript</p>
         <p class="w-full ml-6 text-center sm:text-left">Copyright &copy; 2019</p>
