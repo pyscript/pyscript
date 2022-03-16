@@ -8,7 +8,7 @@ export const pyodideLoaded = writable({
 	premise: null
 });
 
-export const loadedEnvironments = writable({})
+export const loadedEnvironments = writable([{}])
 
 
 export const pyodideReadyPromise = promisable(
@@ -17,4 +17,7 @@ export const pyodideReadyPromise = promisable(
   );
 
 export const navBarOpen = writable(false);
-  
+export const componentsNavOpen = writable(false);
+export const componentDetailsNavOpen = writable(false);
+export const mainDiv = writable(null);
+export const currentComponentDetails = writable([]);
