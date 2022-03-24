@@ -6,12 +6,14 @@ import { keymap, ViewUpdate } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
 import { oneDarkTheme } from "@codemirror/theme-one-dark";
 
-import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, currentComponentDetails } from '../stores';
+import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, currentComponentDetails, mode, addToScriptsQueue } from '../stores';
 import { addClasses } from '../utils';
 
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
 let environments;
+let currentMode;
+
 pyodideLoaded.subscribe(value => {
   pyodideReadyPromise = value;
 });
@@ -22,6 +24,10 @@ loadedEnvironments.subscribe(value => {
 let propertiesNavOpen;
 componentDetailsNavOpen.subscribe(value => {
   propertiesNavOpen = value;
+});
+
+mode.subscribe(value => {
+  currentMode = value;
 });
 
 function createCmdHandler(el){
@@ -127,20 +133,31 @@ export class PyScript extends HTMLElement {
           {key: "source", value: "self"}
         ])
       }
-      
+
       addClasses(this.btnConfig, buttonClasses);
       addClasses(this.btnConfig, ["bg-blue-500"])
       eDiv.appendChild(this.btnConfig);
-  
-      // Editor Div
-      this.editorOut = document.createElement('div');
-      this.editorOut.classList.add("output");
-      this.editorOut.hidden = true;
 
       mainDiv.appendChild(eDiv);
       mainDiv.appendChild(this.editorNode);
-      mainDiv.appendChild(this.editorOut);
-      this.appendChild(mainDiv);
+
+      if (this.hasAttribute('target')) {
+        this.editorOut = document.getElementById(this.getAttribute('target'));
+      }else{
+        // Editor Output Div
+        this.editorOut = document.createElement('div');
+        this.editorOut.classList.add("output");
+        this.editorOut.hidden = true;
+
+        // add the output div id there's not target
+        mainDiv.appendChild(this.editorOut);
+      }
+
+      if (currentMode=="edit"){
+        this.appendChild(mainDiv);
+      }else{
+        addToScriptsQueue(this);
+      }
 
       console.log('connected');
     }
@@ -156,7 +173,14 @@ export class PyScript extends HTMLElement {
           // debugger
           try {
             // @ts-ignore
-            let output = pyodide.runPython(this.editor.state.doc.toString());
+            let source = this.editor.state.doc.toString();
+            let output;
+            if (source.includes("asyncio")){
+              output = pyodide.runPythonAsync(source);
+            }else{
+              output = pyodide.runPython(source);
+            }
+
             if (output !== undefined){
               this.addToOutput(output);
             }
@@ -176,5 +200,3 @@ export class PyScript extends HTMLElement {
   
     }
   }
-
-  
