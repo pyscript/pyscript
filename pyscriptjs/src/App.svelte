@@ -4,7 +4,7 @@
   import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
   import Tailwind from "./Tailwind.svelte";
   import { loadInterpreter } from './interpreter';
-  import { pyodideLoaded, loadedEnvironments, navBarOpen, componentsNavOpen } from './stores';
+  import { pyodideLoaded, loadedEnvironments, navBarOpen, componentsNavOpen, mode, scriptsQueue } from './stores';
   import Main from "./Main.svelte";
   import Header from "./Header.svelte";
   import SideNav from "./SideNav.svelte";
@@ -41,6 +41,13 @@
     navBarOpen.subscribe(value => {
         showNavBar = value;
     });
+
+    // now we can actually execute the page scripts if we are in play mode
+    if ($mode == "play"){
+      for (let script of $scriptsQueue) {
+        script.evaluate();
+      }
+    }
   }
 
   function toggleComponentsNavBar(evt){
@@ -74,7 +81,7 @@
 </style>
 
 <Tailwind />
-
+<!--
 <div class="flex flex-wrap bg-grey-light min-h-screen">
   <div>
     <SideNav />
@@ -92,4 +99,4 @@
     </div>
     <Main />
   </div>
-</div>
+</div> -->
