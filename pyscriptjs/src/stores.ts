@@ -9,7 +9,7 @@ export const pyodideLoaded = writable({
 });
 
 export const loadedEnvironments = writable([{}])
-
+export const DEFAULT_MODE = 'play';
 
 export const pyodideReadyPromise = promisable(
     loadInterpreter,
@@ -21,3 +21,15 @@ export const componentsNavOpen = writable(false);
 export const componentDetailsNavOpen = writable(false);
 export const mainDiv = writable(null);
 export const currentComponentDetails = writable([]);
+export const mode = writable(DEFAULT_MODE)
+export const scriptsQueue = writable([])
+
+let scriptsQueue_ = []
+
+scriptsQueue.subscribe(value => {
+  scriptsQueue_ = value;
+});
+
+export const addToScriptsQueue = (script) => {
+  scriptsQueue.set([...scriptsQueue_, script]);
+};

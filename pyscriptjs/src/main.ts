@@ -6,11 +6,11 @@ import { keymap } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
 import { oneDarkTheme } from "@codemirror/theme-one-dark";
 import { PyScript } from "./components/pyscript";
-import { pyodideLoaded } from './stores';
-
+import { PyRepl } from "./components/pyrepl";
 
 
 let xPyScript = customElements.define('py-script', PyScript);
+let xPyRepl = customElements.define('py-repl', PyRepl);
 
 
 const app = new App({
