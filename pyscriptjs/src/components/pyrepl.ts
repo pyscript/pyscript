@@ -6,7 +6,7 @@ import { keymap, ViewUpdate } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
 import { oneDarkTheme } from "@codemirror/theme-one-dark";
 
-import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, currentComponentDetails, mode, addToScriptsQueue } from '../stores';
+import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, currentComponentDetails, mode } from '../stores';
 import { addClasses } from '../utils';
 
 // Premise used to connect to the first available pyodide interpreter
@@ -208,7 +208,7 @@ export class PyRepl extends HTMLElement {
             let source = this.editor.state.doc.toString();
             let output;
             if (source.includes("asyncio")){
-              output = pyodide.runPythonAsync(source);
+              output = await pyodide.runPythonAsync(source);
             }else{
               output = pyodide.runPython(source);
             }

@@ -4,7 +4,7 @@
   import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
   import Tailwind from "./Tailwind.svelte";
   import { loadInterpreter } from './interpreter';
-  import { pyodideLoaded, loadedEnvironments, navBarOpen, componentsNavOpen, mode, scriptsQueue } from './stores';
+  import { pyodideLoaded, loadedEnvironments, navBarOpen, componentsNavOpen, mode, scriptsQueue, initializers } from './stores';
   import Main from "./Main.svelte";
   import Header from "./Header.svelte";
   import SideNav from "./SideNav.svelte";
@@ -47,6 +47,12 @@
       for (let script of $scriptsQueue) {
         script.evaluate();
       }
+      scriptsQueue.set([])
+    }
+
+    // now we call all initializers AFTER we actually executed all page scripts
+    for (let initializer of $initializers){
+      initializer();
     }
   }
 

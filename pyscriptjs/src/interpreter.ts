@@ -47,30 +47,54 @@ pyscript = PyScript()
 
 
 class Element:
-    def __init__(self, element_id):
+    def __init__(self, element_id, element=None):
         self._id = element_id
+        self._element = element
 
     @property
     def element(self):
         """Return the dom element"""
-        return document.querySelector(f'#{self._id}');
+        if not self._element:
+            self._element = document.querySelector(f'#{self._id}');
+        return self._element
 
     def write(self, value, append=False):
         console.log(f"Element.write: {value} --> {append}")
+        # TODO: it should be the opposite... pyscript.write should use the Element.write
+        #       so we can consolidate on how we write depending on the element type
         pyscript.write(self._id, value, append=append)
 
     def clear(self):
-        self.write("", append=False)
+        if hasattr(self.element, 'value'):
+            self.element.value = ''
+        else:
+            self.write("", append=False)
 
-    def clone(self, new_id=None):
+    def select(self, query, from_content=False):
+        el = self.element
+        if from_content:
+            el = el.content
+
+        _el = el.querySelector(query)
+        if _el:
+            return Element(_el.id, _el)
+        else:
+            console.log(f"WARNING: can't find element matching query {query}")
+
+    def clone(self, new_id=None, to=None):
         if new_id is None:
             new_id = self.element.id
 
-        clone = self.element.cloneNode(true);
+        clone = self.element.cloneNode(True);
         clone.id = new_id;
+
+        if to:
+            to.element.appendChild(clone)
 
         # Inject it into the DOM
         self.element.after(clone);
+        
+        return Element(clone.id, clone)
 
 `
 
@@ -81,13 +105,13 @@ let loadInterpreter = async function(): any {
         }); 
 
     // now that we loaded, add additional convenience fuctions
-    pyodide.loadPackage(['matplotlib', 'numpy'])
+    // pyodide.loadPackage(['matplotlib', 'numpy'])
 
     await pyodide.loadPackage("micropip");
-    await pyodide.runPythonAsync(`
-    import micropip
-    await micropip.install("ipython")
-    `);
+    // await pyodide.runPythonAsync(`
+    // import micropip
+    // await micropip.install("ipython")
+    // `);
 
     let output = pyodide.runPython(additional_definitions);
 

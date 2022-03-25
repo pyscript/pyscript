@@ -6,13 +6,14 @@ import { keymap, ViewUpdate } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
 import { oneDarkTheme } from "@codemirror/theme-one-dark";
 
-import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, currentComponentDetails, mode, addToScriptsQueue } from '../stores';
+import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, currentComponentDetails, mode, addToScriptsQueue, addInitializer } from '../stores';
 import { addClasses } from '../utils';
 
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
 let environments;
 let currentMode;
+let handlersCollected = false;
 
 pyodideLoaded.subscribe(value => {
   pyodideReadyPromise = value;
@@ -39,6 +40,46 @@ function createCmdHandler(el){
     return toggleCheckbox
 }
 
+
+class Script {
+  source: string;
+  state: string;
+  target: string;
+ 
+  constructor(source: string, target: string) {
+    this.target = target;
+    this.source = source;
+    this.state = 'waiting';
+  }
+ 
+  async evaluate() {
+    console.log('evaluate');
+      let pyodide = await pyodideReadyPromise;
+      // debugger
+      try {
+        // @ts-ignore
+        // let source = this.editor.state.doc.toString();
+        let output;
+        if (this.source.includes("asyncio")){
+          output = await pyodide.runPythonAsync(this.source);
+        }else{
+          output = pyodide.runPython(this.source);
+        }
+
+        if (this.target){
+          // this.editorOut.innerHTML = s;
+        }
+        // if (output !== undefined){
+        //   this.addToOutput(output);
+        // }
+
+        
+    } catch (err) {
+        console.log("OOOPS, this happened: " + err);
+          // this.addToOutput(err);
+      }
+  }
+}
 
 export class PyScript extends HTMLElement {
     shadow: ShadowRoot;
@@ -176,11 +217,10 @@ export class PyScript extends HTMLElement {
             let source = this.editor.state.doc.toString();
             let output;
             if (source.includes("asyncio")){
-              output = pyodide.runPythonAsync(source);
+              output = await pyodide.runPythonAsync(source);
             }else{
               output = pyodide.runPython(source);
             }
-
             if (output !== undefined){
               this.addToOutput(output);
             }
@@ -200,3 +240,47 @@ export class PyScript extends HTMLElement {
   
     }
   }
+
+async function initHandlers() {
+  if( handlersCollected == true ) return;
+  
+  console.log('Collecting nodes...'); 
+  let pyodide = await pyodideReadyPromise;
+  let matches : NodeListOf<HTMLElement> = document.querySelectorAll('[pys-onClick]');
+  let output;
+  let source;
+  for (var el of matches) {
+    let handlerCode = el.getAttribute('pys-onClick');
+    source = `Element("${ el.id }").element.onclick = ${ handlerCode }`;
+    output = await pyodide.runPythonAsync(source);
+
+    // el.onclick = (evt: any) => {
+    //   console.log("click");
+    //   new Promise((resolve, reject) => {
+    //     setTimeout(() => {
+    //       console.log('Inside')
+    //     }, 300);
+    //   }).then(() => {
+    //     console.log("resolved")
+    //   });
+    //   // let handlerCode = el.getAttribute('pys-onClick');
+    //   // pyodide.runPython(handlerCode);
+    // }
+  }
+  handlersCollected = true;
+
+  matches = document.querySelectorAll('[pys-onKeyDown]');
+  for (var el of matches) {
+    let handlerCode = el.getAttribute('pys-onKeyDown');
+    source = `Element("${ el.id }").element.addEventListener("keydown",  ${ handlerCode })`;
+    output = await pyodide.runPythonAsync(source);
+  }
+}
+addInitializer(initHandlers)
+
+// if( document.readyState === 'loading' ) {
+//   document.addEventListener( 'DOMContentLoaded', initHandlers );
+// }
+// else if( document.readyState === 'interactive' || document.readyState === 'complete' ) {
+//   initHandlers();
+// }

@@ -23,8 +23,10 @@ export const mainDiv = writable(null);
 export const currentComponentDetails = writable([]);
 export const mode = writable(DEFAULT_MODE)
 export const scriptsQueue = writable([])
+export const initializers = writable([])
 
-let scriptsQueue_ = []
+let scriptsQueue_ = [];
+let initializers_ = [];
 
 scriptsQueue.subscribe(value => {
   scriptsQueue_ = value;
@@ -32,4 +34,12 @@ scriptsQueue.subscribe(value => {
 
 export const addToScriptsQueue = (script) => {
   scriptsQueue.set([...scriptsQueue_, script]);
+};
+
+scriptsQueue.subscribe(value => {
+  scriptsQueue_ = value;
+});
+
+export const addInitializer = (initializer) => {
+  initializers.set([...initializers_, initializer]);
 };
