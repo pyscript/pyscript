@@ -102,11 +102,12 @@ let loadInterpreter = async function(): any {
     /* @ts-ignore */
     let pyodide = await loadPyodide({ 
           indexURL: "https://cdn.jsdelivr.net/pyodide/v0.19.0/full/",
-          stdout: console.log
+          stdout: console.log,
+          stderr: console.log
         }); 
 
     // now that we loaded, add additional convenience fuctions
-    // pyodide.loadPackage(['matplotlib', 'numpy'])
+    pyodide.loadPackage(['matplotlib', 'numpy'])
 
     await pyodide.loadPackage("micropip");
     // await pyodide.runPythonAsync(`
