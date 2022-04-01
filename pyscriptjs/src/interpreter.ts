@@ -107,7 +107,7 @@ let loadInterpreter = async function(): any {
         }); 
 
     // now that we loaded, add additional convenience fuctions
-    pyodide.loadPackage(['matplotlib', 'numpy'])
+    pyodide.loadPackage(['matplotlib', 'numpy', 'bokeh'])
 
     await pyodide.loadPackage("micropip");
     // await pyodide.runPythonAsync(`
