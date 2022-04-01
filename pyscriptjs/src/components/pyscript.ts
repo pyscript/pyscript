@@ -6,7 +6,7 @@ import { keymap, ViewUpdate } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
 import { oneDarkTheme } from "@codemirror/theme-one-dark";
 
-import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, currentComponentDetails, mode, addToScriptsQueue, addInitializer } from '../stores';
+import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, currentComponentDetails, mode, addToScriptsQueue, addInitializer, addPostInitializer } from '../stores';
 import { addClasses } from '../utils';
 
 // Premise used to connect to the first available pyodide interpreter
@@ -40,6 +40,10 @@ function createCmdHandler(el){
     return toggleCheckbox
 }
 
+function htmlDecode(input) {
+  var doc = new DOMParser().parseFromString(input, "text/html");
+  return doc.documentElement.textContent;
+}
 
 class Script {
   source: string;
@@ -214,7 +218,7 @@ export class PyScript extends HTMLElement {
           // debugger
           try {
             // @ts-ignore
-            let source = this.editor.state.doc.toString();
+            let source = htmlDecode(this.editor.state.doc.toString());
             let output;
             if (source.includes("asyncio")){
               output = await pyodide.runPythonAsync(source);
@@ -232,6 +236,7 @@ export class PyScript extends HTMLElement {
             }
         } catch (err) {
               this.addToOutput(err);
+              console.log(err);
           }
       }
   
@@ -241,9 +246,8 @@ export class PyScript extends HTMLElement {
     }
   }
 
+/** Initialize all elements with py-onClick handlers attributes  */
 async function initHandlers() {
-  if( handlersCollected == true ) return;
-  
   console.log('Collecting nodes...'); 
   let pyodide = await pyodideReadyPromise;
   let matches : NodeListOf<HTMLElement> = document.querySelectorAll('[pys-onClick]');
@@ -254,6 +258,7 @@ async function initHandlers() {
     source = `Element("${ el.id }").element.onclick = ${ handlerCode }`;
     output = await pyodide.runPythonAsync(source);
 
+    // TODO: Should we actually map handlers in JS instaed of Python?
     // el.onclick = (evt: any) => {
     //   console.log("click");
     //   new Promise((resolve, reject) => {
@@ -276,11 +281,22 @@ async function initHandlers() {
     output = await pyodide.runPythonAsync(source);
   }
 }
-addInitializer(initHandlers)
 
-// if( document.readyState === 'loading' ) {
-//   document.addEventListener( 'DOMContentLoaded', initHandlers );
-// }
-// else if( document.readyState === 'interactive' || document.readyState === 'complete' ) {
-//   initHandlers();
-// }
+/** Mount all elements with attribute py-mount into the Python namespace */
+async function mountElements() {
+  console.log('Collecting nodes to be mounted into python namespace...');
+  let pyodide = await pyodideReadyPromise;
+  let matches : NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
+  let output;
+  let source = "";
+  for (var el of matches) {
+    let mountName = el.getAttribute('py-mount');
+    if (!mountName){
+      mountName = el.id.replace("-", "_");
+    }
+    source += `\n${ mountName } = Element("${ el.id }")`;
+  }
+  await pyodide.runPythonAsync(source);
+}
+addPostInitializer(initHandlers);
+addInitializer(mountElements);

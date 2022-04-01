@@ -40,7 +40,7 @@ export default {
     sourcemap: true,
     format: "iife",
     name: "app",
-    file: "public/build/bundle.js",
+    file: "public/build/pyscript.js",
   },
   plugins: [
     svelte({
@@ -54,7 +54,7 @@ export default {
         dev: !production,
       },
     }),
-    css({ output: "bundle.css" }),
+    css({ output: "pyscript.css" }),
     resolve({
       browser: true,
       dedupe: ["svelte"],
