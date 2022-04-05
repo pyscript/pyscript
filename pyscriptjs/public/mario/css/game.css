@@ -1,0 +1,32 @@
+html, body, ul, li {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+canvas {
+  display: block;
+  width: 762;
+  margin: 0 auto;
+  background-color: blue;
+}
+
+p {
+  text-align: center;
+}
+
+body {
+  overflow: hidden;
+  height: 100%;
+}
+
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
+.info {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
