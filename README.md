@@ -5,6 +5,8 @@
 ### tl;dr
 PyScript is a Pythonic alternative to Scratch, JSFiddle or other "easy to use" programming frameworks, making the web a friendly, hackable, place where anyone can author interesting and interactive applications.
 
+To demonstrate pyscript, see [the pyscript folder](pyscriptjs/README.md).
+
 ### Longer Version
 PyScript is a meta project that aims to combine multiple open technologies to create a framework for users to use Python (and other languages) to create sophisticated applications in the browser. It highly integrate with the way the DOM works in the browser and allows users to add logic, in Python, in a way that feel natural to web as well as Python developers.
 
