@@ -2,6 +2,7 @@
 // @ts-ignore
 let pyodideReadyPromise;
 
+let pyodide;
 
 let additional_definitions = `
 from js import document, setInterval, console
@@ -100,20 +101,14 @@ class Element:
 
 let loadInterpreter = async function(): any {
     /* @ts-ignore */
-    let pyodide = await loadPyodide({ 
+    pyodide = await loadPyodide({
           indexURL: "https://cdn.jsdelivr.net/pyodide/v0.19.0/full/",
           stdout: console.log,
           stderr: console.log
         }); 
 
     // now that we loaded, add additional convenience fuctions
-    pyodide.loadPackage(['matplotlib', 'numpy', 'bokeh'])
-
     await pyodide.loadPackage("micropip");
-    // await pyodide.runPythonAsync(`
-    // import micropip
-    // await micropip.install("ipython")
-    // `);
 
     let output = pyodide.runPython(additional_definitions);
 
@@ -121,4 +116,8 @@ let loadInterpreter = async function(): any {
     return pyodide;
 }
 
-export {loadInterpreter, pyodideReadyPromise}
+let loadPackage = async function(package_name: string[] | string, runtime: any): any {
+    await runtime.loadPackage(package_name);
+}
+
+export {loadInterpreter, pyodideReadyPromise, loadPackage}

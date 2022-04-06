@@ -1,5 +1,3 @@
-import { promisable } from 'svelte-promisable-stores';
-import { loadInterpreter } from "./interpreter";
 import { writable } from 'svelte/store';
 
 
@@ -10,11 +8,6 @@ export const pyodideLoaded = writable({
 
 export const loadedEnvironments = writable([{}])
 export const DEFAULT_MODE = 'play';
-
-export const pyodideReadyPromise = promisable(
-    loadInterpreter,
-    // shouldRefreshPromise, // optional, but recommended
-  );
 
 export const navBarOpen = writable(false);
 export const componentsNavOpen = writable(false);
