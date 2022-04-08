@@ -19,23 +19,20 @@
         <py-env>
 - bokeh
 - numpy
-- pandas
         </py-env>
         <h1>Bokeh Example</h1>
         <div id="myplot"></div>
-        <py-repl></py-repl>
+        <py-repl id="my-repl"></py-repl>
     
     <py-script>
+import json
+import pyodide
+
+from js import Bokeh, console, JSON
+
+from bokeh.embed import json_item
 from bokeh.plotting import figure
 from bokeh.resources import CDN
-import json
-from bokeh.embed import json_item
-from js import Bokeh
-
-
-from bokeh.io import output_notebook, show
-from bokeh.plotting import figure
-import bokeh.sampledata
 
 # create a new plot with default tools, using figure
 p = figure(plot_width=400, plot_height=400)
@@ -43,16 +40,12 @@ p = figure(plot_width=400, plot_height=400)
 # add a circle renderer with x and y coordinates, size, color, and alpha
 p.circle([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], size=15, line_color="navy", fill_color="orange", fill_alpha=0.5)
 p_json = json.dumps(json_item(p, "myplot"))
-print(p_json)
 
-async def show(item):
-  print("about to embed")
-  Bokeh.embed.embed_item(item)
-  print ("Done embedding...")
+print("about to embed")
 
-pyscript.run_until_complete(show(p_json))
-#show(p) # show the results
+Bokeh.embed.embed_item(JSON.parse(p_json))
 
+print ("Done embedding...")
     </py-script>
     
 </body>

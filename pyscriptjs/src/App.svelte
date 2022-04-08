@@ -22,7 +22,7 @@
     iconSize = 2;
   }
 
-  const initializePyodide = () =>{
+  const initializePyodide = async () =>{
     // @ts-ignore
     pyodideReadyPromise = loadInterpreter();
     // @ts-ignore
@@ -44,7 +44,7 @@
 
     // now we call all initializers before we actually executed all page scripts
     for (let initializer of $initializers){
-      initializer();
+      await initializer();
     }
 
     // now we can actually execute the page scripts if we are in play mode
