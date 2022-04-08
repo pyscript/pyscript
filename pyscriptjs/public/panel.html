@@ -1,5 +1,5 @@
 <html><head>
-    <title>Bokeh Example</title>
+    <title>Panel Example</title>
     <meta charset="iso-8859-1">
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.js"></script>
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-gl-2.4.2.min.js"></script>
@@ -21,19 +21,17 @@
 - bokeh
 - numpy
         </py-env>
-        <h1>Bokeh Example</h1>
+        <h1>Panel Example</h1>
         <div id="myplot"></div>
-    
-    <py-script>
-import json
-import pyodide
+	<py-script>
 import asyncio
+import json
 import micropip
+import pyodide
 
 from js import Bokeh, console, JSON
 
-import bokeh
-
+from bokeh import __version__
 from bokeh.document import Document
 from bokeh.embed.util import OutputDocumentFor, standalone_docs_json
 from bokeh.protocol.messages.patch_doc import process_document_events
@@ -63,7 +61,7 @@ def doc_json(model, target):
         target_id = target,
         root_id   = root_id,
         doc       = doc_json,
-        version   = bokeh.__version__,
+        version   = __version__,
     ))
 
 def link_docs(pydoc, jsdoc):
@@ -91,7 +89,6 @@ async def show(plot, target):
     link_docs(pydoc, jsdoc)
 
 await show(row, 'myplot')
-    </py-script>
-    
+	</py-script>
 </body>
 </html>
