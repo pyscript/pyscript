@@ -1,6 +1,6 @@
 import * as jsyaml from 'js-yaml';
 
-import { pyodideLoaded, loadedEnvironments, mode, addPostInitializer } from '../stores';
+import { pyodideLoaded, loadedEnvironments, mode, addInitializer } from '../stores';
 import { loadPackage } from '../interpreter';
 
 // Premise used to connect to the first available pyodide interpreter
@@ -11,8 +11,9 @@ let currentMode;
 pyodideLoaded.subscribe(value => {
   pyodideReadyPromise = value;
 });
+
 loadedEnvironments.subscribe(value => {
-    environments = value;
+  environments = value;
 });
 
 mode.subscribe(value => {
@@ -20,30 +21,29 @@ mode.subscribe(value => {
 });
 
 export class PyEnv extends HTMLElement {
-    shadow: ShadowRoot;
-    wrapper: HTMLElement;
-    code: string;
-    environment: any;
+  shadow: ShadowRoot;
+  wrapper: HTMLElement;
+  code: string;
+  environment: any;
 
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        // attach shadow so we can preserve the element original innerHtml content
-        this.shadow = this.attachShadow({ mode: 'open'});
-        this.wrapper = document.createElement('slot');
-      }
-
-    connectedCallback() {
-        this.code = this.innerHTML;
-        this.innerHTML = '';
-      
-        let env = this.environment = jsyaml.load(this.code);
-        async function loadEnv(){
-          let pyodide = await pyodideReadyPromise;
-          loadPackage(env, pyodide);
-          console.log("enviroment loaded")
-        }
-        addPostInitializer(loadEnv);
-        console.log("enviroment loading...")
-    }
+    this.shadow = this.attachShadow({ mode: 'open'});
+    this.wrapper = document.createElement('slot');
   }
+
+  connectedCallback() {
+    this.code = this.innerHTML;
+    this.innerHTML = '';
+
+    let env = this.environment = jsyaml.load(this.code);
+    async function loadEnv() {
+      let pyodide = await pyodideReadyPromise;
+      await loadPackage(env, pyodide);
+      console.log("enviroment loaded")
+    }
+    addInitializer(loadEnv);
+    console.log("enviroment loading...", env)
+  }
+}
