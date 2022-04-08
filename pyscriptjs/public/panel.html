@@ -23,72 +23,24 @@
         </py-env>
         <h1>Panel Example</h1>
         <div id="myplot"></div>
-	<py-script>
+<py-script>
 import asyncio
-import json
 import micropip
 import pyodide
 
-from js import Bokeh, console, JSON
-
-from bokeh import __version__
-from bokeh.document import Document
-from bokeh.embed.util import OutputDocumentFor, standalone_docs_json
-from bokeh.protocol.messages.patch_doc import process_document_events
-
-await micropip.install(['panel==0.13.0rc5'])
+await micropip.install(['panel==0.13.0rc8'])
 
 import panel as pn
+
+slider = pn.widgets.FloatSlider(start=0, end=10, name='Amplitude')
 
 def callback(new):
     return f'Amplitude is: {new}'
 
-slider = pn.widgets.FloatSlider(start=0, end=10, name='Amplitude')
-
 row = pn.Row(slider, pn.bind(callback, slider))
 
-print("about to embed")
+await pn.io.pyodide.show(row, 'myplot')
+</py-script>
 
-def doc_json(model, target):
-    doc = model.server_doc()
-    model = doc.roots[0]
-    docs_json = standalone_docs_json([model])
-
-    doc_json = list(docs_json.values())[0]
-    root_id = doc_json['roots']['root_ids'][0]
-
-    return doc, json.dumps(dict(
-        target_id = target,
-        root_id   = root_id,
-        doc       = doc_json,
-        version   = __version__,
-    ))
-
-def link_docs(pydoc, jsdoc):
-    def jssync(event):
-        if (event.setter_id is not None):
-            return
-        events = [event]
-        json_patch = jsdoc.create_json_patch_string(pyodide.to_js(events))
-        pydoc.apply_json_patch(json.loads(json_patch))
-
-    jsdoc.on_change(pyodide.create_proxy(jssync), pyodide.to_js(False))
-
-    def pysync(event):
-        json_patch = process_document_events([event], use_buffers=False)[0]
-
-        jsdoc.apply_json_patch(JSON.parse(json_patch), {}, setter_id='js')
-
-    pydoc.on_change(pysync)
-
-async def show(plot, target):
-    pydoc, model_json = doc_json(plot, target)
-    views = await Bokeh.embed.embed_item(JSON.parse(model_json))
-    print("Done embedding...")
-    jsdoc = views[0].model.document
-    link_docs(pydoc, jsdoc)
-
-await show(row, 'myplot')
-	</py-script>
 </body>
 </html>
