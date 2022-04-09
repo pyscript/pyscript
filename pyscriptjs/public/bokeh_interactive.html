@@ -65,7 +65,7 @@ def doc_json(model, target):
         version   = __version__,
     ))
 
-def link_docs(pydoc, jsdoc):
+def _link_docs(pydoc, jsdoc):
     def jssync(event):
         if (event.setter_id is not None):
             return
@@ -76,9 +76,11 @@ def link_docs(pydoc, jsdoc):
     jsdoc.on_change(pyodide.create_proxy(jssync), pyodide.to_js(False))
 
     def pysync(event):
-        json_patch = process_document_events([event], use_buffers=False)[0]
-
-        jsdoc.apply_json_patch(JSON.parse(json_patch), {}, setter_id='js')
+        json_patch, buffers = process_document_events([event], use_buffers=True)
+        buffer_map = {}
+        for (ref, buffer) in buffers:
+            buffer_map[ref['id']] = buffer
+        jsdoc.apply_json_patch(JSON.parse(json_patch), pyodide.to_js(buffer_map), setter_id='js')
 
     pydoc.on_change(pysync)
 
@@ -87,7 +89,7 @@ async def show(plot, target):
     views = await Bokeh.embed.embed_item(JSON.parse(model_json))
     print("Done embedding...")
     jsdoc = views[0].model.document
-    link_docs(pydoc, jsdoc)
+    _link_docs(pydoc, jsdoc)
 
 await show(row, 'myplot')
     </py-script>
