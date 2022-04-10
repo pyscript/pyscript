@@ -67,7 +67,7 @@ def doc_json(model, target):
 
 def _link_docs(pydoc, jsdoc):
     def jssync(event):
-        if (event.setter_id is not None):
+        if getattr(event, 'setter_id', None) is not None:
             return
         events = [event]
         json_patch = jsdoc.create_json_patch_string(pyodide.to_js(events))
