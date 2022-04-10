@@ -40,7 +40,7 @@ export default {
     sourcemap: true,
     format: "iife",
     name: "app",
-    file: "public/build/pyscript.js",
+    file: "build/pyscript.js",
   },
   plugins: [
     svelte({

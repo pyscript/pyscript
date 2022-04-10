@@ -1,7 +1,6 @@
 // @ts-nocheck
 // @ts-ignore
 let pyodideReadyPromise;
-
 let pyodide;
 
 let additional_definitions = `
@@ -42,9 +41,6 @@ class PyScript:
     @staticmethod
     def run_until_complete(f):
         p = loop.run_until_complete(f)
-
-pyscript = PyScript()
-
 
 
 class Element:
@@ -97,6 +93,7 @@ class Element:
         
         return Element(clone.id, clone)
 
+pyscript = PyScript()
 `
 
 let loadInterpreter = async function(): any {
