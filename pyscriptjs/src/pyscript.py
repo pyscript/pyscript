@@ -1,9 +1,3 @@
-// @ts-nocheck
-// @ts-ignore
-let pyodideReadyPromise;
-let pyodide;
-
-let additional_definitions = `
 from js import document, setInterval, console
 import asyncio
 import io, base64
@@ -94,39 +88,3 @@ class Element:
         return Element(clone.id, clone)
 
 pyscript = PyScript()
-`
-
-let loadInterpreter = async function(): any {
-    /* @ts-ignore */
-    console.log("creating pyodide runtime");
-    pyodide = await loadPyodide({
-          stdout: console.log,
-          stderr: console.log
-        }); 
-
-    // now that we loaded, add additional convenience fuctions
-    console.log("loading micropip");
-    await pyodide.loadPackage("micropip");
-    console.log('loading pyscript module');
-    await pyodide.runPythonAsync(`
-          from pyodide.http import pyfetch
-          response = await pyfetch("/build/pyscript.py")
-          with open("pyscript.py", "wb") as f:
-              content = await response.bytes()
-              print(content)
-              f.write(content)
-      `)
-    let pkg = pyodide.pyimport("pyscript");
-
-    console.log("creating additional definitions");
-    let output = pyodide.runPython(additional_definitions);
-    console.log("done setting up environment");
-    /* @ts-ignore */
-    return pyodide;
-}
-
-let loadPackage = async function(package_name: string[] | string, runtime: any): any {
-    await runtime.loadPackage(package_name);
-}
-
-export {loadInterpreter, pyodideReadyPromise, loadPackage}

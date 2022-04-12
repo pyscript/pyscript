@@ -49,9 +49,12 @@
     }
 
     // now we call all post initializers AFTER we actually executed all page scripts
-    for (let initializer of $postInitializers){
-      initializer();
-    }
+    setTimeout(() => {
+      for (let initializer of $postInitializers){
+        initializer();
+      }
+    }, 5000);
+
   }
 
   function toggleComponentsNavBar(evt){
@@ -61,7 +64,7 @@
 </script>
 
 <svelte:head>
-	<script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js" on:load={initializePyodide}></script>
+	<script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js" on:load={initializePyodide}></script>
 </svelte:head>
 
 <Tailwind />

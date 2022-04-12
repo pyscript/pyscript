@@ -95,6 +95,7 @@ export class PyScript extends HTMLElement {
     btnConfig: HTMLElement;
     btnRun: HTMLElement;
     editorOut: HTMLElement; //HTMLTextAreaElement;
+    source: string;
     // editorState: EditorState;
   
     constructor() {
@@ -205,6 +206,10 @@ export class PyScript extends HTMLElement {
       }
 
       console.log('connected');
+
+      if (this.hasAttribute('src')) {
+        this.source = this.getAttribute('src');
+      }
     }
 
     addToOutput(s: string) {
@@ -212,8 +217,36 @@ export class PyScript extends HTMLElement {
         this.editorOut.hidden = false;
       }
 
+    async loadFromFile(s: string){
+      let pyodide = await pyodideReadyPromise;
+      let response = await fetch(s);
+      this.code = await response.text();
+
+      await pyodide.runPythonAsync(this.code);
+      await pyodide.runPythonAsync(`
+          from pyodide.http import pyfetch
+          from pyodide import eval_code
+          response = await pyfetch("`+s+`")
+          content = await response.bytes()
+
+          with open("todo.py", "wb") as f:
+              print(content)
+              f.write(content)
+              print("done writing")
+      `)
+      // let pkg = pyodide.pyimport("todo");
+      // pyodide.runPython(`
+      //     import todo
+      // `)
+      // pkg.do_something();
+    }
+
     async evaluate() {
+
         console.log('evaluate');
+        if (this.source){
+          this.loadFromFile(this.source)
+        }else{
           let pyodide = await pyodideReadyPromise;
           // debugger
           try {
@@ -238,8 +271,9 @@ export class PyScript extends HTMLElement {
               this.addToOutput(err);
               console.log(err);
           }
+        }
       }
-  
+
     render(){
       console.log('rendered');
   
@@ -298,5 +332,5 @@ async function mountElements() {
   }
   await pyodide.runPythonAsync(source);
 }
-addPostInitializer(initHandlers);
 addInitializer(mountElements);
+addPostInitializer(initHandlers);

@@ -6,10 +6,11 @@ import { terser } from "rollup-plugin-terser";
 import sveltePreprocess from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
 import css from "rollup-plugin-css-only";
+import serve from 'rollup-plugin-serve'
 
 const production = !process.env.ROLLUP_WATCH;
 
-function serve() {
+function serve_() {
   let server;
 
   function toExit() {
@@ -40,7 +41,7 @@ export default {
     sourcemap: true,
     format: "iife",
     name: "app",
-    file: "build/pyscript.js",
+    file: "examples/build/pyscript.js",
   },
   plugins: [
     svelte({
@@ -67,6 +68,10 @@ export default {
     !production && serve(),
     !production && livereload("public"),
     production && terser(),
+    serve({
+      port: 8080,
+      contentBase: 'examples'}
+      )
   ],
   watch: {
     clearScreen: false,
