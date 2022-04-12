@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <title>Pyscript/Panel KMeans Demo</title>
 
-    <link rel="icon" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.8/dist/icons/favicon.ico" type="">
+    <link rel="icon" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/icons/favicon.ico" type="">
     <meta name="name" content="PyScript/Panel KMeans Demo">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.8/dist/css/widgets.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.8/dist/css/markdown.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.8/dist/css/loading.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.8/dist/css/dataframe.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/css/widgets.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/css/markdown.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/css/loading.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/css/dataframe.css" type="text/css" />
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
@@ -20,14 +20,14 @@
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.js"></script>
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.2.min.js"></script>
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.2.min.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@holoviz/panel@0.13.0-rc.8/dist/panel.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/panel.min.js"></script>
     <script type="text/javascript">
       Bokeh.set_log_level("info");
     </script>
         
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.8/dist/bundled/bootstraptemplate/bootstrap.css">
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.8/dist/bundled/defaulttheme/default.css">
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/bundled/bootstraptemplate/bootstrap.css">
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/bundled/defaulttheme/default.css">
 
     <style>
       #sidebar {
@@ -83,7 +83,7 @@ import micropip
 from io import StringIO
 from js import fetch
 
-await micropip.install(['panel==0.13.0rc9', 'altair'])
+await micropip.install(['panel==0.13.0rc10', 'altair'])
 
 import altair as alt
 import panel as pn
@@ -102,45 +102,68 @@ x = pn.widgets.Select(name='x', options=cols, value='bill_depth_mm')
 y = pn.widgets.Select(name='y', options=cols, value='bill_length_mm')
 n_clusters = pn.widgets.IntSlider(name='n_clusters', start=1, end=5, value=3)
 
-@pn.depends(x.param.value, y.param.value, n_clusters.param.value)
-def get_clusters(x, y, n_clusters):
+brush = alt.selection_interval(name='brush')  # selection of type "interval"
+
+def get_clusters(n_clusters):
     kmeans = KMeans(n_clusters=n_clusters)
     est = kmeans.fit(penguins[cols].values)
     df = penguins.copy()
     df['labels'] = est.labels_.astype('str')
-    centers = df.groupby('labels').mean()
-    table.value = df
-    return (
-        alt.Chart(df)
-            .mark_point(size=100)
-            .encode(
-                x=alt.X(x, scale=alt.Scale(zero=False)),
-                y=alt.Y(y, scale=alt.Scale(zero=False)),
-                shape='labels',
-                color='species'
-            ).properties(width=800) +
-        alt.Chart(centers)
-            .mark_point(size=200, shape='cross', color='black')
-            .encode(x=x+':Q', y=y+':Q')
-)
+    return df
 
-table = pn.widgets.Tabulator(penguins, pagination='remote', page_size=10)
+def get_chart(x, y, df):
+    centers = df.groupby('labels').mean()
+    return (alt.Chart(df)
+        .mark_point(size=100)
+        .encode(
+            x=alt.X(x, scale=alt.Scale(zero=False)),
+            y=alt.Y(y, scale=alt.Scale(zero=False)),
+            shape='labels',
+            color='species'
+        ).add_selection(brush).properties(width=800) +
+        alt.Chart(centers)
+            .mark_point(size=250, shape='cross', color='black')
+            .encode(x=x+':Q', y=y+':Q')
+    )
+
+chart = pn.pane.Vega()
+table = pn.widgets.Tabulator(pagination='remote', page_size=10)
+
+def update_table(event=None):
+    table.value = get_clusters(n_clusters.value)
+
+n_clusters.param.watch(update_table, 'value')
+
+@pn.depends(x, y, n_clusters, watch=True)
+def update_chart(*events):
+    chart.object = get_chart(x.value, y.value, table.value)
+    chart.selection.param.watch(update_filters, 'brush')
+
+def update_filters(event=None):
+    filters = []
+    for k, v in (getattr(event, 'new') or {}).items():
+       filters.append(dict(field=k, type='>=', value=v[0]))
+       filters.append(dict(field=k, type='<=', value=v[1]))
+    table.filters = filters
+
+update_table()
+update_chart()
 
 intro = """
 This app provides an example of **building a simple dashboard using
 Panel**.\n\nIt demonstrates how to take the output of **k-means
-clustering on the Penguins dataset** using scikit-learn, parameterizing
-the number of clusters and the variables to plot.\n\nThe entire
-clustering and plotting pipeline is expressed as a **single reactive
-function** that responsively returns an updated plot when one of the
-widgets changes.\n\n The **`x` marks the center** of the cluster.
+clustering on the Penguins dataset** using scikit-learn,
+parameterizing the number of clusters and the variables to
+plot.\n\nThe plot and the table are linked, i.e. selecting on the plot
+will filter the data in the table.\n\n The **`x` marks the center** of
+the cluster.
 """
 
 await show(x, 'x-widget')
 await show(y, 'y-widget')
 await show(n_clusters, 'n-widget')
 await show(intro, 'intro')
-await show(get_clusters, 'cluster-plot')
+await show(chart, 'cluster-plot')
 await show(table, 'table')
     </py-script>
     <script>
