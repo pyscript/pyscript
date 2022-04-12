@@ -7,15 +7,15 @@
     <title>Svelte app</title>
 
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="../build/bundle.css" />
+    <link rel="stylesheet" href="../build/pyscript.css" />
     
     <script defer src="../build/pyscript.js"></script>
   </head>
 
   <body>
-    <div id="outputDiv"></div>
-    <div id="outputDiv2" style="background-color: blueviolet"></div>
-    <div id="outputDiv3" style="background-color: yellow"></div>
+    <div class="font-mono">start time: <label id="outputDiv"></label></div>
+    <div id="outputDiv2" class="font-mono"></div>
+    <div id="outputDiv3" class="font-mono"></div>
     <py-script target="outputDiv">
 from datetime import datetime
 now = datetime.now()
