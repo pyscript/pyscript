@@ -96,9 +96,9 @@ class Element:
 pyscript = PyScript()
 `
 
-let loadInterpreter = async function(): any {
-    /* @ts-ignore */
+let loadInterpreter = async function(): Promise<any> {
     console.log("creating pyodide runtime");
+    /* @ts-ignore */
     pyodide = await loadPyodide({
           stdout: console.log,
           stderr: console.log
@@ -108,15 +108,15 @@ let loadInterpreter = async function(): any {
     console.log("loading micropip");
     await pyodide.loadPackage("micropip");
     console.log('loading pyscript module');
-    await pyodide.runPythonAsync(`
-          from pyodide.http import pyfetch
-          response = await pyfetch("/build/pyscript.py")
-          with open("pyscript.py", "wb") as f:
-              content = await response.bytes()
-              print(content)
-              f.write(content)
-      `)
-    let pkg = pyodide.pyimport("pyscript");
+    // await pyodide.runPythonAsync(`
+    //       from pyodide.http import pyfetch
+    //       response = await pyfetch("/build/pyscript.py")
+    //       with open("pyscript.py", "wb") as f:
+    //           content = await response.bytes()
+    //           print(content)
+    //           f.write(content)
+    //   `)
+    // let pkg = pyodide.pyimport("pyscript");
 
     console.log("creating additional definitions");
     let output = pyodide.runPython(additional_definitions);
@@ -125,7 +125,7 @@ let loadInterpreter = async function(): any {
     return pyodide;
 }
 
-let loadPackage = async function(package_name: string[] | string, runtime: any): any {
+let loadPackage = async function(package_name: string[] | string, runtime: any): Promise<any> {
     await runtime.loadPackage(package_name);
 }
 
