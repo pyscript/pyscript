@@ -35,7 +35,7 @@ class PyScript:
             console.log(f"DATA/IMAGE: {value}")
             document.getElementById(element_id).innerHTML = f'<div><img id="plt" src="{value}"/></div>'
         else:
-            document.getElementById(element_id).innerHTML = repr(value);
+            document.getElementById(element_id).innerHTML = value;
             console.log(f"ELSE: {append} ==> {element_id} --> {value}")
 
     @staticmethod
