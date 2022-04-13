@@ -1,4 +1,5 @@
 from datetime import datetime as dt
+from utils import add_class, remove_class
 from js import console
 
 tasks = []
@@ -11,7 +12,9 @@ new_task_content = Element("new-task-content")
 def add_task(*ags, **kws):
   # create task
   task_id = f"task-{len(tasks)}"
+  now = dt.now()
   task = {"id": task_id, "content": new_task_content.element.value, "done": False, "created_at": dt.now()}
+
   tasks.append(task)
   
   # add the task element to the page as new node in the list by cloning from a template
@@ -24,14 +27,13 @@ def add_task(*ags, **kws):
   def check_task(evt=None):
     task['done'] = not task['done']
     if task['done']:
-      taskHtmlContent.element.classList.add("line-through")
+      add_class(taskHtmlContent, "line-through")
     else:
-      taskHtmlContent.element.classList.remove("line-through")
+      remove_class(taskHtmlContent, "line-through")
 
   new_task_content.clear()
   taskHtmlCheck.element.onclick = check_task
 
 def add_task_event(e):
-  console.log("im in")
   if (e.key == "Enter"):
     add_task()
