@@ -12,14 +12,16 @@
     <script defer src="../build/pyscript.js"></script>
   </head>
 
-  <body>
-    <div class="w-full h-full">
-      <div class="flex">
-        <div class="w-2/3"><py-repl id="my-repl" auto-generate="true" target="output"> </py-repl></div>
-        <div id="output" class="w-1/3"></div>
+  <body class="w-screen">
+    <div class="w-full h-full flex divide-x">
+      <div class="w-2/3 p-4">
+        <h1 class="text-4xl">REPL Demo</h1>
+        <py-repl id="my-repl" auto-generate="true" target="output"> </py-repl>
+      </div>
+      <div class="w-1/3 p-4">
+        <h1 class="text-4xl">Output</h1>
+        <div id="output"></div>
       </div>
     </div>
-    
-
   </body>
 </html>
