@@ -12,7 +12,6 @@ new_task_content = Element("new-task-content")
 def add_task(*ags, **kws):
   # create task
   task_id = f"task-{len(tasks)}"
-  now = dt.now()
   task = {"id": task_id, "content": new_task_content.element.value, "done": False, "created_at": dt.now()}
 
   tasks.append(task)

@@ -135,10 +135,9 @@ let loadFromFile = async function(s: string, runtime: any): Promise<any> {
     let filename = getLastPath(s);
     await runtime.runPythonAsync(`
         from pyodide.http import pyfetch
-        from pyodide import eval_code
+
         response = await pyfetch("`+s+`")
         content = await response.bytes()
-
         with open("`+filename+`", "wb") as f:
             f.write(content)
     `)
