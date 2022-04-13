@@ -63,6 +63,17 @@
 
 </script>
 
+<style>
+  :global(div.buttons-box) {
+    margin-top: -25px;
+  }
+
+  :global(.parentBox:hover .buttons-box) {
+    visibility: visible;
+  }
+
+</style>
+
 <svelte:head>
 	<script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js" on:load={initializePyodide}></script>
 </svelte:head>

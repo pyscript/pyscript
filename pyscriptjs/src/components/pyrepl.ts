@@ -111,12 +111,12 @@ export class PyRepl extends HTMLElement {
       })
   
       let mainDiv = document.createElement('div');
-      addClasses(mainDiv, ["parentBox", "flex", "flex-col", "border-4", "border-dashed", "border-gray-200", "rounded-lg"])
+      addClasses(mainDiv, ["parentBox", "group", "flex", "flex-col", "mt-10", "border-2", "border-gray-200", "rounded-lg"])
       // add Editor to main PyScript div
   
       // Butons DIV
       var eDiv = document.createElement('div');
-      addClasses(eDiv, "buttons-box relative top-0 right-0 flex flex-row-reverse space-x-reverse space-x-4 font-mono text-white text-sm font-bold leading-6 dev-buttons-group".split(" "))
+      addClasses(eDiv, "buttons-box opacity-0 group-hover:opacity-100 relative top-0 right-0 flex flex-row-reverse space-x-reverse space-x-4 font-mono text-white text-sm font-bold leading-6 dev-buttons-group".split(" "))
       eDiv.setAttribute("role", "group");
   
       // Play Button
@@ -212,7 +212,7 @@ export class PyRepl extends HTMLElement {
             }else{
               output = pyodide.runPython(source);
             }
-            
+
             if (output !== undefined){
               let Element = pyodide.globals.get('Element');
               let out = Element(this.editorOut.id);
