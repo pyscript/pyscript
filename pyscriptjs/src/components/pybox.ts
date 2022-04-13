@@ -5,7 +5,6 @@ export class PyBox extends HTMLElement {
     wrapper: HTMLElement;
     theme: string;
     widths: Array<string>;
-    // editorState: EditorState;
   
     constructor() {
         super();
@@ -21,12 +20,10 @@ export class PyBox extends HTMLElement {
     connectedCallback() {
       let mainDiv = document.createElement('div');
       addClasses(mainDiv, ["flex"])
-      // mainDiv.append(...this.childNodes);
       
-      // Ugly hack: for some reason when moving children, the editor box duplicates children
+      // Hack: for some reason when moving children, the editor box duplicates children
       // meaning that we end up with 2 editors, if there's a <py-repl> inside the <py-box>
       // so, if we have more than 2 children with the cm-editor class, we remove one of them
-      
       while (this.childNodes.length > 0) {
         console.log(this.firstChild);
         if ( this.firstChild.nodeName == "PY-REPL" ){
@@ -63,7 +60,7 @@ export class PyBox extends HTMLElement {
         // @ts-ignore
         addClasses(mainDiv.childNodes[parseInt(i)], [this.widths[i]]);
       }
-      
+
       this.appendChild(mainDiv);  
       console.log('py-box connected');
     }
