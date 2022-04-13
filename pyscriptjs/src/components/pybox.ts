@@ -1,27 +1,5 @@
 import { addClasses } from '../utils';
 
-// Premise used to connect to the first available pyodide interpreter
-// let pyodideReadyPromise;
-// let environments;
-// let currentMode;
-
-// pyodideLoaded.subscribe(value => {
-//   pyodideReadyPromise = value;
-// });
-// loadedEnvironments.subscribe(value => {
-//     environments = value;
-// });
-
-// let propertiesNavOpen;
-// componentDetailsNavOpen.subscribe(value => {
-//   propertiesNavOpen = value;
-// });
-
-// mode.subscribe(value => {
-//   currentMode = value;
-// });
-
-
 export class PyBox extends HTMLElement {
     shadow: ShadowRoot;
     wrapper: HTMLElement;
@@ -41,27 +19,53 @@ export class PyBox extends HTMLElement {
 
 
     connectedCallback() {
-        this.innerHTML = '';
-  
       let mainDiv = document.createElement('div');
       addClasses(mainDiv, ["flex"])
-      // add Editor to main PyScript div
-      debugger
-      // mainDiv.appendChild(eDiv);
-      // mainDiv.appendChild(this.editorNode);
-
-      if (!this.id){
-        console.log("WARNING: <pyrepl> define with an id. <pyrepl> should always have an id. More than one <pyrepl> on a page won't work otherwise!")
+      // mainDiv.append(...this.childNodes);
+      
+      // Ugly hack: for some reason when moving children, the editor box duplicates children
+      // meaning that we end up with 2 editors, if there's a <py-repl> inside the <py-box>
+      // so, if we have more than 2 children with the cm-editor class, we remove one of them
+      
+      while (this.childNodes.length > 0) {
+        console.log(this.firstChild);
+        if ( this.firstChild.nodeName == "PY-REPL" ){
+          // in this case we need to remove the child and craete a new one from scratch
+          let replDiv = document.createElement('div');
+          // we need to put the new repl inside a div so that if the repl has auto-generate true
+          // it can replicate itself inside that constrained div
+          replDiv.appendChild(this.firstChild.cloneNode());
+          mainDiv.appendChild(replDiv);
+          this.firstChild.remove();
+        }
+        else{
+          if ( this.firstChild.nodeName != "#text" ){
+            mainDiv.appendChild(this.firstChild);  
+          }else{
+            this.firstChild.remove()
+          }
+        }
       }
 
-      if (!this.hasAttribute('widths')) {
-        this.setAttribute("exec-id", "1");
+      // now we need to set widths
+      this.widths = []
+      if (this.hasAttribute('widths')) {
+        for (let w of this.getAttribute('widths').split(";")) {
+          this.widths.push(`w-${w}`);
+        }
+      }else{
+        for (let el of mainDiv.childNodes) {
+          this.widths.push(`w-1/${mainDiv.childNodes.length}`);
+        }
       }
 
-
-      this.appendChild(mainDiv);      
-
-      console.log('connected');
+      for (let i in this.widths) {
+        // @ts-ignore
+        addClasses(mainDiv.childNodes[parseInt(i)], [this.widths[i]]);
+      }
+      
+      this.appendChild(mainDiv);  
+      console.log('py-box connected');
     }
   }
 
