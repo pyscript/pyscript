@@ -1,3 +1,5 @@
+import { getLastPath } from "./utils";
+
 // @ts-nocheck
 // @ts-ignore
 let pyodideReadyPromise;
@@ -129,4 +131,18 @@ let loadPackage = async function(package_name: string[] | string, runtime: any):
     await runtime.loadPackage(package_name);
 }
 
-export {loadInterpreter, pyodideReadyPromise, loadPackage}
+let loadFromFile = async function(s: string, runtime: any): Promise<any> {
+    let filename = getLastPath(s);
+    await runtime.runPythonAsync(`
+        from pyodide.http import pyfetch
+
+        response = await pyfetch("`+s+`")
+        content = await response.bytes()
+        with open("`+filename+`", "wb") as f:
+            f.write(content)
+    `)
+
+    runtime.pyimport(filename.replace(".py", ""));
+}
+
+export {loadInterpreter, pyodideReadyPromise, loadPackage, loadFromFile}
