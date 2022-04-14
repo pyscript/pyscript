@@ -250,16 +250,37 @@ export class PyScript extends HTMLElement {
           let pyodide = await pyodideReadyPromise;
           // debugger
           try {
-            // @ts-ignore
-            let source = htmlDecode(this.editor.state.doc.toString());
-            let output;
-            if (source.includes("asyncio")){
-              output = await pyodide.runPythonAsync(source);
-            }else{
-              output = pyodide.runPython(source);
+            function ltrim(code: string): string {
+              const lines = code.split("\n")
+              if (lines.length == 0)
+                return code
+
+              const lengths = lines
+                .filter((line) => line.trim().length != 0)
+                .map((line) => {
+                  const [prefix] = line.match(/^\s*/)
+                  return prefix.length
+                })
+
+              const k = Math.min(...lengths)
+
+              if (k != 0)
+                return lines.map((line) => line.substring(k)).join("\n")
+              else
+                return code
             }
-            if (output !== undefined){
-              this.addToOutput(output);
+
+            const str = this.editor.state.doc.toString()
+            const source = htmlDecode(ltrim(str))
+
+            let output
+            if (source.includes("asyncio"))
+              output = await pyodide.runPythonAsync(source)
+            else
+              output = pyodide.runPython(source)
+
+            if (output !== undefined) {
+              this.addToOutput(output)
             }
 
             if (this.hasAttribute('auto-generate') && this.parentElement.lastChild === this) {
