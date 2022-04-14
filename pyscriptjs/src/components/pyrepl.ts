@@ -190,7 +190,7 @@ export class PyRepl extends HTMLElement {
       }
 
       this.appendChild(mainDiv);      
-
+      this.editor.focus();
       console.log('connected');
     }
 
