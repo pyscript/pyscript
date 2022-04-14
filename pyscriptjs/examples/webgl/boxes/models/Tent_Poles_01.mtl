@@ -1,0 +1,28 @@
+# Exported from Wings 3D 1.5.3
+newmtl Green_Roof
+Ns 100.0
+d 1.0
+illum 2
+Kd 0.309804 0.466667 0.458824
+Ka 0.0 0.0 0.0
+Ks 0.33 0.33 0.33
+Ke 0.0 0.0 0.0
+
+newmtl Leafs
+Ns 100.0
+d 1.0
+illum 2
+Kd 0.270588 0.407843 0.4
+Ka 0.0 0.0 0.0
+Ks 0.33 0.33 0.33
+Ke 0.0 0.0 0.0
+
+newmtl Wood
+Ns 100.0
+d 1.0
+illum 2
+Kd 0.666667 0.545098 0.356863
+Ka 0.0 0.0 0.0
+Ks 0.33 0.33 0.33
+Ke 0.0 0.0 0.0
+
