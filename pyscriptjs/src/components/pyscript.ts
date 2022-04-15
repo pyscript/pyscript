@@ -45,6 +45,11 @@ function htmlDecode(input) {
   return doc.documentElement.textContent;
 }
 
+// TODO: use type declaractions
+type PyodideInterface = {
+  registerJsModule(name: string, module: object): void
+}
+
 class Script {
   source: string;
   state: string;
@@ -241,13 +246,46 @@ export class PyScript extends HTMLElement {
       // pkg.do_something();
     }
 
-    async evaluate() {
+    protected async _register_esm(pyodide: PyodideInterface): Promise<void> {
+      const imports: {[key: string]: unknown} = {}
 
+      for (const node of document.querySelectorAll("script[type='importmap']")) {
+        const importmap = (() => {
+          try {
+            return JSON.parse(node.textContent)
+          } catch {
+            return null
+          }
+        })()
+
+        if (importmap?.imports == null)
+          continue
+
+        for (const [name, url] of Object.entries(importmap.imports)) {
+          if (typeof name != "string" || typeof url != "string")
+            continue
+
+          try {
+            // XXX: pyodide doesn't like Module(), failing with
+            // "can't read 'name' of undefined" at import time
+            imports[name] = {...await import(url)}
+          } catch {
+            console.error(`failed to fetch '${url}' for '${name}'`)
+          }
+        }
+      }
+
+      pyodide.registerJsModule("esm", imports)
+    }
+
+    async evaluate(): Promise<void> {
         console.log('evaluate');
+
         if (this.source){
           this.loadFromFile(this.source)
         }else{
-          let pyodide = await pyodideReadyPromise;
+          const pyodide = await pyodideReadyPromise;
+          await this._register_esm(pyodide)
           // debugger
           try {
             function ltrim(code: string): string {

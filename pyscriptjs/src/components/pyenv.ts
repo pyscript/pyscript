@@ -39,7 +39,11 @@ export class PyEnv extends HTMLElement {
 
     let env = [];
     let paths = [];
+
     this.environment = jsyaml.load(this.code);
+    if (this.environment === undefined)
+       return
+
     for (let entry of this.environment) {
       if (typeof entry == "string" ){
         env.push(entry);
