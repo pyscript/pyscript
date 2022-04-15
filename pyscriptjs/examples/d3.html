@@ -3,8 +3,6 @@
     <title>d3: JavaScript & PyScript visualizations side-by-side</title>
     <meta charset="utf-8">
 
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-
     <link rel="stylesheet" href="../build/pyscript.css" />
     <script defer src="../build/pyscript.js"></script>
 
@@ -46,7 +44,17 @@
         </div>
       </div>
 
-<script>
+<script type="importmap">
+{
+  "imports": {
+    "d3": "https://cdn.skypack.dev/d3@7"
+  }
+}
+</script>
+
+<script type="module">
+import * as d3 from "d3"
+
 const fruits = [
   {name: "🍊", count: 21},
   {name: "🍇", count: 13},
@@ -55,7 +63,7 @@ const fruits = [
   {name: "🍐", count: 3},
   {name: "🍋", count: 2},
   {name: "🍎", count: 1},
-  {name: "🍉", count: 1}
+  {name: "🍉", count: 1},
 ]
 
 const fn = (d) => d.count
@@ -101,7 +109,7 @@ for (const d of data) {
 
 <py-script>
 from pyodide import create_proxy, to_js
-from js import d3
+from esm import d3
 
 fruits = [
   dict(name="🍊", count=21),
