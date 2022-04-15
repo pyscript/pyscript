@@ -202,28 +202,32 @@ export class PyRepl extends HTMLElement {
     async evaluate() {
         console.log('evaluate');
           let pyodide = await pyodideReadyPromise;
-          // debugger
+
           try {
             // @ts-ignore
-            let source = this.editor.state.doc.toString();
+            const sourceStrings = [`output_manager.change("`+this.editorOut.id+`")`, 
+              ...this.editor.state.doc.toString().split("\n")];
+            const source = sourceStrings.join('\n')
             let output;
+
             if (source.includes("asyncio")){
               output = await pyodide.runPythonAsync(source);
+              await pyodide.runPythonAsync(`output_manager.revert()`)
             }else{
               output = pyodide.runPython(source);
+              pyodide.runPython(`output_manager.revert()`)
             }
-
+            
             if (output !== undefined){
               let Element = pyodide.globals.get('Element');
               let out = Element(this.editorOut.id);
+
               // @ts-ignore
-              out.write(output);
-              out.write.callKwargs(output, { append : false});
+              out.write.callKwargs(output, { append : true});
 
               if (!this.hasAttribute('target')) {
                 this.editorOut.hidden =  false;
               }
-              // this.addToOutput(output);
             }
 
             if (this.hasAttribute('auto-generate')) {

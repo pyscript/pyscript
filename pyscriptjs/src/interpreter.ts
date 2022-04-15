@@ -8,7 +8,7 @@ let pyodide;
 let additional_definitions = `
 from js import document, setInterval, console
 import asyncio
-import io, base64
+import io, base64, sys
 
 loop = asyncio.get_event_loop()
 
@@ -95,7 +95,30 @@ class Element:
         
         return Element(clone.id, clone)
 
+class OutputManager:
+    def __init__(self, custom=None, output_to_console=True):
+        self._custom = custom
+        self.output_to_console = output_to_console
+        self.prev = None
+
+    def change(self, custom):
+        self._prev = self._custom
+        self._custom = custom
+        console.log("----> changed to", self._custom)
+
+    def revert(self):
+        console.log("----> reverted")
+        self._custom = self._prev
+
+    def write(self, txt):
+        if self._custom:
+            pyscript.write(self._custom, txt, append=True)
+        if self.output_to_console:
+            console.log(self._custom, txt)
+
 pyscript = PyScript()
+output_manager = OutputManager()
+sys.stdout = output_manager
 `
 
 let loadInterpreter = async function(): Promise<any> {
