@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Raycaster</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="container-fluid fixed-top header disable-selection">
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-md-6">
+        <div class="row">
+          <div class="col">
+          </div>
+        </div>
+      </div>
+      <div class="col"></div>
+    </div>
+  </div>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/89/three.min.js'></script>
+
+<script defer src="/build/pyscript.js"></script>
+<link rel="stylesheet" href="/build/pyscript.css" />
+<script>
+function create_objects(mathRandom, modularGruop) {
+  for (var i = 0; i<30; i++) {
+    var geometry = new THREE.IcosahedronGeometry(1);
+    var material = new THREE.MeshStandardMaterial({flatShading:true, color:0x111111, transparent:false, opacity:1, wireframe:false});
+    var cube = new THREE.Mesh(geometry, material);
+    cube.speedRotation = Math.random() * 0.1;
+    cube.positionX = mathRandom();
+    cube.positionY = mathRandom();
+    cube.positionZ = mathRandom();
+    cube.castShadow = true;
+    cube.receiveShadow = true;
+    var newScaleValue = mathRandom(0.3);
+    cube.scale.set(newScaleValue,newScaleValue,newScaleValue);
+    cube.rotation.x = mathRandom(180 * Math.PI / 180);
+    cube.rotation.y = mathRandom(180 * Math.PI / 180);
+    cube.rotation.z = mathRandom(180 * Math.PI / 180);
+    cube.position.set(cube.positionX, cube.positionY, cube.positionZ);
+    modularGruop.add(cube);
+  }
+}
+function generateParticle(mathRandom, particularGruop, num, amp = 2) {
+  var gmaterial = new THREE.MeshPhysicalMaterial({color:0xFFFFFF, side:THREE.DoubleSide});
+  var gparticular = new THREE.CircleGeometry(0.2,5);
+  for (var i = 1; i < num; i++) {
+    var pscale = 0.001+Math.abs(mathRandom(0.03));
+    var particular = new THREE.Mesh(gparticular, gmaterial);
+    particular.position.set(mathRandom(amp),mathRandom(amp),mathRandom(amp));
+    particular.rotation.set(mathRandom(),mathRandom(),mathRandom());
+    particular.scale.set(pscale,pscale,pscale);
+    particular.speedValue = mathRandom(1);
+    particularGruop.add(particular);
+  }
+}
+</script>
+<py-script>
+from pyodide import create_proxy, to_js
+from js import window
+from js import Math
+from js import THREE
+from js import create_objects, generateParticle
+
+renderer = THREE.WebGLRenderer.new({"antialias":True})
+renderer.setSize(1000, 1000)
+renderer.shadowMap.enabled = False
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+renderer.shadowMap.needsUpdate = True
+
+document.body.appendChild( renderer.domElement )
+
+camera = THREE.PerspectiveCamera.new( 35, window.innerWidth / window.innerHeight, 1, 500 )
+scene = THREE.Scene.new()
+cameraRange = 3
+
+camera.aspect = window.innerWidth / window.innerHeight
+camera.updateProjectionMatrix()
+renderer.setSize( window.innerWidth, window.innerHeight )
+
+setcolor = "#000000"
+
+scene.background = THREE.Color.new(setcolor)
+scene.fog = THREE.Fog.new(setcolor, 2.5, 3.5);
+
+sceneGruop = THREE.Object3D.new();
+particularGruop = THREE.Object3D.new();
+
+def mathRandom(num = 1):
+  setNumber = - Math.random() * num + Math.random() * num
+  return setNumber
+
+particularGruop =  THREE.Object3D.new();
+modularGruop =  THREE.Object3D.new();
+
+create_objects(mathRandom, modularGruop)
+generateParticle(mathRandom, particularGruop, 200, 2)
+
+sceneGruop.add(particularGruop);
+scene.add(modularGruop);
+scene.add(sceneGruop);
+
+camera.position.set(0, 0, cameraRange);
+cameraValue = False;
+
+ambientLight = THREE.AmbientLight.new(0xFFFFFF, 0.1);
+
+light = THREE.SpotLight.new(0xFFFFFF, 3);
+light.position.set(5, 5, 2);
+light.castShadow = True;
+light.shadow.mapSize.width = 10000;
+light.shadow.mapSize.height = light.shadow.mapSize.width;
+light.penumbra = 0.5;
+
+lightBack = THREE.PointLight.new(0x0FFFFF, 1);
+lightBack.position.set(0, -3, -1);
+
+scene.add(sceneGruop);
+scene.add(light);
+scene.add(lightBack);
+
+rectSize = 2
+intensity = 100
+rectLight = THREE.RectAreaLight.new( 0x0FFFFF, intensity,  rectSize, rectSize )
+rectLight.position.set( 0, 0, 1 )
+rectLight.lookAt( 0, 0, 0 )
+scene.add( rectLight )
+
+rectLightHelper = THREE.RectAreaLightHelper.new( rectLight );
+raycaster = THREE.Raycaster.new();
+uSpeed = 0.1
+
+time = 0.0003;
+camera.lookAt(scene.position)
+renderer.render( scene, camera )
+</py-script>
+</body>
+</html>
