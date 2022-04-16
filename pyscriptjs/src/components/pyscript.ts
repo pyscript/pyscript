@@ -247,8 +247,6 @@ export class PyScript extends HTMLElement {
     }
 
     protected async _register_esm(pyodide: PyodideInterface): Promise<void> {
-      const imports: {[key: string]: unknown} = {}
-
       for (const node of document.querySelectorAll("script[type='importmap']")) {
         const importmap = (() => {
           try {
@@ -265,17 +263,19 @@ export class PyScript extends HTMLElement {
           if (typeof name != "string" || typeof url != "string")
             continue
 
+          let exports: object
           try {
             // XXX: pyodide doesn't like Module(), failing with
             // "can't read 'name' of undefined" at import time
-            imports[name] = {...await import(url)}
+            exports = {...await import(url)}
           } catch {
-            console.error(`failed to fetch '${url}' for '${name}'`)
+            console.warn(`failed to fetch '${url}' for '${name}'`)
+            continue
           }
+
+          pyodide.registerJsModule(name, exports)
         }
       }
-
-      pyodide.registerJsModule("esm", imports)
     }
 
     async evaluate(): Promise<void> {
