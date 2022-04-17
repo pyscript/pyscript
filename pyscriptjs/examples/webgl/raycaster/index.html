@@ -57,13 +57,59 @@ function generateParticle(mathRandom, particularGruop, num, amp = 2) {
     particularGruop.add(particular);
   }
 }
+var mouse = new THREE.Vector2(), INTERSECTED;
+var intersected;
+
+function onMouseMove(event) {
+  event.preventDefault();
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+}
+function onMouseDown(event) {
+  event.preventDefault();
+  onMouseMove(event);
+  raycaster.setFromCamera(mouse, camera);
+  var intersected = raycaster.intersectObjects(modularGruop.children);
+  if (intersected.length > 0) {
+    cameraValue = false;
+    if (INTERSECTED != intersected[0].object) {
+      if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+
+      INTERSECTED = intersected[0].object;
+      INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+      INTERSECTED.material.emissive.setHex(0xFFFF00);
+      //INTERSECTED.material.map = null;
+      //lightBack.position.set(INTERSECTED.position.x,INTERSECTED.position.y,INTERSECTED.position.z);
+
+      TweenMax.to(camera.position, 1, {
+        x:INTERSECTED.position.x,
+        y:INTERSECTED.position.y,
+        z:INTERSECTED.position.z+3,
+        ease:Power2.easeInOut
+      });
+
+    } else {
+      if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+      INTERSECTED = null;
+
+    }
+  }
+  console.log(intersected.length);
+}
+function onMouseUp(event) {
+
+}
+
+window.addEventListener('mousedown', onMouseDown, false);
+window.addEventListener('mouseup', onMouseUp, false);
+window.addEventListener('mousemove', onMouseMove, false);
 </script>
 <py-script>
 from pyodide import create_proxy, to_js
 from js import window
 from js import Math
 from js import THREE
-from js import create_objects, generateParticle
+from js import create_objects, generateParticle, performance, mouse, intersected
 
 renderer = THREE.WebGLRenderer.new({"antialias":True})
 renderer.setSize(1000, 1000)
@@ -134,8 +180,39 @@ raycaster = THREE.Raycaster.new();
 uSpeed = 0.1
 
 time = 0.0003;
-camera.lookAt(scene.position)
-renderer.render( scene, camera )
+
+while True:
+  time = performance.now() * 0.0003;
+  i = 0
+  while i < particularGruop.children.length:
+    newObject = particularGruop.children[i];
+    newObject.rotation.x += newObject.speedValue/10;
+    newObject.rotation.y += newObject.speedValue/10;
+    newObject.rotation.z += newObject.speedValue/10;
+    i += 1
+
+  i = 0
+  while i < modularGruop.children.length:
+    newCubes = modularGruop.children[i];
+    newCubes.rotation.x += 0.008;
+    newCubes.rotation.y += 0.005;
+    newCubes.rotation.z += 0.003;
+
+    newCubes.position.x = Math.sin(time * newCubes.positionZ) * newCubes.positionY;
+    newCubes.position.y = Math.cos(time * newCubes.positionX) * newCubes.positionZ;
+    newCubes.position.z = Math.sin(time * newCubes.positionY) * newCubes.positionX;
+    i += 1
+
+  particularGruop.rotation.y += 0.005;
+
+  modularGruop.rotation.y -= ((mouse.x * 4) + modularGruop.rotation.y) * uSpeed;
+  modularGruop.rotation.x -= ((-mouse.y * 4) + modularGruop.rotation.x) * uSpeed;
+
+  camera.lookAt(scene.position)
+  renderer.render( scene, camera )
+  await asyncio.sleep(0.01)
+
+
 </py-script>
 </body>
 </html>
