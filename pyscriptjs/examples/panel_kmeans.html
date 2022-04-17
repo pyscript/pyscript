@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <title>Pyscript/Panel KMeans Demo</title>
 
-    <link rel="icon" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/icons/favicon.ico" type="">
+    <link rel="icon" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/icons/favicon.ico" type="">
     <meta name="name" content="PyScript/Panel KMeans Demo">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/css/widgets.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/css/markdown.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/css/loading.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/css/dataframe.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/widgets.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/markdown.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/loading.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/dataframe.css" type="text/css" />
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
@@ -20,14 +20,14 @@
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.js"></script>
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.2.min.js"></script>
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.2.min.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/panel.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@holoviz/panel@0.13.0/dist/panel.min.js"></script>
     <script type="text/javascript">
       Bokeh.set_log_level("info");
     </script>
         
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/bundled/bootstraptemplate/bootstrap.css">
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0-rc.10/dist/bundled/defaulttheme/default.css">
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/bundled/bootstraptemplate/bootstrap.css">
+    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/bundled/defaulttheme/default.css">
 
     <style>
       #sidebar {
@@ -83,7 +83,7 @@ import micropip
 from io import StringIO
 from js import fetch
 
-await micropip.install(['panel==0.13.0rc10', 'altair'])
+await micropip.install(['panel', 'altair'])
 
 import altair as alt
 import panel as pn
