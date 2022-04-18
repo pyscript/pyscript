@@ -115,9 +115,11 @@ export class BaseEvalElement extends HTMLElement {
             await this._register_esm(pyodide);
 
             if (source.includes("asyncio")){
+                await pyodide.runPythonAsync(`output_manager.change("`+this.outputElement.id+`")`);
                 output = await pyodide.runPythonAsync(source);
                 await pyodide.runPythonAsync(`output_manager.revert()`)
             }else{
+                output = pyodide.runPython(`output_manager.change("`+this.outputElement.id+`")`);
                 output = pyodide.runPython(source);
                 pyodide.runPython(`output_manager.revert()`)
             }

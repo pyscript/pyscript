@@ -95,31 +95,57 @@ class Element:
         
         return Element(clone.id, clone)
 
-class OutputManager:
-    def __init__(self, custom=None, output_to_console=True):
-        self._custom = custom
-        self._prev = custom
+class OutputCtxManager:
+    def __init__(self, out=None, output_to_console=True, append=True):
+        self._out = out
+        self._prev = out
         self.output_to_console = output_to_console
-        self.prev = None
+        self._append = append
 
-    def change(self, custom):
-        self._prev = self._custom
-        self._custom = custom
-        console.log("----> changed to", self._custom)
+    def change(self, out=None, err=None, output_to_console=True, append=True):
+        self._prevt = self._out
+        self._out = out
+        self.output_to_console = output_to_console
+        self._append = append
+        console.log("----> changed out to", self._out, self._append)
 
     def revert(self):
         console.log("----> reverted")
-        self._custom = self._prev
+        self._out = self._prev
 
     def write(self, txt):
-        if self._custom:
-            pyscript.write(self._custom, txt, append=True)
+        console.log('writing to', self._out, txt, self._append)
+        if self._out:
+            pyscript.write(self._out, txt, append=self._append)
         if self.output_to_console:
-            console.log(self._custom, txt)
+            console.log(self._out, txt)
+
+class OutputManager:
+    def __init__(self, out=None, err=None, output_to_console=True, append=True):
+        sys.stdout = self._out_manager = OutputCtxManager(out, output_to_console, append)
+        sys.strerr = self._err_manager = OutputCtxManager(err, output_to_console, append)
+        self.output_to_console = output_to_console
+        self._append = append
+
+    def change(self, out=None, err=None, output_to_console=True, append=True):
+        self._out_manager.change(out, output_to_console, append)
+        sys.stdout = self._out_manager
+        self._err_manager.change(err, output_to_console, append)
+        sys.stderr = self._err_manager
+        self.output_to_console = output_to_console
+        self.append = append
+
+    def revert(self):
+        self._out_manager.revert()
+        self._err_manager.revert()
+        sys.stdout = self._out_manager
+        sys.stdout = self._err_manager
+        console.log("----> reverted")
+
 
 pyscript = PyScript()
 output_manager = OutputManager()
-sys.stdout = output_manager
+
 `
 
 let loadInterpreter = async function(): Promise<any> {
