@@ -98,6 +98,7 @@ class Element:
 class OutputManager:
     def __init__(self, custom=None, output_to_console=True):
         self._custom = custom
+        self._prev = custom
         self.output_to_console = output_to_console
         self.prev = None
 
