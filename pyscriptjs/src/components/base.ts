@@ -132,7 +132,7 @@ export class BaseEvalElement extends HTMLElement {
                 // @ts-ignore
                 out.write.callKwargs(output, { append : true});
 
-                if (!this.hasAttribute('target')) {
+                if (!this.hasAttribute('output')) {
                 this.outputElement.hidden =  false;
             }
         }

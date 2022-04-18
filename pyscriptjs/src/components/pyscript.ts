@@ -56,10 +56,10 @@ type PyodideInterface = {
 class Script {
   source: string;
   state: string;
-  target: string;
+  output: string;
  
-  constructor(source: string, target: string) {
-    this.target = target;
+  constructor(source: string, output: string) {
+    this.output = output;
     this.source = source;
     this.state = 'waiting';
   }
@@ -78,7 +78,7 @@ class Script {
           output = pyodide.runPython(this.source);
         }
 
-        if (this.target){
+        if (this.output){
           // this.editorOut.innerHTML = s;
         }
         // if (output !== undefined){
@@ -161,7 +161,7 @@ export class PyScript extends BaseEvalElement {
 
         currentComponentDetails.set([
           {key: "auto-generate",  value: true},
-          {key:"target", value: "default"},
+          {key:"output", value: "default"},
           {key: "source", value: "self"}
         ])
       }
@@ -172,15 +172,15 @@ export class PyScript extends BaseEvalElement {
 
       mainDiv.appendChild(eDiv);
 
-      if (this.hasAttribute('target')) {
-        this.outputElement = document.getElementById(this.getAttribute('target'));
+      if (this.hasAttribute('output')) {
+        this.outputElement = document.getElementById(this.getAttribute('output'));
       }else{
         // Editor Output Div
         this.outputElement = document.createElement('div');
         this.outputElement.classList.add("output");
         this.outputElement.hidden = true;
 
-        // add the output div id there's not target
+        // add the output div id there's no output element
         mainDiv.appendChild(this.outputElement);
       }
 

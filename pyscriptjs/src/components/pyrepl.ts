@@ -134,7 +134,7 @@ export class PyRepl extends BaseEvalElement {
 
         currentComponentDetails.set([
           {key: "auto-generate",  value: true},
-          {key:"target", value: "default"},
+          {key:"output", value: "default"},
           {key: "source", value: "self"},
           {key: "output-mode", value: "clear"}
         ])
@@ -160,8 +160,8 @@ export class PyRepl extends BaseEvalElement {
         this.setAttribute("root", this.id);
       }
 
-      if (this.hasAttribute('target')) {
-        this.outputElement = document.getElementById(this.getAttribute('target'));
+      if (this.hasAttribute('output')) {
+        this.outputElement = document.getElementById(this.getAttribute('output'));
 
         // in this case, the default output-mode is append, if hasn't been specified
         if (!this.hasAttribute('output-mode')) {
@@ -174,7 +174,7 @@ export class PyRepl extends BaseEvalElement {
         this.outputElement.hidden = true;
         this.outputElement.id = this.id + "-" + this.getAttribute("exec-id");
 
-        // add the output div id there's not target
+        // add the output div id if there's not output pre-defined
         mainDiv.appendChild(this.outputElement);
       }
 
@@ -195,8 +195,8 @@ export class PyRepl extends BaseEvalElement {
         newPyRepl.setAttribute('root', this.getAttribute('root'));
         newPyRepl.id = this.getAttribute('root') + "-" + nextExecId.toString();
         newPyRepl.setAttribute('auto-generate', null);
-        if (this.hasAttribute('target')){
-          newPyRepl.setAttribute('target', this.getAttribute('target'));
+        if (this.hasAttribute('output')){
+          newPyRepl.setAttribute('output', this.getAttribute('output'));
         }
           
         newPyRepl.setAttribute('exec-id', nextExecId.toString());
