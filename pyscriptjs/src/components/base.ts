@@ -32,6 +32,7 @@ export class BaseEvalElement extends HTMLElement {
     shadow: ShadowRoot;
     wrapper: HTMLElement;
     code: string;
+    source: string;
     btnConfig: HTMLElement;
     btnRun: HTMLElement;
     outputElement: HTMLElement; //HTMLTextAreaElement;
@@ -55,9 +56,16 @@ export class BaseEvalElement extends HTMLElement {
 
     }
 
-    getSource(): string{
+    getSourceFromElement(): string{
         return "";
     }
+
+    async getSourceFromFile(s: string): Promise<string>{
+        let pyodide = await pyodideReadyPromise;
+        let response = await fetch(s);
+        this.code = await response.text();
+        return this.code;
+      }
 
     protected async _register_esm(pyodide: PyodideInterface): Promise<void> {
         const imports: {[key: string]: unknown} = {}
@@ -91,53 +99,44 @@ export class BaseEvalElement extends HTMLElement {
         pyodide.registerJsModule("esm", imports)
     }
 
-    async evaluate() {
+    async evaluate(): Promise<void> {
         console.log('evaluate');
-          let pyodide = await pyodideReadyPromise;
-
-          try {
+        let pyodide = await pyodideReadyPromise;
+        let source: string;
+        let output;
+        try {
             // @ts-ignore
-            const source = this.getSource();
-            await this._register_esm(pyodide)
-            
-            let output;
+            if (this.source){
+                source = await this.getSourceFromFile(this.source);
+            }else{
+                source = this.getSourceFromElement();
+            }
+
+            await this._register_esm(pyodide);
 
             if (source.includes("asyncio")){
-              output = await pyodide.runPythonAsync(source);
-              await pyodide.runPythonAsync(`output_manager.revert()`)
+                output = await pyodide.runPythonAsync(source);
+                await pyodide.runPythonAsync(`output_manager.revert()`)
             }else{
-              output = pyodide.runPython(source);
-              pyodide.runPython(`output_manager.revert()`)
+                output = pyodide.runPython(source);
+                pyodide.runPython(`output_manager.revert()`)
             }
-            
+
             if (output !== undefined){
-              if (Element === undefined){
+                if (Element === undefined){
                 Element = pyodide.globals.get('Element');
-              }
-              const out = Element(this.outputElement.id);
-              // @ts-ignore
-              out.write.callKwargs(output, { append : true});
+                }
+                const out = Element(this.outputElement.id);
+                // @ts-ignore
+                out.write.callKwargs(output, { append : true});
 
-              if (!this.hasAttribute('target')) {
+                if (!this.hasAttribute('target')) {
                 this.outputElement.hidden =  false;
-              }
             }
+        }
 
-            this.postEvaluate()
+        this.postEvaluate()
 
-            // if (this.hasAttribute('auto-generate')) {
-            //     let nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
-            //     const newPyRepl = document.createElement("py-repl");
-            //     newPyRepl.setAttribute('root', this.getAttribute('root'));
-            //     newPyRepl.id = this.getAttribute('root') + "-" + nextExecId.toString();
-            //     newPyRepl.setAttribute('auto-generate', null);
-            //     if (this.hasAttribute('target')){
-            //       newPyRepl.setAttribute('target', this.getAttribute('target'));
-            //     }
-                  
-            //     newPyRepl.setAttribute('exec-id', nextExecId.toString());
-            //     this.parentElement.appendChild(newPyRepl);
-            // }
         } catch (err) {
               this.addToOutput(err);
           }
