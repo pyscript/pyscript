@@ -47,6 +47,8 @@
       - numpy
       - pandas
       - scikit-learn
+      - panel
+      - altair
     </py-env>
 
     <div class="container-fluid d-flex flex-column vh-100 overflow-hidden" id="container">
@@ -78,12 +80,9 @@
     </div>
     <py-script>
 import asyncio
-import micropip
 
 from io import StringIO
 from js import fetch
-
-await micropip.install(['panel', 'altair'])
 
 import altair as alt
 import panel as pn

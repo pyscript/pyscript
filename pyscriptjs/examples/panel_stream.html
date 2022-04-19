@@ -43,6 +43,7 @@
       - bokeh
       - numpy
       - pandas
+      - panel
     </py-env>
 
     <div class="container-fluid d-flex flex-column vh-100 overflow-hidden" id="container">
@@ -69,9 +70,6 @@
     </div>
     <py-script>
 import asyncio
-import micropip
-
-await micropip.install(['panel'])
 
 import panel as pn
 import numpy as np

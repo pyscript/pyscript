@@ -46,6 +46,7 @@
       - bokeh
       - numpy
       - pandas
+      - panel==0.13.1a1
     </py-env>
 
     <div class="container-fluid d-flex flex-column vh-100 overflow-hidden" id="container">
@@ -74,12 +75,9 @@
     </div>
     <py-script>
 import asyncio
-import micropip
 
 from io import StringIO
 from js import fetch
-
-await micropip.install(['panel==0.13.1a1'])
 
 import panel as pn
 import param
