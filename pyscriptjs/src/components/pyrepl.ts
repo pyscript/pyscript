@@ -188,7 +188,7 @@ export class PyRepl extends BaseEvalElement {
           this.errorElement = this.outputElement;
         }
       }
-  
+
 
       this.appendChild(mainDiv);      
       this.editor.focus();

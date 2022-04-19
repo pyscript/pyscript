@@ -247,7 +247,7 @@ export class PyScript extends BaseEvalElement {
     }
 
     getSourceFromElement(): string {
-      return this.code;
+      return htmlDecode(this.code);
     }
   }
 

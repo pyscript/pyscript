@@ -22,6 +22,8 @@ class PyScript:
         if append:
             child = document.createElement('div');
             element = document.querySelector(f'#{element_id}');
+            if not element:
+                return
             exec_id = exec_id or element.childElementCount + 1
             element_id = child.id = f"{element_id}-{exec_id}";
             element.appendChild(child);
@@ -34,11 +36,9 @@ class PyScript:
             img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
             document.getElementById(element_id).innerHTML = f'<div><img id="plt" src="{img_str}"/></div>'
         elif hasattr(value, "startswith") and value.startswith("data:image"):
-            console.log(f"DATA/IMAGE: {value}")
             document.getElementById(element_id).innerHTML = f'<div><img id="plt" src="{value}"/></div>'
         else:
             document.getElementById(element_id).innerHTML = value;
-            console.log(f"ELSE: {append} ==> {element_id} --> {value}")
 
     @staticmethod
     def run_until_complete(f):
