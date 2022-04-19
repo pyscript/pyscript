@@ -8,7 +8,7 @@ let pyodide;
 let additional_definitions = `
 from js import document, setInterval, console
 import asyncio
-import io, base64
+import io, base64, sys
 
 loop = asyncio.get_event_loop()
 
@@ -22,6 +22,8 @@ class PyScript:
         if append:
             child = document.createElement('div');
             element = document.querySelector(f'#{element_id}');
+            if not element:
+                return
             exec_id = exec_id or element.childElementCount + 1
             element_id = child.id = f"{element_id}-{exec_id}";
             element.appendChild(child);
@@ -34,11 +36,9 @@ class PyScript:
             img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
             document.getElementById(element_id).innerHTML = f'<div><img id="plt" src="{img_str}"/></div>'
         elif hasattr(value, "startswith") and value.startswith("data:image"):
-            console.log(f"DATA/IMAGE: {value}")
             document.getElementById(element_id).innerHTML = f'<div><img id="plt" src="{value}"/></div>'
         else:
             document.getElementById(element_id).innerHTML = value;
-            console.log(f"ELSE: {append} ==> {element_id} --> {value}")
 
     @staticmethod
     def run_until_complete(f):
@@ -95,7 +95,57 @@ class Element:
         
         return Element(clone.id, clone)
 
+class OutputCtxManager:
+    def __init__(self, out=None, output_to_console=True, append=True):
+        self._out = out
+        self._prev = out
+        self.output_to_console = output_to_console
+        self._append = append
+
+    def change(self, out=None, err=None, output_to_console=True, append=True):
+        self._prevt = self._out
+        self._out = out
+        self.output_to_console = output_to_console
+        self._append = append
+        console.log("----> changed out to", self._out, self._append)
+
+    def revert(self):
+        console.log("----> reverted")
+        self._out = self._prev
+
+    def write(self, txt):
+        console.log('writing to', self._out, txt, self._append)
+        if self._out:
+            pyscript.write(self._out, txt, append=self._append)
+        if self.output_to_console:
+            console.log(self._out, txt)
+
+class OutputManager:
+    def __init__(self, out=None, err=None, output_to_console=True, append=True):
+        sys.stdout = self._out_manager = OutputCtxManager(out, output_to_console, append)
+        sys.strerr = self._err_manager = OutputCtxManager(err, output_to_console, append)
+        self.output_to_console = output_to_console
+        self._append = append
+
+    def change(self, out=None, err=None, output_to_console=True, append=True):
+        self._out_manager.change(out, output_to_console, append)
+        sys.stdout = self._out_manager
+        self._err_manager.change(err, output_to_console, append)
+        sys.stderr = self._err_manager
+        self.output_to_console = output_to_console
+        self.append = append
+
+    def revert(self):
+        self._out_manager.revert()
+        self._err_manager.revert()
+        sys.stdout = self._out_manager
+        sys.stdout = self._err_manager
+        console.log("----> reverted")
+
+
 pyscript = PyScript()
+output_manager = OutputManager()
+
 `
 
 let loadInterpreter = async function(): Promise<any> {

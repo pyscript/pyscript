@@ -8,6 +8,7 @@ import { oneDarkTheme } from "@codemirror/theme-one-dark";
 
 import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, currentComponentDetails, mode, addToScriptsQueue, addInitializer, addPostInitializer } from '../stores';
 import { addClasses } from '../utils';
+import { BaseEvalElement } from './base';
 
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
@@ -50,13 +51,15 @@ type PyodideInterface = {
   registerJsModule(name: string, module: object): void
 }
 
+// TODO: This should be used as base for generic scripts that need exectutoin
+//        from PyScript to initializers, etc...
 class Script {
   source: string;
   state: string;
-  target: string;
+  output: string;
  
-  constructor(source: string, target: string) {
-    this.target = target;
+  constructor(source: string, output: string) {
+    this.output = output;
     this.source = source;
     this.state = 'waiting';
   }
@@ -75,7 +78,7 @@ class Script {
           output = pyodide.runPython(this.source);
         }
 
-        if (this.target){
+        if (this.output){
           // this.editorOut.innerHTML = s;
         }
         // if (output !== undefined){
@@ -90,30 +93,12 @@ class Script {
   }
 }
 
-export class PyScript extends HTMLElement {
-    shadow: ShadowRoot;
-    wrapper: HTMLElement;
-    editor: EditorView;
-    editorNode: HTMLElement;
-    code: string;
-    cm: any;
-    btnConfig: HTMLElement;
-    btnRun: HTMLElement;
-    editorOut: HTMLElement; //HTMLTextAreaElement;
-    source: string;
-    // editorState: EditorState;
+export class PyScript extends BaseEvalElement {
   
     constructor() {
         super();
   
-        // attach shadow so we can preserve the element original innerHtml content
-        this.shadow = this.attachShadow({ mode: 'open'});
-  
-        this.wrapper = document.createElement('slot');
-  
         // add an extra div where we can attach the codemirror editor
-        this.editorNode = document.createElement('div');
-        addClasses(this.editorNode, ["editor-box"])
         this.shadow.appendChild(this.wrapper);
       }
 
@@ -138,11 +123,6 @@ export class PyScript extends HTMLElement {
             //     }
             // })
           ]
-      })
-  
-      this.editor = new EditorView({
-          state: startState,
-          parent: this.editorNode
       })
   
       let mainDiv = document.createElement('div');
@@ -180,7 +160,7 @@ export class PyScript extends HTMLElement {
 
         currentComponentDetails.set([
           {key: "auto-generate",  value: true},
-          {key:"target", value: "default"},
+          {key:"output", value: "default"},
           {key: "source", value: "self"}
         ])
       }
@@ -190,18 +170,34 @@ export class PyScript extends HTMLElement {
       eDiv.appendChild(this.btnConfig);
 
       mainDiv.appendChild(eDiv);
-      mainDiv.appendChild(this.editorNode);
 
-      if (this.hasAttribute('target')) {
-        this.editorOut = document.getElementById(this.getAttribute('target'));
+      if (this.hasAttribute('output')) {
+        this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
+
+        // in this case, the default output-mode is append, if hasn't been specified
+        if (!this.hasAttribute('output-mode')) {
+          this.setAttribute('output-mode', 'append');
+        }
       }else{
-        // Editor Output Div
-        this.editorOut = document.createElement('div');
-        this.editorOut.classList.add("output");
-        this.editorOut.hidden = true;
+        if (this.hasAttribute('std-out')){
+          this.outputElement = document.getElementById(this.getAttribute('std-out'));
+        }else{
+          // In this case neither output or std-out have been provided so we need
+          // to create a new output div to output to
+          this.outputElement = document.createElement('div');
+          this.outputElement.classList.add("output");
+          this.outputElement.hidden = true;
+          this.outputElement.id = this.id + "-" + this.getAttribute("exec-id");
 
-        // add the output div id there's not target
-        mainDiv.appendChild(this.editorOut);
+          // add the output div id if there's not output pre-defined
+          mainDiv.appendChild(this.outputElement);
+        }
+
+        if (this.hasAttribute('std-err')){
+          this.outputElement = document.getElementById(this.getAttribute('std-err'));
+        }else{
+          this.errorElement = this.outputElement;
+        }
       }
 
       if (currentMode=="edit"){
@@ -215,35 +211,6 @@ export class PyScript extends HTMLElement {
       if (this.hasAttribute('src')) {
         this.source = this.getAttribute('src');
       }
-    }
-
-    addToOutput(s: string) {
-        this.editorOut.innerHTML = s;
-        this.editorOut.hidden = false;
-      }
-
-    async loadFromFile(s: string){
-      let pyodide = await pyodideReadyPromise;
-      let response = await fetch(s);
-      this.code = await response.text();
-
-      await pyodide.runPythonAsync(this.code);
-      await pyodide.runPythonAsync(`
-          from pyodide.http import pyfetch
-          from pyodide import eval_code
-          response = await pyfetch("`+s+`")
-          content = await response.bytes()
-
-          with open("todo.py", "wb") as f:
-              print(content)
-              f.write(content)
-              print("done writing")
-      `)
-      // let pkg = pyodide.pyimport("todo");
-      // pyodide.runPython(`
-      //     import todo
-      // `)
-      // pkg.do_something();
     }
 
     protected async _register_esm(pyodide: PyodideInterface): Promise<void> {
@@ -278,64 +245,8 @@ export class PyScript extends HTMLElement {
       }
     }
 
-    async evaluate(): Promise<void> {
-        console.log('evaluate');
-
-        if (this.source){
-          this.loadFromFile(this.source)
-        }else{
-          const pyodide = await pyodideReadyPromise;
-          await this._register_esm(pyodide)
-          // debugger
-          try {
-            function ltrim(code: string): string {
-              const lines = code.split("\n")
-              if (lines.length == 0)
-                return code
-
-              const lengths = lines
-                .filter((line) => line.trim().length != 0)
-                .map((line) => {
-                  const [prefix] = line.match(/^\s*/)
-                  return prefix.length
-                })
-
-              const k = Math.min(...lengths)
-
-              if (k != 0)
-                return lines.map((line) => line.substring(k)).join("\n")
-              else
-                return code
-            }
-
-            const str = this.editor.state.doc.toString()
-            const source = htmlDecode(ltrim(str))
-
-            let output
-            if (source.includes("asyncio"))
-              output = await pyodide.runPythonAsync(source)
-            else
-              output = pyodide.runPython(source)
-
-            if (output !== undefined) {
-              this.addToOutput(output)
-            }
-
-            if (this.hasAttribute('auto-generate') && this.parentElement.lastChild === this) {
-                const newPyscript = document.createElement("py-script");
-                newPyscript.setAttribute('auto-generate', null);
-                this.parentElement.appendChild(newPyscript);
-            }
-        } catch (err) {
-              this.addToOutput(err);
-              console.log(err);
-          }
-        }
-      }
-
-    render(){
-      console.log('rendered');
-  
+    getSourceFromElement(): string {
+      return htmlDecode(this.code);
     }
   }
 

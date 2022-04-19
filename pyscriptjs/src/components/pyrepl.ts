@@ -8,6 +8,7 @@ import { oneDarkTheme } from "@codemirror/theme-one-dark";
 
 import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, currentComponentDetails, mode } from '../stores';
 import { addClasses } from '../utils';
+import { BaseEvalElement } from './base';
 
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
@@ -43,26 +44,12 @@ function createCmdHandler(el){
 }
 
 
-export class PyRepl extends HTMLElement {
-    shadow: ShadowRoot;
-    wrapper: HTMLElement;
+export class PyRepl extends BaseEvalElement {
     editor: EditorView;
     editorNode: HTMLElement;
-    code: string;
-    cm: any;
-    btnConfig: HTMLElement;
-    btnRun: HTMLElement;
-    editorOut: HTMLElement; //HTMLTextAreaElement;
-    theme: string;
-    // editorState: EditorState;
   
     constructor() {
         super();
-  
-        // attach shadow so we can preserve the element original innerHtml content
-        this.shadow = this.attachShadow({ mode: 'open'});
-  
-        this.wrapper = document.createElement('slot');
   
         // add an extra div where we can attach the codemirror editor
         this.editorNode = document.createElement('div');
@@ -111,7 +98,7 @@ export class PyRepl extends HTMLElement {
       })
   
       let mainDiv = document.createElement('div');
-      addClasses(mainDiv, ["parentBox", "group", "flex", "flex-col", "mt-10", "border-2", "border-gray-200", "rounded-lg"])
+      addClasses(mainDiv, ["parentBox", "group", "flex", "flex-col", "mt-2", "border-2", "border-gray-200", "rounded-lg"])
       // add Editor to main PyScript div
   
       // Butons DIV
@@ -145,7 +132,7 @@ export class PyRepl extends HTMLElement {
 
         currentComponentDetails.set([
           {key: "auto-generate",  value: true},
-          {key:"target", value: "default"},
+          {key:"output", value: "default"},
           {key: "source", value: "self"},
           {key: "output-mode", value: "clear"}
         ])
@@ -171,23 +158,35 @@ export class PyRepl extends HTMLElement {
         this.setAttribute("root", this.id);
       }
 
-      if (this.hasAttribute('target')) {
-        this.editorOut = document.getElementById(this.getAttribute('target'));
+      if (this.hasAttribute('output')) {
+        this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
 
         // in this case, the default output-mode is append, if hasn't been specified
         if (!this.hasAttribute('output-mode')) {
           this.setAttribute('output-mode', 'append');
         }
       }else{
-        // Editor Output Div
-        this.editorOut = document.createElement('div');
-        this.editorOut.classList.add("output");
-        this.editorOut.hidden = true;
-        this.editorOut.id = this.id + "-" + this.getAttribute("exec-id");
+        if (this.hasAttribute('std-out')){
+          this.outputElement = document.getElementById(this.getAttribute('std-out'));
+        }else{
+          // In this case neither output or std-out have been provided so we need
+          // to create a new output div to output to
+          this.outputElement = document.createElement('div');
+          this.outputElement.classList.add("output");
+          this.outputElement.hidden = true;
+          this.outputElement.id = this.id + "-" + this.getAttribute("exec-id");
 
-        // add the output div id there's not target
-        mainDiv.appendChild(this.editorOut);
+          // add the output div id if there's not output pre-defined
+          mainDiv.appendChild(this.outputElement);
+        }
+
+        if (this.hasAttribute('std-err')){
+          this.errorElement = document.getElementById(this.getAttribute('std-err'));
+        }else{
+          this.errorElement = this.outputElement;
+        }
       }
+
 
       this.appendChild(mainDiv);      
       this.editor.focus();
@@ -195,59 +194,41 @@ export class PyRepl extends HTMLElement {
     }
 
     addToOutput(s: string) {
-        this.editorOut.innerHTML += "<div>"+s+"</div>";
-        this.editorOut.hidden = false;
+        this.outputElement.innerHTML += "<div>"+s+"</div>";
+        this.outputElement.hidden = false;
       }
 
-    async evaluate() {
-        console.log('evaluate');
-          let pyodide = await pyodideReadyPromise;
-          // debugger
-          try {
-            // @ts-ignore
-            let source = this.editor.state.doc.toString();
-            let output;
-            if (source.includes("asyncio")){
-              output = await pyodide.runPythonAsync(source);
-            }else{
-              output = pyodide.runPython(source);
-            }
-
-            if (output !== undefined){
-              let Element = pyodide.globals.get('Element');
-              let out = Element(this.editorOut.id);
-              // @ts-ignore
-              out.write(output);
-              out.write.callKwargs(output, { append : false});
-
-              if (!this.hasAttribute('target')) {
-                this.editorOut.hidden =  false;
-              }
-              // this.addToOutput(output);
-            }
-
-            if (this.hasAttribute('auto-generate')) {
-                let nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
-                const newPyRepl = document.createElement("py-repl");
-                newPyRepl.setAttribute('root', this.getAttribute('root'));
-                newPyRepl.id = this.getAttribute('root') + "-" + nextExecId.toString();
-                newPyRepl.setAttribute('auto-generate', null);
-                if (this.hasAttribute('target')){
-                  newPyRepl.setAttribute('target', this.getAttribute('target'));
-                }
-                  
-                newPyRepl.setAttribute('exec-id', nextExecId.toString());
-                this.parentElement.appendChild(newPyRepl);
-            }
-        } catch (err) {
-              this.addToOutput(err);
-          }
+    postEvaluate(): void {
+      if (this.hasAttribute('auto-generate')) {
+        let nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
+        const newPyRepl = document.createElement("py-repl");
+        newPyRepl.setAttribute('root', this.getAttribute('root'));
+        newPyRepl.id = this.getAttribute('root') + "-" + nextExecId.toString();
+        newPyRepl.setAttribute('auto-generate', null);
+        if (this.hasAttribute('output')){
+          newPyRepl.setAttribute('output', this.getAttribute('output'));
+        }
+        if (this.hasAttribute('std-out')){
+          newPyRepl.setAttribute('std-out', this.getAttribute('std-out'));
+        }
+        if (this.hasAttribute('std-err')){
+          newPyRepl.setAttribute('std-err', this.getAttribute('std-err'));
+        }
+          
+        newPyRepl.setAttribute('exec-id', nextExecId.toString());
+        this.parentElement.appendChild(newPyRepl);
       }
-  
+    }
+
+    getSourceFromElement(): string {
+      const sourceStrings = [`output_manager.change("`+this.outputElement.id+`")`, 
+              ...this.editor.state.doc.toString().split("\n")];
+      return sourceStrings.join('\n')
+    }
+
     render(){
       console.log('rendered');
   
     }
   }
 
-  
