@@ -173,15 +173,32 @@ export class PyScript extends BaseEvalElement {
       mainDiv.appendChild(eDiv);
 
       if (this.hasAttribute('output')) {
-        this.outputElement = document.getElementById(this.getAttribute('output'));
-      }else{
-        // Editor Output Div
-        this.outputElement = document.createElement('div');
-        this.outputElement.classList.add("output");
-        this.outputElement.hidden = true;
+        this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
 
-        // add the output div id there's no output element
-        mainDiv.appendChild(this.outputElement);
+        // in this case, the default output-mode is append, if hasn't been specified
+        if (!this.hasAttribute('output-mode')) {
+          this.setAttribute('output-mode', 'append');
+        }
+      }else{
+        if (this.hasAttribute('std-out')){
+          this.outputElement = document.getElementById(this.getAttribute('std-out'));
+        }else{
+          // In this case neither output or std-out have been provided so we need
+          // to create a new output div to output to
+          this.outputElement = document.createElement('div');
+          this.outputElement.classList.add("output");
+          this.outputElement.hidden = true;
+          this.outputElement.id = this.id + "-" + this.getAttribute("exec-id");
+
+          // add the output div id if there's not output pre-defined
+          mainDiv.appendChild(this.outputElement);
+        }
+
+        if (this.hasAttribute('std-err')){
+          this.outputElement = document.getElementById(this.getAttribute('std-err'));
+        }else{
+          this.errorElement = this.outputElement;
+        }
       }
 
       if (currentMode=="edit"){

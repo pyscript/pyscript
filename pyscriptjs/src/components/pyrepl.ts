@@ -100,7 +100,7 @@ export class PyRepl extends BaseEvalElement {
       })
   
       let mainDiv = document.createElement('div');
-      addClasses(mainDiv, ["parentBox", "group", "flex", "flex-col", "mt-10", "border-2", "border-gray-200", "rounded-lg"])
+      addClasses(mainDiv, ["parentBox", "group", "flex", "flex-col", "mt-2", "border-2", "border-gray-200", "rounded-lg"])
       // add Editor to main PyScript div
   
       // Butons DIV
@@ -161,22 +161,34 @@ export class PyRepl extends BaseEvalElement {
       }
 
       if (this.hasAttribute('output')) {
-        this.outputElement = document.getElementById(this.getAttribute('output'));
+        this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
 
         // in this case, the default output-mode is append, if hasn't been specified
         if (!this.hasAttribute('output-mode')) {
           this.setAttribute('output-mode', 'append');
         }
       }else{
-        // Editor Output Div
-        this.outputElement = document.createElement('div');
-        this.outputElement.classList.add("output");
-        this.outputElement.hidden = true;
-        this.outputElement.id = this.id + "-" + this.getAttribute("exec-id");
+        if (this.hasAttribute('std-out')){
+          this.outputElement = document.getElementById(this.getAttribute('std-out'));
+        }else{
+          // In this case neither output or std-out have been provided so we need
+          // to create a new output div to output to
+          this.outputElement = document.createElement('div');
+          this.outputElement.classList.add("output");
+          this.outputElement.hidden = true;
+          this.outputElement.id = this.id + "-" + this.getAttribute("exec-id");
 
-        // add the output div id if there's not output pre-defined
-        mainDiv.appendChild(this.outputElement);
+          // add the output div id if there's not output pre-defined
+          mainDiv.appendChild(this.outputElement);
+        }
+
+        if (this.hasAttribute('std-err')){
+          this.errorElement = document.getElementById(this.getAttribute('std-err'));
+        }else{
+          this.errorElement = this.outputElement;
+        }
       }
+  
 
       this.appendChild(mainDiv);      
       this.editor.focus();
@@ -197,6 +209,12 @@ export class PyRepl extends BaseEvalElement {
         newPyRepl.setAttribute('auto-generate', null);
         if (this.hasAttribute('output')){
           newPyRepl.setAttribute('output', this.getAttribute('output'));
+        }
+        if (this.hasAttribute('std-out')){
+          newPyRepl.setAttribute('std-out', this.getAttribute('std-out'));
+        }
+        if (this.hasAttribute('std-err')){
+          newPyRepl.setAttribute('std-err', this.getAttribute('std-err'));
         }
           
         newPyRepl.setAttribute('exec-id', nextExecId.toString());

@@ -35,7 +35,8 @@ export class BaseEvalElement extends HTMLElement {
     source: string;
     btnConfig: HTMLElement;
     btnRun: HTMLElement;
-    outputElement: HTMLElement; //HTMLTextAreaElement;
+    outputElement: HTMLElement;
+    errorElement: HTMLElement;
     theme: string;
   
     constructor() {
@@ -115,32 +116,38 @@ export class BaseEvalElement extends HTMLElement {
             await this._register_esm(pyodide);
 
             if (source.includes("asyncio")){
-                await pyodide.runPythonAsync(`output_manager.change("`+this.outputElement.id+`")`);
+                await pyodide.runPythonAsync(`output_manager.change("`+this.outputElement.id+`", "`+this.errorElement.id+`")`);
                 output = await pyodide.runPythonAsync(source);
                 await pyodide.runPythonAsync(`output_manager.revert()`)
             }else{
-                output = pyodide.runPython(`output_manager.change("`+this.outputElement.id+`")`);
+                output = pyodide.runPython(`output_manager.change("`+this.outputElement.id+`", "`+this.errorElement.id+`")`);
                 output = pyodide.runPython(source);
                 pyodide.runPython(`output_manager.revert()`)
             }
 
             if (output !== undefined){
                 if (Element === undefined){
-                Element = pyodide.globals.get('Element');
+                    Element = pyodide.globals.get('Element');
                 }
                 const out = Element(this.outputElement.id);
                 // @ts-ignore
                 out.write.callKwargs(output, { append : true});
 
-                if (!this.hasAttribute('output')) {
                 this.outputElement.hidden =  false;
+                this.outputElement.style.display = 'block';
             }
-        }
 
         this.postEvaluate()
 
         } catch (err) {
-              this.addToOutput(err);
+            if (Element === undefined){
+                Element = pyodide.globals.get('Element');
+            }
+            const out = Element(this.errorElement.id);
+            // @ts-ignore
+            out.write.callKwargs(err, { append : true});
+            this.errorElement.hidden = false;
+            this.errorElement.style.display = 'block';
           }
       }
   }
