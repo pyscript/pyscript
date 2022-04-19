@@ -94,7 +94,6 @@ class Script {
 }
 
 export class PyScript extends BaseEvalElement {
-    // editorState: EditorState;
   
     constructor() {
         super();

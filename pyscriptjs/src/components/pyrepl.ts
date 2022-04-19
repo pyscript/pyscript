@@ -47,8 +47,6 @@ function createCmdHandler(el){
 export class PyRepl extends BaseEvalElement {
     editor: EditorView;
     editorNode: HTMLElement;
-    code: string;
-    theme: string;
   
     constructor() {
         super();
