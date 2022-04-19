@@ -7,6 +7,7 @@ let pyodide;
 
 let additional_definitions = `
 from js import document, setInterval, console
+import micropip
 import asyncio
 import io, base64, sys
 
@@ -178,7 +179,9 @@ let loadInterpreter = async function(): Promise<any> {
 }
 
 let loadPackage = async function(package_name: string[] | string, runtime: any): Promise<any> {
-    await runtime.loadPackage(package_name);
+    let micropip = pyodide.globals.get('micropip');
+    await micropip.install(package_name)
+    micropip.destroy()
 }
 
 let loadFromFile = async function(s: string, runtime: any): Promise<any> {

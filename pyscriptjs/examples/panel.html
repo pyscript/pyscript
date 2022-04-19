@@ -13,14 +13,13 @@
     <py-env>
       - bokeh
       - numpy
+      - panel
     </py-env>
     <h1>Panel Example</h1>
     <div id="myplot"></div>
     <py-script>
 import asyncio
 import micropip
-
-await micropip.install(['panel'])
 
 import panel as pn
 
