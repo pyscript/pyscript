@@ -19,8 +19,8 @@ To try PyScript, import the pyscript to your html page with:
 ```
 At that point, you can then use PyScript components in your html page. PyScript currently implements the following elements:
 
-* `<py-script>`: that can be used to define python code that is execute withing the web page. The element itself is not rendered to the page and only used to add logic
-* `<py-repl>`: creates a REPL component that is rendered to the page as a code editor and allows users to right code that can be executed
+* `<py-script>`: that can be used to define python code that is executable within the web page. The element itself is not rendered to the page and only used to add logic
+* `<py-repl>`: creates a REPL component that is rendered to the page as a code editor and allows users to write code that can be executed
 
 Check out the `/examples` folder for more examples on how to use it, all you need to do is open them in Chrome.
 
