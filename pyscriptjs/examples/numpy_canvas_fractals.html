@@ -1,0 +1,135 @@
+<html>
+  <head>
+    <title>Visualization of Mandelbrot and Julia sets with NumPy and HTML5 canvas</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="../build/pyscript.css" />
+    <script defer src="../build/pyscript.js"></script>
+
+    <style>
+      .loading {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: black;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+
+    </head>
+    <body>
+      <b>
+      </b>
+      <div style="display: flex; flex-direction: row; gap: 1em">
+        <div>
+          <div style="text-align: center">Mandelbrot set</div>
+          <div id="mandelbrot" style="width: 600px; height: 600px">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div>
+          <div style="text-align: center">Julia set</div>
+          <div id="julia" style="width: 600px; height: 600px">
+            <div class="loading"></div>
+          </div>
+        </div>
+      </div>
+
+<py-env>
+- numpy
+- paths:
+  - /palettes.py
+  - /fractals.py
+</py-env>
+
+<py-script>
+from pyodide import to_js
+
+import numpy as np
+
+from palettes import Magma256
+from fractals import mandelbrot, julia
+
+from js import (
+    console,
+    document,
+    devicePixelRatio,
+    ImageData,
+    Uint8ClampedArray,
+    CanvasRenderingContext2D as Context2d,
+)
+
+def create_canvas(width: int, height: int, target: str) -> Context2d:
+    pixel_ratio = devicePixelRatio
+
+    canvas = document.createElement("canvas")
+    ctx = canvas.getContext("2d")
+
+    canvas.style.width = f"{width}px"
+    canvas.style.height = f"{height}px"
+
+    canvas.width = width*pixel_ratio
+    canvas.height = height*pixel_ratio
+
+    ctx.scale(pixel_ratio, pixel_ratio)
+    ctx.translate(0.5, 0.5)
+
+    ctx.clearRect(0, 0, width, height)
+
+    el = document.querySelector(target)
+    el.replaceChildren(canvas)
+
+    return ctx
+
+def color_map(array: np.array, palette: np.array) -> np.array:
+    size, _ = palette.shape
+    index = (array/array.max()*(size - 1)).round().astype("uint8")
+
+    width, height = array.shape
+    image = np.full((width, height, 4), 0xff, dtype=np.uint8)
+    image[:, :, :3] = palette[index]
+
+    return image
+
+def draw_image(ctx: Context2d, image: np.array) -> None:
+  data = Uint8ClampedArray.new(to_js(image.tobytes()))
+  width, height, _ = image.shape
+  image_data = ImageData.new(data, width, height)
+  ctx.putImageData(image_data, 0, 0)
+
+def draw_mandelbrot(width: int, height: int) -> None:
+  ctx = create_canvas(width, height, "#mandelbrot")
+
+  console.log("Computing Mandelbrot set ...")
+  console.time("mandelbrot")
+  array = mandelbrot(width, height)
+  console.timeEnd("mandelbrot")
+
+  image = color_map(array, Magma256)
+  draw_image(ctx, image)
+
+def draw_julia(width: int, height: int) -> None:
+  ctx = create_canvas(width, height, "#julia")
+
+  console.log("Computing Julia set ...")
+  console.time("julia")
+  array = julia(width, height)
+  console.timeEnd("julia")
+
+  image = color_map(array, Magma256)
+  draw_image(ctx, image)
+
+draw_mandelbrot(600, 600)
+draw_julia(600, 600)
+</py-script>
+
+</body>
+</html>
