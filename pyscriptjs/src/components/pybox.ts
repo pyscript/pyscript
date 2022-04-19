@@ -58,7 +58,7 @@ export class PyBox extends HTMLElement {
 
       for (let i in this.widths) {
         // @ts-ignore
-        addClasses(mainDiv.childNodes[parseInt(i)], [this.widths[i]]);
+        addClasses(mainDiv.childNodes[parseInt(i)], [this.widths[i], 'mx-4']);
       }
 
       this.appendChild(mainDiv);  
