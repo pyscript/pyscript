@@ -192,14 +192,18 @@ export class BaseEvalElement extends HTMLElement {
         }
 
         connectedCallback() {
-            console.log(this.name, 'OOOOOOO connected!!!!')
-            this.eval(this.code).then(() => {
-                this.proxy = this.proxyClass(this);
-                console.log('proxy', this.proxy);
-                this.proxy.connect();
-                this.registerWidget();
-              });
-              console.log(this.name, 'DOOOOONE connected!!!!')
+            // TODO: we are calling with a 2secs delay to allow pyodide to load
+            //       ideally we can just wait for it to load and then run. To do
+            //       so we need to replace using the promise and actually using
+            //       the interpreter after it loads completely
+            setTimeout(() => {
+                this.eval(this.code).then(() => {
+                    this.proxy = this.proxyClass(this);
+                    console.log('proxy', this.proxy);
+                    this.proxy.connect();
+                    this.registerWidget();
+                });
+            }, 2000);
         }
 
         async registerWidget(){
