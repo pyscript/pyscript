@@ -53,7 +53,7 @@
       for (let initializer of $postInitializers){
         initializer();
       }
-    }, 5000);
+    }, 3000);
 
   }
 

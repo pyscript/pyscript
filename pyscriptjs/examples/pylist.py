@@ -14,8 +14,19 @@ def create(what, id_=None, classes=''):
   add_classes(element, classes)
   return Element(id_, element)
 
+class PyWidgetTheme:
+  def __init__(self, main_style_classes):
+    self.main_style_classes = main_style_classes
 
-class PyList:
+  def theme_it(self, widget):
+    for klass in self.main_style_classes.split(' '):
+      widget.classList.add(klass)
+
+
+class PyListTemplate:
+  theme = PyWidgetTheme("flex flex-col-reverse mt-4")
+  
+
   def __init__(self, parent):
     self.parent = parent
     self._children = []
@@ -25,8 +36,8 @@ class PyList:
     self.md = main_div = document.createElement('div');
     main_div.id = self.id + "-list-tasks-container"
 
-    for klass in "flex flex-col-reverse mt-4".split(' '):
-      main_div.classList.add(klass)
+    if self.theme:
+      self.theme.theme_it(main_div)
     
     self.parent.appendChild(main_div)
 
@@ -35,12 +46,24 @@ class PyList:
     return self._add(child)
 
   def _add(self, child_elem):
-    self._children.append(child_elem)
     console.log("appending child", child_elem.element)
+    self.pre_child_append(child_elem)
+    child_elem.pre_append()
+    self._children.append(child_elem)
     self.md.appendChild(child_elem.create().element)
+    child_elem.post_append()
+    self.child_appended(child_elem)
     return child_elem
 
-class PyItem(Element):
+  def pre_child_append(self, child):
+    pass
+
+  def child_appended(self, child):
+    """Overwrite me to define logic"""
+    pass
+
+
+class PyItemTemplate(Element):
   def __init__(self, parent, data, labels):
     self._parent = parent
     self.id = f"{self._parent.id}-c-{len(self._parent._children)}"
@@ -63,22 +86,48 @@ class PyItem(Element):
 </label>
     """
 
-    check = new_child.select('input').element
-    check.onclick = self.check_task
+    # check = new_child.select('input').element
+    # check.onclick = self.check_task
     console.log('returning')
     return new_child
 
-  def check_task(self, evt=None):
-    self.data['done'] = not self.data['done']
-    if self.data['done']:
+  def on_click(self, evt):
+    pass
+
+  def pre_append(self):
+    pass
+
+  def post_append(self):
+    self.element.click = self.on_click
+    self.element.onclick = self.on_click
+
+    self._post_append()
+
+  def _post_append(self):
+    pass
+
+  def strike(self, value):
+    if value:
       self.add_class("line-through")
     else:
       self.remove_class("line-through")
+    
 
+class PyList(PyListTemplate):
+  pass
+
+
+class PyItem(PyItemTemplate):
+  def on_click(self, evt=None):
+    self.data['done'] = not self.data['done']
+    self.strike(self.data['done'])
   
+    self.select('input').element.checked = self.data['done']
+
+
 def add_task(*ags, **kws):
   console.log(new_task_content.value) 
-  console.log('adding', myList)
+  console.log('adding1', myList)
   task = {
     "content": new_task_content.value, 
     "done": False,

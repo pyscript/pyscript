@@ -176,13 +176,14 @@ export class BaseEvalElement extends HTMLElement {
         }
 
         connectedCallback() {
-            console.log(this.name, 'connected!!!!')
+            console.log(this.name, 'OOOOOOO connected!!!!')
             this.eval(this.code).then(() => {
                 this.proxy = this.proxyClass(this);
                 console.log('proxy', this.proxy);
                 this.proxy.connect();
                 this.registerWidget();
               });
+              console.log(this.name, 'DOOOOONE connected!!!!')
         }
 
         async registerWidget(){
