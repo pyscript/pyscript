@@ -11,7 +11,7 @@ MIME_METHODS = {
     '_repr_markdown_': 'text/markdown',
     '_repr_svg_': 'image/svg+xml',
     '_repr_png_': 'image/png',
-    'repr_pdf_': 'application/pdf',
+    '_repr_pdf_': 'application/pdf',
     '_repr_jpeg_': 'image/jpeg',
     '_repr_latex': 'text/latex',
     '_repr_json_': 'application/json',
