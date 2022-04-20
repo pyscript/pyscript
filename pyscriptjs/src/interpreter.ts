@@ -156,7 +156,6 @@ class PyListTemplate:
   def data(self):
     return [c.data for c in self._children]
 
-  @property
   def render_children(self):
     return [c.element.innerHTML.replace("\\n", "") for c in self._children]
 
