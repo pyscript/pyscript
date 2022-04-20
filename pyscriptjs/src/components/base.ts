@@ -149,7 +149,23 @@ export class BaseEvalElement extends HTMLElement {
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
           }
-      }
+      } // end evaluate
+
+      async eval(source: string): Promise<void> {
+        let output;
+        let pyodide = await pyodideReadyPromise;
+        
+        try{ 
+            output = await pyodide.runPythonAsync(source);
+
+            if (output !== undefined){
+                console.log(output);
+            }
+
+        } catch (err) {
+            console.log(err);
+        }
+    } // end eval
   }
 
   function createWidget(name: string, code: string, klass: string){

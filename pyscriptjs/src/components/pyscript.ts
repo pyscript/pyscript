@@ -7,7 +7,7 @@ import { defaultKeymap } from "@codemirror/commands";
 import { oneDarkTheme } from "@codemirror/theme-one-dark";
 
 import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, currentComponentDetails, mode, addToScriptsQueue, addInitializer, addPostInitializer } from '../stores';
-import { addClasses } from '../utils';
+import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
 
 // Premise used to connect to the first available pyodide interpreter
@@ -39,11 +39,6 @@ function createCmdHandler(el){
         return el.evaluate(state)
       }
     return toggleCheckbox
-}
-
-function htmlDecode(input) {
-  var doc = new DOMParser().parseFromString(input, "text/html");
-  return doc.documentElement.textContent;
 }
 
 // TODO: use type declaractions

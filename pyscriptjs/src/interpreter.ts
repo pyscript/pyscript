@@ -148,6 +148,18 @@ class PyListTemplate:
     self._children = []
     self._id = self.parent.id
 
+  @property
+  def children(self):
+    return self._children
+
+  @property
+  def data(self):
+    return [c.data for c in self._children]
+
+  @property
+  def render_children(self):
+    return [c.element.innerHTML.replace("\\n", "") for c in self._children]
+
   def connect(self):
     self.md = main_div = document.createElement('div');
     main_div.id = self._id + "-list-tasks-container"
