@@ -98,7 +98,7 @@ export class PyRepl extends BaseEvalElement {
       })
   
       let mainDiv = document.createElement('div');
-      addClasses(mainDiv, ["parentBox", "group", "flex", "flex-col", "mt-2", "border-2", "border-gray-200", "rounded-lg"])
+      addClasses(mainDiv, ["parentBox", "group", "flex", "flex-col", "mt-2", "border-2", "border-gray-200", "rounded-lg", "mx-8"])
       // add Editor to main PyScript div
   
       // Butons DIV

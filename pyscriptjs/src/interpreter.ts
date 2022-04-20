@@ -130,6 +130,7 @@ def create(what, id_=None, classes=''):
   add_classes(element, classes)
   return Element(id_, element)
 
+
 class PyWidgetTheme:
   def __init__(self, main_style_classes):
     self.main_style_classes = main_style_classes
@@ -137,57 +138,6 @@ class PyWidgetTheme:
   def theme_it(self, widget):
     for klass in self.main_style_classes.split(' '):
       widget.classList.add(klass)
-
-
-class PyListTemplate:
-  theme = PyWidgetTheme("flex flex-col-reverse mt-8 mx-4")
-  
-
-  def __init__(self, parent):
-    self.parent = parent
-    self._children = []
-    self._id = self.parent.id
-
-  @property
-  def children(self):
-    return self._children
-
-  @property
-  def data(self):
-    return [c.data for c in self._children]
-
-  def render_children(self):
-    return [c.element.innerHTML.replace("\\n", "") for c in self._children]
-
-  def connect(self):
-    self.md = main_div = document.createElement('div');
-    main_div.id = self._id + "-list-tasks-container"
-
-    if self.theme:
-      self.theme.theme_it(main_div)
-    
-    self.parent.appendChild(main_div)
-
-  def add(self, child):
-    child.register_parent(self)
-    return self._add(child)
-
-  def _add(self, child_elem):
-    console.log("appending child", child_elem.element)
-    self.pre_child_append(child_elem)
-    child_elem.pre_append()
-    self._children.append(child_elem)
-    self.md.appendChild(child_elem.create().element)
-    child_elem.post_append()
-    self.child_appended(child_elem)
-    return child_elem
-
-  def pre_child_append(self, child):
-    pass
-
-  def child_appended(self, child):
-    """Overwrite me to define logic"""
-    pass
 
 
 class PyItemTemplate(Element):
@@ -253,6 +203,61 @@ class PyItemTemplate(Element):
 
   def render_content(self):
     return ' - '.join([self.data[f] for f in self.labels])
+
+class PyListTemplate:
+  theme = PyWidgetTheme("flex flex-col-reverse mt-8 mx-8")
+  item_class = PyItemTemplate
+
+  def __init__(self, parent):
+    self.parent = parent
+    self._children = []
+    self._id = self.parent.id
+
+  @property
+  def children(self):
+    return self._children
+
+  @property
+  def data(self):
+    return [c.data for c in self._children]
+
+  def render_children(self):
+    return [c.element.innerHTML.replace("\\n", "") for c in self._children]
+
+  def connect(self):
+    self.md = main_div = document.createElement('div');
+    main_div.id = self._id + "-list-tasks-container"
+
+    if self.theme:
+      self.theme.theme_it(main_div)
+
+    self.parent.appendChild(main_div)
+
+  def add(self, *args, **kws):
+    if not isinstance(args[0], self.item_class):
+      child = self.item_class(*args, **kws)
+    else:
+      child = args[0]
+    child.register_parent(self)
+    return self._add(child)
+
+  def _add(self, child_elem):
+    console.log("appending child", child_elem.element)
+    self.pre_child_append(child_elem)
+    child_elem.pre_append()
+    self._children.append(child_elem)
+    self.md.appendChild(child_elem.create().element)
+    child_elem.post_append()
+    self.child_appended(child_elem)
+    return child_elem
+
+  def pre_child_append(self, child):
+    pass
+
+  def child_appended(self, child):
+    """Overwrite me to define logic"""
+    pass
+
     
 
 class OutputCtxManager:
