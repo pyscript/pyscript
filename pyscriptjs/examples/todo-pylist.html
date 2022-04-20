@@ -20,7 +20,11 @@
   <body>
       <py-title>To Do List</py-title>
       <py-box widths="2/3;1/3">
-        <py-inputbox id="new-task-content"></py-inputbox>
+        <py-inputbox id="new-task-content">
+          def on_keypress(e):
+            if (e.code == "Enter"):
+              add_task()
+        </py-inputbox>
         <py-button id="new-task-btn" label="Add Task!">
           def on_click(evt):
             task = { "content": new_task_content.value,  "done": False, "created_at": dt.now() }
@@ -30,7 +34,6 @@
       </py-box>
     
       <py-list id="myList"></py-list>
-
       <py-repl id="my-repl" auto-generate="true"> </py-repl>
   </body>
 </html>

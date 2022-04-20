@@ -140,7 +140,7 @@ class PyWidgetTheme:
 
 
 class PyListTemplate:
-  theme = PyWidgetTheme("flex flex-col-reverse mt-4")
+  theme = PyWidgetTheme("flex flex-col-reverse mt-8 mx-4")
   
 
   def __init__(self, parent):

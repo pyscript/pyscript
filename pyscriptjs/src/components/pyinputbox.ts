@@ -23,7 +23,7 @@ export class PyInputBox extends BaseEvalElement {
 
 
       connectedCallback() {
-        this.label = htmlDecode(this.innerHTML);
+        this.code = htmlDecode(this.innerHTML);
         this.mount_name  = this.id.split("-").join("_");
         this.innerHTML = '';
         
@@ -37,14 +37,23 @@ export class PyInputBox extends BaseEvalElement {
       
       // now that we appended and the element is attached, lets connect with the event handlers
       // defined for this widget
-      this.code = `${this.mount_name} = Element("${ mainDiv.id }")`;
+      this.appendChild(mainDiv);
+      this.code = this.code.split("self").join(this.mount_name);
+      let registrationCode = `${this.mount_name} = Element("${ mainDiv.id }")`;
+      if (this.code.includes("def on_keypress")){
+        this.code = this.code.replace("def on_keypress", `def on_keypress_${this.mount_name}`);
+        registrationCode += `\n${this.mount_name}.element.onkeypress = on_keypress_${this.mount_name}`
+      }
+
       setTimeout(() => { 
         this.eval(this.code).then(() => {
-          console.log('registered handlers');
+          this.eval(registrationCode).then(() => {
+            console.log('registered handlers');
+          });
         });
        }, 4000);
-          
-        console.log('py-title connected');
+
+        console.log('py-inputbox connected');
       }
   }
 
