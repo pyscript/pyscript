@@ -296,7 +296,7 @@ async function mountElements() {
   for (var el of matches) {
     let mountName = el.getAttribute('py-mount');
     if (!mountName){
-      mountName = el.id.replace("-", "_");
+      mountName = el.id.split("-").join("_");
     }
     source += `\n${ mountName } = Element("${ el.id }")`;
   }

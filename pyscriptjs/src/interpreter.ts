@@ -58,6 +58,14 @@ class Element:
             self._element = document.querySelector(f'#{self._id}');
         return self._element
 
+    @property
+    def value(self):
+        return self.element.value
+
+    @property
+    def innerHtml(self):
+        return self.element.innerHtml
+
     def write(self, value, append=False):
         console.log(f"Element.write: {value} --> {append}")
         # TODO: it should be the opposite... pyscript.write should use the Element.write
@@ -95,6 +103,17 @@ class Element:
         self.element.after(clone);
         
         return Element(clone.id, clone)
+
+    
+    def remove_class(self, classname):
+        if isinstance(classname, list):
+            for cl in classname:
+                self.remove_class(cl)
+        else:
+            self.element.classList.remove(classname)
+
+    def add_class(self, classname):
+        self.element.classList.add(classname)
 
 class OutputCtxManager:
     def __init__(self, out=None, output_to_console=True, append=True):

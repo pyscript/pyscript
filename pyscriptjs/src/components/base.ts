@@ -151,3 +151,171 @@ export class BaseEvalElement extends HTMLElement {
           }
       }
   }
+
+  function createWidget(name: string, code: string, klass: string){
+      
+    
+    class CustomWidget extends HTMLElement{
+        shadow: ShadowRoot;
+        wrapper: HTMLElement;
+
+        name: string = name;
+        klass: string = klass;
+        code: string = code;
+        proxy: any;
+        proxyClass: any;
+
+        constructor() {
+          super();
+    
+          // attach shadow so we can preserve the element original innerHtml content
+          this.shadow = this.attachShadow({ mode: 'open'});
+    
+          this.wrapper = document.createElement('slot');
+          this.shadow.appendChild(this.wrapper);
+        }
+
+        connectedCallback() {
+            console.log(this.name, 'connected!!!!')
+            this.eval(this.code).then(() => {
+                this.proxy = this.proxyClass(this);
+                console.log('proxy', this.proxy);
+                this.proxy.connect();
+                this.registerWidget();
+              });
+        }
+
+        async registerWidget(){
+            let pyodide = await pyodideReadyPromise;
+
+            console.log('new widget registered:', this.name);
+            
+
+            pyodide.globals.set(this.id, this.proxy);
+        }
+
+        async eval(source: string): Promise<void> {
+            let output;
+            let pyodide = await pyodideReadyPromise;
+            try{ 
+                output = await pyodide.runPythonAsync(source);
+                this.proxyClass = pyodide.globals.get(this.klass);
+                if (output !== undefined){
+                    console.log(output);
+                }
+    
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    }
+    let xPyWidget = customElements.define(name, CustomWidget);
+  }
+
+  export class PyWidget extends HTMLElement {
+    shadow: ShadowRoot;
+    name: string;
+    klass: string;
+    outputElement: HTMLElement;
+    errorElement: HTMLElement;
+    wrapper: HTMLElement;
+    theme: string;
+    source: string;
+    code: string;
+  
+    constructor() {
+        super();
+  
+        // attach shadow so we can preserve the element original innerHtml content
+        this.shadow = this.attachShadow({ mode: 'open'});
+  
+        this.wrapper = document.createElement('slot');
+        this.shadow.appendChild(this.wrapper);
+
+        if (this.hasAttribute('src')) {
+          this.source = this.getAttribute('src');
+        }
+
+        if (this.hasAttribute('name')) {
+          this.name = this.getAttribute('name');
+        }
+
+        if (this.hasAttribute('klass')) {
+          this.klass = this.getAttribute('klass');
+        }
+      }
+
+
+    connectedCallback() {
+      if (this.id === undefined){
+        throw new ReferenceError(`No id specified for component. Components must have an explicit id. Please use id="" to specify your component id.`)
+        return;
+      }
+
+      let mainDiv = document.createElement('div');
+      mainDiv.id = this.id + '-main';
+      this.appendChild(mainDiv);  
+      console.log('reading source')
+      this.getSourceFromFile(this.source).then((code:string) => {
+        this.code = code;
+        createWidget(this.name, code, this.klass);
+
+      });
+      
+      console.log('py-template connected');
+    }
+
+    initOutErr(): void {
+        if (this.hasAttribute('output')) {
+            this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
+
+            // in this case, the default output-mode is append, if hasn't been specified
+            if (!this.hasAttribute('output-mode')) {
+                this.setAttribute('output-mode', 'append');
+            }
+        }else{
+            if (this.hasAttribute('std-out')){
+                this.outputElement = document.getElementById(this.getAttribute('std-out'));
+            }else{
+                // In this case neither output or std-out have been provided so we need
+                // to create a new output div to output to
+                this.outputElement = document.createElement('div');
+                this.outputElement.classList.add("output");
+                this.outputElement.hidden = true;
+                this.outputElement.id = this.id + "-" + this.getAttribute("exec-id");
+
+                // add the output div id if there's not output pre-defined
+                //mainDiv.appendChild(this.outputElement);
+            }
+
+            if (this.hasAttribute('std-err')){
+                this.outputElement = document.getElementById(this.getAttribute('std-err'));
+            }else{
+                this.errorElement = this.outputElement;
+            }
+        }
+    }
+
+    async getSourceFromFile(s: string): Promise<string>{
+        let pyodide = await pyodideReadyPromise;
+        let response = await fetch(s);
+        return await response.text();
+      }
+    
+    async eval(source: string): Promise<void> {
+        let output;
+        let pyodide = await pyodideReadyPromise;
+        try{ 
+            output = await pyodide.runPythonAsync(source);
+
+            if (output !== undefined){
+                console.log(output);
+            }
+
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    
+  }
