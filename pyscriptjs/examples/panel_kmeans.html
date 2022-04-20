@@ -81,20 +81,18 @@
     <py-script>
 import asyncio
 
-from io import StringIO
-from js import fetch
-
 import altair as alt
 import panel as pn
 import pandas as pd
 
 from panel.io.pyodide import show
 from sklearn.cluster import KMeans
+from pyodide.http import open_url
 
 pn.config.sizing_mode = 'stretch_width'
 
-data = await fetch('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins.csv')
-penguins = pd.read_csv(StringIO(await data.text())).dropna()
+url = 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins.csv'
+penguins = pd.read_csv(open_url(url)).dropna()
 cols = list(penguins.columns)[2:6]
 
 x = pn.widgets.Select(name='x', options=cols, value='bill_depth_mm')
