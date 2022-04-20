@@ -29,7 +29,7 @@ MIME_METHODS = {
 }
 
 def render_image(mime, value, meta):
-    data = f'{mime};base64,{value}'
+    data = f'data:{mime};charset=utf-8;base64,{value}'
     attrs = ' '.join(['{k}="{v}"' for k, v in meta.items()])
     return f'<img src="{data}" {attrs}</img>'
 
@@ -68,7 +68,13 @@ def format_mime(obj):
     """
     Formats object using _repr_x_ methods.
     """
-    format_dict, md_dict = eval_formatter(obj, '_repr_mimebundle_')
+
+    mimebundle = eval_formatter(obj, '_repr_mimebundle_')
+    if isinstance(mimebundle, tuple):
+        format_dict, md_dict = mimebundle
+    else:
+        format_dict = mimebundle
+        md_dict = {}
 
     output, not_available = None, []
     for method, mime_type in reversed(MIME_METHODS.items()):
@@ -113,9 +119,9 @@ class PyScript:
 
         element = document.getElementById(element_id)
         html, mime_type = format_mime(value)
-        if mime_type == 'application/javascript':
+        if mime_type in ('application/javascript', 'text/html'):
             scriptEl = document.createRange().createContextualFragment(html)
-            element.children = [scriptEl]
+            element.appendChild(scriptEl)
         else:
             element.innerHTML = html
 
