@@ -18,28 +18,27 @@
   </head>
 
   <body class="container">
-    <!-- <py-repl id="my-repl" auto-generate="true"> </py-repl> -->
-  <!-- <py-script src="/todo.py">  </py-script> -->
 
-  
   <main class="max-w-xs mx-auto mt-4">
     <section>
 
-      <py-list id="mylist"></py-list>
-    
-    <div class="text-center w-full mb-8">
-      <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-tight">To Do List</h1>
-    </div>
+    <py-title>To Do List</py-title>
     <div>
       <input id="new-task-content" class="border flex-1 mr-3 border-gray-300 p-2 rounded" type="text" py-mount>
-      <button id="new-task-btn" class="p-2 text-white bg-blue-600 border border-blue-600 rounded" type="submit" pys-onClick="add_task">
-        Add task
+      
+      <py-button id="new-task-btn" label="Add Task!">
+        def on_click(evt):
+          task = { "content": new_task_content.value,  "done": False, "created_at": dt.now() }
+          myList.add(PyItem(task, labels=['content'], state_key="done"))
+          new_task_content.clear()
       </button>
     </div>
   
     <py-list id="myList"></py-list>
+
+    
     <py-repl id="my-repl" auto-generate="true"> </py-repl>
-  </div>
+  
   </section>
   </main>
 </body>
