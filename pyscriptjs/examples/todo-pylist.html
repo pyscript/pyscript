@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
 
     <title>Todo App</title>
 
@@ -14,12 +13,12 @@
     - paths:
       - /utils.py
     </py-env>
-    <py-register-widget src="/pylist.py" name="py-list" klass="PyList"></py-widget>
+    <py-register-widget src="/pylist.py" name="py-list" klass="PyList"></py-register-widget>
   </head>
 
   <body>
       <py-title>To Do List</py-title>
-      <py-box widths="2/3;1/3">
+      <py-box widths="4/5;1/5">
         <py-inputbox id="new-task-content">
           def on_keypress(e):
             if (e.code == "Enter"):
@@ -27,12 +26,10 @@
         </py-inputbox>
         <py-button id="new-task-btn" label="Add Task!">
           def on_click(evt):
-            task = { "content": new_task_content.value,  "done": False, "created_at": dt.now() }
-            myList.add(PyItem(task, labels=['content'], state_key="done"))
-            new_task_content.clear()
+            add_task()
         </button>
       </py-box>
-    
+
       <py-list id="myList"></py-list>
       <py-repl id="my-repl" auto-generate="true"> </py-repl>
   </body>
