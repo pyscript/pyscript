@@ -111,7 +111,6 @@ class PyScript:
 
         element = document.getElementById(element_id)
         html, mime_type = format_mime(value)
-        console.log(mime_type, html)
         if mime_type == 'application/javascript':
             scriptEl = document.createRange().createContextualFragment(html)
             element.children = [scriptEl]
