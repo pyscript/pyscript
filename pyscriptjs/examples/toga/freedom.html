@@ -33,22 +33,17 @@
         crossorigin="anonymous">
         </script>
   </body>
+  <py-env>
+ - './static/wheels/travertino-0.1.3-py3-none-any.whl'
+ - './static/wheels/toga_core-0.3.0.dev33-py3-none-any.whl'
+ - './static/wheels/toga_web-0.3.0.dev33-py3-none-any.whl'
+ - './static/wheels/freedom-0.0.1-py3-none-any.whl'
+  </py-env>
   <py-script>
-import asyncio
-import micropip
-
-await micropip.install([
-    './static/wheels/travertino-0.1.3-py3-none-any.whl',
-    './static/wheels/toga_core-0.3.0.dev33-py3-none-any.whl',
-    './static/wheels/toga_web-0.3.0.dev33-py3-none-any.whl',
-    './static/wheels/freedom-0.0.1-py3-none-any.whl',
-])
-
 from toga_web.dom import handle as dom_handle
 
 from freedom.__main__ import main
 
 app = main().main_loop(spa=True)
-
   </py-script>
 </html>

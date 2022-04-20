@@ -54,7 +54,7 @@ class FreedomApp(toga.App):
 
 
 def main():
-    return FreedomApp('Freedom Units', 'org.beeware.freedom')
+    return FreedomApp('Freedom Units', 'org.beeware.freedom', version='0.0.1')
 
 
 if __name__ == '__main__':
