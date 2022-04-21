@@ -158,6 +158,7 @@ raycaster = THREE.Raycaster.new();
 uSpeed = 0.1
 
 time = 0.0003;
+camera.lookAt(scene.position)
 
 while True:
   time = performance.now() * 0.0003;
@@ -186,7 +187,6 @@ while True:
   modularGruop.rotation.y -= ((mouse.x * 4) + modularGruop.rotation.y) * uSpeed;
   modularGruop.rotation.x -= ((-mouse.y * 4) + modularGruop.rotation.x) * uSpeed;
 
-  camera.lookAt(scene.position)
   renderer.render( scene, camera )
   await asyncio.sleep(0.02)
 
