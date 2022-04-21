@@ -6,8 +6,9 @@ let pyodideReadyPromise;
 let pyodide;
 
 let additional_definitions = `
-from js import document, setInterval, console
+from js import document, setInterval, console, setTimeout
 import micropip
+import time
 import asyncio
 import io, base64, sys
 
@@ -195,7 +196,7 @@ class PyItemTemplate(Element):
   def _post_append(self):
     pass
 
-  def strike(self, value):
+  def strike(self, value, extra=None):
     if value:
       self.add_class("line-through")
     else:
@@ -222,14 +223,32 @@ class PyListTemplate:
     return [c.data for c in self._children]
 
   def render_children(self):
-    return [c.element.innerHTML.replace("\\n", "") for c in self._children]
+    out = []
+    binds = {}
+    for i, c in enumerate(self._children):
+        txt = c.element.innerHTML
+        rnd = str(time.time()).replace(".", "")[-5:]
+        new_id = f"{c.element.id}-{i}-{rnd}"
+        binds[new_id] = c.element.id
+        txt = txt.replace(">", f" id='{new_id}'>")
+        print(txt)
+
+    def foo(evt):
+        console.log(evt)
+        evtEl = evt.srcElement
+        srcEl = Element(binds[evtEl.id])
+        srcEl.element.onclick()
+        evtEl.classList = srcEl.element.classList
+
+    for new_id, old_id in binds.items():
+        Element(new_id).element.onclick = foo
 
   def connect(self):
-    self.md = main_div = document.createElement('div');
+    self.md = main_div = document.createElement('div')
     main_div.id = self._id + "-list-tasks-container"
 
     if self.theme:
-      self.theme.theme_it(main_div)
+        self.theme.theme_it(main_div)
 
     self.parent.appendChild(main_div)
 

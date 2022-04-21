@@ -199,6 +199,10 @@ export class PyRepl extends BaseEvalElement {
       }
 
     postEvaluate(): void {
+
+      this.outputElement.hidden =  false;
+      this.outputElement.style.display = 'block';
+
       if (this.hasAttribute('auto-generate')) {
         let nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
         const newPyRepl = document.createElement("py-repl");
