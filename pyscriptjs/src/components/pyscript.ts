@@ -159,7 +159,6 @@ export class PyScript extends BaseEvalElement {
         }
       }
 
-      console.log('MOOOOOODE', currentMode)
       if (currentMode=="edit"){
         // TODO: We need to build a plan for this
         this.appendChild(mainDiv);
