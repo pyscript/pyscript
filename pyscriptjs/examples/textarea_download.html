@@ -1,0 +1,198 @@
+<!-- Upload file to pyscript -->
+
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>py-script demos: textarea download</title>
+    <!-- Styles //-->
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/pyscript.css" />
+    <style type="text/css">
+    body {
+      font-family: "Red Hat Text", sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.618;
+    }
+
+    #app {
+      margin: 1em auto;
+      width: 1000px;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 100px;
+      height: 100px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: black;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    .loading-container {
+      margin: 5em 0 0;
+      text-align: center;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    a {color: #43B029;}
+
+    ul#project_list {
+      margin: 1em 0;
+    }
+
+    ul#project_list li {
+      list-style: disc;
+      margin-left: 1.25em;
+    }
+
+    #upload_form, #entry_form {
+      border-left: 3px solid #777;
+      display: none;
+      margin: 1.618em 0;
+      padding-left: 1em;
+    }
+
+    legend {
+      display: block;
+      font-size: 1.25em;
+      margin: 0.5em 0;
+    }
+
+    input[type=submit], button {
+      background: #43B029;
+      border-radius: 3px;
+      color: white;
+      padding: 0.35em 1.25em;
+    }
+
+    label {
+      display: block;
+    }
+
+    textarea {
+      border: 1px solid #777;
+      padding: 0.75em;
+      width: 40em;
+      height: 10em;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 1em 0;
+    }
+
+    th, td {
+      border: 1px solid #777;
+      padding: 0.35em 0.75em;
+    }
+
+    th {
+      background: #eee;
+      font-weight: normal;
+    }
+    </style>
+
+    <!-- pyscript -->
+    <script defer src="static/pyscript.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Header //-->
+      <header>
+        <h1>py-script Demos: textarea download</h1>
+      </header>
+
+      <main>
+        <div class="loading-container">
+          <div class="loading"></div>
+        </div>
+
+        <div id="entry_form">
+          <fieldset>
+            <legend>Enter text and download as .txt</legend>
+            <ol>
+              <li>
+                <label for="text_data">Enter text:</label>
+                <textarea id="text_data" name="text_data"></textarea>
+              </li>
+            </ol>
+          </fieldset>
+          <div id="submit" style="margin: 1em 0;">
+            <input id="submit" name="submit" type="submit" value="Download Text">
+          </div>
+        </div>
+
+        <div id="output"></div>
+
+<!-- py-script and py-env -->
+
+<!-- <py-env>
+</py-env> -->
+
+<py-script style="display: none;">
+from js import (
+  document,
+  Blob,
+  URL
+)
+
+import datetime
+import pyodide
+import re
+
+loading = document.getElementsByClassName("loading-container")[0]
+loading.style.display = "none"
+form = document.getElementById("entry_form")
+form.style.display = "block"
+
+def download(path, filename):
+  """Create an anchor with a data URL object, insert into DOM, trigger anchor to
+  download file
+  """
+  anchor = document.createElement("a")
+  anchor.href = path
+  anchor.download = filename
+  anchor.style.visibility = "hidden"
+  document.body.appendChild(anchor)
+  anchor.click()
+  document.body.removeChild(anchor)
+
+def ts_for_filename():
+  now = datetime.datetime.now()
+  ts = now.strftime("%Y%m%d-%H%M%S")
+  return ts
+
+def get_text():
+  textarea = document.getElementById("text_data")
+  text = textarea.value
+  return text
+
+def download_handler(event):
+  text = get_text()
+  blob = Blob.new([text], type="text/plain")
+  url = URL.createObjectURL(blob)
+  filename = ts_for_filename() + "-pyscript.txt"
+  download(url, filename)
+
+submit = document.getElementById("submit")
+submit.addEventListener("click", pyodide.create_proxy(download_handler))
+
+</py-script>
+
+<!-- end py-script and py-env -->
+
+<!-- End output -->
+      </main>
+    </div>
+    <!-- Scripts //-->
+  </body>
+</html>
