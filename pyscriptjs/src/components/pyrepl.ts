@@ -98,7 +98,7 @@ export class PyRepl extends BaseEvalElement {
       })
   
       let mainDiv = document.createElement('div');
-      addClasses(mainDiv, ["parentBox", "group", "flex", "flex-col", "mt-2", "border-2", "border-gray-200", "rounded-lg"])
+      addClasses(mainDiv, ["parentBox", "group", "flex", "flex-col", "mt-2", "border-2", "border-gray-200", "rounded-lg", "mx-8"])
       // add Editor to main PyScript div
   
       // Butons DIV
@@ -199,6 +199,10 @@ export class PyRepl extends BaseEvalElement {
       }
 
     postEvaluate(): void {
+
+      this.outputElement.hidden =  false;
+      this.outputElement.style.display = 'block';
+
       if (this.hasAttribute('auto-generate')) {
         let nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
         const newPyRepl = document.createElement("py-repl");

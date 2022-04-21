@@ -19,7 +19,7 @@ export class PyBox extends HTMLElement {
 
     connectedCallback() {
       let mainDiv = document.createElement('div');
-      addClasses(mainDiv, ["flex"])
+      addClasses(mainDiv, ["flex", "mx-8"])
       
       // Hack: for some reason when moving children, the editor box duplicates children
       // meaning that we end up with 2 editors, if there's a <py-repl> inside the <py-box>
