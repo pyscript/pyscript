@@ -1,0 +1,203 @@
+<!-- Upload file to pyscript -->
+
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>py-script demos: image upload form</title>
+    <!-- Styles //-->
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/pyscript.css" />
+    <style type="text/css">
+    body {
+      font-family: "Red Hat Text", sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.618;
+    }
+
+    #app {
+      margin: 1em auto;
+      width: 1000px;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 100px;
+      height: 100px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: black;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    .loading-container {
+      margin: 5em 0 0;
+      text-align: center;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    a {color: #43B029;}
+
+    ul#project_list {
+      margin: 1em 0;
+    }
+
+    ul#project_list li {
+      list-style: disc;
+      margin-left: 1.25em;
+    }
+
+    #upload_form, #entry_form {
+      border-left: 3px solid #777;
+      display: none;
+      margin: 1.618em 0;
+      padding-left: 1em;
+    }
+
+    legend {
+      display: block;
+      font-size: 1.25em;
+      margin: 0.5em 0;
+    }
+
+    input[type=submit], button {
+      background: #43B029;
+      border-radius: 3px;
+      color: white;
+      padding: 0.35em 1.25em;
+    }
+
+    label {
+      display: block;
+    }
+
+    textarea {
+      border: 1px solid #777;
+      padding: 0.75em;
+      width: 40em;
+      height: 10em;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 1em 0;
+    }
+
+    th, td {
+      border: 1px solid #777;
+      padding: 0.35em 0.75em;
+    }
+
+    th {
+      background: #eee;
+      font-weight: normal;
+    }
+    </style>
+
+    <!-- pyscript -->
+    <script defer src="static/pyscript.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Header //-->
+      <header>
+        <h1>py-script Demos: image upload form</h1>
+      </header>
+
+      <main>
+        <div class="loading-container">
+          <div class="loading"></div>
+        </div>
+
+        <div id="upload_form">
+          <fieldset>
+            <legend>Upload a File (.jpg or .png)</legend>
+            <ol>
+              <li>
+                <label for="upload">File Upload:</label>
+                <input type="file" name="upload" id="upload" accept="image/png, image/jpeg">
+              </li>
+            </ol>
+          </fieldset>
+        </div>
+
+        <div id="output"></div>
+
+<!-- py-script and py-env -->
+
+<!-- <py-env>
+</py-env> -->
+
+<py-script>
+import base64
+import pyodide
+
+from js import btoa, FileReader, Image
+
+# Handle end of loading
+
+loading = document.getElementsByClassName("loading-container")[0]
+loading.style.display = "none"
+form = document.getElementById("upload_form")
+form.style.display = "block"
+
+# <input> event handler
+
+def write_output(val):
+  """Write something to `#output` div"""
+  output = document.getElementById("output")
+  output.textContent = str(val)
+
+def get_upload():
+  """Load `input#upload` instance from DOM"""
+  upload = document.getElementById("upload")
+  return upload
+
+def reader_handler(event):
+  """Event listener for FileReader load"""
+  img_data = event.target.result
+  create_and_display_img(img_data)
+
+def upload_handler(event):
+  """Event listener/top-level controller to handle changing of #upload input"""
+  reader = FileReader.new()
+  reader.addEventListener("load", pyodide.create_proxy(reader_handler))
+  target_file = event.target.files.item(0)  # pyodide.JsProxy obj's not subscriptable
+  reader.readAsBinaryString(target_file)
+
+def create_and_display_img(img_data):
+  # Create image from binary data
+  img = Image.new()
+  img.src = "data:image/jpeg;base64," + btoa(img_data)
+
+  # Append to container
+  container = document.getElementById("container")
+  container.append(img)
+
+upload = get_upload()
+upload.addEventListener("change", pyodide.create_proxy(upload_handler))
+
+</py-script>
+
+<!-- end py-script and py-env -->
+
+<!-- Output -->
+
+<div id="container">
+
+</div>
+
+
+<!-- End output -->
+      </main>
+    </div>
+    <!-- Scripts //-->
+  </body>
+</html>
