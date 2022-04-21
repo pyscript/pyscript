@@ -157,11 +157,7 @@ export class BaseEvalElement extends HTMLElement {
         
         try{ 
             output = await pyodide.runPythonAsync(source);
-
-            if (output !== undefined){
-                console.log(output);
-            }
-
+            if (output !== undefined){ console.log(output); }
         } catch (err) {
             console.log(err);
         }
@@ -170,7 +166,6 @@ export class BaseEvalElement extends HTMLElement {
 
   function createWidget(name: string, code: string, klass: string){
       
-    
     class CustomWidget extends HTMLElement{
         shadow: ShadowRoot;
         wrapper: HTMLElement;
@@ -208,10 +203,7 @@ export class BaseEvalElement extends HTMLElement {
 
         async registerWidget(){
             let pyodide = await pyodideReadyPromise;
-
             console.log('new widget registered:', this.name);
-            
-
             pyodide.globals.set(this.id, this.proxy);
         }
 
@@ -224,7 +216,6 @@ export class BaseEvalElement extends HTMLElement {
                 if (output !== undefined){
                     console.log(output);
                 }
-    
             } catch (err) {
                 console.log(err);
             }
@@ -266,7 +257,6 @@ export class BaseEvalElement extends HTMLElement {
         }
       }
 
-
     connectedCallback() {
       if (this.id === undefined){
         throw new ReferenceError(`No id specified for component. Components must have an explicit id. Please use id="" to specify your component id.`)
@@ -280,10 +270,7 @@ export class BaseEvalElement extends HTMLElement {
       this.getSourceFromFile(this.source).then((code:string) => {
         this.code = code;
         createWidget(this.name, code, this.klass);
-
       });
-      
-      console.log('py-template connected');
     }
 
     initOutErr(): void {
@@ -304,9 +291,6 @@ export class BaseEvalElement extends HTMLElement {
                 this.outputElement.classList.add("output");
                 this.outputElement.hidden = true;
                 this.outputElement.id = this.id + "-" + this.getAttribute("exec-id");
-
-                // add the output div id if there's not output pre-defined
-                //mainDiv.appendChild(this.outputElement);
             }
 
             if (this.hasAttribute('std-err')){
@@ -321,22 +305,18 @@ export class BaseEvalElement extends HTMLElement {
         let pyodide = await pyodideReadyPromise;
         let response = await fetch(s);
         return await response.text();
-      }
+    }
     
     async eval(source: string): Promise<void> {
         let output;
         let pyodide = await pyodideReadyPromise;
         try{ 
             output = await pyodide.runPythonAsync(source);
-
             if (output !== undefined){
                 console.log(output);
             }
-
         } catch (err) {
             console.log(err);
         }
     }
-
-    
   }

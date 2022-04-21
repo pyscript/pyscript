@@ -11,16 +11,10 @@ export class PyButton extends BaseEvalElement {
     constructor() {
         super();
   
-        // attach shadow so we can preserve the element original innerHtml content
-        // this.shadow = this.attachShadow({ mode: 'open'});
-  
-        // this.wrapper = document.createElement('slot');
-        // this.shadow.appendChild(this.wrapper);
         if (this.hasAttribute('label')) {
           this.label = this.getAttribute('label');
         }
       }
-
 
     connectedCallback() {
       this.code = htmlDecode(this.innerHTML);
@@ -60,5 +54,3 @@ export class PyButton extends BaseEvalElement {
       console.log('py-button connected');
     }
   }
-
-  
