@@ -76,27 +76,25 @@
     <py-script>
 import asyncio
 
-from io import StringIO
-from js import fetch
-
 import panel as pn
 import param
 import pandas as pd
 
 from panel.io.pyodide import show
+from pyodide.http import open_url
 
 MAPBOX_KEY = "pk.eyJ1IjoicGFuZWxvcmciLCJhIjoiY2s1enA3ejhyMWhmZjNobjM1NXhtbWRrMyJ9.B_frQsAVepGIe-HiOJeqvQ"
 
 class App(pn.viewable.Viewer):
 
     data = param.DataFrame(precedence=-1)
-    
+
     view = param.DataFrame(precedence=-1)
 
     arc_view = param.DataFrame(precedence=-1)
 
     radius = param.Integer(default=50, bounds=(20, 1000))
-    
+
     elevation = param.Integer(default=10, bounds=(0, 50))
 
     hour = param.Integer(default=0, bounds=(0, 23))
@@ -109,8 +107,12 @@ class App(pn.viewable.Viewer):
         self.deck_gl = None
         super().__init__(**params)
         self.deck_gl = pn.pane.DeckGL(
-            dict(self.spec), mapbox_api_key=MAPBOX_KEY, throttle={'click': 10},
-            sizing_mode='stretch_both', margin=0)
+            dict(self.spec),
+            mapbox_api_key=MAPBOX_KEY,
+            throttle={'click': 10},
+            sizing_mode='stretch_both',
+            margin=0
+        )
         self.deck_gl.param.watch(self._update_arc_view, 'click_state')
         self._playing = False
         self._cb = pn.state.add_periodic_callback(
@@ -186,7 +188,7 @@ class App(pn.viewable.Viewer):
                 (df.pickup_y<=float(lat+tol))
             ]
 
-    @param.depends('hour', watch=True)
+    @param.depends('hour', watch=True, on_init=True)
     def _update_hourly_view(self):
         self.view = self.data[self.data.hour==self.hour]
 
@@ -210,10 +212,8 @@ class App(pn.viewable.Viewer):
     def update_spec(self):
         self.deck_gl.object = dict(self.spec)
 
-
-data = await fetch('https://s3.eu-west-1.amazonaws.com/assets.holoviews.org/data/nyc_taxi_wide.csv')
-df = pd.read_csv(StringIO(await data.text()))        
-
+url = 'https://s3.eu-west-1.amazonaws.com/assets.holoviews.org/data/nyc_taxi_wide.csv'
+df = pd.read_csv(open_url(url))
 app = App(data=df)
 controls = pn.Param(app.param, sizing_mode='stretch_width', show_name=False)
 
