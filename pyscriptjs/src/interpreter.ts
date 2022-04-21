@@ -45,7 +45,7 @@ MIME_RENDERERS = {
     'image/svg+xml': identity,
     'application/json': identity,
     'application/javascript': lambda value, meta: f'<script>{value}</script>'
-}  
+}
 
 
 def eval_formatter(obj, print_method):
@@ -82,7 +82,7 @@ def format_mime(obj):
             output = format_dict[mime_type]
         else:
             output = eval_formatter(obj, method)
-        
+
         if output is None:
             continue
         elif mime_type not in MIME_RENDERERS:
@@ -91,7 +91,7 @@ def format_mime(obj):
         break
     if output is None:
         if not_available:
-            console.warning(f'Rendered object requested unavailable MIME renderers: {not_available}')  
+            console.warning(f'Rendered object requested unavailable MIME renderers: {not_available}')
         output = repr(output)
         mime_type = 'text/plain'
     elif isinstance(output, tuple):
@@ -189,7 +189,7 @@ class Element:
 
         # Inject it into the DOM
         self.element.after(clone);
-        
+
         return Element(clone.id, clone)
 
     def remove_class(self, classname):
@@ -228,7 +228,7 @@ class PyItemTemplate(Element):
 
   def __init__(self, data, labels=None, state_key=None, parent=None):
     self.data = data
-    
+
     self.register_parent(parent)
 
     if not labels:
@@ -251,7 +251,7 @@ class PyItemTemplate(Element):
     console.log('creating section')
     new_child = create('section', self._id, "task bg-white my-1")
     console.log('creating values')
-    
+
     console.log('creating innerHtml')
     new_child._element.innerHTML = f"""
 <label for="flex items-center p-2 ">
@@ -419,7 +419,7 @@ let loadInterpreter = async function(): Promise<any> {
     pyodide = await loadPyodide({
           stdout: console.log,
           stderr: console.log
-        }); 
+        });
 
     // now that we loaded, add additional convenience fuctions
     console.log("loading micropip");
