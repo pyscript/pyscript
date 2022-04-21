@@ -27,6 +27,12 @@ type PyodideInterface = {
     registerJsModule(name: string, module: object): void
 }
 
+export function guidGenerator(): string {
+  var S4 = function(): string {
+    return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+  };
+  return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
 
 export class BaseEvalElement extends HTMLElement {
     shadow: ShadowRoot;
@@ -46,6 +52,8 @@ export class BaseEvalElement extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open'});
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
+        if (!this.id)
+	  this.id = this.constructor.name+"-"+guidGenerator()
       }
 
     addToOutput(s: string) {
