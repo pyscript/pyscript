@@ -140,13 +140,9 @@ export class PyScript extends BaseEvalElement {
           // to create a new output div to output to
 
           // Let's check if we have an id first and create one if not
-          if (!this.id){
-            this.id = `pyid-${Date.now()}`
-          }
           this.outputElement = document.createElement('div');
-          // this.outputElement.classList.add("output");
-          this.outputElement.hidden = true;
-          this.outputElement.id = this.id + "-" + this.childElementCount;
+          const exec_id = this.getAttribute("exec-id");
+          this.outputElement.id = this.id + (exec_id ? "-"+exec_id : "");
 
           // add the output div id if there's not output pre-defined
           mainDiv.appendChild(this.outputElement);

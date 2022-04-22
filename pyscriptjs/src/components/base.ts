@@ -1,5 +1,5 @@
 import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, mode } from '../stores';
-
+import { guidGenerator } from '../utils';
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
 let environments;
@@ -27,7 +27,6 @@ type PyodideInterface = {
     registerJsModule(name: string, module: object): void
 }
 
-
 export class BaseEvalElement extends HTMLElement {
     shadow: ShadowRoot;
     wrapper: HTMLElement;
@@ -46,6 +45,8 @@ export class BaseEvalElement extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open'});
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
+        if (!this.id)
+	  this.id = this.constructor.name+"-"+guidGenerator()
       }
 
     addToOutput(s: string) {
