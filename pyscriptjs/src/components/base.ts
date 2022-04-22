@@ -1,5 +1,5 @@
 import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, mode } from '../stores';
-
+import { guidGenerator } from '../utils';
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
 let environments;
@@ -25,13 +25,6 @@ mode.subscribe(value => {
 // TODO: use type declaractions
 type PyodideInterface = {
     registerJsModule(name: string, module: object): void
-}
-
-export function guidGenerator(): string {
-  var S4 = function(): string {
-    return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-  };
-  return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
 }
 
 export class BaseEvalElement extends HTMLElement {
