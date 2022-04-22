@@ -45,9 +45,7 @@ export class BaseEvalElement extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open'});
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
-        if (!this.id)
-	  this.id = this.constructor.name+"-"+guidGenerator()
-      }
+    }
 
     addToOutput(s: string) {
         this.outputElement.innerHTML += "<div>"+s+"</div>";
@@ -56,6 +54,11 @@ export class BaseEvalElement extends HTMLElement {
 
     postEvaluate(){
 
+    }
+
+    checkId(){
+        if (!this.id)
+            this.id = this.constructor.name+"-"+guidGenerator();
     }
 
     getSourceFromElement(): string{
@@ -164,6 +167,8 @@ export class BaseEvalElement extends HTMLElement {
         }
     } // end eval
   }
+
+
 
   function createWidget(name: string, code: string, klass: string){
       

@@ -59,26 +59,27 @@ export class PyRepl extends BaseEvalElement {
 
 
     connectedCallback() {
-        this.code = this.innerHTML;
-        this.innerHTML = '';
+      this.checkId()
+      this.code = this.innerHTML;
+      this.innerHTML = '';
 
-        let extensions = [
-          basicSetup,
-            languageConf.of(python()),
-            keymap.of([
-                  ...defaultKeymap,
-                  { key: "Ctrl-Enter", run: createCmdHandler(this) },
-                  { key: "Shift-Enter", run: createCmdHandler(this) }
-            ]),
-            
-            // Event listener function that is called every time an user types something on this editor
-          //   EditorView.updateListener.of((v:ViewUpdate) => {
-          //     if (v.docChanged) {
-          //       console.log(v.changes);
+      let extensions = [
+        basicSetup,
+          languageConf.of(python()),
+          keymap.of([
+                ...defaultKeymap,
+                { key: "Ctrl-Enter", run: createCmdHandler(this) },
+                { key: "Shift-Enter", run: createCmdHandler(this) }
+          ]),
 
-          //     }
-          // })
-        ];
+          // Event listener function that is called every time an user types something on this editor
+        //   EditorView.updateListener.of((v:ViewUpdate) => {
+        //     if (v.docChanged) {
+        //       console.log(v.changes);
+
+        //     }
+        // })
+      ];
         
         if (!this.hasAttribute('theme')) {
           this.theme = this.getAttribute('theme');
