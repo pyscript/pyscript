@@ -77,7 +77,7 @@ export class PyRepl extends BaseEvalElement {
         // })
       ];
         const customTheme = EditorView.theme({
-          '.cm-focused .cm-editor, .cm-editor ::selection': { outline: '0px' },
+          '&.cm-focused .cm-editor': { outline: '0px' },
           '.cm-scroller': { lineHeight: 2.5 },
           '.cm-activeLine': { backgroundColor: '#fff' },
           '.cm-content': { padding: 0, backgroundColor: '#f5f5f5' },
