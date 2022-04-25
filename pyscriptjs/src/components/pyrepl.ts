@@ -50,7 +50,7 @@ export class PyRepl extends BaseEvalElement {
 
         // add an extra div where we can attach the codemirror editor
         this.editorNode = document.createElement('div');
-        addClasses(this.editorNode, ['editor-box']);
+        addClasses(this.editorNode, ["editor-box", "border", "border-gray-300"]);
         this.shadow.appendChild(this.wrapper);
     }
 
@@ -64,77 +64,66 @@ export class PyRepl extends BaseEvalElement {
             languageConf.of(python()),
             keymap.of([
                 ...defaultKeymap,
-                { key: 'Ctrl-Enter', run: createCmdHandler(this) },
-                { key: 'Shift-Enter', run: createCmdHandler(this) },
-            ]),
+                { key: "Ctrl-Enter", run: createCmdHandler(this) },
+                { key: "Shift-Enter", run: createCmdHandler(this) }
+          ]),
 
-            // Event listener function that is called every time an user types something on this editor
-            //   EditorView.updateListener.of((v:ViewUpdate) => {
-            //     if (v.docChanged) {
-            //       console.log(v.changes);
+          // Event listener function that is called every time an user types something on this editor
+        //   EditorView.updateListener.of((v:ViewUpdate) => {
+        //     if (v.docChanged) {
+        //       console.log(v.changes);
 
-            //     }
-            // })
-        ];
-
+        //     }
+        // })
+      ];
+        const customTheme = EditorView.theme({
+          '.cm-focused .cm-editor, .cm-editor ::selection': { outline: '0px' },
+          '.cm-scroller': { lineHeight: 2.5 },
+          '.cm-activeLine': { backgroundColor: '#fff' },
+          '.cm-content': { padding: 0, backgroundColor: '#f5f5f5' },
+          '&.cm-focused .cm-content': { border: '1px solid #1876d2' }
+        });
+        
         if (!this.hasAttribute('theme')) {
-            this.theme = this.getAttribute('theme');
-            if (this.theme == 'dark') {
-                extensions.push(oneDarkTheme);
-            }
+          this.theme = this.getAttribute('theme');
+          if (this.theme == 'dark'){
+            extensions.push(oneDarkTheme);
+          }
+          extensions.push(customTheme);
         }
+        
+        let startState = EditorState.create({
+          doc: this.code.trim(),
+          extensions: extensions
+      })
+  
+      this.editor = new EditorView({
+          state: startState,
+          parent: this.editorNode
+      })
+  
+      let mainDiv = document.createElement('div');
+      addClasses(mainDiv, ["parentBox", "group", "flex", "flex-col", "mt-2", "mx-8"])
+      // add Editor to main PyScript div
+  
+      // Butons DIV
+      var eDiv = document.createElement('div');
+      addClasses(eDiv, "buttons-box opacity-0 group-hover:opacity-100 relative top-0 right-0 flex flex-row-reverse space-x-reverse space-x-4 font-mono text-white text-sm font-bold leading-6 dev-buttons-group -mt-2 first-of-type:m-0".split(" "))
+      eDiv.setAttribute("role", "group");
+  
+      // Play Button
+      this.btnRun = document.createElement('button');
+      this.btnRun.innerHTML = '<svg id="" class="svelte-fa svelte-ps5qeg" style="height:1em;vertical-align:-.125em;transform-origin:center;overflow:visible" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>';
+      let buttonClasses = ["mr-2", "block", "py-2", "px-4", "rounded-full"];
+      addClasses(this.btnRun, buttonClasses);
+      addClasses(this.btnRun, ["bg-green-500"])
+      eDiv.appendChild(this.btnRun);
 
-        const startState = EditorState.create({
-            doc: this.code.trim(),
-            extensions: extensions,
-        });
-
-        this.editor = new EditorView({
-            state: startState,
-            parent: this.editorNode,
-        });
-
-        const mainDiv = document.createElement('div');
-        addClasses(mainDiv, [
-            'parentBox',
-            'group',
-            'flex',
-            'flex-col',
-            'mt-2',
-            'border-2',
-            'border-gray-200',
-            'rounded-lg',
-            'mx-8',
-        ]);
-        // add Editor to main PyScript div
-
-        // Butons DIV
-        const eDiv = document.createElement('div');
-        addClasses(
-            eDiv,
-            'buttons-box opacity-0 group-hover:opacity-100 relative top-0 right-0 flex flex-row-reverse space-x-reverse space-x-4 font-mono text-white text-sm font-bold leading-6 dev-buttons-group'.split(
-                ' ',
-            ),
-        );
-        eDiv.setAttribute('role', 'group');
-
-        // Play Button
-        this.btnRun = document.createElement('button');
-        this.btnRun.innerHTML =
-            '<svg id="" class="svelte-fa svelte-ps5qeg" style="height:1em;vertical-align:-.125em;transform-origin:center;overflow:visible" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>';
-        const buttonClasses = ['mr-2', 'block', 'py-2', 'px-4', 'rounded-full'];
-        addClasses(this.btnRun, buttonClasses);
-        addClasses(this.btnRun, ['bg-green-500']);
-        eDiv.appendChild(this.btnRun);
-
-        this.btnRun.onclick = wrap(this);
-
-        function wrap(el: any) {
-            async function evaluatePython() {
-                await el.evaluate();
-            }
-
-            return evaluatePython;
+      this.btnRun.onclick = wrap(this);
+  
+      function wrap(el: any){
+        async function evaluatePython() {
+            el.evaluate()
         }
 
         // Settings button
@@ -188,7 +177,7 @@ export class PyRepl extends BaseEvalElement {
                 // In this case neither output or std-out have been provided so we need
                 // to create a new output div to output to
                 this.outputElement = document.createElement('div');
-                this.outputElement.classList.add('output');
+                this.outputElement.classList.add('output', 'font-mono', 'ml-8', 'mt-4','text-sm');
                 this.outputElement.hidden = true;
                 this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
 
@@ -208,7 +197,7 @@ export class PyRepl extends BaseEvalElement {
         console.log('connected');
     }
 
-    addToOutput(s: string) {
+    addToOutput(s: string): void {
         this.outputElement.innerHTML += '<div>' + s + '</div>';
         this.outputElement.hidden = false;
     }
