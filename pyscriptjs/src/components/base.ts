@@ -1,4 +1,4 @@
-import { pyodideLoaded, loadedEnvironments, componentDetailsNavOpen, mode } from '../stores';
+import { componentDetailsNavOpen, loadedEnvironments, mode, pyodideLoaded } from '../stores';
 import { guidGenerator } from '../utils';
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
@@ -7,7 +7,7 @@ let currentMode;
 let Element;
 
 pyodideLoaded.subscribe(value => {
-  pyodideReadyPromise = value;
+    pyodideReadyPromise = value;
 });
 loadedEnvironments.subscribe(value => {
     environments = value;
@@ -15,17 +15,17 @@ loadedEnvironments.subscribe(value => {
 
 let propertiesNavOpen;
 componentDetailsNavOpen.subscribe(value => {
-  propertiesNavOpen = value;
+    propertiesNavOpen = value;
 });
 
 mode.subscribe(value => {
-  currentMode = value;
+    currentMode = value;
 });
 
 // TODO: use type declaractions
 type PyodideInterface = {
-    registerJsModule(name: string, module: object): void
-}
+    registerJsModule(name: string, module: object): void;
+};
 
 export class BaseEvalElement extends HTMLElement {
     shadow: ShadowRoot;
@@ -37,142 +37,136 @@ export class BaseEvalElement extends HTMLElement {
     outputElement: HTMLElement;
     errorElement: HTMLElement;
     theme: string;
-  
+
     constructor() {
         super();
-  
+
         // attach shadow so we can preserve the element original innerHtml content
-        this.shadow = this.attachShadow({ mode: 'open'});
+        this.shadow = this.attachShadow({ mode: 'open' });
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
     }
 
     addToOutput(s: string) {
-        this.outputElement.innerHTML += "<div>"+s+"</div>";
+        this.outputElement.innerHTML += '<div>' + s + '</div>';
         this.outputElement.hidden = false;
-      }
-
-    postEvaluate(){
-
     }
 
-    checkId(){
-        if (!this.id)
-            this.id = this.constructor.name+"-"+guidGenerator();
+    postEvaluate() {}
+
+    checkId() {
+        if (!this.id) this.id = this.constructor.name + '-' + guidGenerator();
     }
 
-    getSourceFromElement(): string{
-        return "";
+    getSourceFromElement(): string {
+        return '';
     }
 
-    async getSourceFromFile(s: string): Promise<string>{
-        let pyodide = await pyodideReadyPromise;
-        let response = await fetch(s);
+    async getSourceFromFile(s: string): Promise<string> {
+        const pyodide = await pyodideReadyPromise;
+        const response = await fetch(s);
         this.code = await response.text();
         return this.code;
-      }
+    }
 
     protected async _register_esm(pyodide: PyodideInterface): Promise<void> {
-        const imports: {[key: string]: unknown} = {}
-  
+        const imports: { [key: string]: unknown } = {};
+
         for (const node of document.querySelectorAll("script[type='importmap']")) {
-          const importmap = (() => {
-            try {
-              return JSON.parse(node.textContent)
-            } catch {
-              return null
+            const importmap = (() => {
+                try {
+                    return JSON.parse(node.textContent);
+                } catch {
+                    return null;
+                }
+            })();
+
+            if (importmap?.imports == null) continue;
+
+            for (const [name, url] of Object.entries(importmap.imports)) {
+                if (typeof name != 'string' || typeof url != 'string') continue;
+
+                try {
+                    // XXX: pyodide doesn't like Module(), failing with
+                    // "can't read 'name' of undefined" at import time
+                    imports[name] = { ...(await import(url)) };
+                } catch {
+                    console.error(`failed to fetch '${url}' for '${name}'`);
+                }
             }
-          })()
-  
-          if (importmap?.imports == null)
-            continue
-  
-          for (const [name, url] of Object.entries(importmap.imports)) {
-            if (typeof name != "string" || typeof url != "string")
-              continue
-  
-            try {
-              // XXX: pyodide doesn't like Module(), failing with
-              // "can't read 'name' of undefined" at import time
-              imports[name] = {...await import(url)}
-            } catch {
-              console.error(`failed to fetch '${url}' for '${name}'`)
-            }
-          }
         }
-  
-        pyodide.registerJsModule("esm", imports)
+
+        pyodide.registerJsModule('esm', imports);
     }
 
     async evaluate(): Promise<void> {
         console.log('evaluate');
-        let pyodide = await pyodideReadyPromise;
+        const pyodide = await pyodideReadyPromise;
         let source: string;
         let output;
         try {
-            // @ts-ignore
-            if (this.source){
+            if (this.source) {
                 source = await this.getSourceFromFile(this.source);
-            }else{
+            } else {
                 source = this.getSourceFromElement();
             }
 
             await this._register_esm(pyodide);
 
-            if (source.includes("asyncio")){
-                await pyodide.runPythonAsync(`output_manager.change("`+this.outputElement.id+`", "`+this.errorElement.id+`")`);
+            if (source.includes('asyncio')) {
+                await pyodide.runPythonAsync(
+                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                );
                 output = await pyodide.runPythonAsync(source);
-                await pyodide.runPythonAsync(`output_manager.revert()`)
-            }else{
-                output = pyodide.runPython(`output_manager.change("`+this.outputElement.id+`", "`+this.errorElement.id+`")`);
+                await pyodide.runPythonAsync(`output_manager.revert()`);
+            } else {
+                output = pyodide.runPython(
+                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                );
                 output = pyodide.runPython(source);
-                pyodide.runPython(`output_manager.revert()`)
+                pyodide.runPython(`output_manager.revert()`);
             }
 
-            if (output !== undefined){
-                if (Element === undefined){
+            if (output !== undefined) {
+                if (Element === undefined) {
                     Element = pyodide.globals.get('Element');
                 }
                 const out = Element(this.outputElement.id);
-                // @ts-ignore
-                out.write.callKwargs(output, { append : true});
+                out.write.callKwargs(output, { append: true });
 
-                this.outputElement.hidden =  false;
+                this.outputElement.hidden = false;
                 this.outputElement.style.display = 'block';
             }
 
-        this.postEvaluate()
-
+            this.postEvaluate();
         } catch (err) {
-            if (Element === undefined){
+            if (Element === undefined) {
                 Element = pyodide.globals.get('Element');
             }
             const out = Element(this.errorElement.id);
-            // @ts-ignore
-            out.write.callKwargs(err, { append : true});
+            out.write.callKwargs(err, { append: true });
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
-          }
-      } // end evaluate
+        }
+    } // end evaluate
 
-      async eval(source: string): Promise<void> {
+    async eval(source: string): Promise<void> {
         let output;
-        let pyodide = await pyodideReadyPromise;
-        
-        try{ 
+        const pyodide = await pyodideReadyPromise;
+
+        try {
             output = await pyodide.runPythonAsync(source);
-            if (output !== undefined){ console.log(output); }
+            if (output !== undefined) {
+                console.log(output);
+            }
         } catch (err) {
             console.log(err);
         }
     } // end eval
-  }
+}
 
-
-
-  function createWidget(name: string, code: string, klass: string){
-      
-    class CustomWidget extends HTMLElement{
+function createWidget(name: string, code: string, klass: string) {
+    class CustomWidget extends HTMLElement {
         shadow: ShadowRoot;
         wrapper: HTMLElement;
 
@@ -183,13 +177,13 @@ export class BaseEvalElement extends HTMLElement {
         proxyClass: any;
 
         constructor() {
-          super();
-    
-          // attach shadow so we can preserve the element original innerHtml content
-          this.shadow = this.attachShadow({ mode: 'open'});
-    
-          this.wrapper = document.createElement('slot');
-          this.shadow.appendChild(this.wrapper);
+            super();
+
+            // attach shadow so we can preserve the element original innerHtml content
+            this.shadow = this.attachShadow({ mode: 'open' });
+
+            this.wrapper = document.createElement('slot');
+            this.shadow.appendChild(this.wrapper);
         }
 
         connectedCallback() {
@@ -207,19 +201,19 @@ export class BaseEvalElement extends HTMLElement {
             }, 2000);
         }
 
-        async registerWidget(){
-            let pyodide = await pyodideReadyPromise;
+        async registerWidget() {
+            const pyodide = await pyodideReadyPromise;
             console.log('new widget registered:', this.name);
             pyodide.globals.set(this.id, this.proxy);
         }
 
         async eval(source: string): Promise<void> {
             let output;
-            let pyodide = await pyodideReadyPromise;
-            try{ 
+            const pyodide = await pyodideReadyPromise;
+            try {
                 output = await pyodide.runPythonAsync(source);
                 this.proxyClass = pyodide.globals.get(this.klass);
-                if (output !== undefined){
+                if (output !== undefined) {
                     console.log(output);
                 }
             } catch (err) {
@@ -227,10 +221,10 @@ export class BaseEvalElement extends HTMLElement {
             }
         }
     }
-    let xPyWidget = customElements.define(name, CustomWidget);
-  }
+    const xPyWidget = customElements.define(name, CustomWidget);
+}
 
-  export class PyWidget extends HTMLElement {
+export class PyWidget extends HTMLElement {
     shadow: ShadowRoot;
     name: string;
     klass: string;
@@ -240,43 +234,45 @@ export class BaseEvalElement extends HTMLElement {
     theme: string;
     source: string;
     code: string;
-  
+
     constructor() {
         super();
-  
+
         // attach shadow so we can preserve the element original innerHtml content
-        this.shadow = this.attachShadow({ mode: 'open'});
-  
+        this.shadow = this.attachShadow({ mode: 'open' });
+
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
 
         if (this.hasAttribute('src')) {
-          this.source = this.getAttribute('src');
+            this.source = this.getAttribute('src');
         }
 
         if (this.hasAttribute('name')) {
-          this.name = this.getAttribute('name');
+            this.name = this.getAttribute('name');
         }
 
         if (this.hasAttribute('klass')) {
-          this.klass = this.getAttribute('klass');
+            this.klass = this.getAttribute('klass');
         }
-      }
+    }
 
     connectedCallback() {
-      if (this.id === undefined){
-        throw new ReferenceError(`No id specified for component. Components must have an explicit id. Please use id="" to specify your component id.`)
-        return;
-      }
+        if (this.id === undefined) {
+            throw new ReferenceError(
+                `No id specified for component. Components must have an explicit id. Please use id="" to specify your component id.`,
+            );
+            return;
+        }
 
-      let mainDiv = document.createElement('div');
-      mainDiv.id = this.id + '-main';
-      this.appendChild(mainDiv);  
-      console.log('reading source')
-      this.getSourceFromFile(this.source).then((code:string) => {
-        this.code = code;
-        createWidget(this.name, code, this.klass);
-      });
+        const mainDiv = document.createElement('div');
+        mainDiv.id = this.id + '-main';
+        this.appendChild(mainDiv);
+        console.log('reading source');
+        this.getSourceFromFile(this.source).then((code: string) => {
+            this.code = code;
+            createWidget(this.name, code, this.klass);
+        });
     }
 
     initOutErr(): void {
@@ -287,42 +283,42 @@ export class BaseEvalElement extends HTMLElement {
             if (!this.hasAttribute('output-mode')) {
                 this.setAttribute('output-mode', 'append');
             }
-        }else{
-            if (this.hasAttribute('std-out')){
+        } else {
+            if (this.hasAttribute('std-out')) {
                 this.outputElement = document.getElementById(this.getAttribute('std-out'));
-            }else{
+            } else {
                 // In this case neither output or std-out have been provided so we need
                 // to create a new output div to output to
                 this.outputElement = document.createElement('div');
-                this.outputElement.classList.add("output");
+                this.outputElement.classList.add('output');
                 this.outputElement.hidden = true;
-                this.outputElement.id = this.id + "-" + this.getAttribute("exec-id");
+                this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
             }
 
-            if (this.hasAttribute('std-err')){
+            if (this.hasAttribute('std-err')) {
                 this.outputElement = document.getElementById(this.getAttribute('std-err'));
-            }else{
+            } else {
                 this.errorElement = this.outputElement;
             }
         }
     }
 
-    async getSourceFromFile(s: string): Promise<string>{
-        let pyodide = await pyodideReadyPromise;
-        let response = await fetch(s);
+    async getSourceFromFile(s: string): Promise<string> {
+        const pyodide = await pyodideReadyPromise;
+        const response = await fetch(s);
         return await response.text();
     }
-    
+
     async eval(source: string): Promise<void> {
         let output;
-        let pyodide = await pyodideReadyPromise;
-        try{ 
+        const pyodide = await pyodideReadyPromise;
+        try {
             output = await pyodide.runPythonAsync(source);
-            if (output !== undefined){
+            if (output !== undefined) {
                 console.log(output);
             }
         } catch (err) {
             console.log(err);
         }
     }
-  }
+}

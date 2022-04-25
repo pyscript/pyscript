@@ -9,68 +9,65 @@ let environments;
 let currentMode;
 
 pyodideLoaded.subscribe(value => {
-  pyodideReadyPromise = value;
+    pyodideReadyPromise = value;
 });
 
 loadedEnvironments.subscribe(value => {
-  environments = value;
+    environments = value;
 });
 
 mode.subscribe(value => {
-  currentMode = value;
+    currentMode = value;
 });
 
 export class PyEnv extends HTMLElement {
-  shadow: ShadowRoot;
-  wrapper: HTMLElement;
-  code: string;
-  environment: any;
+    shadow: ShadowRoot;
+    wrapper: HTMLElement;
+    code: string;
+    environment: any;
 
-  constructor() {
-    super();
+    constructor() {
+        super();
 
-    this.shadow = this.attachShadow({ mode: 'open'});
-    this.wrapper = document.createElement('slot');
-  }
+        this.shadow = this.attachShadow({ mode: 'open' });
+        this.wrapper = document.createElement('slot');
+    }
 
-  connectedCallback() {
-    this.code = this.innerHTML;
-    this.innerHTML = '';
+    connectedCallback() {
+        this.code = this.innerHTML;
+        this.innerHTML = '';
 
-    let env = [];
-    let paths = [];
+        const env = [];
+        const paths = [];
 
-    this.environment = jsyaml.load(this.code);
-    if (this.environment === undefined)
-       return
+        this.environment = jsyaml.load(this.code);
+        if (this.environment === undefined) return;
 
-    for (let entry of this.environment) {
-      if (typeof entry == "string" ){
-        env.push(entry);
-      }
-      else if (entry.hasOwnProperty('paths')){
-        for (let path of entry.paths) {
-          paths.push(path);
+        for (const entry of this.environment) {
+            if (typeof entry == 'string') {
+                env.push(entry);
+            } else if (entry.hasOwnProperty('paths')) {
+                for (const path of entry.paths) {
+                    paths.push(path);
+                }
+            }
         }
-      }
-    }
 
-    async function loadEnv() {
-      let pyodide = await pyodideReadyPromise;
-      await loadPackage(env, pyodide);
-      console.log("enviroment loaded")
-    }
+        async function loadEnv() {
+            const pyodide = await pyodideReadyPromise;
+            await loadPackage(env, pyodide);
+            console.log('enviroment loaded');
+        }
 
-    async function loadPaths() {
-      let pyodide = await pyodideReadyPromise;
-      for (let singleFile of paths) {
-        await loadFromFile(singleFile, pyodide);
-      }
-      console.log("paths loaded")
+        async function loadPaths() {
+            const pyodide = await pyodideReadyPromise;
+            for (const singleFile of paths) {
+                await loadFromFile(singleFile, pyodide);
+            }
+            console.log('paths loaded');
+        }
+        addInitializer(loadEnv);
+        addInitializer(loadPaths);
+        console.log('enviroment loading...', env);
     }
-    addInitializer(loadEnv);
-    addInitializer(loadPaths);
-    console.log("enviroment loading...", env)
-
-  }
 }

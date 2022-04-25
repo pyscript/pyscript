@@ -4,10 +4,10 @@ module.exports = {
     singleQuote: true,
     printWidth: 120,
     plugins: ['prettier-plugin-svelte'],
-    semi: false,
+    semi: true,
     svelteSortOrder: 'options-styles-scripts-markup',
     svelteStrictMode: false,
     svelteIndentScriptAndStyle: true,
-    tabWidth: 2,
+    tabWidth: 4,
     trailingComma: 'all',
 }

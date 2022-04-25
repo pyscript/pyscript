@@ -1,11 +1,9 @@
-import { getLastPath } from "./utils";
+import { getLastPath } from './utils';
 
-// @ts-nocheck
-// @ts-ignore
 let pyodideReadyPromise;
 let pyodide;
 
-let additional_definitions = `
+const additional_definitions = `
 from js import document, setInterval, console, setTimeout
 import micropip
 import time
@@ -330,19 +328,18 @@ class OutputManager:
 pyscript = PyScript()
 output_manager = OutputManager()
 
-`
+`;
 
-let loadInterpreter = async function(): Promise<any> {
-    console.log("creating pyodide runtime");
-    /* @ts-ignore */
+const loadInterpreter = async function (): Promise<any> {
+    console.log('creating pyodide runtime');
     pyodide = await loadPyodide({
-          stdout: console.log,
-          stderr: console.log
-        }); 
+        stdout: console.log,
+        stderr: console.log,
+    });
 
     // now that we loaded, add additional convenience fuctions
-    console.log("loading micropip");
-    await pyodide.loadPackage("micropip");
+    console.log('loading micropip');
+    await pyodide.loadPackage('micropip');
     console.log('loading pyscript module');
     // await pyodide.runPythonAsync(`
     //       from pyodide.http import pyfetch
@@ -354,31 +351,36 @@ let loadInterpreter = async function(): Promise<any> {
     //   `)
     // let pkg = pyodide.pyimport("pyscript");
 
-    console.log("creating additional definitions");
-    let output = pyodide.runPython(additional_definitions);
-    console.log("done setting up environment");
-    /* @ts-ignore */
+    console.log('creating additional definitions');
+    const output = pyodide.runPython(additional_definitions);
+    console.log('done setting up environment');
     return pyodide;
-}
+};
 
-let loadPackage = async function(package_name: string[] | string, runtime: any): Promise<any> {
-    let micropip = pyodide.globals.get('micropip');
-    await micropip.install(package_name)
-    micropip.destroy()
-}
+const loadPackage = async function (package_name: string[] | string, runtime: any): Promise<any> {
+    const micropip = pyodide.globals.get('micropip');
+    await micropip.install(package_name);
+    micropip.destroy();
+};
 
-let loadFromFile = async function(s: string, runtime: any): Promise<any> {
-    let filename = getLastPath(s);
-    await runtime.runPythonAsync(`
+const loadFromFile = async function (s: string, runtime: any): Promise<any> {
+    const filename = getLastPath(s);
+    await runtime.runPythonAsync(
+        `
         from pyodide.http import pyfetch
 
-        response = await pyfetch("`+s+`")
+        response = await pyfetch("` +
+            s +
+            `")
         content = await response.bytes()
-        with open("`+filename+`", "wb") as f:
+        with open("` +
+            filename +
+            `", "wb") as f:
             f.write(content)
-    `)
+    `,
+    );
 
-    runtime.pyimport(filename.replace(".py", ""));
-}
+    runtime.pyimport(filename.replace('.py', ''));
+};
 
-export {loadInterpreter, pyodideReadyPromise, loadPackage, loadFromFile}
+export { loadInterpreter, pyodideReadyPromise, loadPackage, loadFromFile };
