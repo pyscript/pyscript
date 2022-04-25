@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>py-script demos: traits</title>
+    <!-- Styles //-->
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../build/pyscript.css" />
+    <style type="text/css">
+    body {
+      font-family: "Red Hat Text", sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.618;
+    }
+
+    #app {
+      margin: 1em auto;
+      width: 1000px;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 100px;
+      height: 100px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: black;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    .loading-container {
+      margin: 5em 0 0;
+      text-align: center;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    a {color: #43B029;}
+
+    ul#project_list {
+      margin: 1em 0;
+    }
+
+    ul#project_list li {
+      list-style: disc;
+      margin-left: 1.25em;
+    }
+
+    #upload_form, #entry_form {
+      border-left: 3px solid #777;
+      display: none;
+      margin: 1.618em 0;
+      padding-left: 1em;
+    }
+
+    legend {
+      display: block;
+      font-size: 1.25em;
+      margin: 0.5em 0;
+    }
+
+    input[type=submit], button {
+      background: #43B029;
+      border-radius: 3px;
+      color: white;
+      padding: 0.35em 1.25em;
+    }
+
+    label {
+      display: block;
+    }
+
+    textarea {
+      border: 1px solid #777;
+      padding: 0.75em;
+      width: 40em;
+      height: 10em;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 1em 0;
+    }
+
+    th, td {
+      border: 1px solid #777;
+      padding: 0.35em 0.75em;
+    }
+
+    th {
+      background: #eee;
+      font-weight: normal;
+    }
+
+    p {margin: 1em 0;}
+    </style>
+
+    <!-- pyscript -->
+    <script defer src="../build/pyscript.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Header //-->
+      <header>
+        <h1>py-script Demos: traits</h1>
+      </header>
+
+      <main>
+        <div class="loading-container">
+          <div class="loading"></div>
+        </div>
+
+<!-- py-script and py-env -->
+
+<py-env>
+- traits
+</py-env>
+
+<py-script>
+from js import (
+  document
+)
+
+import io
+from contextlib import redirect_stdout
+
+from traits.api import (
+  Delegate,
+  HasTraits,
+  Instance,
+  Int,
+  Str,
+)
+
+class Parent(HasTraits):
+  last_name = "Johnson"
+
+class Child(HasTraits):
+  age = Int
+  father = Instance(Parent)
+  last_name = Delegate("father")
+
+  def _age_changed(self, old, new):
+    print(f"Age changed from {old} to {new}")
+
+loading = document.getElementsByClassName("loading-container")[0]
+loading.style.display = "none"
+
+output = document.getElementById("output")
+
+joe = Parent()
+joe.last_name = 'Johnson'
+moe = Child()
+moe.father = joe
+
+setup = """
+joe = Parent()
+joe.last_name = 'Johnson'
+moe = Child()
+moe.father = joe
+""".strip()
+
+p = document.createElement("p")
+a = document.createElement("a")
+br = document.createElement("br")
+a.href = "https://docs.enthought.com/traits/traits_user_manual/intro.html"
+a.textContent = "https://docs.enthought.com/traits/traits_user_manual/intro.html"
+p.append("Traits example: ")
+p.append(br)
+p.append(a)
+output.append(p)
+
+p = document.createElement("p")
+pre = document.createElement("pre")
+pre.innerHTML = setup
+p.append(pre)
+output.append(p)
+
+p = document.createElement("p")
+code = document.createElement("code")
+code.textContent = f"Moe's last name is {moe.last_name}"
+p.append(code)
+output.append(p)
+
+p = document.createElement("p")
+pre = document.createElement("pre")
+pre.textContent = "moe.age = 10"
+p.append(pre)
+pre = document.createElement("pre")
+strio = io.StringIO()
+with redirect_stdout(strio):
+  moe.age = 10
+pre.textContent = f">>> {strio.getvalue()}"
+p.append(pre)
+output.append(p)
+
+</py-script>
+
+<!-- end py-script and py-env -->
+
+<!-- Output -->
+
+<div id="output"></div>
+
+<!-- End output -->
+      </main>
+    </div>
+    <!-- Scripts //-->
+  </body>
+</html>
