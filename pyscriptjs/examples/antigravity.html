@@ -5,68 +5,11 @@
 
     <link rel="stylesheet" href="../build/pyscript.css" />
     <script defer src="../build/pyscript.js"></script>
-
-    <style>
-    .loading {
-      display: inline-block;
-      width: 50px;
-      height: 50px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: black;
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-    </style>
-
-    </head>
-    <body>
-      <b>
-        Based on xkcd: antigravity https://xkcd.com/353/.
-      </b>
-      <div style="display: flex; flex-direction: row">
-        <div id="antigravity" style="width: 400px; height: 400px">
-          <div class="loading"></div>
-        </div>
-      </div>
-
-<py-script output="antigravity">
-import random
-
-from js import document, setInterval
-from pyodide import create_proxy
-from pyodide.http import open_url
-
-class Antigravity():
-
-    def __init__(self, node):
-        self.node = node
-        self.xoffset, self.yoffset = 0, 0
-        setInterval(create_proxy(self.move), 10)
-
-    def move(self):
-        char = document.getElementById('python')
-        console.log(char)
-        char.setAttribute('transform', f'translate({self.xoffset}, {-self.yoffset})')
-        self.xoffset += random.normalvariate(0, 1)/20
-        if self.yoffset < 50:
-            self.yoffset += 0.1
-        else:
-            self.yoffset += random.normalvariate(0, 1)/20
-
-    def _repr_svg_(self):
-        return open_url('./antigravity.svg').read()
-
-node = document.getElementById('antigravity')
-node.replaceChildren()
-
-Antigravity(node)
-</py-script>
-
-</body>
+  </head>
+  <body>
+    <b>
+      Based on xkcd: antigravity https://xkcd.com/353/.
+    </b>
+    <py-script src="antigravity.py"></py-script>
+  </body>
 </html>
