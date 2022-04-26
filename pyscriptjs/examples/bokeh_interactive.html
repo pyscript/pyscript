@@ -32,7 +32,7 @@ from js import Bokeh, console, JSON
 
 from bokeh import __version__
 from bokeh.document import Document
-from bokeh.embed.util import OutputDocumentFor, standalone_docs_json
+from bokeh.embed.util import OutputDocumentFor, standalone_docs_json_and_render_items
 from bokeh.models import Slider, Div
 from bokeh.layouts import Row
 from bokeh.protocol.messages.patch_doc import process_document_events
@@ -48,12 +48,12 @@ p.on_change('value', callback)
 
 row = Row(children=[p, div])
 
-print("about to embed")
-
 def doc_json(model, target):
     with OutputDocumentFor([model]) as doc:
         doc.title = ""
-        docs_json = standalone_docs_json([model])
+        docs_json, _ = standalone_docs_json_and_render_items(
+            [model], suppress_callback_warning=True
+        )
 
     doc_json = list(docs_json.values())[0]
     root_id = doc_json['roots']['root_ids'][0]
@@ -87,7 +87,6 @@ def _link_docs(pydoc, jsdoc):
 async def show(plot, target):
     pydoc, model_json = doc_json(plot, target)
     views = await Bokeh.embed.embed_item(JSON.parse(model_json))
-    print("Done embedding...")
     jsdoc = views[0].model.document
     _link_docs(pydoc, jsdoc)
 
