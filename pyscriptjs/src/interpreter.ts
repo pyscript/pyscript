@@ -407,10 +407,8 @@ class OutputManager:
         sys.stdout = self._err_manager
         console.log("----> reverted")
 
-
 pyscript = PyScript()
 output_manager = OutputManager()
-
 `;
 
 const loadInterpreter = async function (): Promise<any> {
@@ -462,8 +460,6 @@ const loadFromFile = async function (s: string, runtime: any): Promise<any> {
             f.write(content)
     `,
     );
-
-    runtime.pyimport(filename.replace('.py', ''));
 };
 
 export { loadInterpreter, pyodideReadyPromise, loadPackage, loadFromFile };
