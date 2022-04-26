@@ -9,7 +9,7 @@ class Antigravity():
 
     url = './antigravity.svg'
     
-    def __init__(self, target=None, interval=10, append=True):
+    def __init__(self, target=None, interval=10, append=True, fly=False):
         target = target or sys.stdout._out
         self.target = document.getElementById(target) if isinstance(target, str) else target
         doc = DOMParser.new().parseFromString(open_url(self.url).read(), "image/svg+xml")
@@ -19,7 +19,12 @@ class Antigravity():
         else:
             self.target.replaceChildren(self.node)
         self.xoffset, self.yoffset = 0, 0
-        setInterval(create_proxy(self.move), interval)
+        self.interval = interval
+        if fly:
+            self.fly()
+
+    def fly(self):
+        setInterval(create_proxy(self.move), self.interval)
 
     def move(self):
         char = self.node.getElementsByTagName('g')[1]
@@ -30,4 +35,5 @@ class Antigravity():
         else:
             self.yoffset += random.normalvariate(0, 1)/20
 
-Antigravity(append=True);
+_auto = Antigravity(append=True)
+fly = _auto.fly
