@@ -35,4 +35,4 @@ jobs:
     - name: Build pyscript
       run: |
         cd pyscriptjs
-        npm run dev
+        npm run build
