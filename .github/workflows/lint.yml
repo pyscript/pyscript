@@ -32,7 +32,7 @@ jobs:
       run: |
         cd pyscriptjs
         npm install
-    - name: Build pyscript
+    - name: Run linter
       run: |
         cd pyscriptjs
         npm run lint
