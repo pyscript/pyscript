@@ -8,7 +8,7 @@ import typescript from "@rollup/plugin-typescript";
 import css from "rollup-plugin-css-only";
 import serve from 'rollup-plugin-serve'
 
-const production = !process.env.ROLLUP_WATCH;
+const production = !process.env.ROLLUP_WATCH || (process.env.NODE_ENV === "production");
 
 function serve_() {
   let server;
@@ -68,7 +68,7 @@ export default {
     !production && serve(),
     !production && livereload("public"),
     production && terser(),
-    serve({
+    !production && serve({
       port: 8080,
       contentBase: 'examples'}
       )
