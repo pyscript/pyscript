@@ -146,7 +146,6 @@ export class BaseEvalElement extends HTMLElement {
             const out = Element(this.errorElement.id);
             
             addClasses(this.errorElement, ['bg-red-200', 'p-2']);
-            // @ts-ignore
             out.write.callKwargs(err, { append : true});
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
