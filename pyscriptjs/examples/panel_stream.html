@@ -2,16 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>PyScript/Panel Streaming Demo</title>
-
-    <link rel="icon" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/icons/favicon.ico" type="">
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#000000">
     <meta name="name" content="PyScript/Panel Streaming Demo">
+
+    <title>PyScript/Panel Streaming Demo</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
     <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/widgets.css" type="text/css" />
     <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/markdown.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/loading.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/dataframe.css" type="text/css" />
 
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.js"></script>
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.js"></script>
@@ -21,16 +23,10 @@
     <script type="text/javascript">
       Bokeh.set_log_level("info");
     </script>
-        
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/bundled/bootstraptemplate/bootstrap.css">
     <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/bundled/defaulttheme/default.css">
-
-    <style>
-      #sidebar {
-	  width: 350px;
-      }
-    </style>
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
@@ -38,32 +34,34 @@
     <link rel="stylesheet" href="build/pyscript.css" />
     <script defer src="build/pyscript.js"></script>
   </head>
-  <body>    
-    <py-env>
-      - bokeh
-      - numpy
-      - pandas
-      - panel
-    </py-env>
 
+  <py-env>
+  - bokeh
+  - numpy
+  - pandas
+  - panel
+  </py-env>
+
+  <body>
     <div class="container-fluid d-flex flex-column vh-100 overflow-hidden" id="container">
-      <nav class="navbar navbar-expand-md navbar-dark sticky-top shadow" style="" id="header">
+      <nav class="navbar navbar-expand-md navbar-dark sticky-top shadow" id="header" style="background-color: #000000;">
         <button type="button" class="navbar-toggle collapsed" id="sidebarCollapse">
-	      <span class="navbar-toggler-icon"></span>
-	    </button>
-	    <div class="app-header">
-	      <a class="title" href="/" >&nbsp;Panel</a>
-	      <span class="title">&nbsp;-</span>
-	      <a class="title" href="" >&nbsp;Pyscript Streaming Demo</a>
-	    </div>
+	  <span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="app-header">
+	  <a class="navbar-brand app-logo" href="/">
+	    <img src="./logo.png" class="app-logo">
+	  </a>
+	  <a class="title" href="" style="color: #f0ab3c;">Panel Streaming Demo</a>
+	</div>
       </nav>
 
       <div class="row overflow-hidden" id="content">
         <div class="col mh-100 float-left" id="main">
-          <div class="bk-root" id="controls" data-root-id="1009"></div>
+          <div class="bk-root" id="controls"></div>
           <div class="row">
-            <div class="bk-root" id="table" data-root-id="1010"></div>
-            <div class="bk-root" id="plot" data-root-id="1011"></div>
+            <div class="bk-root" id="table"></div>
+            <div class="bk-root" id="plot"></div>
           </div>
         </div>
       </div>
