@@ -121,7 +121,7 @@ export class PyRepl extends BaseEvalElement {
         this.btnRun.onclick = wrap(this);
   
         function wrap(el: any){
-          async function evaluatePython() {
+          function evaluatePython() {
               el.evaluate();
           }
           return evaluatePython;
