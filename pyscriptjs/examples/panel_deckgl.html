@@ -8,12 +8,11 @@
     <meta name="name" content="Pyscript/Panel DeckGL Demo">
 
     <title>Pyscript/Panel DeckGL Demo</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.png">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
     <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/widgets.css" type="text/css" />
     <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/markdown.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/loading.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/dataframe.css" type="text/css" />
 
     <script type="text/javascript" src="https://unpkg.com/h3-js@3.7.2/dist/h3-js.umd.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/deck.gl@8.6.7/dist.min.js"></script>
@@ -50,26 +49,27 @@
     </py-env>
 
     <div class="container-fluid d-flex flex-column vh-100 overflow-hidden" id="container">
-      <nav class="navbar navbar-expand-md navbar-dark sticky-top shadow" id="header" style="background-color: #0072b5;">
+      <nav class="navbar navbar-expand-md navbar-dark sticky-top shadow" id="header" style="background-color: #000000;">
 	<button type="button" class="navbar-toggle collapsed" id="sidebarCollapse">
 	  <span class="navbar-toggler-icon"></span>
 	</button>
 	<div class="app-header">
-	  <a class="title" href="/" >&nbsp;Panel</a>
-	  <span class="title">&nbsp;-</span>
-	  <a class="title" href="" >&nbsp;Pyscript DeckGL NYC Taxi</a>
+	  <a class="navbar-brand app-logo" href="/">
+	    <img src="./logo.png" class="app-logo">
+	  </a>
+	  <a class="title" href="" style="color: #f0ab3c;">Panel DeckGL NYC Taxi Demo</a>
 	</div>
       </nav>
 
       <div class="row overflow-hidden" id="content">
 	<div class="sidenav" id="sidebar">
 	  <ul class="nav flex-column">
-        <div class="bk-root" id="widgets" data-root-id="1021"></div>
+        <div class="bk-root" id="widgets"></div>
         <py-repl id="my-repl" auto-generate="true"> </py-repl>
 	  </ul>
 	</div>
 	<div class="col mh-100 float-left" style="padding: 0;">
-	  <div class="bk-root" id="plot" data-root-id="1008"></div>
+	  <div class="bk-root" id="plot"></div>
 	</div>
       </div>
     </div>

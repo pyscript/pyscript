@@ -2,16 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Pyscript/Panel KMeans Demo</title>
-
-    <link rel="icon" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/icons/favicon.ico" type="">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#000000">
     <meta name="name" content="PyScript/Panel KMeans Demo">
+
+    <title>Pyscript/Panel KMeans Demo</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.png">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
     <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/widgets.css" type="text/css" />
     <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/markdown.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/loading.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.0/dist/css/dataframe.css" type="text/css" />
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
@@ -41,40 +42,41 @@
     <link rel="stylesheet" href="../build/pyscript.css" />
     <script defer src="../build/pyscript.js"></script>
   </head>
-  <body>    
-    <py-env>
-      - bokeh
-      - numpy
-      - pandas
-      - scikit-learn
-      - panel==0.13.1a2
-      - altair
-    </py-env>
+  
+  <py-env>
+    - altair
+    - numpy
+    - pandas
+    - scikit-learn
+    - panel==0.13.1a2
+  </py-env>
 
+  <body>
     <div class="container-fluid d-flex flex-column vh-100 overflow-hidden" id="container">
-      <nav class="navbar navbar-expand-md navbar-dark sticky-top shadow" style="" id="header">
+      <nav class="navbar navbar-expand-md navbar-dark sticky-top shadow" id="header" style="background-color: #000000;">
 	<button type="button" class="navbar-toggle collapsed" id="sidebarCollapse">
 	  <span class="navbar-toggler-icon"></span>
 	</button>
 	<div class="app-header">
-	  <a class="title" href="/" >&nbsp;Panel</a>
-	  <span class="title">&nbsp;-</span>
-	  <a class="title" href="" >&nbsp;Pyscript KMeans Clustering Demo</a>
+	  <a class="navbar-brand app-logo" href="/">
+	    <img src="./logo.png" class="app-logo">
+	  </a>
+	  <a class="title" href="" style="color: #f0ab3c;">Panel KMeans Clustering Demo</a>
 	</div>
       </nav>
 
       <div class="row overflow-hidden" id="content">
 	<div class="sidenav" id="sidebar">
 	  <ul class="nav flex-column">
-            <div class="bk-root" id="x-widget" data-root-id="1021"></div>
-            <div class="bk-root" id="y-widget" data-root-id="1026"></div>
-            <div class="bk-root" id="n-widget" data-root-id="1031"></div>
+            <div class="bk-root" id="x-widget"></div>
+            <div class="bk-root" id="y-widget"></div>
+            <div class="bk-root" id="n-widget"></div>
 	  </ul>
 	</div>
 	<div class="col mh-100 float-left" id="main">
-	  <div class="bk-root" id="intro" data-root-id="1008"></div>
-	  <div class="bk-root" id="cluster-plot" data-root-id="1009"></div>
-	  <div class="bk-root" id="table" data-root-id="1009"></div>
+	  <div class="bk-root" id="intro"></div>
+	  <div class="bk-root" id="cluster-plot"></div>
+	  <div class="bk-root" id="table"></div>
 	</div>
       </div>
     </div>
