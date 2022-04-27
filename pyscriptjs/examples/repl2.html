@@ -10,6 +10,25 @@
     <link rel="stylesheet" href="../build/pyscript.css" />
     
     <script defer src="../build/pyscript.js"></script>
+
+    <style>
+      #output > div {
+        font-family: 'monospace';
+        background-color: #e5e5e5;
+        border: 1px solid lightgray;
+        border-top: 0;
+        font-size: 0.875rem;
+        padding: 0.5rem;
+      }
+
+      #output > div:first-child {
+        border-top: 1px solid lightgray;
+      }
+
+      #output > div:nth-child(even) {
+        border: 0;
+      }
+    </style>
   </head>
 
   <py-env>
@@ -24,9 +43,9 @@
       <h1 class="font-semibold text-2xl ml-5">Custom REPL</h1>
       <py-box widths="2/3;1/3">
         <py-repl id="my-repl" auto-generate="true" std-out="output" std-err="err-div"> </py-repl>
-        <div id="output"></div>
+        <div id="output" class="p-4"></div>
       </py-box>
-      <footer id="err-div" class="bg-red-700 text-white text-center border-t-4 border-gree-500 fixed inset-x-0 bottom-0 p-4 hidden">
+      <footer id="err-div" class="bg-red-700 text-white text-center border-t-4 border-green-500 fixed inset-x-0 bottom-0 p-4 hidden">
     </footer>
   </body>
 </html>
