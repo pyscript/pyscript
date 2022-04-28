@@ -1,13 +1,3 @@
-<style>
-    :global(div.buttons-box) {
-        margin-top: -25px;
-    }
-
-    :global(.parentBox:hover .buttons-box) {
-        visibility: visible;
-    }
-</style>
-
 <script lang="ts">
     import Tailwind from './Tailwind.svelte';
     import { loadInterpreter } from './interpreter';

@@ -1,5 +1,5 @@
 import { componentDetailsNavOpen, loadedEnvironments, mode, pyodideLoaded } from '../stores';
-import { guidGenerator } from '../utils';
+import { guidGenerator, addClasses } from '../utils';
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
 let environments;
@@ -144,7 +144,9 @@ export class BaseEvalElement extends HTMLElement {
                 Element = pyodide.globals.get('Element');
             }
             const out = Element(this.errorElement.id);
-            out.write.callKwargs(err, { append: true });
+            
+            addClasses(this.errorElement, ['bg-red-200', 'p-2']);
+            out.write.callKwargs(err, { append : true});
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
         }
