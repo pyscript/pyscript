@@ -5,7 +5,6 @@
         initializers,
         loadedEnvironments,
         mode,
-        navBarOpen,
         postInitializers,
         pyodideLoaded,
         scriptsQueue,

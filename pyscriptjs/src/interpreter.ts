@@ -413,6 +413,7 @@ output_manager = OutputManager()
 
 const loadInterpreter = async function (): Promise<any> {
     console.log('creating pyodide runtime');
+    // eslint-disable-next-line
     // @ts-ignore
     pyodide = await loadPyodide({
         stdout: console.log,
