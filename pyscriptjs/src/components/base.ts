@@ -1,4 +1,4 @@
-import { componentDetailsNavOpen, loadedEnvironments, mode, pyodideLoaded } from '../stores';
+import { loadedEnvironments, mode, pyodideLoaded } from '../stores';
 import { guidGenerator, addClasses } from '../utils';
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
@@ -13,10 +13,6 @@ loadedEnvironments.subscribe(value => {
     environments = value;
 });
 
-let propertiesNavOpen;
-componentDetailsNavOpen.subscribe(value => {
-    propertiesNavOpen = value;
-});
 
 mode.subscribe(value => {
     currentMode = value;
@@ -52,7 +48,11 @@ export class BaseEvalElement extends HTMLElement {
         this.outputElement.hidden = false;
     }
 
-    postEvaluate() {}
+    // subclasses should overwrite this method to define custom logic
+    // after code has been evaluated
+    postEvaluate() {
+        return null;
+    }
 
     checkId() {
         if (!this.id) this.id = this.constructor.name + '-' + guidGenerator();

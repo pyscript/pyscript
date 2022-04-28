@@ -5,20 +5,6 @@ import { loadPackage, loadFromFile } from '../interpreter';
 
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
-let environments;
-let currentMode;
-
-pyodideLoaded.subscribe(value => {
-    pyodideReadyPromise = value;
-});
-
-loadedEnvironments.subscribe(value => {
-    environments = value;
-});
-
-mode.subscribe(value => {
-    currentMode = value;
-});
 
 export class PyEnv extends HTMLElement {
     shadow: ShadowRoot;

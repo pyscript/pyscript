@@ -11,7 +11,6 @@
         scriptsQueue,
     } from './stores';
 
-    let iconSize = 2;
     let pyodideReadyPromise;
 
     const initializePyodide = async () => {
@@ -24,11 +23,6 @@
         pyodideLoaded.set(pyodideReadyPromise);
         loadedEnvironments.update((value: any): any => {
             value[newEnv['id']] = newEnv;
-        });
-
-        let showNavBar = false;
-        navBarOpen.subscribe(value => {
-            showNavBar = value;
         });
 
         // now we call all initializers before we actually executed all page scripts
