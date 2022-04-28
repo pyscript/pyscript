@@ -39,14 +39,6 @@ mode.subscribe(value => {
     currentMode = value;
 });
 
-function createCmdHandler(el) {
-    // Creates a codemirror cmd handler that calls the el.evaluate when an event
-    // triggers that specific cmd
-    const toggleCheckbox: StateCommand = ({ state, dispatch }) => {
-        return el.evaluate(state);
-    };
-    return toggleCheckbox;
-}
 
 // TODO: use type declaractions
 type PyodideInterface = {
@@ -104,25 +96,6 @@ export class PyScript extends BaseEvalElement {
         this.checkId();
         this.code = this.innerHTML;
         this.innerHTML = '';
-        const startState = EditorState.create({
-            doc: this.code,
-            extensions: [
-                keymap.of([
-                    ...defaultKeymap,
-                    { key: 'Ctrl-Enter', run: createCmdHandler(this) },
-                    { key: 'Shift-Enter', run: createCmdHandler(this) },
-                ]),
-                oneDarkTheme,
-                python(),
-                // Event listener function that is called every time an user types something on this editor
-                //   EditorView.updateListener.of((v:ViewUpdate) => {
-                //     if (v.docChanged) {
-                //       console.log(v.changes);
-
-                //     }
-                // })
-            ],
-        });
 
         const mainDiv = document.createElement('div');
         addClasses(mainDiv, ['parentBox', 'flex', 'flex-col', 'mx-8']);

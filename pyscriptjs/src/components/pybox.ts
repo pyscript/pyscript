@@ -56,6 +56,7 @@ export class PyBox extends HTMLElement {
 
         this.widths.forEach((width, index)=>{
             const node: ChildNode = mainDiv.childNodes[index];
+            // @ts-ignore
             addClasses(node, [width, 'mx-4'])
 
         })
