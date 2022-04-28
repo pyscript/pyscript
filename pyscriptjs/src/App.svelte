@@ -2,43 +2,29 @@
     import Tailwind from './Tailwind.svelte';
     import { loadInterpreter } from './interpreter';
     import {
-        componentsNavOpen,
         initializers,
         loadedEnvironments,
         mode,
-        navBarOpen,
         postInitializers,
         pyodideLoaded,
         scriptsQueue,
     } from './stores';
 
-    let iconSize = 2;
     let pyodideReadyPromise;
-
-    function bumpSize(evt) {
-        iconSize = 4;
-    }
-
-    function downSize(evt) {
-        iconSize = 2;
-    }
 
     const initializePyodide = async () => {
         pyodideReadyPromise = loadInterpreter();
+        const pyodide = await pyodideReadyPromise;
         let newEnv = {
             id: 'a',
             promise: pyodideReadyPromise,
+            runtime: pyodide,
             state: 'loading',
         };
-        pyodideLoaded.set(pyodideReadyPromise);
+        pyodideLoaded.set(pyodide);
+
         loadedEnvironments.update((value: any): any => {
             value[newEnv['id']] = newEnv;
-        });
-
-        let showNavBar = false;
-        let main = document.querySelector('#main');
-        navBarOpen.subscribe(value => {
-            showNavBar = value;
         });
 
         // now we call all initializers before we actually executed all page scripts
@@ -61,10 +47,6 @@
             }
         }, 3000);
     };
-
-    function toggleComponentsNavBar(evt) {
-        componentsNavOpen.set(!$componentsNavOpen);
-    }
 </script>
 
 <svelte:head>

@@ -1,5 +1,5 @@
 import { BaseEvalElement } from './base';
-import { addClasses, ltrim, htmlDecode } from '../utils';
+import { addClasses, htmlDecode } from '../utils';
 
 export class PyInputBox extends BaseEvalElement {
     shadow: ShadowRoot;

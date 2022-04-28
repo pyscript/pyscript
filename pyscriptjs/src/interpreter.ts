@@ -413,6 +413,8 @@ output_manager = OutputManager()
 
 const loadInterpreter = async function (): Promise<any> {
     console.log('creating pyodide runtime');
+    // eslint-disable-next-line
+    // @ts-ignore
     pyodide = await loadPyodide({
         stdout: console.log,
         stderr: console.log,
@@ -422,15 +424,6 @@ const loadInterpreter = async function (): Promise<any> {
     console.log('loading micropip');
     await pyodide.loadPackage('micropip');
     console.log('loading pyscript module');
-    // await pyodide.runPythonAsync(`
-    //       from pyodide.http import pyfetch
-    //       response = await pyfetch("/build/pyscript.py")
-    //       with open("pyscript.py", "wb") as f:
-    //           content = await response.bytes()
-    //           print(content)
-    //           f.write(content)
-    //   `)
-    // let pkg = pyodide.pyimport("pyscript");
 
     console.log('creating additional definitions');
     const output = pyodide.runPython(additional_definitions);

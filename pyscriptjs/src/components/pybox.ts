@@ -49,14 +49,12 @@ export class PyBox extends HTMLElement {
                 this.widths.push(`w-${w}`);
             }
         } else {
-            for (const el of mainDiv.childNodes) {
-                this.widths.push(`w-1/${mainDiv.childNodes.length}`);
-            }
+            this.widths = [...this.widths, ...[`w-1/${mainDiv.childNodes.length}`]];
         }
 
         this.widths.forEach((width, index)=>{
             const node: ChildNode = mainDiv.childNodes[index];
-            addClasses(node, [width, 'mx-4'])
+            addClasses(node, [width, 'mx-1'])
 
         })
 

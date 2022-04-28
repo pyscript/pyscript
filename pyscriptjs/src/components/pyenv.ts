@@ -5,19 +5,11 @@ import { loadPackage, loadFromFile } from '../interpreter';
 
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
-let environments;
-let currentMode;
+let runtime;
 
 pyodideLoaded.subscribe(value => {
-    pyodideReadyPromise = value;
-});
-
-loadedEnvironments.subscribe(value => {
-    environments = value;
-});
-
-mode.subscribe(value => {
-    currentMode = value;
+    runtime = value;
+    console.log("RUNTIME READY")
 });
 
 export class PyEnv extends HTMLElement {
@@ -25,6 +17,9 @@ export class PyEnv extends HTMLElement {
     wrapper: HTMLElement;
     code: string;
     environment: any;
+    runtime: any;
+    env: string[];
+    paths: string[];
 
     constructor() {
         super();
@@ -54,20 +49,20 @@ export class PyEnv extends HTMLElement {
         }
 
         async function loadEnv() {
-            const pyodide = await pyodideReadyPromise;
-            await loadPackage(env, pyodide);
+            await loadPackage(env, runtime);
             console.log('enviroment loaded');
         }
 
         async function loadPaths() {
             const pyodide = await pyodideReadyPromise;
             for (const singleFile of paths) {
-                await loadFromFile(singleFile, pyodide);
+                await loadFromFile(singleFile, runtime);
             }
             console.log('paths loaded');
         }
+
         addInitializer(loadEnv);
         addInitializer(loadPaths);
-        console.log('enviroment loading...', env);
+        console.log('enviroment loading...', this.env);
     }
 }

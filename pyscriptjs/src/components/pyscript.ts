@@ -1,15 +1,7 @@
-import { EditorState } from '@codemirror/basic-setup';
-import { python } from '@codemirror/lang-python';
-import { StateCommand } from '@codemirror/state';
-import { keymap } from '@codemirror/view';
-import { defaultKeymap } from '@codemirror/commands';
-import { oneDarkTheme } from '@codemirror/theme-one-dark';
-
 import {
     addInitializer,
     addPostInitializer,
     addToScriptsQueue,
-    componentDetailsNavOpen,
     loadedEnvironments,
     mode,
     pyodideLoaded,
@@ -21,7 +13,6 @@ import { BaseEvalElement } from './base';
 let pyodideReadyPromise;
 let environments;
 let currentMode;
-let handlersCollected = false;
 
 pyodideLoaded.subscribe(value => {
     pyodideReadyPromise = value;
@@ -30,67 +21,16 @@ loadedEnvironments.subscribe(value => {
     environments = value;
 });
 
-let propertiesNavOpen;
-componentDetailsNavOpen.subscribe(value => {
-    propertiesNavOpen = value;
-});
-
 mode.subscribe(value => {
     currentMode = value;
 });
 
-function createCmdHandler(el) {
-    // Creates a codemirror cmd handler that calls the el.evaluate when an event
-    // triggers that specific cmd
-    const toggleCheckbox: StateCommand = ({ state, dispatch }) => {
-        return el.evaluate(state);
-    };
-    return toggleCheckbox;
-}
 
 // TODO: use type declaractions
 type PyodideInterface = {
     registerJsModule(name: string, module: object): void;
 };
 
-// TODO: This should be used as base for generic scripts that need exectutoin
-//        from PyScript to initializers, etc...
-class Script {
-    source: string;
-    state: string;
-    output: string;
-
-    constructor(source: string, output: string) {
-        this.output = output;
-        this.source = source;
-        this.state = 'waiting';
-    }
-
-    async evaluate() {
-        console.log('evaluate');
-        const pyodide = await pyodideReadyPromise;
-        // debugger
-        try {
-            // let source = this.editor.state.doc.toString();
-            let output;
-            if (this.source.includes('asyncio')) {
-                output = await pyodide.runPythonAsync(this.source);
-            } else {
-                output = pyodide.runPython(this.source);
-            }
-
-            if (this.output) {
-                // this.editorOut.innerHTML = s;
-            }
-            // if (output !== undefined){
-            //   this.addToOutput(output);
-            // }
-        } catch (err) {
-            console.log('OOOPS, this happened: ', err);
-            // this.addToOutput(err);
-        }
-    }
-}
 
 export class PyScript extends BaseEvalElement {
     constructor() {
@@ -104,25 +44,6 @@ export class PyScript extends BaseEvalElement {
         this.checkId();
         this.code = this.innerHTML;
         this.innerHTML = '';
-        const startState = EditorState.create({
-            doc: this.code,
-            extensions: [
-                keymap.of([
-                    ...defaultKeymap,
-                    { key: 'Ctrl-Enter', run: createCmdHandler(this) },
-                    { key: 'Shift-Enter', run: createCmdHandler(this) },
-                ]),
-                oneDarkTheme,
-                python(),
-                // Event listener function that is called every time an user types something on this editor
-                //   EditorView.updateListener.of((v:ViewUpdate) => {
-                //     if (v.docChanged) {
-                //       console.log(v.changes);
-
-                //     }
-                // })
-            ],
-        });
 
         const mainDiv = document.createElement('div');
         addClasses(mainDiv, ['parentBox', 'flex', 'flex-col', 'mx-8']);
@@ -234,7 +155,6 @@ async function initHandlers() {
         //   // pyodide.runPython(handlerCode);
         // }
     }
-    handlersCollected = true;
 
     matches = document.querySelectorAll('[pys-onKeyDown]');
     for (const el of matches) {
@@ -249,7 +169,7 @@ async function mountElements() {
     console.log('Collecting nodes to be mounted into python namespace...');
     const pyodide = await pyodideReadyPromise;
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
-    let output;
+
     let source = '';
     for (const el of matches) {
         let mountName = el.getAttribute('py-mount');

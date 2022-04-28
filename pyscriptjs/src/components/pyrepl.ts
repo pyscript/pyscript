@@ -5,7 +5,7 @@ import { keymap } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 
-import { componentDetailsNavOpen, currentComponentDetails, loadedEnvironments, mode, pyodideLoaded } from '../stores';
+import { componentDetailsNavOpen, loadedEnvironments, mode, pyodideLoaded } from '../stores';
 import { addClasses } from '../utils';
 import { BaseEvalElement } from './base';
 
