@@ -4,22 +4,48 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>Svelte app</title>
+    <title>PyScript simple script 2 demo</title>
 
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="../build/pyscript.css" />
-    
+    <!-- <link rel="stylesheet" href="../build/pyscript.css" />     -->
     <script defer src="../build/pyscript.js"></script>
     <py-env>
-    - paths:
-      - /utils.py
+      - paths:
+        - /utils.py
     </py-env>
   </head>
 
   <body>
-    <div class="font-mono">start time: <label id="outputDiv"></label></div>
-    <div id="outputDiv2" class="font-mono"></div>
-    <div id="outputDiv3" class="font-mono"></div>
+    <p>This example demonstrates various features:
+      <ul class="list-disc">
+        <li>
+          <i>Start time</i> is computed as soon as the page is loaded,
+          and it's placed into an HTML tag by using <tt>&lt;py-script output="outputDiv"&gt;</tt>.
+        </li>
+
+        <li>
+          <i>Current time</i> is computed every second,
+          using <tt>asyncio</tt>. The HTML tag is modified by using
+          the <tt>Element</tt> class.
+        </li>
+      </ul>
+    </p>
+
+    <table>
+      <tr>
+        <th>Start time</th>
+        <td id="outputDiv"></td>
+      </tr>
+      <tr>
+        <th>Current time</th>
+        <td id="outputDiv2"></td>
+      </tr>
+      <tr>
+        <th>&nbsp;</th>
+        <td id="outputDiv3"></td>
+      </tr>
+    </table>
+
     <py-script output="outputDiv">
 import utils
 utils.now()
