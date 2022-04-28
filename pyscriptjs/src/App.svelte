@@ -2,7 +2,6 @@
     import Tailwind from './Tailwind.svelte';
     import { loadInterpreter } from './interpreter';
     import {
-        componentsNavOpen,
         initializers,
         loadedEnvironments,
         mode,
@@ -14,14 +13,6 @@
 
     let iconSize = 2;
     let pyodideReadyPromise;
-
-    function bumpSize(evt) {
-        iconSize = 4;
-    }
-
-    function downSize(evt) {
-        iconSize = 2;
-    }
 
     const initializePyodide = async () => {
         pyodideReadyPromise = loadInterpreter();
@@ -36,7 +27,6 @@
         });
 
         let showNavBar = false;
-        let main = document.querySelector('#main');
         navBarOpen.subscribe(value => {
             showNavBar = value;
         });
@@ -61,10 +51,6 @@
             }
         }, 3000);
     };
-
-    function toggleComponentsNavBar(evt) {
-        componentsNavOpen.set(!$componentsNavOpen);
-    }
 </script>
 
 <svelte:head>
