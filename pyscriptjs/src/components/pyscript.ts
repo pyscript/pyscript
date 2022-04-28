@@ -1,15 +1,7 @@
-import { EditorState } from '@codemirror/basic-setup';
-import { python } from '@codemirror/lang-python';
-import { StateCommand } from '@codemirror/state';
-import { keymap } from '@codemirror/view';
-import { defaultKeymap } from '@codemirror/commands';
-import { oneDarkTheme } from '@codemirror/theme-one-dark';
-
 import {
     addInitializer,
     addPostInitializer,
     addToScriptsQueue,
-    componentDetailsNavOpen,
     loadedEnvironments,
     mode,
     pyodideLoaded,
@@ -21,18 +13,12 @@ import { BaseEvalElement } from './base';
 let pyodideReadyPromise;
 let environments;
 let currentMode;
-let handlersCollected = false;
 
 pyodideLoaded.subscribe(value => {
     pyodideReadyPromise = value;
 });
 loadedEnvironments.subscribe(value => {
     environments = value;
-});
-
-let propertiesNavOpen;
-componentDetailsNavOpen.subscribe(value => {
-    propertiesNavOpen = value;
 });
 
 mode.subscribe(value => {
@@ -45,44 +31,6 @@ type PyodideInterface = {
     registerJsModule(name: string, module: object): void;
 };
 
-// TODO: This should be used as base for generic scripts that need exectutoin
-//        from PyScript to initializers, etc...
-class Script {
-    source: string;
-    state: string;
-    output: string;
-
-    constructor(source: string, output: string) {
-        this.output = output;
-        this.source = source;
-        this.state = 'waiting';
-    }
-
-    async evaluate() {
-        console.log('evaluate');
-        const pyodide = await pyodideReadyPromise;
-        // debugger
-        try {
-            // let source = this.editor.state.doc.toString();
-            let output;
-            if (this.source.includes('asyncio')) {
-                output = await pyodide.runPythonAsync(this.source);
-            } else {
-                output = pyodide.runPython(this.source);
-            }
-
-            if (this.output) {
-                // this.editorOut.innerHTML = s;
-            }
-            // if (output !== undefined){
-            //   this.addToOutput(output);
-            // }
-        } catch (err) {
-            console.log('OOOPS, this happened: ', err);
-            // this.addToOutput(err);
-        }
-    }
-}
 
 export class PyScript extends BaseEvalElement {
     constructor() {
@@ -207,7 +155,6 @@ async function initHandlers() {
         //   // pyodide.runPython(handlerCode);
         // }
     }
-    handlersCollected = true;
 
     matches = document.querySelectorAll('[pys-onKeyDown]');
     for (const el of matches) {
@@ -222,7 +169,7 @@ async function mountElements() {
     console.log('Collecting nodes to be mounted into python namespace...');
     const pyodide = await pyodideReadyPromise;
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
-    let output;
+
     let source = '';
     for (const el of matches) {
         let mountName = el.getAttribute('py-mount');
