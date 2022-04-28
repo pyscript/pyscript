@@ -14,12 +14,15 @@
 
     const initializePyodide = async () => {
         pyodideReadyPromise = loadInterpreter();
+        const pyodide = await pyodideReadyPromise;
         let newEnv = {
             id: 'a',
             promise: pyodideReadyPromise,
+            runtime: pyodide,
             state: 'loading',
         };
-        pyodideLoaded.set(pyodideReadyPromise);
+        pyodideLoaded.set(pyodide);
+
         loadedEnvironments.update((value: any): any => {
             value[newEnv['id']] = newEnv;
         });
