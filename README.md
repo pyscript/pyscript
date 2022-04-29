@@ -33,7 +33,11 @@ To contribute:
 * install the dependencies with `npm install`
 * run `npm run dev` to build and run the dev server. This will also watch for changes and rebuild when a file is saved
 
-## Notes:
+## Notes
 
 * This is an extremely experimental project, so expect things to break!
 * PyScript has been only tested on Chrome, at the moment.
+
+## Governance
+
+The [PyScript organization governance](https://github.com/pyscript/governance) is documented in a separate repository.
