@@ -50,7 +50,7 @@ export class PyRepl extends BaseEvalElement {
 
         // add an extra div where we can attach the codemirror editor
         this.editorNode = document.createElement('div');
-        addClasses(this.editorNode, ["editor-box", "border", "border-gray-300"]);
+        addClasses(this.editorNode, ["editor-box", "border", "border-gray-300", "group", "relative"]);
         this.shadow.appendChild(this.wrapper);
     }
 
@@ -95,22 +95,16 @@ export class PyRepl extends BaseEvalElement {
         });
   
         const mainDiv = document.createElement('div');
-        addClasses(mainDiv, ["parentBox", "group", "flex", "flex-col", "mt-2", "mx-8", "relative"])
+        addClasses(mainDiv, ["parentBox", "flex", "flex-col", "mt-2", "mx-8", "relative"])
 
         // add Editor to main PyScript div
         mainDiv.appendChild(this.editorNode);
         
-        // Butons DIV
-        const eDiv = document.createElement('div');
-        addClasses(eDiv, "buttons-box opacity-0 group-hover:opacity-100 relative right-0 -top-4 z-10 flex flex-row-reverse space-x-reverse space-x-4 font-mono text-white text-sm font-bold leading-6 dev-buttons-group".split(" "))
-        eDiv.setAttribute("role", "group");
-  
         // Play Button
         this.btnRun = document.createElement('button');
         this.btnRun.innerHTML = '<svg id="" class="svelte-fa svelte-ps5qeg" style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>';
-        const buttonClasses = ["mr-2", "block"];
-        addClasses(this.btnRun, buttonClasses);
-        eDiv.appendChild(this.btnRun);
+        addClasses(this.btnRun, ["absolute", "right-0", "bottom-2", "opacity-0", "group-hover:opacity-100"]);
+        this.editorNode.appendChild(this.btnRun);
 
         this.btnRun.onclick = wrap(this);
   
@@ -121,8 +115,6 @@ export class PyRepl extends BaseEvalElement {
           return evaluatePython;
         }
 
-        mainDiv.appendChild(eDiv);
-        
         if (!this.id) {
             console.log(
                 'WARNING: <pyrepl> define with an id. <pyrepl> should always have an id. More than one <pyrepl> on a page won\'t work otherwise!',
