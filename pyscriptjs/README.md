@@ -37,4 +37,4 @@ A simple webapp to demonstrate the capabilities of PyScript.
 
 ## More information
 
-You can find more information and links about PyScript at [https://community.anaconda.cloud/c/pyscript](https://community.anaconda.cloud/c/pyscript)
+There is a forum PyScript where you can discuss the project or ask questions at [https://community.anaconda.cloud/c/pyscript](https://community.anaconda.cloud/c/pyscript)
