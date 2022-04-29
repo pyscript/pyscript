@@ -111,6 +111,42 @@ pyscript.write('pi', f'π is approximately {pi:.3f}')
 </html>
 ```
 
+## Packages and modules
+
+In addition to the [Python Standard Library](https://docs.python.org/3/library/) and
+the `pyscript` module, many 3rd-party OSS packages will work out-of-the-box with PyScript.
+In order to use them you will need to delcare the dependencies using the `<py-env>` in the
+HTML head.
+
+For example, NumPy and Matplotlib are available. Notice here we're using `<py-script output="plot">`
+as a shortcut, which takes the expression on the last line of the script and runs `pyscript.write('plot', fig)`.
 
 
-## Asynchronous
+```html
+<html>
+    <head>
+      <link rel="stylesheet" href="pyscript.css" />
+      <script defer src="pyscript.js"></script>
+      <py-env>
+        - numpy
+        - matplotlib
+      </py-env>
+    </head>
+
+  <body>
+    <h1>Let's plot random numbers</h1>
+    <div id="plot"></div>
+    <py-script output="plot">
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.random.randn(1000)
+y = np.random.randn(1000)
+
+fig, ax = plt.subplots()
+ax.scatter(x, y)
+fig
+    </py-script>
+  </body>
+</html>
+```
