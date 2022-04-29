@@ -5,6 +5,7 @@ This document lists the Maintainers of the Project. Maintainers may be added onc
 | **NAME** | **Organization** |
 | Fabio Pliger | Anaconda, Inc |
 | Antonio Cuni | Anaconda, Inc |
+| Philipp Rudiger | Anaconda, Inc |
 | Peter Wang | Anaconda, Inc |
 | Kevin Goldsmith | Anaconda, Inc |
 | --- | --- |
