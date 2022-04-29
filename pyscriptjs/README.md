@@ -34,3 +34,7 @@ A simple webapp to demonstrate the capabilities of PyScript.
    Once this is visible, open a browser at
    [http://localhost:8080](http://localhost:8080). This will provide a list of
    demos that you can run.
+
+## More information
+
+You can find more information and links about PyScript at [https://community.anaconda.cloud/c/pyscript](https://community.anaconda.cloud/c/pyscript)
