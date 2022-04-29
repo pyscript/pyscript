@@ -4,7 +4,7 @@ This is the organizational charter for the PyScript Organization (the "Organizat
 
 ## 1. Mission
 
-[Set out mission of the Organization].
+**Programming for the 99%**
 
 ## 2. Steering Committee
 
