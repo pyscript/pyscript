@@ -13,22 +13,15 @@ can be used to reload the page as you edit the HTML file.
 
 ## Installation
 
-First, go to https://pyscript.net and download the PyScript assets.
-Unzip the archive to a directory where you wish to write PyScript-enabled
-HTML files. You should then have four files in your directory.
+There is no installation required. In this document we'll use
+the PyScript assets served on https://pyscript.net.
 
-```
-├── ./
-│   ├── pyscript.css
-│   ├── pyscript.js
-│   └── pyscript.js.map
-│   ├── pyscript.min.js
-```
+If you want to download the source and build it yourself follow
+the instructions in the README.md file.
 
 ## Your first PyScript HTML file
 
-Here's a "Hello, world!" example using PyScript using the assets you
-downloaded from https://pyscript.net.
+Here's a "Hello, world!" example using PyScript
 
 Using your favorite editor create a new file called `hello.html` in
 the same directory as your PyScript JavaScript and CSS files with the
@@ -38,8 +31,8 @@ open an HTML by double clicking it in your file explorer.
 ```html
 <html>
   <head>
-    <link rel="stylesheet" href="pyscript.css" />
-    <script defer src="pyscript.min.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
   </head>
   <body> <py-script> print('Hello, World!') </py-script> </body>
 </html>
@@ -58,8 +51,8 @@ example we can compute π.
 ```html
 <html>
   <head>
-    <link rel="stylesheet" href="pyscript.css" />
-    <script defer src="pyscript.min.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
   </head>
   <body>
       <py-script>
@@ -90,8 +83,8 @@ the `<py-script>` tag write to.
 ```html
 <html>
     <head>
-      <link rel="stylesheet" href="pyscript.css" />
-      <script defer src="pyscript.min.js"></script>
+      <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+      <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     </head>
 
@@ -130,8 +123,8 @@ as a shortcut, which takes the expression on the last line of the script and run
 ```html
 <html>
     <head>
-      <link rel="stylesheet" href="pyscript.css" />
-      <script defer src="pyscript.min.js"></script>
+      <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+      <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
       <py-env>
         - numpy
         - matplotlib
@@ -178,8 +171,8 @@ In the HTML tag `<py-env>` paths to local modules are provided in the
 ```html
 <html>
     <head>
-      <link rel="stylesheet" href="pyscript.css" />
-      <script defer src="pyscript.min.js"></script>
+      <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+      <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
       <py-env>
         - numpy
         - matplotlib
