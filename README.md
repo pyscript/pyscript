@@ -5,7 +5,9 @@
 ### tl;dr
 PyScript is a Pythonic alternative to Scratch, JSFiddle or other "easy to use" programming frameworks, making the web a friendly, hackable, place where anyone can author interesting and interactive applications.
 
-To demonstrate pyscript, see [the pyscript folder](pyscriptjs/README.md).
+To get started see [GETTING-STARTED][GETTING-STARTED.md]
+
+For examples see [the pyscript folder](pyscriptjs/README.md).
 
 ### Longer Version
 PyScript is a meta project that aims to combine multiple open technologies to create a framework for users to use Python (and other languages) to create sophisticated applications in the browser. It highly integrate with the way the DOM works in the browser and allows users to add logic, in Python, in a way that feel natural to web as well as Python developers.
@@ -28,9 +30,9 @@ Check out the `/examples` folder for more examples on how to use it, all you nee
 
 To contribute:
 
-* clone the repo
+* clone the repo `git clone https://github.com/pyscript/pyscript`
 * cd into the main project folder with `cd pyscriptjs`
-* install the dependencies with `npm install`
+* install the dependencies with `npm install` - make sure to use npm version >= 16
 * run `npm run dev` to build and run the dev server. This will also watch for changes and rebuild when a file is saved
 
 ## Notes
