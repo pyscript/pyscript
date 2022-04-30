@@ -32,7 +32,7 @@ To contribute:
 
 * clone the repo `git clone https://github.com/pyscript/pyscript`
 * cd into the main project folder with `cd pyscriptjs`
-* install the dependencies with `npm install` - make sure to use npm version >= 16
+* install the dependencies with `npm install` - make sure to use nodejs version >= 16
 * run `npm run dev` to build and run the dev server. This will also watch for changes and rebuild when a file is saved
 
 ## Notes
