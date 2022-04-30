@@ -7,17 +7,22 @@ This page will guide you through getting started with PyScript.
 PyScript does not require any development environment other
 than a web browser. We recommend using Chrome.
 
+If, you're using [VSCode](https://code.visualstudio.com/) the
+[Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
+can be used to reload the page as you edit the HTML file.
+
 ## Installation
 
 First, go to https://pyscript.net and download the PyScript assets.
 Unzip the archive to a directory where you wish to write PyScript-enabled
-HTML files. You should then have three files in your directory.
+HTML files. You should then have four files in your directory.
 
 ```
 ├── ./
 │   ├── pyscript.css
 │   ├── pyscript.js
 │   └── pyscript.js.map
+│   ├── pyscript.min.js
 ```
 
 ## Your first PyScript HTML file
@@ -34,7 +39,7 @@ open an HTML by double clicking it in your file explorer.
 <html>
   <head>
     <link rel="stylesheet" href="pyscript.css" />
-    <script defer src="pyscript.js"></script>
+    <script defer src="pyscript.min.js"></script>
   </head>
   <body> <py-script> print('Hello, World!') </py-script> </body>
 </html>
@@ -54,7 +59,7 @@ example we can compute π.
 <html>
   <head>
     <link rel="stylesheet" href="pyscript.css" />
-    <script defer src="pyscript.js"></script>
+    <script defer src="pyscript.min.js"></script>
   </head>
   <body>
       <py-script>
@@ -86,7 +91,7 @@ the `<py-script>` tag write to.
 <html>
     <head>
       <link rel="stylesheet" href="pyscript.css" />
-      <script defer src="pyscript.js"></script>
+      <script defer src="pyscript.min.js"></script>
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     </head>
 
@@ -126,7 +131,7 @@ as a shortcut, which takes the expression on the last line of the script and run
 <html>
     <head>
       <link rel="stylesheet" href="pyscript.css" />
-      <script defer src="pyscript.js"></script>
+      <script defer src="pyscript.min.js"></script>
       <py-env>
         - numpy
         - matplotlib
@@ -142,6 +147,55 @@ import numpy as np
 
 x = np.random.randn(1000)
 y = np.random.randn(1000)
+
+fig, ax = plt.subplots()
+ax.scatter(x, y)
+fig
+    </py-script>
+  </body>
+</html>
+```
+
+### Local modules
+
+In addition to packages you can declare local Python modules that will
+be imported in the `<py-script>` tag. For example we can place the random
+number generation steps in a function in the file `data.py`.
+
+```python
+# data.py
+import numpy as np
+
+def make_x_and_y(n):
+    x = np.random.randn(n)
+    y = np.random.randn(n)
+    return x, y
+```
+
+In the HTML tag `<py-env>` paths to local modules are provided in the
+`paths:` key.
+
+```html
+<html>
+    <head>
+      <link rel="stylesheet" href="pyscript.css" />
+      <script defer src="pyscript.min.js"></script>
+      <py-env>
+        - numpy
+        - matplotlib
+        - paths:
+          - /data.py
+      </py-env>
+    </head>
+
+  <body>
+    <h1>Let's plot random numbers</h1>
+    <div id="plot"></div>
+    <py-script output="plot">
+import matplotlib.pyplot as plt
+from data import make_x_and_y
+
+x, y = make_x_and_y(n=1000)
 
 fig, ax = plt.subplots()
 ax.scatter(x, y)
