@@ -33,6 +33,12 @@ To contribute:
 * install the dependencies with `npm install`
 * run `npm run dev` to build and run the dev server. This will also watch for changes and rebuild when a file is saved
 
+## Resources
+
+* [Discussion board](https://community.anaconda.cloud/c/tech-topics/pyscript)
+* [Home Page](https://pyscript.net/)
+* [Blog Post](https://engineering.anaconda.com/2022/04/welcome-pyscript.html)
+
 ## Notes
 
 * This is an extremely experimental project, so expect things to break!
