@@ -37,12 +37,15 @@ function serve_() {
 
 export default {
   input: "src/main.ts",
-  output: {
+  output:[
+    {
     sourcemap: true,
     format: "iife",
     name: "app",
     file: "examples/build/pyscript.js",
-  },
+    },
+    { file: "examples/build/pyscript.min.js", format: "iife", plugins: [terser()] },
+  ],
   plugins: [
     svelte({
       // add postcss config with tailwind
