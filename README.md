@@ -16,8 +16,8 @@ PyScript is a meta project that aims to combine multiple open technologies to cr
 
 To try PyScript, import the pyscript to your html page with:
 ```
-<link rel="stylesheet" href="pyscript.css" />
-<script defer src="pyscript.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
 ```
 At that point, you can then use PyScript components in your html page. PyScript currently implements the following elements:
 
@@ -34,6 +34,12 @@ To contribute:
 * cd into the main project folder with `cd pyscriptjs`
 * install the dependencies with `npm install` - make sure to use nodejs version >= 16
 * run `npm run dev` to build and run the dev server. This will also watch for changes and rebuild when a file is saved
+
+## Resources
+
+* [Discussion board](https://community.anaconda.cloud/c/tech-topics/pyscript)
+* [Home Page](https://pyscript.net/)
+* [Blog Post](https://engineering.anaconda.com/2022/04/welcome-pyscript.html)
 
 ## Notes
 

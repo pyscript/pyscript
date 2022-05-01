@@ -1,4 +1,6 @@
+from typing import Tuple
 import numpy as np
+from numpy.polynomial import Polynomial
 
 def mandelbrot(width: int, height: int, *,
       x: float = -0.5, y: float = 0, zoom: int = 1, max_iterations: int = 100) -> np.array:
@@ -60,3 +62,48 @@ def julia(width: int, height: int, *,
         div_time[m] = i
 
     return div_time
+
+Range = Tuple[float, float]
+
+def newton(width: int, height: int, *,
+        p: Polynomial, a: complex, xr: Range = (-2.5, 1), yr: Range = (-1, 1), max_iterations: int = 100) -> (np.array, np.array):
+    """ """
+    # To make navigation easier we calculate these values
+    x_from, x_to = xr
+    y_from, y_to = yr
+
+    # Here the actual algorithm starts
+    x = np.linspace(x_from, x_to, width).reshape((1, width))
+    y = np.linspace(y_from, y_to, height).reshape((height, 1))
+    z = x + 1j*y
+
+    # Compute the derivative
+    dp = p.deriv()
+
+    # Compute roots
+    roots = p.roots()
+    epsilon = 1e-5
+
+    # Set the initial conditions
+    a = np.full(z.shape, a)
+
+    # To keep track in which iteration the point diverged
+    div_time = np.zeros(z.shape, dtype=int)
+
+    # To keep track on which points did not converge so far
+    m = np.full(a.shape, True, dtype=bool)
+
+    # To keep track which root each point converged to
+    r = np.full(a.shape, 0, dtype=int)
+
+    for i in range(max_iterations):
+        z[m] = z[m] - a[m]*p(z[m])/dp(z[m])
+
+        for j, root in enumerate(roots):
+            converged = (np.abs(z.real - root.real) < epsilon) & (np.abs(z.imag - root.imag) < epsilon)
+            m[converged] = False
+            r[converged] = j + 1
+
+        div_time[m] = i
+
+    return div_time, r
