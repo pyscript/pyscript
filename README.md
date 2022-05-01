@@ -1,16 +1,16 @@
 # PyScript
 
-## What is PyScript
+## What is PyScript?
 
 ### tl;dr
-PyScript is a Pythonic alternative to Scratch, JSFiddle or other "easy to use" programming frameworks, making the web a friendly, hackable, place where anyone can author interesting and interactive applications.
+PyScript is a Pythonic alternative to Scratch, JSFiddle or other "easy to use" programming frameworks, making the web a friendly hackable place where anyone can author interesting and interactive applications.
 
 To demonstrate pyscript, see [the pyscript folder](pyscriptjs/README.md).
 
 ### Longer Version
 PyScript is a meta project that aims to combine multiple open technologies to create a framework for users to use Python (and other languages) to create sophisticated applications in the browser. It highly integrates with the way the DOM works in the browser and allows users to add logic, in Python, in a way that feels natural to web as well as Python developers.
 
-## Try PyScript
+## Try PyScript!
 
 To try PyScript, import the pyscript to your html page with:
 ```
@@ -24,7 +24,7 @@ At that point, you can then use PyScript components in your html page. PyScript 
 
 Check out the `/examples` folder for more examples on how to use it, all you need to do is open them in Chrome.
 
-## How to Contribute
+## How to Contribute?
 
 To contribute:
 
