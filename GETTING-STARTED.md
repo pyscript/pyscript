@@ -158,11 +158,18 @@ number generation steps in a function in the file `data.py`.
 ```python
 # data.py
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 def make_x_and_y(n):
     x = np.random.randn(n)
     y = np.random.randn(n)
-    return x, y
+    n = np.arange(n)
+    return x, y, n
+
+
+def get_cmap(n, name='hsv'):
+    return plt.cm.get_cmap(name, n)
 ```
 
 In the HTML tag `<py-env>` paths to local modules are provided in the
@@ -186,12 +193,14 @@ In the HTML tag `<py-env>` paths to local modules are provided in the
     <div id="plot"></div>
     <py-script output="plot">
 import matplotlib.pyplot as plt
-from data import make_x_and_y
+from data import make_x_and_y, get_cmap
 
-x, y = make_x_and_y(n=1000)
+x, y, n = make_x_and_y(n=1000)
+
+cmap = get_cmap(len(n))
 
 fig, ax = plt.subplots()
-ax.scatter(x, y)
+ax.scatter(x, y, c=cmap(n))
 fig
     </py-script>
   </body>
