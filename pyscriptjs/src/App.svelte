@@ -12,6 +12,13 @@
 
     let pyodideReadyPromise;
 
+    const executeScripts = () => {
+        for (let script of $scriptsQueue) {
+            script.evaluate();
+        }
+        scriptsQueue.set([]);
+    }
+
     const initializePyodide = async () => {
         pyodideReadyPromise = loadInterpreter();
         const pyodide = await pyodideReadyPromise;
@@ -34,10 +41,8 @@
 
         // now we can actually execute the page scripts if we are in play mode
         if ($mode == 'play') {
-            for (let script of $scriptsQueue) {
-                script.evaluate();
-            }
-            scriptsQueue.set([]);
+            executeScripts();
+            setInterval(executeScripts, 200);
         }
 
         // now we call all post initializers AFTER we actually executed all page scripts

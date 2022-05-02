@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>PyScript Create Dynamic</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="../build/pyscript.css" />
+    
+    <script defer src="../build/pyscript.js"></script>
+  </head>
+
+  <body>
+    Create dynamically a <code>py-script</code> tag.<br>
+    This is the current date and time, as computed by Python:
+     <script>
+      setTimeout(function() {
+        var pyscript = document.createElement('py-script');
+
+        pyscript.innerHTML = `
+from datetime import datetime
+now = datetime.now()
+
+now.strftime("%m/%d/%Y %H:%M:%S")
+        `
+        document.body.appendChild(pyscript);
+      }, 1000);
+    </script>
+  </body>
+</html>
