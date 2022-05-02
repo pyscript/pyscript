@@ -59,8 +59,8 @@ def format_mime(obj):
     """
     Formats object using _repr_x_ methods.
     """
-    if isinstance(obj, str):
-        return obj, 'text/plain'
+    if isinstance(obj, (str, type)):
+        return str(obj), 'text/plain'
 
     mimebundle = eval_formatter(obj, '_repr_mimebundle_')
     if isinstance(mimebundle, tuple):
