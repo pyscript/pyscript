@@ -67,6 +67,7 @@ pi = wallis(100000)
 s = f"π is approximately {pi:.3f}"
 print(s)
       </py-script>
+  </body>
 </html>
 ```
 
