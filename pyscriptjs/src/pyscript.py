@@ -45,12 +45,12 @@ def eval_formatter(obj, print_method):
     """
     if print_method == '__repr__':
          return repr(obj)
-    elif print_method == 'savefig':
-         buf = io.BytesIO()
-         obj.savefig(buf, format='png')
-         buf.seek(0)
-         return base64.b64encode(buf.read()).decode('utf-8')
     elif hasattr(obj, print_method):
+        if print_method == 'savefig':
+            buf = io.BytesIO()
+            obj.savefig(buf, format='png')
+            buf.seek(0)
+            return base64.b64encode(buf.read()).decode('utf-8')
         return getattr(obj, print_method)()
     elif print_method == '_repr_mimebundle_':
         return {}, {}
