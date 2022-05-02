@@ -9,8 +9,8 @@ const getLastPath = function (str) {
 };
 
 function htmlDecode(input) {
-    const doc = new DOMParser().parseFromString(input, 'text/html');
-    return ltrim(doc.documentElement.textContent);
+    const doc = new DOMParser().parseFromString(ltrim(input), 'text/html');
+    return doc.documentElement.textContent;
 }
 
 function ltrim(code: string): string {
