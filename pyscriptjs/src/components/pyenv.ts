@@ -1,6 +1,6 @@
 import * as jsyaml from 'js-yaml';
 
-import { pyodideLoaded, loadedEnvironments, mode, addInitializer } from '../stores';
+import { pyodideLoaded, addInitializer } from '../stores';
 import { loadPackage, loadFromFile } from '../interpreter';
 
 // Premise used to connect to the first available pyodide interpreter
