@@ -50,14 +50,16 @@ def eval_formatter(obj, print_method):
     """
     Evaluates a formatter method.
     """
-    if hasattr(obj, print_method):
-        if print_method == 'savefig':
-            buf = io.BytesIO()
-            obj.savefig(buf, format='png')
-            buf.seek(0)
-            return base64.b64encode(buf.read()).decode('utf-8')
+    if print_method == '__repr__':
+         return repr(obj)
+    elif print_method == 'savefig':
+         buf = io.BytesIO()
+         obj.savefig(buf, format='png')
+         buf.seek(0)
+         return base64.b64encode(buf.read()).decode('utf-8')
+    elif hasattr(obj, print_method):
         return getattr(obj, print_method)()
-    if print_method == '_repr_mimebundle_':
+    elif print_method == '_repr_mimebundle_':
         return {}, {}
     return None
 
@@ -66,7 +68,7 @@ def format_mime(obj):
     """
     Formats object using _repr_x_ methods.
     """
-    if isinstance(obj, (str, type)):
+    if isinstance(obj, str):
         return obj, 'text/plain'
 
     mimebundle = eval_formatter(obj, '_repr_mimebundle_')
