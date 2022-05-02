@@ -1,5 +1,8 @@
 import { loadedEnvironments, mode, pyodideLoaded } from '../stores';
 import { guidGenerator, addClasses } from '../utils';
+
+import dedent from "dedent";
+
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
 let environments;
@@ -110,6 +113,7 @@ export class BaseEvalElement extends HTMLElement {
             } else {
                 source = this.getSourceFromElement();
             }
+            source = dedent(source)
 
             await this._register_esm(pyodide);
 
