@@ -1,0 +1,53 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+</head>
+
+<body>
+    <py-env>
+        - numpy
+        - networkx
+        - matplotlib
+    </py-env>
+    <py-script>
+import numpy as np
+import networkx as nx
+    </py-script>
+
+    <p>Message passing with linear algebra: a demo.</p>
+    <p>Imagine we have a chain graph that looks like this:</p>
+    <pre><code>O --> 1 --> 2 --> 3</code></pre>
+    <p>In NetworkX this graph would look like the following:</p>
+    <pre>
+        <py-script>
+G = nx.Graph()
+nodes = list(range(4))
+G.add_edges_from(zip(nodes[0:-1], nodes[1:]))
+print(G.edges())
+</py-script></pre>
+    <p>This chain graph has the following adjacency matrix:</p>
+    <pre>
+<py-script>
+adj_mat = np.eye(4, k=1)
+print(f"A: {adj_mat}")
+</py-script>
+        </pre>
+    <p>And imagine that we have a message that lives on the graph:</p>
+    <pre>
+            <py-script>
+message = np.array([1.0, 0.0, 0.0, 0.0])
+print(f"message: {message}")
+            </py-script>
+        </pre>
+    <p>Try out message passing below by doing any one of the following steps:</p>
+    <pre><code>message @ adj_mat</code></pre>
+    <pre><code>message @ adj_mat @ adj_mat</code></pre>
+    <pre><code>message @ adj_mat @ adj_mat @ adj_mat</code></pre>
+    <div>
+        <py-repl id="my-repl" auto-generate="true"> </py-repl>
+    </div>
+</body>
+
+</html>

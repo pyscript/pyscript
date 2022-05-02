@@ -10,7 +10,7 @@ To get started see [GETTING-STARTED][GETTING-STARTED.md]
 For examples see [the pyscript folder](pyscriptjs/README.md).
 
 ### Longer Version
-PyScript is a meta project that aims to combine multiple open technologies to create a framework for users to use Python (and other languages) to create sophisticated applications in the browser. It highly integrate with the way the DOM works in the browser and allows users to add logic, in Python, in a way that feel natural to web as well as Python developers.
+PyScript is a meta project that aims to combine multiple open technologies to create a framework for users to use Python (and other languages) to create sophisticated applications in the browser. It highly integrates with the way the DOM works in the browser and allows users to add logic, in Python, in a way that feels natural to web as well as Python developers.
 
 ## Try PyScript
 
