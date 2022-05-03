@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>GET, POST, PUT, DELETE example</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="../build/pyscript.css" />
+    
+    <script defer src="../build/pyscript.js"></script>
+    <py-env>
+        - paths:
+          - /request.py
+    </py-env>
+  </head>
+
+  <body><p>
+    Hello world request example! <br>
+    Here is the output of your request:
+    </p>
+    <py-script>
+import asyncio  # important!!
+import json
+from request import request
+
+baseurl = "https://jsonplaceholder.typicode.com/"
+
+# GET
+headers = {"Content-type": "application/json"}
+response = await request(baseurl+"posts/2", method="GET", headers=headers)
+print(f"GET request=> status:{response.status}, json:{await response.json()}")
+
+# POST
+body = json.dumps({"title":"test_title", "body":"test body", "userId":1})
+new_post = await request(baseurl+"posts", body=body, method="POST", headers=headers)
+print(f"POST request=> status:{new_post.status}, json:{await new_post.json()}")
+
+# PUT
+body = json.dumps({"id":1, "title":"test_title", "body":"test body", "userId":2})
+new_post = await request(baseurl+"posts/1", body=body, method="PUT", headers=headers)
+print(f"PUT request=> status:{new_post.status}, json:{await new_post.json()}")
+
+# DELETE
+new_post = await request(baseurl+"posts/1", method="DELETE", headers=headers)
+print(f"DELETE request=> status:{new_post.status}, json:{await new_post.json()}")
+    </py-script>
+
+    <div>
+    <p>
+        You can also use other methods. See fetch documentation: <br>
+        https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters 
+    </p>
+    </div>
+    <div>
+        <p>
+        See pyodide documentation for what to do with a FetchResponse object: <br>
+        https://pyodide.org/en/stable/usage/api/python-api.html#pyodide.http.FetchResponse
+        </p>
+    </div>
+  </body>
+</html>
