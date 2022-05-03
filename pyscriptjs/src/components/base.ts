@@ -218,7 +218,7 @@ function createWidget(name: string, code: string, klass: string) {
             });
         }
 
-        async registerWidget() {
+        registerWidget() {
             const pyodide = runtime;
             console.log('new widget registered:', this.name);
             pyodide.globals.set(this.id, this.proxy);
