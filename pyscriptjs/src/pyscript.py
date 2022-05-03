@@ -1,7 +1,6 @@
-from js import document, setInterval, console
-import micropip
+from js import document, console
 import asyncio
-import io, base64, sys
+import io, base64
 
 loop = asyncio.get_event_loop()
 
