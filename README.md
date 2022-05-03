@@ -24,7 +24,7 @@ At that point, you can then use PyScript components in your html page. PyScript 
 * `<py-script>`: that can be used to define python code that is executable within the web page. The element itself is not rendered to the page and only used to add logic
 * `<py-repl>`: creates a REPL component that is rendered to the page as a code editor and allows users to write code that can be executed
 
-Check out the `/examples` folder for more examples on how to use it, all you need to do is open them in Chrome.
+Check out the `pyscriptjs/examples` folder for more examples on how to use it, all you need to do is open them in Chrome.
 
 ## How to Contribute
 
