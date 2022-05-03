@@ -40,7 +40,7 @@ run the web demo server:
 
 then point your browser at http://localhost:8081/
 
-Enter a value in the "Farenheit" input, and click the "calculate" button.
+Enter a value in the "Fahrenheit" input, and click the "calculate" button.
 
 It may take a few seconds for this button to become live; look for the
 "Collecting nodes..." entry in the console log.
