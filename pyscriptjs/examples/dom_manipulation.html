@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>DOM Manipulation</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="../build/pyscript.css" />
+    
+    <script defer src="../build/pyscript.js"></script>
+  </head>
+
+  <body class="container">
+    <py-script>
+from js import document, console
+
+def get_input(*ags, **kws):
+  element = document.getElementById('new-content')
+  current = document.getElementById('cur-input')
+  current.textContent = element.value
+
+def change_input(*ags, **kws):
+  original = document.getElementById('new-content')
+  new_input = document.getElementById('change-content')
+  current = document.getElementById('cur-input')
+  original.value = new_input.value
+  current.textContent = original.value
+    </py-script>
+    <main>
+        <div class="text-center w-full mb-8">
+          <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-tight">DOM Manipulation</h1>
+        </div>
+    
+        <div style="display: flex;">
+          <input id="new-content" class="border flex-1 mr-3 border-gray-300 p-2 rounded" type="text">
+          <button id="new-btn" class="p-2 text-white bg-blue-600 border border-blue-600 rounded" type="submit" pys-onClick="get_input">
+            Show Current Input
+          </button>
+        </div>
+        <div style="display: flex; padding-top: 20px;">
+            <input id="change-content" class="border flex-1 mr-3 border-gray-300 p-2 rounded" type="text">
+            <button id="change-btn" class="p-2 text-white bg-blue-600 border border-blue-600 rounded" type="submit" pys-onClick="change_input">
+              Change Current Input
+            </button>
+          </div>
+        <div style="padding-top: 20px;">
+            Current Input: <span id="cur-input">null</span>
+        </div>
+    </main>
+  </body>
+</html>
