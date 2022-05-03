@@ -7,7 +7,7 @@ This page will guide you through getting started with PyScript.
 PyScript does not require any development environment other
 than a web browser. We recommend using Chrome.
 
-If, you're using [VSCode](https://code.visualstudio.com/) the
+If you're using [VSCode](https://code.visualstudio.com/) the
 [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
 can be used to reload the page as you edit the HTML file.
 
@@ -46,7 +46,7 @@ introduce the 8 tags provided by PyScript.
 
 The `<py-script>` tag let's you execute multi-line Python scripts and
 print back onto the page. For
-example we can compute π.
+example, we can compute π.
 
 ```html
 <html>
@@ -162,7 +162,7 @@ fig
 ### Local modules
 
 In addition to packages you can declare local Python modules that will
-be imported in the `<py-script>` tag. For example we can place the random
+be imported in the `<py-script>` tag. For example, we can place the random
 number generation steps in a function in the file `data.py`.
 
 ```python
