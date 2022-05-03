@@ -1,13 +1,14 @@
 import { loadedEnvironments, mode, pyodideLoaded } from '../stores';
 import { guidGenerator, addClasses } from '../utils';
 // Premise used to connect to the first available pyodide interpreter
-let pyodideReadyPromise;
+let runtime;
 let environments;
 let currentMode;
 let Element;
 
+
 pyodideLoaded.subscribe(value => {
-    pyodideReadyPromise = value;
+    runtime = value;
 });
 loadedEnvironments.subscribe(value => {
     environments = value;
@@ -63,7 +64,7 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     async getSourceFromFile(s: string): Promise<string> {
-        const pyodide = await pyodideReadyPromise;
+        const pyodide = runtime;
         const response = await fetch(s);
         this.code = await response.text();
         return this.code;
@@ -101,7 +102,7 @@ export class BaseEvalElement extends HTMLElement {
 
     async evaluate(): Promise<void> {
         console.log('evaluate');
-        const pyodide = await pyodideReadyPromise;
+        const pyodide = runtime;
         let source: string;
         let output;
         try {
@@ -154,7 +155,7 @@ export class BaseEvalElement extends HTMLElement {
 
     async eval(source: string): Promise<void> {
         let output;
-        const pyodide = await pyodideReadyPromise;
+        const pyodide = runtime;
 
         try {
             output = await pyodide.runPythonAsync(source);
@@ -193,25 +194,39 @@ function createWidget(name: string, code: string, klass: string) {
             //       ideally we can just wait for it to load and then run. To do
             //       so we need to replace using the promise and actually using
             //       the interpreter after it loads completely
-            setTimeout(() => {
-                this.eval(this.code).then(() => {
-                    this.proxy = this.proxyClass(this);
-                    console.log('proxy', this.proxy);
-                    this.proxy.connect();
-                    this.registerWidget();
-                });
-            }, 2000);
+            // setTimeout(() => {
+            //     this.eval(this.code).then(() => {
+            //         this.proxy = this.proxyClass(this);
+            //         console.log('proxy', this.proxy);
+            //         this.proxy.connect();
+            //         this.registerWidget();
+            //     });
+            // }, 2000);
+            pyodideLoaded.subscribe(value => {
+                console.log("RUNTIME READY", value)
+                if ("runPythonAsync" in value){
+                    runtime = value;
+                    setTimeout(() => {
+                        this.eval(this.code).then(() => {
+                            this.proxy = this.proxyClass(this);
+                            console.log('proxy', this.proxy);
+                            this.proxy.connect();
+                            this.registerWidget();
+                        });
+                    }, 1000);
+                }
+            });
         }
 
-        async registerWidget() {
-            const pyodide = await pyodideReadyPromise;
+        registerWidget() {
+            const pyodide = runtime;
             console.log('new widget registered:', this.name);
             pyodide.globals.set(this.id, this.proxy);
         }
 
         async eval(source: string): Promise<void> {
             let output;
-            const pyodide = await pyodideReadyPromise;
+            const pyodide = runtime;
             try {
                 output = await pyodide.runPythonAsync(source);
                 this.proxyClass = pyodide.globals.get(this.klass);
@@ -306,14 +321,14 @@ export class PyWidget extends HTMLElement {
     }
 
     async getSourceFromFile(s: string): Promise<string> {
-        const pyodide = await pyodideReadyPromise;
+        const pyodide = runtime;
         const response = await fetch(s);
         return await response.text();
     }
 
     async eval(source: string): Promise<void> {
         let output;
-        const pyodide = await pyodideReadyPromise;
+        const pyodide = runtime;
         try {
             output = await pyodide.runPythonAsync(source);
             if (output !== undefined) {

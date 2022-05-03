@@ -9,3 +9,9 @@ class PyItem(PyItemTemplate):
     
 class PyList(PyListTemplate):
   item_class = PyItem
+
+  def add(self, item):
+    if isinstance(item, str):
+      item = { "content": item,  "done": False, "created_at": dt.now() }
+
+    super().add(item, labels=['content'], state_key="done")
