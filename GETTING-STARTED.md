@@ -115,7 +115,7 @@ pyscript.write('pi', f'π is approximately {pi:.3f}')
 In addition to the [Python Standard Library](https://docs.python.org/3/library/) and
 the `pyscript` module, many 3rd-party OSS packages will work out-of-the-box with PyScript.
 
-In order to use them you will need to delcare the dependencies using the `<py-env>` in the
+In order to use them you will need to declare the dependencies using the `<py-env>` in the
 HTML head. You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/pyscriptjs/examples/toga/freedom.html)
 
 ```
