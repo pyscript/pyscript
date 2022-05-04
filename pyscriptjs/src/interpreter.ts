@@ -390,7 +390,7 @@ class OutputCtxManager:
 class OutputManager:
     def __init__(self, out=None, err=None, output_to_console=True, append=True):
         sys.stdout = self._out_manager = OutputCtxManager(out, output_to_console, append)
-        sys.strerr = self._err_manager = OutputCtxManager(err, output_to_console, append)
+        sys.stderr = self._err_manager = OutputCtxManager(err, output_to_console, append)
         self.output_to_console = output_to_console
         self._append = append
 
@@ -406,7 +406,7 @@ class OutputManager:
         self._out_manager.revert()
         self._err_manager.revert()
         sys.stdout = self._out_manager
-        sys.stdout = self._err_manager
+        sys.stderr = self._err_manager
         console.log("----> reverted")
 
 pyscript = PyScript()
