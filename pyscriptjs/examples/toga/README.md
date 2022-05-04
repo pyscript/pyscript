@@ -76,4 +76,4 @@ Xcode for iOS, and the Android SDKs for Android. These are multiple gigabyte
 downloads. Briefcase will detect when these tools aren't available, and either
 prompt you to download them, or perform a download for you. As a result, your
 first build may take up to 20 minutes to complete, depending on the speed of
-your conection.
+your connection.
