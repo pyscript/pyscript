@@ -1,10 +1,10 @@
-from pydoc import doc
-from js import console, fetch, JSON , document
+from js import console, document
+from pyodide.http import pyfetch
 import json
 
 async def get_data():
-    res = await fetch('https://api.coindesk.com/v1/bpi/currentprice.json')
-    data = json.loads(JSON.stringify(await res.json()))
+    res = await pyfetch('https://api.coindesk.com/v1/bpi/currentprice.json')
+    data = await res.json()
     console.log('fetched data from api ',data)
     return data['bpi']
 
