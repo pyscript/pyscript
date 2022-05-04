@@ -1,106 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>PyScript demo</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="build/pyscript.css" />
-  </head>
+  <title>PyScript demo</title>
 
-  <body class="container font-mono">
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="build/pyscript.css" />
+</head>
 
-    <h1 class="text-4xl font-bold">PyScript demos</h1>
+<body class="container font-mono">
 
-    <br>
-    <h2 class="text-3xl font-bold">Basic examples</h2>
-    <hr/>
+  <h1 class="text-4xl font-bold">PyScript demos</h1>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./hello_world.html" target=”_blank”>Hello world</a></h2>
-    <p>A static demo of the <code>&lt;py-script&gt;</code> tag</p>
+  <br>
+  <h2 class="text-3xl font-bold">Basic examples</h2>
+  <hr />
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./simple_clock.html" target=”_blank”>Simple clock</a></h2>
-    <p>A dynamic demo of the <code>&lt;py-script&gt;</code> tag</p>
-
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./repl.html" target=”_blank”>REPL</a></h2>
-    <p>A Python REPL (Read Eval Print Loop). </p>
-
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./repl2.html" target=”_blank”>REPL2</a></h2>
-    <p>A Python REPL (Read Eval Print Loop) with slightly better formatting.</p>
-
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./todo.html" target=”_blank”>TODO App</a></h2>
-    <p>Demo showing how would a Simple TODO App would look like in PyScript</code> tag</p>
-
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./todo-pylist.html" target=”_blank”>PyScript Native TODO App</a></h2>
-    <p>Demo showing how would a Simple TODO App would look like only using PyScript native elements</code> tag</p>
-
-    <br>
-    <h2 class="text-3xl font-bold">MIME Rendering</h2>
-    <hr/>
-
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./matplotlib.html" target=”_blank”>Matplotlib</a></h2>
-    <p>Demonstrates rendering matplotlib figure as output of the py-script tag</p>
-
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./altair.html" target=”_blank”>Altair</a></h2>
-    <p>Demonstrates rendering altair plot as output of the py-script tag</p>
-
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./folium.html" target=”_blank”>Folium</a></h2>
-    <p>Demonstrates rendering Folium map as output of the py-script tag</p>
-
-    <br>
-    <h2 class="text-3xl font-bold">JS Interaction</h2>
-    <hr/>
-
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./d3.html" target=”_blank”>Simple d3 visualization</a></h2>
-    <p>Minimal d3 demo demonstrating how to create a visualization</p>
-
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./webgl/raycaster/index.html" target=”_blank”>Webgl Icosahedron Example</a></h2>
-    <p>Demo showing how a Simple Webgl scene would work in PyScript</code> tag</p>
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./hello_world.html" target=”_blank”>Hello world</a></h2>
+  <p>A static demo of the <code>&lt;py-script&gt;</code> tag</p>
 
 
-    <br>
-    <h2 class="text-3xl font-bold">Visualizations & Dashboards</h2>
-    <hr/>
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./bokeh.html" target=”_blank”>Simple Static Bokeh Plot</a></h2>
-    <p>Minimal Bokeh demo demonstrating how to create a simple bokeh plot from code</p>
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./simple_clock.html" target=”_blank”>Simple clock</a></h2>
+  <p>A dynamic demo of the <code>&lt;py-script&gt;</code> tag</p>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./bokeh_interactive.html" target=”_blank”>Bokeh Interactive</a></h2>
-    <p>Interactive demo using a Bokeh slider widget to dynamically change a value in the page
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./repl.html" target=”_blank”>REPL</a></h2>
+  <p>A Python REPL (Read Eval Print Loop). </p>
 
-      WARNING: This examples takes a little longer to load. So be patient :)
-    </p>
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./repl2.html" target=”_blank”>REPL2</a></h2>
+  <p>A Python REPL (Read Eval Print Loop) with slightly better formatting.</p>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./panel_kmeans.html" target=”_blank”>KMeans Demo in Panel</a></h2>
-    <p>Interactive KMeans Chart using Panel
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./todo.html" target=”_blank”>TODO App</a></h2>
+  <p>Demo showing how would a Simple TODO App would look like in PyScript</code> tag</p>
 
-      WARNING: This examples takes a little longer to load. So be patient :)
-    </p>
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./todo-pylist.html" target=”_blank”>PyScript Native TODO App</a>
+  </h2>
+  <p>Demo showing how would a Simple TODO App would look like only using PyScript native elements</code> tag</p>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./panel_stream.html" target=”_blank”>Streaming Demo in Panel</a></h2>
-    <p>Interactive Streaming Table and Bokeh plot using Panel
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./counter.html" target=”_blank”>Counter App</a></h2>
+  <p>Demo showing a Simple Counter App <code>&lt;py-script&gt;</code> tag</p>
 
-      WARNING: This examples takes a little longer to load. So be patient :)
-    </p>
+  <br>
+  <h2 class="text-3xl font-bold">MIME Rendering</h2>
+  <hr />
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./panel.html" target=”_blank”>Simple Panel Demo</a></h2>
-    <p>Simple demo showing Panel widgets interating with parts of the page
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./matplotlib.html" target=”_blank”>Matplotlib</a></h2>
+  <p>Demonstrates rendering matplotlib figure as output of the py-script tag</p>
 
-      WARNING: This examples takes a little longer to load. So be patient :)
-    </p>
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./altair.html" target=”_blank”>Altair</a></h2>
+  <p>Demonstrates rendering altair plot as output of the py-script tag</p>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./panel_deckgl.html" target=”_blank”>NYC Taxi Data Panel DeckGL Demo</a></h2>
-    <p>Interactive application exploring the NYC Taxi dataset using Panel and DeckGL
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./folium.html" target=”_blank”>Folium</a></h2>
+  <p>Demonstrates rendering Folium map as output of the py-script tag</p>
 
-      WARNING: This examples takes a little longer to load. So be patient :)
-    </p>
+  <br>
+  <h2 class="text-3xl font-bold">JS Interaction</h2>
+  <hr />
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./toga/freedom.html" target=”_blank”>Freedom Units!</a></h2>
-    <p>A Toga application (a Fahrenheit to Celsius converter), rendered as a Single Page App</p>
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./d3.html" target=”_blank”>Simple d3 visualization</a></h2>
+  <p>Minimal d3 demo demonstrating how to create a visualization</p>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./numpy_canvas_fractals.html" target=”_blank”>Fractals with NumPy and canvas</a></h2>
-    <p>Visualization of Mandelbrot and Julia sets with NumPy and HTML5 canvas</p>
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./webgl/raycaster/index.html" target=”_blank”>Webgl Icosahedron
+      Example</a></h2>
+  <p>Demo showing how a Simple Webgl scene would work in PyScript</code> tag</p>
 
-  </body>
-  </html>
+
+  <br>
+  <h2 class="text-3xl font-bold">Visualizations & Dashboards</h2>
+  <hr />
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./bokeh.html" target=”_blank”>Simple Static Bokeh Plot</a></h2>
+  <p>Minimal Bokeh demo demonstrating how to create a simple bokeh plot from code</p>
+
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./bokeh_interactive.html" target=”_blank”>Bokeh Interactive</a>
+  </h2>
+  <p>Interactive demo using a Bokeh slider widget to dynamically change a value in the page
+
+    WARNING: This examples takes a little longer to load. So be patient :)
+  </p>
+
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./panel_kmeans.html" target=”_blank”>KMeans Demo in Panel</a>
+  </h2>
+  <p>Interactive KMeans Chart using Panel
+
+    WARNING: This examples takes a little longer to load. So be patient :)
+  </p>
+
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./panel_stream.html" target=”_blank”>Streaming Demo in Panel</a>
+  </h2>
+  <p>Interactive Streaming Table and Bokeh plot using Panel
+
+    WARNING: This examples takes a little longer to load. So be patient :)
+  </p>
+
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./panel.html" target=”_blank”>Simple Panel Demo</a></h2>
+  <p>Simple demo showing Panel widgets interating with parts of the page
+
+    WARNING: This examples takes a little longer to load. So be patient :)
+  </p>
+
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./panel_deckgl.html" target=”_blank”>NYC Taxi Data Panel DeckGL
+      Demo</a></h2>
+  <p>Interactive application exploring the NYC Taxi dataset using Panel and DeckGL
+
+    WARNING: This examples takes a little longer to load. So be patient :)
+  </p>
+
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./toga/freedom.html" target=”_blank”>Freedom Units!</a></h2>
+  <p>A Toga application (a Fahrenheit to Celsius converter), rendered as a Single Page App</p>
+
+  <h2 class="text-2xl font-bold text-blue-600"><a href="./numpy_canvas_fractals.html" target=”_blank”>Fractals with
+      NumPy and canvas</a></h2>
+  <p>Visualization of Mandelbrot and Julia sets with NumPy and HTML5 canvas</p>
+
+</body>
+
+</html>
