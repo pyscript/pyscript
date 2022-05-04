@@ -422,7 +422,7 @@ const loadInterpreter = async function (): Promise<any> {
         stderr: console.log,
     });
 
-    // now that we loaded, add additional convenience fuctions
+    // now that we loaded, add additional convenience functions
     console.log('loading micropip');
     await pyodide.loadPackage('micropip');
     console.log('loading pyscript module');
