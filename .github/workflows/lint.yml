@@ -36,3 +36,8 @@ jobs:
       run: |
         cd pyscriptjs
         npm run lint
+    - name: Lint Python
+      run: |
+        pip3 install codespell flake8
+        codespell --count --skip="./pyscriptjs/node_modules/*,*js,*.json"
+        flake8 --builtins=Element,PyItemTemplate,PyListTemplate --max-complexity=10 --max-line-length=88 --show-source

@@ -1,6 +1,8 @@
-from js import document, console
 import asyncio
-import io, base64
+import base64
+import io
+
+from js import console, document
 
 loop = asyncio.get_event_loop()
 
@@ -15,13 +17,15 @@ MIME_METHODS = {
     '_repr_latex': 'text/latex',
     '_repr_json_': 'application/json',
     '_repr_javascript_': 'application/javascript',
-    'savefig': 'image/png'
+    'savefig': 'image/png',
 }
+
 
 def render_image(mime, value, meta):
     data = f'data:{mime};charset=utf-8;base64,{value}'
     attrs = ' '.join(['{k}="{v}"' for k, v in meta.items()])
     return f'<img src="{data}" {attrs}</img>'
+
 
 def identity(value, meta):
     return value
@@ -29,13 +33,13 @@ def identity(value, meta):
 
 MIME_RENDERERS = {
     'text/plain': identity,
-    'text/html' : identity,
-    'image/png' : lambda value, meta: render_image('image/png', value, meta),
+    'text/html': identity,
+    'image/png': lambda value, meta: render_image('image/png', value, meta),
     'image/jpeg': lambda value, meta: render_image('image/jpeg', value, meta),
     'image/svg+xml': identity,
     'application/json': identity,
-    'application/javascript': lambda value, meta: f'<script>{value}</script>'
-}  
+    'application/javascript': lambda value, meta: f'<script>{value}</script>',
+}
 
 
 def eval_formatter(obj, print_method):
@@ -43,7 +47,7 @@ def eval_formatter(obj, print_method):
     Evaluates a formatter method.
     """
     if print_method == '__repr__':
-         return repr(obj)
+        return repr(obj)
     elif hasattr(obj, print_method):
         if print_method == 'savefig':
             buf = io.BytesIO()
@@ -68,7 +72,7 @@ def format_mime(obj):
         format_dict, md_dict = mimebundle
     else:
         format_dict = mimebundle
-        md_dict = {}
+        md_dict = {}  # noqa: F841
 
     output, not_available = None, []
     for method, mime_type in reversed(MIME_METHODS.items()):
@@ -85,7 +89,9 @@ def format_mime(obj):
         break
     if output is None:
         if not_available:
-            console.warning(f'Rendered object requested unavailable MIME renderers: {not_available}')
+            console.warning(
+                f'Rendered object requested unavailable MIME renderers: {not_available}'
+            )
         output = repr(output)
         mime_type = 'text/plain'
     elif isinstance(output, tuple):
@@ -103,13 +109,13 @@ class PyScript:
         """Writes value to the element with id "element_id"""
         console.log(f"APPENDING: {append} ==> {element_id} --> {value}")
         if append:
-            child = document.createElement('div');
-            element = document.querySelector(f'#{element_id}');
+            child = document.createElement('div')
+            element = document.querySelector(f'#{element_id}')
             if not element:
                 return
             exec_id = exec_id or element.childElementCount + 1
-            element_id = child.id = f"{element_id}-{exec_id}";
-            element.appendChild(child);
+            element_id = child.id = f"{element_id}-{exec_id}"
+            element.appendChild(child)
 
         element = document.getElementById(element_id)
         html, mime_type = format_mime(value)
@@ -121,7 +127,7 @@ class PyScript:
 
     @staticmethod
     def run_until_complete(f):
-        p = loop.run_until_complete(f)
+        _ = loop.run_until_complete(f)
 
 
 class Element:
@@ -133,14 +139,14 @@ class Element:
     def element(self):
         """Return the dom element"""
         if not self._element:
-            self._element = document.querySelector(f'#{self._id}');
+            self._element = document.querySelector(f'#{self._id}')
         return self._element
 
     def write(self, value, append=False):
         console.log(f"Element.write: {value} --> {append}")
         # TODO: it should be the opposite... pyscript.write should use the Element.write
         #       so we can consolidate on how we write depending on the element type
-        pyscript.write(self._id, value, append=append)
+        pyscript.write(self._id, value, append=append)  # noqa: F821
 
     def clear(self):
         if hasattr(self.element, 'value'):
@@ -163,13 +169,13 @@ class Element:
         if new_id is None:
             new_id = self.element.id
 
-        clone = self.element.cloneNode(True);
-        clone.id = new_id;
+        clone = self.element.cloneNode(True)
+        clone.id = new_id
 
         if to:
             to.element.appendChild(clone)
 
         # Inject it into the DOM
-        self.element.after(clone);
-        
+        self.element.after(clone)
+
         return Element(clone.id, clone)

@@ -1,6 +1,5 @@
-
 import toga
-from toga.style.pack import LEFT, RIGHT, COLUMN, ROW, Pack
+from toga.style.pack import COLUMN, LEFT, RIGHT, ROW, Pack
 
 
 class FreedomApp(toga.App):
