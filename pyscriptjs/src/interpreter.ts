@@ -370,7 +370,7 @@ class OutputCtxManager:
         self._append = append
 
     def change(self, out=None, err=None, output_to_console=True, append=True):
-        self._prevt = self._out
+        self._prev = self._out
         self._out = out
         self.output_to_console = output_to_console
         self._append = append
