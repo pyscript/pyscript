@@ -44,7 +44,7 @@ test:
 .PHONY: test-py
 test-py:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
-	$(env)/bin/pytest -vv $(ARGS) tests/ --log-cli-level=warning
+	$(conda_run) -vv $(ARGS) tests/ --log-cli-level=warning
 
 .PHONY: test-ts
 test-ts:
@@ -52,12 +52,12 @@ test-ts:
 	npm run tests
 
 .PHONY: fmt
-fmt:
-	$(env)/bin/black -l 88 .
+fmt: fmt-py fmt-ts
+	@echo "Format completed"
 
 .PHONY: fmt-check
-fmt-check:
-	$(env)/bin/black -l 88 --check .
+fmt-check: fmt-ts-check fmt-py
+	@echo "Format check completed"
 
 .PHONY: fmt-ts
 fmt-ts:
@@ -69,16 +69,16 @@ fmt-ts-check:
 
 .PHONY: fmt-py
 fmt-py:
-	$(env)/bin/black -l 88 .
+	$(conda_run) black -l 88 .
 
 .PHONY: fmt-py-check
 fmt-py-check:
-	$(env)/bin/black -l 88 --check .
+	$(conda_run) black -l 88 --check .
 
 .PHONY: lint
-lint:
-	npm run lint
+lint: lint-ts
+	@echo "Format check completed"
 
-.PHONY: lint-js
-lint-js:
-	npm run lint
+.PHONY: lint-ts
+lint-ts:
+	$(conda_run) npm run lint
