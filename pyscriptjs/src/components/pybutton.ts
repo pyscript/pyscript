@@ -16,6 +16,7 @@ export class PyButton extends BaseEvalElement {
         if (this.hasAttribute('label')) {
             this.label = this.getAttribute('label');
         }
+        /* Make Styling Dynamic START */
         // Styling does the same thing as class in normal HTML. Using the name "class" makes the style to malfunction
         if (this.hasAttribute('styling')) {
              let klass = this.getAttribute('styling');
@@ -31,6 +32,8 @@ export class PyButton extends BaseEvalElement {
         else {
             this.class = this.defaultClass
         }
+
+        /* Make Styling Dynamic END */
     }
 
     connectedCallback() {
