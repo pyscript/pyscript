@@ -9,7 +9,7 @@ let runtime;
 
 pyodideLoaded.subscribe(value => {
     runtime = value;
-    console.log("RUNTIME READY")
+    console.log('RUNTIME READY');
 });
 
 export class PyEnv extends HTMLElement {
