@@ -2,40 +2,40 @@ name: Lint
 
 on:
 
-  push: # Only run on merges into master that modify files under pyscriptjs/
-    branches:
-      - main
+    push: # Only run on merges into master that modify files under pyscriptjs/
+        branches:
+        -   main
 
-  pull_request: # Run on any PR that modifies files in pyscriptjs/
+    pull_request: # Run on any PR that modifies files in pyscriptjs/
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./pyscriptjs
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Install node
-      uses: actions/setup-node@v3
-      with:
-       node-version: '12.x'
-    - name: Cache node modules
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-node-modules
-      with:
+    build:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./pyscriptjs
+        steps:
+        -   name: Checkout
+            uses: actions/checkout@v3
+        -   name: Install node
+            uses: actions/setup-node@v3
+            with:
+                node-version: 12.x
+        -   name: Cache node modules
+            uses: actions/cache@v3
+            env:
+                cache-name: cache-node-modules
+            with:
         # npm cache files are stored in `~/.npm` on Linux/macOS
-        path: ~/.npm
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
-    - name: Install dependencies
-      run: |
-        npm install
-    - name: Run linter
-      run: |
-        npm run lint
+                path: ~/.npm
+                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                restore-keys: |
+                    ${{ runner.os }}-build-${{ env.cache-name }}-
+                    ${{ runner.os }}-build-
+                    ${{ runner.os }}-
+        -   name: Install dependencies
+            run: |
+                npm install
+        -   name: Run linter
+            run: |
+                npm run lint

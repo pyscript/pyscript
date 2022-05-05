@@ -3,22 +3,27 @@
 
 default_stages: [commit]
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
+-   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.2.0
     hooks:
     -   id: end-of-file-fixer
-        exclude: ".*.min.js"
+        exclude: .*.min.js
     -   id: trailing-whitespace
     -   id: check-json
         exclude: .*/tsconfig.json
     -   id: check-yaml
-  - repo: https://github.com/psf/black
+-   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: pretty-format-yaml
+        args: [--autofix, --indent, '4']
+-   repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:
-      - id: black
-  - repo: https://github.com/pycqa/isort
+    -   id: black
+-   repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
-      - id: isort
+    -   id: isort
         name: isort (python)
         args: [--profile, black]
