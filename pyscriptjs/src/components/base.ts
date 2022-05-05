@@ -145,7 +145,7 @@ export class BaseEvalElement extends HTMLElement {
                 Element = pyodide.globals.get('Element');
             }
             const out = Element(this.errorElement.id);
-            
+
             addClasses(this.errorElement, ['bg-red-200', 'p-2']);
             out.write.callKwargs(err, { append : true});
             this.errorElement.hidden = false;
