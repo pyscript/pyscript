@@ -1,6 +1,5 @@
-
 import toga
-from toga.style.pack import LEFT, RIGHT, COLUMN, ROW, Pack
+from toga.style.pack import COLUMN, LEFT, RIGHT, ROW, Pack
 
 
 class FreedomApp(toga.App):
@@ -8,7 +7,7 @@ class FreedomApp(toga.App):
         try:
             self.c_input.value = (float(self.f_input.value) - 32.0) * 5.0 / 9.0
         except ValueError:
-            self.c_input.value = '???'
+            self.c_input.value = "???"
 
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
@@ -20,11 +19,11 @@ class FreedomApp(toga.App):
         self.c_input = toga.TextInput(id="c_input", readonly=True)
         self.f_input = toga.TextInput(id="f_input")
 
-        c_label = toga.Label('Celsius', style=Pack(text_align=LEFT))
-        f_label = toga.Label('Fahrenheit', style=Pack(text_align=LEFT))
-        join_label = toga.Label('is equivalent to', style=Pack(text_align=RIGHT))
+        c_label = toga.Label("Celsius", style=Pack(text_align=LEFT))
+        f_label = toga.Label("Fahrenheit", style=Pack(text_align=LEFT))
+        join_label = toga.Label("is equivalent to", style=Pack(text_align=RIGHT))
 
-        button = toga.Button('Calculate', id="calculate", on_press=self.calculate)
+        button = toga.Button("Calculate", id="calculate", on_press=self.calculate)
 
         f_box.add(self.f_input)
         f_box.add(f_label)
@@ -54,8 +53,8 @@ class FreedomApp(toga.App):
 
 
 def main():
-    return FreedomApp('Freedom Units', 'org.beeware.freedom', version='0.0.1')
+    return FreedomApp("Freedom Units", "org.beeware.freedom", version="0.0.1")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main().main_loop()
