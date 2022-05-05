@@ -69,10 +69,9 @@ def format_mime(obj):
 
     mimebundle = eval_formatter(obj, '_repr_mimebundle_')
     if isinstance(mimebundle, tuple):
-        format_dict, md_dict = mimebundle
+        format_dict, _ = mimebundle
     else:
         format_dict = mimebundle
-        md_dict = {}  # noqa: F841
 
     output, not_available = None, []
     for method, mime_type in reversed(MIME_METHODS.items()):
