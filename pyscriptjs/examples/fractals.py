@@ -1,4 +1,5 @@
 from typing import Tuple
+
 import numpy as np
 from numpy.polynomial import Polynomial
 

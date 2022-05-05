@@ -1,8 +1,6 @@
 from flask import Flask
-
-from toga_flask import TogaApp
-
 from freedom import app as freedom
+from toga_flask import TogaApp
 
 app = Flask(__name__, static_folder="../static")
 

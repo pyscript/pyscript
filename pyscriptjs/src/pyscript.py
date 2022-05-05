@@ -1,6 +1,8 @@
-from js import document, console
 import asyncio
-import io, base64
+import base64
+import io
+
+from js import console, document
 
 loop = asyncio.get_event_loop()
 

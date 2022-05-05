@@ -1,6 +1,7 @@
 from datetime import datetime as dt
-from utils import add_class, remove_class
+
 from js import console
+from utils import add_class, remove_class
 
 tasks = []
 
