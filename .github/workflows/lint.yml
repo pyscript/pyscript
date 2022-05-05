@@ -1,14 +1,17 @@
 name: Lint
 
 on:
-  push:
+
+  push: # Only run on merges into master that modify files under pyscriptjs/
     branches: main
-  pull_request:
-    branches: '*'
+  pull_request: # Run on any PR that modifies files in pyscriptjs/
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./pyscriptjs
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -30,9 +33,7 @@ jobs:
           ${{ runner.os }}-
     - name: Install dependencies
       run: |
-        cd pyscriptjs
         npm install
     - name: Run linter
       run: |
-        cd pyscriptjs
         npm run lint
