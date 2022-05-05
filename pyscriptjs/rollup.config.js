@@ -39,12 +39,11 @@ export default {
   input: "src/main.ts",
   output:[
     {
-    sourcemap: true,
-    format: "iife",
-    name: "app",
-    file: "examples/build/pyscript.js",
+      sourcemap: true,
+      format: "iife",
+      name: "app",
+      file: "examples/build/pyscript.js",
     },
-    { file: "examples/build/pyscript.min.js", format: "iife", plugins: [terser()] },
   ],
   plugins: [
     svelte({
@@ -73,8 +72,8 @@ export default {
     production && terser(),
     !production && serve({
       port: 8080,
-      contentBase: 'examples'}
-      )
+      contentBase: 'examples'
+    }),
   ],
   watch: {
     clearScreen: false,
