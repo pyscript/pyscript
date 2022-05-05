@@ -8,7 +8,7 @@ app_dir ?= $(shell git rev-parse --show-prefix)
 
 CONDA_ENV ?= ./env
 env := $(CONDA_ENV)
-
+conda_run := conda run -p $(env)
 
 .PHONY: clean
 clean:
