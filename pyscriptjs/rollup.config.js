@@ -6,7 +6,36 @@ import { terser } from "rollup-plugin-terser";
 import sveltePreprocess from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
 import css from "rollup-plugin-css-only";
-import serve from 'rollup-plugin-serve'
+import serve from 'rollup-plugin-serve';
+
+import path from "path";
+import fs from "fs";
+
+function copyPythonFiles(from, to, overwrite = false) {
+	return {
+		name: 'copy-files',
+		generateBundle() {
+			const log = msg => console.log('\x1b[36m%s\x1b[0m', msg)
+			log(`copy files: ${from} → ${to}`)
+			fs.readdirSync(from).forEach(file => {
+				const fromFile = `${from}/${file}`
+				const toFile = `${to}/${file}`
+        if (fromFile.endsWith(`.py`)){
+          log(`----> ${fromFile} → ${toFile}`)
+          if (fs.existsSync(toFile) && !overwrite){
+            log(`skipping ${fromFile} → ${toFile}`)
+            return
+          }else{
+            fs.copyFileSync(
+              path.resolve(fromFile),
+              path.resolve(toFile)
+            );
+          }
+        }
+			})
+		}
+	}
+}
 
 const production = !process.env.ROLLUP_WATCH || (process.env.NODE_ENV === "production");
 
@@ -68,6 +97,8 @@ export default {
       sourceMap: !production,
       inlineSources: !production,
     }),
+    // Copy all the python files from source to the build folder
+    copyPythonFiles("./src/", "./examples/build", true),
     !production && serve(),
     !production && livereload("public"),
     production && terser(),
