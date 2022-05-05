@@ -3,8 +3,11 @@ name: Build
 on:
   push:
     branches: main
+    paths:
+      - pyscriptjs/**
   pull_request:
-    branches: '*'
+    paths:
+      - pyscriptjs/**
 
 jobs:
   build:
