@@ -40,7 +40,7 @@ run the web demo server:
 
 then point your browser at http://localhost:8081/
 
-Enter a value in the "Farenheit" input, and click the "calculate" button.
+Enter a value in the "Fahrenheit" input, and click the "calculate" button.
 
 It may take a few seconds for this button to become live; look for the
 "Collecting nodes..." entry in the console log.
@@ -76,4 +76,4 @@ Xcode for iOS, and the Android SDKs for Android. These are multiple gigabyte
 downloads. Briefcase will detect when these tools aren't available, and either
 prompt you to download them, or perform a download for you. As a result, your
 first build may take up to 20 minutes to complete, depending on the speed of
-your conection.
+your connection.

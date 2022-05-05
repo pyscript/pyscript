@@ -141,7 +141,7 @@ async function initHandlers() {
         source = `Element("${el.id}").element.onclick = ${handlerCode}`;
         output = await pyodide.runPythonAsync(source);
 
-        // TODO: Should we actually map handlers in JS instaed of Python?
+        // TODO: Should we actually map handlers in JS instead of Python?
         // el.onclick = (evt: any) => {
         //   console.log("click");
         //   new Promise((resolve, reject) => {

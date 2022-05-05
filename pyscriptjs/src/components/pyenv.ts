@@ -50,7 +50,7 @@ export class PyEnv extends HTMLElement {
 
         async function loadEnv() {
             await loadPackage(env, runtime);
-            console.log('enviroment loaded');
+            console.log('environment loaded');
         }
 
         async function loadPaths() {
@@ -63,6 +63,6 @@ export class PyEnv extends HTMLElement {
 
         addInitializer(loadEnv);
         addInitializer(loadPaths);
-        console.log('enviroment loading...', this.env);
+        console.log('environment loading...', this.env);
     }
 }
