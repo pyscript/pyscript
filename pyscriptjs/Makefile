@@ -10,6 +10,11 @@ CONDA_ENV ?= ./env
 env := $(CONDA_ENV)
 conda_run := conda run -p $(env)
 
+.PHONY: setup
+setup:
+	@if [ -z "$${CONDA_SHLVL:+x}" ]; then echo "Conda is not installed." && exit 1; fi
+	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
+
 .PHONY: clean
 clean:
 	find . -name \*.py[cod] -delete
@@ -17,11 +22,6 @@ clean:
 
 clean-all: clean
 	rm -rf $(env) *.egg-info
-
-.PHONY: setup
-setup:
-	@if [ -z "$${CONDA_SHLVL:+x}" ]; then echo "Conda is not installed." && exit 1; fi
-	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 
 .PHONY: shell
 shell:
