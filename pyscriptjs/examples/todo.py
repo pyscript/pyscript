@@ -14,8 +14,8 @@ new_task_content = Element("new-task-content")
 def add_task(*ags, **kws):
     # ignore empty task
     if not new_task_content.element.value:
-      return None
-    
+        return None
+
     # create task
     task_id = f"task-{len(tasks)}"
     task = {
