@@ -44,7 +44,7 @@ test:
 .PHONY: test-py
 test-py:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
-	$(conda_run) -vv $(ARGS) tests/ --log-cli-level=warning
+	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
 .PHONY: test-ts
 test-ts:
