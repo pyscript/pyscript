@@ -3,7 +3,8 @@ name: Lint
 on:
 
   push: # Only run on merges into master that modify files under pyscriptjs/
-    branches: main
+    branches: 
+      - main
 
   pull_request: # Run on any PR that modifies files in pyscriptjs/
 
