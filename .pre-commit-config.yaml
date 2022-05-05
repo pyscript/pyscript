@@ -9,6 +9,7 @@ repos:
     -   id: end-of-file-fixer
         exclude: ".*.min.js"
     -   id: trailing-whitespace
+    -   id: check-yaml
   - repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:
