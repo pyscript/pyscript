@@ -56,7 +56,7 @@ fmt: fmt-py fmt-ts
 	@echo "Format completed"
 
 .PHONY: fmt-check
-fmt-check: fmt-ts-check fmt-py
+fmt-check: fmt-ts-check fmt-py-check
 	@echo "Format check completed"
 
 .PHONY: fmt-ts
@@ -69,7 +69,8 @@ fmt-ts-check:
 
 .PHONY: fmt-py
 fmt-py:
-	$(conda_run) black -l 88 .
+	$(conda_run) black --skip-string-normalization .
+	$(conda_run) isort --profile black .
 
 .PHONY: fmt-py-check
 fmt-py-check:
