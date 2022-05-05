@@ -152,7 +152,6 @@ def micrograd_demo(*args, **kwargs):
     plt.ylim(yy.min(), yy.max())
 
     finish = datetime.datetime.now()
-    # print(f"It took {(finish-start).seconds} seconds to run this code.")
     print_div(f"It took {(finish-start).seconds} seconds to run this code.")
 
     plt
