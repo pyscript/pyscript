@@ -54,8 +54,8 @@ export class PyEnv extends HTMLElement {
         }
 
         async function loadPaths() {
-            const pyodide = await pyodideReadyPromise;
             for (const singleFile of paths) {
+                console.log(`loading ${singleFile}`);
                 await loadFromFile(singleFile, runtime);
             }
             console.log('paths loaded');

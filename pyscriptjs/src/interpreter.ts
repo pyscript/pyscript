@@ -48,9 +48,6 @@ const loadFromFile = async function (s: string, runtime: any): Promise<any> {
             s +
             `")
         content = await response.bytes()
-        console.log("writing", ` +
-        filename +
-        `)
         with open("` +
             filename +
             `", "wb") as f:
