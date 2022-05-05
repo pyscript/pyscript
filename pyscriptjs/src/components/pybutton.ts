@@ -7,12 +7,29 @@ export class PyButton extends BaseEvalElement {
     theme: string;
     widths: Array<string>;
     label: string;
+    class: Array<string>;
+    defaultClass: Array<string>;
     mount_name: string;
     constructor() {
         super();
-
+        this.defaultClass = ['p-2', 'text-white', 'bg-blue-600', 'border', 'border-blue-600','rounded']
         if (this.hasAttribute('label')) {
             this.label = this.getAttribute('label');
+        }
+        // Styling does the same thing as class in normal HTML. Using the name "class" makes the style to malfunction
+        if (this.hasAttribute('styling')) {
+             let klass = this.getAttribute('styling');
+            if (klass.trim() == ''){
+                this.class = this.defaultClass
+            }else{
+                klass = klass.trim()
+                let newClassArray = klass.split(' ');
+                // trim each element to remove unecessary spaces which makes the button style to malfunction
+                this.class = (() => {let concatenatedString = []; for (let i = 0; i < newClassArray.length; i++) {if (newClassArray[i].trim() !== '')(concatenatedString.push(newClassArray[i].trim()));} return concatenatedString;})();
+            }
+        }
+        else {
+            this.class = this.defaultClass
         }
     }
 
@@ -23,7 +40,8 @@ export class PyButton extends BaseEvalElement {
 
         const mainDiv = document.createElement('button');
         mainDiv.innerHTML = this.label;
-        addClasses(mainDiv, ['p-2', 'text-white', 'bg-blue-600', 'border', 'border-blue-600', 'rounded']);
+        console.log(this.class)
+        addClasses(mainDiv, this.class);
 
         mainDiv.id = this.id;
         this.id = `${this.id}-container`;
