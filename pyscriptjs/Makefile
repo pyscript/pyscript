@@ -21,7 +21,7 @@ clean-all: clean
 .PHONY: setup
 setup:
 	@if [ -z "$${CONDA_SHLVL:+x}" ]; then echo "Conda is not installed." && exit 1; fi
-	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environmentwh.yml
+	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 
 .PHONY: shell
 shell:
