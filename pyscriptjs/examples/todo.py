@@ -10,6 +10,10 @@ task_list = Element("list-tasks-container")
 new_task_content = Element("new-task-content")
 
 def add_task(*ags, **kws):
+  # ignore empty task
+  if not new_task_content.element.value:
+    return None
+
   # create task
   task_id = f"task-{len(tasks)}"
   task = {"id": task_id, "content": new_task_content.element.value, "done": False, "created_at": dt.now()}
@@ -36,3 +40,5 @@ def add_task(*ags, **kws):
 def add_task_event(e):
   if (e.key == "Enter"):
     add_task()
+
+new_task_content.element.onkeypress = add_task_event
