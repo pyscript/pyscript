@@ -1,4 +1,11 @@
-# This is the configuration for pre-commit, a local framework for managing pre-commit hooks
-#   Check out the docs at: https://pre-commit.com/
-
-repos: []
+default_stages: [commit]
+repos:
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      -   id: black
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: isort (python)
