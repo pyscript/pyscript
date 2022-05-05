@@ -5,7 +5,7 @@ This page will guide you through getting started with PyScript.
 ## Development setup
 
 PyScript does not require any development environment other
-than a web browser. We recommend using Chrome.
+than a web browser. We recommend using [Chrome](https://www.google.com/chrome/).
 
 If you're using [VSCode](https://code.visualstudio.com/) the
 [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
@@ -124,7 +124,8 @@ HTML head. You can also link to `.whl` files directly on disk like in our [toga 
 </py-env>
 ```
 
-If your `.whl` is not a pure Python wheel then open a PR or issue with [pyodide](https://github.com/pyodide/pyodide) to get it added here https://github.com/pyodide/pyodide/tree/main/packages. If there's enough popular demand the pyodide team will likely work on supporting your package, regardless things will likely move faster if you make the PR and consult with the team to get unblocked.
+If your `.whl` is not a pure Python wheel then open a PR or issue with [pyodide](https://github.com/pyodide/pyodide) to get it added [here](https://github.com/pyodide/pyodide/tree/main/packages). 
+If there's enough popular demand the pyodide team will likely work on supporting your package, regardless things will likely move faster if you make the PR and consult with the team to get unblocked.
 
 For example, NumPy and Matplotlib are available. Notice here we're using `<py-script output="plot">`
 as a shortcut, which takes the expression on the last line of the script and runs `pyscript.write('plot', fig)`.
