@@ -16,7 +16,7 @@ export class PyButton extends BaseEvalElement {
         if (this.hasAttribute('label')) {
             this.label = this.getAttribute('label');
         }
-    
+
         // Styling does the same thing as class in normal HTML. Using the name "class" makes the style to malfunction
         if (this.hasAttribute('styling')) {
              let klass = this.getAttribute('styling');
@@ -25,7 +25,7 @@ export class PyButton extends BaseEvalElement {
             }else{
                 klass = klass.trim()
                 const newClassArray = klass.split(' ');
-                // trim each element to remove unecessary spaces which makes the button style to malfunction
+                // trim each element to remove unnecessary spaces which makes the button style to malfunction
                 this.class = (() => {const concatenatedString = []; for (let i = 0; i < newClassArray.length; i++) {if (newClassArray[i].trim() !== '')(concatenatedString.push(newClassArray[i].trim()));} return concatenatedString;})();
             }
         }
