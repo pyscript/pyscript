@@ -74,3 +74,4 @@ repos:
         - 'eslint'
         - 'typescript'
         - '@typescript-eslint/eslint-plugin'
+        - 'eslint-plugin-svelte3'
