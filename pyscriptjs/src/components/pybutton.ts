@@ -16,7 +16,7 @@ export class PyButton extends BaseEvalElement {
         if (this.hasAttribute('label')) {
             this.label = this.getAttribute('label');
         }
-    
+
         // Styling does the same thing as class in normal HTML. Using the name "class" makes the style to malfunction
         if (this.hasAttribute('styling')) {
              let klass = this.getAttribute('styling');
