@@ -72,6 +72,9 @@ repos:
         types: [file]
         additional_dependencies:
         - 'eslint'
+        - 'eslint-plugin-svelte3'
         - 'typescript'
         - '@typescript-eslint/eslint-plugin'
-        - 'eslint-plugin-svelte3'
+        - '@typescript-eslint/parser'
+
+
