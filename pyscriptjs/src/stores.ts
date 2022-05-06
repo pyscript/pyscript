@@ -30,10 +30,6 @@ export const addToScriptsQueue = script => {
     scriptsQueue.set([...scriptsQueue_, script]);
 };
 
-scriptsQueue.subscribe(value => {
-    scriptsQueue_ = value;
-});
-
 initializers.subscribe(value => {
     initializers_ = value;
 });
