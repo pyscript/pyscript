@@ -7,10 +7,10 @@ on:
         -   pyscriptjs/**
         -   .github/workflows/** # Test that workflows work when changed
 
-    pull_request: # Run on any PR that modifies files in pyscriptjs/
-        paths:
-        -   pyscriptjs/**
-        -   .github/workflows/**
+#    pull_request: # Run on any PR that modifies files in pyscriptjs/
+#        paths:
+#        -   pyscriptjs/**
+#        -   .github/workflows/**
 
 jobs:
     build:
