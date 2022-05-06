@@ -4,9 +4,6 @@ __pycache__/
 *$py.class
 .DS_Store
 
-# TODO File
-my_contributions.txt
-
 # C extensions
 *.so
 
