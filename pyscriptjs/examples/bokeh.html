@@ -12,9 +12,9 @@
         Bokeh.set_log_level("info");
     </script>
     <link rel="stylesheet" href="../build/pyscript.css" />
-    
+
     <script defer src="../build/pyscript.js"></script>
-    
+
     </head>
     <body>
         <py-env>
@@ -23,7 +23,7 @@
         </py-env>
         <h1>Bokeh Example</h1>
         <div id="myplot"></div>
-    
+
     <py-script id="main">
 import json
 import pyodide
@@ -43,6 +43,6 @@ p_json = json.dumps(json_item(p, "myplot"))
 
 Bokeh.embed.embed_item(JSON.parse(p_json))
     </py-script>
-    
+
 </body>
 </html>
