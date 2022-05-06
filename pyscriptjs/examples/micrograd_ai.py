@@ -23,7 +23,7 @@ def print_div(o):
     print_statements.append(o + " \n<br>")
     pyscript.write("micrograd-run-all-print-div", "".join(print_statements))
 
-    
+
 # All code is wrapped in this run_all function so it optionally executed (called)
 # from pyscript when a button is pressed.
 def micrograd_demo(*args, **kwargs):
