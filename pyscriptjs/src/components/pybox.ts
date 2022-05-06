@@ -52,11 +52,10 @@ export class PyBox extends HTMLElement {
             this.widths = [...this.widths, ...[`w-1/${mainDiv.childNodes.length}`]];
         }
 
-        this.widths.forEach((width, index)=>{
+        this.widths.forEach((width, index) => {
             const node: ChildNode = mainDiv.childNodes[index];
-            addClasses(node as HTMLElement, [width, 'mx-1'])
-
-        })
+            addClasses(node as HTMLElement, [width, 'mx-1']);
+        });
 
         this.appendChild(mainDiv);
         console.log('py-box connected');
