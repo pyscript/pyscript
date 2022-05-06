@@ -24,9 +24,9 @@ export class PyButton extends BaseEvalElement {
                 this.class = this.defaultClass
             }else{
                 klass = klass.trim()
-                let newClassArray = klass.split(' ');
+                const newClassArray = klass.split(' ');
                 // trim each element to remove unecessary spaces which makes the button style to malfunction
-                this.class = (() => {let concatenatedString = []; for (let i = 0; i < newClassArray.length; i++) {if (newClassArray[i].trim() !== '')(concatenatedString.push(newClassArray[i].trim()));} return concatenatedString;})();
+                this.class = (() => {const concatenatedString = []; for (let i = 0; i < newClassArray.length; i++) {if (newClassArray[i].trim() !== '')(concatenatedString.push(newClassArray[i].trim()));} return concatenatedString;})();
             }
         }
         else {
