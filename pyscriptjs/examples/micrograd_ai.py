@@ -5,6 +5,7 @@ import random
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 # cell
 from micrograd.engine import Value
 from micrograd.nn import MLP, Layer, Neuron
