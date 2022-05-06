@@ -39,6 +39,7 @@ jobs:
     - name: Commit changes
       run: |
         git clone https://github.com/pyscript/pyscript.github.io --single-branch gh-pages
+        mkdir -p gh-pages/review/${{ github.event.number }}/
         cp -r docs/_build/dirhtml/* gh-pages/review/${{ github.event.number }}/
         cd gh-pages
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
