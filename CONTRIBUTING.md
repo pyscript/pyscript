@@ -10,6 +10,7 @@ Thank you for wanting to contribute to the PyScript project!
     * [Reporting security issues](#reporting-security-issues)
     * [Asking questions](#asking-questions)
     * [Setting up your environment](#setting-up-your-environment)
+    * [Places to start](#places-to-start)
     * [Submitting a change](#submitting-a-change)
 * [License terms for contributions](#license-terms-for-contributions)
 * [Becoming a maintainer](#becoming-a-maintainer)
