@@ -50,14 +50,16 @@ def eval_formatter(obj, print_method):
     """
     Evaluates a formatter method.
     """
-    if hasattr(obj, print_method):
+    if print_method == '__repr__':
+         return repr(obj)
+    elif hasattr(obj, print_method):
         if print_method == 'savefig':
             buf = io.BytesIO()
             obj.savefig(buf, format='png')
             buf.seek(0)
             return base64.b64encode(buf.read()).decode('utf-8')
         return getattr(obj, print_method)()
-    if print_method == '_repr_mimebundle_':
+    elif print_method == '_repr_mimebundle_':
         return {}, {}
     return None
 
@@ -368,7 +370,7 @@ class OutputCtxManager:
         self._append = append
 
     def change(self, out=None, err=None, output_to_console=True, append=True):
-        self._prevt = self._out
+        self._prev = self._out
         self._out = out
         self.output_to_console = output_to_console
         self._append = append
@@ -388,7 +390,7 @@ class OutputCtxManager:
 class OutputManager:
     def __init__(self, out=None, err=None, output_to_console=True, append=True):
         sys.stdout = self._out_manager = OutputCtxManager(out, output_to_console, append)
-        sys.strerr = self._err_manager = OutputCtxManager(err, output_to_console, append)
+        sys.stderr = self._err_manager = OutputCtxManager(err, output_to_console, append)
         self.output_to_console = output_to_console
         self._append = append
 
@@ -404,7 +406,7 @@ class OutputManager:
         self._out_manager.revert()
         self._err_manager.revert()
         sys.stdout = self._out_manager
-        sys.stdout = self._err_manager
+        sys.stderr = self._err_manager
         console.log("----> reverted")
 
 pyscript = PyScript()
@@ -420,7 +422,7 @@ const loadInterpreter = async function (): Promise<any> {
         stderr: console.log,
     });
 
-    // now that we loaded, add additional convenience fuctions
+    // now that we loaded, add additional convenience functions
     console.log('loading micropip');
     await pyodide.loadPackage('micropip');
     console.log('loading pyscript module');
