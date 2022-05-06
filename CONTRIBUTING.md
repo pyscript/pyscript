@@ -10,14 +10,14 @@ Thank you for wanting to contribute to the PyScript project!
     * [Reporting security issues](#reporting-security-issues)
     * [Asking questions](#asking-questions)
     * [Setting up your environment](#setting-up-your-environment)
-    * [Submitting a pull request](#submitting-a-pull-request)
+    * [Submitting a change](#submitting-a-change)
 * [License terms for contributions](#license-terms-for-contributions)
 * [Becoming a maintainer](#becoming-a-maintainer)
 * [Trademarks](#trademarks)
 
 ## Code of Conduct
 
-The project and everyone participating in it is governed by the [PyScript Code of Conduct](https://github.com/pyscript/governance/blob/main/CODE-OF-CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to the maintainers or administrators.
+The project and everyone participating in it is governed by the [PyScript Code of Conduct](https://github.com/pyscript/governance/blob/main/CODE-OF-CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to the maintainers or administrators as described in that document.
 
 ## Contributing
 
@@ -59,11 +59,16 @@ If you have questions about the project, using PyScript, or anything else please
     npm run dev
 ```
 
-### Submitting a pull request
+### Submitting a change
 
 All contributions must be licensed Apache 2.0 and all files must have a copy of the boilerplate license comment (can be copied from an existing file).
 
-Please squash all commits for a change into a single commit (this can be done using "git rebase -i"). Do your best to have a well-formed commit message for the change.
+To create a change for PyScript, you can follow the process described [here](https://docs.github.com/en/get-started/quickstart/contributing-to-projects)
+
+* Fork a personal copy of the PyScript project 
+* Make the changes you would like (don't forget to test them!)
+* Please squash all commits for a change into a single commit (this can be done using "git rebase -i"). Do your best to have a well-formed commit message for the change.
+* Open a pull request back to the PyScript project and address any comments/questions that come up from the maintainers
 
 ## License terms for contributions
 
