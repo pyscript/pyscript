@@ -6,7 +6,7 @@ on:
     - '*'
 
 jobs:
-  build:
+  review:
     runs-on: ubuntu-latest
     steps:
 
@@ -28,6 +28,7 @@ jobs:
       uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
+        pre-build-command: "conda activate docs"
         build-command: "make dirhtml"
 
     - name: Upload artifacts
