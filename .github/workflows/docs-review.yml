@@ -25,11 +25,10 @@ jobs:
         python-version: 3.9
 
     - name: Build
-      uses: ammaraskar/sphinx-action@master
-      with:
-        docs-folder: "docs/"
-        pre-build-command: "conda activate docs"
-        build-command: "make dirhtml"
+      shell: bash -l {0}
+      run: |
+        cd docs/
+        make dirhtml
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
