@@ -9,10 +9,3 @@ repos:
     hooks:
       - id: isort
         name: isort (python)
-  - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: 'v8.14.0'
-    hooks:
-    -   id: eslint
-        additional_dependencies:
-        -   eslint@>=5.16.0
-        -   eslint-config-google@latest
