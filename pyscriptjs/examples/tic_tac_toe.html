@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="title" content="Tic-Tac-Toe" />
+    <meta name="description" content="Tic-Tac-Toe using py-script" />
+    <meta name="keywords" content="py-script, python, javascript, python" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="language" content="English" />
+    <meta name="author" content="Ali Hassan" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <title>Tic-Tac-Toe</title>
+    <py-env>
+- numpy
+    
+    </py-env>
+    <py-script>
+
+# Importing library
+import js, pyodide
+import numpy as np
+
+# For tracking variable
+current_pos='5'
+winner = False
+is_first_player = True
+grid = [[-1,-1,-1],[-1,-1,-1],[-1,-1,-1]]
+
+# Show selected block
+def show_block(pos):
+  children = document.getElementById('block-container').children
+  for ele in children :
+    ele.classList.remove('border-solid')
+    ele.classList.remove('border-4')
+    if ele.id =='block-'+pos :
+      ele.classList.add('border-solid')
+      ele.classList.add('border-4')
+
+# checking completeness
+def check_completeness(data):
+  count_one = 0
+  count_zero = 0
+
+  for item in data:
+    if item==1 :
+      count_one +=1
+    if item ==0:
+      count_zero+=1
+
+  return count_one == 3 or count_zero == 3
+
+# checking diaonally
+def check_diagonally(data):
+  count_one = 0
+  count_zero = 0
+
+  for i in range (3):
+    if data[i][i] ==1 :
+      count_one +=1
+    if data[i][i] ==0:
+      count_zero+=1
+
+  return count_one == 3 or count_zero == 3
+
+    
+def check(data):
+  
+  for item in data:
+    if check_completeness(item):
+      return True
+  else:
+    return False
+
+# check winner
+def check_winner():
+  global winner
+  numpy_array = np.array(grid)
+  flipped = np.fliplr(grid).tolist()
+  transpose = numpy_array.T.tolist()
+
+  if check(transpose) or check(grid) or check_diagonally(grid) or check_diagonally(flipped):
+    winner = True
+    if is_first_player:
+      document.getElementById('won-by').innerText = "Player 2 won"
+    else :
+      document.getElementById('won-by').innerText = "Player 1 won"
+    
+# select postion
+def change_status(evt):
+  if not winner :
+    temp = evt.target.id.split('-')
+    global is_first_player
+    global grid
+    ele = document.getElementById('block-'+current_pos)
+    if current_pos != -1 and len(ele.innerText)==0:
+      is_first_player = not is_first_player
+
+      if is_first_player:
+        document.getElementById('player-2').classList.remove('text-orange-800')
+        document.getElementById('player-1').classList.add('text-orange-800')
+      else:
+        document.getElementById('player-1').classList.remove('text-orange-800')
+        document.getElementById('player-2').classList.add('text-orange-800')
+      ele.innerText = temp[1]
+      i = int((int(current_pos)-1)/3)
+      j = int((int(current_pos)-1)%3)
+
+      
+      if temp[1]=='o':
+        grid[i][j] = 1
+      else:
+        grid[i][j] = 0
+
+      check_winner()
+      
+# It listen onClick event
+def onClick(event):
+  event.preventDefault(); 
+  temp = event.target.id.split('-')
+  global current_pos
+  if len(temp)==2 and temp[0]=='block':
+    current_pos = temp[1]
+    show_block(current_pos)
+
+# For resetting resetting reset
+def reset_game(evt):
+  global current_pos
+  global is_first_player
+  global grid
+  global winner
+  
+  current_pos='5'
+  is_first_player = True
+  winner = False
+  grid = [[-1,-1,-1],[-1,-1,-1],[-1,-1,-1]]
+
+  document.getElementById('player-2').classList.remove('text-orange-800')
+  document.getElementById('player-1').classList.add('text-orange-800')
+  document.getElementById('player-1').classList.add('text-orange-800')
+  document.getElementById('won-by').innerText = ""
+
+  show_block('5')
+
+  children = document.getElementById('block-container').children
+  for ele in children :
+      ele.innerText = ""
+
+#Event listner
+js.document.addEventListener('click',pyodide.create_proxy(onClick))
+
+    </py-script>
+	
+  </head>
+  <body>
+    <div class="mx-auto my-8 w-72">
+      <div class="grid grid-cols-2 gap-2 text-center font-extrabold">
+        <div id="player-1" class="text-orange-800">
+          Player 1
+        </div>
+        <div id="player-2">
+          Player 2
+        </div>
+      </div>
+    </div>
+    <div class="mx-auto my-1 w-48 text-center text-5xl">
+      <div
+        id="block-container"
+        class="grid grid-cols-3 gap-0 rounded-lg overflow-hidden"
+      >
+        <div id="block-1" class="bg-amber-100 w-16 h-16"></div>
+        <div id="block-2" class="bg-lime-200"></div>
+        <div id="block-3" class="bg-amber-100"></div>
+
+        <div id="block-4" class="bg-lime-200 w-16 h-16"></div>
+        <div id="block-5" class="bg-amber-100 border-solid border-4"></div>
+        <div id="block-6" class="bg-lime-200"></div>
+
+        <div id="block-7" class="bg-amber-100 w-16 h-16"></div>
+        <div id="block-8" class="bg-lime-200"></div>
+        <div id="block-9" class="bg-amber-100"></div>
+      </div>
+
+      <div id="won-by" class="text-center text-base text-rose-900 my-4">
+      </div>
+
+      <!-- Action Button -->
+      <div class="grid grid-cols-2 gap-2 text-xl text-white mt-6">
+        <button
+          id="button-o"
+          pys-onClick="change_status"
+          class="bg-cyan-500 shadow-lg shadow-cyan-500/50 rounded overflow-hidden hover:bg-cyan-400"
+        >
+          O
+        </button>
+        <button
+          id="button-x"
+          pys-onClick="change_status"
+          class="bg-indigo-500 shadow-lg shadow-indigo-500/50 rounded overflow-hidden hover:bg-indigo-400"
+        >
+          X
+        </button>
+      </div>
+
+      <button
+      id="button-reset"
+      pys-onClick="reset_game"
+      class="text-white text-sm w-16 bg-indigo-500 shadow-lg shadow-indigo-500/50 rounded overflow-hidden hover:bg-indigo-400"
+    >
+      Reset
+    </button>
+      <!-- Action button end here -->
+    </div>
+  </body>
+</html>
