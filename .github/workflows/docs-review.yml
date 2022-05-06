@@ -36,24 +36,27 @@ jobs:
         name: dirhtml
         path: docs/_build/dirhtml/
 
-    - name: Commit changes
-      run: |
-        git clone https://github.com/pyscript/pyscript.github.io --single-branch gh-pages
-        mkdir -p gh-pages/review/${{ github.event.number }}/
-        cp -r docs/_build/dirhtml/* gh-pages/review/${{ github.event.number }}/
-        cd gh-pages
-        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add .
-        git commit -m "Update documentation" -a || true
-        # The above command will fail if no changes were present, so we ignore
-        # the return code.
-        git push origin main
+    # Disabled while we figure things out where to host the build artifacts
+    # For now use the https://pyscript-docs.readthedocs.io/ staging area.
 
-    - name: Set commit status to error
-      uses: Sibz/github-status-action@v1
-      with:
-        context: Review documentation
-        description: See details link for the build result.
-        state: success
-        target_url: https://pyscript.github.io/review/${{ github.event.number }}/
+    # - name: Commit changes
+    #   run: |
+    #     git clone https://github.com/pyscript/pyscript.github.io --single-branch gh-pages
+    #     mkdir -p gh-pages/review/${{ github.event.number }}/
+    #     cp -r docs/_build/dirhtml/* gh-pages/review/${{ github.event.number }}/
+    #     cd gh-pages
+    #     git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    #     git config --local user.name "github-actions[bot]"
+    #     git add .
+    #     git commit -m "Update documentation" -a || true
+    #     # The above command will fail if no changes were present, so we ignore
+    #     # the return code.
+    #     git push origin main
+
+    # - name: Set commit status to error
+    #   uses: Sibz/github-status-action@v1
+    #   with:
+    #     context: Review documentation
+    #     description: See details link for the build result.
+    #     state: success
+    #     target_url: https://pyscript.github.io/review/${{ github.event.number }}/
