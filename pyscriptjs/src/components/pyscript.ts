@@ -25,12 +25,10 @@ mode.subscribe(value => {
     currentMode = value;
 });
 
-
 // TODO: use type declaractions
 type PyodideInterface = {
     registerJsModule(name: string, module: object): void;
 };
-
 
 export class PyScript extends BaseEvalElement {
     constructor() {

@@ -1,14 +1,7 @@
 <script lang="ts">
     import Tailwind from './Tailwind.svelte';
     import { loadInterpreter } from './interpreter';
-    import {
-        initializers,
-        loadedEnvironments,
-        mode,
-        postInitializers,
-        pyodideLoaded,
-        scriptsQueue,
-    } from './stores';
+    import { initializers, loadedEnvironments, mode, postInitializers, pyodideLoaded, scriptsQueue } from './stores';
 
     let pyodideReadyPromise;
 

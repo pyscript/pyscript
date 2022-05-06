@@ -9,7 +9,7 @@ let runtime;
 
 pyodideLoaded.subscribe(value => {
     runtime = value;
-    console.log("RUNTIME READY")
+    console.log('RUNTIME READY');
 });
 
 export class PyEnv extends HTMLElement {
@@ -33,7 +33,7 @@ export class PyEnv extends HTMLElement {
         this.innerHTML = '';
 
         const env = [];
-        const paths = [];
+        const paths: string[] = [];
 
         this.environment = jsyaml.load(this.code);
         if (this.environment === undefined) return;
@@ -54,8 +54,8 @@ export class PyEnv extends HTMLElement {
         }
 
         async function loadPaths() {
-            const pyodide = await pyodideReadyPromise;
             for (const singleFile of paths) {
+                console.log(`loading ${singleFile}`);
                 await loadFromFile(singleFile, runtime);
             }
             console.log('paths loaded');
