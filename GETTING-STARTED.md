@@ -55,18 +55,18 @@ example, we can compute π.
     <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
   </head>
   <body>
-      <py-script>
-print("Let's compute π:")
-def wallis(n):
-    pi = 2
-    for i in range(1,n):
-        pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
-    return pi
+    <py-script>
+      print("Let's compute π:")
+      def wallis(n):
+          pi = 2
+          for i in range(1,n):
+              pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
+          return pi
 
-pi = wallis(100000)
-s = f"π is approximately {pi:.3f}"
-print(s)
-      </py-script>
+      pi = wallis(100000)
+      s = f"π is approximately {pi:.3f}"
+      print(s)
+    </py-script>
   </body>
 </html>
 ```
@@ -94,17 +94,17 @@ the `<py-script>` tag write to.
     <br>
     <div id="pi" class="alert alert-primary"></div>
     <py-script>
-import datetime as dt
-pyscript.write('today', dt.date.today().strftime('%A %B %d, %Y'))
+      import datetime as dt
+      pyscript.write('today', dt.date.today().strftime('%A %B %d, %Y'))
 
-def wallis(n):
-    pi = 2
-    for i in range(1,n):
-        pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
-    return pi
+      def wallis(n):
+          pi = 2
+          for i in range(1,n):
+              pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
+          return pi
 
-pi = wallis(100000)
-pyscript.write('pi', f'π is approximately {pi:.3f}')
+      pi = wallis(100000)
+      pyscript.write('pi', f'π is approximately {pi:.3f}')
     </py-script>
   </body>
 </html>
@@ -146,15 +146,15 @@ as a shortcut, which takes the expression on the last line of the script and run
     <h1>Let's plot random numbers</h1>
     <div id="plot"></div>
     <py-script output="plot">
-import matplotlib.pyplot as plt
-import numpy as np
+      import matplotlib.pyplot as plt
+      import numpy as np
 
-x = np.random.randn(1000)
-y = np.random.randn(1000)
+      x = np.random.randn(1000)
+      y = np.random.randn(1000)
 
-fig, ax = plt.subplots()
-ax.scatter(x, y)
-fig
+      fig, ax = plt.subplots()
+      ax.scatter(x, y)
+      fig
     </py-script>
   </body>
 </html>
@@ -196,14 +196,14 @@ In the HTML tag `<py-env>` paths to local modules are provided in the
     <h1>Let's plot random numbers</h1>
     <div id="plot"></div>
     <py-script output="plot">
-import matplotlib.pyplot as plt
-from data import make_x_and_y
+      import matplotlib.pyplot as plt
+      from data import make_x_and_y
 
-x, y = make_x_and_y(n=1000)
+      x, y = make_x_and_y(n=1000)
 
-fig, ax = plt.subplots()
-ax.scatter(x, y)
-fig
+      fig, ax = plt.subplots()
+      ax.scatter(x, y)
+      fig
     </py-script>
   </body>
 </html>
