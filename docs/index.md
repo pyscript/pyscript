@@ -1,6 +1,6 @@
 # PyScript
 
-Welcome to the PyScript documentation!
+Welcome to the PyScript (work in progress) documentation!
 
 ````{panels}
 ## [Tutorials](tutorials/index.md)
