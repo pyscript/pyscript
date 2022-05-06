@@ -1,8 +1,8 @@
 {
   // "extends": "@tsconfig/svelte/tsconfig.json",
 
-  "include": ["pyscriptjs/src/**/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
+  // "include": ["pyscriptjs/src/**/*"],
+  // "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
   "compilerOptions": {
     "moduleResolution": "node",
     "target": "es2017",
