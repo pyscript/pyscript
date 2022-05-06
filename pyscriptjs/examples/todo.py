@@ -29,7 +29,6 @@ def add_task(*ags, **kws):
     task_html_content.element.innerText = task["content"]
     task_html_check = task_html.select("input")
     task_list.element.appendChild(task_html.element)
-
   def check_task(evt=None):
     task["done"] = not task["done"]
         if task["done"]:
@@ -39,7 +38,6 @@ def add_task(*ags, **kws):
 
     new_task_content.clear()
     task_html_check.element.onclick = check_task
-
 
 def add_task_event(e):
     if e.key == "Enter":
