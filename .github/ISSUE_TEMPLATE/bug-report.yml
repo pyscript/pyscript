@@ -32,7 +32,19 @@ body:
       label: What happened?
       description: And what should have happened instead? This really helps everone review quicker and greatly increases the chance that someone can get around to solve your issue
       placeholder: Tell us what you see!
-      value: "Error in console and page wouldn't load"
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browsers are you seeing the problem on?
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
+        - Other
     validations:
       required: true
   - type: textarea
@@ -40,10 +52,7 @@ body:
     attributes:
       label: Console info
       description: |
-        If there are errors in your browser console then its helpful to be able to troubleshoot. Usually found in the browsers 'Dev Tools'
-
-        ```bash
-        ```
+        If there are errors in your browser console then its helpful to be able to troubleshoot. Usually found in the browser's `Dev Tools`
       render: shell
   - type: textarea
     id: context
