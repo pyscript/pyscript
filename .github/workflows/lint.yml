@@ -1,7 +1,6 @@
 name: Lint
 
 on:
-
     push: # Only run on merges into master that modify files under pyscriptjs/
         branches:
         -   main
