@@ -420,6 +420,7 @@ const loadInterpreter = async function (): Promise<any> {
     pyodide = await loadPyodide({
         stdout: console.log,
         stderr: console.log,
+        fullStdLib: false
     });
 
     // now that we loaded, add additional convenience functions
