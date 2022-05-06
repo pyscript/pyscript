@@ -11,6 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
@@ -72,7 +73,6 @@ html_theme_options = {
     "icon_links_label": "Quick Links",
     # "google_analytics_id": "G-XXXXXXXXXX",
     "use_edit_page_button": True,
-
     "show_nav_level": 2,
     "external_links": [
         # {"name": "GitHub repo", "url": "https://github.com/pyscript/pyscript"},
