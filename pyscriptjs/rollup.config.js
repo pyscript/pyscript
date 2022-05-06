@@ -17,6 +17,13 @@ function copyPythonFiles(from, to, overwrite = false) {
 		generateBundle() {
 			const log = msg => console.log('\x1b[36m%s\x1b[0m', msg)
 			log(`copy files: ${from} → ${to}`)
+
+      // create folder if it doesn't exist
+      if (!fs.existsSync(to)){
+        log(`Destination folder ${to} doesn't exist. Creating...`)
+        fs.mkdirSync(to);
+      }
+
 			fs.readdirSync(from).forEach(file => {
 				const fromFile = `${from}/${file}`
 				const toFile = `${to}/${file}`
