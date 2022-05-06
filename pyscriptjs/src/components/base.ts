@@ -6,14 +6,12 @@ let environments;
 let currentMode;
 let Element;
 
-
 pyodideLoaded.subscribe(value => {
     runtime = value;
 });
 loadedEnvironments.subscribe(value => {
     environments = value;
 });
-
 
 mode.subscribe(value => {
     currentMode = value;
@@ -147,7 +145,7 @@ export class BaseEvalElement extends HTMLElement {
             const out = Element(this.errorElement.id);
 
             addClasses(this.errorElement, ['bg-red-200', 'p-2']);
-            out.write.callKwargs(err, { append : true});
+            out.write.callKwargs(err, { append: true });
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
         }
@@ -203,8 +201,8 @@ function createWidget(name: string, code: string, klass: string) {
             //     });
             // }, 2000);
             pyodideLoaded.subscribe(value => {
-                console.log("RUNTIME READY", value)
-                if ("runPythonAsync" in value){
+                console.log('RUNTIME READY', value);
+                if ('runPythonAsync' in value) {
                     runtime = value;
                     setTimeout(() => {
                         this.eval(this.code).then(() => {

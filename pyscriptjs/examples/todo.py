@@ -12,6 +12,10 @@ new_task_content = Element("new-task-content")
 
 
 def add_task(*ags, **kws):
+    # ignore empty task
+    if not new_task_content.element.value:
+        return None
+
     # create task
     task_id = f"task-{len(tasks)}"
     task = {
@@ -24,23 +28,26 @@ def add_task(*ags, **kws):
     tasks.append(task)
 
     # add the task element to the page as new node in the list by cloning from a template
-    taskHtml = task_template.clone(task_id, to=task_list)
-    taskHtmlContent = taskHtml.select("p")
-    taskHtmlContent.element.innerText = task["content"]
-    taskHtmlCheck = taskHtml.select("input")
-    task_list.element.appendChild(taskHtml.element)
+    task_html = task_template.clone(task_id, to=task_list)
+    task_html_content = task_html.select("p")
+    task_html_content.element.innerText = task["content"]
+    task_html_check = task_html.select("input")
+    task_list.element.appendChild(task_html.element)
 
     def check_task(evt=None):
         task["done"] = not task["done"]
         if task["done"]:
-            add_class(taskHtmlContent, "line-through")
+            add_class(task_html_content, "line-through")
         else:
-            remove_class(taskHtmlContent, "line-through")
+            remove_class(task_html_content, "line-through")
 
     new_task_content.clear()
-    taskHtmlCheck.element.onclick = check_task
+    task_html_check.element.onclick = check_task
 
 
 def add_task_event(e):
     if e.key == "Enter":
         add_task()
+
+
+new_task_content.element.onkeypress = add_task_event
