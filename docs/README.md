@@ -1,7 +1,7 @@
 # PyScript documentation
 
-Welcome to the PyScript documentation directory, where PyScript
-is and related topics are discussed.
+Welcome to the PyScript documentation directory, where you can find 
+and contribute to discussions around PyScript and related topics.
 
 ## Getting started
 
@@ -10,7 +10,7 @@ take a look at the general contributing guidelines for the PyScript project.
 
 ### Setup
 
-The `docs` directory in the pyscript repository contains
-[Sphinx](https://www.sphinx-doc.org/) documentation project, which is a system
-to take a plaintext files containing the documentation written in Markdown
-and static files such as templates and themes to build the static end result.
+The `docs` directory in the pyscript repository contains a 
+[Sphinx](https://www.sphinx-doc.org/) documentation project. Sphinx is a system
+that takes plaintext files containing documentation written in Markdown, along with
+and static files like templates and themes, to build the static end result.
