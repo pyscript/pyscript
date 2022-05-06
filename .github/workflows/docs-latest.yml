@@ -1,0 +1,60 @@
+name: Docs
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  latest:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+        fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+
+    - name: Setup
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        activate-environment: docs
+        environment-file: docs/environment.yml
+        python-version: 3.9
+
+    - name: Build
+      shell: bash -l {0}
+      run: |
+        cd docs/
+        make dirhtml
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: dirhtml
+        path: docs/_build/dirhtml/
+
+    # # Disabled while we figure things out where to host the build artifacts
+    # # For now use the https://pyscript-docs.readthedocs.io/ staging area.
+    # - name: Commit changes
+    #   run: |
+    #     git clone https://github.com/pyscript/pyscript.github.io --single-branch gh-pages
+    #     mkdir -p gh-pages/latest/
+    #     cp -r docs/_build/dirhtml/* gh-pages/latest/
+    #     cd gh-pages
+    #     git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    #     git config --local user.name "github-actions[bot]"
+    #     git add .
+    #     git commit -m "Update documentation" -a || true
+    #     # The above command will fail if no changes were present, so we ignore
+    #     # the return code.
+
+    # - name: Set commit status to error
+    #   uses: Sibz/github-status-action@v1
+    #   with:
+    #     context: Review documentation
+    #     description: See details link for the build result.
+    #     state: success
+    #     target_url: https://pyscript.github.io/latest/
