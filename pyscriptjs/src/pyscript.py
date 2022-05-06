@@ -4,8 +4,8 @@ import io
 import sys
 import time
 
-import micropip
-from js import console, document, setInterval, setTimeout
+import micropip  # noqa: F401
+from js import console, document
 
 loop = asyncio.get_event_loop()
 
@@ -72,10 +72,9 @@ def format_mime(obj):
 
     mimebundle = eval_formatter(obj, "_repr_mimebundle_")
     if isinstance(mimebundle, tuple):
-        format_dict, md_dict = mimebundle
+        format_dict, _ = mimebundle
     else:
         format_dict = mimebundle
-        md_dict = {}
 
     output, not_available = None, []
     for method, mime_type in reversed(MIME_METHODS.items()):
@@ -123,14 +122,14 @@ class PyScript:
         element = document.getElementById(element_id)
         html, mime_type = format_mime(value)
         if mime_type in ("application/javascript", "text/html"):
-            scriptEl = document.createRange().createContextualFragment(html)
-            element.appendChild(scriptEl)
+            script_element = document.createRange().createContextualFragment(html)
+            element.appendChild(script_element)
         else:
             element.innerHTML = html
 
     @staticmethod
     def run_until_complete(f):
-        p = loop.run_until_complete(f)
+        _ = loop.run_until_complete(f)
 
 
 class Element:
@@ -311,7 +310,6 @@ class PyListTemplate:
         return [c.data for c in self._children]
 
     def render_children(self):
-        out = []
         binds = {}
         for i, c in enumerate(self._children):
             txt = c.element.innerHTML
@@ -328,7 +326,7 @@ class PyListTemplate:
             srcEl.element.onclick()
             evtEl.classList = srcEl.element.classList
 
-        for new_id, old_id in binds.items():
+        for new_id in binds:
             Element(new_id).element.onclick = foo
 
     def connect(self):

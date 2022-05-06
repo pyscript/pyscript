@@ -16,7 +16,7 @@
     <div class="hero-body">
         <p class="title is-3">PyScript — Simple Bioinformatics Example <span class="tag is-white">v.1</span></p>
         <p class="subtitle is-6">
-            Demonstrates the simple use of <a href="https://pyscript.net/" target="_blank"><code>PyScript</code></a> 
+            Demonstrates the simple use of <a href="https://pyscript.net/" target="_blank"><code>PyScript</code></a>
             in <strong>Bioinformatics/Computational Biology</strong> fields!
         </p>
     </div>
@@ -58,7 +58,7 @@
     <!--- DNA Sequence Output -->
     <label class="label">Output for the <code id="operation_name_output">given operation</code></label>
     <div id="output"></div>
-</div> 
+</div>
 
 <br><br>
 <!-- Footer -->
@@ -84,15 +84,15 @@ operation_element = Element("operation")
 operation_name_output_element = Element("operation_name_output")
 
 # DNA Sequene Operations
-def return_reverse(dna_seq): 
+def return_reverse(dna_seq):
     return dna_seq[::-1]
-def return_complement(dna_seq): 
+def return_complement(dna_seq):
     return dna_seq.translate(str.maketrans("ATCG", "TAGC"))
-def return_reverse_complement(dna_seq): 
+def return_reverse_complement(dna_seq):
     return dna_seq.translate(str.maketrans("ATCG", "TAGC"))[::-1]
 
 # Check DNA seq is valid
-def check_dna_seq(dna_seq): 
+def check_dna_seq(dna_seq):
     return all(letter in dna_alphabet for letter in dna_seq.upper())
 
 # Clear the form and output
@@ -115,7 +115,7 @@ def run(*args, **kwargs):
             output_dna_seq = return_complement(dna_seq)
         elif operation_name == "ReverseComplement":
             output_dna_seq = return_reverse_complement(dna_seq)
-            
+
         # Output the result
         output.write(output_dna_seq)
     elif (dna_seq.strip() == "") or (dna_seq is None):
