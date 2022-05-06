@@ -123,8 +123,8 @@ class PyScript:
         element = document.getElementById(element_id)
         html, mime_type = format_mime(value)
         if mime_type in ("application/javascript", "text/html"):
-            scriptEl = document.createRange().createContextualFragment(html)
-            element.appendChild(scriptEl)
+            script_element = document.createRange().createContextualFragment(html)
+            element.appendChild(script_element)
         else:
             element.innerHTML = html
 

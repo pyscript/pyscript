@@ -9,9 +9,9 @@ def now(fmt="%m/%d/%Y, %H:%M:%S"):
     return format_date(dt.now(), fmt)
 
 
-def remove_class(element, className):
-    element.element.classList.remove(className)
+def remove_class(element, class_name):
+    element.element.classList.remove(class_name)
 
 
-def add_class(element, className):
-    element.element.classList.add(className)
+def add_class(element, class_name):
+    element.element.classList.add(class_name)

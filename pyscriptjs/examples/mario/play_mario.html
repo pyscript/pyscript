@@ -8,7 +8,7 @@
 
     <link rel="icon" type="image/png" href="../favicon.png" />
     <link rel="stylesheet" href="../../build/pyscript.css" />
-    
+
     <script defer src="../../build/pyscript.js"></script>
   </head>
 
@@ -69,7 +69,7 @@ def toggle_video(evt):
     handTrack.stopVideo(video.element)
     isVideo = False
     update_note.write("Video stopped")
-  
+
 async def start_video():
   global isVideo
   update_note.write("Inside sstart video")
@@ -91,7 +91,7 @@ async def run_detection():
   global isVideo
   global last_position
   global direction
-  
+
   predictions = await model.detect(video.element)
   model.renderPredictions(predictions, canvas.element, context, video.element);
 
