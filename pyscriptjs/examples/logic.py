@@ -1,4 +1,4 @@
-from js import DOMParser, console, document
+from js import console, document
 
 answer = Element("typing-text")
 num_first = ""
@@ -59,7 +59,7 @@ def sign_clicked(args):
                 what_type(current)
             )
             num_first = "-" + str(what_type(current))
-    elif not args.target.id in sign:
+    elif args.target.id not in sign:
         cal_type = args.target.id
         sign_click = args.target.innerText
         document.getElementById("typing-text").innerHTML += (
