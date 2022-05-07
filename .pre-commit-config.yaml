@@ -9,6 +9,8 @@ repos:
     -   id: check-builtin-literals
     -   id: check-case-conflict
     -   id: check-docstring-first
+    -   id: check-json
+        exclude: tsconfig.json
     -   id: check-toml
     -   id: check-xml
     -   id: check-yaml
@@ -16,9 +18,6 @@ repos:
     -   id: end-of-file-fixer
         exclude: \.min\.js$
     -   id: trailing-whitespace
-    -   id: check-json
-        exclude: tsconfig.json
-    -   id: check-yaml
 
 -   repo: https://github.com/PyCQA/bandit
     rev: 1.7.4
