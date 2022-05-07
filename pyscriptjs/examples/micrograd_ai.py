@@ -8,7 +8,7 @@ import numpy as np
 
 # cell
 from micrograd.engine import Value
-from micrograd.nn import MLP, Layer, Neuron
+from micrograd.nn import MLP
 
 print_statements = []
 
@@ -43,7 +43,8 @@ def micrograd_demo(*args, **kwargs):
     random.seed(1337)
 
     # cell
-    # An adaptation of sklearn's make_moons function https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_moons.html
+    # An adaptation of sklearn's make_moons function
+    # https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_moons.html
     def make_moons(n_samples=100, noise=None):
         n_samples_out, n_samples_in = n_samples, n_samples
 
@@ -102,7 +103,7 @@ def micrograd_demo(*args, **kwargs):
         data_loss = sum(losses) * (1.0 / len(losses))
         # L2 regularization
         alpha = 1e-4
-        reg_loss = alpha * sum((p * p for p in model.parameters()))
+        reg_loss = alpha * sum(p * p for p in model.parameters())
         total_loss = data_loss + reg_loss
 
         # also get accuracy
@@ -120,7 +121,7 @@ def micrograd_demo(*args, **kwargs):
     for k in range(20):  # was 100
 
         # forward
-        total_loss, acc = loss()
+        total_loss, _ = loss()
 
         # backward
         model.zero_grad()
@@ -146,7 +147,7 @@ def micrograd_demo(*args, **kwargs):
     Z = np.array([(s.data).__gt__(0) for s in scores])
     Z = Z.reshape(xx.shape)
 
-    fig = plt.figure()
+    _ = plt.figure()
     plt.contourf(xx, yy, Z, cmap=plt.cm.Spectral, alpha=0.8)
     plt.scatter(X[:, 0], X[:, 1], c=y, s=40, cmap=plt.cm.Spectral)
     plt.xlim(xx.min(), xx.max())
