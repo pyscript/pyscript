@@ -51,6 +51,9 @@ export class PyEnv extends HTMLElement {
             }
         }
 
+        this.env = env;
+        this.paths = paths;
+
         async function loadEnv() {
             await loadPackage(env, runtime);
             console.log('environment loaded');
