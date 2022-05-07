@@ -1,40 +1,40 @@
 name: Docs
 
 on:
-  pull_request:
-    branches:
-    - '*'
+    pull_request:
+        branches:
+        -   '*'
 
 jobs:
-  review:
-    runs-on: ubuntu-latest
-    steps:
+    review:
+        runs-on: ubuntu-latest
+        steps:
 
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
-        fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+        -   name: Checkout
+            uses: actions/checkout@v3
+            with:
+                persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+                fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
 
-    - name: Setup
-      uses: conda-incubator/setup-miniconda@v2
-      with:
-        auto-update-conda: true
-        activate-environment: docs
-        environment-file: docs/environment.yml
-        python-version: 3.9
+        -   name: Setup
+            uses: conda-incubator/setup-miniconda@v2
+            with:
+                auto-update-conda: true
+                activate-environment: docs
+                environment-file: docs/environment.yml
+                python-version: 3.9
 
-    - name: Build
-      shell: bash -l {0}
-      run: |
-        cd docs/
-        make dirhtml
+        -   name: Build
+            shell: bash -l {0}
+            run: |
+                cd docs/
+                make dirhtml
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: dirhtml
-        path: docs/_build/dirhtml/
+        -   name: Upload artifacts
+            uses: actions/upload-artifact@v3
+            with:
+                name: dirhtml
+                path: docs/_build/dirhtml/
 
     # Disabled while we figure things out where to host the build artifacts
     # For now use the https://pyscript-docs.readthedocs.io/ staging area.
