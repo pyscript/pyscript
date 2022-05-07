@@ -63,7 +63,6 @@ repos:
         args:
         -   --py310-plus
 
-
 -   repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.4.0
     hooks:
