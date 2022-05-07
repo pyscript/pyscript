@@ -9,6 +9,7 @@ This document lists the Maintainers of the Project. Maintainers may be added onc
 | Philipp Rudiger | Anaconda, Inc |
 | Peter Wang | Anaconda, Inc |
 | Kevin Goldsmith | Anaconda, Inc |
+| Mariana Meireles | Anaconda, Inc |
 | --- | --- |
 
 ---

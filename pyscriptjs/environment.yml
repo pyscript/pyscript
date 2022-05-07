@@ -1,0 +1,12 @@
+channels:
+-   defaults
+-   conda-forge
+dependencies:
+-   python=3.9
+-   pip=20.2.2
+-   pytest=7
+-   nodejs=16
+-   black
+-   isort
+-   codespell
+-   pre-commit

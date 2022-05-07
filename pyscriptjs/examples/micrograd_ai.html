@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/x-icon" href="./favicon.png">
+
+        <title>micrograd</title>
+
+        <link rel="stylesheet" href="../build/pyscript.css" />
+        <script defer src="../build/pyscript.js"></script>
+
+        <py-env>
+            - micrograd
+            - numpy
+            - matplotlib
+        </py-env>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    </head>
+
+    <body style="padding-top: 20px; padding-right: 20px; padding-bottom: 20px; padding-left: 20px">
+        <h1>Micrograd - A tiny Autograd engine (with a bite! :))</h1><br>
+        <div>
+            <p>
+                <a href="https://github.com/karpathy/micrograd">Micrograd</a> is a tiny Autograd engine created
+                by <a href="https://twitter.com/karpathy">Andrej Karpathy</a>. This app recreates the
+                <a href="https://github.com/karpathy/micrograd/blob/master/demo.ipynb">demo</a>
+                he prepared for this package using pyscript to train a basic model, written in Python, natively in
+                the browser. <br>
+            </p>
+        </div>
+        <div>
+            <p>
+                You may run each Python REPL cell interactively by pressing (Shift + Enter) or (Ctrl + Enter).
+                You can also modify the code directly as you wish. If you want to run all the code at once,
+                not each cell individually, you may instead click the 'Run All' button. Training the model
+                takes between 1-2 min if you decide to 'Run All' at once. 'Run All' is your only option if
+                you are running this on a mobile device where you cannot press (Shift + Enter). After the
+                model is trained, a plot image should be displayed depicting the model's ability to
+                classify the data. <br>
+            </p>
+            <p>
+                Currently the <code>&gt;</code> symbol is being imported incorrectly as <code>&ampgt;</code> into the REPL's.
+                In this app the <code>&gt;</code> symbol has been replaced with <code>().__gt__()</code> so you can run the code
+                without issue. Ex: instead of <code>a &gt; b</code>, you will see <code>(a).__gt__(b)</code> instead. <br>
+            </p>
+            <p>
+                <py-script>import js; js.document.getElementById('python-status').innerHTML = 'Python is now ready. You may proceed.'</py-script>
+                <div id="python-status">Python is currently starting.  Please wait...</div>
+            </p>
+            <p>
+                <button id="run-all-button" class="btn btn-primary" type="submit" pys-onClick="run_all_micrograd_demo">Run All</button><br>
+                <py-script src="/micrograd_ai.py"></py-script>
+                <div id="micrograd-run-all-print-div"></div><br>
+                <div id="micrograd-run-all-fig1-div"></div>
+                <div id="micrograd-run-all-fig2-div"></div><br>
+            </p>
+        </div>
+        <py-repl auto-generate="false">
+import random
+import numpy as np
+import matplotlib.pyplot as plt
+        </py-repl><br>
+        <py-repl auto-generate="false">
+from micrograd.engine import Value
+from micrograd.nn import Neuron, Layer, MLP
+        </py-repl><br>
+        <py-repl auto-generate="true">
+np.random.seed(1337)
+random.seed(1337)
+        </py-repl><br>
+        <py-repl auto-generate="true">
+#An adaptation of sklearn's make_moons function https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_moons.html
+def make_moons(n_samples=100, noise=None):
+  n_samples_out, n_samples_in = n_samples, n_samples
+
+  outer_circ_x = np.cos(np.linspace(0, np.pi, n_samples_out))
+  outer_circ_y = np.sin(np.linspace(0, np.pi, n_samples_out))
+  inner_circ_x = 1 - np.cos(np.linspace(0, np.pi, n_samples_in))
+  inner_circ_y = 1 - np.sin(np.linspace(0, np.pi, n_samples_in)) - 0.5
+
+  X = np.vstack([np.append(outer_circ_x, inner_circ_x), np.append(outer_circ_y, inner_circ_y)]).T
+  y = np.hstack([np.zeros(n_samples_out, dtype=np.intp), np.ones(n_samples_in, dtype=np.intp)])
+  if noise is not None: X += np.random.normal(loc=0.0, scale=noise, size=X.shape)
+  return X, y
+X, y = make_moons(n_samples=100, noise=0.1)
+        </py-repl><br>
+        <py-repl auto-generate="true">
+y = y*2 - 1 # make y be -1 or 1
+# visualize in 2D
+plt.figure(figsize=(5,5))
+plt.scatter(X[:,0], X[:,1], c=y, s=20, cmap='jet')
+plt
+        </py-repl><br>
+        <py-repl auto-generate="true">
+model = MLP(2, [16, 16, 1]) # 2-layer neural network
+print(model)
+print("number of parameters", len(model.parameters()))
+        </py-repl><br>
+
+        <div>
+            Line 24 has been changed from: <br>
+            <code>accuracy = [(yi &gt; 0) == (scorei.data &gt; 0) for yi, scorei in zip(yb, scores)]</code><br>
+            to: <br>
+            <code>accuracy = [((yi).__gt__(0)) == ((scorei.data).__gt__(0)) for yi, scorei in zip(yb, scores)]</code><br>
+        </div>
+
+        <py-repl auto-generate="true">
+# loss function
+def loss(batch_size=None):
+
+    # inline DataLoader :)
+    if batch_size is None:
+        Xb, yb = X, y
+    else:
+        ri = np.random.permutation(X.shape[0])[:batch_size]
+        Xb, yb = X[ri], y[ri]
+    inputs = [list(map(Value, xrow)) for xrow in Xb]
+
+    # forward the model to get scores
+    scores = list(map(model, inputs))
+
+    # svm "max-margin" loss
+    losses = [(1 + -yi*scorei).relu() for yi, scorei in zip(yb, scores)]
+    data_loss = sum(losses) * (1.0 / len(losses))
+    # L2 regularization
+    alpha = 1e-4
+    reg_loss = alpha * sum((p*p for p in model.parameters()))
+    total_loss = data_loss + reg_loss
+
+    # also get accuracy
+    accuracy = [((yi).__gt__(0)) == ((scorei.data).__gt__(0)) for yi, scorei in zip(yb, scores)]
+    return total_loss, sum(accuracy) / len(accuracy)
+
+total_loss, acc = loss()
+print(total_loss, acc)
+        </py-repl><br>
+        <py-repl auto-generate="true">
+# optimization
+for k in range(20): #was 100. Accuracy can be further improved w/ more epochs (to 100%).
+
+    # forward
+    total_loss, acc = loss()
+
+    # backward
+    model.zero_grad()
+    total_loss.backward()
+
+    # update (sgd)
+    learning_rate = 1.0 - 0.9*k/100
+    for p in model.parameters():
+        p.data -= learning_rate * p.grad
+
+    if k % 1 == 0:
+        print(f"step {k} loss {total_loss.data}, accuracy {acc*100}%")
+        </py-repl><br>
+        <div>
+            <p>
+                Please wait for the training loop above to complete.  It will not print out stats until it
+                has completely finished. This typically takes 1-2 min. <br><br>
+
+                Line 9 has been changed from: <br>
+                <code>Z = np.array([s.data &gt; 0 for s in scores])</code><br>
+                to: <br>
+                <code>Z = np.array([(s.data).__gt__(0) for s in scores])</code><br>
+            </p>
+        </div>
+        <py-repl auto-generate="true">
+h = 0.25
+x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                      np.arange(y_min, y_max, h))
+Xmesh = np.c_[xx.ravel(), yy.ravel()]
+inputs = [list(map(Value, xrow)) for xrow in Xmesh]
+scores = list(map(model, inputs))
+Z = np.array([(s.data).__gt__(0) for s in scores])
+Z = Z.reshape(xx.shape)
+
+fig = plt.figure()
+plt.contourf(xx, yy, Z, cmap=plt.cm.Spectral, alpha=0.8)
+plt.scatter(X[:, 0], X[:, 1], c=y, s=40, cmap=plt.cm.Spectral)
+plt.xlim(xx.min(), xx.max())
+plt.ylim(yy.min(), yy.max())
+plt
+        </py-repl><br>
+        <py-repl auto-generate="true">
+1+1
+        </py-repl><br>
+    </body>
+</html>
+<!-- Adapted by Mat Miller -->

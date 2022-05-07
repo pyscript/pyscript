@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>PyScript — Simple Bioinformatics Example</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css'>
+    <link rel="icon" type="image/png" href="https://user-images.githubusercontent.com/49681382/166738771-d0c26557-426c-4688-9641-8db5e6b08348.png" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+</head>
+<body>
+
+<!-- Header -->
+<section class="hero is-primary is-small">
+    <div class="hero-body">
+        <p class="title is-3">PyScript — Simple Bioinformatics Example <span class="tag is-white">v.1</span></p>
+        <p class="subtitle is-6">
+            Demonstrates the simple use of <a href="https://pyscript.net/" target="_blank"><code>PyScript</code></a>
+            in <strong>Bioinformatics/Computational Biology</strong> fields!
+        </p>
+    </div>
+</section>
+
+
+<!-- Main Content -->
+<div class="container is-white is-fluid" style="margin-top:45px">
+    <p class="title is-3">🧬 DNA Sequence Tool</p>
+
+    <!--- DNA Sequence Input -->
+    <div class="field">
+        <label class="label">Input DNA Sequence</label>
+        <div class="control">
+            <textarea class="textarea" placeholder="GATTACA" id="dna_seq"></textarea>
+        </div>
+    </div>
+
+    <!-- Operation Selection -->
+    <label class="label">Pick the operation to be applied</label>
+    <div class="field has-addons">
+        <div class="control is-expanded">
+            <div class="select is-fullwidth">
+            <select name="operation" id="operation">
+                <option value="Reverse">Compute the reverse counterpart</option>
+                <option value="Complement">Compute the complement counterpart</option>
+                <option value="ReverseComplement">Compute the reverse complement counterpart</option>
+            </select>
+            </div>
+        </div>
+        <div class="control">
+            <button id="run" type="button" class="button is-primary" pys-onClick="run">Run!</button>
+            <button id="clear" type="button" class="button is-danger" pys-onClick="clear">Clear</button>
+        </div>
+        </div>
+
+    <hr>
+
+    <!--- DNA Sequence Output -->
+    <label class="label">Output for the <code id="operation_name_output">given operation</code></label>
+    <div id="output"></div>
+</div>
+
+<br><br>
+<!-- Footer -->
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>
+            Developed by <a href="mailto:furkanmtorun@gmail.com"><strong>Furkan M. Torun (@furkanmtorun)</strong></a>
+            <br>
+            <a href="https://github.com/furkanmtorun">GitHub</a>
+            | <a href="https://scholar.google.com/citations?user=d5ZyOZ4AAAAJ">Google Scholar</a>
+            | <a href="https://twitter.com/furkanmtorun">Twitter</a>
+            | <a href="https://www.linkedin.com/in/furkanmtorun/">LinkedIn</a>
+        </p>
+    </div>
+</footer>
+
+<py-script>
+# Define HTML elements and inputs
+dna_alphabet = "ATGC"
+output = Element("output")
+dna_seq_element = Element("dna_seq")
+operation_element = Element("operation")
+operation_name_output_element = Element("operation_name_output")
+
+# DNA Sequene Operations
+def return_reverse(dna_seq):
+    return dna_seq[::-1]
+def return_complement(dna_seq):
+    return dna_seq.translate(str.maketrans("ATCG", "TAGC"))
+def return_reverse_complement(dna_seq):
+    return dna_seq.translate(str.maketrans("ATCG", "TAGC"))[::-1]
+
+# Check DNA seq is valid
+def check_dna_seq(dna_seq):
+    return all(letter in dna_alphabet for letter in dna_seq.upper())
+
+# Clear the form and output
+def clear(*args, **kwargs):
+    dna_seq_element.clear()
+    output.clear()
+
+# Run
+def run(*args, **kwargs):
+    dna_seq = dna_seq_element.value
+    is_dna_seq_valid = check_dna_seq(dna_seq)
+    if is_dna_seq_valid:
+        operation_name = operation_element.value
+        operation_name_output_element.write(operation_name)
+
+        # Compute the desired outputs
+        if operation_name == "Reverse":
+            output_dna_seq = return_reverse(dna_seq)
+        elif operation_name == "Complement":
+            output_dna_seq = return_complement(dna_seq)
+        elif operation_name == "ReverseComplement":
+            output_dna_seq = return_reverse_complement(dna_seq)
+
+        # Output the result
+        output.write(output_dna_seq)
+    elif (dna_seq.strip() == "") or (dna_seq is None):
+        output.write("No DNA sequence provided")
+    else:
+        output.write("Invalid DNA sequence entered")
+</py-script>
+
+</body>
+</html>

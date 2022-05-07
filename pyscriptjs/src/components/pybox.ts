@@ -26,7 +26,7 @@ export class PyBox extends HTMLElement {
         while (this.childNodes.length > 0) {
             console.log(this.firstChild);
             if (this.firstChild.nodeName == 'PY-REPL') {
-                // in this case we need to remove the child and craete a new one from scratch
+                // in this case we need to remove the child and create a new one from scratch
                 const replDiv = document.createElement('div');
                 // we need to put the new repl inside a div so that if the repl has auto-generate true
                 // it can replicate itself inside that constrained div
@@ -52,11 +52,10 @@ export class PyBox extends HTMLElement {
             this.widths = [...this.widths, ...[`w-1/${mainDiv.childNodes.length}`]];
         }
 
-        this.widths.forEach((width, index)=>{
+        this.widths.forEach((width, index) => {
             const node: ChildNode = mainDiv.childNodes[index];
-            addClasses(node as HTMLElement, [width, 'mx-1'])
-
-        })
+            addClasses(node as HTMLElement, [width, 'mx-1']);
+        });
 
         this.appendChild(mainDiv);
         console.log('py-box connected');

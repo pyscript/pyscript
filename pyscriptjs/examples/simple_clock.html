@@ -8,7 +8,7 @@
 
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="../build/pyscript.css" />
-    
+
     <script defer src="../build/pyscript.js"></script>
     <py-env>
     - paths:
@@ -34,7 +34,7 @@ async def foo():
     await asyncio.sleep(1)
     output = now()
     pyscript.write("outputDiv2", output)
-    
+
     out3 = Element("outputDiv3")
     if output[-1] in ["0", "4", "8"]:
       out3.write("It's espresso time!")
