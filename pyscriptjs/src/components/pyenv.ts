@@ -16,7 +16,7 @@ export class PyEnv extends HTMLElement {
     shadow: ShadowRoot;
     wrapper: HTMLElement;
     code: string;
-    environment: any;
+    environment: unknown;
     runtime: any;
     env: string[];
     paths: string[];
@@ -32,18 +32,21 @@ export class PyEnv extends HTMLElement {
         this.code = this.innerHTML;
         this.innerHTML = '';
 
-        const env = [];
+        const env: string[] = [];
         const paths: string[] = [];
 
         this.environment = jsyaml.load(this.code);
         if (this.environment === undefined) return;
 
-        for (const entry of this.environment) {
+        for (const entry of Array.isArray(this.environment) ? this.environment : []) {
             if (typeof entry == 'string') {
                 env.push(entry);
-            } else if (entry.hasOwnProperty('paths')) {
-                for (const path of entry.paths) {
-                    paths.push(path);
+            } else if (entry && typeof entry === 'object') {
+                const obj = <Record<string, unknown>>entry;
+                for (const path of Array.isArray(obj.paths) ? obj.paths : []) {
+                    if (typeof path === 'string') {
+                        paths.push(path);
+                    }
                 }
             }
         }
