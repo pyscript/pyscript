@@ -40,6 +40,7 @@ export class PyConfig extends BaseEvalElement {
             };
         }
         appConfig.set(this.values);
+        console.log("config set", this.values);
     }
 
     log(msg: string){

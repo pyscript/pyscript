@@ -58,10 +58,11 @@
         }
 
         // now we call all post initializers AFTER we actually executed all page scripts
-        loader.log("Running post initializers...")
+        loader.log("Running post initializers...");
 
         if (appConfig_ && appConfig_.autoclose_loader) {
-            loader.remove();
+            loader.close();
+            console.log("------ loader closed ------");
         }
 
         setTimeout(() => {

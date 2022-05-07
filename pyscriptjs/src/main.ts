@@ -12,7 +12,6 @@ import { PyLoader } from './components/pyloader';
 import { globalLoader } from './stores';
 import { PyConfig } from './components/pyconfig';
 
-
 const xPyScript = customElements.define('py-script', PyScript);
 const xPyRepl = customElements.define('py-repl', PyRepl);
 const xPyEnv = customElements.define('py-env', PyEnv);
@@ -24,6 +23,13 @@ const xPyWidget = customElements.define('py-register-widget', PyWidget);
 const xPyLoader = customElements.define('py-loader', PyLoader);
 const xPyConfig = customElements.define('py-config', PyConfig);
 
+
+// As first thing, loop for application configs
+const config = document.querySelector('py-config');
+if (!config){
+    const loader = document.createElement('py-config');
+    document.body.append(loader);
+}
 
 // add loader to the page body
 const loader = document.createElement('py-loader');
