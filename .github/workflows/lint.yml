@@ -5,7 +5,7 @@ on:
         branches:
         -   main
 
-#    pull_request: # Run on any PR that modifies files in pyscriptjs/
+    pull_request: # Run on any PR that modifies files in pyscriptjs/
 
 jobs:
     build:
