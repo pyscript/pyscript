@@ -23,12 +23,6 @@
     /** Requests the runtime types from the svelte modules by default. Needed for TS files or else you get errors. */
     "types": ["svelte"],
 
-    /**
-      TypeScript doesn't know about import usages in the template because it only sees the
-      script of a Svelte file. Therefore preserve all value imports. Requires TS 4.5 or higher.
-     */
-    "preserveValueImports": true,
-
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
