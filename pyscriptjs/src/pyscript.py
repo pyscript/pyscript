@@ -260,11 +260,11 @@ class PyItemTemplate(Element):
         console.log("creating innerHtml")
         new_child._element.innerHTML = dedent(
             f"""
-        <label for="flex items-center p-2 ">
-          <input class="mr-2" type="checkbox" class="task-check">
-          <p class="m-0 inline">{self.render_content()}</p>
-        </label>
-        """
+            <label for="flex items-center p-2 ">
+              <input class="mr-2" type="checkbox" class="task-check">
+              <p class="m-0 inline">{self.render_content()}</p>
+            </label>
+            """
         )
 
         console.log("returning")
