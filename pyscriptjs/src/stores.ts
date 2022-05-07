@@ -21,6 +21,7 @@ export const scriptsQueue = writable<PyScript[]>([]);
 export const initializers = writable<Initializer[]>([]);
 export const postInitializers = writable<Initializer[]>([]);
 export const globalLoader = writable();
+export const appConfig = writable();
 
 let scriptsQueue_: PyScript[] = [];
 let initializers_: Initializer[] = [];

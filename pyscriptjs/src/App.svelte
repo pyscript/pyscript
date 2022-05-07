@@ -1,17 +1,29 @@
 <script lang="ts">
     import Tailwind from './Tailwind.svelte';
     import { loadInterpreter } from './interpreter';
-    import { initializers, loadedEnvironments, mode, postInitializers, pyodideLoaded, scriptsQueue, globalLoader } from './stores';
+    import type { AppConfig } from './components/pyconfig';
+    import { initializers, loadedEnvironments, mode, postInitializers, pyodideLoaded, scriptsQueue, globalLoader, appConfig } from './stores';
 
     let pyodideReadyPromise;
 
     let loader;
+    let appConfig_: AppConfig = {
+        autoclose_loader: true,
+    };
 
     globalLoader.subscribe(value => {
         loader = value;
     });
 
+    appConfig.subscribe( (value:AppConfig) => {
+        if (value){
+            appConfig_ = value;
+        }
+        console.log("config set!")
+    });
+
     const initializePyodide = async () => {
+        loader.log("Loading runtime...")
         pyodideReadyPromise = loadInterpreter();
         const pyodide = await pyodideReadyPromise;
         let newEnv = {
@@ -22,16 +34,22 @@
         };
         pyodideLoaded.set(pyodide);
 
+        // Inject the loader into the runtime namespace
+        pyodide.globals.set("pyscript_loader", loader);
+
+        loader.log("Runtime created...")
         loadedEnvironments.update((value: any): any => {
             value[newEnv['id']] = newEnv;
         });
 
         // now we call all initializers before we actually executed all page scripts
+        loader.log("Initializing components...")
         for (let initializer of $initializers) {
             await initializer();
         }
 
         // now we can actually execute the page scripts if we are in play mode
+        loader.log("Initializing scripts...")
         if ($mode == 'play') {
             for (let script of $scriptsQueue) {
                 script.evaluate();
@@ -40,11 +58,16 @@
         }
 
         // now we call all post initializers AFTER we actually executed all page scripts
+        loader.log("Running post initializers...")
+
+        if (appConfig_ && appConfig_.autoclose_loader) {
+            loader.remove();
+        }
+
         setTimeout(() => {
             for (let initializer of $postInitializers) {
                 initializer();
             }
-            loader.remove();
         }, 3000);
     };
 </script>
@@ -56,7 +79,7 @@
       width: 40px;
       height: 40px;
       position: absolute;
-      top: calc(50% - 20px);
+      top: calc(40% - 20px);
       left: calc(50% - 20px);
       border-radius: 50%;
     }
@@ -76,7 +99,6 @@
       width: 100%;
       display: block;
       color: rgba(255, 255, 255, 0.8);
-      text-transform: uppercase;
       font-size: 0.8rem;
       margin-top: 6rem;
     }

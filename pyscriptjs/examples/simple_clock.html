@@ -14,6 +14,9 @@
     - paths:
       - ./utils.py
     </py-env>
+    <py-config>
+      - autoclose_loader: false
+    </py-config>
   </head>
 
   <body>
@@ -21,6 +24,7 @@
     <div id="outputDiv2" class="font-mono"></div>
     <div id="outputDiv3" class="font-mono"></div>
     <py-script output="outputDiv">
+pyscript_loader.log("HI")
 import utils
 utils.now()
     </py-script>
@@ -40,7 +44,7 @@ async def foo():
       out3.write("It's espresso time!")
     else:
       out3.clear()
-
+#pyscript_loader.close()
 pyscript.run_until_complete(foo())
     </py-script>
   </body>

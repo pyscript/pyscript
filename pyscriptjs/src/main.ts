@@ -10,6 +10,8 @@ import { PyInputBox } from './components/pyinputbox';
 import { PyWidget } from './components/base';
 import { PyLoader } from './components/pyloader';
 import { globalLoader } from './stores';
+import { PyConfig } from './components/pyconfig';
+
 
 const xPyScript = customElements.define('py-script', PyScript);
 const xPyRepl = customElements.define('py-repl', PyRepl);
@@ -20,6 +22,8 @@ const xPyTitle = customElements.define('py-title', PyTitle);
 const xPyInputBox = customElements.define('py-inputbox', PyInputBox);
 const xPyWidget = customElements.define('py-register-widget', PyWidget);
 const xPyLoader = customElements.define('py-loader', PyLoader);
+const xPyConfig = customElements.define('py-config', PyConfig);
+
 
 // add loader to the page body
 const loader = document.createElement('py-loader');
