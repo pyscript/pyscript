@@ -3,12 +3,6 @@
 
 default_stages: [commit]
 repos:
--   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.3.0
-    hooks:
-    -   id: pretty-format-yaml
-        args: [--autofix, --indent, '4']
-
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.2.0
     hooks:
@@ -54,6 +48,12 @@ repos:
     -   id: isort
         name: isort (python)
         args: [--profile, black]
+
+-   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: pretty-format-yaml
+        args: [--autofix, --indent, '4']
 
 -   repo: https://github.com/asottile/pyupgrade
     rev: v2.32.1
