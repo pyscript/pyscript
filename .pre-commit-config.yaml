@@ -65,17 +65,15 @@ repos:
 
 
 -   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: 'v8.4.0'
+    rev: v8.4.0
     hooks:
     -   id: eslint
         files: pyscriptjs/src/.*\.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
         types: [file]
         additional_dependencies:
-        - 'eslint'
-        - 'eslint-plugin-svelte3'
-        - 'typescript'
-        - '@typescript-eslint/eslint-plugin'
-        - '@typescript-eslint/parser'
+        -   eslint
+        -   eslint-plugin-svelte3
+        -   typescript
+        -   '@typescript-eslint/eslint-plugin'
+        -   '@typescript-eslint/parser'
 #        - '@tsconfig/svelte'
-
-
