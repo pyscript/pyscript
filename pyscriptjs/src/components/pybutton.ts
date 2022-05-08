@@ -19,14 +19,15 @@ export class PyButton extends BaseEvalElement {
 
         // Styling does the same thing as class in normal HTML. Using the name "class" makes the style to malfunction
         if (this.hasAttribute('styling')) {
-             let klass = this.getAttribute('styling');
-            if (klass.trim() == ''){
+            const klass = this.getAttribute('styling').trim();
+            if (klass === ''){
                 this.class = this.defaultClass
             }else{
-                klass = klass.trim()
-                const newClassArray = klass.split(' ');
                 // trim each element to remove unnecessary spaces which makes the button style to malfunction
-                this.class = (() => {const concatenatedString = []; for (let i = 0; i < newClassArray.length; i++) {if (newClassArray[i].trim() !== '')(concatenatedString.push(newClassArray[i].trim()));} return concatenatedString;})();
+                this.class = klass
+                    .split(' ')
+                    .map(x => x.trim())
+                    .filter(x => x !== '');
             }
         }
         else {
