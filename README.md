@@ -26,6 +26,26 @@ At that point, you can then use PyScript components in your html page. PyScript 
 
 Check out the [pyscriptjs/examples](pyscriptjs/examples) folder for more examples on how to use it, all you need to do is open them in Chrome.
 
+If you are trying to open the examples in the Chrome then try to change the `pyscript.js` and `pyscript.css` local reference to the CDN one that mentioned above (https://pyscript.net/alpha/pyscript.js, https://pyscript.net/alpha/pyscript.css).
+
+For example:
+
+In the `hello_world.html` file,
+
+Change the following lines 
+
+```
+<link rel="stylesheet" href="build/pyscript.js" /> 
+<script defer src="build/pyscript.js"></script>
+```
+
+with remote cdn links.
+
+```
+<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+```
+
 ## How to Contribute
 
 To contribute:

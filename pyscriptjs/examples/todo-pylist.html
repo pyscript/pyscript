@@ -6,14 +6,14 @@
     <title>Todo App</title>
 
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="/build/pyscript.css" />
+    <link rel="stylesheet" href="build/pyscript.css" />
 
-    <script defer src="/build/pyscript.js"></script>
+    <script defer src="build/pyscript.js"></script>
     <py-env>
     - paths:
       - ./utils.py
     </py-env>
-    <py-register-widget src="/pylist.py" name="py-list" klass="PyList"></py-register-widget>
+    <py-register-widget src="pylist.py" name="py-list" klass="PyList"></py-register-widget>
 
     <py-script>
       def add_task(*ags, **kws):

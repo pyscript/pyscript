@@ -35,6 +35,28 @@ A simple webapp to demonstrate the capabilities of PyScript.
    [http://localhost:8080](http://localhost:8080). This will provide a list of
    demos that you can run.
 
+
+   You can take the examples folder and change the `pyscript.js` and `pyscript.css` local reference to the CDN one that mentioned above to run the examples indivitually on the browser.
+
+   **For example:**
+
+   In the hello_world.html file,
+
+   Change the following lines 
+
+   ```
+   <link rel="stylesheet" href="build/pyscript.js" /> 
+   <script defer src="build/pyscript.js"></script>
+   ```
+
+   with remote cdn links.
+
+   ```
+   <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+   <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+   ```
+
+
 ## More information
 
 There is a forum PyScript where you can discuss the project or ask questions at [https://community.anaconda.cloud/c/pyscript](https://community.anaconda.cloud/c/pyscript)
