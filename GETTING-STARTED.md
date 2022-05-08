@@ -57,13 +57,13 @@ example, we can compute π.
   <body>
       <py-script>
 print("Let's compute π:")
-def wallis(n):
+def compute_pi(n):
     pi = 2
     for i in range(1,n):
         pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
     return pi
 
-pi = wallis(100000)
+pi = compute_pi(100000)
 s = f"π is approximately {pi:.3f}"
 print(s)
       </py-script>
@@ -97,13 +97,13 @@ the `<py-script>` tag write to.
 import datetime as dt
 pyscript.write('today', dt.date.today().strftime('%A %B %d, %Y'))
 
-def wallis(n):
+def compute_pi(n):
     pi = 2
     for i in range(1,n):
         pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
     return pi
 
-pi = wallis(100000)
+pi = compute_pi(100000)
 pyscript.write('pi', f'π is approximately {pi:.3f}')
     </py-script>
   </body>
