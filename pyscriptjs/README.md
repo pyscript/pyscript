@@ -42,10 +42,10 @@ A simple webapp to demonstrate the capabilities of PyScript.
 
    In the hello_world.html file,
 
-   Change the following lines 
+   Change the following lines
 
    ```
-   <link rel="stylesheet" href="build/pyscript.js" /> 
+   <link rel="stylesheet" href="build/pyscript.js" />
    <script defer src="build/pyscript.js"></script>
    ```
 
