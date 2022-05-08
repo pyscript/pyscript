@@ -1,31 +1,30 @@
 name: Build
 
 on:
-    push: # Only run on merges into master that modify files under pyscriptjs/
+    push:  # Only run on merges into master that modify files under pyscriptjs/
         branches: main
         paths:
         -   pyscriptjs/**
-        -   .github/workflows/** # Test that workflows work when changed
+        -   .github/workflows/**  # Test that workflows work when changed
 
-    pull_request: # Run on any PR that modifies files in pyscriptjs/
+    pull_request:  # Run on any PR that modifies files in pyscriptjs/
         paths:
         -   pyscriptjs/**
         -   .github/workflows/**
 
 jobs:
     build:
-        runs-on: ubuntu-latest # Will be self hosted soon
+        runs-on: ubuntu-latest  # Will be self hosted soon
         defaults:
             run:
                 working-directory: ./pyscriptjs
-
         steps:
         -   name: Checkout
             uses: actions/checkout@v3
         -   name: Install node
             uses: actions/setup-node@v3
             with:
-                node-version: 12.x
+                node-version: 18.x
         -   name: Cache node modules
             uses: actions/cache@v3
             env:
