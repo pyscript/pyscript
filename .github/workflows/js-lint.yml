@@ -1,24 +1,25 @@
-name: Build
+name: Lint
 
 on:
+
     push: # Only run on merges into master that modify files under pyscriptjs/
-        branches: main
+        branches:
+        -   main
         paths:
         -   pyscriptjs/**
         -   .github/workflows/** # Test that workflows work when changed
 
-    pull_request: # Run on any PR that modifies files in pyscriptjs/
-        paths:
-        -   pyscriptjs/**
-        -   .github/workflows/**
+        pull_request: # Run on any PR that modifies files in pyscriptjs/
+            paths:
+            -   pyscriptjs/**
+            -   .github/workflows/**
 
 jobs:
     build:
-        runs-on: ubuntu-latest # Will be self hosted soon
+        runs-on: ubuntu-latest
         defaults:
             run:
                 working-directory: ./pyscriptjs
-
         steps:
         -   name: Checkout
             uses: actions/checkout@v3
@@ -41,6 +42,6 @@ jobs:
         -   name: Install dependencies
             run: |
                 npm install
-        -   name: Build pyscript
+        -   name: Run linter
             run: |
-                npm run build
+                npm run lint

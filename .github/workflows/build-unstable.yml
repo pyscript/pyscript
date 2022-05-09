@@ -1,18 +1,28 @@
-name: Lint
+name: Build
 
 on:
     push: # Only run on merges into master that modify files under pyscriptjs/
         branches:
         -   main
+        paths:
+        -   pyscriptjs/**
+        -   .github/workflows/** # Test that workflows work when changed
 
     pull_request: # Run on any PR that modifies files in pyscriptjs/
+        paths:
+        -   pyscriptjs/**
+        -   .github/workflows/**
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: ./pyscriptjs
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: ./pyscriptjs
+
         steps:
         -   name: Checkout
             uses: actions/checkout@v3
@@ -35,6 +45,14 @@ jobs:
         -   name: Install dependencies
             run: |
                 npm install
-        -   name: Run linter
+        -   name: Build pyscript
             run: |
-                npm run lint
+                npm run build
+    # Deploy to S3
+        -   name: Configure AWS credentials
+            uses: aws-actions/configure-aws-credentials@v1.6.1
+            with:
+                aws-region: ${{secrets.AWS_REGION}}
+                role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
+        -   name: Sync to S3
+            run: aws s3 sync . s3://pyscript-static/unstable/ # What artifacts exactly need to be copied?
