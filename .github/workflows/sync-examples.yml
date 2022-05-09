@@ -1,4 +1,4 @@
-name: "[CI] Sync Examples"
+name: '[CI] Sync Examples'
 
 on:
     push: # Only run on merges into master that modify files under pyscriptjs/
