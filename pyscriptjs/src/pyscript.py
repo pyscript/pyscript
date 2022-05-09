@@ -3,6 +3,7 @@ import base64
 import io
 import sys
 import time
+from textwrap import dedent
 
 import micropip  # noqa: F401
 from js import console, document
@@ -257,12 +258,14 @@ class PyItemTemplate(Element):
         console.log("creating values")
 
         console.log("creating innerHtml")
-        new_child._element.innerHTML = f"""
-<label for="flex items-center p-2 ">
-  <input class="mr-2" type="checkbox" class="task-check">
-  <p class="m-0 inline">{self.render_content()}</p>
-</label>
-    """
+        new_child._element.innerHTML = dedent(
+            f"""
+            <label for="flex items-center p-2 ">
+              <input class="mr-2" type="checkbox" class="task-check">
+              <p class="m-0 inline">{self.render_content()}</p>
+            </label>
+            """
+        )
 
         console.log("returning")
         return new_child
