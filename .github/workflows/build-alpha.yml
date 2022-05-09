@@ -8,11 +8,6 @@ on:
         -   pyscriptjs/**
         -   .github/workflows/** # Test that workflows work when changed
 
-    pull_request:
-        paths:
-        -   pyscriptjs/**
-        -   .github/workflows/**
-
 jobs:
     build:
         runs-on: ubuntu-latest
