@@ -55,4 +55,4 @@ jobs:
                 aws-region: ${{secrets.AWS_REGION}}
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
         -   name: Sync to S3
-            run: aws s3 sync . s3://pyscript-static/unstable/ # What artifacts exactly need to be copied?
+            run: aws s3 sync . s3://pyscript-static/alpha/ # What artifacts exactly need to be copied?
