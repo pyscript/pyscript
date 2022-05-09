@@ -1,4 +1,4 @@
-name: Lint
+name: "[Test] Lint JS"
 
 on:
 

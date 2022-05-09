@@ -1,4 +1,4 @@
-name: Build
+name: "[CI] Build Unstable"
 
 on:
     push: # Only run on merges into master that modify files under pyscriptjs/

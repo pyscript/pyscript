@@ -1,4 +1,4 @@
-name: Build
+name: "[CI] Build Alpha"
 
 on:
     push:
