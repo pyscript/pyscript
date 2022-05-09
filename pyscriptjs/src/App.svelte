@@ -28,15 +28,15 @@
         // now we can actually execute the page scripts if we are in play mode
         if ($mode == 'play') {
             for (let script of $scriptsQueue) {
-                script.evaluate();
+                await script.evaluate();
             }
             scriptsQueue.set([]);
         }
 
         // now we call all post initializers AFTER we actually executed all page scripts
-        setTimeout(() => {
+        setTimeout(async () => {
             for (let initializer of $postInitializers) {
-                initializer();
+                await initializer();
             }
         }, 3000);
     };
