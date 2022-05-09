@@ -71,10 +71,10 @@ export class PyEnv extends HTMLElement {
                 catch (e) {
                         //Should we still export full error contents to console?
                         //console.warn("Caught an error in loadPaths");
-                        let errorContent = `<p>PyScript: Access to local files 
+                        let errorContent = `<p>PyScript: Access to local files
                         (using "Paths:" in &lt;py-env&gt;) is not available when directly opening a HTML file;
                         you must use a webserver to serve the additional files.
-                        See <a style="text-decoration: underline;" href="https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062">this reference</a> 
+                        See <a style="text-decoration: underline;" href="https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062">this reference</a>
                         on starting a simple webserver with Python.</p>`;
                         showError(errorContent);
 
