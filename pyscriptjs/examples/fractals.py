@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import numpy as np
 from numpy.polynomial import Polynomial
 
@@ -14,7 +12,7 @@ def mandelbrot(
     max_iterations: int = 100
 ) -> np.array:
     """
-    From https://www.learnpythonwithrune.org/numpy-compute-mandelbrot-set-by-vectorization/.
+    https://www.learnpythonwithrune.org/numpy-compute-mandelbrot-set-by-vectorization
     """
     # To make navigation easier we calculate these values
     x_width, y_height = 1.5, 1.5 * height / width
@@ -56,7 +54,7 @@ def julia(
     max_iterations: int = 100
 ) -> np.array:
     """
-    From https://www.learnpythonwithrune.org/numpy-calculate-the-julia-set-with-vectorization/.
+    https://www.learnpythonwithrune.org/numpy-calculate-the-julia-set-with-vectorization
     """
     # To make navigation easier we calculate these values
     x_width, y_height = 1.5, 1.5 * height / width
@@ -84,7 +82,7 @@ def julia(
     return div_time
 
 
-Range = Tuple[float, float]
+Range = tuple[float, float]
 
 
 def newton(
@@ -96,7 +94,7 @@ def newton(
     xr: Range = (-2.5, 1),
     yr: Range = (-1, 1),
     max_iterations: int = 100
-) -> (np.array, np.array):
+) -> tuple[np.array, np.array]:
     """ """
     # To make navigation easier we calculate these values
     x_from, x_to = xr

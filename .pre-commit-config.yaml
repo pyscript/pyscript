@@ -6,24 +6,59 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.2.0
     hooks:
+    -   id: check-builtin-literals
+    -   id: check-case-conflict
+    -   id: check-docstring-first
+    -   id: check-executables-have-shebangs
+    -   id: check-json
+        exclude: tsconfig.json
+    -   id: check-toml
+    -   id: check-xml
+    -   id: check-yaml
+    -   id: detect-private-key
     -   id: end-of-file-fixer
         exclude: \.min\.js$
     -   id: trailing-whitespace
-    -   id: check-json
-        exclude: tsconfig.json
-    -   id: check-yaml
--   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.3.0
+
+-   repo: https://github.com/PyCQA/bandit
+    rev: 1.7.4
     hooks:
-    -   id: pretty-format-yaml
-        args: [--autofix, --indent, '4']
+    -   id: bandit
+        args:
+        -   --skip=B201
+
 -   repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:
     -   id: black
+
+-   repo: https://github.com/codespell-project/codespell
+    rev: v2.1.0
+    hooks:
+    -   id: codespell  # See 'setup.cfg' for args
+
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: 3.9.2
+    hooks:
+    -   id: flake8  # See 'setup.cfg' for args
+        additional_dependencies: [flake8-bugbear, flake8-comprehensions]
+
 -   repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
     -   id: isort
         name: isort (python)
         args: [--profile, black]
+
+-   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: pretty-format-yaml
+        args: [--autofix, --indent, '4']
+
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v2.32.1
+    hooks:
+    -   id: pyupgrade
+        args:
+        -   --py310-plus
