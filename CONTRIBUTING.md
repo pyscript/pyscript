@@ -91,7 +91,6 @@ This Project welcomes contributions, suggestions, and feedback. All contribution
 Contributors are invited to be maintainers of the project by demonstrating good decision making in their contributions, a commitment to the goals of the project, and consistent adherence to the [code of conduct](https://github.com/pyscript/governance/blob/main/CODE-OF-CONDUCT.md). New maintainers are invited by a 3/4 vote of the existing maintainers.
 
 ## Trademarks
->>>>>>> 825c63c1844d020f517c7a1f41df82908896667c
 
 The Project abides by the Organization's [trademark policy](https://github.com/pyscript/governance/blob/main/TRADEMARKS.md).
 
