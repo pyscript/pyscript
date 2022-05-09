@@ -39,20 +39,39 @@ const loadPackage = async function (package_name: string[] | string, runtime: an
 
 const loadFromFile = async function (s: string, runtime: any): Promise<any> {
     const filename = getLastPath(s);
-    await runtime.runPythonAsync(
-        `
-        from pyodide.http import pyfetch
-        from js import console
-        response = await pyfetch("` +
-            s +
-            `")
-        content = await response.bytes()
-        with open("` +
-            filename +
-            `", "wb") as f:
-            f.write(content)
-    `,
-    );
+    try {
+        await runtime.runPythonAsync(
+            `
+            from pyodide.http import pyfetch
+            from js import console
+
+            response = None;
+            try:
+                response = await pyfetch("` +
+                    s +
+                    `")
+            except Exception as err:
+                console.warn("PyScript: Access to local files (using 'Paths:' in py-env) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
+            content = await response.bytes()
+            with open("` +
+                filename +
+                `", "wb") as f:
+                f.write(content)
+        `,
+        );
+    }
+    catch (e) {
+        if (e instanceof pyodide.PythonError){
+            if (e.message.indexOf("Failed to fetch") > -1){
+                //Should we still log the full text of the Pyodide error to console?
+                //console.log("Full text of PythonError from failed fetch:\r\n" + e)
+            }
+            else{
+                console.error("PyScript: an error occured when loading files:\r\n" + e)
+            }
+        }
+        throw e;
+    }
 };
 
 export { loadInterpreter, pyodideReadyPromise, loadPackage, loadFromFile };

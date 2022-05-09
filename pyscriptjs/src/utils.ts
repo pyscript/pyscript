@@ -37,4 +37,19 @@ function guidGenerator(): string {
     return S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4();
 }
 
-export { addClasses, getLastPath, ltrim, htmlDecode, guidGenerator };
+/*
+ *  Display a page-wide error message to show that something has gone wrong with
+ *  PyScript or Pyodide during loading. Probably not be used for issues that occur within
+ *  Python scripts, since stderr can be routed to somewhere in the DOM
+*/
+function showError(msg: string): void {
+    let warning = document.createElement("div")
+    warning.style.backgroundColor = "LightCoral";
+    warning.style.alignContent = "center";
+    warning.style.margin = "4px";
+    warning.style.padding = "4px";
+    warning.innerHTML = msg;
+    document.body.prepend(warning);
+}
+
+export { addClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError };
