@@ -25,7 +25,7 @@ export class PyButton extends BaseEvalElement {
             }else{
                 klass = klass.trim()
                 const newClassArray = klass.split(' ');
-                // trim each element to remove unecessary spaces which makes the button style to malfunction
+                // trim each element to remove unnecessary spaces which makes the button style to malfunction
                 this.class = (() => {const concatenatedString = []; for (let i = 0; i < newClassArray.length; i++) {if (newClassArray[i].trim() !== '')(concatenatedString.push(newClassArray[i].trim()));} return concatenatedString;})();
             }
         }
@@ -61,12 +61,10 @@ export class PyButton extends BaseEvalElement {
 
         // now that we appended and the element is attached, lets connect with the event handlers
         // defined for this widget
-        setTimeout(() => {
-            this.eval(this.code).then(() => {
-                this.eval(registrationCode).then(() => {
-                    console.log('registered handlers');
-                });
-            });
+        setTimeout(async () => {
+            await this.eval(this.code);
+            await this.eval(registrationCode);
+            console.log('registered handlers');
         }, 4000);
 
         console.log('py-button connected');
