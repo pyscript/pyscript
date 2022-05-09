@@ -169,10 +169,10 @@ async function mountElements() {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
 
     let source = '';
-		for (const el of matches) {
-			const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
-			source += `\n${mountName} = Element("${el.id}")`;
-		}
+    for (const el of matches) {
+        const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
+        source += `\n${mountName} = Element("${el.id}")`;
+    }
     await pyodide.runPythonAsync(source);
 }
 addInitializer(mountElements);
