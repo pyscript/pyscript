@@ -44,7 +44,7 @@ introduce the 8 tags provided by PyScript.
 
 ## The py-script tag
 
-The `<py-script>` tag let's you execute multi-line Python scripts and
+The `<py-script>` tag lets you execute multi-line Python scripts and
 print back onto the page. For
 example, we can compute π.
 
