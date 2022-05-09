@@ -1,7 +1,7 @@
 name: '[CI] Sync Examples'
 
 on:
-    push: # Only run on merges into master that modify files under pyscriptjs/
+    push: # Only run on merges into main that modify files under pyscriptjs/examples/
         branches:
         -   main
         paths:
