@@ -78,7 +78,7 @@ export class PyRepl extends BaseEvalElement {
 
         this.editor = new EditorView({
             state: EditorState.create({
-                doc: this.code.trim(), 
+                doc: this.code.trim(),
                 extensions,
             }),
             parent: this.editorNode,
