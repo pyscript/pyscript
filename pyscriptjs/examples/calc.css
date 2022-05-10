@@ -103,7 +103,7 @@ body {
     height: 70px;
 }
 #typing-text span {
-    color: #F47A7B !important;
+    color: #F47A7B;
     padding: 0px 10px;
     font-size: 18px;
 }
