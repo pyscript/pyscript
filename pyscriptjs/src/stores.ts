@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import type { PyScript } from './components/pyscript';
 
-type Initializer = () => Promise<void>;
+export type Initializer = () => Promise<void>;
 
 export const pyodideLoaded = writable({
     loaded: false,
