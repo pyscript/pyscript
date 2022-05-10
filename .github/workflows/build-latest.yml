@@ -9,9 +9,11 @@ on:
         -   .github/workflows/build-latest.yml # Test that workflow works when changed
 
     pull_request: # Run on any PR that modifies files in pyscriptjs/
+        branches:
+        -   main
         paths:
         -   pyscriptjs/**
-        -   .github/workflows/**
+        -   .github/workflows/build-latest.yml # Test that workflow works when changed
 
 jobs:
     build:
@@ -21,7 +23,7 @@ jobs:
             id-token: write
         defaults:
             run:
-                working-directory: ./pyscriptjs
+                working-directory: pyscriptjs
 
         steps:
         -   name: Checkout
@@ -48,11 +50,14 @@ jobs:
         -   name: Build pyscript
             run: |
                 npm run build
+
         # Deploy to S3
         -   name: Configure AWS credentials
+            if: github.ref == 'refs/heads/main' # Only deploy on merge into main
             uses: aws-actions/configure-aws-credentials@v1.6.1
             with:
                 aws-region: ${{secrets.AWS_REGION}}
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
         -   name: Sync to S3
-            run: aws s3 sync . s3://pyscript-static/unstable/ # What artifacts exactly need to be copied?
+            if: github.ref == 'refs/heads/main'
+            run: aws s3 sync --quiet ./examples/build/ s3://pyscript-static/unstable
