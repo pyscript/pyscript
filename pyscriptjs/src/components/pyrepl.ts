@@ -68,7 +68,6 @@ export class PyRepl extends BaseEvalElement {
             ]),
         ];
 
-        // supoprt dark theme TODO: make
         if (this.hasAttribute('theme')) {
             this.theme = this.getAttribute('theme');
 
