@@ -30,8 +30,6 @@ mode.subscribe(value => {
     currentMode = value;
 });
 
-const languageConf = new Compartment();
-
 function createCmdHandler(el) {
     // Creates a codemirror cmd handler that calls the el.evaluate when an event
     // triggers that specific cmd
@@ -58,6 +56,7 @@ export class PyRepl extends BaseEvalElement {
         this.checkId();
         this.code = this.innerHTML;
         this.innerHTML = '';
+        const languageConf = new Compartment();
 
         const extensions = [
             basicSetup,
@@ -68,29 +67,21 @@ export class PyRepl extends BaseEvalElement {
                 { key: 'Shift-Enter', run: createCmdHandler(this) },
             ]),
         ];
-        const customTheme = EditorView.theme({
-            '&.cm-focused .cm-editor': { outline: '0px' },
-            '.cm-scroller': { lineHeight: 2.5 },
-            '.cm-activeLine': { backgroundColor: '#fff' },
-            '.cm-content': { padding: 0, backgroundColor: '#f5f5f5' },
-            '&.cm-focused .cm-content': { border: '1px solid #1876d2' },
-        });
 
-        if (!this.hasAttribute('theme')) {
+        // supoprt dark theme TODO: make
+        if (this.hasAttribute('theme')) {
             this.theme = this.getAttribute('theme');
-            if (this.theme == 'dark') {
-                extensions.push(oneDarkTheme);
+
+            if (this.theme === 'dark') {
+                extensions.push(oneDarkTheme)
             }
-            extensions.push(customTheme);
         }
 
-        const startState = EditorState.create({
-            doc: this.code.trim(),
-            extensions: extensions,
-        });
-
         this.editor = new EditorView({
-            state: startState,
+            state: EditorState.create({
+                doc: this.code.trim(), 
+                extensions,
+            }),
             parent: this.editorNode,
         });
 
