@@ -3,11 +3,12 @@ import { getLastPath } from './utils';
 let pyodideReadyPromise;
 let pyodide;
 
-const loadInterpreter = async function (): Promise<any> {
+const loadInterpreter = async function (indexUrl:string): Promise<any> {
     console.log('creating pyodide runtime');
     // eslint-disable-next-line
     // @ts-ignore
     pyodide = await loadPyodide({
+        // indexURL: indexUrl,
         stdout: console.log,
         stderr: console.log,
         fullStdLib: false
