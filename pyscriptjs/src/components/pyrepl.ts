@@ -95,13 +95,13 @@ export class PyRepl extends BaseEvalElement {
         });
 
         const mainDiv = document.createElement('div');
-        mainDiv.id = 'code-editor';
         addClasses(mainDiv, ['parentBox', 'flex', 'flex-col', 'mt-2', 'mx-8', 'relative']);
 
         // Styles that we use to hide the labels whilst also keeping it accessible for screen readers
         const labelStyle = 'overflow:hidden; display:block; width:1px; height:1px';
 
         // Code editor Label
+        this.editorNode.id = 'code-editor';
         const editorLabel = document.createElement('label');
         editorLabel.innerHTML = 'Python Script Area';
         editorLabel.setAttribute('style', labelStyle);
