@@ -26,7 +26,7 @@
         loader.log("Loading runtime...")
         pyodideReadyPromise = loadInterpreter();
         const pyodide = await pyodideReadyPromise;
-        let newEnv = {
+        const newEnv = {
             id: 'a',
             promise: pyodideReadyPromise,
             runtime: pyodide,
