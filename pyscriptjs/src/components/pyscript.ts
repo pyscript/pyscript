@@ -77,11 +77,10 @@ export class PyScript extends BaseEvalElement {
             }
         }
 
+        this.appendChild(mainDiv);
         if (currentMode == 'edit') {
             // TODO: We need to build a plan for this
-            this.appendChild(mainDiv);
         } else {
-            this.appendChild(mainDiv);
             addToScriptsQueue(this);
         }
 

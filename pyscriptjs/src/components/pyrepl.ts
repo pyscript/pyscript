@@ -35,7 +35,7 @@ const languageConf = new Compartment();
 function createCmdHandler(el) {
     // Creates a codemirror cmd handler that calls the el.evaluate when an event
     // triggers that specific cmd
-    const toggleCheckbox: StateCommand = ({ state, dispatch }) => {
+    const toggleCheckbox: StateCommand = ({ state }) => {
         return el.evaluate(state);
     };
     return toggleCheckbox;
@@ -86,7 +86,7 @@ export class PyRepl extends BaseEvalElement {
 
         const startState = EditorState.create({
             doc: this.code.trim(),
-            extensions: extensions,
+            extensions,
         });
 
         this.editor = new EditorView({
