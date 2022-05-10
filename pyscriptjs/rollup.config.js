@@ -80,7 +80,12 @@ export default {
     name: "app",
     file: "examples/build/pyscript.js",
     },
-    { file: "examples/build/pyscript.min.js", format: "iife", plugins: [terser()] },
+    {
+      file: "examples/build/pyscript.min.js",
+      format: "iife",
+      sourcemap: true,
+      plugins: [terser()],
+    },
   ],
   plugins: [
     svelte({
