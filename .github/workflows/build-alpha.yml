@@ -51,4 +51,4 @@ jobs:
                 aws-region: ${{secrets.AWS_REGION}}
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
         -   name: Sync to S3
-            run: aws s3 sync --quiet ./examples/build/* s3://pyscript-static/alpha/
+            run: aws s3 sync --quiet ./examples/build/ s3://pyscript-static/alpha/
