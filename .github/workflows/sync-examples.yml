@@ -8,8 +8,6 @@ on:
         -   pyscriptjs/examples/**
         -   .github/workflows/sync-examples.yml # Test that workflow works when changed
 
-    pull_request: # for testing
-
 jobs:
     build:
         runs-on: ubuntu-latest

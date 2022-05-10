@@ -9,6 +9,11 @@ on:
         -   .github/workflows/build-latest.yml # Test that workflow works when changed
 
     pull_request: # Run on any PR that modifies files in pyscriptjs/
+        branches:
+        -   main
+        paths:
+        -   pyscriptjs/**
+        -   .github/workflows/build-latest.yml # Test that workflow works when changed
 
 jobs:
     build:
