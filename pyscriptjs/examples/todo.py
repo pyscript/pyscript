@@ -1,6 +1,5 @@
 from datetime import datetime as dt
 
-from js import console
 from utils import add_class, remove_class
 
 tasks = []
@@ -27,7 +26,8 @@ def add_task(*ags, **kws):
 
     tasks.append(task)
 
-    # add the task element to the page as new node in the list by cloning from a template
+    # add the task element to the page as new node in the list by cloning from a
+    # template
     task_html = task_template.clone(task_id, to=task_list)
     task_html_content = task_html.select("p")
     task_html_content.element.innerText = task["content"]

@@ -52,7 +52,7 @@
         loader.log("Initializing scripts...")
         if ($mode == 'play') {
             for (let script of $scriptsQueue) {
-                script.evaluate();
+                await script.evaluate();
             }
             scriptsQueue.set([]);
         }
@@ -65,9 +65,9 @@
             console.log("------ loader closed ------");
         }
 
-        setTimeout(() => {
+        setTimeout(async () => {
             for (let initializer of $postInitializers) {
-                initializer();
+                await initializer();
             }
         }, 3000);
     };

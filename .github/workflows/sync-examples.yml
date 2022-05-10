@@ -1,0 +1,33 @@
+name: '[CI] Sync Examples'
+
+on:
+    push: # Only run on merges into main that modify files under pyscriptjs/examples/
+        branches:
+        -   main
+        paths:
+        -   pyscriptjs/examples/**
+        -   .github/workflows/sync-examples.yml # Test that workflow works when changed
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        defaults:
+            run:
+                working-directory: pyscriptjs/examples
+
+        steps:
+
+        # Deploy to S3
+        -   name: Checkout
+            uses: actions/checkout@v3
+        -   name: Configure AWS credentials
+            uses: aws-actions/configure-aws-credentials@v1.6.1
+            with:
+                aws-region: ${{secrets.AWS_REGION}}
+                role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
+        -   name: Sync to S3
+            # Sync outdated or new files, delete ones no longer in source
+            run: aws s3 sync --quiet --delete . s3://pyscript-static/examples/ # Sync directory, delete what is not in source

@@ -3,9 +3,10 @@ import base64
 import io
 import sys
 import time
+from textwrap import dedent
 
-import micropip
-from js import console, document, setInterval, setTimeout
+import micropip  # noqa: F401
+from js import console, document
 
 loop = asyncio.get_event_loop()
 
@@ -72,10 +73,9 @@ def format_mime(obj):
 
     mimebundle = eval_formatter(obj, "_repr_mimebundle_")
     if isinstance(mimebundle, tuple):
-        format_dict, md_dict = mimebundle
+        format_dict, _ = mimebundle
     else:
         format_dict = mimebundle
-        md_dict = {}
 
     output, not_available = None, []
     for method, mime_type in reversed(MIME_METHODS.items()):
@@ -130,7 +130,7 @@ class PyScript:
 
     @staticmethod
     def run_until_complete(f):
-        p = loop.run_until_complete(f)
+        _ = loop.run_until_complete(f)
 
 
 class Element:
@@ -258,12 +258,14 @@ class PyItemTemplate(Element):
         console.log("creating values")
 
         console.log("creating innerHtml")
-        new_child._element.innerHTML = f"""
-<label for="flex items-center p-2 ">
-  <input class="mr-2" type="checkbox" class="task-check">
-  <p class="m-0 inline">{self.render_content()}</p>
-</label>
-    """
+        new_child._element.innerHTML = dedent(
+            f"""
+            <label for="flex items-center p-2 ">
+              <input class="mr-2" type="checkbox" class="task-check">
+              <p class="m-0 inline">{self.render_content()}</p>
+            </label>
+            """
+        )
 
         console.log("returning")
         return new_child
@@ -311,7 +313,6 @@ class PyListTemplate:
         return [c.data for c in self._children]
 
     def render_children(self):
-        out = []
         binds = {}
         for i, c in enumerate(self._children):
             txt = c.element.innerHTML
@@ -328,7 +329,7 @@ class PyListTemplate:
             srcEl.element.onclick()
             evtEl.classList = srcEl.element.classList
 
-        for new_id, old_id in binds.items():
+        for new_id in binds:
             Element(new_id).element.onclick = foo
 
     def connect(self):

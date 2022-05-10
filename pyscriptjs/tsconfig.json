@@ -1,5 +1,7 @@
 {
-  "extends": "@tsconfig/svelte/tsconfig.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Svelte",
+  "_version": "3.0.0",
 
   "include": ["src/**/*"],
   "exclude": ["node_modules/*", "__sapper__/*", "public/*"],

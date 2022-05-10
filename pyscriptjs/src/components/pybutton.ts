@@ -12,25 +12,27 @@ export class PyButton extends BaseEvalElement {
     mount_name: string;
     constructor() {
         super();
-        this.defaultClass = ['p-2', 'text-white', 'bg-blue-600', 'border', 'border-blue-600','rounded']
+
+        this.defaultClass = ['p-2', 'text-white', 'bg-blue-600', 'border', 'border-blue-600', 'rounded'];
+
         if (this.hasAttribute('label')) {
             this.label = this.getAttribute('label');
         }
-    
+
         // Styling does the same thing as class in normal HTML. Using the name "class" makes the style to malfunction
         if (this.hasAttribute('styling')) {
-             let klass = this.getAttribute('styling');
-            if (klass.trim() == ''){
-                this.class = this.defaultClass
-            }else{
-                klass = klass.trim()
-                const newClassArray = klass.split(' ');
-                // trim each element to remove unecessary spaces which makes the button style to malfunction
-                this.class = (() => {const concatenatedString = []; for (let i = 0; i < newClassArray.length; i++) {if (newClassArray[i].trim() !== '')(concatenatedString.push(newClassArray[i].trim()));} return concatenatedString;})();
+            const klass = this.getAttribute('styling').trim();
+            if (klass === '') {
+                this.class = this.defaultClass;
+            } else {
+                // trim each element to remove unnecessary spaces which makes the button style to malfunction
+                this.class = klass
+                    .split(' ')
+                    .map(x => x.trim())
+                    .filter(x => x !== '');
             }
-        }
-        else {
-            this.class = this.defaultClass
+        } else {
+            this.class = this.defaultClass;
         }
     }
 
@@ -61,12 +63,10 @@ export class PyButton extends BaseEvalElement {
 
         // now that we appended and the element is attached, lets connect with the event handlers
         // defined for this widget
-        setTimeout(() => {
-            this.eval(this.code).then(() => {
-                this.eval(registrationCode).then(() => {
-                    console.log('registered handlers');
-                });
-            });
+        setTimeout(async () => {
+            await this.eval(this.code);
+            await this.eval(registrationCode);
+            console.log('registered handlers');
         }, 4000);
 
         console.log('py-button connected');
