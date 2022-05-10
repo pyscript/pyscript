@@ -32,4 +32,4 @@ jobs:
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
         -   name: Sync to S3
             # Sync outdated or new files, delete ones no longer in source
-            run: aws s3 sync --quiet --delete --exclude toga/static/pyscript . s3://pyscript-static/examples/ # Sync directory, delete what is not in source, ignore symlink file
+            run: aws s3 sync --quiet --delete . s3://pyscript-static/examples/ # Sync directory, delete what is not in source
