@@ -71,7 +71,7 @@ export class PyodideRuntime extends Object{
         loader.log("Loading runtime...")
     pyodideReadyPromise = loadInterpreter(this.src);
     const pyodide = await pyodideReadyPromise;
-    let newEnv = {
+    const newEnv = {
         id: 'a',
         promise: pyodideReadyPromise,
         runtime: pyodide,
@@ -89,14 +89,14 @@ export class PyodideRuntime extends Object{
 
     // now we call all initializers before we actually executed all page scripts
     loader.log("Initializing components...")
-    for (let initializer of initializers_) {
+    for (const initializer of initializers_) {
         await initializer();
     }
 
     // now we can actually execute the page scripts if we are in play mode
     loader.log("Initializing scripts...")
     if (mode_ == 'play') {
-        for (let script of scriptsQueue_) {
+        for (const script of scriptsQueue_) {
             script.evaluate();
         }
         scriptsQueue.set([]);
@@ -111,7 +111,7 @@ export class PyodideRuntime extends Object{
     }
 
     setTimeout(() => {
-        for (let initializer of postInitializers_) {
+        for (const initializer of postInitializers_) {
             initializer();
         }
     }, 3000);
@@ -145,7 +145,7 @@ export class PyConfig extends BaseEvalElement {
             };
         }else{
             this.values = Object.assign({}, ...loadedValues);
-        };
+        }
         if (this.values.runtimes === undefined){
             this.values.runtimes = [DEFAULT_RUNTIME];
         }
@@ -167,11 +167,13 @@ export class PyConfig extends BaseEvalElement {
 
     loadRuntimes(){
         console.log("Initializing runetimes...")
-        for (let runtime of this.values.runtimes) {
-            var script = document.createElement("script");  // create a script DOM node
+        for (const runtime of this.values.runtimes) {
+            const script = document.createElement("script");  // create a script DOM node
             const runtimeSpec = new PyodideRuntime(runtime);
             script.src = runtime;  // set its src to the provided URL
-            script.onload = runtimeSpec.initialize;
+            script.onload = () => {
+                runtimeSpec.initialize();
+            }
             document.head.appendChild(script);
         }
     }
