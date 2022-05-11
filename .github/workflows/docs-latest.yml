@@ -8,6 +8,9 @@ on:
 jobs:
     latest:
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
         steps:
 
         -   name: Checkout
@@ -35,6 +38,16 @@ jobs:
             with:
                 name: dirhtml
                 path: docs/_build/dirhtml/
+
+        # Deploy to S3
+        -   name: Configure AWS credentials
+            uses: aws-actions/configure-aws-credentials@v1.6.1
+            with:
+              aws-region: ${{secrets.AWS_REGION}}
+              role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
+
+        -   name: Sync to S3
+            run: aws s3 sync --quiet ./docs/_build/dirhtml/ s3://docs.pyscript.net/
 
     # # Disabled while we figure things out where to host the build artifacts
     # # For now use the https://pyscript-docs.readthedocs.io/ staging area.
