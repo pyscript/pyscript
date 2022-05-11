@@ -176,7 +176,7 @@ export class PyConfig extends BaseEvalElement {
     }
 
     loadRuntimes(){
-        console.log("Initializing runetimes...")
+        console.log("Initializing runtimes...")
         for (const runtime of this.values.runtimes) {
             const script = document.createElement("script");  // create a script DOM node
             const runtimeSpec = new PyodideRuntime(runtime.src);
