@@ -10,6 +10,7 @@ import { addClasses } from '../utils';
 import { BaseEvalElement } from './base';
 
 // Premise used to connect to the first available pyodide interpreter
+
 let pyodideReadyPromise;
 let environments;
 let currentMode;
@@ -17,6 +18,7 @@ let currentMode;
 pyodideLoaded.subscribe(value => {
     pyodideReadyPromise = value;
 });
+
 loadedEnvironments.subscribe(value => {
     environments = value;
 });
@@ -37,6 +39,15 @@ function createCmdHandler(el) {
         return el.evaluate(state);
     };
     return toggleCheckbox;
+}
+
+let initialTheme;
+function getEditorTheme(el: BaseEvalElement): string {
+    if (initialTheme) {
+        return initialTheme;
+    }
+
+    return initialTheme = el.getAttribute('theme');
 }
 
 export class PyRepl extends BaseEvalElement {
@@ -68,12 +79,8 @@ export class PyRepl extends BaseEvalElement {
             ]),
         ];
 
-        if (this.hasAttribute('theme')) {
-            this.theme = this.getAttribute('theme');
-
-            if (this.theme === 'dark') {
-                extensions.push(oneDarkTheme)
-            }
+        if (getEditorTheme(this) === 'dark') {
+            extensions.push(oneDarkTheme);
         }
 
         this.editor = new EditorView({
@@ -166,15 +173,19 @@ export class PyRepl extends BaseEvalElement {
         if (this.hasAttribute('auto-generate')) {
             const nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
             const newPyRepl = document.createElement('py-repl');
+
             newPyRepl.setAttribute('root', this.getAttribute('root'));
             newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
             newPyRepl.setAttribute('auto-generate', null);
+
             if (this.hasAttribute('output')) {
                 newPyRepl.setAttribute('output', this.getAttribute('output'));
             }
+
             if (this.hasAttribute('std-out')) {
                 newPyRepl.setAttribute('std-out', this.getAttribute('std-out'));
             }
+
             if (this.hasAttribute('std-err')) {
                 newPyRepl.setAttribute('std-err', this.getAttribute('std-err'));
             }
