@@ -5,14 +5,24 @@ import { loadInterpreter } from '../interpreter';
 import type { PyScript } from './pyscript';
 
 
-const DEFAULT_RUNTIME = "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js";
+const DEFAULT_RUNTIME = {
+    src: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js",
+    name: "pyodide-default",
+    lang: "python"
+}
+
+export type Runtime = {
+    src: string;
+    name?: string;
+    lang?: string;
+};
 
 export type AppConfig = {
     autoclose_loader: boolean;
     name?: string;
     version?: string;
-    runtimes?: Array<string>;
-  };
+    runtimes?: Array<Runtime>;
+};
 
 let appConfig_: AppConfig = {
     autoclose_loader: true,
@@ -169,8 +179,8 @@ export class PyConfig extends BaseEvalElement {
         console.log("Initializing runetimes...")
         for (const runtime of this.values.runtimes) {
             const script = document.createElement("script");  // create a script DOM node
-            const runtimeSpec = new PyodideRuntime(runtime);
-            script.src = runtime;  // set its src to the provided URL
+            const runtimeSpec = new PyodideRuntime(runtime.src);
+            script.src = runtime.src;  // set its src to the provided URL
             script.onload = () => {
                 runtimeSpec.initialize();
             }
