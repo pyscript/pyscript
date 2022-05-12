@@ -42,13 +42,13 @@ jobs:
             shell: bash -l {0}
             run: |
                 cd docs/
-                make dirhtml
+                make html
 
         -   name: Upload artifacts
             uses: actions/upload-artifact@v3
             with:
                 name: pyscript-docs-review-${{ github.event.number }}
-                path: docs/_build/dirhtml/
+                path: docs/_build/html/
 
         # Deploy to S3
         -   name: Configure AWS credentials
@@ -58,13 +58,13 @@ jobs:
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
 
         -   name: Copy redirect file
-            run: aws s3 cp --quiet ./docs/_build/dirhtml/_static/redirect.html s3://docs.pyscript.net/index.html
+            run: aws s3 cp --quiet ./docs/_build/html/_static/redirect.html s3://docs.pyscript.net/index.html
 
         # -   name: Delete review directory
         #     run: aws s3 rm --recursive s3://docs.pyscript.net/review/${{ github.event.number }}/
 
         -   name: Sync to S3
-            run: aws s3 sync --quiet ./docs/_build/dirhtml/ s3://docs.pyscript.net/review/${{ github.event.number }}/
+            run: aws s3 sync --quiet ./docs/_build/html/ s3://docs.pyscript.net/review/${{ github.event.number }}/
 
         -   name: Get PR metadata
             uses: actions/github-script@v6

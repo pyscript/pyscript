@@ -33,9 +33,6 @@ shell:
 htmlserve:
 	python -m http.server -d "$(BUILDDIR)/html/"
 
-dirhtmlserve:
-	python -m http.server -d "$(BUILDDIR)/dirhtml/"
-
 livehtml:
 	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
