@@ -11,8 +11,8 @@ concurrency:
   # concurrency group while a previous build is running it will be canceled.
   # Repeated pushes to a PR will cancel all previous builds, while multiple
   # merges to main will not cancel.
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+    cancel-in-progress: true
 
 jobs:
     review:
