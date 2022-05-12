@@ -11,6 +11,7 @@ jobs:
         permissions:
             contents: read
             id-token: write
+            statuses: write
         env:
             SPHINX_HTML_BASE_URL: https://docs.pyscript.net/
         steps:
