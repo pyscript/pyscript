@@ -5,6 +5,15 @@ on:
         branches:
         -   '*'
 
+concurrency:
+  # Concurrency group that uses the workflow name and PR number if available
+  # or commit SHA as a fallback. If a new build is triggered under that
+  # concurrency group while a previous build is running it will be canceled.
+  # Repeated pushes to a PR will cancel all previous builds, while multiple
+  # merges to main will not cancel.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
 jobs:
     review:
         runs-on: ubuntu-latest
