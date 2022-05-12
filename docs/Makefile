@@ -30,6 +30,16 @@ shell:
 	@export CONDA_ENV_PROMPT='<{name}>'
 	@echo 'conda activate $(env)'
 
+htmlserve:
+	python -m http.server -d "$(BUILDDIR)/html/"
+
+dirhtmlserve:
+	python -m http.server -d "$(BUILDDIR)/dirhtml/"
+
+livehtml:
+	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+
 .PHONY: help Makefile setup clean clean-all shell
 
 # Catch-all target: route all unknown targets to Sphinx using the new

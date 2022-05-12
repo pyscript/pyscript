@@ -13,3 +13,4 @@ dependencies:
 -   pip:
     -   sphinxemoji
     -   sphinx-sitemap
+    -   sphinx-autobuild
