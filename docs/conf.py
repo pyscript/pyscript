@@ -31,7 +31,7 @@ language = "en"
 extensions = [
     "myst_parser",
     "sphinx_copybutton",
-    "sphinx_panels",
+    "sphinx_design",
     "sphinx_togglebutton",
     "sphinx_sitemap",
     "sphinxemoji.sphinxemoji",

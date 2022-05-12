@@ -8,37 +8,34 @@ Python REPL directly to your website, share an interactive dashboard with a coll
 as an HTML file, or create a client-side Python-powered web application. This documentation
 will show you how.
 
-````{panels}
-## [Tutorials](tutorials/index.md)
+::::{grid} 2
+:gutter: 3
+
+:::{grid-item-card} [Tutorials](tutorials/index.md)
 
 Just getting started with PyScript?
 
 Check out our [getting started guide](tutorials/getting-started.md)!
-
----
-
-## [How-to guides](howtos/index.md)
+:::
+:::{grid-item-card} [How-to guides](howtos/index.md)
 
 **Coming soon!**
 
----
+:::
+:::{grid-item-card} [Concepts](concepts/index.md)
 
-## [Concepts](concepts/index.md)
+[What is PyScript?](concepts/what-is-pyscript.md)
 
-What is PyScript?
-
----
-
-## [Reference](reference/index.md)
+:::
+:::{grid-item-card} [Reference](reference/index.md)
 
 **Coming soon!**
 
-```{toctree}
+::{toctree}
 :maxdepth: 1
 
-```
-
-````
+:::
+::::
 
 ```{toctree}
 :maxdepth: 1

@@ -12,39 +12,21 @@ Click **Preview** to see the rendered HTML.
 To try it in your browser, copy the HTML source to a new HTML file and double-click it to open.
 
 
-````{tabbed} HTML Source
-```html
-<html>
-    <head>
-      <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-      <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
-      <py-env>
-        - numpy
-        - matplotlib
-      </py-env>
-    </head>
+::::{tab-set}
+:::{tab-item} HTML Source
 
-  <body>
-    <h1>Let's plot random numbers</h1>
-    <div id="plot"></div>
-    <py-script output="plot">
-import matplotlib.pyplot as plt
-import numpy as np
-
-x = np.random.randn(1000)
-y = np.random.randn(1000)
-
-fig, ax = plt.subplots()
-ax.scatter(x, y)
-fig
-    </py-script>
-  </body>
-</html>
+```{literalinclude} ../_static/examples/what-is-pyscript.html
+---
+linenos:
 ```
-````
 
-````{tabbed} Preview
+:::
+
+:::{tab-item} Preview
+
 ```{raw} html
-<iframe width="600" height="480" src="../_static/plot.html"></iframe>
+<iframe height="600px" width="100%" scrolling="auto" frameborder="0" src="../_static/examples/what-is-pyscript.html"></iframe>
 ```
-````
+
+:::
+::::

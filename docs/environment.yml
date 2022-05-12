@@ -8,7 +8,7 @@ dependencies:
 -   myst-parser=0.17.2
 -   pydata-sphinx-theme
 -   sphinx-copybutton
--   sphinx-panels
+-   sphinx-design
 -   sphinx-togglebutton
 -   pip:
     -   sphinxemoji
