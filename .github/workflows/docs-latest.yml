@@ -38,7 +38,7 @@ jobs:
         -   name: Upload artifacts
             uses: actions/upload-artifact@v3
             with:
-                name: dirhtml
+                name: pyscript-docs-latest.zip
                 path: docs/_build/dirhtml/
 
         # Deploy to S3
