@@ -72,13 +72,13 @@ print(s)
 
 ### Writing into labeled elements
 
-In the example above, we had a single `<py-script>` tag and it printed
-one or more lines onto the page in order. Within the `<py-script>`, you
+In the example above, we had a single `<py-script>` tag printing
+one or more lines onto the page in order. Within `<py-script>`, you
 have access to the `pyscript` module, which provides a `.write()` method
 to send strings into labeled elements on the page.
 
 For example, we'll add some style elements and provide place holders for
-the `<py-script>` tag write to.
+the `<py-script>` tag to write to.
 
 ```html
 <html>
@@ -109,12 +109,12 @@ pyscript.write('pi', f'π is approximately {pi:.3f}')
 </html>
 ```
 
-## Packages and modules
+## The py-env tag
 
 In addition to the [Python Standard Library](https://docs.python.org/3/library/) and
 the `pyscript` module, many 3rd-party OSS packages will work out-of-the-box with PyScript.
 
-In order to use them, you will need to declare the dependencies using the `<py-env>` in the
+In order to use them, you will need to declare the dependencies using the `<py-env>` tag in the
 HTML head. You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/pyscriptjs/examples/toga/freedom.html).
 
 ```
@@ -207,3 +207,19 @@ fig
   </body>
 </html>
 ```
+
+## The py-repl tag
+
+The `<py-repl>` tag creates a REPL component that is rendered to the page as a code editor, allowing you to write executable code inline.
+
+## Visual components
+
+The following tags control visual attributes of your html page.
+
+| Tag             | Description |
+| ---             | ----------- |
+| `<py-inputbox>` | TBD         | 
+| `<py-box>`      | TBD         |
+| `<py-button>`   | TBD         |
+| `<py-list>`     | TBD         |
+| `<py-title>`    | TBD         |
