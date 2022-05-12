@@ -1,4 +1,4 @@
-name: Docs
+name: '[Docs] Build Release'
 
 on:
   # Any time a tag or branch is created
@@ -6,7 +6,7 @@ on:
     create:
 
 jobs:
-    release:
+    build:
         if: startsWith(github.ref, 'refs/tags') # Only if tagged
         runs-on: ubuntu-latest
         permissions:

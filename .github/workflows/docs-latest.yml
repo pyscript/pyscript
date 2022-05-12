@@ -1,4 +1,4 @@
-name: Docs
+name: '[Docs] Build Latest'
 
 on:
     push:
@@ -6,7 +6,7 @@ on:
         -   main
 
 jobs:
-    latest:
+    build:
         runs-on: ubuntu-latest
         permissions:
             contents: read

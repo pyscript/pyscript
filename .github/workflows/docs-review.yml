@@ -1,4 +1,4 @@
-name: Docs
+name: '[Docs] Build Review'
 
 on:
     pull_request:
@@ -15,7 +15,7 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    review:
+    build:
         runs-on: ubuntu-latest
         permissions:
             contents: read
