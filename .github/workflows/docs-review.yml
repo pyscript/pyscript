@@ -64,3 +64,4 @@ jobs:
                 description: See details link for the build result.
                 state: success
                 target_url: https://docs.pyscript.net/review/${{ github.event.number }}/
+                sha: ${{ github.event.pull_request.head.sha || github.sha }}

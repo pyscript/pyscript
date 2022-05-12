@@ -57,11 +57,3 @@ jobs:
 
         -   name: Sync to S3
             run: aws s3 sync --quiet ./docs/_build/dirhtml/ s3://docs.pyscript.net/${{ github.ref_name }}/
-
-        -   name: Set commit status to error
-            uses: Sibz/github-status-action@v1
-            with:
-                context: Release documentation
-                description: See details link for the build result.
-                state: success
-                target_url: https://docs.pyscript.net/${{ github.ref_name }}/
