@@ -38,9 +38,10 @@ Check out our [getting started guide](tutorials/getting-started.md)!
 ::::
 
 ```{toctree}
-:maxdepth: 1
-:hidden:
-
+---
+maxdepth: 1
+hidden:
+---
 tutorials/index
 howtos/index
 concepts/index

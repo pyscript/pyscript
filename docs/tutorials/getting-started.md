@@ -129,7 +129,6 @@ If there's enough popular demand, the pyodide team will likely work on supportin
 For example, NumPy and Matplotlib are available. Notice here we're using `<py-script output="plot">`
 as a shortcut, which takes the expression on the last line of the script and runs `pyscript.write('plot', fig)`.
 
-
 ```html
 <html>
     <head>
@@ -168,6 +167,7 @@ number generation steps in a function in the file `data.py`.
 ```python
 # data.py
 import numpy as np
+
 
 def make_x_and_y(n):
     x = np.random.randn(n)

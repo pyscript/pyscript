@@ -9,9 +9,10 @@ Please head over to the [tutorials](../tutorials/index.md) section if you're onl
 ```
 
 ```{toctree}
-:maxdepth: 2
-:glob:
-:caption: "Contents:"
-
+---
+maxdepth: 2
+glob:
+caption: 'Contents:'
+---
 *
 ```
