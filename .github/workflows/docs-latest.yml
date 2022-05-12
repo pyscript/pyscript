@@ -49,6 +49,9 @@ jobs:
         -   name: Copy redirect file
             run: aws s3 cp --quiet ./docs/_build/dirhtml/_static/redirect.html s3://docs.pyscript.net/index.html
 
+        -   name: Delete latest directory
+            run: aws s3 rm --recursive s3://docs.pyscript.net/latest/
+
         -   name: Sync to S3
             run: aws s3 sync --quiet ./docs/_build/dirhtml/ s3://docs.pyscript.net/latest/
 
