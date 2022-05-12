@@ -1,4 +1,4 @@
-name: Docs release
+name: Docs
 
 on:
   # Any time a tag or branch is created
