@@ -44,7 +44,7 @@ const loadFromFile = async function (s: string, runtime: any): Promise<any> {
         `
             from pyodide.http import pyfetch
             from js import console
-            
+
             try:
                 response = await pyfetch("` +
             s +

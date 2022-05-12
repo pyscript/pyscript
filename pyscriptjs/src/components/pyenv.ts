@@ -70,11 +70,11 @@ export class PyEnv extends HTMLElement {
                     console.warn('Caught an error in loadPaths:\r\n' + e);
                     let errorContent;
                     if (e.message.includes('TypeError: Failed to fetch')) {
-                        errorContent = `<p>PyScript: Access to local files 
-                        (using "Paths:" in &lt;py-env&gt;) 
-                        is not available when directly opening a HTML file; 
-                        you must use a webserver to serve the additional files. 
-                        See <a style="text-decoration: underline;" href="https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062">this reference</a> 
+                        errorContent = `<p>PyScript: Access to local files
+                        (using "Paths:" in &lt;py-env&gt;)
+                        is not available when directly opening a HTML file;
+                        you must use a webserver to serve the additional files.
+                        See <a style="text-decoration: underline;" href="https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062">this reference</a>
                         on starting a simple webserver with Python.</p>`;
                     } else if (e.message.includes('404')) {
                         errorContent =
