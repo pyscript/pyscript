@@ -49,7 +49,7 @@ jobs:
         -   name: Upload artifacts
             uses: actions/upload-artifact@v3
             with:
-                name: pyscript-docs-review-${{ github.event.number }}.zip
+                name: pyscript-docs-review-${{ github.event.number }}
                 path: docs/_build/dirhtml/
 
         # Deploy to S3

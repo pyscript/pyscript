@@ -39,7 +39,7 @@ jobs:
         -   name: Upload artifacts
             uses: actions/upload-artifact@v3
             with:
-                name: pyscript-docs-${{ github.ref_name }}.zip
+                name: pyscript-docs-${{ github.ref_name }}
                 path: docs/_build/dirhtml/
 
         # Deploy to S3
