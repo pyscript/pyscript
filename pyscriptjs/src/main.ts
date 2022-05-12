@@ -25,7 +25,7 @@ const xPyConfig = customElements.define('py-config', PyConfig);
 
 // As first thing, loop for application configs
 const config: PyConfig = document.querySelector('py-config');
-if (!config){
+if (!config) {
     const loader = document.createElement('py-config');
     document.body.append(loader);
 }
