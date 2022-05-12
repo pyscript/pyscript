@@ -31,7 +31,7 @@ Check out our [getting started guide](tutorials/getting-started.md)!
 
 **Coming soon!**
 
-::{toctree}
+:::{toctree}
 :maxdepth: 1
 
 :::
