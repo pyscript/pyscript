@@ -1,6 +1,6 @@
 # Tutorials
 
-This is the totorials section for beginners.
+This is the tutorials section for beginners.
 
 ```{toctree}
 :maxdepth: 2

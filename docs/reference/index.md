@@ -1,4 +1,4 @@
 # Reference
 
-This is the reference section to have manually documented or fully
-automated code documentation.
+This reference section will have manually documented or fully
+automated code documentation. **Coming soon!**

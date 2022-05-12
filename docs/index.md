@@ -2,10 +2,16 @@
 
 Welcome to the PyScript (work in progress) documentation!
 
+PyScript provides a way for you to run Python code directly in your browser, giving 
+anyone the ability to program without infrastructure barriers. Add an interactive 
+Python REPL directly to your website, share an interactive dashboard with a colleague 
+as an HTML file, or create a client-side Python-powered web application. This documentation 
+will show you how.
+
 ````{panels}
 ## [Tutorials](tutorials/index.md)
 
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr.
+Just getting started with PyScript?
 
 Check out our [getting started guide](tutorials/getting-started.md)!
 
@@ -13,7 +19,7 @@ Check out our [getting started guide](tutorials/getting-started.md)!
 
 ## [How-to guides](howtos/index.md)
 
-At vero eos et accusam et justo duo dolores et ea rebum.
+**Coming soon!**
 
 ---
 
@@ -25,7 +31,7 @@ What is PyScript?
 
 ## [Reference](reference/index.md)
 
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+**Coming soon!**
 
 ```{toctree}
 :maxdepth: 1
