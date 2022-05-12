@@ -170,10 +170,7 @@ async function mountElements() {
 
     let source = '';
     for (const el of matches) {
-        let mountName = el.getAttribute('py-mount');
-        if (!mountName) {
-            mountName = el.id.split('-').join('_');
-        }
+        const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
         source += `\n${mountName} = Element("${el.id}")`;
     }
     await pyodide.runPythonAsync(source);

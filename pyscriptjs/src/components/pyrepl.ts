@@ -10,6 +10,7 @@ import { addClasses } from '../utils';
 import { BaseEvalElement } from './base';
 
 // Premise used to connect to the first available pyodide interpreter
+
 let pyodideReadyPromise;
 let environments;
 let currentMode;
@@ -17,6 +18,7 @@ let currentMode;
 pyodideLoaded.subscribe(value => {
     pyodideReadyPromise = value;
 });
+
 loadedEnvironments.subscribe(value => {
     environments = value;
 });
@@ -30,8 +32,6 @@ mode.subscribe(value => {
     currentMode = value;
 });
 
-const languageConf = new Compartment();
-
 function createCmdHandler(el) {
     // Creates a codemirror cmd handler that calls the el.evaluate when an event
     // triggers that specific cmd
@@ -39,6 +39,15 @@ function createCmdHandler(el) {
         return el.evaluate(state);
     };
     return toggleCheckbox;
+}
+
+let initialTheme;
+function getEditorTheme(el: BaseEvalElement): string {
+    if (initialTheme) {
+        return initialTheme;
+    }
+
+    return initialTheme = el.getAttribute('theme');
 }
 
 export class PyRepl extends BaseEvalElement {
@@ -58,6 +67,7 @@ export class PyRepl extends BaseEvalElement {
         this.checkId();
         this.code = this.innerHTML;
         this.innerHTML = '';
+        const languageConf = new Compartment();
 
         const extensions = [
             basicSetup,
@@ -68,29 +78,16 @@ export class PyRepl extends BaseEvalElement {
                 { key: 'Shift-Enter', run: createCmdHandler(this) },
             ]),
         ];
-        const customTheme = EditorView.theme({
-            '&.cm-focused .cm-editor': { outline: '0px' },
-            '.cm-scroller': { lineHeight: 2.5 },
-            '.cm-activeLine': { backgroundColor: '#fff' },
-            '.cm-content': { padding: 0, backgroundColor: '#f5f5f5' },
-            '&.cm-focused .cm-content': { border: '1px solid #1876d2' },
-        });
 
-        if (!this.hasAttribute('theme')) {
-            this.theme = this.getAttribute('theme');
-            if (this.theme == 'dark') {
-                extensions.push(oneDarkTheme);
-            }
-            extensions.push(customTheme);
+        if (getEditorTheme(this) === 'dark') {
+            extensions.push(oneDarkTheme);
         }
 
-        const startState = EditorState.create({
-            doc: this.code.trim(),
-            extensions: extensions,
-        });
-
         this.editor = new EditorView({
-            state: startState,
+            state: EditorState.create({
+                doc: this.code.trim(),
+                extensions,
+            }),
             parent: this.editorNode,
         });
 
@@ -176,15 +173,19 @@ export class PyRepl extends BaseEvalElement {
         if (this.hasAttribute('auto-generate')) {
             const nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
             const newPyRepl = document.createElement('py-repl');
+
             newPyRepl.setAttribute('root', this.getAttribute('root'));
             newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
             newPyRepl.setAttribute('auto-generate', null);
+
             if (this.hasAttribute('output')) {
                 newPyRepl.setAttribute('output', this.getAttribute('output'));
             }
+
             if (this.hasAttribute('std-out')) {
                 newPyRepl.setAttribute('std-out', this.getAttribute('std-out'));
             }
+
             if (this.hasAttribute('std-err')) {
                 newPyRepl.setAttribute('std-err', this.getAttribute('std-err'));
             }
