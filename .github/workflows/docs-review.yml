@@ -36,27 +36,26 @@ jobs:
                 name: dirhtml
                 path: docs/_build/dirhtml/
 
-    # Disabled while we figure things out where to host the build artifacts
-    # For now use the https://pyscript-docs.readthedocs.io/ staging area.
+        # Deploy to S3
+        -   name: Configure AWS credentials
+            uses: aws-actions/configure-aws-credentials@v1.6.1
+            with:
+              aws-region: ${{secrets.AWS_REGION}}
+              role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
 
-    # - name: Commit changes
-    #   run: |
-    #     git clone https://github.com/pyscript/pyscript.github.io --single-branch gh-pages
-    #     mkdir -p gh-pages/review/${{ github.event.number }}/
-    #     cp -r docs/_build/dirhtml/* gh-pages/review/${{ github.event.number }}/
-    #     cd gh-pages
-    #     git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-    #     git config --local user.name "github-actions[bot]"
-    #     git add .
-    #     git commit -m "Update documentation" -a || true
-    #     # The above command will fail if no changes were present, so we ignore
-    #     # the return code.
-    #     git push origin main
+        -   name: Copy redirect file
+            run: aws s3 cp --quiet ./docs/_build/dirhtml/_static/redirect.html s3://docs.pyscript.net/index.html
 
-    # - name: Set commit status to error
-    #   uses: Sibz/github-status-action@v1
-    #   with:
-    #     context: Review documentation
-    #     description: See details link for the build result.
-    #     state: success
-    #     target_url: https://pyscript.github.io/review/${{ github.event.number }}/
+        -   name: Delete review directory
+            run: aws s3 rm --recursive s3://docs.pyscript.net/review/${{ github.event.number }}/
+
+        -   name: Sync to S3
+            run: aws s3 sync --quiet ./docs/_build/dirhtml/ s3://docs.pyscript.net/review/${{ github.event.number }}/
+
+        -   name: Set commit status to error
+            uses: Sibz/github-status-action@v1
+            with:
+                context: Review documentation
+                description: See details link for the build result.
+                state: success
+                target_url: https://docs.pyscript.net/review/${{ github.event.number }}/
