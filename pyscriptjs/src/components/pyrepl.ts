@@ -172,7 +172,6 @@ export class PyRepl extends BaseEvalElement {
 
         if (this.hasAttribute('auto-generate')) {
             if(this.getAttribute('auto-generate') == "true"){
-
                 const nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
                 const newPyRepl = document.createElement('py-repl');
     
