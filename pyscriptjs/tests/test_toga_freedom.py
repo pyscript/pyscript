@@ -6,11 +6,7 @@ import time
 
 try:
     # When running `make test`
-    from .common import (
-        MAX_TEST_TIME,
-        TEST_TIME_INCREMENT,
-        _url_join,
-    )
+    from .common import MAX_TEST_TIME, TEST_TIME_INCREMENT, _url_join
 except:
     # When running `python test_<example name>.py`
     from common import (
@@ -71,7 +67,9 @@ def test():
         # but present after rendering)
 
         pattern = r"""<(main|div).*?id=['"]toga_\d+['"].*?>"""
-        re_sub_content = re.compile(pattern)  # <main>/<div> with class `toga_<numeric code>`
+        re_sub_content = re.compile(
+            pattern
+        )  # <main>/<div> with class `toga_<numeric code>`
 
         py_rendered = False
         for _ in range(rng):

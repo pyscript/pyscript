@@ -19,7 +19,9 @@ def _url_join(base, *parts):
     http://localhost:8080/dir/index.html
     """
 
-    url_parts = [base,] + list(parts)
+    url_parts = [
+        base,
+    ] + list(parts)
     url = "/".join(url_parts)
     url = RE_SLASHES.sub("/", url)  # Replace multiple slashes with one '/'
     url = RE_PROTOCOL.sub(r"\1//", url)  # Fix slashes in protocol

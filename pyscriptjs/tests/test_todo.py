@@ -6,11 +6,7 @@ import time
 
 try:
     # When running `make test`
-    from .common import (
-        MAX_TEST_TIME,
-        TEST_TIME_INCREMENT,
-        _url_join,
-    )
+    from .common import MAX_TEST_TIME, TEST_TIME_INCREMENT, _url_join
 except:
     # When running `python test_<example name>.py`
     from common import (
@@ -72,7 +68,7 @@ def test():
 
         pattern = r"""<input.*?id=['"]new-task-content['"].*?>"""
         re_sub_content = re.compile(pattern)  # <input id="new-task-content"...>
-        
+
         py_rendered = False
         for _ in range(rng):
             time.sleep(TEST_TIME_INCREMENT)

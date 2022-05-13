@@ -6,11 +6,7 @@ import time
 
 try:
     # When running `make test`
-    from .common import (
-        MAX_TEST_TIME,
-        TEST_TIME_INCREMENT,
-        _url_join,
-    )
+    from .common import MAX_TEST_TIME, TEST_TIME_INCREMENT, _url_join
 except:
     # When running `python test_<example name>.py`
     from common import (
@@ -22,7 +18,9 @@ except:
 from playwright.sync_api import sync_playwright
 
 BASE_URL = "http://127.0.0.1:8080"
-EXPECTED_TITLE = "Visualization of Mandelbrot, Julia and Newton sets with NumPy and HTML5 canvas"
+EXPECTED_TITLE = (
+    "Visualization of Mandelbrot, Julia and Newton sets with NumPy and HTML5 canvas"
+)
 HTML_FILE = "numpy_canvas_fractals.html"
 
 
