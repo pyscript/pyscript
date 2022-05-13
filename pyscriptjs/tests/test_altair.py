@@ -8,7 +8,7 @@ import time
 try:
     # When running `make test`
     from .common import MAX_TEST_TIME, TEST_TIME_INCREMENT, _url_join
-except:
+except ImportError:
     # When running `python test_<example name>.py`
     from common import (
         MAX_TEST_TIME,
