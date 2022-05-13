@@ -32,7 +32,6 @@ build:
 	npm run build
 
 test:
-	@echo "Testing examples"
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
 test-py:
