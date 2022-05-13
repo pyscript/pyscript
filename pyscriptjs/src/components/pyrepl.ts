@@ -174,23 +174,23 @@ export class PyRepl extends BaseEvalElement {
             if(this.getAttribute('auto-generate') == "true"){
                 const nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
                 const newPyRepl = document.createElement('py-repl');
-    
+
                 newPyRepl.setAttribute('root', this.getAttribute('root'));
                 newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
                 newPyRepl.setAttribute('auto-generate', null);
-    
+
                 if (this.hasAttribute('output')) {
                     newPyRepl.setAttribute('output', this.getAttribute('output'));
                 }
-    
+
                 if (this.hasAttribute('std-out')) {
                     newPyRepl.setAttribute('std-out', this.getAttribute('std-out'));
                 }
-    
+
                 if (this.hasAttribute('std-err')) {
                     newPyRepl.setAttribute('std-err', this.getAttribute('std-err'));
                 }
-    
+
                 newPyRepl.setAttribute('exec-id', nextExecId.toString());
                 this.parentElement.appendChild(newPyRepl);
             }
