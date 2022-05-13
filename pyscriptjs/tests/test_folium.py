@@ -59,7 +59,7 @@ def test():
                 break
 
         print(f"{HTML_FILE}: Asserting that pyodide is loading")
-        assert pyodide_loading folium
+        assert pyodide_loading # nosec
 
         # Step 3:
         # Assert that rendering inserts data into the page as expected
@@ -77,7 +77,7 @@ def test():
                 break
 
         print(f"{HTML_FILE}: Asserting that example rendered")
-        assert py_rendered folium
+        assert py_rendered # nosec
 
 
 if __name__ == "__main__":
