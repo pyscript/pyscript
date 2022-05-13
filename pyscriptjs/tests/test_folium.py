@@ -36,7 +36,7 @@ def test():
         # Step 1: Test page title to ensure HTML is loaded properly
 
         print(f"{HTML_FILE}: Asserting <title></title> == {EXPECTED_TITLE}")
-        assert page.title() == EXPECTED_TITLE # nosec
+        assert page.title() == EXPECTED_TITLE  # nosec
 
         # Step 2: Test that pyodide is loaded via the console
 
