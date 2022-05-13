@@ -136,7 +136,7 @@ async function initHandlers() {
     let source;
     for (const el of matches) {
         const handlerCode = el.getAttribute('pys-onClick');
-        source = `Element("${el.id}").element.onclick = ${handlerCode}`;
+        source = `Element("${el.id}").element.addEventListener('click', ${handlerCode})`;
         output = await pyodide.runPythonAsync(source);
 
         // TODO: Should we actually map handlers in JS instead of Python?

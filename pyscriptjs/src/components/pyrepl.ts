@@ -104,14 +104,9 @@ export class PyRepl extends BaseEvalElement {
         addClasses(this.btnRun, ['absolute', 'right-1', 'bottom-3', 'opacity-0', 'group-hover:opacity-100']);
         this.editorNode.appendChild(this.btnRun);
 
-        this.btnRun.onclick = wrap(this);
-
-        function wrap(el: any) {
-            function evaluatePython() {
-                el.evaluate();
-            }
-            return evaluatePython;
-        }
+        this.btnRun.addEventListener('click', () => {
+            void this.evaluate();
+        });
 
         if (!this.id) {
             console.log(
