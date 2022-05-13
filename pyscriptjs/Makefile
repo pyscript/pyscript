@@ -31,10 +31,6 @@ dev:
 build:
 	npm run build
 
-test-setup:
-	@echo "Installing playwright as a dependency for tests"
-	playwright install
-
 test:
 	@echo "Testing examples"
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
