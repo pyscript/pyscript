@@ -36,7 +36,7 @@ def test():
         # Step 1: Test page title to ensure HTML is loaded properly
 
         print(f"{'_'.join(HTML_FILE)}: Asserting <title></title> == {EXPECTED_TITLE}")
-        assert page.title() in EXPECTED_TITLE
+        assert page.title() in EXPECTED_TITLE  # nosec
 
         # Step 2: Test that pyodide is loaded via the console
 
@@ -59,7 +59,7 @@ def test():
                 break
 
         print(f"{'_'.join(HTML_FILE)}: Asserting that pyodide is loading")
-        assert pyodide_loading
+        assert pyodide_loading  # nosec
 
         # Step 3:
         # Assert that rendering inserts data into the page as expected
@@ -80,7 +80,7 @@ def test():
                 break
 
         print(f"{'_'.join(HTML_FILE)}: Asserting that example rendered")
-        assert py_rendered
+        assert py_rendered  # nosec
 
 
 if __name__ == "__main__":
