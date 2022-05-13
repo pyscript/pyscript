@@ -197,7 +197,7 @@ export class PyRepl extends BaseEvalElement {
 
     getSourceFromElement(): string {
         const sourceStrings = [
-            `output_manager.change("` + this.outputElement.id + `")`,
+            `output_manager.change("${this.outputElement.id}")`,
             ...this.editor.state.doc.toString().split('\n'),
         ];
         return sourceStrings.join('\n');

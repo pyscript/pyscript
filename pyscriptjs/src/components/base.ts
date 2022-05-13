@@ -114,13 +114,13 @@ export class BaseEvalElement extends HTMLElement {
 
             if (source.includes('asyncio')) {
                 await pyodide.runPythonAsync(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    `output_manager.change("${this.outputElement.id}", "${this.errorElement.id}")`,
                 );
                 output = await pyodide.runPythonAsync(source);
                 await pyodide.runPythonAsync(`output_manager.revert()`);
             } else {
                 output = pyodide.runPython(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    `output_manager.change("${this.outputElement.id}", "${this.errorElement.id}")`,
                 );
                 output = pyodide.runPython(source);
                 pyodide.runPython(`output_manager.revert()`);
