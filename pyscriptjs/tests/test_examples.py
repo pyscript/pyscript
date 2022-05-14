@@ -21,7 +21,9 @@ from playwright.sync_api import sync_playwright
 def test_examples(config):
     # Set up time/iterations to allow for testing
     max_test_time = config["default_values"]["MAX_TEST_TIME"]  # e.g. 30 seconds
-    test_time_increment = config["default_values"]["TEST_TIME_INCREMENT"]  # e.g. 1/4 second
+    test_time_increment = config["default_values"][
+        "TEST_TIME_INCREMENT"
+    ]  # e.g. 1/4 second
     test_iterations = math.ceil(max_test_time / test_time_increment)  # 120 iterations
 
     for example in config["examples"]:

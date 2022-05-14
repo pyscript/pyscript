@@ -93,12 +93,12 @@ patterns = {
     "bokeh": r"<div.*class=\"bk\".*>",  # <div class="bk"...>
     "bokeh_interactive": r"<div.*?class=\"bk\".*?>",  # <div class="bk"...>
     "d3": r"<svg.*?>",  # svg tag
-    "folium": r"<iframe srcdoc=", # iframe tag
+    "folium": r"<iframe srcdoc=",  # iframe tag
     "hello_world": r"\d+/\d+/\d+, \d+:\d+:\d+",  # Timestamp
     "matplotlib": r"""<img src=['"]data:image""",  # <img> tag with data
     "numpy_canvas_fractals": r"""<div.*?id=['"](mandelbrot|julia|newton)['"].*?>""",
     "panel": r"""<div.*?class=['"]bk-root['"].*?>""",  # <div class="bk-root"...>
-    "panel_deckgl":  r"""<div.*?class=['"]bk-root['"].*?>""",  # <div class="bk-root"...>
+    "panel_deckgl": r"""<div.*?class=['"]bk-root['"].*?>""",  # <div class="bk-root"...>
     "panel_kmeans": r"""<div.*?class=['"]bk-root['"].*?>""",  # <div class="bk-root"...>
     "panel_stream": r"""<div.*?class=['"]bk-root['"].*?>""",  # <div class="bk-root"...>
     "repl": r"""<py-repl.*?>""",  # <py-repl> tag
