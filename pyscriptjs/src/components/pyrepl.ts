@@ -175,7 +175,7 @@ export class PyRepl extends BaseEvalElement {
             const lastRepl = allPyRepls[allPyRepls.length -1 ];
             const lastExecId = lastRepl.getAttribute('exec-id');
             const nextExecId = parseInt(lastExecId) + 1;
-            
+
             const newPyRepl = document.createElement('py-repl');
 
             newPyRepl.setAttribute('root', this.getAttribute('root'));
