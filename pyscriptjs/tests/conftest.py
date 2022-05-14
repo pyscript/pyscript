@@ -71,7 +71,6 @@ titles = {
     "folium": "Folium",
     "hello_world": "PyScript Hello World",
     "matplotlib": "Matplotlib",
-    "numpy_canvas_fractals": "Visualization of Mandelbrot, Julia and Newton sets with NumPy and HTML5 canvas",
     "numpy_canvas_fractals": (
         "Visualization of Mandelbrot, Julia and Newton"
         " sets with NumPy and HTML5 canvas"
