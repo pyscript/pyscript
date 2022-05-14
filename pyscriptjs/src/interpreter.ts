@@ -44,13 +44,9 @@ const loadFromFile = async function (s: string, runtime: any): Promise<any> {
         `
         from pyodide.http import pyfetch
         from js import console
-        response = await pyfetch("` +
-            s +
-            `")
+        response = await pyfetch("${s}")
         content = await response.bytes()
-        with open("` +
-            filename +
-            `", "wb") as f:
+        with open("${filename}", "wb") as f:
             f.write(content)
     `,
     );
