@@ -1,7 +1,5 @@
 """All data required for testing examples"""
 
-import re
-
 import pytest
 
 default_values = {
@@ -74,6 +72,10 @@ titles = {
     "hello_world": "PyScript Hello World",
     "matplotlib": "Matplotlib",
     "numpy_canvas_fractals": "Visualization of Mandelbrot, Julia and Newton sets with NumPy and HTML5 canvas",
+    "numpy_canvas_fractals": (
+        "Visualization of Mandelbrot, Julia and Newton"
+        " sets with NumPy and HTML5 canvas"
+    ),
     "panel": "Panel Example",
     "panel_deckgl": "PyScript/Panel DeckGL Demo",
     "panel_kmeans": "Pyscript/Panel KMeans Demo",
@@ -93,12 +95,12 @@ patterns = {
     "bokeh": r"<div.*class=\"bk\".*>",  # <div class="bk"...>
     "bokeh_interactive": r"<div.*?class=\"bk\".*?>",  # <div class="bk"...>
     "d3": r"<svg.*?>",  # svg tag
-    "folium": r"<iframe srcdoc=", # iframe tag
+    "folium": r"<iframe srcdoc=",  # iframe tag
     "hello_world": r"\d+/\d+/\d+, \d+:\d+:\d+",  # Timestamp
     "matplotlib": r"""<img src=['"]data:image""",  # <img> tag with data
     "numpy_canvas_fractals": r"""<div.*?id=['"](mandelbrot|julia|newton)['"].*?>""",
     "panel": r"""<div.*?class=['"]bk-root['"].*?>""",  # <div class="bk-root"...>
-    "panel_deckgl":  r"""<div.*?class=['"]bk-root['"].*?>""",  # <div class="bk-root"...>
+    "panel_deckgl": r"""<div.*?class=['"]bk-root['"].*?>""",  # <div class="bk-root"...>
     "panel_kmeans": r"""<div.*?class=['"]bk-root['"].*?>""",  # <div class="bk-root"...>
     "panel_stream": r"""<div.*?class=['"]bk-root['"].*?>""",  # <div class="bk-root"...>
     "repl": r"""<py-repl.*?>""",  # <py-repl> tag
@@ -113,11 +115,11 @@ patterns = {
 
 @pytest.fixture(scope="session")
 def config() -> dict:
-    return dict(
-        default_values=default_values,
-        loading_messages=loading_messages,
-        examples=examples,
-        titles=titles,
-        files=files,
-        patterns=patterns,
-    )
+    return {
+        "default_values": default_values,
+        "loading_messages": loading_messages,
+        "examples": examples,
+        "titles": titles,
+        "files": files,
+        "patterns": patterns,
+    }
