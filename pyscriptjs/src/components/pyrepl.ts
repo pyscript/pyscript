@@ -171,16 +171,16 @@ export class PyRepl extends BaseEvalElement {
         this.outputElement.style.display = 'block';
 
         if (this.hasAttribute('auto-generate')) {
-            const allPyRepls = document.querySelectorAll('py-repl[exec-id]');
+            const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
             const lastRepl = allPyRepls[allPyRepls.length -1 ];
             const lastExecId = lastRepl.getAttribute('exec-id');
             const nextExecId = parseInt(lastExecId) + 1;
             
             const newPyRepl = document.createElement('py-repl');
-
             newPyRepl.setAttribute('root', this.getAttribute('root'));
             newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
-            newPyRepl.removeAttribute('auto-generate')
+            newPyRepl.setAttribute('auto-generate', '');
+            this.removeAttribute('auto-generate');
 
             if (this.hasAttribute('output')) {
                 newPyRepl.setAttribute('output', this.getAttribute('output'));
