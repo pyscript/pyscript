@@ -1,7 +1,7 @@
 import { basicSetup, EditorState, EditorView } from '@codemirror/basic-setup';
 import { python } from '@codemirror/lang-python';
-import { Compartment, StateCommand } from '@codemirror/state';
-import { keymap } from '@codemirror/view';
+import { Compartment } from '@codemirror/state';
+import { keymap, type Command } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 
@@ -32,13 +32,13 @@ mode.subscribe(value => {
     currentMode = value;
 });
 
-function createCmdHandler(el: PyRepl): StateCommand {
+function createCmdHandler(el: PyRepl): Command {
     // Creates a codemirror cmd handler that calls the el.evaluate when an event
     // triggers that specific cmd
-    const toggleCheckbox: StateCommand = ({ state, dispatch }) => {
-        return el.evaluate(state);
+    return () => {
+        void el.evaluate();
+        return true;
     };
-    return toggleCheckbox;
 }
 
 let initialTheme: string;
