@@ -84,7 +84,7 @@ export default {
       file: "examples/build/pyscript.min.js",
       format: "iife",
       sourcemap: true,
-      // plugins: [terser()],
+      plugins: [terser()],
     },
   ],
   plugins: [
