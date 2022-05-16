@@ -35,7 +35,7 @@ To contribute see the [CONTRIBUTING](CONTRIBUTING.md) document.
 * [Discussion board](https://community.anaconda.cloud/c/tech-topics/pyscript)
 * [Home Page](https://pyscript.net/)
 * [Blog Post](https://engineering.anaconda.com/2022/04/welcome-pyscript.html)
-* [Slack Channel](https://join.slack.com/t/pyscriptworkspace/shared_invite/zt-196tzwuw1-7ErAw5mKSSh4nCTRIAIc9w)
+* [Discord Channel](https://discord.gg/TynfPGRwda)
 
 ## Notes
 
