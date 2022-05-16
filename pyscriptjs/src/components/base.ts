@@ -54,7 +54,7 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     checkId() {
-        if (!this.id) this.id = this.constructor.name + '-' + guidGenerator();
+        if (!this.id) this.id = 'py-' + guidGenerator();
     }
 
     getSourceFromElement(): string {
