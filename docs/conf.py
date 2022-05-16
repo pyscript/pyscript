@@ -19,7 +19,7 @@ import os
 # -- Project information -----------------------------------------------------
 
 project = "PyScript"
-copyright = "Copyright (c) 2022, Anaconda, Inc."
+copyright = "(c) 2022, Anaconda, Inc."
 author = "Anaconda, Inc."
 language = "en"
 
