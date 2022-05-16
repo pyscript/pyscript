@@ -19,8 +19,8 @@ import os
 # -- Project information -----------------------------------------------------
 
 project = "PyScript"
-copyright = "2022, PyScript contributors"
-author = "PyScript contributors"
+copyright = "Copyright (c) 2022, Anaconda, Inc."
+author = "Anaconda, Inc."
 language = "en"
 
 # -- General configuration ---------------------------------------------------
