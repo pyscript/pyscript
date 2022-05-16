@@ -3,7 +3,7 @@ name: '[CI] Build Alpha'
 on:
     push:
         branches:
-        -  main
+        -   main
         tags:
         -   '**' # Currently any tag, need to slim down
         paths:
