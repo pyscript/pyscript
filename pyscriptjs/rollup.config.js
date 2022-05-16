@@ -84,7 +84,7 @@ export default {
       file: "examples/build/pyscript.min.js",
       format: "iife",
       sourcemap: true,
-      plugins: [terser()],
+      // plugins: [terser()],
     },
   ],
   plugins: [
@@ -113,7 +113,7 @@ export default {
     copyPythonFiles("./src/", "./examples/build", true),
     !production && serve(),
     !production && livereload("public"),
-    production && terser(),
+    // production && terser(),
     !production && serve({
       port: 8080,
       contentBase: 'examples'}
