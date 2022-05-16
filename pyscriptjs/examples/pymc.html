@@ -1,0 +1,103 @@
+<html><head>
+    <title>PyMC Example</title>
+    <meta charset="iso-8859-1">
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-gl-2.4.2.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.2.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.2.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-mathjax-2.4.2.min.js"></script>
+
+    <script type="text/javascript">
+        Bokeh.set_log_level("info");
+    </script>
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    </head>
+    <body>
+        <py-env>
+- bokeh
+- micropymc
+        </py-env>
+
+        <py-title>PyMC in the browser using PyScript</py-title>
+        <p>(c) 2022, <a href="https://twitter.com/twiecki">Thomas Wiecki</a></p><br>
+
+This webapp runs the following <a href src="https://pymc.io">PyMC</a> model in your browser:
+        <pre><code class="python">import pymc as pm
+with pm.Model() as model:
+    p = pm.Beta("p", alpha=1, beta=1)
+    obs = pm.Binomial("obs", p=p, n=n, 
+                      observed=k)
+    
+    idata = pm.sample()</code></pre>
+
+This is a simple beta-binomial or coin-flip model.
+Enter how many coin-flips you did (N) and how many times it came up heads (K). 
+Then press "Sample!" to run the NUTS sampler. 
+
+For a full explanation, see <a href src="https://www.pymc-labs.io/blog-posts/pymc-in-browser/">this blog post</a>.
+        <py-box widths="1/7;2/7;1/7;2/7;1/7">
+          <py-title>n=</py-title>
+          <py-inputbox id="input_box_n">10</py-inputbox>
+        <py-title>k=</py-title>
+         <py-inputbox id="input_box_k">5</py-inputbox>
+        <py-button id="sample-btn" label="Sample!">
+def on_click(evt):
+    k = Element('input_box_k').element.value
+    if k == "":
+        k = 5
+    n = Element('input_box_n').element.value
+    if n == "":
+        n = 10
+    run_model(n=n, k=k)
+          </py-button>
+        </py-box>
+
+Sampling will take a couple of seconds. 
+The resulting posterior belief into what 
+probabilities of obtaining heads are plausible will show up below:
+    <div id="myplot"></div>
+<br>
+<p>Made using <a href="https://pyscript.net">PyScript</a>, <a href="https://pymc.io">PyMC</a>, <a href="https://https://arviz-devs.github.io/arviz/index.html">Arviz</a>, <a href="https://docs.bokeh.org/en/latest/index.html">Bokeh</a>.</p>
+    <py-script id="main">
+import warnings
+warnings.filterwarnings("ignore")
+
+import json
+from js import Bokeh, JSON
+from bokeh.embed import json_item
+from bokeh.plotting import figure
+
+import arviz as az
+az.rcParams["plot.backend"] = "bokeh"
+
+import os, sys
+sys.stderr = open(os.devnull, "w")
+import pymc as pm
+
+def run_model(n=10, k=5):
+    with pm.Model() as model:
+        p = pm.Beta("p", alpha=1, beta=1)
+        obs = pm.Binomial("obs", p=p, n=n, observed=k)
+        idata = pm.sample(chains=1, progressbar=False)
+
+    p = figure(plot_width=500, plot_height=400, toolbar_location="below")
+    az.plot_posterior(idata, var_names=["p"], show=False, ax=p)
+    p.xaxis.axis_label = 'p'
+    p_json = json.dumps(json_item(p, "myplot"))
+    Bokeh.embed.embed_item(JSON.parse(p_json))
+    </py-script>
+
+    <script>
+        window.addEventListener('load', function() {
+            let input_box_n = document.querySelector("#input_box_n")
+            input_box_n.value = "10"
+            let input_box_k = document.querySelector("#input_box_k")
+            input_box_k.value = "5"
+        })
+      </script>
+</body>
+</html>
