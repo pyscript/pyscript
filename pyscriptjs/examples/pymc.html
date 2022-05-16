@@ -29,14 +29,14 @@ This webapp runs the following <a href src="https://pymc.io">PyMC</a> model in y
         <pre><code class="python">import pymc as pm
 with pm.Model() as model:
     p = pm.Beta("p", alpha=1, beta=1)
-    obs = pm.Binomial("obs", p=p, n=n, 
+    obs = pm.Binomial("obs", p=p, n=n,
                       observed=k)
-    
+
     idata = pm.sample()</code></pre>
 
 This is a simple beta-binomial or coin-flip model.
-Enter how many coin-flips you did (N) and how many times it came up heads (K). 
-Then press "Sample!" to run the NUTS sampler. 
+Enter how many coin-flips you did (N) and how many times it came up heads (K).
+Then press "Sample!" to run the NUTS sampler.
 
 For a full explanation, see <a href src="https://www.pymc-labs.io/blog-posts/pymc-in-browser/">this blog post</a>.
         <py-box widths="1/7;2/7;1/7;2/7;1/7">
@@ -56,8 +56,8 @@ def on_click(evt):
           </py-button>
         </py-box>
 
-Sampling will take a couple of seconds. 
-The resulting posterior belief into what 
+Sampling will take a couple of seconds.
+The resulting posterior belief into what
 probabilities of obtaining heads are plausible will show up below:
     <div id="myplot"></div>
 <br>
