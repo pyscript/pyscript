@@ -27,6 +27,7 @@ export class BaseEvalElement extends HTMLElement {
     wrapper: HTMLElement;
     code: string;
     source: string;
+    namespace: string;
     btnConfig: HTMLElement;
     btnRun: HTMLElement;
     outputElement: HTMLElement;
@@ -102,28 +103,73 @@ export class BaseEvalElement extends HTMLElement {
         console.log('evaluate');
         const pyodide = runtime;
         let source: string;
+        let namespace;
         let output;
         try {
             if (this.source) {
                 source = await this.getSourceFromFile(this.source);
             } else {
                 source = this.getSourceFromElement();
+
             }
 
             await this._register_esm(pyodide);
 
+            if (this.namespace == "DEFAULT_NAMESPACE"){
+                console.log("No pys-namespace attribute found, using global namespace");
+                namespace = runtime.globals
+            }
+            else {
+                console.log("Found that pys-namespace is " + this.namespace);
+                namespace = runtime.globals.get("namespaces").get(this.namespace)
+                
+                //if (this.namespace in ns){
+                //   namespace = runtime.globals.get("namespaces").get(this.namespace);
+                //    console.log("Using prexisting namespace called " + this.namespace + " with value " + namespace);
+                //}
+                //else{
+                //    console.warn("No namespace found with title " + this.namespace + " - this should have been created at init time.\nUsing global namespace.");
+                //    namespace = runtime.globals
+                    //console.log("Creating new namespace for " + this.namespace);
+
+                    /* let my_new_namespace = runtime.globals.get("dict")(runtime.globals);
+                    my_new_namespace.pop("namespaces");
+
+                    //shallow copy of globals namespace?
+                    let my_new_namespace = runtime.toPy(runtime.globals);
+                    if ('namespaces' in my_new_namespace){
+                        delete my_new_namespace['namespaces'];
+                        console.log("Deleted namespaces from my_new_namespace");
+                    }
+                    console.log("my_new_namespace has type " + typeof (my_new_namespace));
+
+                    //Orignal - empty namespace
+                     let my_new_namespace = runtime.globals.get("dict")();
+                    for (let prop in runtime.globals){
+                        console.log("Adding " + prop + " with value " + runtime.globals[prop] + " to new namespace dict")
+                        my_new_namespace[prop] = runtime.globals[prop];
+                    } 
+
+                    runtime.globals.get("namespaces").set(this.namespace, my_new_namespace);
+                    namespace = my_new_namespace; */
+                //}
+                
+            }
+
+            //console.log("Executing with namespace " + namespace);
+
             if (source.includes('asyncio')) {
                 await pyodide.runPythonAsync(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`, {globals: namespace}
                 );
-                output = await pyodide.runPythonAsync(source);
-                await pyodide.runPythonAsync(`output_manager.revert()`);
+                output = await pyodide.runPythonAsync(source, {globals: namespace});
+                await pyodide.runPythonAsync(`output_manager.revert()`, {globals: namespace});
             } else {
                 output = pyodide.runPython(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`, {globals: namespace}
                 );
-                output = pyodide.runPython(source);
-                pyodide.runPython(`output_manager.revert()`);
+                output = pyodide.runPython(source,  {globals: namespace});
+                pyodide.runPython(`output_manager.revert()`, {globals: namespace});
             }
 
             if (output !== undefined) {
@@ -246,7 +292,7 @@ export class PyWidget extends HTMLElement {
     wrapper: HTMLElement;
     theme: string;
     source: string;
-    code: string;
+    code: string
 
     constructor() {
         super();

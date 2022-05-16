@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>PyScript Hello World</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="../build/pyscript.css" />
+
+    <script defer src="../build/pyscript.js"></script>
+  </head>
+
+  <body>
+    Hello world! <br>
+    <div class="bg-blue-100">
+      <br>
+      <py-script >
+import math
+print(f"This is executing in the default scope")
+print("with python version" + str(sys.version)[:30])
+x, y, z = 1, 2, 3
+print(f"{x=}")
+print(f"{y=}")
+print(f"{z=}")
+print(f"{math.prod([x,y,z]) = }")
+      </py-script>
+    </div>
+    <div class="bg-yellow-100">
+      <py-script pys-namespace = 'ns-one'>
+
+print(f"This is executing in the ns-one scope")
+print("with python version" + str(sys.version)[:30])
+x, y = 4, 5
+print(f"{x=}")
+print(f"{y=}")
+print(f"{math.prod([x,y]) = }")
+      </py-script>
+    </div>
+    <div class="bg-green-100">
+      <py-script pys-namespace="ns-two">
+print("This is executing in a custom namespace called 'ns-two'")
+print(f"with python version {sys.version[:30]}")
+
+x = 6
+print(f"{x=}")
+print(f"{y=}")
+print(f"{z=}")
+            </py-script>
+      <p id="output-target-ns-two"></p>
+      <div class="bg-yellow-100">
+        <py-script pys-namespace = 'ns-one'>
+print(f"This is executing in the ns-one scope")
+print("with python version" + str(sys.version)[:30])
+print(f"{x=}")
+print(f"{y=}")
+print(f"{z=}")       
+       </py-script>
+      </div>
+    </div>
+  </body>
+</html>
