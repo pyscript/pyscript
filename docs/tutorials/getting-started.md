@@ -217,7 +217,7 @@ The following tags control visual attributes of your html page.
 
 | Tag             | Description |
 | ---             | ----------- |
-| `<py-inputbox>` | TBD         | 
+| `<py-inputbox>` | TBD         |
 | `<py-box>`      | TBD         |
 | `<py-button>`   | TBD         |
 | `<py-list>`     | TBD         |
