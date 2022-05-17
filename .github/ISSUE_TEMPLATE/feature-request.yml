@@ -21,9 +21,9 @@ body:
 
           Search for that respective library on github repo or website. You will have much more success there.
 
-        - #### A general Python question:
+        - #### A general Python question/feature request:
 
-          Try out a forum post here [<TBD>](python.org)
+          Try out a forum post [here](python.org)
 
   - type: checkboxes
     id: checks
