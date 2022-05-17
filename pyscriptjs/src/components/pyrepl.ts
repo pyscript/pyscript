@@ -171,28 +171,44 @@ export class PyRepl extends BaseEvalElement {
         this.outputElement.style.display = 'block';
 
         if (this.hasAttribute('auto-generate')) {
-            const nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
-            const newPyRepl = document.createElement('py-repl');
+            const allPyRepls = document.querySelectorAll('py-repl[exec-id]');
+            var createNext = true;
+            if(this.getAttribute('auto-generate') == "false"){
+                createNext = false;
+            }
+            for (var PyRepl of allPyRepls){
+                if (parseInt(PyRepl.getAttribute('exec-id')) ==  parseInt(this.getAttribute('exec-id')) + 1){
+                    createNext = false;
+                }
+            }
+            if(createNext){
 
-            newPyRepl.setAttribute('root', this.getAttribute('root'));
-            newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
-            newPyRepl.setAttribute('auto-generate', null);
+                const nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
+                const newPyRepl = document.createElement('py-repl');
 
-            if (this.hasAttribute('output')) {
-                newPyRepl.setAttribute('output', this.getAttribute('output'));
+                newPyRepl.setAttribute('root', this.getAttribute('root'));
+                newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
+
+                newPyRepl.setAttribute('auto-generate', "true");
+
+                    if (this.hasAttribute('output')) {
+                        newPyRepl.setAttribute('output', this.getAttribute('output'));
+                    }
+
+                    if (this.hasAttribute('std-out')) {
+                        newPyRepl.setAttribute('std-out', this.getAttribute('std-out'));
+                    }
+
+                    if (this.hasAttribute('std-err')) {
+                        newPyRepl.setAttribute('std-err', this.getAttribute('std-err'));
+                    }
+
+                    newPyRepl.setAttribute('exec-id', nextExecId.toString());
+                    this.parentElement.appendChild(newPyRepl);
+                }
             }
 
-            if (this.hasAttribute('std-out')) {
-                newPyRepl.setAttribute('std-out', this.getAttribute('std-out'));
-            }
 
-            if (this.hasAttribute('std-err')) {
-                newPyRepl.setAttribute('std-err', this.getAttribute('std-err'));
-            }
-
-            newPyRepl.setAttribute('exec-id', nextExecId.toString());
-            this.parentElement.appendChild(newPyRepl);
-        }
     }
 
     getSourceFromElement(): string {
