@@ -213,7 +213,7 @@ The `<py-repl>` tag creates a REPL component that is rendered to the page as a c
 
 ## Visual components
 
-The following tags control visual attributes of your html page.
+The following tags control visual attributes of your HTML page.
 
 | Tag             | Description |
 | ---             | ----------- |
