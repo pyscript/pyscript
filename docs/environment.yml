@@ -10,8 +10,9 @@ dependencies:
 -   sphinx-copybutton
 -   sphinx-design
 -   sphinx-togglebutton
--   sphinxcontrib.youtube
+
 -   pip:
     -   sphinxemoji
     -   sphinx-sitemap
     -   sphinx-autobuild
+    -   sphinxcontrib.youtube
