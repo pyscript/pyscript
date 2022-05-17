@@ -80,7 +80,12 @@ export default {
     name: "app",
     file: "examples/build/pyscript.js",
     },
-    { file: "examples/build/pyscript.min.js", format: "iife", plugins: [terser()] },
+    {
+      file: "examples/build/pyscript.min.js",
+      format: "iife",
+      sourcemap: true,
+      plugins: [terser()],
+    },
   ],
   plugins: [
     svelte({
@@ -108,7 +113,7 @@ export default {
     copyPythonFiles("./src/", "./examples/build", true),
     !production && serve(),
     !production && livereload("public"),
-    production && terser(),
+    // production && terser(),
     !production && serve({
       port: 8080,
       contentBase: 'examples'}

@@ -55,7 +55,7 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     checkId() {
-        if (!this.id) this.id = this.constructor.name + '-' + guidGenerator();
+        if (!this.id) this.id = 'py-' + guidGenerator();
     }
 
     getSourceFromElement(): string {
@@ -353,7 +353,7 @@ export class PyWidget extends HTMLElement {
             }
 
             if (this.hasAttribute('std-err')) {
-                this.outputElement = document.getElementById(this.getAttribute('std-err'));
+                this.errorElement = document.getElementById(this.getAttribute('std-err'));
             } else {
                 this.errorElement = this.outputElement;
             }

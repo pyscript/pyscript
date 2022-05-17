@@ -2,7 +2,8 @@
   "name": "pyscript",
   "version": "0.0.1",
   "scripts": {
-    "build": "NODE_ENV=production rollup -c",
+    "build-min": "NODE_ENV=production rollup -c",
+    "build": "rollup -c",
     "dev": "rollup -c -w",
     "start": "sirv public --no-clear --port 8080",
     "validate": "svelte-check",

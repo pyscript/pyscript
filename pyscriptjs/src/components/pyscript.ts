@@ -71,7 +71,7 @@ export class PyScript extends BaseEvalElement {
             }
 
             if (this.hasAttribute('std-err')) {
-                this.outputElement = document.getElementById(this.getAttribute('std-err'));
+                this.errorElement = document.getElementById(this.getAttribute('std-err'));
             } else {
                 this.errorElement = this.outputElement;
             }
@@ -134,17 +134,36 @@ export class PyScript extends BaseEvalElement {
     }
 }
 
-/** Initialize all elements with py-onClick handlers attributes  */
+/** Defines all possible pys-on* and their corresponding event types  */
+const pysAttributeToEvent: Map<string, string> = new Map<string, string>([
+        ["pys-onClick", "click"],
+        ["pys-onKeyDown", "keydown"]
+]);
+
+/** Initialize all elements with pys-on* handlers attributes  */
 async function initHandlers() {
     console.log('Collecting nodes...');
     const pyodide = await pyodideReadyPromise;
-    let matches: NodeListOf<HTMLElement> = document.querySelectorAll('[pys-onClick]');
-    let output;
-    let source;
+    for (const pysAttribute of pysAttributeToEvent.keys()) {
+        await createElementsWithEventListeners(pyodide, pysAttribute);
+    }
+}
+
+/** Initializes an element with the given pys-on* attribute and its handler */
+async function createElementsWithEventListeners(pyodide: any, pysAttribute: string) {
+    const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pysAttribute}]`);
     for (const el of matches) {
-        const handlerCode = el.getAttribute('pys-onClick');
-        source = `Element("${el.id}").element.onclick = ${handlerCode}`;
-        output = await pyodide.runPythonAsync(source);
+        if (el.id.length === 0) {
+            throw new TypeError(`<${el.tagName.toLowerCase()}> must have an id attribute, when using the ${pysAttribute} attribute`)
+        }
+        const handlerCode = el.getAttribute(pysAttribute);
+        const event = pysAttributeToEvent.get(pysAttribute);
+        const source = `
+        from pyodide import create_proxy
+        Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
+        `;
+        await pyodide.runPythonAsync(source);
+
 
         // TODO: Should we actually map handlers in JS instead of Python?
         // el.onclick = (evt: any) => {
@@ -161,12 +180,6 @@ async function initHandlers() {
         // }
     }
 
-    matches = document.querySelectorAll('[pys-onKeyDown]');
-    for (const el of matches) {
-        const handlerCode = el.getAttribute('pys-onKeyDown');
-        source = `Element("${el.id}").element.addEventListener("keydown",  ${handlerCode})`;
-        output = await pyodide.runPythonAsync(source);
-    }
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
@@ -177,10 +190,7 @@ async function mountElements() {
 
     let source = '';
     for (const el of matches) {
-        let mountName = el.getAttribute('py-mount');
-        if (!mountName) {
-            mountName = el.id.split('-').join('_');
-        }
+        const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
         source += `\n${mountName} = Element("${el.id}")`;
     }
     await pyodide.runPythonAsync(source);
