@@ -69,6 +69,6 @@ jobs:
         -   name: Adding step summary
             run: |
                 echo "### Review documentation" >> $GITHUB_STEP_SUMMARY
-                echo "As with any pull request, you can find the rendered documentation version for pull request ${{ context.issue.number }} here:"
+                echo "As with any pull request, you can find the rendered documentation version for pull request ${{ github.event.number }} here:"
                 echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
-                echo "https://docs.pyscript.net/review/${{ context.issue.number }}/" >> $GITHUB_STEP_SUMMARY
+                echo "https://docs.pyscript.net/review/${{ github.event.number }}/" >> $GITHUB_STEP_SUMMARY
