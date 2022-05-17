@@ -66,8 +66,9 @@ jobs:
         -   name: Sync to S3
             run: aws s3 sync --quiet ./docs/_build/html/ s3://docs.pyscript.net/review/${{ github.event.number }}/
 
-        -   name: Get PR metadata
-            uses: actions/github-script@v6
-            with:
-                script: |
-                    core.notice(`Review documentation uploaded at: https://docs.pyscript.net/review/${ context.issue.number }/`);
+        -   name: Adding step summary
+            run: |
+                echo "### Review documentation" >> $GITHUB_STEP_SUMMARY
+                echo "As with any pull request, you can find the rendered documentation version for pull request ${{ context.issue.number }} here:"
+                echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
+                echo "https://docs.pyscript.net/review/${{ context.issue.number }}/" >> $GITHUB_STEP_SUMMARY
