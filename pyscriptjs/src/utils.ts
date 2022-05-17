@@ -4,6 +4,12 @@ function addClasses(element: HTMLElement, classes: Array<string>) {
     }
 }
 
+function removeClasses(element: HTMLElement, classes: Array<string>) {
+    for (const entry of classes) {
+        element.classList.remove(entry);
+    }
+}
+
 function getLastPath(str: string): string {
     return str.split('\\').pop().split('/').pop();
 }
@@ -37,4 +43,4 @@ function guidGenerator(): string {
     return S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4();
 }
 
-export { addClasses, getLastPath, ltrim, htmlDecode, guidGenerator };
+export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator };
