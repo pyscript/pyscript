@@ -21,7 +21,9 @@ from playwright.sync_api import sync_playwright
 
 MAX_TEST_TIME = 30  # Number of seconds allowed for checking a testing condition
 TEST_TIME_INCREMENT = 0.25  # 1/4 second, the length of each iteration
-TEST_ITERATIONS = math.ceil(MAX_TEST_TIME / TEST_TIME_INCREMENT)  # 120 iters of 1/4 second
+TEST_ITERATIONS = math.ceil(
+    MAX_TEST_TIME / TEST_TIME_INCREMENT
+)  # 120 iters of 1/4 second
 
 # Content that is displayed in the page while pyodide loads
 LOADING_MESSAGES = [
