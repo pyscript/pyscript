@@ -7,14 +7,14 @@
     <title>Svelte app</title>
 
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="../../build/pyscript.css" />
-    
-    <script defer src="../../build/pyscript.js"></script>
+    <link rel="stylesheet" href="../https://pyscript.net/alpha/pyscript.css" />
+
+    <script defer src="../https://pyscript.net/alpha/pyscript.js"></script>
   </head>
 
   <body>
     <py-script>
-from js import handTrack, setTimeout, requestAnimationFrame
+from js import handTrack, requestAnimationFrame
 from pyodide import create_once_callable
 import asyncio
 
@@ -40,7 +40,7 @@ def toggle_video(evt):
     handTrack.stopVideo(video.element)
     isVideo = False
     update_note.write("Video stopped")
-  
+
 async def start_video():
   global isVideo
   update_note.write("Inside sstart video")
@@ -61,9 +61,9 @@ async def run_detection():
   console.log("in RUN DETECTION: ");
   global model
   global isVideo
-  
+
   console.log("...1")
-  
+
   predictions = await model.detect(video.element)
   console.log("done...1")
   console.log("Predictions: ", predictions);

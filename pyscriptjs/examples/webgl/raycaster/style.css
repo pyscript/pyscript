@@ -28,7 +28,7 @@ canvas {
 a, a:hover, a:visited {
   color: red;
   text-decoration: none;
-} 
+}
 .disable-selection {
      -moz-user-select: none; /* Firefox */
       -ms-user-select: none; /* Internet Explorer */

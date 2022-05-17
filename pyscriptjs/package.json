@@ -2,7 +2,8 @@
   "name": "pyscript",
   "version": "0.0.1",
   "scripts": {
-    "build": "NODE_ENV=production rollup -c",
+    "build-min": "NODE_ENV=production rollup -c",
+    "build": "rollup -c",
     "dev": "rollup -c -w",
     "start": "sirv public --no-clear --port 8080",
     "validate": "svelte-check",
@@ -17,6 +18,7 @@
     "@rollup/plugin-node-resolve": "^11.0.0",
     "@rollup/plugin-typescript": "^8.3.2",
     "@tsconfig/svelte": "^1.0.0",
+    "@types/js-yaml": "^4.0.5",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
     "autoprefixer": "^10.4.7",
