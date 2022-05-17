@@ -23,7 +23,7 @@ body:
 
         - #### A general Python question/feature request:
 
-          Try out a forum post [here](python.org)
+          Try out a forum post [here](https://discuss.python.org/c/users/7)
 
   - type: checkboxes
     id: checks

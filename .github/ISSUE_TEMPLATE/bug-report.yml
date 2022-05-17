@@ -37,7 +37,7 @@ body:
   - type: dropdown
     id: browsers
     attributes:
-      label: What browsers are you seeing the problem on?
+      label: What browsers are you seeing the problem on? (if applicable)
       multiple: true
       options:
         - Firefox
@@ -46,13 +46,15 @@ body:
         - Microsoft Edge
         - Other
     validations:
-      required: true
+      required: false
   - type: textarea
     id: list
     attributes:
       label: Console info
       description: |
-        If there are errors in your browser console then its helpful to be able to troubleshoot. Usually found in the browser's `Dev Tools`
+        If there are errors in your browser console then its helpful to be able to troubleshoot.
+        - Chrome , Firefox, and Edge: Right-click on the page and select *Inspect*. Alternatively  you can press F12 on your keyboard.
+        - Safari: Find instructions [here](https://support.apple.com/guide/safari/use-the-developer-tools-in-the-develop-menu-sfri20948/mac).
       render: shell
   - type: textarea
     id: context
