@@ -15,4 +15,4 @@ dependencies:
     -   sphinxemoji
     -   sphinx-sitemap
     -   sphinx-autobuild
-    -   sphinxcontrib.youtube
+    -   sphinxcontrib-youtube
