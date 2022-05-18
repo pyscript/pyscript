@@ -157,7 +157,7 @@ def make_x_and_y(n):
     return x, y
 ```
 
-HTMLタグの`<py-env>`では、ローカルモジュールへのパスは`paths:key`で提供されます。
+HTMLタグの`<py-env>`では、ローカルモジュールへのパスは`paths:`キーで提供されます。
 
 ```html
 <html>
