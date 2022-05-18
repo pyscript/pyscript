@@ -5,7 +5,7 @@ on:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#create
     create:
         paths:
-        -   docs
+        -   docs/**
 
 jobs:
     build:
