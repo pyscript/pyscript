@@ -211,6 +211,30 @@ fig
 
 The `<py-repl>` tag creates a REPL component that is rendered to the page as a code editor, allowing you to write executable code inline.
 
+## The py-config tag
+
+The `<py-config>` tag can be used to set and configure general metadata about your PyScript application. It's an optional tag that allows configuration in yaml format (if you are new to YAML, you may want to consider [this read](https://www.redhat.com/sysadmin/yaml-beginners) for more information about it) and can be used as follows:
+
+```
+<py-config>
+  - autoclose_loader: false
+  - runtimes:
+    -
+      src: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
+      name: pyodide-0.20
+      lang: python
+</py-config>
+```
+
+The values supported by `<py-config>` are (all values are optional):
+
+  * autoclose_loader (boolean): if false, PyScript will not close the loading splash screen when the startup operations are finished
+  * name (string): name of the user application. This field can be any string and is to be used by the application author for their own customization purposes.
+  * version (string): version of the user application. This field can be any string and is to be used by the application author for their own customization purposes. It is not related to the PyScript version.
+  * runtimes (List of Runtimes): List of runtime configurations. Each Runtime expect the following fields:
+    * src (string): url to the runtime source.
+    * name (string), Optional: name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes.
+    * name (string), Optional: programming language supported by the runtime. This field can by used by the application author for better clarify and currently has no implications on how PyScript behave
 
 ## Visual components
 
