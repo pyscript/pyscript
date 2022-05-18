@@ -14,7 +14,7 @@ can be used to reload the page as you edit the HTML file.
 
 追加のインストールは不要です。 このドキュメントでは https://pyscript.net で提供されているPyScriptアセットを使用します。
 
-ソースをダウンロードして自分でビルドする場合は、README.mdファイルに書かれている指示にしたがってください。
+ソースをダウンロードして自分でビルドする場合は、README.mdファイルに書かれている指示に従ってください。
 
 ## 最初のPyScript HTMLファイル
 
