@@ -47,7 +47,7 @@ function getEditorTheme(el: BaseEvalElement): string {
         return initialTheme;
     }
 
-    return initialTheme = el.getAttribute('theme');
+    return (initialTheme = el.getAttribute('theme'));
 }
 
 export class PyRepl extends BaseEvalElement {

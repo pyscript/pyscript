@@ -1,9 +1,9 @@
-import { getLastPath } from './utils';
+import { getLastPath, handleFetchError } from './utils';
 
 let pyodideReadyPromise;
 let pyodide;
 
-const loadInterpreter = async function (indexUrl:string): Promise<any> {
+const loadInterpreter = async function (indexUrl: string): Promise<any> {
     console.log('creating pyodide runtime');
     // eslint-disable-next-line
     // @ts-ignore
@@ -11,7 +11,7 @@ const loadInterpreter = async function (indexUrl:string): Promise<any> {
         // indexURL: indexUrl,
         stdout: console.log,
         stderr: console.log,
-        fullStdLib: false
+        fullStdLib: false,
     });
 
     // now that we loaded, add additional convenience functions
@@ -24,35 +24,47 @@ const loadInterpreter = async function (indexUrl:string): Promise<any> {
     // file from the same location
     const loadedScript: HTMLScriptElement = document.querySelector(`script[src$='pyscript.js'], script[src$='pyscript.min.js']`);
     const scriptPath = loadedScript.src.substring(0, loadedScript.src.lastIndexOf('/'));
-    await pyodide.runPythonAsync(await (await fetch(`${scriptPath}/pyscript.py`)).text());
+    const pyScriptPath = `${scriptPath}/pyscript.py`;
 
-    console.log(scriptPath);
+    try {
+        await pyodide.runPythonAsync(await (await fetch(pyScriptPath)).text());
+    } catch (e) {
+        //Should we still export full error contents to console?
+        handleFetchError(e, pyScriptPath);
+    }
 
     console.log('done setting up environment');
     return pyodide;
 };
 
 const loadPackage = async function (package_name: string[] | string, runtime: any): Promise<any> {
-    const micropip = pyodide.globals.get('micropip');
-    await micropip.install(package_name);
-    micropip.destroy();
+    if (package_name.length > 0){
+        const micropip = pyodide.globals.get('micropip');
+        await micropip.install(package_name);
+        micropip.destroy();
+    }
 };
 
 const loadFromFile = async function (s: string, runtime: any): Promise<any> {
     const filename = getLastPath(s);
     await runtime.runPythonAsync(
         `
-        from pyodide.http import pyfetch
-        from js import console
-        response = await pyfetch("` +
+            from pyodide.http import pyfetch
+            from js import console
+
+            try:
+                response = await pyfetch("` +
             s +
             `")
-        content = await response.bytes()
-        with open("` +
+            except Exception as err:
+                console.warn("PyScript: Access to local files (using 'Paths:' in py-env) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
+                raise(err)
+            content = await response.bytes()
+            with open("` +
             filename +
             `", "wb") as f:
-            f.write(content)
-    `,
+                f.write(content)
+        `,
     );
 };
 
