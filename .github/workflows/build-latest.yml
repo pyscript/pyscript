@@ -59,7 +59,7 @@ jobs:
                 make setup CONDA_EXE=conda/bin/conda
 
         -   name: Test pyscript
-            run: make test
+            run: make test CONDA_EXE=conda/bin/conda
 
         -   name: Build pyscript
             run: make build
