@@ -113,7 +113,7 @@ export default {
     copyPythonFiles("./src/", "./examples/build", true),
     !production && serve(),
     !production && livereload("public"),
-    production && terser(),
+    // production && terser(),
     !production && serve({
       port: 8080,
       contentBase: 'examples'}

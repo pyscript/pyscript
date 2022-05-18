@@ -60,4 +60,4 @@ jobs:
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
         -   name: Sync to S3
             if: github.ref == 'refs/heads/main'
-            run: aws s3 sync --quiet ./examples/build/ s3://pyscript-static/unstable
+            run: aws s3 sync --quiet ./examples/build/ s3://pyscript.net/unstable

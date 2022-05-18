@@ -4,6 +4,12 @@ function addClasses(element: HTMLElement, classes: Array<string>) {
     }
 }
 
+function removeClasses(element: HTMLElement, classes: Array<string>) {
+    for (const entry of classes) {
+        element.classList.remove(entry);
+    }
+}
+
 function getLastPath(str: string): string {
     return str.split('\\').pop().split('/').pop();
 }
@@ -52,4 +58,27 @@ function showError(msg: string): void {
     document.body.prepend(warning);
 }
 
-export { addClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError };
+function handleFetchError(e: Error, singleFile: string){
+    //Should we still export full error contents to console?
+    console.warn('Caught an error in loadPaths:\r\n' + e);
+    let errorContent;
+    if (e.message.includes('TypeError: Failed to fetch')) {
+        errorContent = `<p>PyScript: Access to local files
+        (using "Paths:" in &lt;py-env&gt;)
+        is not available when directly opening a HTML file;
+        you must use a webserver to serve the additional files.
+        See <a style="text-decoration: underline;" href="https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062">this reference</a>
+        on starting a simple webserver with Python.</p>`;
+    } else if (e.message.includes('404')) {
+        errorContent =
+            `<p>PyScript: Loading from file <u>` +
+            singleFile +
+            `</u> failed with error 404 (File not Found). Are your filename and path are correct?</p>`;
+    } else {
+        errorContent =
+            '<p>PyScript encountered an error while loading from file: ' + e.message + '</p>';
+    }
+    showError(errorContent);
+}
+
+export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError };

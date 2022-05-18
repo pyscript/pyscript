@@ -22,8 +22,8 @@ const loadInterpreter = async function (indexUrl: string): Promise<any> {
 
     // let's get the full path of where PyScript is running from so we can load the pyscript.py
     // file from the same location
-    const loadedScript: HTMLScriptElement = document.querySelector(`script[src$='pyscript.js']`);
-    const scriptPath = loadedScript.src.substr(0, loadedScript.src.lastIndexOf('/'));
+    const loadedScript: HTMLScriptElement = document.querySelector(`script[src$='pyscript.js'], script[src$='pyscript.min.js']`);
+    const scriptPath = loadedScript.src.substring(0, loadedScript.src.lastIndexOf('/'));
     await pyodide.runPythonAsync(await (await fetch(`${scriptPath}/pyscript.py`)).text());
 
     console.log(scriptPath);
