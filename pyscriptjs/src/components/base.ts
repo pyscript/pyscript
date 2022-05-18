@@ -1,5 +1,5 @@
 import { loadedEnvironments, mode, pyodideLoaded } from '../stores';
-import { guidGenerator, addClasses } from '../utils';
+import { guidGenerator, addClasses, removeClasses } from '../utils';
 // Premise used to connect to the first available pyodide interpreter
 let runtime;
 let environments;
@@ -54,7 +54,7 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     checkId() {
-        if (!this.id) this.id = this.constructor.name + '-' + guidGenerator();
+        if (!this.id) this.id = 'py-' + guidGenerator();
     }
 
     getSourceFromElement(): string {
@@ -137,6 +137,19 @@ export class BaseEvalElement extends HTMLElement {
                 this.outputElement.style.display = 'block';
             }
 
+            // check if this REPL contains errors, delete them and remove error classes
+            const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
+            if (errorElements.length > 0) {
+                for (const errorElement of errorElements) {
+                    errorElement.classList.add('hidden');
+                    if(this.hasAttribute('std-err')) {
+                        this.errorElement.hidden = true;
+                        this.errorElement.style.removeProperty('display');
+                    }
+                }
+                removeClasses(this.errorElement, ['bg-red-200', 'p-2']);
+            }
+
             this.postEvaluate();
         } catch (err) {
             if (Element === undefined) {
@@ -146,6 +159,8 @@ export class BaseEvalElement extends HTMLElement {
 
             addClasses(this.errorElement, ['bg-red-200', 'p-2']);
             out.write.callKwargs(err, { append: true });
+
+            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '')
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
         }
@@ -307,7 +322,7 @@ export class PyWidget extends HTMLElement {
             }
 
             if (this.hasAttribute('std-err')) {
-                this.outputElement = document.getElementById(this.getAttribute('std-err'));
+                this.errorElement = document.getElementById(this.getAttribute('std-err'));
             } else {
                 this.errorElement = this.outputElement;
             }

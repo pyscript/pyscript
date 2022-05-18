@@ -15,7 +15,7 @@ can be used to reload the page as you edit the HTML file.
 
 ## Installation
 
-There is no installation required. In this document we'll use
+There is no installation required. In this document, we'll use
 the PyScript assets served on https://pyscript.net.
 
 If you want to download the source and build it yourself, follow
@@ -25,10 +25,10 @@ the instructions in the README.md file.
 
 Here's a "Hello, world!" example using PyScript.
 
-Using your favorite editor create a new file called `hello.html` in
+Using your favorite editor, create a new file called `hello.html` in
 the same directory as your PyScript, JavaScript, and CSS files with the
 following content, and open the file in your web browser. You can typically
-open an HTML by double clicking it in your file explorer.
+open an HTML by double-clicking it in your file explorer.
 
 ```html
 <html>
@@ -41,14 +41,13 @@ open an HTML by double clicking it in your file explorer.
 ```
 
 Notice the use of the `<py-script>` tag in the HTML body. This
-is where you'll write your Python code. In the following sections we'll
-introduce the 8 tags provided by PyScript.
+is where you'll write your Python code. In the following sections, we'll
+introduce the eight tags provided by PyScript.
 
 ## The py-script tag
 
 The `<py-script>` tag lets you execute multi-line Python scripts and
-print back onto the page. For
-example, we can compute π.
+print back onto the page. For example, we can compute π.
 
 ```html
 <html>
@@ -75,12 +74,12 @@ print(s)
 
 ### Writing into labeled elements
 
-In the example above we had a single `<py-script>` tag and it printed
-one or more lines onto the page in order. Within the `<py-script>` you
+In the example above, we had a single `<py-script>` tag and it printed
+one or more lines onto the page in order. Within the `<py-script>`, you
 have access to the `pyscript` module, which provides a `.write()` method
 to send strings into labeled elements on the page.
 
-For example we'll add some style elements and provide place holders for
+For example, we'll add some style elements and provide place holders for
 the `<py-script>` tag write to.
 
 ```html
@@ -117,8 +116,8 @@ pyscript.write('pi', f'π is approximately {pi:.3f}')
 In addition to the [Python Standard Library](https://docs.python.org/3/library/) and
 the `pyscript` module, many 3rd-party OSS packages will work out-of-the-box with PyScript.
 
-In order to use them you will need to declare the dependencies using the `<py-env>` in the
-HTML head. You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/pyscriptjs/examples/toga/freedom.html)
+In order to use them, you will need to declare the dependencies using the `<py-env>` in the
+HTML head. You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/pyscriptjs/examples/toga/freedom.html).
 
 ```
 <py-env>
@@ -127,11 +126,10 @@ HTML head. You can also link to `.whl` files directly on disk like in our [toga 
 ```
 
 If your `.whl` is not a pure Python wheel, then open a PR or issue with [pyodide](https://github.com/pyodide/pyodide) to get it added [here](https://github.com/pyodide/pyodide/tree/main/packages).
-If there's enough popular demand the pyodide team will likely work on supporting your package, regardless things will likely move faster if you make the PR and consult with the team to get unblocked.
+If there's enough popular demand, the pyodide team will likely work on supporting your package. Regardless, things will likely move faster if you make the PR and consult with the team to get unblocked.
 
 For example, NumPy and Matplotlib are available. Notice here we're using `<py-script output="plot">`
 as a shortcut, which takes the expression on the last line of the script and runs `pyscript.write('plot', fig)`.
-
 
 ```html
 <html>
@@ -164,7 +162,7 @@ fig
 
 ### Local modules
 
-In addition to packages you can declare local Python modules that will
+In addition to packages, you can declare local Python modules that will
 be imported in the `<py-script>` tag. For example, we can place the random
 number generation steps in a function in the file `data.py`.
 
@@ -172,13 +170,14 @@ number generation steps in a function in the file `data.py`.
 # data.py
 import numpy as np
 
+
 def make_x_and_y(n):
     x = np.random.randn(n)
     y = np.random.randn(n)
     return x, y
 ```
 
-In the HTML tag `<py-env>` paths to local modules are provided in the
+In the HTML tag `<py-env>`, paths to local modules are provided in the
 `paths:` key.
 
 ```html

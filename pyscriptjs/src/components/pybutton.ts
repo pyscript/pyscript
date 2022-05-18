@@ -37,6 +37,7 @@ export class PyButton extends BaseEvalElement {
     }
 
     connectedCallback() {
+        this.checkId();
         this.code = htmlDecode(this.innerHTML);
         this.mount_name = this.id.split('-').join('_');
         this.innerHTML = '';
@@ -53,12 +54,12 @@ export class PyButton extends BaseEvalElement {
         let registrationCode = `${this.mount_name} = Element("${mainDiv.id}")`;
         if (this.code.includes('def on_focus')) {
             this.code = this.code.replace('def on_focus', `def on_focus_${this.mount_name}`);
-            registrationCode += `\n${this.mount_name}.element.onfocus = on_focus_${this.mount_name}`;
+            registrationCode += `\n${this.mount_name}.element.addEventListener('focus', on_focus_${this.mount_name})`;
         }
 
         if (this.code.includes('def on_click')) {
             this.code = this.code.replace('def on_click', `def on_click_${this.mount_name}`);
-            registrationCode += `\n${this.mount_name}.element.onclick = on_click_${this.mount_name}`;
+            registrationCode += `\n${this.mount_name}.element.addEventListener('click', on_click_${this.mount_name})`;
         }
 
         // now that we appended and the element is attached, lets connect with the event handlers
