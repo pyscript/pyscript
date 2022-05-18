@@ -41,6 +41,13 @@ export class BaseEvalElement extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open' });
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
+
+        if (this.hasAttribute('pys-namespace')){
+            this.namespace = this.getAttribute('pys-namespace');
+        }
+        else {
+            this.namespace = "DEFAULT_NAMESPACE";
+        }
     }
 
     addToOutput(s: string) {
@@ -105,6 +112,7 @@ export class BaseEvalElement extends HTMLElement {
         let source: string;
         let namespace;
         let output;
+
         try {
             if (this.source) {
                 source = await this.getSourceFromFile(this.source);
@@ -121,42 +129,8 @@ export class BaseEvalElement extends HTMLElement {
             }
             else {
                 console.log("Found that pys-namespace is " + this.namespace);
-                namespace = runtime.globals.get("namespaces").get(this.namespace)
-                
-                //if (this.namespace in ns){
-                //   namespace = runtime.globals.get("namespaces").get(this.namespace);
-                //    console.log("Using prexisting namespace called " + this.namespace + " with value " + namespace);
-                //}
-                //else{
-                //    console.warn("No namespace found with title " + this.namespace + " - this should have been created at init time.\nUsing global namespace.");
-                //    namespace = runtime.globals
-                    //console.log("Creating new namespace for " + this.namespace);
-
-                    /* let my_new_namespace = runtime.globals.get("dict")(runtime.globals);
-                    my_new_namespace.pop("namespaces");
-
-                    //shallow copy of globals namespace?
-                    let my_new_namespace = runtime.toPy(runtime.globals);
-                    if ('namespaces' in my_new_namespace){
-                        delete my_new_namespace['namespaces'];
-                        console.log("Deleted namespaces from my_new_namespace");
-                    }
-                    console.log("my_new_namespace has type " + typeof (my_new_namespace));
-
-                    //Orignal - empty namespace
-                     let my_new_namespace = runtime.globals.get("dict")();
-                    for (let prop in runtime.globals){
-                        console.log("Adding " + prop + " with value " + runtime.globals[prop] + " to new namespace dict")
-                        my_new_namespace[prop] = runtime.globals[prop];
-                    } 
-
-                    runtime.globals.get("namespaces").set(this.namespace, my_new_namespace);
-                    namespace = my_new_namespace; */
-                //}
-                
+                namespace = runtime.globals.get("pyscript_namespaces").get(this.namespace)
             }
-
-            //console.log("Executing with namespace " + namespace);
 
             if (source.includes('asyncio')) {
                 await pyodide.runPythonAsync(
@@ -215,9 +189,19 @@ export class BaseEvalElement extends HTMLElement {
     async eval(source: string): Promise<void> {
         let output;
         const pyodide = runtime;
+        let eval_namespace;
+        
+        if (this.namespace == "DEFAULT_NAMESPACE"){
+            console.log("No pys-namespace attribute found, using global namespace");
+            eval_namespace = runtime.globals
+        }
+        else {
+            console.log("Found that pys-namespace is " + this.namespace);
+            eval_namespace = runtime.globals.get("pyscript_namespaces").get(this.namespace)
+        }
 
         try {
-            output = await pyodide.runPythonAsync(source);
+            output = await pyodide.runPythonAsync(source, {globals: eval_namespace});
             if (output !== undefined) {
                 console.log(output);
             }
@@ -232,6 +216,7 @@ function createWidget(name: string, code: string, klass: string) {
         shadow: ShadowRoot;
         wrapper: HTMLElement;
 
+        namespace: string;
         name: string = name;
         klass: string = klass;
         code: string = code;
@@ -246,6 +231,13 @@ function createWidget(name: string, code: string, klass: string) {
 
             this.wrapper = document.createElement('slot');
             this.shadow.appendChild(this.wrapper);
+
+            if (this.hasAttribute('pys-namespace')){
+                this.namespace = this.getAttribute('pys-namespace');
+            }
+            else {
+                this.namespace = "DEFAULT_NAMESPACE";
+            }
         }
 
         connectedCallback() {
@@ -284,8 +276,19 @@ function createWidget(name: string, code: string, klass: string) {
         async eval(source: string): Promise<void> {
             let output;
             const pyodide = runtime;
+            let eval_namespace;
+        
+            if (this.namespace == "DEFAULT_NAMESPACE"){
+                console.log("No pys-namespace attribute found, using global namespace");
+                eval_namespace = runtime.globals
+            }
+            else {
+                console.log("Found that pys-namespace is " + this.namespace);
+                eval_namespace = runtime.globals.get("pyscript_namespaces").get(this.namespace)
+            }
+
             try {
-                output = await pyodide.runPythonAsync(source);
+                output = await pyodide.runPythonAsync(source, {globals: eval_namespace});
                 this.proxyClass = pyodide.globals.get(this.klass);
                 if (output !== undefined) {
                     console.log(output);
@@ -302,8 +305,10 @@ export class PyWidget extends HTMLElement {
     shadow: ShadowRoot;
     name: string;
     klass: string;
+    namespace: string;
     outputElement: HTMLElement;
     errorElement: HTMLElement;
+    namespace: string;
     wrapper: HTMLElement;
     theme: string;
     source: string;
@@ -328,6 +333,13 @@ export class PyWidget extends HTMLElement {
 
         if (this.hasAttribute('klass')) {
             this.klass = this.getAttribute('klass');
+        }
+
+        if (this.hasAttribute('pys-namespace')){
+            this.namespace = this.getAttribute('pys-namespace');
+        }
+        else{
+            this.namespace = "DEFAULT_NAMESPACE"
         }
     }
 
@@ -384,8 +396,19 @@ export class PyWidget extends HTMLElement {
     async eval(source: string): Promise<void> {
         let output;
         const pyodide = runtime;
+        let eval_namespace;
+
+        if (this.namespace == "DEFAULT_NAMESPACE"){
+            console.log("No pys-namespace attribute found, using global namespace");
+            eval_namespace = runtime.globals
+        }
+        else {
+            console.log("Found that pys-namespace is " + this.namespace);
+            eval_namespace = runtime.globals.get("pyscript_namespaces").get(this.namespace)
+        }
+
         try {
-            output = await pyodide.runPythonAsync(source);
+            output = await pyodide.runPythonAsync(source, {globals: eval_namespace});
             if (output !== undefined) {
                 console.log(output);
             }

@@ -30,7 +30,7 @@ const loadInterpreter = async function (indexUrl:string): Promise<any> {
 
     //create dict for non-default namespaces
     let namespace_dict = pyodide.globals.get("dict")();
-    pyodide.globals.set("namespaces", namespace_dict)
+    pyodide.globals.set("pyscript_namespaces", namespace_dict)
 
     console.log('done setting up environment');
     return pyodide;
