@@ -1,4 +1,4 @@
-import { loadedEnvironments, mode, pyodideLoaded } from '../stores';
+import { loadedEnvironments, mode, pyodideLoaded, DEFAULT_NAMESPACE } from '../stores';
 import { guidGenerator, addClasses, removeClasses } from '../utils';
 // Premise used to connect to the first available pyodide interpreter
 let runtime;
@@ -46,7 +46,7 @@ export class BaseEvalElement extends HTMLElement {
             this.namespace = this.getAttribute('pys-namespace');
         }
         else {
-            this.namespace = "DEFAULT_NAMESPACE";
+            this.namespace = DEFAULT_NAMESPACE;
         }
     }
 
@@ -112,18 +112,16 @@ export class BaseEvalElement extends HTMLElement {
         let source: string;
         let namespace;
         let output;
-
         try {
             if (this.source) {
                 source = await this.getSourceFromFile(this.source);
             } else {
                 source = this.getSourceFromElement();
-
             }
 
             await this._register_esm(pyodide);
 
-            if (this.namespace == "DEFAULT_NAMESPACE"){
+            if (this.namespace == DEFAULT_NAMESPACE){
                 console.log("No pys-namespace attribute found, using global namespace");
                 namespace = runtime.globals
             }
@@ -191,7 +189,7 @@ export class BaseEvalElement extends HTMLElement {
         const pyodide = runtime;
         let eval_namespace;
         
-        if (this.namespace == "DEFAULT_NAMESPACE"){
+        if (this.namespace == DEFAULT_NAMESPACE){
             console.log("No pys-namespace attribute found, using global namespace");
             eval_namespace = runtime.globals
         }
@@ -236,7 +234,7 @@ function createWidget(name: string, code: string, klass: string) {
                 this.namespace = this.getAttribute('pys-namespace');
             }
             else {
-                this.namespace = "DEFAULT_NAMESPACE";
+                this.namespace = DEFAULT_NAMESPACE;
             }
         }
 
@@ -278,7 +276,7 @@ function createWidget(name: string, code: string, klass: string) {
             const pyodide = runtime;
             let eval_namespace;
         
-            if (this.namespace == "DEFAULT_NAMESPACE"){
+            if (this.namespace == DEFAULT_NAMESPACE){
                 console.log("No pys-namespace attribute found, using global namespace");
                 eval_namespace = runtime.globals
             }
@@ -308,7 +306,6 @@ export class PyWidget extends HTMLElement {
     namespace: string;
     outputElement: HTMLElement;
     errorElement: HTMLElement;
-    namespace: string;
     wrapper: HTMLElement;
     theme: string;
     source: string;
@@ -339,7 +336,7 @@ export class PyWidget extends HTMLElement {
             this.namespace = this.getAttribute('pys-namespace');
         }
         else{
-            this.namespace = "DEFAULT_NAMESPACE"
+            this.namespace = DEFAULT_NAMESPACE
         }
     }
 
@@ -398,7 +395,7 @@ export class PyWidget extends HTMLElement {
         const pyodide = runtime;
         let eval_namespace;
 
-        if (this.namespace == "DEFAULT_NAMESPACE"){
+        if (this.namespace == DEFAULT_NAMESPACE){
             console.log("No pys-namespace attribute found, using global namespace");
             eval_namespace = runtime.globals
         }

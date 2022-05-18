@@ -10,6 +10,7 @@ export const pyodideLoaded = writable({
 
 export const loadedEnvironments = writable([{}]);
 export const DEFAULT_MODE = 'play';
+export const DEFAULT_NAMESPACE = "DEFAULT_NAMESPACE"
 
 export const navBarOpen = writable(false);
 export const componentsNavOpen = writable(false);

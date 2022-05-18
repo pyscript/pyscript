@@ -14,6 +14,7 @@ let pyodideReadyPromise;
 let environments;
 let currentMode;
 
+
 pyodideLoaded.subscribe(value => {
     pyodideReadyPromise = value;
 });
