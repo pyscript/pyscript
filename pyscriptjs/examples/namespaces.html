@@ -17,12 +17,12 @@
     <p>Add the <code>pys-namespace</code> attribute to any tag that can have associated source (<code>py-script</code>, <code>repl</code>, <code>py-button</code>, etc.) to have it execute code within that specific namespace.</p>
     <div class="grid w-full grid-cols-1 gap-4 mt-8 mb-8">
         <div class="w-full">The following code is has no <code>pys-namespace</code> attribute, and is therefore executing in the default namespace.</div>
-        <div class="flex flex-col gap-2 m-2 md:flex-row bg-gray-50">
+        <div class="flex flex-col gap-2 m-2 bg-gray-100 md:flex-row">
             <div class="w-full">
                 <pre class="overflow-x-auto">
 &lt;py-script&gt;
 import math
-print(f"This is executing in the default scope")
+print(f"This is executing in the default namespace")
 print("with python version" + str(sys.version)[:30])
 x, y, z = 1, 2, 3
 print(f"{x=}")
@@ -34,10 +34,10 @@ PyScript.write("default-target", "This has been written to the p tag.")
 &lt;p style = "font-weight: 800" id="default-target"&gt;&lt;/p&gt;
                 </pre>
             </div>
-            <div class="w-full p-2 bg-blue-100">
+            <div class="w-full p-2 m-2 bg-blue-100">
             <py-script >
 import math
-print(f"This is executing in the default scope")
+print(f"This is executing in the default namespace")
 print("with python version" + str(sys.version)[:30])
 x, y, z = 1, 2, 3
 print(f"{x=}")
@@ -50,12 +50,12 @@ PyScript.write("default-target", "This has been written to a the p tag.")
             </div>
         </div>
         <div class="w-full mt-8">The following code is executed in the <code>namespace-one</code> namespace as specified by the <code>pys-namespace</code> attribute</div>
-        <div class="flex flex-col gap-2 m-2 md:flex-row bg-gray-50">
-            <div class="w-1/2 p-2">
+        <div class="flex flex-col gap-2 m-2 bg-gray-100 md:flex-row">
+            <div class="w-full p-2 m-2 md:w-1/2">
 <pre class="overflow-x-auto">
 &lt;py-script pys-namespace='namespace-one'&gt;
 # We still have access to all the standard libraries that pyodide imports
-print(f"This is executing in the namespace-one scope")
+print(f"This is executing in the namespace-one namespace")
 print("with python version" + str(sys.version)[:30])
 
 #We will assign variables here to show they do not overwrite the identically-named variables in the default namespace
@@ -68,9 +68,9 @@ print(f"{z=}")
 &lt;/py-script&gt;
 </pre>
             </div>
-            <div class="w-1/2 p-2 bg-yellow-100">
+            <div class="w-full p-2 m-2 bg-yellow-100 md:w-1/2">
             <py-script pys-namespace = 'namespace-one'>
-                print(f"This is executing in the namespace-one scope")
+                print(f"This is executing in the namespace-one namespace")
                 print("with python version" + str(sys.version)[:30])
                 x, y = 4, 5
                 print(f"{x=}")
@@ -80,8 +80,8 @@ print(f"{z=}")
             </div>
         </div>
         <div class="w-full mt-8">We can put multiple executable tags in one page - so long as they share the same <code>pys-namespace</code> attribute, they will use the same namespace. This final block once again uses the default namespace.</div>
-        <div class="flex flex-col gap-2 m-2 md:flex-row bg-gray-50">
-            <div class="w-1/2 m-2">
+        <div class="flex flex-col gap-2 m-2 bg-gray-100 md:flex-row">
+            <div class="w-full m-2 md:w-1/2">
                 <pre class="overflow-x-auto">
 &lt;py-script&gt;
 print(f"{x=}")
@@ -91,9 +91,9 @@ print(f"{math.prod([x,y,z]) = }")
 &lt;/py-script&gt;
                 </pre>
             </div>
-            <div class="w-1/2 m-2 bg-blue-100">
+            <div class="w-full p-2 m-2 bg-blue-100 md:w-1/2">
             <py-script >
-print(f"This is executing in the default scope")
+print(f"This is executing in the default namespace")
 print(f"{x=}")
 print(f"{y=}")
 print(f"{z=}")
@@ -103,28 +103,28 @@ print(f"{math.prod([x,y,z]) = }")
             </div>
         </div>
         <div class="w-full mt-8">Repls (and other objects with an eval() method) can share namespaces, and can share namespaces with &lt;py-script&gt; tags.</div>
-        <div class="flex flex-col gap-2 m-2 md:flex-row bg-gray-50">
-            <div class="w-1/2 p-2">
+        <div class="flex flex-col gap-2 m-2 bg-gray-100 md:flex-row">
+            <div class="w-full p-2 m-2 md:w-1/2">
 <pre class="overflow-x-auto">
 &lt;py-script pys-namespace='namespace-one'&gt;
-print(f"This is executing in the namespace-one scope")
-print("Try typing x into the repl below")
+print(f"This is executing in the namespace-one namespace")
+print("Try typing x into the repl below. Its value should be '4' as assigned in the earlier 'namespace-one' py-script.")
 &lt;/py-script&gt;
 &lt;py-repl pys-namespace = 'namespace-one'&gt;
 &lt;/py-repl&gt;
 </pre>
             </div>
-            <div class="w-1/2 p-2 bg-yellow-100">
+            <div class="w-full p-2 m-2 bg-yellow-100 md:w-1/2">
             <py-script pys-namespace = 'namespace-one'>
-                print(f"This is executing in the namespace-one scope")
-                print("Try typing x into the repl below")
+                print(f"This is executing in the namespace-one namespace")
+                print("Try typing x into the repl below. Its value should be '4' as assigned in the earlier 'namespace-one' py-script.")
             </py-script>
             <py-repl pys-namespace="namespace-one"></py-repl>
             </div>
         </div>
         <div class="w-full mt-8">This can include PyButtons, PyWidgets, etc. Notice that the two <code>py-button</code> tags before use identical function names, and their associated <code>py-scripts</code> use identical variable names, yet the two counts are kept separate in their own namespaces.</div>
-        <div class="flex flex-col gap-2 m-2 md:flex-row bg-gray-50">
-            <div class="w-1/2 p-2">
+        <div class="flex flex-col gap-2 m-2 bg-gray-100 md:flex-row">
+            <div class="w-full p-2 m-2 md:w-1/2">
 <pre class="overflow-x-auto">
 &lt;py-script pys-namespace = 'red'&gt;
 total = 0
@@ -154,7 +154,7 @@ def add_one():
 </pre>
             </div>
             <div class="flex flex-col w-full place-items-stretch">
-                <div class="w-full p-2 bg-red-100">
+                <div class="w-auto m-2 bg-red-100">
                 <py-script pys-namespace = 'red'>
                     total = 0
                     def add_one():
@@ -168,7 +168,7 @@ def add_one():
                 </py-button>
                 <span id="red-output"></span>
                 </div>
-                <div class="w-full p-2 bg-green-100">
+                <div class="w-auto m-2 bg-green-100">
                 <py-script pys-namespace = 'green'>
                     total = 0
                     def add_one():
