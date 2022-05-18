@@ -3,7 +3,7 @@ import { getLastPath } from './utils';
 let pyodideReadyPromise;
 let pyodide;
 
-const loadInterpreter = async function (indexUrl:string): Promise<any> {
+const loadInterpreter = async function (indexUrl: string): Promise<any> {
     console.log('creating pyodide runtime');
     // eslint-disable-next-line
     // @ts-ignore
@@ -11,7 +11,7 @@ const loadInterpreter = async function (indexUrl:string): Promise<any> {
         // indexURL: indexUrl,
         stdout: console.log,
         stderr: console.log,
-        fullStdLib: false
+        fullStdLib: false,
     });
 
     // now that we loaded, add additional convenience functions
@@ -22,15 +22,17 @@ const loadInterpreter = async function (indexUrl:string): Promise<any> {
 
     // let's get the full path of where PyScript is running from so we can load the pyscript.py
     // file from the same location
-    const loadedScript: HTMLScriptElement = document.querySelector(`script[src$='pyscript.js'], script[src$='pyscript.min.js']`);
+    const loadedScript: HTMLScriptElement = document.querySelector(
+        `script[src$='pyscript.js'], script[src$='pyscript.min.js']`,
+    );
     const scriptPath = loadedScript.src.substring(0, loadedScript.src.lastIndexOf('/'));
     await pyodide.runPythonAsync(await (await fetch(`${scriptPath}/pyscript.py`)).text());
 
     console.log(scriptPath);
 
     //create dict for non-default namespaces
-    let namespace_dict = pyodide.globals.get("dict")();
-    pyodide.globals.set("pyscript_namespaces", namespace_dict)
+    const namespace_dict = pyodide.globals.get('dict')();
+    pyodide.globals.set('pyscript_namespaces', namespace_dict);
 
     console.log('done setting up environment');
     return pyodide;

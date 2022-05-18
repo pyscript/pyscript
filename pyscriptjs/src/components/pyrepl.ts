@@ -47,7 +47,7 @@ function getEditorTheme(el: BaseEvalElement): string {
         return initialTheme;
     }
 
-    return initialTheme = el.getAttribute('theme');
+    return (initialTheme = el.getAttribute('theme'));
 }
 
 export class PyRepl extends BaseEvalElement {
@@ -172,7 +172,7 @@ export class PyRepl extends BaseEvalElement {
 
         if (this.hasAttribute('auto-generate')) {
             const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
-            const lastRepl = allPyRepls[allPyRepls.length -1 ];
+            const lastRepl = allPyRepls[allPyRepls.length - 1];
             const lastExecId = lastRepl.getAttribute('exec-id');
             const nextExecId = parseInt(lastExecId) + 1;
 

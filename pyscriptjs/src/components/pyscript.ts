@@ -14,7 +14,6 @@ let pyodideReadyPromise;
 let environments;
 let currentMode;
 
-
 pyodideLoaded.subscribe(value => {
     pyodideReadyPromise = value;
 });
@@ -130,8 +129,8 @@ export class PyScript extends BaseEvalElement {
 
 /** Defines all possible pys-on* and their corresponding event types  */
 const pysAttributeToEvent: Map<string, string> = new Map<string, string>([
-        ["pys-onClick", "click"],
-        ["pys-onKeyDown", "keydown"]
+    ['pys-onClick', 'click'],
+    ['pys-onKeyDown', 'keydown'],
 ]);
 
 /** Initialize all elements with pys-on* handlers attributes  */
@@ -148,7 +147,9 @@ async function createElementsWithEventListeners(pyodide: any, pysAttribute: stri
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pysAttribute}]`);
     for (const el of matches) {
         if (el.id.length === 0) {
-            throw new TypeError(`<${el.tagName.toLowerCase()}> must have an id attribute, when using the ${pysAttribute} attribute`)
+            throw new TypeError(
+                `<${el.tagName.toLowerCase()}> must have an id attribute, when using the ${pysAttribute} attribute`,
+            );
         }
         const handlerCode = el.getAttribute(pysAttribute);
         const event = pysAttributeToEvent.get(pysAttribute);
@@ -157,7 +158,6 @@ async function createElementsWithEventListeners(pyodide: any, pysAttribute: stri
         Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
         `;
         await pyodide.runPythonAsync(source);
-
 
         // TODO: Should we actually map handlers in JS instead of Python?
         // el.onclick = (evt: any) => {
@@ -173,7 +173,6 @@ async function createElementsWithEventListeners(pyodide: any, pysAttribute: stri
         //   // pyodide.runPython(handlerCode);
         // }
     }
-
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
@@ -190,20 +189,20 @@ async function mountElements() {
     await pyodide.runPythonAsync(source);
 }
 
-async function initNamespaces(){
+async function initNamespaces() {
     console.log('Copying global namespace to separate namespaces if necessary');
     const pyodide = await pyodideReadyPromise;
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[pys-namespace]');
 
-    for (const el of matches){
-        let namespace_title = el.getAttribute('pys-namespace');
-        console.log("Found " + el.nodeName + " with namespace title " + namespace_title)
+    for (const el of matches) {
+        const namespace_title = el.getAttribute('pys-namespace');
+        console.log('Found ' + el.nodeName + ' with namespace title ' + namespace_title);
 
-        let my_new_namespace = pyodide.globals.get("dict")(pyodide.globals);
-        my_new_namespace.pop("pyscript_namespaces"); //remove any previously created namespaces from this copy
-        pyodide.globals.get("pyscript_namespaces").set(namespace_title, my_new_namespace);
-        console.log("Created new namespace " + namespace_title);
-        //console.log("Globals is now " + pyodide.globals)
+        const my_new_namespace = pyodide.globals.get('dict')(pyodide.globals);
+        my_new_namespace.pop('pyscript_namespaces'); //remove any previously created namespaces from this copy
+        pyodide.globals.get('pyscript_namespaces').set(namespace_title, my_new_namespace);
+        console.log('Created new namespace ' + namespace_title);
+        console.log('Globals is now ' + pyodide.globals);
     }
 }
 

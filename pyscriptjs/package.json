@@ -7,10 +7,10 @@
     "dev": "rollup -c -w",
     "start": "sirv public --no-clear --port 8080",
     "validate": "svelte-check",
-    "format:check": "prettier --check './src/**/*.{js,svelte,html,ts}'",
-    "format": "prettier --write './src/**/*.{js,svelte,html,ts}'",
-    "lint": "eslint './src/**/*.{js,svelte,html,ts}'",
-    "lint:fix": "eslint --fix './src/**/*.{js,svelte,html,ts}'",
+    "format:check": "prettier --check \"./src/**/*.{js,svelte,html,ts}\"",
+    "format": "prettier --write \"./src/**/*.{js,svelte,html,ts}\"",
+    "lint": "eslint \"./src/**/*.{js,svelte,html,ts}\"",
+    "lint:fix": "eslint --fix \"./src/**/*.{js,svelte,html,ts}\"",
     "xprelint": "npm run format"
   },
   "devDependencies": {

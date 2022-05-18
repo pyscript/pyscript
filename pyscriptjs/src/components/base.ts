@@ -42,10 +42,9 @@ export class BaseEvalElement extends HTMLElement {
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
 
-        if (this.hasAttribute('pys-namespace')){
+        if (this.hasAttribute('pys-namespace')) {
             this.namespace = this.getAttribute('pys-namespace');
-        }
-        else {
+        } else {
             this.namespace = DEFAULT_NAMESPACE;
         }
     }
@@ -121,27 +120,28 @@ export class BaseEvalElement extends HTMLElement {
 
             await this._register_esm(pyodide);
 
-            if (this.namespace == DEFAULT_NAMESPACE){
-                console.log("No pys-namespace attribute found, using global namespace");
-                namespace = runtime.globals
-            }
-            else {
-                console.log("Found that pys-namespace is " + this.namespace);
-                namespace = runtime.globals.get("pyscript_namespaces").get(this.namespace)
+            if (this.namespace == DEFAULT_NAMESPACE) {
+                console.log('No pys-namespace attribute found, using global namespace');
+                namespace = runtime.globals;
+            } else {
+                console.log('Found that pys-namespace is ' + this.namespace);
+                namespace = runtime.globals.get('pyscript_namespaces').get(this.namespace);
             }
 
             if (source.includes('asyncio')) {
                 await pyodide.runPythonAsync(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`, {globals: namespace}
+                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    { globals: namespace },
                 );
-                output = await pyodide.runPythonAsync(source, {globals: namespace});
-                await pyodide.runPythonAsync(`output_manager.revert()`, {globals: namespace});
+                output = await pyodide.runPythonAsync(source, { globals: namespace });
+                await pyodide.runPythonAsync(`output_manager.revert()`, { globals: namespace });
             } else {
                 output = pyodide.runPython(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`, {globals: namespace}
+                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    { globals: namespace },
                 );
-                output = pyodide.runPython(source,  {globals: namespace});
-                pyodide.runPython(`output_manager.revert()`, {globals: namespace});
+                output = pyodide.runPython(source, { globals: namespace });
+                pyodide.runPython(`output_manager.revert()`, { globals: namespace });
             }
 
             if (output !== undefined) {
@@ -160,7 +160,7 @@ export class BaseEvalElement extends HTMLElement {
             if (errorElements.length > 0) {
                 for (const errorElement of errorElements) {
                     errorElement.classList.add('hidden');
-                    if(this.hasAttribute('std-err')) {
+                    if (this.hasAttribute('std-err')) {
                         this.errorElement.hidden = true;
                         this.errorElement.style.removeProperty('display');
                     }
@@ -178,28 +178,28 @@ export class BaseEvalElement extends HTMLElement {
             addClasses(this.errorElement, ['bg-red-200', 'p-2']);
             out.write.callKwargs(err, { append: true });
 
-            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '')
+            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
         }
+        console.log('Globals is now ' + pyodide.globals);
     } // end evaluate
 
     async eval(source: string): Promise<void> {
         let output;
         const pyodide = runtime;
         let eval_namespace;
-        
-        if (this.namespace == DEFAULT_NAMESPACE){
-            console.log("No pys-namespace attribute found, using global namespace");
-            eval_namespace = runtime.globals
-        }
-        else {
-            console.log("Found that pys-namespace is " + this.namespace);
-            eval_namespace = runtime.globals.get("pyscript_namespaces").get(this.namespace)
+
+        if (this.namespace == DEFAULT_NAMESPACE) {
+            console.log('No pys-namespace attribute found, using global namespace');
+            eval_namespace = runtime.globals;
+        } else {
+            console.log('Found that pys-namespace is ' + this.namespace);
+            eval_namespace = runtime.globals.get('pyscript_namespaces').get(this.namespace);
         }
 
         try {
-            output = await pyodide.runPythonAsync(source, {globals: eval_namespace});
+            output = await pyodide.runPythonAsync(source, { globals: eval_namespace });
             if (output !== undefined) {
                 console.log(output);
             }
@@ -230,10 +230,9 @@ function createWidget(name: string, code: string, klass: string) {
             this.wrapper = document.createElement('slot');
             this.shadow.appendChild(this.wrapper);
 
-            if (this.hasAttribute('pys-namespace')){
+            if (this.hasAttribute('pys-namespace')) {
                 this.namespace = this.getAttribute('pys-namespace');
-            }
-            else {
+            } else {
                 this.namespace = DEFAULT_NAMESPACE;
             }
         }
@@ -275,18 +274,17 @@ function createWidget(name: string, code: string, klass: string) {
             let output;
             const pyodide = runtime;
             let eval_namespace;
-        
-            if (this.namespace == DEFAULT_NAMESPACE){
-                console.log("No pys-namespace attribute found, using global namespace");
-                eval_namespace = runtime.globals
-            }
-            else {
-                console.log("Found that pys-namespace is " + this.namespace);
-                eval_namespace = runtime.globals.get("pyscript_namespaces").get(this.namespace)
+
+            if (this.namespace == DEFAULT_NAMESPACE) {
+                console.log('No pys-namespace attribute found, using global namespace');
+                eval_namespace = runtime.globals;
+            } else {
+                console.log('Found that pys-namespace is ' + this.namespace);
+                eval_namespace = runtime.globals.get('pyscript_namespaces').get(this.namespace);
             }
 
             try {
-                output = await pyodide.runPythonAsync(source, {globals: eval_namespace});
+                output = await pyodide.runPythonAsync(source, { globals: eval_namespace });
                 this.proxyClass = pyodide.globals.get(this.klass);
                 if (output !== undefined) {
                     console.log(output);
@@ -309,7 +307,7 @@ export class PyWidget extends HTMLElement {
     wrapper: HTMLElement;
     theme: string;
     source: string;
-    code: string
+    code: string;
 
     constructor() {
         super();
@@ -332,11 +330,10 @@ export class PyWidget extends HTMLElement {
             this.klass = this.getAttribute('klass');
         }
 
-        if (this.hasAttribute('pys-namespace')){
+        if (this.hasAttribute('pys-namespace')) {
             this.namespace = this.getAttribute('pys-namespace');
-        }
-        else{
-            this.namespace = DEFAULT_NAMESPACE
+        } else {
+            this.namespace = DEFAULT_NAMESPACE;
         }
     }
 
@@ -395,17 +392,16 @@ export class PyWidget extends HTMLElement {
         const pyodide = runtime;
         let eval_namespace;
 
-        if (this.namespace == DEFAULT_NAMESPACE){
-            console.log("No pys-namespace attribute found, using global namespace");
-            eval_namespace = runtime.globals
-        }
-        else {
-            console.log("Found that pys-namespace is " + this.namespace);
-            eval_namespace = runtime.globals.get("pyscript_namespaces").get(this.namespace)
+        if (this.namespace == DEFAULT_NAMESPACE) {
+            console.log('No pys-namespace attribute found, using global namespace');
+            eval_namespace = runtime.globals;
+        } else {
+            console.log('Found that pys-namespace is ' + this.namespace);
+            eval_namespace = runtime.globals.get('pyscript_namespaces').get(this.namespace);
         }
 
         try {
-            output = await pyodide.runPythonAsync(source, {globals: eval_namespace});
+            output = await pyodide.runPythonAsync(source, { globals: eval_namespace });
             if (output !== undefined) {
                 console.log(output);
             }
