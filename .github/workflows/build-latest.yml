@@ -46,9 +46,9 @@ jobs:
                     ${{ runner.os }}-
 
         -   name: Install dependencies
-            run: | 
-              npm install
-              make setup
+            run: |
+                npm install
+                make setup
 
         -   name: Test pyscript
             run: make test
