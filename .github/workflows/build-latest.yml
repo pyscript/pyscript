@@ -50,8 +50,8 @@ jobs:
                     ${{ runner.os }}-
         -   name: Install miniconda
             run: |
-              curl -L -O https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_VERSION}-Linux-x86_64.sh \
-              && bash Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_VERSION}-Linux-x86_64.sh -b -p ~/.local/conda
+                curl -L -O https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_VERSION}-Linux-x86_64.sh \
+                && bash Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_VERSION}-Linux-x86_64.sh -b -p ~/.local/conda
 
         -   name: Install dependencies
             run: |
