@@ -211,14 +211,16 @@ fig
 
 The `<py-repl>` tag creates a REPL component that is rendered to the page as a code editor, allowing you to write executable code inline.
 
+
 ## Visual components
 
-The following tags control visual attributes of your HTML page.
+The following tags can be used to add visual attributes of your HTML page.
 
 | Tag             | Description |
 | ---             | ----------- |
-| `<py-inputbox>` | TBD         |
-| `<py-box>`      | TBD         |
-| `<py-button>`   | TBD         |
-| `<py-list>`     | TBD         |
-| `<py-title>`    | TBD         |
+| `<py-inputbox>` | Adds an input box that can be used to prompt users to enter input values |
+| `<py-box>`      | Create a container object that can be used to host one or more visual components, allowing to define how elements of `<py-box>` should align and show on the page. |
+| `<py-button>`   | Adds a button allowing authors to add a label as well as event handlers for actions on the button, such as `on_focus` or `on_click`. |
+| `<py-title>`    | Adds a static text title component that will style the text inside the tag as a page title |
+
+NOTE: All the elements above are experimental and not implemented at their full functionality. Use them with the understanding that the APIs or full support might change or be removed until the visual components are more mature.
