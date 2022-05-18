@@ -6,11 +6,13 @@ src_dir ?= $(base_dir)/src
 examples ?=  $(base_dir)/examples
 app_dir ?= $(shell git rev-parse --show-prefix)
 
+CONDA_EXE := conda/bin/conda
 CONDA_ENV ?= ./env
 env := $(CONDA_ENV)
 conda_run := conda run -p $(env)
 
 setup:
+	@if [ -z "$${CONDA_SHLVL:+x}" ]; then echo "Conda is not installed." && exit 1; fi
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
 
