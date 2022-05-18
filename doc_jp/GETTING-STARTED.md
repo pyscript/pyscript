@@ -98,7 +98,7 @@ pyscript.write('pi', f'π is approximately {pi:.3f}')
 
 ## Packagesとmodules
 
-[Python Standard Library](https://docs.python.org/3/library/) と`pyscript` moduleに加え、多くのサードパーティ製OSSパッケージがPyScriptと即座に連携して動作します。
+[Python Standard Library](https://docs.python.org/3/library/) と`pyscript`モジュールに加え、多くのサードパーティ製OSSパッケージがPyScriptと即座に連携して動作します。
 
 これらを使用するためには、HTMLの先頭で`<py-env>`を使用して依存関係を宣言する必要があります。[toga example](https://github.com/pyscript/pyscript/blob/main/pyscriptjs/examples/toga/freedom.html)のように、ディスク上の`.whl`ファイルに直接リンクすることもできます。
 
