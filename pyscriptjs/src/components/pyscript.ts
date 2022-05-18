@@ -157,7 +157,6 @@ async function createElementsWithEventListeners(pyodide: any, pysAttribute: stri
         `;
         await pyodide.runPythonAsync(source);
 
-
         // TODO: Should we actually map handlers in JS instead of Python?
         // el.onclick = (evt: any) => {
         //   console.log("click");

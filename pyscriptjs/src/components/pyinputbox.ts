@@ -37,7 +37,7 @@ export class PyInputBox extends BaseEvalElement {
         let registrationCode = `${this.mount_name} = Element("${mainDiv.id}")`;
         if (this.code.includes('def on_keypress')) {
             this.code = this.code.replace('def on_keypress', `def on_keypress_${this.mount_name}`);
-            registrationCode += `\n${this.mount_name}.element.onkeypress = on_keypress_${this.mount_name}`;
+            registrationCode += `\n${this.mount_name}.element.addEventListener('keypress', on_keypress_${this.mount_name})`;
         }
 
         // TODO: For now we delay execution to allow pyodide to load but in the future this
