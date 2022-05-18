@@ -1,5 +1,5 @@
 # Getting started with PyScript
-[English](GETTING-STARTED.md) | [Japanese](doc_jp/GETTING-STARTED.md)
+[English](GETTING-STARTED.md) | [Japanese](../../doc_jp/GETTING-STARTED.md)
 
 This page will guide you through getting started with PyScript.
 
