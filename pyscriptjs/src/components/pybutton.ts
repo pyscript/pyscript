@@ -37,6 +37,7 @@ export class PyButton extends BaseEvalElement {
     }
 
     connectedCallback() {
+        this.checkId();
         this.code = htmlDecode(this.innerHTML);
         this.mount_name = this.id.split('-').join('_');
         this.innerHTML = '';
