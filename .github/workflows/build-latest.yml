@@ -15,23 +15,23 @@ on:
         -   pyscriptjs/**
         -   .github/workflows/build-latest.yml # Test that workflow works when changed
 
-jobs:
-    build:
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            id-token: write
-        defaults:
-            run:
-                working-directory: pyscriptjs
+defaults:
+    run:
+        working-directory: pyscriptjs
 
+jobs:
+    test:
+        runs-on: ubuntu-latest
         steps:
+
         -   name: Checkout
             uses: actions/checkout@v3
+
         -   name: Install node
             uses: actions/setup-node@v3
             with:
                 node-version: 18.x
+
         -   name: Cache node modules
             uses: actions/cache@v3
             env:
@@ -44,20 +44,30 @@ jobs:
                     ${{ runner.os }}-build-${{ env.cache-name }}-
                     ${{ runner.os }}-build-
                     ${{ runner.os }}-
-        -   name: Install dependencies
-            run: |
-                npm install
-        -   name: Build pyscript
-            run: |
-                npm run build
 
+        -   name: Install dependencies
+            run: | 
+              npm install
+              make setup
+
+        -   name: Test pyscript
+            run: make test
+
+        -   name: Build pyscript
+            run: make build
+
+    deploy:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main' # Only deploy on merge into main
+        permissions:
+            contents: read
+            id-token: write
+        steps:
         # Deploy to S3
         -   name: Configure AWS credentials
-            if: github.ref == 'refs/heads/main' # Only deploy on merge into main
             uses: aws-actions/configure-aws-credentials@v1.6.1
             with:
                 aws-region: ${{secrets.AWS_REGION}}
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
         -   name: Sync to S3
-            if: github.ref == 'refs/heads/main'
             run: aws s3 sync --quiet ./examples/build/ s3://pyscript.net/unstable
