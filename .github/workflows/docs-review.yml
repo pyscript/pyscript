@@ -4,6 +4,8 @@ on:
     pull_request:
         branches:
         -   '*'
+        paths:
+        -   docs
 
 concurrency:
   # Concurrency group that uses the workflow name and PR number if available
