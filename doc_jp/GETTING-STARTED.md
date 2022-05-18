@@ -109,7 +109,7 @@ pyscript.write('pi', f'π is approximately {pi:.3f}')
 </py-env>
 ```
 
-あなたの`.whl`が純粋なPython wheelでない場合、[こちら](https://github.com/pyodide/pyodide/tree/main/packages)へ追加するため[pyodide](https://github.com/pyodide/pyodide)にPRまたはissueをしてください。十分な需要があれば、pyodideチームはあなたのパッケージのサポートに取り組むでしょう。しかし、あなたがPRを行い、ブロック解除のためにチームと相談すれば、より早く進むでしょう。
+あなたの`.whl`が純粋なPython wheelでない場合、[こちら](https://github.com/pyodide/pyodide/tree/main/packages)へ追加するため[pyodide](https://github.com/pyodide/pyodide)にPRまたはissueを作成してください。十分な需要があれば、pyodideチームはあなたのパッケージのサポートに取り組むでしょう。しかし、あなたがPRを作成し、障害を取り除くためにチームと相談すれば、より早く進むでしょう。
 
 たとえば、NumPyやMatplotlibが利用可能です。ここでは、ショートカットとして `<py-script output="plot">` を使用していることに注意してください。これは、スクリプトの最終行にある式を受け取り、`pyscript.write('plot', fig) `を実行します
 
