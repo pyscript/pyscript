@@ -1,4 +1,4 @@
-import { getLastPath } from './utils';
+import { getLastPath, handleFetchError } from './utils';
 
 let pyodideReadyPromise;
 let pyodide;
@@ -24,18 +24,25 @@ const loadInterpreter = async function (indexUrl: string): Promise<any> {
     // file from the same location
     const loadedScript: HTMLScriptElement = document.querySelector(`script[src$='pyscript.js'], script[src$='pyscript.min.js']`);
     const scriptPath = loadedScript.src.substring(0, loadedScript.src.lastIndexOf('/'));
-    await pyodide.runPythonAsync(await (await fetch(`${scriptPath}/pyscript.py`)).text());
+    const pyScriptPath = `${scriptPath}/pyscript.py`;
 
-    console.log(scriptPath);
+    try {
+        await pyodide.runPythonAsync(await (await fetch(pyScriptPath)).text());
+    } catch (e) {
+        //Should we still export full error contents to console?
+        handleFetchError(e, pyScriptPath);
+    }
 
     console.log('done setting up environment');
     return pyodide;
 };
 
 const loadPackage = async function (package_name: string[] | string, runtime: any): Promise<any> {
-    const micropip = pyodide.globals.get('micropip');
-    await micropip.install(package_name);
-    micropip.destroy();
+    if (package_name.length > 0){
+        const micropip = pyodide.globals.get('micropip');
+        await micropip.install(package_name);
+        micropip.destroy();
+    }
 };
 
 const loadFromFile = async function (s: string, runtime: any): Promise<any> {
