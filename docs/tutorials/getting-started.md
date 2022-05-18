@@ -213,7 +213,7 @@ The `<py-repl>` tag creates a REPL component that is rendered to the page as a c
 
 ## The py-config tag
 
-Use the `<py-config>` tag to set and configure general metadata about your PyScript application in YAML format. If you are unfamiliar with YAML, consider reading [Red Hat's YAML for beginners](https://www.redhat.com/sysadmin/yaml-beginners) guide for more information.  
+Use the `<py-config>` tag to set and configure general metadata about your PyScript application in YAML format. If you are unfamiliar with YAML, consider reading [Red Hat's YAML for beginners](https://www.redhat.com/sysadmin/yaml-beginners) guide for more information.
 
 The `<py-config>` tag can be used as follows:
 
