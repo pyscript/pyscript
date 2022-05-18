@@ -35,6 +35,7 @@ extensions = [
     "sphinx_togglebutton",
     "sphinx_sitemap",
     "sphinxemoji.sphinxemoji",
+    "sphinxcontrib.youtube",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
