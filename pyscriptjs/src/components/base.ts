@@ -32,6 +32,7 @@ export class BaseEvalElement extends HTMLElement {
     outputElement: HTMLElement;
     errorElement: HTMLElement;
     theme: string;
+    appendOutput: boolean;
 
     constructor() {
         super();
@@ -40,6 +41,14 @@ export class BaseEvalElement extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open' });
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
+    }
+
+    setOutputMode() {
+        if (this.hasAttribute('output-mode')) {
+            this.appendOutput = this.getAttribute('output-mode') == "replace" ? false : true;
+        } else {
+            this.appendOutput = true;
+        }
     }
 
     addToOutput(s: string) {
@@ -104,6 +113,8 @@ export class BaseEvalElement extends HTMLElement {
         let source: string;
         let output;
         try {
+            this.setOutputMode();
+
             if (this.source) {
                 source = await this.getSourceFromFile(this.source);
             } else {
@@ -114,13 +125,13 @@ export class BaseEvalElement extends HTMLElement {
 
             if (source.includes('asyncio')) {
                 await pyodide.runPythonAsync(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    `output_manager.change("${this.outputElement.id}", "${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
                 output = await pyodide.runPythonAsync(source);
                 await pyodide.runPythonAsync(`output_manager.revert()`);
             } else {
                 output = pyodide.runPython(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    `output_manager.change("${this.outputElement.id}", "${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
                 output = pyodide.runPython(source);
                 pyodide.runPython(`output_manager.revert()`);
@@ -131,7 +142,7 @@ export class BaseEvalElement extends HTMLElement {
                     Element = pyodide.globals.get('Element');
                 }
                 const out = Element(this.outputElement.id);
-                out.write.callKwargs(output, { append: true });
+                out.write.callKwargs(output, { append: this.appendOutput });
 
                 this.outputElement.hidden = false;
                 this.outputElement.style.display = 'block';
@@ -147,8 +158,8 @@ export class BaseEvalElement extends HTMLElement {
                         this.errorElement.style.removeProperty('display');
                     }
                 }
-                removeClasses(this.errorElement, ['bg-red-200', 'p-2']);
             }
+            removeClasses(this.errorElement, ['bg-red-200', 'p-2']);
 
             this.postEvaluate();
         } catch (err) {
@@ -158,7 +169,7 @@ export class BaseEvalElement extends HTMLElement {
             const out = Element(this.errorElement.id);
 
             addClasses(this.errorElement, ['bg-red-200', 'p-2']);
-            out.write.callKwargs(err, { append: true });
+            out.write.callKwargs(err, { append: this.appendOutput });
 
             this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '')
             this.errorElement.hidden = false;
@@ -304,11 +315,6 @@ export class PyWidget extends HTMLElement {
     initOutErr(): void {
         if (this.hasAttribute('output')) {
             this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
-
-            // in this case, the default output-mode is append, if hasn't been specified
-            if (!this.hasAttribute('output-mode')) {
-                this.setAttribute('output-mode', 'append');
-            }
         } else {
             if (this.hasAttribute('std-out')) {
                 this.outputElement = document.getElementById(this.getAttribute('std-out'));

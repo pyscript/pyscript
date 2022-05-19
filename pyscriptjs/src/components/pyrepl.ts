@@ -124,11 +124,6 @@ export class PyRepl extends BaseEvalElement {
 
         if (this.hasAttribute('output')) {
             this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
-
-            // in this case, the default output-mode is append, if hasn't been specified
-            if (!this.hasAttribute('output-mode')) {
-                this.setAttribute('output-mode', 'append');
-            }
         } else {
             if (this.hasAttribute('std-out')) {
                 this.outputElement = document.getElementById(this.getAttribute('std-out'));
@@ -162,6 +157,8 @@ export class PyRepl extends BaseEvalElement {
     }
 
     postEvaluate(): void {
+        this.setOutputMode();
+
         this.outputElement.hidden = false;
         this.outputElement.style.display = 'block';
 
@@ -175,6 +172,7 @@ export class PyRepl extends BaseEvalElement {
             newPyRepl.setAttribute('root', this.getAttribute('root'));
             newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
             newPyRepl.setAttribute('auto-generate', '');
+            newPyRepl.setAttribute('output-mode', this.appendOutput ? 'append' : 'replace');
             this.removeAttribute('auto-generate');
 
             if (this.hasAttribute('output')) {
@@ -196,7 +194,7 @@ export class PyRepl extends BaseEvalElement {
 
     getSourceFromElement(): string {
         const sourceStrings = [
-            `output_manager.change("` + this.outputElement.id + `")`,
+            `output_manager.change("${this.outputElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
             ...this.editor.state.doc.toString().split('\n'),
         ];
         return sourceStrings.join('\n');
