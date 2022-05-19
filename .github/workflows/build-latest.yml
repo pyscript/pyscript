@@ -55,8 +55,6 @@ jobs:
         -   name: setup Miniconda
             uses: conda-incubator/setup-miniconda@v2
 
-        -   run: which conda
-
         -   name: Install dependencies
             run: |
                 npm install
