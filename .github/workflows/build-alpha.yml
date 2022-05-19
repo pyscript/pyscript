@@ -53,10 +53,10 @@ jobs:
         -   name: Install dependencies
             run: |
                 npm install
-                make setup
+                make setup CONDA_EXE=conda
 
         -   name: Test pyscript
-            run: make test
+            run: make test CONDA_EXE=conda
 
         -   name: Build pyscript
             run: make build
