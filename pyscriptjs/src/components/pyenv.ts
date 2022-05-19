@@ -2,6 +2,7 @@ import * as jsyaml from 'js-yaml';
 
 import { pyodideLoaded, addInitializer } from '../stores';
 import { loadPackage, loadFromFile } from '../interpreter';
+import { handleFetchError } from '../utils';
 
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
@@ -62,7 +63,12 @@ export class PyEnv extends HTMLElement {
         async function loadPaths() {
             for (const singleFile of paths) {
                 console.log(`loading ${singleFile}`);
-                await loadFromFile(singleFile, runtime);
+                try {
+                    await loadFromFile(singleFile, runtime);
+                } catch (e) {
+                    //Should we still export full error contents to console?
+                    handleFetchError(e, singleFile);
+                }
             }
             console.log('paths loaded');
         }

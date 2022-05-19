@@ -13,6 +13,7 @@ conda_run := conda run -p $(env)
 setup:
 	@if [ -z "$${CONDA_SHLVL:+x}" ]; then echo "Conda is not installed." && exit 1; fi
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
+	$(conda_run) playwright install
 
 clean:
 	find . -name \*.py[cod] -delete
@@ -32,7 +33,6 @@ build:
 	npm run build
 
 test:
-	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
 test-py:
