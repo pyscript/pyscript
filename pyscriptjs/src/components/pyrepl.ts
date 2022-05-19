@@ -35,10 +35,10 @@ mode.subscribe(value => {
 function createCmdHandler(el: PyRepl): StateCommand {
     // Creates a codemirror cmd handler that calls the el.evaluate when an event
     // triggers that specific cmd
-    const toggleCheckbox: StateCommand = ({ state, dispatch }) => {
-        return el.evaluate(state);
+    return () => {
+        void el.evaluate();
+        return true;
     };
-    return toggleCheckbox;
 }
 
 let initialTheme: string;
