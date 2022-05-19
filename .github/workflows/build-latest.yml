@@ -53,7 +53,7 @@ jobs:
                     ${{ runner.os }}-
 
         -   name: setup Miniconda
-        -   uses: conda-incubator/setup-miniconda@v2
+            uses: conda-incubator/setup-miniconda@v2
 
         -   run: which conda
 
