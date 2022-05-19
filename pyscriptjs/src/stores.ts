@@ -42,7 +42,7 @@ initializers.subscribe(value => {
 export const addInitializer = (initializer: Initializer) => {
     console.log('adding initializer', initializer);
     initializers.set([...initializers_, initializer]);
-    console.log('adding initializer', initializer);
+    console.log('added initializer', initializer);
 };
 
 postInitializers.subscribe(value => {
@@ -52,5 +52,5 @@ postInitializers.subscribe(value => {
 export const addPostInitializer = (initializer: Initializer) => {
     console.log('adding post initializer', initializer);
     postInitializers.set([...postInitializers_, initializer]);
-    console.log('adding post initializer', initializer);
+    console.log('added post initializer', initializer);
 };
