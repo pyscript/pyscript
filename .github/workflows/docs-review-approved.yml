@@ -1,6 +1,8 @@
 name: '[Docs] Deploy Review'
 
 on:
+  # workflow_call:
+
     repository_dispatch:
         types: [submitted]
 
