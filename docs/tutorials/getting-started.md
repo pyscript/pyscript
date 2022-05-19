@@ -211,14 +211,44 @@ fig
 
 The `<py-repl>` tag creates a REPL component that is rendered to the page as a code editor, allowing you to write executable code inline.
 
-## Visual components
+## The py-config tag
 
-The following tags control visual attributes of your HTML page.
+Use the `<py-config>` tag to set and configure general metadata about your PyScript application in YAML format. If you are unfamiliar with YAML, consider reading [Red Hat's YAML for beginners](https://www.redhat.com/sysadmin/yaml-beginners) guide for more information.
+
+The `<py-config>` tag can be used as follows:
+
+```
+<py-config>
+  - autoclose_loader: false
+  - runtimes:
+    -
+      src: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
+      name: pyodide-0.20
+      lang: python
+</py-config>
+```
+
+The following optional values are supported by `<py-config>`:
+
+  * autoclose_loader (boolean): If false, PyScript will not close the loading splash screen when the startup operations finish.
+  * name (string): Name of the user application. This field can be any string and is to be used by the application author for their own customization purposes.
+  * version (string): Version of the user application. This field can be any string and is to be used by the application author for their own customization purposes. It is not related to the PyScript version.
+  * runtimes (List of Runtimes): List of runtime configurations. Each Runtime expects the following fields:
+    * src (string, Required): URL to the runtime source.
+    * name (string): Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes.
+    * name (string): Programming language supported by the runtime. This field can by used by the application author to provide clarify. It currently has no implications on how PyScript behaves.
+
+## Visual component tags
+
+The following tags can be used to add visual attributes to your HTML page.
 
 | Tag             | Description |
 | ---             | ----------- |
-| `<py-inputbox>` | TBD         |
-| `<py-box>`      | TBD         |
-| `<py-button>`   | TBD         |
-| `<py-list>`     | TBD         |
-| `<py-title>`    | TBD         |
+| `<py-inputbox>` | Adds an input box that can be used to prompt users to enter input values. |
+| `<py-box>`      | Creates a container object that can be used to host one or more visual components that define how elements of `<py-box>` should align and show on the page. |
+| `<py-button>`   | Adds a button to which authors can add labels and event handlers for actions on the button, such as `on_focus` or `on_click`. |
+| `<py-title>`    | Adds a static text title component that styles the text inside the tag as a page title. |
+
+```{note}
+All the elements above are experimental and not implemented at their full functionality. Use them with the understanding that the APIs or full support might change or be removed until the visual components are more mature.
+```
