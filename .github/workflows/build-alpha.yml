@@ -47,10 +47,8 @@ jobs:
                     ${{ runner.os }}-build-
                     ${{ runner.os }}-
 
-        -   name: Install miniconda
-            run: |
-                curl -L -O https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_VERSION}-Linux-x86_64.sh \
-                && bash Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_VERSION}-Linux-x86_64.sh -b -p conda/
+        -   name: setup Miniconda
+        -   uses: conda-incubator/setup-miniconda@v2
 
         -   name: Install dependencies
             run: |
