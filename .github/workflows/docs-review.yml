@@ -1,9 +1,15 @@
 name: '[Docs] Build Review'
 
 on:
-    push:
-        branches:
-        -   'test-fork-workflows'
+
+  pull_request:
+    types: [opened]
+    branches:
+      - '*'
+
+  push:
+      branches:
+      -   'test-fork-workflows'
 
 concurrency:
   # Concurrency group that uses the workflow name and PR number if available
@@ -52,4 +58,4 @@ jobs:
 
     approved:
         uses: pyscript/pyscript/.github/workflows/docs-review-approved.yml@test-fork-workflows
-        if: github.ref == 'refs/heads/test-fork-workflows'
+        needs: build
