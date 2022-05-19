@@ -2,8 +2,7 @@ name: '[Docs] Build Review'
 
 on:
 
-  pull_request_review:
-    types: [submitted]
+  pull_request:
     branches:
       - '*'
 
@@ -57,6 +56,5 @@ jobs:
                 name: pyscript-docs-review-${{ github.event.number }}
                 path: docs/_build/html/
 
-    approved:
-        uses: pyscript/pyscript/.github/workflows/docs-review-approved.yml@test-fork-workflows
-        needs: build
+
+
