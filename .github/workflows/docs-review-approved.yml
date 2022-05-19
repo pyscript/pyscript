@@ -39,6 +39,8 @@ jobs:
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
 
         -   name: Copy redirect file
+            run: |
+                echo "### Review documentation"
         #     run: aws s3 cp --quiet ./docs/_build/html/_static/redirect.html s3://docs.pyscript.net/index.html
 
         # # -   name: Delete review directory
