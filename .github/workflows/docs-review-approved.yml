@@ -1,7 +1,8 @@
 name: '[Docs] Deploy Review'
 
 on:
-  workflow_dispatch:
+ repository_dispatch:
+  types: [submitted]
 
 env:
   SPHINX_HTML_BASE_URL: https://docs.pyscript.net/
@@ -20,7 +21,7 @@ concurrency:
 jobs:
     approved:
         name: Approved
-        if: github.pull.request == 'submitted'
+        if: github.event.review.state == 'approved'
         runs-on: ubuntu-latest
         permissions:
             contents: read
