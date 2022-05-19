@@ -57,7 +57,7 @@ jobs:
 
     deploy:
         needs: build
-        # if: github.event.review.state == 'approved'
+        if: github.event.review.state == 'approved'
         runs-on: ubuntu-latest
         permissions:
             contents: read
