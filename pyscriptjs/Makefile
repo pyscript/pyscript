@@ -33,7 +33,13 @@ dev:
 build:
 	npm run build
 
+example:
+	cp -r ../examples ./examples
+	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+./build/+g {} +
+
 test:
+	rm -rf examples
+	make example
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
 test-py:
