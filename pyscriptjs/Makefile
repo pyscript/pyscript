@@ -6,6 +6,7 @@ src_dir ?= $(base_dir)/src
 examples ?=  $(base_dir)/examples
 app_dir ?= $(shell git rev-parse --show-prefix)
 
+CONDA_EXE := conda
 CONDA_ENV ?= ./env
 env := $(CONDA_ENV)
 conda_run := $(CONDA_EXE) run -p $(env)
