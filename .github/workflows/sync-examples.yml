@@ -1,7 +1,7 @@
 name: '[CI] Sync Examples'
 
 on:
-    push: # Only run on merges into main that modify files under pyscriptjs/examples/
+    push: # Only run on merges into main that modify files under examples/
         branches:
         -   main
         paths:
@@ -16,7 +16,7 @@ jobs:
             id-token: write
         defaults:
             run:
-                working-directory: pyscriptjs/examples
+                working-directory: examples
 
         steps:
 
