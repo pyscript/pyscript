@@ -51,15 +51,16 @@ export class PyButton extends BaseEvalElement {
 
         this.appendChild(mainDiv);
         this.code = this.code.split('self').join(this.mount_name);
-        let registrationCode = `${this.mount_name} = Element("${mainDiv.id}")`;
+        let registrationCode = `from pyodide import create_proxy`;
+        registrationCode += `\n${this.mount_name} = Element("${mainDiv.id}")`;
         if (this.code.includes('def on_focus')) {
             this.code = this.code.replace('def on_focus', `def on_focus_${this.mount_name}`);
-            registrationCode += `\n${this.mount_name}.element.addEventListener('focus', on_focus_${this.mount_name})`;
+            registrationCode += `\n${this.mount_name}.element.addEventListener('focus', create_proxy(on_focus_${this.mount_name}))`;
         }
 
         if (this.code.includes('def on_click')) {
             this.code = this.code.replace('def on_click', `def on_click_${this.mount_name}`);
-            registrationCode += `\n${this.mount_name}.element.addEventListener('click', on_click_${this.mount_name})`;
+            registrationCode += `\n${this.mount_name}.element.addEventListener('click', create_proxy(on_click_${this.mount_name}))`;
         }
 
         // now that we appended and the element is attached, lets connect with the event handlers
