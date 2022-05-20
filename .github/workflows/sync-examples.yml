@@ -5,7 +5,7 @@ on:
         branches:
         -   main
         paths:
-        -   pyscriptjs/examples/**
+        -   examples/**
         -   .github/workflows/sync-examples.yml # Test that workflow works when changed
 
 jobs:
