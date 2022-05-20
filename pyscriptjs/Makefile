@@ -35,7 +35,7 @@ build:
 
 example:
 	cp -r ../examples ./examples
-	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+./build/+g {} +
+	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+build/+g {} +
 
 test:
 	rm -rf examples
