@@ -43,11 +43,7 @@ function createCmdHandler(el: PyRepl): StateCommand {
 
 let initialTheme: string;
 function getEditorTheme(el: BaseEvalElement): string {
-    if (initialTheme) {
-        return initialTheme;
-    }
-
-    return (initialTheme = el.getAttribute('theme'));
+    return initialTheme || (initialTheme = el.getAttribute('theme'));
 }
 
 export class PyRepl extends BaseEvalElement {
@@ -165,11 +161,9 @@ export class PyRepl extends BaseEvalElement {
                 mainDiv.appendChild(this.outputElement);
             }
 
-            if (this.hasAttribute('std-err')) {
-                this.errorElement = document.getElementById(this.getAttribute('std-err'));
-            } else {
-                this.errorElement = this.outputElement;
-            }
+            this.errorElement = this.hasAttribute('std-err')
+                ? document.getElementById(this.getAttribute('std-err'))
+                : this.outputElement;
         }
 
         this.appendChild(mainDiv);
@@ -188,7 +182,7 @@ export class PyRepl extends BaseEvalElement {
 
         if (this.hasAttribute('auto-generate')) {
             const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
-            const lastRepl = allPyRepls[allPyRepls.length -1 ];
+            const lastRepl = allPyRepls[allPyRepls.length - 1];
             const lastExecId = lastRepl.getAttribute('exec-id');
             const nextExecId = parseInt(lastExecId) + 1;
 
@@ -198,17 +192,15 @@ export class PyRepl extends BaseEvalElement {
             newPyRepl.setAttribute('auto-generate', '');
             this.removeAttribute('auto-generate');
 
-            if (this.hasAttribute('output')) {
-                newPyRepl.setAttribute('output', this.getAttribute('output'));
-            }
+            const addReplAttribute = (attribute: string) => {
+                if (this.hasAttribute(attribute)) {
+                    newPyRepl.setAttribute(attribute, this.getAttribute(attribute));
+                }
+            };
 
-            if (this.hasAttribute('std-out')) {
-                newPyRepl.setAttribute('std-out', this.getAttribute('std-out'));
-            }
-
-            if (this.hasAttribute('std-err')) {
-                newPyRepl.setAttribute('std-err', this.getAttribute('std-err'));
-            }
+            addReplAttribute('output');
+            addReplAttribute('std-out');
+            addReplAttribute('std-err');
 
             newPyRepl.setAttribute('exec-id', nextExecId.toString());
             this.parentElement.appendChild(newPyRepl);
