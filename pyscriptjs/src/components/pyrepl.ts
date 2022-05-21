@@ -199,7 +199,7 @@ export class PyRepl extends BaseEvalElement {
                 newPyRepl.setAttribute('auto-generate', '');
                 this.removeAttribute('auto-generate');
             }
-            
+
             if(this.hasAttribute('output-append')) {
                 newPyRepl.setAttribute('output-append', '');
             }
