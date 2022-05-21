@@ -368,15 +368,17 @@ class PyListTemplate:
 
 
 class OutputCtxManager:
-    def __init__(self, out=None, output_to_console=True, append=True):
+    def __init__(self, out=None, err=None, output_to_console=True, append=True):
         self._out = out
+        self._err = err
         self._prev = out
         self.output_to_console = output_to_console
         self._append = append
 
     def change(self, out=None, err=None, output_to_console=True, append=True):
-        self._prev = self._out
+        self._prev = self._out or self._err
         self._out = out
+        self._err = err
         self.output_to_console = output_to_console
         self._append = append
         console.log("----> changed out to", self._out, self._append)
@@ -398,13 +400,11 @@ class OutputManager:
         sys.stdout = self._out_manager = OutputCtxManager(
             out=out, 
             output_to_console=output_to_console, 
-            append=append
-        )
+            append=append)
         sys.stderr = self._err_manager = OutputCtxManager(
             err=err,
             output_to_console=output_to_console,
-            append=append
-        )
+            append=append)
         self.output_to_console = output_to_console
         self._append = append
 
@@ -412,14 +412,12 @@ class OutputManager:
         self._out_manager.change(
             out=out, 
             output_to_console=output_to_console, 
-            append=append
-        )
+            append=append)
         sys.stdout = self._out_manager
         self._err_manager.change(
             err=err, 
             output_to_console=output_to_console, 
-            append=append
-        )
+            append=append)
         sys.stderr = self._err_manager
         self.output_to_console = output_to_console
         self._append = append
