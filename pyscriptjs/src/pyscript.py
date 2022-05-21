@@ -390,7 +390,29 @@ class OutputCtxManager:
     def write(self, txt):
         console.log("writing to", self._out, txt, self._append)
         if self._out:
-            pyscript.write(self._out, txt, append=self._append)
+            out_element = document.querySelector(f"#{self._out}")
+            out_element_id = self._out
+
+            if not out_element:
+                return
+
+            if self._append:
+                child = document.createElement("div")
+                exec_id = out_element.childElementCount + 1
+                out_element_id = child.id = f"{self._out}-{exec_id}"
+                out_element.appendChild(child)
+            
+            out_element = document.querySelector(f"#{out_element_id}")
+            
+            html, mime_type = format_mime(txt)
+            if mime_type in ("application/javascript", "text/html"):
+                script_element = document.createRange().createContextualFragment(html)
+                out_element.appendChild(script_element)
+            else:
+                if html == "\n":
+                    return
+                out_element.innerHTML = html
+
         if self.output_to_console:
             console.log(self._out, txt)
 
