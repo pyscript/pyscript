@@ -410,7 +410,7 @@ class OutputManager:
         self._err_manager.change(err, output_to_console, append)
         sys.stderr = self._err_manager
         self.output_to_console = output_to_console
-        self.append = append
+        self._append = append
 
     def revert(self):
         self._out_manager.revert()
