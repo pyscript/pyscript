@@ -143,13 +143,12 @@ export class PyRepl extends BaseEvalElement {
             this.setAttribute('root', this.id);
         }
 
+        if(!this.hasAttribute('output-append')) {
+            this.appendOutput = false;
+        }
+
         if (this.hasAttribute('output')) {
             this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
-
-            // in this case, the default output-mode is append, if hasn't been specified
-            if (!this.hasAttribute('output-mode')) {
-                this.setAttribute('output-mode', 'append');
-            }
         } else {
             if (this.hasAttribute('std-out')) {
                 this.outputElement = document.getElementById(this.getAttribute('std-out'));
@@ -195,8 +194,15 @@ export class PyRepl extends BaseEvalElement {
             const newPyRepl = document.createElement('py-repl');
             newPyRepl.setAttribute('root', this.getAttribute('root'));
             newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
-            newPyRepl.setAttribute('auto-generate', '');
-            this.removeAttribute('auto-generate');
+
+            if(this.hasAttribute('auto-generate')) {
+                newPyRepl.setAttribute('auto-generate', '');
+                this.removeAttribute('auto-generate');
+            }
+            
+            if(this.hasAttribute('output-append')) {
+                newPyRepl.setAttribute('output-append', '');
+            }
 
             if (this.hasAttribute('output')) {
                 newPyRepl.setAttribute('output', this.getAttribute('output'));
@@ -216,10 +222,15 @@ export class PyRepl extends BaseEvalElement {
     }
 
     getSourceFromElement(): string {
-        const sourceStrings = [
-            `output_manager.change("` + this.outputElement.id + `")`,
+        let sourceStrings = [
+            `output_manager.change(out="${this.outputElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
             ...this.editor.state.doc.toString().split('\n'),
         ];
+
+        if(!this.appendOutput) {
+            sourceStrings.splice(2, 0, `output_manager.change(out="${this.outputElement.id}", append=True)`);
+        }
+
         return sourceStrings.join('\n');
     }
 
