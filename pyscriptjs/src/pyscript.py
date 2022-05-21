@@ -396,18 +396,30 @@ class OutputCtxManager:
 class OutputManager:
     def __init__(self, out=None, err=None, output_to_console=True, append=True):
         sys.stdout = self._out_manager = OutputCtxManager(
-            out, output_to_console, append
+            out=out, 
+            output_to_console=output_to_console, 
+            append=append
         )
         sys.stderr = self._err_manager = OutputCtxManager(
-            err, output_to_console, append
+            err=err,
+            output_to_console=output_to_console,
+            append=append
         )
         self.output_to_console = output_to_console
         self._append = append
 
     def change(self, out=None, err=None, output_to_console=True, append=True):
-        self._out_manager.change(out, output_to_console, append)
+        self._out_manager.change(
+            out=out, 
+            output_to_console=output_to_console, 
+            append=append
+        )
         sys.stdout = self._out_manager
-        self._err_manager.change(err, output_to_console, append)
+        self._err_manager.change(
+            err=err, 
+            output_to_console=output_to_console, 
+            append=append
+        )
         sys.stderr = self._err_manager
         self.output_to_console = output_to_console
         self._append = append
