@@ -16,7 +16,7 @@ PyScript는 브라우저에서 DOM이 작동하는 방식과 정교하게 결합
 
 ## PyScript 사용하기
 
-PyScript을 사용하기 위해서, html 페이지에 올바른 pyscript 파일을 import 해야 합니다:
+PyScript를 사용 하려면, 다음과 같이 html 페이지에 적절한 pyscript 파일들을 import 해야 합니다.
 ```html
 <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
 <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
