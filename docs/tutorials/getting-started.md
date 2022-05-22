@@ -77,7 +77,7 @@ one or more lines onto the page in order. Within the `<py-script>`, you
 have access to the `pyscript` module, which provides a `.write()` method
 to send strings into labeled elements on the page.
 
-For example, we'll add some style elements and provide place holders for
+For example, we'll add some style elements and provide placeholders for
 the `<py-script>` tag to write to.
 
 ```html
@@ -236,7 +236,7 @@ The following optional values are supported by `<py-config>`:
   * runtimes (List of Runtimes): List of runtime configurations. Each Runtime expects the following fields:
     * src (string, Required): URL to the runtime source.
     * name (string): Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes.
-    * name (string): Programming language supported by the runtime. This field can by used by the application author to provide clarify. It currently has no implications on how PyScript behaves.
+    * name (string): Programming language supported by the runtime. This field can be used by the application author to provide clarify. It currently has no implications on how PyScript behaves.
 
 ## Visual component tags
 
