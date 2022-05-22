@@ -41,7 +41,7 @@ PyScript를 사용 하려면, 다음과 같이 html 페이지에 적절한 pyscr
 ## Notes
 
 * 이것은 매우 실험적인 프로젝트이므로, 프로젝트가 깨질 수 있습니다!
-* PyScript는 현재 크롬에서만 테스트되고 있습니다.
+* PyScript는 현재 크롬에서만 테스트 되었습니다.
 
 ## Governance
 
