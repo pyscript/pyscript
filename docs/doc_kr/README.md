@@ -7,16 +7,16 @@ PyScript는 Scratch, JSFiddle 및 기타 "사용하기 쉬운" 프로그래밍 �
 
 시작하려면 [시작 튜토리얼](docs/tutorials/getting-started.md)을 참조하세요.
 
-예제보기 [the pyscript folder](pyscriptjs).
+예제 보기 [the pyscript folder](pyscriptjs).
 
 ### Longer Version
-PyScript는 사용자가 파이썬으로 정교한 브라우저 애플리케이션을 만들 수 있게 하는 여러 오픈소스 기술을 결합을 목표로 하는 메타 프로젝트입니다.
-PyScript는 브라우저에서 DOM이 작동하는 방식과 정교하게 결합하고 웹과 파이썬 개발자 모두에게 자연스럽게 파이썬 로직을 추가할 수 있습니다.
+PyScript는 사용자가 파이썬으로 정교한 브라우저 애플리케이션을 만들 수 있게 하는 여러 오픈소스 기술들을 결합하는 것이 목표인 메타 프로젝트입니다.
+PyScript는 브라우저에서 DOM이 작동하는 방식과 정교하게 결합하고 웹과 파이썬 개발자 모두가 자연스럽게 파이썬 로직을 추가할 수 있게 합니다.
 
 
 ## PyScript 사용하기
 
-PyScript를 사용 하려면, 다음과 같이 html 페이지에 적절한 pyscript 파일들을 import 해야 합니다.
+PyScript를 사용하려면, 다음과 같이 html 페이지에 적절한 pyscript 파일들을 import 해야 합니다.
 ```html
 <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
 <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
@@ -24,7 +24,7 @@ PyScript를 사용 하려면, 다음과 같이 html 페이지에 적절한 pyscr
 이제 PyScript 컴포넌트들을 html 페이지에 사용할 수 있습니다. PyScript는 현재 다음과 같은 요소(elements)들을 구현하고 있습니다.
 
 * `<py-script>`: 웹 페이지 내에서 실행할 수 있는 파이썬 코드를 정의하는 데 사용할 수 있습니다. 요소(element) 자체는 페이지에 렌더링되지 않으며 논리를 추가하는 데만 사용됩니다
-* `<py-repl>`: 코드 편집기로 페이지에 렌더링되는 REP 구성 요소를 만들고 사용자가 실행 코드를 쓸 수 있도록 합니다.
+* `<py-repl>`: 코드 편집기로 페이지에 렌더링되는 REP 구성 요소를 만들고 사용자가 실행 코드를 쓸 수 있게 합니다.
 
 사용방법에 대한 자세한 예시는 [pyscriptjs/examples](pyscriptjs/examples) 폴더를 확인하십시오. 크롬에서 열기만 하시면 됩니다.
 
