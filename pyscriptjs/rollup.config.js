@@ -6,7 +6,8 @@ import { terser } from "rollup-plugin-terser";
 import sveltePreprocess from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
 import css from "rollup-plugin-css-only";
-import serve from 'rollup-plugin-serve';
+import serve from "rollup-plugin-serve";
+import { string } from "rollup-plugin-string";
 
 import path from "path";
 import fs from "fs";
@@ -100,6 +101,10 @@ export default {
       },
     }),
     css({ output: "pyscript.css" }),
+    // Bundle all the Python files into the output file
+    string({
+      include: "./src/**/*.py",
+    }),
     resolve({
       browser: true,
       dedupe: ["svelte"],
