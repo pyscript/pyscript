@@ -21,7 +21,7 @@ PyScript를 사용 하려면, 다음과 같이 html 페이지에 적절한 pyscr
 <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
 <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
 ```
-이제 PyScript 컴포넌트를 html page에 사용할 수 있습니다. PyScript는 현재 다음과 같은 요소(elements)들을 구현하고 있다.
+이제 PyScript 컴포넌트들을 html 페이지에 사용할 수 있습니다. PyScript는 현재 다음과 같은 요소(elements)들을 구현하고 있습니다.
 
 * `<py-script>`: 웹 페이지 내에서 실행할 수 있는 파이썬 코드를 정의하는 데 사용할 수 있습니다. 요소(element) 자체는 페이지에 렌더링되지 않으며 논리를 추가하는 데만 사용됩니다
 * `<py-repl>`: 코드 편집기로 페이지에 렌더링되는 REP 구성 요소를 만들고 사용자가 실행 코드를 쓸 수 있도록 합니다.
