@@ -1,4 +1,7 @@
-import { getLastPath, handleFetchError } from './utils';
+import { getLastPath } from './utils';
+// eslint-disable-next-line
+// @ts-ignore
+import pyscript from './pyscript.py';
 
 let pyodideReadyPromise;
 let pyodide;
@@ -19,19 +22,7 @@ const loadInterpreter = async function (indexUrl: string): Promise<any> {
     await pyodide.loadPackage('micropip');
 
     console.log('loading pyscript...');
-
-    // let's get the full path of where PyScript is running from so we can load the pyscript.py
-    // file from the same location
-    const loadedScript: HTMLScriptElement = document.querySelector(`script[src$='pyscript.js'], script[src$='pyscript.min.js']`);
-    const scriptPath = loadedScript.src.substring(0, loadedScript.src.lastIndexOf('/'));
-    const pyScriptPath = `${scriptPath}/pyscript.py`;
-
-    try {
-        await pyodide.runPythonAsync(await (await fetch(pyScriptPath)).text());
-    } catch (e) {
-        //Should we still export full error contents to console?
-        handleFetchError(e, pyScriptPath);
-    }
+    await pyodide.runPythonAsync(pyscript);
 
     console.log('done setting up environment');
     return pyodide;
