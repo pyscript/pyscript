@@ -222,7 +222,7 @@ export class PyRepl extends BaseEvalElement {
     }
 
     getSourceFromElement(): string {
-        let sourceStrings = [
+        const sourceStrings = [
             `output_manager.change(out="${this.outputElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
             ...this.editor.state.doc.toString().split('\n'),
         ];
