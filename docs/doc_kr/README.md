@@ -36,7 +36,7 @@ PyScript를 사용 하려면, 다음과 같이 html 페이지에 적절한 pyscr
 
 * [토론 게시판](https://community.anaconda.cloud/c/tech-topics/pyscript)
 * [홈페이지](https://pyscript.net/)
-* [Blog Post](https://engineering.anaconda.com/2022/04/welcome-pyscript.html)
+* [블로그 포스팅](https://engineering.anaconda.com/2022/04/welcome-pyscript.html)
 
 ## Notes
 
