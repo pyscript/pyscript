@@ -5,7 +5,7 @@
 ### Summary
 PyScript는 Scratch, JSFiddle 및 기타 "사용하기 쉬운" 프로그래밍 프레임워크에 대한 파이썬의 대안이며, 누구나 흥미롭고 상호작용하는 애플리케이션을 친근하고 나만의 방식대로 웹에 만드는 것을 목표로 합니다.
 
-시작하려면 [getting started tutorial](docs/tutorials/getting-started.md).
+시작하려면 [시작 튜토리얼](docs/tutorials/getting-started.md)을 참조하세요.
 
 예제보기 [the pyscript folder](pyscriptjs).
 
