@@ -138,8 +138,8 @@
     /* Pop-up second layer end */
 </style>
 
-<script lang="ts">
+<!-- <script lang="ts">
     import Tailwind from './Tailwind.svelte';
-</script>
+</script> -->
 
 <!-- <Tailwind /> -->

@@ -18,7 +18,7 @@ export class PyBox extends HTMLElement {
 
     connectedCallback() {
         const mainDiv = document.createElement('div');
-        addClasses(mainDiv, ['flex', 'mx-8']);
+        addClasses(mainDiv, ['py-box']);
 
         // Hack: for some reason when moving children, the editor box duplicates children
         // meaning that we end up with 2 editors, if there's a <py-repl> inside the <py-box>
@@ -44,17 +44,21 @@ export class PyBox extends HTMLElement {
 
         // now we need to set widths
         this.widths = [];
+
         if (this.hasAttribute('widths')) {
             for (const w of this.getAttribute('widths').split(';')) {
-                this.widths.push(`w-${w}`);
+                if (w.includes('/')) this.widths.push(w.split('/')[0])
+                else this.widths.push(w)
             }
         } else {
-            this.widths = [...this.widths, ...[`w-1/${mainDiv.childNodes.length}`]];
+            this.widths = Array(mainDiv.children.length).fill('1 1 0')
         }
 
         this.widths.forEach((width, index) => {
             const node: ChildNode = mainDiv.childNodes[index];
-            addClasses(node as HTMLElement, [width, 'mx-1']);
+            // addClasses(node as HTMLElement, [width, 'mx-1']);
+            (<HTMLElement>node).style.flex = width;
+            addClasses((<HTMLElement>node), ['py-box-child']);
         });
 
         this.appendChild(mainDiv);
