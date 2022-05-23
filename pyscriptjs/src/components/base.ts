@@ -65,8 +65,14 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     // subclasses should overwrite this method to define custom logic
+    // before code gets evaluated
+    preEvaluate(): void {
+        return null;
+    }
+
+    // subclasses should overwrite this method to define custom logic
     // after code has been evaluated
-    postEvaluate() {
+    postEvaluate(): void {
         return null;
     }
 
@@ -117,6 +123,8 @@ export class BaseEvalElement extends HTMLElement {
 
     async evaluate(): Promise<void> {
         console.log('evaluate');
+        this.preEvaluate();
+    
         const pyodide = runtime;
         let source: string;
         let output;
