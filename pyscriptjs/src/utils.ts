@@ -32,8 +32,8 @@ function ltrim(code: string): string {
 
     const k = Math.min(...lengths);
 
-    if (k != 0) return lines.map(line => line.substring(k)).join('\n');
-    else return code;
+    return k != 0 ? lines.map(line => line.substring(k)).join('\n')
+                  : code;
 }
 
 function guidGenerator(): string {
@@ -58,10 +58,10 @@ function showError(msg: string): void {
     document.body.prepend(warning);
 }
 
-function handleFetchError(e: Error, singleFile: string){
+function handleFetchError(e: Error, singleFile: string) {
     //Should we still export full error contents to console?
     console.warn('Caught an error in loadPaths:\r\n' + e);
-    let errorContent;
+    let errorContent: string;
     if (e.message.includes('TypeError: Failed to fetch')) {
         errorContent = `<p>PyScript: Access to local files
         (using "Paths:" in &lt;py-env&gt;)
@@ -75,8 +75,7 @@ function handleFetchError(e: Error, singleFile: string){
             singleFile +
             `</u> failed with error 404 (File not Found). Are your filename and path are correct?</p>`;
     } else {
-        errorContent =
-            '<p>PyScript encountered an error while loading from file: ' + e.message + '</p>';
+        errorContent = '<p>PyScript encountered an error while loading from file: ' + e.message + '</p>';
     }
     showError(errorContent);
 }
