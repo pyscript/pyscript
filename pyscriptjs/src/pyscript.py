@@ -418,7 +418,7 @@ class OutputManager:
         )
         sys.stdout = self._out_manager
         self._err_manager.change(
-            err=err, output_to_console=output_to_console, append=append
+            out=err, output_to_console=output_to_console, append=append
         )
         sys.stderr = self._err_manager
         self.output_to_console = output_to_console
