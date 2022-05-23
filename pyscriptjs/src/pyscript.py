@@ -111,6 +111,18 @@ class PyScript:
     def run_until_complete(f):
         _ = loop.run_until_complete(f)
 
+    @staticmethod
+    def write(element_id, value, append=False, exec_id=0):
+        """Writes value to the element with id "element_id"""
+        Element(element_id).write(value=value, append=append)
+        console.warn(
+            dedent(
+                """PyScript Deprecation Warning: PyScript.write is
+        marked as deprecated and will be removed sometime soon. Please, use
+        Element(<id>).write instead."""
+            )
+        )
+
 
 class Element:
     def __init__(self, element_id, element=None):
