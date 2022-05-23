@@ -219,14 +219,14 @@ export class PyRepl extends BaseEvalElement {
     }
 
     getSourceFromElement(): string {
+        if(!this.appendOutput) {
+            this.outputElement.innerHTML = '';
+        }
+        
         const sourceStrings = [
-            `output_manager.change(out="${this.outputElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
+            `output_manager.change(out="${this.outputElement.id}", append=True)`,
             ...this.editor.state.doc.toString().split('\n'),
         ];
-
-        if(!this.appendOutput) {
-            sourceStrings.splice(2, 0, `output_manager.change(out="${this.outputElement.id}", append=True)`);
-        }
 
         return sourceStrings.join('\n');
     }
