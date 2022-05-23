@@ -65,7 +65,6 @@ export class PyRepl extends BaseEvalElement {
 
     connectedCallback() {
         this.checkId();
-        this.setOutputMode("replace");
         this.code = this.innerHTML;
         this.innerHTML = '';
         const languageConf = new Compartment();
@@ -178,6 +177,13 @@ export class PyRepl extends BaseEvalElement {
         this.outputElement.hidden = false;
     }
 
+    preEvaluate(): void {
+        this.setOutputMode("replace");
+        if(!this.appendOutput) {
+            this.outputElement.innerHTML = '';
+        }
+    }
+
     postEvaluate(): void {
         this.outputElement.hidden = false;
         this.outputElement.style.display = 'block';
@@ -219,10 +225,6 @@ export class PyRepl extends BaseEvalElement {
     }
 
     getSourceFromElement(): string {
-        if(!this.appendOutput) {
-            this.outputElement.innerHTML = '';
-        }
-
         const sourceStrings = [
             `output_manager.change(out="${this.outputElement.id}", append=True)`,
             ...this.editor.state.doc.toString().split('\n'),
