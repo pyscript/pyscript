@@ -49,7 +49,7 @@ export class BaseEvalElement extends HTMLElement {
         this.outputElement.hidden = false;
     }
 
-    setOutputMode(defaultMode: string = "append") {
+    setOutputMode(defaultMode = "append") {
         const mode = this.hasAttribute('output-mode') ? this.getAttribute('output-mode') : defaultMode;
 
         switch (mode) {
