@@ -124,7 +124,7 @@ export class BaseEvalElement extends HTMLElement {
     async evaluate(): Promise<void> {
         console.log('evaluate');
         this.preEvaluate();
-    
+
         const pyodide = runtime;
         let source: string;
         let output;

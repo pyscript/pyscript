@@ -146,7 +146,7 @@ class Element:
             exec_id = self.element.childElementCount + 1
             out_element_id = child.id = f"{self.id}-{exec_id}"
             self.element.appendChild(child)
-        
+
         out_element = document.querySelector(f"#{out_element_id}")
 
         html, mime_type = format_mime(value)
