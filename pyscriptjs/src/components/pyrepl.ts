@@ -61,6 +61,7 @@ export class PyRepl extends BaseEvalElement {
         this.editorNode = document.createElement('div');
         addClasses(this.editorNode, ['editor-box', 'border', 'border-gray-300', 'group', 'relative']);
         this.shadow.appendChild(this.wrapper);
+        this.setOutputMode("replace");
     }
 
     connectedCallback() {
@@ -143,10 +144,6 @@ export class PyRepl extends BaseEvalElement {
             this.setAttribute('root', this.id);
         }
 
-        if(!this.hasAttribute('output-append')) {
-            this.appendOutput = false;
-        }
-
         if (this.hasAttribute('output')) {
             this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
         } else {
@@ -200,8 +197,8 @@ export class PyRepl extends BaseEvalElement {
                 this.removeAttribute('auto-generate');
             }
 
-            if(this.hasAttribute('output-append')) {
-                newPyRepl.setAttribute('output-append', '');
+            if(this.hasAttribute('output-mode')) {
+                newPyRepl.setAttribute('output-mode', this.getAttribute('output-mode'));
             }
 
             if (this.hasAttribute('output')) {

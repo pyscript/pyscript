@@ -41,12 +41,27 @@ export class BaseEvalElement extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open' });
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
-        this.appendOutput = true;
+        this.setOutputMode("append");
     }
 
     addToOutput(s: string) {
         this.outputElement.innerHTML += '<div>' + s + '</div>';
         this.outputElement.hidden = false;
+    }
+
+    setOutputMode(defaultMode: string = "append") {
+        const mode = this.hasAttribute('output-mode') ? this.getAttribute('output-mode') : defaultMode;
+
+        switch (mode) {
+            case "append":
+                this.appendOutput = true;
+                break;
+            case "replace":
+                this.appendOutput = false;
+                break;
+            default:
+                console.log(`${this.id}: custom output-modes are currently not implemented`);
+        }
     }
 
     // subclasses should overwrite this method to define custom logic
