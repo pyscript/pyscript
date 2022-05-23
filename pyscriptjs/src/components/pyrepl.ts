@@ -61,11 +61,11 @@ export class PyRepl extends BaseEvalElement {
         this.editorNode = document.createElement('div');
         addClasses(this.editorNode, ['editor-box', 'border', 'border-gray-300', 'group', 'relative']);
         this.shadow.appendChild(this.wrapper);
-        this.setOutputMode("replace");
     }
 
     connectedCallback() {
         this.checkId();
+        this.setOutputMode("replace");
         this.code = this.innerHTML;
         this.innerHTML = '';
         const languageConf = new Compartment();
