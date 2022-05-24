@@ -40,6 +40,8 @@ example:
 test:
 	rm -rf examples
 	make example
+	npm install
+	make build
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
 test-py:
