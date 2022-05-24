@@ -29,9 +29,9 @@ body:
 -   type: textarea
     id: what-happened
     attributes:
-      label: What happened?
-      description: And what should have happened instead? This really helps everyone review quicker and greatly increases the chance that someone can get around to solve your issue
-      placeholder: Tell us what you see!
+        label: What happened?
+        description: And what should have happened instead? This really helps everyone review quicker and greatly increases the chance that someone can get around to solve your issue
+        placeholder: Tell us what you see!
     validations:
         required: true
 -   type: dropdown
