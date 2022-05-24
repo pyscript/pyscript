@@ -17,15 +17,16 @@
   </py-env>
   <body>
     <h1>Panel Example</h1>
+    <div id="simple_app"></div>
     <py-script>
-    import panel as pn
+      import panel as pn
 
-    slider = pn.widgets.FloatSlider(start=0, end=10, name='Amplitude')
+      slider = pn.widgets.FloatSlider(start=0, end=10, name='Amplitude')
 
-    def callback(new):
-        return f'Amplitude is: {new}'
+      def callback(new):
+          return f'Amplitude is: {new}'
 
-    pn.Row(slider, pn.bind(callback, slider)).servable();
+      pn.Row(slider, pn.bind(callback, slider)).servable(target='simple_app');
     </py-script>
-  </body>
+</body>
 </html>
