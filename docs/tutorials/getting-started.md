@@ -219,10 +219,9 @@ The `<py-config>` tag can be used as follows:
 
 ```
 <py-config>
-  - autoclose_loader: false
-  - runtimes:
-    -
-      src: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
+  autoclose_loader: false
+  runtimes:
+    - src: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
       name: pyodide-0.20
       lang: python
 </py-config>

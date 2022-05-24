@@ -159,7 +159,9 @@ export class PyConfig extends BaseEvalElement {
                 autoclose_loader: true,
             };
         } else {
-            this.values = Object.assign({}, ...loadedValues);
+            // eslint-disable-next-line
+            // @ts-ignore
+            this.values = loadedValues;
         }
         if (this.values.runtimes === undefined) {
             this.values.runtimes = [DEFAULT_RUNTIME];
