@@ -32,22 +32,18 @@ mode.subscribe(value => {
     currentMode = value;
 });
 
-function createCmdHandler(el) {
+function createCmdHandler(el: PyRepl): StateCommand {
     // Creates a codemirror cmd handler that calls the el.evaluate when an event
     // triggers that specific cmd
-    const toggleCheckbox: StateCommand = ({ state, dispatch }) => {
-        return el.evaluate(state);
+    return () => {
+        void el.evaluate();
+        return true;
     };
-    return toggleCheckbox;
 }
 
-let initialTheme;
+let initialTheme: string;
 function getEditorTheme(el: BaseEvalElement): string {
-    if (initialTheme) {
-        return initialTheme;
-    }
-
-    return initialTheme = el.getAttribute('theme');
+    return initialTheme || (initialTheme = el.getAttribute('theme'));
 }
 
 export class PyRepl extends BaseEvalElement {
@@ -94,14 +90,35 @@ export class PyRepl extends BaseEvalElement {
         const mainDiv = document.createElement('div');
         addClasses(mainDiv, ['parentBox', 'flex', 'flex-col', 'mt-2', 'mx-8', 'relative']);
 
+        // Styles that we use to hide the labels whilst also keeping it accessible for screen readers
+        const labelStyle = 'overflow:hidden; display:block; width:1px; height:1px';
+
+        // Code editor Label
+        this.editorNode.id = 'code-editor';
+        const editorLabel = document.createElement('label');
+        editorLabel.innerHTML = 'Python Script Area';
+        editorLabel.setAttribute('style', labelStyle);
+        editorLabel.htmlFor = 'code-editor';
+
+        mainDiv.append(editorLabel);
+
         // add Editor to main PyScript div
         mainDiv.appendChild(this.editorNode);
 
         // Play Button
         this.btnRun = document.createElement('button');
+        this.btnRun.id = 'btnRun';
         this.btnRun.innerHTML =
             '<svg id="" class="svelte-fa svelte-ps5qeg" style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>';
         addClasses(this.btnRun, ['absolute', 'right-1', 'bottom-1', 'opacity-0', 'group-hover:opacity-100']);
+
+        // Play Button Label
+        const btnLabel = document.createElement('label');
+        btnLabel.innerHTML = 'Python Script Run Button';
+        btnLabel.setAttribute('style', labelStyle);
+        btnLabel.htmlFor = 'btnRun';
+
+        this.editorNode.appendChild(btnLabel);
         this.editorNode.appendChild(this.btnRun);
 
         this.btnRun.addEventListener('click', () => {
@@ -144,11 +161,9 @@ export class PyRepl extends BaseEvalElement {
                 mainDiv.appendChild(this.outputElement);
             }
 
-            if (this.hasAttribute('std-err')) {
-                this.errorElement = document.getElementById(this.getAttribute('std-err'));
-            } else {
-                this.errorElement = this.outputElement;
-            }
+            this.errorElement = this.hasAttribute('std-err')
+                ? document.getElementById(this.getAttribute('std-err'))
+                : this.outputElement;
         }
 
         this.appendChild(mainDiv);
@@ -167,7 +182,7 @@ export class PyRepl extends BaseEvalElement {
 
         if (this.hasAttribute('auto-generate')) {
             const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
-            const lastRepl = allPyRepls[allPyRepls.length -1 ];
+            const lastRepl = allPyRepls[allPyRepls.length - 1];
             const lastExecId = lastRepl.getAttribute('exec-id');
             const nextExecId = parseInt(lastExecId) + 1;
 
@@ -177,17 +192,15 @@ export class PyRepl extends BaseEvalElement {
             newPyRepl.setAttribute('auto-generate', '');
             this.removeAttribute('auto-generate');
 
-            if (this.hasAttribute('output')) {
-                newPyRepl.setAttribute('output', this.getAttribute('output'));
-            }
+            const addReplAttribute = (attribute: string) => {
+                if (this.hasAttribute(attribute)) {
+                    newPyRepl.setAttribute(attribute, this.getAttribute(attribute));
+                }
+            };
 
-            if (this.hasAttribute('std-out')) {
-                newPyRepl.setAttribute('std-out', this.getAttribute('std-out'));
-            }
-
-            if (this.hasAttribute('std-err')) {
-                newPyRepl.setAttribute('std-err', this.getAttribute('std-err'));
-            }
+            addReplAttribute('output');
+            addReplAttribute('std-out');
+            addReplAttribute('std-err');
 
             newPyRepl.setAttribute('exec-id', nextExecId.toString());
             this.parentElement.appendChild(newPyRepl);

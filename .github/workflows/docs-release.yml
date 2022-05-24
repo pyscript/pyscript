@@ -4,6 +4,8 @@ on:
   # Any time a tag or branch is created
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#create
     create:
+        paths:
+        -   docs/**
 
 jobs:
     build:

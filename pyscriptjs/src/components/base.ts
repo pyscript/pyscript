@@ -62,7 +62,6 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     async getSourceFromFile(s: string): Promise<string> {
-        const pyodide = runtime;
         const response = await fetch(s);
         this.code = await response.text();
         return this.code;
@@ -104,11 +103,8 @@ export class BaseEvalElement extends HTMLElement {
         let source: string;
         let output;
         try {
-            if (this.source) {
-                source = await this.getSourceFromFile(this.source);
-            } else {
-                source = this.getSourceFromElement();
-            }
+            source = this.source ? await this.getSourceFromFile(this.source)
+                                 : this.getSourceFromElement();
 
             await this._register_esm(pyodide);
 
@@ -142,7 +138,7 @@ export class BaseEvalElement extends HTMLElement {
             if (errorElements.length > 0) {
                 for (const errorElement of errorElements) {
                     errorElement.classList.add('hidden');
-                    if(this.hasAttribute('std-err')) {
+                    if (this.hasAttribute('std-err')) {
                         this.errorElement.hidden = true;
                         this.errorElement.style.removeProperty('display');
                     }
@@ -160,7 +156,7 @@ export class BaseEvalElement extends HTMLElement {
             addClasses(this.errorElement, ['bg-red-200', 'p-2']);
             out.write.callKwargs(err, { append: true });
 
-            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '')
+            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
         }
@@ -249,7 +245,6 @@ function createWidget(name: string, code: string, klass: string) {
             }
         }
     }
-    const xPyWidget = customElements.define(name, CustomWidget);
 }
 
 export class PyWidget extends HTMLElement {
@@ -290,7 +285,6 @@ export class PyWidget extends HTMLElement {
             throw new ReferenceError(
                 `No id specified for component. Components must have an explicit id. Please use id="" to specify your component id.`,
             );
-            return;
         }
 
         const mainDiv = document.createElement('div');

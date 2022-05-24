@@ -74,13 +74,13 @@ print(s)
 
 ### Writing into labeled elements
 
-In the example above, we had a single `<py-script>` tag and it printed
+In the example above, we had a single `<py-script>` tag printing
 one or more lines onto the page in order. Within the `<py-script>`, you
 have access to the `pyscript` module, which provides a `.write()` method
 to send strings into labeled elements on the page.
 
-For example, we'll add some style elements and provide place holders for
-the `<py-script>` tag write to.
+For example, we'll add some style elements and provide placeholders for
+the `<py-script>` tag to write to.
 
 ```html
 <html>
@@ -111,12 +111,12 @@ pyscript.write('pi', f'π is approximately {pi:.3f}')
 </html>
 ```
 
-## Packages and modules
+## The py-env tag
 
 In addition to the [Python Standard Library](https://docs.python.org/3/library/) and
 the `pyscript` module, many 3rd-party OSS packages will work out-of-the-box with PyScript.
 
-In order to use them, you will need to declare the dependencies using the `<py-env>` in the
+In order to use them, you will need to declare the dependencies using the `<py-env>` tag in the
 HTML head. You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/pyscriptjs/examples/toga/freedom.html).
 
 ```
@@ -208,4 +208,49 @@ fig
     </py-script>
   </body>
 </html>
+```
+## The py-repl tag
+
+The `<py-repl>` tag creates a REPL component that is rendered to the page as a code editor, allowing you to write executable code inline.
+
+## The py-config tag
+
+Use the `<py-config>` tag to set and configure general metadata about your PyScript application in YAML format. If you are unfamiliar with YAML, consider reading [Red Hat's YAML for beginners](https://www.redhat.com/sysadmin/yaml-beginners) guide for more information.
+
+The `<py-config>` tag can be used as follows:
+
+```
+<py-config>
+  - autoclose_loader: false
+  - runtimes:
+    -
+      src: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
+      name: pyodide-0.20
+      lang: python
+</py-config>
+```
+
+The following optional values are supported by `<py-config>`:
+
+  * autoclose_loader (boolean): If false, PyScript will not close the loading splash screen when the startup operations finish.
+  * name (string): Name of the user application. This field can be any string and is to be used by the application author for their own customization purposes.
+  * version (string): Version of the user application. This field can be any string and is to be used by the application author for their own customization purposes. It is not related to the PyScript version.
+  * runtimes (List of Runtimes): List of runtime configurations. Each Runtime expects the following fields:
+    * src (string, Required): URL to the runtime source.
+    * name (string): Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes.
+    * name (string): Programming language supported by the runtime. This field can be used by the application author to provide clarify. It currently has no implications on how PyScript behaves.
+
+## Visual component tags
+
+The following tags can be used to add visual attributes to your HTML page.
+
+| Tag             | Description |
+| ---             | ----------- |
+| `<py-inputbox>` | Adds an input box that can be used to prompt users to enter input values. |
+| `<py-box>`      | Creates a container object that can be used to host one or more visual components that define how elements of `<py-box>` should align and show on the page. |
+| `<py-button>`   | Adds a button to which authors can add labels and event handlers for actions on the button, such as `on_focus` or `on_click`. |
+| `<py-title>`    | Adds a static text title component that styles the text inside the tag as a page title. |
+
+```{note}
+All the elements above are experimental and not implemented at their full functionality. Use them with the understanding that the APIs or full support might change or be removed until the visual components are more mature.
 ```

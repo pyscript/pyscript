@@ -29,7 +29,7 @@ Check out the [pyscriptjs/examples](pyscriptjs/examples) folder for more example
 
 ## How to Contribute
 
-To contribute see the [CONTRIBUTING](CONTRIBUTING.md) document.
+Read the [contributing guide](CONTRIBUTING.md) to learn about our development process, reporting bugs and improvements, creating issues and asking questions.
 
 ## Resources
 

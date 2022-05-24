@@ -9,8 +9,10 @@ PyScript turns the browser into a code deployment tool that anyone can learn to 
 In this example, we are using the `<py-script>` HTML tag to generate a Matplotlib figure and display it as an image.
 Click **Preview** to see the rendered HTML.
 
-To try it in your browser, copy the HTML source to a new HTML file and double-click it to open.
+To try it in your browser, copy the code below into an online HTML editor like W3School's [Tryit Editor](https://www.w3schools.com/html/tryit.asp?filename=tryhtml_default_default), which allows you to modify, run, and even save your code. Watch the video below to see it in action!
 
+```{youtube} ZtC7TCt_LhU
+```
 
 ::::{tab-set}
 :::{tab-item} HTML Source

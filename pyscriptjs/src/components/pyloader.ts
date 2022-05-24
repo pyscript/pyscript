@@ -26,7 +26,7 @@ export class PyLoader extends BaseEvalElement {
         this.details = document.getElementById('pyscript-operation-details');
     }
 
-    log(msg: string){
+    log(msg: string) {
         const newLog = document.createElement('p');
         newLog.innerText = msg;
         this.details.appendChild(newLog);

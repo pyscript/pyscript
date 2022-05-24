@@ -6,13 +6,15 @@ src_dir ?= $(base_dir)/src
 examples ?=  $(base_dir)/examples
 app_dir ?= $(shell git rev-parse --show-prefix)
 
+CONDA_EXE := conda
 CONDA_ENV ?= ./env
 env := $(CONDA_ENV)
-conda_run := conda run -p $(env)
+conda_run := $(CONDA_EXE) run -p $(env)
 
 setup:
-	@if [ -z "$${CONDA_SHLVL:+x}" ]; then echo "Conda is not installed." && exit 1; fi
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
+	$(conda_run) playwright install
+	$(CONDA_EXE) install -c anaconda pytest
 
 clean:
 	find . -name \*.py[cod] -delete
@@ -32,7 +34,6 @@ build:
 	npm run build
 
 test:
-	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
 test-py:
