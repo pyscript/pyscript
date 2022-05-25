@@ -54,12 +54,11 @@ export class PyUpload extends BaseEvalElement {
                 import asyncio
       
                 from pyodide.http import pyfetch
+
                 response = await pyfetch("${fileURL}")
-                total_size_bytes = (int(${file.size}))
                 if response.status == 200:
                   with open("/${file.name}", "wb") as f:
                     f.write(await response.bytes())
-                file_manager.add_file("${file.name}")
               `;
       
               this.code = code;
@@ -71,10 +70,6 @@ export class PyUpload extends BaseEvalElement {
             }
           };
 
-          reader.onprogress = (e) => {
-            console.log(e.total / e.loaded);
-          };
-
           reader.onerror = (error) => {
             reject (error);
           };
@@ -84,7 +79,7 @@ export class PyUpload extends BaseEvalElement {
       });
 
       const fileNames = await Promise.all(filePromises);
-      
+
       loaderElement.style.display = 'none';
 
       const uploadEvent = new CustomEvent('upload', { detail: fileNames });
