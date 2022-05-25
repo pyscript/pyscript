@@ -262,7 +262,7 @@ class PyItemTemplate(Element):
             f"""
             <label for="flex items-center p-2 ">
               <input class="mr-2" type="checkbox" class="task-check">
-              <p class="m-0 inline">{self.render_content()}</p>
+              <p class="py-li-element">{self.render_content()}</p>
             </label>
             """
         )
@@ -296,7 +296,7 @@ class PyItemTemplate(Element):
 
 
 class PyListTemplate:
-    theme = PyWidgetTheme("flex flex-col-reverse mt-8 mx-8")
+    theme = PyWidgetTheme("py-li-element")
     item_class = PyItemTemplate
 
     def __init__(self, parent):
