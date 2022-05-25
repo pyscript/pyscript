@@ -11,6 +11,7 @@ import { PyWidget } from './components/base';
 import { PyLoader } from './components/pyloader';
 import { globalLoader } from './stores';
 import { PyConfig } from './components/pyconfig';
+import { PyUpload } from './components/pyupload';
 
 const xPyScript = customElements.define('py-script', PyScript);
 const xPyRepl = customElements.define('py-repl', PyRepl);
@@ -22,6 +23,7 @@ const xPyInputBox = customElements.define('py-inputbox', PyInputBox);
 const xPyWidget = customElements.define('py-register-widget', PyWidget);
 const xPyLoader = customElements.define('py-loader', PyLoader);
 const xPyConfig = customElements.define('py-config', PyConfig);
+const xPyUpload = customElements.define('py-upload', PyUpload);
 
 // As first thing, loop for application configs
 const config: PyConfig = document.querySelector('py-config');
