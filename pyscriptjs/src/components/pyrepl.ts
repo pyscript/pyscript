@@ -59,7 +59,7 @@ export class PyRepl extends BaseEvalElement {
 
         // add an extra div where we can attach the codemirror editor
         this.editorNode = document.createElement('div');
-        addClasses(this.editorNode, ['editor-box', 'border', 'border-gray-300', 'group', 'relative']);
+        addClasses(this.editorNode, ['editor-box']);
         this.shadow.appendChild(this.wrapper);
     }
 
@@ -157,7 +157,7 @@ export class PyRepl extends BaseEvalElement {
                 // In this case neither output or std-out have been provided so we need
                 // to create a new output div to output to
                 this.outputElement = document.createElement('div');
-                this.outputElement.classList.add('output', 'font-mono', 'ml-8', 'text-sm');
+                this.outputElement.classList.add('output');
                 this.outputElement.hidden = true;
                 this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
 
