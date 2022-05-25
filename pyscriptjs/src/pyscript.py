@@ -155,7 +155,7 @@ class Element:
 
         html, mime_type = format_mime(value)
         if html == "\n":
-                return
+            return
 
         if append:
             child = document.createElement("div")
