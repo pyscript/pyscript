@@ -163,6 +163,7 @@ export class BaseEvalElement extends HTMLElement {
             this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '')
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
+            this.errorElement.style.visibility = 'visible';
         }
     } // end evaluate
 
