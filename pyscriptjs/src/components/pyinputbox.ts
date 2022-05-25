@@ -24,7 +24,7 @@ export class PyInputBox extends BaseEvalElement {
 
         const mainDiv = document.createElement('input');
         mainDiv.type = 'text';
-        addClasses(mainDiv, ['border', 'flex-1', 'w-full', 'mr-3', 'border-gray-300', 'p-2', 'rounded']);
+        addClasses(mainDiv, ['py-input']);
 
         mainDiv.id = this.id;
         this.id = `${this.id}-container`;
