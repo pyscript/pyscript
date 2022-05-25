@@ -19,7 +19,7 @@ export class PyUpload extends BaseEvalElement {
 
   connectedCallback() {
     this.checkId();
-    
+
     const uploadElement = document.createElement('input');
     uploadElement.id = this.id;
     uploadElement.type = 'file';
@@ -28,7 +28,7 @@ export class PyUpload extends BaseEvalElement {
     loaderElement.id = `${this.id}-loader`;
     loaderElement.classList.add('lds-dual-ring');
     loaderElement.style.display = 'none';
-    
+
     this.id = `${this.id}-container`;
     this.appendChild(loaderElement);
     this.appendChild(uploadElement);
@@ -45,14 +45,14 @@ export class PyUpload extends BaseEvalElement {
       const filePromises = Array.from(files).map((file) => {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
-      
+
           reader.onload = async (e) => {
             try {
               const fileURL = e.target.result;
-                
+
               const code = `
                 import asyncio
-      
+
                 from pyodide.http import pyfetch
 
                 response = await pyfetch("${fileURL}")
@@ -60,9 +60,9 @@ export class PyUpload extends BaseEvalElement {
                   with open("/${file.name}", "wb") as f:
                     f.write(await response.bytes())
               `;
-      
+
               this.code = code;
-      
+
               await this.evaluate();
               resolve(file.name);
             } catch(err) {
@@ -73,7 +73,7 @@ export class PyUpload extends BaseEvalElement {
           reader.onerror = (error) => {
             reject (error);
           };
-          
+
           reader.readAsDataURL(file);
         });
       });
