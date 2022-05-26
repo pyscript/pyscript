@@ -236,7 +236,7 @@ The following optional values are supported by `<py-config>`:
   * runtimes (List of Runtimes): List of runtime configurations. Each Runtime expects the following fields:
     * src (string, Required): URL to the runtime source.
     * name (string): Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes.
-    * lang (string): Programming language supported by the runtime. This field can be used by the application author to provide clarify. It currently has no implications on how PyScript behaves.
+    * lang (string): Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves.
 
 ## Visual component tags
 
