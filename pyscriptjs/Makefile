@@ -12,6 +12,7 @@ env := $(CONDA_ENV)
 conda_run := $(CONDA_EXE) run -p $(env)
 
 setup:
+	npm install
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
 	$(CONDA_EXE) install -c anaconda pytest
@@ -43,8 +44,6 @@ example:
 
 test:
 	make example
-	npm install
-	make build
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
 test-py:

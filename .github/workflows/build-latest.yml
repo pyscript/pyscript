@@ -55,10 +55,13 @@ jobs:
         -   name: setup Miniconda
             uses: conda-incubator/setup-miniconda@v2
 
-        -   name: Install dependencies
+        -   name: Setup Environment
             run: make setup
 
-        -   name: Test pyscript
+        -   name: Build
+            run: make build
+
+        -   name: Test local examples
             run: make test
 
         # Deploy to S3
