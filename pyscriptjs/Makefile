@@ -3,7 +3,7 @@ git_hash ?= $(shell git log -1 --pretty=format:%h)
 
 base_dir ?= $(shell git rev-parse --show-toplevel)
 src_dir ?= $(base_dir)/src
-examples ?=  $(base_dir)/examples
+examples ?=  ../$(base_dir)/examples
 app_dir ?= $(shell git rev-parse --show-prefix)
 
 CONDA_EXE := conda

@@ -1,11 +1,11 @@
 name: '[CI] Sync Examples'
 
 on:
-    push: # Only run on merges into main that modify files under pyscriptjs/examples/
+    push: # Only run on merges into main that modify files under examples/
         branches:
         -   main
         paths:
-        -   pyscriptjs/examples/**
+        -   examples/**
         -   .github/workflows/sync-examples.yml # Test that workflow works when changed
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
             id-token: write
         defaults:
             run:
-                working-directory: pyscriptjs/examples
+                working-directory: examples
 
         steps:
 
