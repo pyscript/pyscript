@@ -12,6 +12,7 @@ env := $(CONDA_ENV)
 conda_run := $(CONDA_EXE) run -p $(env)
 
 setup:
+	npm install
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
 	$(CONDA_EXE) install -c anaconda pytest
@@ -33,7 +34,17 @@ dev:
 build:
 	npm run build
 
+example:
+	mkdir -p ./examples
+	cp -r ../examples/* ./examples
+	chmod -R 755 examples
+	find ./examples/toga -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../build/+g {} \;
+	find ./examples/webgl -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../../build/+g {} \;
+	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+./build/+g {} \;
+
 test:
+	make example
+	npm run build
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
 test-py:
