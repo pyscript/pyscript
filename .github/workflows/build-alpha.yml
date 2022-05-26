@@ -47,16 +47,14 @@ jobs:
         -   name: setup Miniconda
             uses: conda-incubator/setup-miniconda@v2
 
-        -   name: Install dependencies
-            run: |
-                npm install
-                make setup
+        -   name: Setup Environment
+            run: make setup
 
-        -   name: Test pyscript
-            run: make test
-
-        -   name: Build pyscript
+        -   name: Build
             run: make build
+
+        -   name: Test local examples
+            run: make test
 
         # Deploy to S3
         -   name: Configure AWS credentials
