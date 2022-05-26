@@ -108,29 +108,20 @@ class PyScript:
     loop = loop
 
     @staticmethod
-    def write(element_id, value, append=False, exec_id=0):
-        """Writes value to the element with id "element_id"""
-        console.log(f"APPENDING: {append} ==> {element_id} --> {value}")
-        if append:
-            child = document.createElement("div")
-            element = document.querySelector(f"#{element_id}")
-            if not element:
-                return
-            exec_id = exec_id or element.childElementCount + 1
-            element_id = child.id = f"{element_id}-{exec_id}"
-            element.appendChild(child)
-
-        element = document.getElementById(element_id)
-        html, mime_type = format_mime(value)
-        if mime_type in ("application/javascript", "text/html"):
-            script_element = document.createRange().createContextualFragment(html)
-            element.appendChild(script_element)
-        else:
-            element.innerHTML = html
-
-    @staticmethod
     def run_until_complete(f):
         _ = loop.run_until_complete(f)
+
+    @staticmethod
+    def write(element_id, value, append=False, exec_id=0):
+        """Writes value to the element with id "element_id"""
+        Element(element_id).write(value=value, append=append)
+        console.warn(
+            dedent(
+                """PyScript Deprecation Warning: PyScript.write is
+        marked as deprecated and will be removed sometime soon. Please, use
+        Element(<id>).write instead."""
+            )
+        )
 
 
 class Element:
@@ -159,9 +150,25 @@ class Element:
 
     def write(self, value, append=False):
         console.log(f"Element.write: {value} --> {append}")
-        # TODO: it should be the opposite... pyscript.write should use the Element.write
-        #       so we can consolidate on how we write depending on the element type
-        pyscript.write(self._id, value, append=append)
+
+        out_element_id = self.id
+
+        if append:
+            child = document.createElement("div")
+            exec_id = self.element.childElementCount + 1
+            out_element_id = child.id = f"{self.id}-{exec_id}"
+            self.element.appendChild(child)
+
+        out_element = document.querySelector(f"#{out_element_id}")
+
+        html, mime_type = format_mime(value)
+        if mime_type in ("application/javascript", "text/html"):
+            script_element = document.createRange().createContextualFragment(html)
+            out_element.appendChild(script_element)
+        else:
+            if html == "\n":
+                return
+            out_element.innerHTML = html
 
     def clear(self):
         if hasattr(self.element, "value"):
@@ -374,7 +381,7 @@ class OutputCtxManager:
         self.output_to_console = output_to_console
         self._append = append
 
-    def change(self, out=None, err=None, output_to_console=True, append=True):
+    def change(self, out=None, output_to_console=True, append=True):
         self._prev = self._out
         self._out = out
         self.output_to_console = output_to_console
@@ -385,32 +392,37 @@ class OutputCtxManager:
         console.log("----> reverted")
         self._out = self._prev
 
-    def write(self, txt):
-        console.log("writing to", self._out, txt, self._append)
+    def write(self, value):
+        console.log("writing to", self._out, value, self._append)
         if self._out:
-            pyscript.write(self._out, txt, append=self._append)
+            Element(self._out).write(value, self._append)
+
         if self.output_to_console:
-            console.log(self._out, txt)
+            console.log(self._out, value)
 
 
 class OutputManager:
     def __init__(self, out=None, err=None, output_to_console=True, append=True):
         sys.stdout = self._out_manager = OutputCtxManager(
-            out, output_to_console, append
+            out=out, output_to_console=output_to_console, append=append
         )
         sys.stderr = self._err_manager = OutputCtxManager(
-            err, output_to_console, append
+            out=err, output_to_console=output_to_console, append=append
         )
         self.output_to_console = output_to_console
         self._append = append
 
     def change(self, out=None, err=None, output_to_console=True, append=True):
-        self._out_manager.change(out, output_to_console, append)
+        self._out_manager.change(
+            out=out, output_to_console=output_to_console, append=append
+        )
         sys.stdout = self._out_manager
-        self._err_manager.change(err, output_to_console, append)
+        self._err_manager.change(
+            out=err, output_to_console=output_to_console, append=append
+        )
         sys.stderr = self._err_manager
         self.output_to_console = output_to_console
-        self.append = append
+        self._append = append
 
     def revert(self):
         self._out_manager.revert()

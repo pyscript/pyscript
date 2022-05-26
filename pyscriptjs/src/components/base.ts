@@ -32,6 +32,7 @@ export class BaseEvalElement extends HTMLElement {
     outputElement: HTMLElement;
     errorElement: HTMLElement;
     theme: string;
+    appendOutput: boolean;
 
     constructor() {
         super();
@@ -40,6 +41,7 @@ export class BaseEvalElement extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open' });
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
+        this.setOutputMode("append");
     }
 
     addToOutput(s: string) {
@@ -47,9 +49,30 @@ export class BaseEvalElement extends HTMLElement {
         this.outputElement.hidden = false;
     }
 
+    setOutputMode(defaultMode = "append") {
+        const mode = this.hasAttribute('output-mode') ? this.getAttribute('output-mode') : defaultMode;
+
+        switch (mode) {
+            case "append":
+                this.appendOutput = true;
+                break;
+            case "replace":
+                this.appendOutput = false;
+                break;
+            default:
+                console.log(`${this.id}: custom output-modes are currently not implemented`);
+        }
+    }
+
+    // subclasses should overwrite this method to define custom logic
+    // before code gets evaluated
+    preEvaluate(): void {
+        return null;
+    }
+
     // subclasses should overwrite this method to define custom logic
     // after code has been evaluated
-    postEvaluate() {
+    postEvaluate(): void {
         return null;
     }
 
@@ -62,7 +85,6 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     async getSourceFromFile(s: string): Promise<string> {
-        const pyodide = runtime;
         const response = await fetch(s);
         this.code = await response.text();
         return this.code;
@@ -100,27 +122,26 @@ export class BaseEvalElement extends HTMLElement {
 
     async evaluate(): Promise<void> {
         console.log('evaluate');
+        this.preEvaluate();
+
         const pyodide = runtime;
         let source: string;
         let output;
         try {
-            if (this.source) {
-                source = await this.getSourceFromFile(this.source);
-            } else {
-                source = this.getSourceFromElement();
-            }
+            source = this.source ? await this.getSourceFromFile(this.source)
+                                 : this.getSourceFromElement();
 
             await this._register_esm(pyodide);
 
             if (source.includes('asyncio')) {
                 await pyodide.runPythonAsync(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
                 output = await pyodide.runPythonAsync(source);
                 await pyodide.runPythonAsync(`output_manager.revert()`);
             } else {
                 output = pyodide.runPython(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
                 output = pyodide.runPython(source);
                 pyodide.runPython(`output_manager.revert()`);
@@ -142,13 +163,13 @@ export class BaseEvalElement extends HTMLElement {
             if (errorElements.length > 0) {
                 for (const errorElement of errorElements) {
                     errorElement.classList.add('hidden');
-                    if(this.hasAttribute('std-err')) {
+                    if (this.hasAttribute('std-err')) {
                         this.errorElement.hidden = true;
                         this.errorElement.style.removeProperty('display');
                     }
                 }
-                removeClasses(this.errorElement, ['bg-red-200', 'p-2']);
             }
+            removeClasses(this.errorElement, ['bg-red-200', 'p-2']);
 
             this.postEvaluate();
         } catch (err) {
@@ -160,7 +181,7 @@ export class BaseEvalElement extends HTMLElement {
             addClasses(this.errorElement, ['bg-red-200', 'p-2']);
             out.write.callKwargs(err, { append: true });
 
-            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '')
+            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
         }
@@ -249,7 +270,6 @@ function createWidget(name: string, code: string, klass: string) {
             }
         }
     }
-    const xPyWidget = customElements.define(name, CustomWidget);
 }
 
 export class PyWidget extends HTMLElement {
@@ -290,7 +310,6 @@ export class PyWidget extends HTMLElement {
             throw new ReferenceError(
                 `No id specified for component. Components must have an explicit id. Please use id="" to specify your component id.`,
             );
-            return;
         }
 
         const mainDiv = document.createElement('div');
