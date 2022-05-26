@@ -1,6 +1,6 @@
 name: Feature Request
 description: Create a feature request to make PyScript even better
-labels: ["type: enhancement"]
+labels: ["type: enhancement", "needs-triage"]
 body:
 -   type: markdown
     attributes:

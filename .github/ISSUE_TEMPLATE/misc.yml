@@ -1,6 +1,6 @@
 name: Miscellaneous
 description: For issues that don't belong in other categories
-labels: ["type: misc"]
+labels: ["type: misc", "needs-triage"]
 body:
 -   type: markdown
     attributes:
