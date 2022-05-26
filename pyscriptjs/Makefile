@@ -38,12 +38,13 @@ example:
 	mkdir -p ./examples
 	cp -r ../examples/* ./examples
 	chmod -R 755 examples
-	find ./examples/toga -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../build/+g {} +\n
-	find ./examples/webgl -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../../build/+g {} +\n
-	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+./build/+g {} +\n
+	find ./examples/toga -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../build/+g {} +\n;
+	find ./examples/webgl -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../../build/+g {} +\n;
+	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+./build/+g {} +\n;
 
 test:
 	make example
+	npm run build
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
 test-py:
