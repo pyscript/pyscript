@@ -58,10 +58,7 @@ jobs:
         -   name: Setup Environment
             run: make setup
 
-        -   name: Build
-            run: make build
-
-        -   name: Test local examples
+        -   name: Build and Test
             run: make test
 
         # Deploy to S3
