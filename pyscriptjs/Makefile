@@ -34,11 +34,11 @@ build:
 	npm run build
 
 example:
-	cp -r ../examples ./examples
-	find ./examples -type f -name '*.html' -exec sed -i s+https://pyscript.net/alpha/+build/+g {} +
+	mkdir -p ./examples
+	cp -r ../examples/* ./examples
+	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+./build/+g {} +\n
 
 test:
-	rm -rf examples
 	make example
 	npm install
 	make build
