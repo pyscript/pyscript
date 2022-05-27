@@ -152,7 +152,7 @@ export class BaseEvalElement extends HTMLElement {
                     Element = pyodide.globals.get('Element');
                 }
                 const out = Element(this.outputElement.id);
-                out.write.callKwargs(output, { append: true });
+                out.write.callKwargs(output, { append: this.appendOutput });
 
                 this.outputElement.hidden = false;
                 this.outputElement.style.display = 'block';
@@ -179,7 +179,7 @@ export class BaseEvalElement extends HTMLElement {
             const out = Element(this.errorElement.id);
 
             addClasses(this.errorElement, ['bg-red-200', 'p-2']);
-            out.write.callKwargs(err, { append: true });
+            out.write.callKwargs(err, { append: this.appendOutput });
 
             this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
             this.errorElement.hidden = false;

@@ -153,6 +153,10 @@ class Element:
 
         out_element_id = self.id
 
+        html, mime_type = format_mime(value)
+        if html == "\n":
+            return
+
         if append:
             child = document.createElement("div")
             exec_id = self.element.childElementCount + 1
@@ -161,13 +165,10 @@ class Element:
 
         out_element = document.querySelector(f"#{out_element_id}")
 
-        html, mime_type = format_mime(value)
         if mime_type in ("application/javascript", "text/html"):
             script_element = document.createRange().createContextualFragment(html)
             out_element.appendChild(script_element)
         else:
-            if html == "\n":
-                return
             out_element.innerHTML = html
 
     def clear(self):
