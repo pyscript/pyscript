@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Simple Clock Demo</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env>
+    - paths:
+      - ./utils.py
+    </py-env>
+    <py-config>
+      - autoclose_loader: false
+      - runtimes:
+        -
+          src: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
+          name: pyodide-0.20
+          lang: python
+    </py-config>
+  </head>
+
+  <body>
+    <div class="font-mono">start time: <label id="outputDiv"></label></div>
+    <div id="outputDiv2" class="font-mono"></div>
+    <div id="outputDiv3" class="font-mono"></div>
+    <py-script output="outputDiv">
+# demonstrates how use the global PyScript pyscript_loader
+# to send operation log messages to it
+import utils
+utils.now()
+    </py-script>
+
+    <py-script>
+from utils import now
+import asyncio
+
+async def foo():
+  while True:
+    await asyncio.sleep(1)
+    output = now()
+    pyscript.write("outputDiv2", output)
+
+    out3 = Element("outputDiv3")
+    if output[-1] in ["0", "4", "8"]:
+      out3.write("It's espresso time!")
+    else:
+      out3.clear()
+
+# close the global PyScript pyscript_loader
+pyscript_loader.close()
+pyscript.run_until_complete(foo())
+    </py-script>
+  </body>
+</html>

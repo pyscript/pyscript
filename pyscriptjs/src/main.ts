@@ -23,10 +23,9 @@ const xPyWidget = customElements.define('py-register-widget', PyWidget);
 const xPyLoader = customElements.define('py-loader', PyLoader);
 const xPyConfig = customElements.define('py-config', PyConfig);
 
-
 // As first thing, loop for application configs
-const config = document.querySelector('py-config');
-if (!config){
+const config: PyConfig = document.querySelector('py-config');
+if (!config) {
     const loader = document.createElement('py-config');
     document.body.append(loader);
 }

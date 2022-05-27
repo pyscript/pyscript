@@ -17,6 +17,7 @@ export class PyInputBox extends BaseEvalElement {
     }
 
     connectedCallback() {
+        this.checkId();
         this.code = htmlDecode(this.innerHTML);
         this.mount_name = this.id.split('-').join('_');
         this.innerHTML = '';
@@ -33,10 +34,11 @@ export class PyInputBox extends BaseEvalElement {
         // defined for this widget
         this.appendChild(mainDiv);
         this.code = this.code.split('self').join(this.mount_name);
-        let registrationCode = `${this.mount_name} = Element("${mainDiv.id}")`;
+        let registrationCode = `from pyodide import create_proxy`;
+        registrationCode += `\n${this.mount_name} = Element("${mainDiv.id}")`;
         if (this.code.includes('def on_keypress')) {
             this.code = this.code.replace('def on_keypress', `def on_keypress_${this.mount_name}`);
-            registrationCode += `\n${this.mount_name}.element.onkeypress = on_keypress_${this.mount_name}`;
+            registrationCode += `\n${this.mount_name}.element.addEventListener('keypress', create_proxy(on_keypress_${this.mount_name}))`;
         }
 
         // TODO: For now we delay execution to allow pyodide to load but in the future this

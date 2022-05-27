@@ -10,6 +10,7 @@ import { addClasses } from '../utils';
 import { BaseEvalElement } from './base';
 
 // Premise used to connect to the first available pyodide interpreter
+
 let pyodideReadyPromise;
 let environments;
 let currentMode;
@@ -17,6 +18,7 @@ let currentMode;
 pyodideLoaded.subscribe(value => {
     pyodideReadyPromise = value;
 });
+
 loadedEnvironments.subscribe(value => {
     environments = value;
 });
@@ -30,15 +32,18 @@ mode.subscribe(value => {
     currentMode = value;
 });
 
-const languageConf = new Compartment();
-
-function createCmdHandler(el) {
+function createCmdHandler(el: PyRepl): StateCommand {
     // Creates a codemirror cmd handler that calls the el.evaluate when an event
     // triggers that specific cmd
-    const toggleCheckbox: StateCommand = ({ state, dispatch }) => {
-        return el.evaluate(state);
+    return () => {
+        void el.evaluate();
+        return true;
     };
-    return toggleCheckbox;
+}
+
+let initialTheme: string;
+function getEditorTheme(el: BaseEvalElement): string {
+    return initialTheme || (initialTheme = el.getAttribute('theme'));
 }
 
 export class PyRepl extends BaseEvalElement {
@@ -58,6 +63,7 @@ export class PyRepl extends BaseEvalElement {
         this.checkId();
         this.code = this.innerHTML;
         this.innerHTML = '';
+        const languageConf = new Compartment();
 
         const extensions = [
             basicSetup,
@@ -68,53 +74,56 @@ export class PyRepl extends BaseEvalElement {
                 { key: 'Shift-Enter', run: createCmdHandler(this) },
             ]),
         ];
-        const customTheme = EditorView.theme({
-            '&.cm-focused .cm-editor': { outline: '0px' },
-            '.cm-scroller': { lineHeight: 2.5 },
-            '.cm-activeLine': { backgroundColor: '#fff' },
-            '.cm-content': { padding: 0, backgroundColor: '#f5f5f5' },
-            '&.cm-focused .cm-content': { border: '1px solid #1876d2' },
-        });
 
-        if (!this.hasAttribute('theme')) {
-            this.theme = this.getAttribute('theme');
-            if (this.theme == 'dark') {
-                extensions.push(oneDarkTheme);
-            }
-            extensions.push(customTheme);
+        if (getEditorTheme(this) === 'dark') {
+            extensions.push(oneDarkTheme);
         }
 
-        const startState = EditorState.create({
-            doc: this.code.trim(),
-            extensions: extensions,
-        });
-
         this.editor = new EditorView({
-            state: startState,
+            state: EditorState.create({
+                doc: this.code.trim(),
+                extensions,
+            }),
             parent: this.editorNode,
         });
 
         const mainDiv = document.createElement('div');
         addClasses(mainDiv, ['parentBox', 'flex', 'flex-col', 'mt-2', 'mx-8', 'relative']);
 
+        // Styles that we use to hide the labels whilst also keeping it accessible for screen readers
+        const labelStyle = 'overflow:hidden; display:block; width:1px; height:1px';
+
+        // Code editor Label
+        this.editorNode.id = 'code-editor';
+        const editorLabel = document.createElement('label');
+        editorLabel.innerHTML = 'Python Script Area';
+        editorLabel.setAttribute('style', labelStyle);
+        editorLabel.htmlFor = 'code-editor';
+
+        mainDiv.append(editorLabel);
+
         // add Editor to main PyScript div
         mainDiv.appendChild(this.editorNode);
 
         // Play Button
         this.btnRun = document.createElement('button');
+        this.btnRun.id = 'btnRun';
         this.btnRun.innerHTML =
             '<svg id="" class="svelte-fa svelte-ps5qeg" style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>';
-        addClasses(this.btnRun, ['absolute', 'right-1', 'bottom-3', 'opacity-0', 'group-hover:opacity-100']);
+        addClasses(this.btnRun, ['absolute', 'right-1', 'bottom-1', 'opacity-0', 'group-hover:opacity-100']);
+
+        // Play Button Label
+        const btnLabel = document.createElement('label');
+        btnLabel.innerHTML = 'Python Script Run Button';
+        btnLabel.setAttribute('style', labelStyle);
+        btnLabel.htmlFor = 'btnRun';
+
+        this.editorNode.appendChild(btnLabel);
         this.editorNode.appendChild(this.btnRun);
 
-        this.btnRun.onclick = wrap(this);
-
-        function wrap(el: any) {
-            function evaluatePython() {
-                el.evaluate();
-            }
-            return evaluatePython;
-        }
+        this.btnRun.addEventListener('click', () => {
+            void this.evaluate();
+        });
 
         if (!this.id) {
             console.log(
@@ -132,11 +141,6 @@ export class PyRepl extends BaseEvalElement {
 
         if (this.hasAttribute('output')) {
             this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
-
-            // in this case, the default output-mode is append, if hasn't been specified
-            if (!this.hasAttribute('output-mode')) {
-                this.setAttribute('output-mode', 'append');
-            }
         } else {
             if (this.hasAttribute('std-out')) {
                 this.outputElement = document.getElementById(this.getAttribute('std-out'));
@@ -152,11 +156,9 @@ export class PyRepl extends BaseEvalElement {
                 mainDiv.appendChild(this.outputElement);
             }
 
-            if (this.hasAttribute('std-err')) {
-                this.errorElement = document.getElementById(this.getAttribute('std-err'));
-            } else {
-                this.errorElement = this.outputElement;
-            }
+            this.errorElement = this.hasAttribute('std-err')
+                ? document.getElementById(this.getAttribute('std-err'))
+                : this.outputElement;
         }
 
         this.appendChild(mainDiv);
@@ -169,25 +171,45 @@ export class PyRepl extends BaseEvalElement {
         this.outputElement.hidden = false;
     }
 
+    preEvaluate(): void {
+        this.setOutputMode("replace");
+        if(!this.appendOutput) {
+            this.outputElement.innerHTML = '';
+        }
+    }
+
     postEvaluate(): void {
         this.outputElement.hidden = false;
         this.outputElement.style.display = 'block';
 
         if (this.hasAttribute('auto-generate')) {
-            const nextExecId = parseInt(this.getAttribute('exec-id')) + 1;
+            const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
+            const lastRepl = allPyRepls[allPyRepls.length - 1];
+            const lastExecId = lastRepl.getAttribute('exec-id');
+            const nextExecId = parseInt(lastExecId) + 1;
+
             const newPyRepl = document.createElement('py-repl');
             newPyRepl.setAttribute('root', this.getAttribute('root'));
             newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
-            newPyRepl.setAttribute('auto-generate', null);
-            if (this.hasAttribute('output')) {
-                newPyRepl.setAttribute('output', this.getAttribute('output'));
+
+            if(this.hasAttribute('auto-generate')) {
+                newPyRepl.setAttribute('auto-generate', '');
+                this.removeAttribute('auto-generate');
             }
-            if (this.hasAttribute('std-out')) {
-                newPyRepl.setAttribute('std-out', this.getAttribute('std-out'));
+
+            if(this.hasAttribute('output-mode')) {
+                newPyRepl.setAttribute('output-mode', this.getAttribute('output-mode'));
             }
-            if (this.hasAttribute('std-err')) {
-                newPyRepl.setAttribute('std-err', this.getAttribute('std-err'));
-            }
+
+            const addReplAttribute = (attribute: string) => {
+                if (this.hasAttribute(attribute)) {
+                    newPyRepl.setAttribute(attribute, this.getAttribute(attribute));
+                }
+            };
+
+            addReplAttribute('output');
+            addReplAttribute('std-out');
+            addReplAttribute('std-err');
 
             newPyRepl.setAttribute('exec-id', nextExecId.toString());
             this.parentElement.appendChild(newPyRepl);
@@ -196,9 +218,10 @@ export class PyRepl extends BaseEvalElement {
 
     getSourceFromElement(): string {
         const sourceStrings = [
-            `output_manager.change("` + this.outputElement.id + `")`,
+            `output_manager.change(out="${this.outputElement.id}", append=True)`,
             ...this.editor.state.doc.toString().split('\n'),
         ];
+
         return sourceStrings.join('\n');
     }
 

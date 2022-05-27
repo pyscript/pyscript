@@ -1,0 +1,63 @@
+name: Bug Report
+description: Create a report to help us improve
+labels: ["type: bug", "needs-triage"]
+body:
+-   type: markdown
+    attributes:
+        value: |
+            Thanks for helping PyScript! 🐍
+
+            Going through bugs and issues takes up a lot of time, so please be so kind and take a few minutes to fill out all the areas to the best of your ability.
+
+            There will always be more issues than there is time to do them, and so we will need to selectively close issues that don't provide enough information, so we can focus our time on helping people like you who fill out the issue form completely. Thank you for your collaboration!
+
+            There are also already a lot of open issues, so please take 2 minutes and search through existing ones to see if what you are experiencing already exists
+
+            Thanks for helping PyScript be amazing. We are nothing without people like you helping build a better community 💐!
+-   type: checkboxes
+    id: checks
+    attributes:
+        label: Checklist
+        description: Please confirm and check all the following options.
+        options:
+        -   label: I added a descriptive title
+            required: true
+        -   label: I searched for other issues and couldn't find a solution or duplication
+            required: true
+        -   label: I already searched in Google and didn't find any good information or help
+            required: true
+-   type: textarea
+    id: what-happened
+    attributes:
+        label: What happened?
+        description: And what should have happened instead? This really helps everyone review quicker and greatly increases the chance that someone can get around to solve your issue
+        placeholder: Tell us what you see!
+    validations:
+        required: true
+-   type: dropdown
+    id: browsers
+    attributes:
+        label: What browsers are you seeing the problem on? (if applicable)
+        multiple: true
+        options:
+        -   Firefox
+        -   Chrome
+        -   Safari
+        -   Microsoft Edge
+        -   Other
+    validations:
+        required: false
+-   type: textarea
+    id: list
+    attributes:
+        label: Console info
+        description: |
+            If there are errors in your browser console then its helpful to be able to troubleshoot.
+            - Chrome , Firefox, and Edge: Right-click on the page and select *Inspect*. Alternatively  you can press F12 on your keyboard.
+            - Safari: Find instructions [here](https://support.apple.com/guide/safari/use-the-developer-tools-in-the-develop-menu-sfri20948/mac).
+        render: shell
+-   type: textarea
+    id: context
+    attributes:
+        label: Additional Context
+        description: Add any additional context information or screenshots you think are useful.

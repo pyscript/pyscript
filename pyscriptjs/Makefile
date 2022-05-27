@@ -3,16 +3,19 @@ git_hash ?= $(shell git log -1 --pretty=format:%h)
 
 base_dir ?= $(shell git rev-parse --show-toplevel)
 src_dir ?= $(base_dir)/src
-examples ?=  $(base_dir)/examples
+examples ?=  ../$(base_dir)/examples
 app_dir ?= $(shell git rev-parse --show-prefix)
 
+CONDA_EXE := conda
 CONDA_ENV ?= ./env
 env := $(CONDA_ENV)
-conda_run := conda run -p $(env)
+conda_run := $(CONDA_EXE) run -p $(env)
 
 setup:
-	@if [ -z "$${CONDA_SHLVL:+x}" ]; then echo "Conda is not installed." && exit 1; fi
+	npm install
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
+	$(conda_run) playwright install
+	$(CONDA_EXE) install -c anaconda pytest
 
 clean:
 	find . -name \*.py[cod] -delete
@@ -31,8 +34,17 @@ dev:
 build:
 	npm run build
 
+example:
+	mkdir -p ./examples
+	cp -r ../examples/* ./examples
+	chmod -R 755 examples
+	find ./examples/toga -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../build/+g {} \;
+	find ./examples/webgl -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../../build/+g {} \;
+	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+./build/+g {} \;
+
 test:
-	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
+	make example
+	npm run build
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
 test-py:

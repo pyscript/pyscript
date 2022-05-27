@@ -1,0 +1,318 @@
+<html>
+  <head>
+    <title>Visualization of Mandelbrot, Julia and Newton sets with NumPy and HTML5 canvas</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+
+    <style>
+      .loading {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: black;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      canvas {
+        display: none;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+
+    </head>
+    <body>
+      <b>
+      </b>
+      <div style="display: flex; flex-direction: column; gap: 1em; width: 600px">
+        <div id="mandelbrot">
+          <div style="text-align: center">Mandelbrot set</div>
+          <div>
+            <div class="loading"></div>
+            <canvas></canvas>
+          </div>
+        </div>
+        <div id="julia">
+          <div style="text-align: center">Julia set</div>
+          <div>
+            <div class="loading"></div>
+            <canvas></canvas>
+          </div>
+        </div>
+        <div id="newton">
+          <div style="text-align: center">Newton set</div>
+          <fieldset style="display: flex; flex-direction: row; gap: 1em">
+            <div><span style="white-space: pre">p(z) = </span><input id="poly" type="text" value="z**3 - 2*z + 2"></div>
+            <div><span style="white-space: pre">a = </span><input id="coef" type="text" value="1" style="width: 40px"></div>
+            <div style="display: flex; flex-direction: row">
+              <span style="white-space: pre">x = [</span>
+              <input id="x0" type="text" value="-2.5" style="width: 80px; text-align: right">
+              <span style="white-space: pre">, </span>
+              <input id="x1" type="text" value="2.5" style="width: 80px; text-align: right">
+              <span style="white-space: pre">]</span>
+            </div>
+            <div style="display: flex; flex-direction: row">
+              <span style="white-space: pre">y = [</span>
+              <input id="y0" type="text" value="-5.0" style="width: 80px; text-align: right">
+              <span style="white-space: pre">, </span>
+              <input id="y1" type="text" value="5.0" style="width: 80px; text-align: right">
+              <span style="white-space: pre">]</span>
+            </div>
+            <div style="display: flex; flex-direction: row; gap: 1em">
+              <div style="white-space: pre"><input type="radio" id="conv" name="type" value="convergence" checked> convergence</div>
+              <div style="white-space: pre"><input type="radio" id="iter" name="type" value="iterations"> iterations</div>
+            </div>
+          </fieldset>
+          <div>
+            <div class="loading"></div>
+            <canvas></canvas>
+          </div>
+        </div>
+      </div>
+
+<py-env>
+- numpy
+- sympy
+- paths:
+  - ./palettes.py
+  - ./fractals.py
+</py-env>
+
+<py-script>
+from pyodide import to_js, create_proxy
+
+import numpy as np
+import sympy
+
+from palettes import Magma256
+from fractals import mandelbrot, julia, newton
+
+from js import (
+    console,
+    document,
+    devicePixelRatio,
+    ImageData,
+    Uint8ClampedArray,
+    CanvasRenderingContext2D as Context2d,
+    requestAnimationFrame,
+)
+
+def prepare_canvas(width: int, height: int, canvas: Element) -> Context2d:
+    ctx = canvas.getContext("2d")
+
+    canvas.style.width = f"{width}px"
+    canvas.style.height = f"{height}px"
+
+    canvas.width = width
+    canvas.height = height
+
+    ctx.clearRect(0, 0, width, height)
+
+    return ctx
+
+def color_map(array: np.array, palette: np.array) -> np.array:
+    size, _ = palette.shape
+    index = (array/array.max()*(size - 1)).round().astype("uint8")
+
+    width, height = array.shape
+    image = np.full((width, height, 4), 0xff, dtype=np.uint8)
+    image[:, :, :3] = palette[index]
+
+    return image
+
+def draw_image(ctx: Context2d, image: np.array) -> None:
+  data = Uint8ClampedArray.new(to_js(image.tobytes()))
+  width, height, _ = image.shape
+  image_data = ImageData.new(data, width, height)
+  ctx.putImageData(image_data, 0, 0)
+
+width, height = 600, 600
+
+async def draw_mandelbrot() -> None:
+  spinner = document.querySelector("#mandelbrot .loading")
+  canvas = document.querySelector("#mandelbrot canvas")
+
+  spinner.style.display = ""
+  canvas.style.display = "none"
+
+  ctx = prepare_canvas(width, height, canvas)
+
+  console.log("Computing Mandelbrot set ...")
+  console.time("mandelbrot")
+  iters = mandelbrot(width, height)
+  console.timeEnd("mandelbrot")
+
+  image = color_map(iters, Magma256)
+  draw_image(ctx, image)
+
+  spinner.style.display = "none"
+  canvas.style.display = "block"
+
+async def draw_julia() -> None:
+  spinner = document.querySelector("#julia .loading")
+  canvas = document.querySelector("#julia canvas")
+
+  spinner.style.display = ""
+  canvas.style.display = "none"
+
+  ctx = prepare_canvas(width, height, canvas)
+
+  console.log("Computing Julia set ...")
+  console.time("julia")
+  iters = julia(width, height)
+  console.timeEnd("julia")
+
+  image = color_map(iters, Magma256)
+  draw_image(ctx, image)
+
+  spinner.style.display = "none"
+  canvas.style.display = "block"
+
+def ranges():
+  x0_in = document.querySelector("#x0")
+  x1_in = document.querySelector("#x1")
+  y0_in = document.querySelector("#y0")
+  y1_in = document.querySelector("#y1")
+
+  xr = (float(x0_in.value), float(x1_in.value))
+  yr = (float(y0_in.value), float(y1_in.value))
+
+  return xr, yr
+
+current_image = None
+async def draw_newton() -> None:
+  spinner = document.querySelector("#newton .loading")
+  canvas = document.querySelector("#newton canvas")
+
+  spinner.style.display = ""
+  canvas.style.display = "none"
+
+  ctx = prepare_canvas(width, height, canvas)
+
+  console.log("Computing Newton set ...")
+
+  poly_in = document.querySelector("#poly")
+  coef_in = document.querySelector("#coef")
+  conv_in = document.querySelector("#conv")
+  iter_in = document.querySelector("#iter")
+
+  xr, yr = ranges()
+
+  # z**3 - 1
+  # z**8 + 15*z**4 - 16
+  # z**3 - 2*z + 2
+
+  expr = sympy.parse_expr(poly_in.value)
+  coeffs = [ complex(c) for c in reversed(sympy.Poly(expr, sympy.Symbol("z")).all_coeffs()) ]
+  poly = np.polynomial.Polynomial(coeffs)
+
+  coef = complex(sympy.parse_expr(coef_in.value))
+
+  console.time("newton")
+  iters, roots = newton(width, height, p=poly, a=coef, xr=xr, yr=yr)
+  console.timeEnd("newton")
+
+  if conv_in.checked:
+    n = poly.degree() + 1
+    k = int(len(Magma256)/n)
+
+    colors = Magma256[::k, :][:n]
+    colors[0, :] = [255, 0, 0] # red: no convergence
+
+    image = color_map(roots, colors)
+  else:
+    image = color_map(iters, Magma256)
+
+  global current_image
+  current_image = image
+  draw_image(ctx, image)
+
+  spinner.style.display = "none"
+  canvas.style.display = "block"
+
+handler = create_proxy(lambda _event: draw_newton())
+document.querySelector("#newton fieldset").addEventListener("change", handler)
+
+canvas = document.querySelector("#newton canvas")
+
+is_selecting = False
+init_sx, init_sy = None, None
+sx, sy = None, None
+async def mousemove(event):
+  global is_selecting
+  global init_sx
+  global init_sy
+  global sx
+  global sy
+
+  def invert(sx, source_range, target_range):
+    source_start, source_end = source_range
+    target_start, target_end = target_range
+    factor = (target_end - target_start)/(source_end - source_start)
+    offset = -(factor * source_start) + target_start
+    return (sx - offset) / factor
+
+  bds = canvas.getBoundingClientRect()
+  event_sx, event_sy = event.clientX - bds.x, event.clientY - bds.y
+
+  ctx = canvas.getContext("2d")
+
+  pressed = event.buttons == 1
+  if is_selecting:
+    if not pressed:
+      xr, yr = ranges()
+
+      x0 = invert(init_sx, xr, (0, width))
+      x1 = invert(sx, xr, (0, width))
+      y0 = invert(init_sy, yr, (0, height))
+      y1 = invert(sy, yr, (0, height))
+
+      document.querySelector("#x0").value = x0
+      document.querySelector("#x1").value = x1
+      document.querySelector("#y0").value = y0
+      document.querySelector("#y1").value = y1
+
+      is_selecting = False
+      init_sx, init_sy = None, None
+      sx, sy = init_sx, init_sy
+
+      await draw_newton()
+    else:
+      ctx.save()
+      ctx.clearRect(0, 0, width, height)
+      draw_image(ctx, current_image)
+      sx, sy = event_sx, event_sy
+      ctx.beginPath()
+      ctx.rect(init_sx, init_sy, sx - init_sx, sy - init_sy)
+      ctx.fillStyle = "rgba(255, 255, 255, 0.4)"
+      ctx.strokeStyle = "rgba(255, 255, 255, 1.0)"
+      ctx.fill()
+      ctx.stroke()
+      ctx.restore()
+  else:
+    if pressed:
+      is_selecting = True
+      init_sx, init_sy = event_sx, event_sy
+      sx, sy = init_sx, init_sy
+
+canvas.addEventListener("mousemove", create_proxy(mousemove))
+
+import asyncio
+
+_ = await asyncio.gather(
+  draw_mandelbrot(),
+  draw_julia(),
+  draw_newton(),
+)
+</py-script>
+
+</body>
+</html>

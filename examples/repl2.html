@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Custom REPL Example</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <link rel="stylesheet" href="repl.css" />
+
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  </head>
+
+  <py-env>
+- bokeh
+- numpy
+- paths:
+  - ./utils.py
+  - ./antigravity.py
+  </py-env>
+
+  <body>
+      <h1 class="font-semibold text-2xl ml-5">Custom REPL</h1>
+      <py-box widths="1/2;1/2">
+        <py-repl id="my-repl" auto-generate="true" std-out="output" std-err="err-div"> </py-repl>
+        <div id="output" class="p-4"></div>
+      </py-box>
+      <footer id="err-div" class="bg-red-700 text-white text-center border-t-4 border-green-500 fixed inset-x-0 bottom-0 p-4 hidden">
+    </footer>
+  </body>
+</html>
