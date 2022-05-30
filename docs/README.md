@@ -6,7 +6,8 @@ and contribute to discussions around PyScript and related topics.
 ## Getting started
 
 Before you start contributing to the documentation, it's worthwhile to
-take a look at the general contributing guidelines for the PyScript project.
+take a look at the general contributing guidelines for the PyScript project. You can find these guidelines here
+[Contributing Guidelines](https://github.com/pyscript/pyscript/blob/main/CONTRIBUTING.md)
 
 ### Setup
 
