@@ -55,16 +55,16 @@ print back onto the page. For example, we can compute π.
   </head>
   <body>
       <py-script>
-print("Let's compute π:")
-def compute_pi(n):
-    pi = 2
-    for i in range(1,n):
-        pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
-    return pi
+        print("Let's compute π:")
+        def compute_pi(n):
+            pi = 2
+            for i in range(1,n):
+                pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
+            return pi
 
-pi = compute_pi(100000)
-s = f"π is approximately {pi:.3f}"
-print(s)
+        pi = compute_pi(100000)
+        s = f"π is approximately {pi:.3f}"
+        print(s)
       </py-script>
   </body>
 </html>
@@ -93,17 +93,17 @@ the `<py-script>` tag to write to.
     <br>
     <div id="pi" class="alert alert-primary"></div>
     <py-script>
-import datetime as dt
-pyscript.write('today', dt.date.today().strftime('%A %B %d, %Y'))
+      import datetime as dt
+      pyscript.write('today', dt.date.today().strftime('%A %B %d, %Y'))
 
-def compute_pi(n):
-    pi = 2
-    for i in range(1,n):
-        pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
-    return pi
+      def compute_pi(n):
+          pi = 2
+          for i in range(1,n):
+              pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
+          return pi
 
-pi = compute_pi(100000)
-pyscript.write('pi', f'π is approximately {pi:.3f}')
+      pi = compute_pi(100000)
+      pyscript.write('pi', f'π is approximately {pi:.3f}')
     </py-script>
   </body>
 </html>
@@ -115,7 +115,7 @@ In addition to the [Python Standard Library](https://docs.python.org/3/library/)
 the `pyscript` module, many 3rd-party OSS packages will work out-of-the-box with PyScript.
 
 In order to use them, you will need to declare the dependencies using the `<py-env>` tag in the
-HTML head. You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/pyscriptjs/examples/toga/freedom.html).
+HTML head. You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/examples/toga/freedom.html).
 
 ```
 <py-env>
@@ -144,15 +144,15 @@ as a shortcut, which takes the expression on the last line of the script and run
     <h1>Let's plot random numbers</h1>
     <div id="plot"></div>
     <py-script output="plot">
-import matplotlib.pyplot as plt
-import numpy as np
+      import matplotlib.pyplot as plt
+      import numpy as np
 
-x = np.random.randn(1000)
-y = np.random.randn(1000)
+      x = np.random.randn(1000)
+      y = np.random.randn(1000)
 
-fig, ax = plt.subplots()
-ax.scatter(x, y)
-fig
+      fig, ax = plt.subplots()
+      ax.scatter(x, y)
+      fig
     </py-script>
   </body>
 </html>
@@ -187,7 +187,7 @@ In the HTML tag `<py-env>`, paths to local modules are provided in the
         - numpy
         - matplotlib
         - paths:
-          - /data.py
+          - ./data.py
       </py-env>
     </head>
 
@@ -195,14 +195,14 @@ In the HTML tag `<py-env>`, paths to local modules are provided in the
     <h1>Let's plot random numbers</h1>
     <div id="plot"></div>
     <py-script output="plot">
-import matplotlib.pyplot as plt
-from data import make_x_and_y
+      import matplotlib.pyplot as plt
+      from data import make_x_and_y
 
-x, y = make_x_and_y(n=1000)
+      x, y = make_x_and_y(n=1000)
 
-fig, ax = plt.subplots()
-ax.scatter(x, y)
-fig
+      fig, ax = plt.subplots()
+      ax.scatter(x, y)
+      fig
     </py-script>
   </body>
 </html>
@@ -236,7 +236,7 @@ The following optional values are supported by `<py-config>`:
   * runtimes (List of Runtimes): List of runtime configurations. Each Runtime expects the following fields:
     * src (string, Required): URL to the runtime source.
     * name (string): Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes.
-    * name (string): Programming language supported by the runtime. This field can be used by the application author to provide clarify. It currently has no implications on how PyScript behaves.
+    * lang (string): Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves.
 
 ## Visual component tags
 
