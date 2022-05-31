@@ -6,7 +6,7 @@ import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 
 import { componentDetailsNavOpen, loadedEnvironments, mode, pyodideLoaded } from '../stores';
-import { addClasses } from '../utils';
+import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
 
 // Premise used to connect to the first available pyodide interpreter
@@ -61,7 +61,7 @@ export class PyRepl extends BaseEvalElement {
 
     connectedCallback() {
         this.checkId();
-        this.code = this.innerHTML;
+        this.code = htmlDecode(this.innerHTML);
         this.innerHTML = '';
         const languageConf = new Compartment();
 

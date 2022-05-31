@@ -40,7 +40,7 @@ export class PyScript extends BaseEvalElement {
 
     connectedCallback() {
         this.checkId();
-        this.code = this.innerHTML;
+        this.code = htmlDecode(this.innerHTML);
         this.innerHTML = '';
 
         const mainDiv = document.createElement('div');
