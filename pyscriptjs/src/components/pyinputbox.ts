@@ -43,10 +43,10 @@ export class PyInputBox extends BaseEvalElement {
 
         // TODO: For now we delay execution to allow pyodide to load but in the future this
         //       should really wait for it to load..
-        setTimeout(async () => {
+        this.runAfterRuntimeInitialized(async () => {
             await this.eval(this.code);
             await this.eval(registrationCode);
             console.log('registered handlers');
-        }, 4000);
+        });
     }
 }

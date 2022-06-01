@@ -184,6 +184,7 @@ export class BaseEvalElement extends HTMLElement {
             this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
+            this.errorElement.style.visibility = 'visible';
         }
     } // end evaluate
 
@@ -200,6 +201,16 @@ export class BaseEvalElement extends HTMLElement {
             console.log(err);
         }
     } // end eval
+
+    runAfterRuntimeInitialized(callback: () => Promise<void>){
+        pyodideLoaded.subscribe(value => {
+            if ('runPythonAsync' in value) {
+                setTimeout(async () => {
+                    await callback();
+                }, 100);
+            }
+        });
+    }
 }
 
 function createWidget(name: string, code: string, klass: string) {
@@ -270,6 +281,7 @@ function createWidget(name: string, code: string, klass: string) {
             }
         }
     }
+    const xPyWidget = customElements.define(name, CustomWidget);
 }
 
 export class PyWidget extends HTMLElement {
