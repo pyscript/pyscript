@@ -24,6 +24,7 @@ You can then use PyScript components in your html page. PyScript currently imple
 
 * `<py-script>`: can be used to define python code that is executable within the web page. The element itself is not rendered to the page and is only used to add logic
 * `<py-repl>`: creates a REPL component that is rendered to the page as a code editor and allows users to write executable code
+* `<py-env>`: Installs any module that's listed, f.e.: ```<py-env>- BlockOL</py-env>``` then you can import BlockOL (if you want more modules you need to put a newline after the previous ones)
 
 Check out the [the examples directory](examples) folder for more examples on how to use it, all you need to do is open them in Chrome.
 
