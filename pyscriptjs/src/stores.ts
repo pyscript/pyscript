@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import type { PyLoader } from './components/pyloader';
 import type { PyScript } from './components/pyscript';
 
 export type Initializer = () => Promise<void>;
@@ -20,7 +21,7 @@ export const mode = writable(DEFAULT_MODE);
 export const scriptsQueue = writable<PyScript[]>([]);
 export const initializers = writable<Initializer[]>([]);
 export const postInitializers = writable<Initializer[]>([]);
-export const globalLoader = writable();
+export const globalLoader = writable<PyLoader | undefined>();
 export const appConfig = writable();
 
 let scriptsQueue_: PyScript[] = [];
