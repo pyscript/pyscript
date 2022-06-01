@@ -201,6 +201,16 @@ export class BaseEvalElement extends HTMLElement {
             console.log(err);
         }
     } // end eval
+
+    runAfterRuntimeInitialized(callback: () => Promise<void>){
+        pyodideLoaded.subscribe(value => {
+            if ('runPythonAsync' in value) {
+                setTimeout(async () => {
+                    await callback();
+                }, 100);
+            }
+        });
+    }
 }
 
 function createWidget(name: string, code: string, klass: string) {
