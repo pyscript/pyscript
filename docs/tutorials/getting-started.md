@@ -228,15 +228,19 @@ The `<py-config>` tag can be used as follows:
 ```
 
 The following optional values are supported by `<py-config>`:
-
-  * `autoclose_loader` (boolean): If false, PyScript will not close the loading splash screen when the startup operations finish.
-  * `name` (string): Name of the user application. This field can be any string and is to be used by the application author for their own customization purposes.
-  * `version` (string): Version of the user application. This field can be any string and is to be used by the application author for their own customization purposes. It is not related to the PyScript version.
-  * `runtimes` (List of Runtimes): List of runtime configurations. Each Runtime expects the following fields:
-    * `src` (string, Required): URL to the runtime source.
-    * `name` (string): Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes.
-    * `lang` (string): Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves.
-
+| Value | Type | Description |
+| ------ | ---- | ----------- |
+| `autoclose_loader` | boolean | If false, PyScript will not close the loading splash screen when the startup operations finish. |
+| `name` | string | Name of the user application. This field can be any string and is to be used by the application author for their own customization purposes. |
+| `version` | string | Version of the user application. This field can be any string and is to be used by the application author for their own customization purposes. It is not related to the PyScript version. |
+ | `runtimes` | List of Runtimes | List of runtime configurations, described below.
+ 
+ A runtime configuration consists of the following:
+| Value | Type | Description |
+| ----- | ---- | ----------- |
+| `src` | string (Required) | URL to the runtime source. |
+| `name` | string | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
+| `lang` | string | Programming language supported by the runtime. This field can be used by the application author clarification. It currently has no implications on how PyScript behaves. |
 
 ## Visual component tags
 
