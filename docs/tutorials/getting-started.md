@@ -17,7 +17,7 @@ There is no installation required. In this document, we'll use
 the PyScript assets served on https://pyscript.net.
 
 If you want to download the source and build it yourself, follow
-the instructions in the README.md file.
+the instructions in the [README.md](https://github.com/pyscript/pyscript/blob/main/README.md) file.
 
 ## Your first PyScript HTML file
 
