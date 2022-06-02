@@ -210,6 +210,15 @@ In the HTML tag `<py-env>`, paths to local modules are provided in the
 ## The py-repl tag
 
 The `<py-repl>` tag creates a REPL component that is rendered to the page as a code editor, allowing you to write executable code inline.
+```html
+<html>
+  <head>
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  </head>
+  <py-repl></py-repl>
+</html>
+```
 
 ## The py-config tag
 
