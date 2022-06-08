@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>PyScript Namespaces Example</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="/pyscriptjs/examples/build/pyscript.css" />
+
+    <script defer src="/pyscriptjs/examples/build/pyscript.js"></script>
+    <style>pre {overflow-x: auto;}</style>
+  </head>
+
+  <body>
+    <p>The following examples demonstrate using the 'pys-namespace' attribute to set which namespace Pyscript blocks execute within.</p>
+    <p>The first block of code should run without errors. <b>The second, third, and fourth code blocks with have errors.</b> This is intentional, to demonstrate the variables that are and aren't available within individual namespaces.</p>
+    <div class="grid grid-cols-1 space-y-6">
+        <div class="grid grid-cols-2 gap-2 p-2 space-x-4 bg-blue-100 ">
+            <pre>&lt;py-script&gt;
+import math
+print(f"This is executing in the default scope")
+print("with python version" + str(sys.version.split(" ")[0]))
+x, y, z = 1, 2, 3
+print(f"{x=}")
+print(f"{y=}")
+print(f"{z=}")
+print(f"{math.prod([x,y,z]) = }")
+&lt;/py-script&gt;</pre>
+          <py-script class="p-2 bg-gray-200 border-4 border-gray-400">
+            import math
+            print(f"This is executing in the default scope")
+            print("with python version" + str(sys.version.split(" ")[0]))
+            x, y, z = 1, 2, 3
+            print(f"{x=}")
+            print(f"{y=}")
+            print(f"{z=}")
+            print(f"{math.prod([x,y,z]) = }")
+          </py-script>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 p-2 space-x-4 bg-yellow-100 ">
+            <pre>&lt;py-script pys-namespace = 'ns-one'&gt;
+print(f"This is executing in a custom namespace called 'ns-one'")
+print("with python version" + str(sys.version.split(" ")[0]))
+
+x, y = 4, 5
+#The math module has not be imported in this namespace, so we get a NameError
+print(f"{math.prod([x,y]) = }")
+&lt;/py-script&gt;</pre>
+          <py-script pys-namespace = 'ns-one'class="p-2 bg-gray-200 border-4 border-gray-400">
+        import traceback
+        print(f"This is executing in a custom namespace called 'ns-one'")
+        print("with python version" + str(sys.version.split(" ")[0]))
+
+        x, y = 4, 5
+        print(f"{math.prod([x,y]) = }")
+          </py-script>
+        </div>
+        <div class="grid grid-cols-2 gap-2 p-2 space-x-4 bg-green-100 ">
+            <pre>&lt;py-script pys-namespace = 'ns-two'&gt;
+print("This is executing in a custom namespace called 'ns-two'")
+print(f"with python version {str(sys.version.split(" ")[0])}")
+
+x = 6
+print(f"{x=}")
+
+# y is not defined in this namespace so we will get a nameerror
+print(f"{y=}")
+&lt;/py-script&gt;</pre>
+          <py-script pys-namespace="ns-two"class="p-2 bg-gray-200 border-4 border-gray-400">
+        import traceback
+        print("This is executing in a custom namespace called 'ns-two'")
+        print("with python version" + str(sys.version.split(" ")[0]))
+        
+        x = 6
+        print(f"{x=}")
+        print(f"{y=}")
+                </py-script>
+                </div>
+          <div class="grid grid-cols-2 gap-2 p-2 space-x-4 bg-yellow-100 ">
+              <pre>&lt;py-script pys-namespace = 'ns-one'&gt;
+print(f"This is executing in a custom namespace called 'ns-one'")
+print("with python version" + str(sys.version.split(" ")[0]))
+
+# x and y retain their values established in the earlier code block in this namespace
+print(f"{x=}")
+print(f"{y=}")
+
+# however, z is not defined in this namespace, so we get a nameerror
+print(f"{z=}")
+&lt;/py-script&gt;</pre>
+            <py-script pys-namespace = 'ns-one'class="p-2 bg-gray-200 border-4 border-gray-400">
+        print(f"This is executing in a custom namespace called 'ns-one'")
+        print("with python version" + str(sys.version.split(" ")[0]))
+        print(f"{x=}")
+        print(f"{y=}")
+        print(f"{z=}")
+           </py-script>
+          </div>
+        </div>
+    </div>
+  </body>
+</html>

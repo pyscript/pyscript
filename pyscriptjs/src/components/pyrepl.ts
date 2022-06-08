@@ -172,8 +172,8 @@ export class PyRepl extends BaseEvalElement {
     }
 
     preEvaluate(): void {
-        this.setOutputMode("replace");
-        if(!this.appendOutput) {
+        this.setOutputMode('replace');
+        if (!this.appendOutput) {
             this.outputElement.innerHTML = '';
         }
     }
@@ -192,12 +192,12 @@ export class PyRepl extends BaseEvalElement {
             newPyRepl.setAttribute('root', this.getAttribute('root'));
             newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
 
-            if(this.hasAttribute('auto-generate')) {
+            if (this.hasAttribute('auto-generate')) {
                 newPyRepl.setAttribute('auto-generate', '');
                 this.removeAttribute('auto-generate');
             }
 
-            if(this.hasAttribute('output-mode')) {
+            if (this.hasAttribute('output-mode')) {
                 newPyRepl.setAttribute('output-mode', this.getAttribute('output-mode'));
             }
 

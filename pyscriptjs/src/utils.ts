@@ -32,8 +32,7 @@ function ltrim(code: string): string {
 
     const k = Math.min(...lengths);
 
-    return k != 0 ? lines.map(line => line.substring(k)).join('\n')
-                  : code;
+    return k != 0 ? lines.map(line => line.substring(k)).join('\n') : code;
 }
 
 function guidGenerator(): string {
@@ -80,4 +79,24 @@ function handleFetchError(e: Error, singleFile: string) {
     showError(errorContent);
 }
 
-export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError };
+function getNamespace(name: string, runtime: any) {
+    if (name == 'DEFAULT_NAMESPACE') {
+        console.log('No pys-namespace attribute found, using default(global) namespace');
+        return runtime.globals;
+    } else {
+        console.log('Found that pys-namespace is ' + name);
+        return runtime.globals.get('pyscript_namespaces').get(name);
+    }
+}
+
+export {
+    addClasses,
+    removeClasses,
+    getLastPath,
+    ltrim,
+    htmlDecode,
+    guidGenerator,
+    showError,
+    handleFetchError,
+    getNamespace,
+};
