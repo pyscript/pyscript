@@ -1,40 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>PyScript demo</title>
+  <title>PyScript demo</title>
 
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-  </head>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+</head>
 
-  <body class="container font-mono">
+<body class="container font-mono">
+  <h1 class="text-6xl font-bold text-center my-10">PyScript demos</h1>
 
-    <h1 class="text-4xl font-bold">PyScript demos</h1>
+  <section class="container mx-auto">      
+      <h2 class="text-4xl font-bold mb-5">Basic examples</h2>      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-    <br>
-    <h2 class="text-3xl font-bold">Basic examples</h2>
-    <hr/>
+      <div class="max-w-sm rounded overflow-hidden shadow-lg h-60">
+        <a href="./hello_world.html" target=”_blank”>
+          <div class="px-6 py-4 flex flex-col justify-between h-full">
+            <h2 class="text-4xl font-bold text-blue-600">
+              Hello world
+            </h2>
+            <p class="text-gray-700 text-base">
+              A static demo of the <code>&lt;py-script&gt;</code> tag
+            </p>
+          </div>
+        </a>
+      </div>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./hello_world.html" target=”_blank”>Hello world</a></h2>
-    <p>A static demo of the <code>&lt;py-script&gt;</code> tag</p>
+      <div class="max-w-sm rounded overflow-hidden shadow-lg h-60">
+        <a href="./simple_clock.html" target=”_blank”>
+          <div class="px-6 py-4 flex flex-col justify-between h-full">
+            <h2 class="text-4xl font-bold text-blue-600">
+              Simple clock
+            </h2>
+            <p class="text-gray-700 text-base">
+              A dynamic demo of the <code>&lt;py-script&gt;</code> tag
+            </p>
+          </div>
+        </a>
+      </div>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./simple_clock.html" target=”_blank”>Simple clock</a></h2>
-    <p>A dynamic demo of the <code>&lt;py-script&gt;</code> tag</p>
+      <div class="max-w-sm rounded overflow-hidden shadow-lg h-60">
+        <a href="./repl.html" target=”_blank”>
+          <div class="px-6 py-4 flex flex-col justify-between h-full">
+            <h2 class="text-4xl font-bold text-blue-600">
+              REPL
+            </h2>
+            <p class="text-gray-700 text-base">
+              A Python REPL (Read Eval Print Loop).
+            </p>
+          </div>
+        </a>
+      </div>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./repl.html" target=”_blank”>REPL</a></h2>
-    <p>A Python REPL (Read Eval Print Loop). </p>
+      <div class="max-w-sm rounded overflow-hidden shadow-lg h-60">
+          <a href="./repl2.html" target=”_blank”>
+            <div class="px-6 py-4 flex flex-col justify-between h-full">
+              <h2 class="text-4xl font-bold text-blue-600">
+                REPL2
+              </h2>
+              <p class="text-gray-700 text-base">
+                A Python REPL (Read Eval Print Loop) with slightly better formatting..
+              </p>
+            </div>
+          </a>
+      </div>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./repl2.html" target=”_blank”>REPL2</a></h2>
-    <p>A Python REPL (Read Eval Print Loop) with slightly better formatting.</p>
+      <div class="max-w-sm rounded overflow-hidden shadow-lg h-60">
+          <a href="./todo.html" target=”_blank”>
+            <div class="px-6 py-4 flex flex-col justify-between h-full">
+              <h2 class="text-4xl font-bold text-blue-600">
+                TODO App
+              </h2>
+              <p class="text-gray-700 text-base">
+                Demo showing how would a Simple TODO App would look like in PyScript</code> tag
+              </p>
+            </div>
+          </a>
+      </div>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./todo.html" target=”_blank”>TODO App</a></h2>
-    <p>Demo showing how would a Simple TODO App would look like in PyScript</code> tag</p>
+      <div class="max-w-sm rounded overflow-hidden shadow-lg h-60">
+          <a href="./todo-pylist.html" target=”_blank”>
+            <div class="px-6 py-4 flex flex-col justify-between h-full">
+              <h2 class="text-4xl font-bold text-blue-600">
+                PyScript Native TODO App
+              </h2>
+              <p class="text-gray-700 text-base">
+                Demo showing how would a Simple TODO App would look like in PyScript</code> tag
+              </p>
+            </div>
+          </a>
+      </div>
+    </div>
+  </section>
 
-    <h2 class="text-2xl font-bold text-blue-600"><a href="./todo-pylist.html" target=”_blank”>PyScript Native TODO App</a></h2>
-    <p>Demo showing how would a Simple TODO App would look like only using PyScript native elements</code> tag</p>
 
     <br>
     <h2 class="text-3xl font-bold">MIME Rendering</h2>
