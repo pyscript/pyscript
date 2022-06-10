@@ -99,6 +99,20 @@ print(f"{z=}")
         print(f"{z=}")
            </py-script>
           </div>
+          <div>
+            <h1 class="text-2xl font-semibold">REPLs</h1>
+            <p>These two REPLs are in separate namespaces, "repl-1" and "repl-2". They are in different namespaces than the above code examples. Try assigning and reading variables to see that their namespaces keep them separate.</p>
+            <p>All auto-generated REPLs inherit their namespace from the REPL that created them.</p>
+            <div class="grid grid-cols-2 gap-2 p-2 space-x-4 divide-x-2">
+              <div class="pb-2 bg-red-200">
+                <py-repl namespace="repl-1" auto-generate="true"></py-repl>
+              </div>
+              <div class="pb-2 bg-purple-200">
+                <py-repl namespace="repl-2" auto-generate="true"></py-repl>
+              </div>
+            </div>
+          </div>
+          <div>
         </div>
     </div>
   </body>
