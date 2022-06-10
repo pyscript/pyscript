@@ -201,6 +201,10 @@ export class PyRepl extends BaseEvalElement {
                 newPyRepl.setAttribute('output-mode', this.getAttribute('output-mode'));
             }
 
+            if (this.hasAttribute('namespace')) {
+                newPyRepl.setAttribute('namespace', this.getAttribute('namespace'));
+            }
+
             const addReplAttribute = (attribute: string) => {
                 if (this.hasAttribute(attribute)) {
                     newPyRepl.setAttribute(attribute, this.getAttribute(attribute));

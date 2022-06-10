@@ -129,6 +129,10 @@ export class BaseEvalElement extends HTMLElement {
         let source: string;
         let namespace;
         let output;
+
+        if (this.hasAttribute('namespace')) this.namespace = this.getAttribute('namespace');
+        else this.namespace = "DEFAULT_NAMESPACE";
+
         try {
             source = this.source ? await this.getSourceFromFile(this.source) : this.getSourceFromElement();
 
@@ -201,6 +205,10 @@ export class BaseEvalElement extends HTMLElement {
     async eval(source: string): Promise<void> {
         let output;
         const pyodide = runtime;
+
+        if (this.hasAttribute('namespace')) this.namespace = this.getAttribute('namespace');
+        else this.namespace = "DEFAULT_NAMESPACE";
+        
         const eval_namespace = getNamespace(this.namespace, runtime);
 
         try {
