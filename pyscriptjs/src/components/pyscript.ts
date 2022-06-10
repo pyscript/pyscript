@@ -76,8 +76,8 @@ export class PyScript extends BaseEvalElement {
                 this.errorElement = this.outputElement;
             }
 
-            if (this.hasAttribute('pys-namespace')) {
-                this.namespace = this.getAttribute('pys-namespace');
+            if (this.hasAttribute('namespace')) {
+                this.namespace = this.getAttribute('namespace');
             } else {
                 this.namespace = 'DEFAULT_NAMESPACE';
             }
@@ -198,10 +198,10 @@ async function mountElements() {
 async function initNamespaces() {
     console.log('Copying global namespace to separate namespaces if necessary');
     const pyodide = await pyodideReadyPromise;
-    const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[pys-namespace]');
+    const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[namespace]');
 
     for (const el of matches) {
-        const namespace_title = el.getAttribute('pys-namespace');
+        const namespace_title = el.getAttribute('namespace');
 
         const my_new_namespace = pyodide.globals.get('dict')(pyodide.globals);
         my_new_namespace.pop('pyscript_namespaces'); //remove any previously created namespaces from this copy
