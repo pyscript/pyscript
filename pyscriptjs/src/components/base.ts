@@ -208,7 +208,7 @@ export class BaseEvalElement extends HTMLElement {
 
         if (this.hasAttribute('namespace')) this.namespace = this.getAttribute('namespace');
         else this.namespace = "DEFAULT_NAMESPACE";
-        
+
         const eval_namespace = getNamespace(this.namespace, runtime);
 
         try {
