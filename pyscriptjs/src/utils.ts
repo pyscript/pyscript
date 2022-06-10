@@ -81,10 +81,9 @@ function handleFetchError(e: Error, singleFile: string) {
 
 function getNamespace(name: string, runtime: any) {
     if (name == 'DEFAULT_NAMESPACE') {
-        console.log('No namespace attribute found, using default(global) namespace');
         return runtime.globals;
     } else {
-        console.log('Found that namespace is ' + name);
+        console.log('Using namespace ' + name);
         return runtime.globals.get('pyscript_namespaces').get(name);
     }
 }
