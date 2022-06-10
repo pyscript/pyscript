@@ -196,17 +196,23 @@ async function mountElements() {
 }
 
 async function initNamespaces() {
-    console.log('Copying global namespace to separate namespaces if necessary');
     const pyodide = await pyodideReadyPromise;
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[namespace]');
+    let namespaceList = Array<string>();
 
     for (const el of matches) {
         const namespace_title = el.getAttribute('namespace');
+        if (!namespaceList.includes(namespace_title)){
+            namespaceList.push(namespace_title);
 
-        const my_new_namespace = pyodide.globals.get('dict')(pyodide.globals);
-        my_new_namespace.pop('pyscript_namespaces'); //remove any previously created namespaces from this copy
-        pyodide.globals.get('pyscript_namespaces').set(namespace_title, my_new_namespace);
-        console.log('Created new namespace ' + namespace_title);
+            const my_new_namespace = pyodide.globals.get('dict')(pyodide.globals);
+            my_new_namespace.pop('pyscript_namespaces'); //remove any previously created namespaces from this copy
+            pyodide.globals.get('pyscript_namespaces').set(namespace_title, my_new_namespace);
+        }
+    }
+
+    if (matches.length > 0){
+        console.log('Generated new namespaces based on "namespace" attributes: ' + namespaceList.join(", "));
     }
 }
 
