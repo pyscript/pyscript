@@ -13,7 +13,8 @@
     <style>pre {overflow-x: auto;}</style>
   </head>
 
-  <body>
+  <body class="ml-5">
+    <h1 class="text-2xl font-semibold">Custom Namespaces</h1>
     <p>The following examples demonstrate using the 'namespace' attribute to set which namespace Pyscript blocks execute within.</p>
     <p>The first block of code should run without errors. <b>The second, third, and fourth code blocks with have errors.</b> This is intentional, to demonstrate the variables that are and aren't available within individual namespaces.</p>
     <div class="grid grid-cols-1 space-y-6">
@@ -113,6 +114,51 @@ print(f"{z=}")
             </div>
           </div>
           <div>
+            <h1 class="text-2xl font-semibold">Other Components</h1>
+            <p>Py-buttons, py-inputbox, and other Pyscript tags can also make use of the 'namespace' attribute.</p>
+            <p>Both of the buttons below set the text in this box to the value of the variable <code>x</code>. However, <code>x</code> is different in each of their namespaces</p>
+            <div class="flex flex-row space-x-2">
+              <div class="w-16 h-6 border-2 border-gray-500"><label id="button-output" class=""></label></div>
+              <span class="italic"><code>&lt;label id="button-output&gt;</code></span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 p-2 space-x-4 divide-x-2">
+              <div class="bg-yellow-400">
+                <pre class="mb-4">
+&lt;py-script namespace="button-1"&gt;
+x = 1
+&lt;/py-script&gt;
+&lt;py-button namespace="button-1 label="Set Label to 1"&gt;
+def on_click(event):
+  from js import document
+  document.getElementById("button-output").innerText = str(x)
+&lt;/py-button&gt;</pre>
+                <py-script namespace="button-1">x = 1</py-script>
+                <py-button namespace="button-1" label="Set Label to 1">
+                  def on_click(event):
+                    from js import document
+                    document.getElementById("button-output").innerText = str(x)
+                </py-button>
+              </div>
+              <div class="bg-gray-300">
+<pre class="mb-4">
+&lt;py-script namespace="button-2"&gt;
+x = 2
+&lt;/py-script&gt;
+&lt;py-button namespace="button-2" label="Set Label to 2"&gt;
+def on_click(event):
+  from js import document
+  document.getElementById("button-output").innerText = str(x)
+&lt;/py-button&gt;
+</pre>
+                <py-script namespace="button-2">x = 2</py-script>
+                <py-button namespace="button-2" label="Set Label to 2">
+                  def on_click(event):
+                    from js import document
+                    document.getElementById("button-output").innerText = str(x)
+                </py-button>
+              </div>
+            </div>
+          </div>
         </div>
     </div>
   </body>
