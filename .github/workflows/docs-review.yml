@@ -18,6 +18,8 @@ concurrency:
 
 jobs:
     build:
+        if: >-
+            !github.event.repository.fork
         runs-on: ubuntu-latest
         permissions:
             contents: read
