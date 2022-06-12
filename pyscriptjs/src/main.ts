@@ -1,4 +1,5 @@
 import App from './App.svelte';
+import './styles/pyscript_base.css';
 
 import { PyScript } from './components/pyscript';
 import { PyRepl } from './components/pyrepl';
