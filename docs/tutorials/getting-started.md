@@ -17,7 +17,7 @@ There is no installation required. In this document, we'll use
 the PyScript assets served on https://pyscript.net.
 
 If you want to download the source and build it yourself, follow
-the instructions in the README.md file.
+the instructions in the [README.md](https://github.com/pyscript/pyscript/blob/main/README.md) file.
 
 ## Your first PyScript HTML file
 
@@ -210,6 +210,15 @@ In the HTML tag `<py-env>`, paths to local modules are provided in the
 ## The py-repl tag
 
 The `<py-repl>` tag creates a REPL component that is rendered to the page as a code editor, allowing you to write executable code inline.
+```html
+<html>
+  <head>
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  </head>
+  <py-repl></py-repl>
+</html>
+```
 
 ## The py-config tag
 
@@ -217,26 +226,30 @@ Use the `<py-config>` tag to set and configure general metadata about your PyScr
 
 The `<py-config>` tag can be used as follows:
 
-```
+```html
 <py-config>
-  - autoclose_loader: false
-  - runtimes:
-    -
-      src: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
+  autoclose_loader: false
+  runtimes:
+    - src: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
       name: pyodide-0.20
       lang: python
 </py-config>
 ```
 
 The following optional values are supported by `<py-config>`:
+| Value | Type | Description |
+| ------ | ---- | ----------- |
+| `autoclose_loader` | boolean | If false, PyScript will not close the loading splash screen when the startup operations finish. |
+| `name` | string | Name of the user application. This field can be any string and is to be used by the application author for their own customization purposes. |
+| `version` | string | Version of the user application. This field can be any string and is to be used by the application author for their own customization purposes. It is not related to the PyScript version. |
+ | `runtimes` | List of Runtimes | List of runtime configurations, described below.
 
-  * autoclose_loader (boolean): If false, PyScript will not close the loading splash screen when the startup operations finish.
-  * name (string): Name of the user application. This field can be any string and is to be used by the application author for their own customization purposes.
-  * version (string): Version of the user application. This field can be any string and is to be used by the application author for their own customization purposes. It is not related to the PyScript version.
-  * runtimes (List of Runtimes): List of runtime configurations. Each Runtime expects the following fields:
-    * src (string, Required): URL to the runtime source.
-    * name (string): Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes.
-    * lang (string): Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves.
+ A runtime configuration consists of the following:
+| Value | Type | Description |
+| ----- | ---- | ----------- |
+| `src` | string (Required) | URL to the runtime source. |
+| `name` | string | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
+| `lang` | string | Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
 
 ## Visual component tags
 

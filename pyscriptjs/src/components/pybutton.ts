@@ -65,11 +65,11 @@ export class PyButton extends BaseEvalElement {
 
         // now that we appended and the element is attached, lets connect with the event handlers
         // defined for this widget
-        setTimeout(async () => {
+        this.runAfterRuntimeInitialized(async () => {
             await this.eval(this.code);
             await this.eval(registrationCode);
             console.log('registered handlers');
-        }, 4000);
+        });
 
         console.log('py-button connected');
     }
