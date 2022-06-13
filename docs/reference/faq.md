@@ -10,7 +10,7 @@ We are fully leaning into the idea that the browser is the most ubiquitous VM by
 
 ## Why PyScript?
 
-Exponentially expand accessibility and use cases for Python by enabling Python in the browser for building UIs. Reproduce environments without having to download Python or conda or install other packages. Projects can be shared with anyone and deployed anywhere—all you need is a browser and a web-accessible device (computer, tablet, or mobile). 
+Exponentially expand accessibility and use cases for Python by enabling Python in the browser for building UIs. Reproduce environments without having to download Python or conda or install other packages. Projects can be shared with anyone and deployed anywhere—all you need is a browser and a web-accessible device (computer, tablet, or mobile).
 
 We are fully leaning into the idea that the browser is the most ubiquitous VM by using Python to build a graphical, programmable operating system on top of the browser to make and share applications. Harness the full power of canvas, webGL, WASI, and even in-browser support for P2P and CRDTs for serverless data sharing and collaboration.
 
@@ -45,15 +45,15 @@ Leveraging Python in HTML is literally as simple as adding a few lines of code t
 
 - [PyScript Repo](https://github.com/pyscript/pyscript)
 - [PyScript Announcement Blog](https://www.anaconda.com/blog/pyscript-python-in-the-browser)
-- [PyScript Technical Blog](https://engineering.anaconda.com/2022/04/welcome-pyscript.html) 
+- [PyScript Technical Blog](https://engineering.anaconda.com/2022/04/welcome-pyscript.html)
 - [PyScript Nucleus Project](https://anaconda.cloud/s/pyscript)
 - [PyScript Documentation](https://docs.pyscript.net/)
 
 ## Why isn't this going to be as terrible as PHP?
 
-This comparison is based on both PHP and PyScript having a similar way of declaring things: put a tag on the page and the interpreter handles it. PHP works on the server side and is itself a whole different programming language that has its own directives and semantics. 
+This comparison is based on both PHP and PyScript having a similar way of declaring things: put a tag on the page and the interpreter handles it. PHP works on the server side and is itself a whole different programming language that has its own directives and semantics.
 
-The choice of using tags to allow people to execute Python is explicit; even if this functionality is similar to PHP, it works differently. First of all, everything runs in the browser itself rather than going to the server side. Secondly, PyScript lives close to the text and allows changes to be made to the visual elements. The PyScript REPL can generate output, plus it provides additional visual elements like buttons, titles, and input boxes. PyScript functions as a framework that generates UIs that makes sense as a tag in the html code. 
+The choice of using tags to allow people to execute Python is explicit; even if this functionality is similar to PHP, it works differently. First of all, everything runs in the browser itself rather than going to the server side. Secondly, PyScript lives close to the text and allows changes to be made to the visual elements. The PyScript REPL can generate output, plus it provides additional visual elements like buttons, titles, and input boxes. PyScript functions as a framework that generates UIs that makes sense as a tag in the html code.
 
 Currently, both PHP and PyScript operate with only one namespace. However, PyScript will soon support multiple namespaces and different types of isolation of code (scope), along with support for languages beyond Python.
 
@@ -61,9 +61,9 @@ Currently, both PHP and PyScript operate with only one namespace. However, PyScr
 
 JavaScript is not only a different language from python, but a challenging language at that. With PyScript, you now have two languages to choose from, with even more on the roadmap. PyScript allows you to use both libraries and makes JavaScript and Python compatible with one another.
 
-Python is incredibly powerful, super intuitive, and easy to learn. By adding Python to your toolkit, you can use Numpy, SciPy, Pandas, and more, seamlessly. One tradeoff is longer download times, so it isn’t the right tool for everything—but where it is the right tool, it’s almost irreplaceable. 
+Python is incredibly powerful, super intuitive, and easy to learn. By adding Python to your toolkit, you can use Numpy, SciPy, Pandas, and more, seamlessly. One tradeoff is longer download times, so it isn’t the right tool for everything—but where it is the right tool, it’s almost irreplaceable.
 
-Ultimately, PyScript will enable the use of a variety of languages, offer a standard set of components that is well linked to the REPLs, and allow you to do an introspection on the code base—you can have, for example, a *modifiable* chart as a python object. 
+Ultimately, PyScript will enable the use of a variety of languages, offer a standard set of components that is well linked to the REPLs, and allow you to do an introspection on the code base—you can have, for example, a *modifiable* chart as a python object.
 
 ## Will PyScript replace JavaScript?
 
@@ -87,7 +87,7 @@ With respect to the UI, PyScript is opinionated and purposeful, while Pyodide is
 
 ## What packages can I use? Can I use anything from PyPI?
 
-You can use anything within the Pyodide library, and pure python packages from PyPi that do not contain C dependencies should be supported by Pyodide. 
+You can use anything within the Pyodide library, and pure python packages from PyPi that do not contain C dependencies should be supported by Pyodide.
 
 There is a list of packages built in Pyodide in [Packages built in Pyodide — Version 0.20.0](https://pyodide.org/en/stable/usage/packages-in-pyodide.html) (these are mostly packages with C extensions). You can also install pure Python packages from PyPI or custom URLs, assuming they have a wheel.
 
@@ -99,7 +99,7 @@ See [Creating a Pyodide pacakge — Version 0.20.0](https://pyodide.org/en/stabl
 
 ## Why is PyScript loading so slowly? Why can’t we put things behind a CDN?
 
-Packages are already served from the JsDelivr CDN. This is not a downloading speed problem—it's WASM assembly time. PyScript loads slowly because the Python standard library and packages are large and WebAssembly code needs to be compiled and run by the browser after they are loaded for the first time. 
+Packages are already served from the JsDelivr CDN. This is not a downloading speed problem—it's WASM assembly time. PyScript loads slowly because the Python standard library and packages are large and WebAssembly code needs to be compiled and run by the browser after they are loaded for the first time.
 
 Currently, there are efforts to mitigate the problem, and Pyodide is currently working on a bundler, for instance.
 
@@ -109,11 +109,11 @@ Anaconda doesn’t own PyScript. It is an open source project developed by Anaco
 
 See [Maintainers](../concepts/governance/maintainers.md)
 
-See [Governance Policy](../concepts/governance/policy.md) 
+See [Governance Policy](../concepts/governance/policy.md)
 
 ## What is the governing model for PyScript?
 
-See [Governance Policy](../concepts/governance/policy.md) 
+See [Governance Policy](../concepts/governance/policy.md)
 
 ## What is the license?
 
@@ -123,7 +123,7 @@ Pyodide uses MPL-2.0 license. Various packages are distributed under their corre
 
 ## Is Pyodide a replacement for CPython? How does PyScript and Pyodide compare to CPython on WASM?
 
-No. They have different elements that do different things, both of which are additive. 
+No. They have different elements that do different things, both of which are additive.
 
 PyScript sits on top of everything. Pyodide came before the work on CPython and WASM. Patches were created in order for it to work, but now that CPython/WASM are progressing, Pyodide is able to remove a few of those patches. Additionally, CPython doesn’t deal with building Python packages for WASM. WASM related work on upstream CPython will integrate into Pyodide in the near future.
 
@@ -131,7 +131,7 @@ For a list of differences from “standard” CPython, see [Pyodide Python compa
 
 ## Hasn’t this already been done before by Brython/skulpt?
 
-No. Brython and Skulpt accomplish different things than PyScript and Pyodide. 
+No. Brython and Skulpt accomplish different things than PyScript and Pyodide.
 
 Brython is client-side and functions as syntax on top of Javascript—it is a reimplementation of Python on top of Javascript, without support for packages or a file system. The extraction of a package in normal Python has been replaced completely by something else. You should be able to run code with minimal changes; however, that isn’t possible with Brython.
 
@@ -153,8 +153,8 @@ See [WebAssembly docs](https://webassembly.org/docs/security/#:~:text=The%20secu
 
 Requests and Black do not work out of the box because they weren’t meant for the browser. On the browser, sockets multiprocessing works differently, so there is work to be done to actually match things.
 
-For Black, it’s a design choice that can be patched. This is currently being addressed by the team at Pyodide.  
+For Black, it’s a design choice that can be patched. This is currently being addressed by the team at Pyodide.
 
-Requests do not work because of the sockets issue (sockets and websockets are two different things) and requests are blocking—which you don’t want in the browser. It’ll require putting the runtime on a webworker and utilizing an assistant, but on the main thread it’s unlikely that it’ll work. 
+Requests do not work because of the sockets issue (sockets and websockets are two different things) and requests are blocking—which you don’t want in the browser. It’ll require putting the runtime on a webworker and utilizing an assistant, but on the main thread it’s unlikely that it’ll work.
 
 There are options as a path forward. For example, Requests can be leveraged using javascript libraries, or building a python async version of Requests API or a python wrapper for fetch (pyfetch), etc. The websockets library has a client side that could be made to work—given that it has all asynchronous APIs, there’s nothing fundamentally difficult about getting it to work.
