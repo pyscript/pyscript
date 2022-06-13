@@ -176,6 +176,10 @@ html{
    border-radius: 0.25rem;
     margin-right: 0.75rem;
     border-style: solid;
+    width: auto;
+}
+
+.py-box input.py-input{
     width: -webkit-fill-available;
 }
 
@@ -218,6 +222,14 @@ input {
     border-color: rgba(37, 99, 235, var(--tw-border-opacity));
     border-width: 1px;
     border-radius: 0.25rem;
+}
+
+.py-li-element p{
+    margin: 5px;
+}
+
+.py-li-element p{
+    display: inline;
 }
 
 button, input, optgroup, select, textarea {
