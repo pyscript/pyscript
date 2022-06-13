@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <title>Examples / Pycript</title>
+    <py-env>
+        - paths:
+          - quote.txt
+    </py-env>
+</head>
+<body>
+    <div id="quotes"></div>
+    <py-script output="quotes">
+        import random
+
+def primary():
+
+  f = open("quote.txt")
+  quotes = f.readlines()
+  f.close()
+  last = len(quotes) - 1
+  rnd = random.randint(0, last)
+  print(quotes[rnd])
+
+if __name__== "__main__":
+  primary()
+    </py-script>
+</body>
+</html>
