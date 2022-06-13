@@ -30,9 +30,9 @@ To set up the project locally on your machine for contribution;
 cd docs
 ```
 
-3. Create a new environment, this environment will help you install all the dependecies you need for the project: 
+3. Create a new environment, this environment will help you install all the dependecies you need for the project:
 ```bash
-    conda create --name <name-of-env> 
+    conda create --name <name-of-env>
 ```
 
 4. Activate the environment:
@@ -40,7 +40,7 @@ cd docs
     conda activate <name-of-env>
 ```
 
-5. Install all your dependences by running the command: 
+5. Install all your dependences by running the command:
 ```bash
     conda env update -n <name-of-env> --file environment.yml
 ```
@@ -53,4 +53,4 @@ When you're ready to submit your changes, add a descriptive title and comments t
 Select **Create a new branch for this commit and start a pull request**.
 Check the **Propose file change** button.
 Scroll down to compare changes with the original document.
-Select **Create pull request**. 
+Select **Create pull request**.
