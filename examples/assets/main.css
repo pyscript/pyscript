@@ -1,5 +1,6 @@
-@import "./reset.css";
 @import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap");
+@import "./variables.css";
+@import "./reset.css";
 
 .container {
     max-width: 1510px;
@@ -7,18 +8,10 @@
     padding: 0 2rem;
 }
 
-p {    
-    font-family: "Inconsolata", monospace;   
-    font-weight: 400;
-}
-
 .title-main {
     color: #000000;
     font-size: 4.25rem;
     font-family: "Inconsolata", monospace;
     text-align: center;
-}
-
-a {
-    text-decoration: none;
+    margin: 2rem 0;
 }
