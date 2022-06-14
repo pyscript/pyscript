@@ -13,8 +13,8 @@
     height: 15rem;
     background-color: #FFFFFF;
     padding: 1rem;
-    -webkit-box-shadow: var(--card-shadow); 
-    box-shadow: var(--card-shadow);   
+    -webkit-box-shadow: var(--card-shadow);
+    box-shadow: var(--card-shadow);
 }
 
 .card a h2 {
@@ -39,13 +39,13 @@
 }
 
 @media (min-width: 600px) {
-    .container-card { 
-        grid-template-columns: repeat(2, 1fr); 
+    .container-card {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (min-width: 900px) {
-    .container-card { 
+    .container-card {
         grid-template-columns: repeat(4, 1fr);
     }
 }
