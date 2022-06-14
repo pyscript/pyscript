@@ -7,7 +7,16 @@
     text-decoration: none;
 }
 
-body{
+body {
     font-size: 100%;
     list-style-type: none;
+}
+
+p {    
+    font-family: "Inconsolata", monospace;   
+    font-weight: 400;
+}
+
+a {
+    text-decoration: none;
 }
