@@ -34,7 +34,7 @@ Check out our [getting started guide](tutorials/getting-started.md)!
 :::
 :::{grid-item-card} [Reference](reference/index.md)
 
-**Coming soon!**
+[Frequently asked questions](reference/faq.md)
 
 :::{toctree}
 :maxdepth: 1
