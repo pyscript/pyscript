@@ -95,7 +95,7 @@ In general, Pyodide doesn’t support all Python features—not because of Pyodi
 
 ## This package XXX is not supported because it has C dependencies. How can I make it work?
 
-See [Creating a Pyodide pacakge — Version 0.20.0](https://pyodide.org/en/stable/development/new-packages.html)
+See [Creating a Pyodide pacakge — Version 0.20.0](https://pyodide.org/en/stable/development/new-packages.html).
 
 ## Why is PyScript loading so slowly? Why can’t we put things behind a CDN?
 
@@ -107,13 +107,13 @@ Currently, there are efforts to mitigate the problem, and Pyodide is currently w
 
 Anaconda doesn’t own PyScript. It is an open source project developed by Anaconda internally, and Anaconda team members are currently the main contributors, but the repo itself is public. We are working on a steering council to ensure the project stays public and owned by the community.
 
-See [Maintainers](../concepts/governance/maintainers.md)
+See [Maintainers](../concepts/governance/maintainers.md).
 
-See [Governance Policy](../concepts/governance/policy.md)
+See [Governance Policy](../concepts/governance/policy.md).
 
 ## What is the governing model for PyScript?
 
-See [Governance Policy](../concepts/governance/policy.md)
+See [Governance Policy](../concepts/governance/policy.md).
 
 ## What is the license?
 
@@ -127,7 +127,7 @@ No. They have different elements that do different things, both of which are add
 
 PyScript sits on top of everything. Pyodide came before the work on CPython and WASM. Patches were created in order for it to work, but now that CPython/WASM are progressing, Pyodide is able to remove a few of those patches. Additionally, CPython doesn’t deal with building Python packages for WASM. WASM related work on upstream CPython will integrate into Pyodide in the near future.
 
-For a list of differences from “standard” CPython, see [Pyodide Python compatibility — Version 0.20.0](https://pyodide.org/en/stable/usage/wasm-constraints.html)
+For a list of differences from “standard” CPython, see [Pyodide Python compatibility — Version 0.20.0](https://pyodide.org/en/stable/usage/wasm-constraints.html).
 
 ## Hasn’t this already been done before by Brython/skulpt?
 
@@ -143,11 +143,11 @@ Fairly similar syntax to normal Python, but not exactly the same. If Brython was
 
 **PyScript** - we are currently working on building documentation and a contributing guide. In the meantime, just ask to help on the PyScript [discussions page](https://anaconda.cloud/s/pyscript) or in the [repo](http://github.com/pyscript/pyscript).
 
-**Pyodide** - refer to [Pyodide docs](https://pyodide.org/en/stable/development/contributing.html)
+**Pyodide** - refer to [Pyodide docs](https://pyodide.org/en/stable/development/contributing.html).
 
 ## WebAssembly Security
 
-See [WebAssembly docs](https://webassembly.org/docs/security/#:~:text=The%20security%20model%20of%20WebAssembly,the%20constraints%20of%20(1).)
+See [WebAssembly docs](https://webassembly.org/docs/security/).
 
 ## Why don’t Requests and Black work?
 
