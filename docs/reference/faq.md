@@ -95,7 +95,7 @@ In general, Pyodide doesn’t support all Python features—not because of Pyodi
 
 ## This package XXX is not supported because it has C dependencies. How can I make it work?
 
-See [Creating a Pyodide pacakge — Version 0.20.0](https://pyodide.org/en/stable/development/new-packages.html).
+See [Creating a Pyodide package — Version 0.20.0](https://pyodide.org/en/stable/development/new-packages.html).
 
 ## Why is PyScript loading so slowly? Why can’t we put things behind a CDN?
 
