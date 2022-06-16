@@ -1,10 +1,9 @@
-
 name: '[CI] Publish Release'
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch: # Remove for prod
+    release:
+        types: [published]
+    workflow_dispatch: # Remove for prod
 
 env:
     MINICONDA_PYTHON_VERSION: py38
@@ -62,4 +61,3 @@ jobs:
 #            run: | # Overwrite "latest" alpha + versioned subdirectory
 #              aws s3 sync --quiet ./examples/build/ s3://pyscript.net/alpha/${{ github.ref_name }}
 #              aws s3 sync --quiet ./examples/build/ s3://pyscript.net/alpha/
-

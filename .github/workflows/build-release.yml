@@ -49,11 +49,11 @@ jobs:
         -   name: Build and Test
             run: make test
 
-        - name: Prepare Release
-          if: startsWith(github.ref, 'refs/tags/')
-          uses: softprops/action-gh-release@v1
-          with:
-            tag_name: alpha # Remove for prod
-            draft: true
-            prerelease: true
-            generate_release_notes: true
+        -   name: Prepare Release
+            if: startsWith(github.ref, 'refs/tags/')
+            uses: softprops/action-gh-release@v1
+            with:
+                tag_name: alpha # Remove for prod
+                draft: true
+                prerelease: true
+                generate_release_notes: true
