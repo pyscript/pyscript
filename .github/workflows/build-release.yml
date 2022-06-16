@@ -4,7 +4,6 @@ on:
     push:
         tags:
         -   '**'
-    workflow_dispatch: #Remove for prod
 
 env:
     MINICONDA_PYTHON_VERSION: py38
@@ -52,7 +51,6 @@ jobs:
         -   name: Prepare Release
             uses: softprops/action-gh-release@v1
             with:
-                tag_name: alpha # Remove for prod
                 draft: true
                 prerelease: true
                 generate_release_notes: true

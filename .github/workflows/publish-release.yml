@@ -3,7 +3,6 @@ name: '[CI] Publish Release'
 on:
     release:
         types: [published]
-    workflow_dispatch: # Remove for prod
 
 env:
     MINICONDA_PYTHON_VERSION: py38
