@@ -1,11 +1,10 @@
-name: '[CI] Build Alpha'
+
+name: '[CI] Publish Release'
 
 on:
-    push:
-        tags:
-        -   '**' # Currently any tag, need to slim down
-        paths:
-        -   pyscriptjs/**
+  release:
+    types: [published]
+  workflow_dispatch: # Remove for prod
 
 env:
     MINICONDA_PYTHON_VERSION: py38
@@ -22,7 +21,6 @@ jobs:
             contents: read
             id-token: write
         steps:
-
         -   name: Checkout
             uses: actions/checkout@v3
 
@@ -53,14 +51,15 @@ jobs:
         -   name: Build and Test
             run: make test
 
-        # Deploy to S3
+        # Upload to S3
         -   name: Configure AWS credentials
-            if: github.ref == 'refs/heads/main' # Only deploy on merge into main
             uses: aws-actions/configure-aws-credentials@v1.6.1
             with:
                 aws-region: ${{secrets.AWS_REGION}}
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
 
-        -   name: Sync to S3
-            if: github.ref == 'refs/heads/main'
-            run: aws s3 sync --quiet ./examples/build/ s3://pyscript.net/alpha/
+#        -   name: Sync to S3
+#            run: | # Overwrite "latest" alpha + versioned subdirectory
+#              aws s3 sync --quiet ./examples/build/ s3://pyscript.net/alpha/${{ github.ref_name }}
+#              aws s3 sync --quiet ./examples/build/ s3://pyscript.net/alpha/
+
