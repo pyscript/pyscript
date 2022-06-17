@@ -130,21 +130,19 @@ export class BaseEvalElement extends HTMLElement {
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
+            const is_async = source.includes('asyncio')
 
             await this._register_esm(pyodide);
-
-            if (source.includes('asyncio')) {
+            if (is_async) {
                 await pyodide.runPythonAsync(
                     `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
                 output = await pyodide.runPythonAsync(source);
-                await pyodide.runPythonAsync(`output_manager.revert()`);
             } else {
                 output = pyodide.runPython(
                     `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
                 output = pyodide.runPython(source);
-                pyodide.runPython(`output_manager.revert()`);
             }
 
             if (output !== undefined) {
@@ -157,6 +155,12 @@ export class BaseEvalElement extends HTMLElement {
                 this.outputElement.hidden = false;
                 this.outputElement.style.display = 'block';
             }
+
+            if (is_async) {
+              await pyodide.runPythonAsync(`output_manager.revert()`);
+            } else {
+              await pyodide.runPython(`output_manager.revert()`);
+	    }
 
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
