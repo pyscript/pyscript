@@ -16,7 +16,6 @@ import time
 from urllib.parse import urljoin
 
 import pytest
-from playwright.sync_api import sync_playwright
 
 MAX_TEST_TIME = 30  # Number of seconds allowed for checking a testing condition
 TEST_TIME_INCREMENT = 0.25  # 1/4 second, the length of each iteration
@@ -147,57 +146,51 @@ TEST_PARAMS = {
 
 
 @pytest.mark.parametrize("example", EXAMPLES)
-def test_examples(example, http_server):
+def test_examples(example, http_server, page):
 
     base_url = http_server
     example_path = urljoin(base_url, TEST_PARAMS[example]["file"])
 
-    # Invoke playwright
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page()
-        page.goto(example_path)
+    page.goto(example_path)
 
-        # STEP 1: Check page title proper initial loading of the example page
+    # STEP 1: Check page title proper initial loading of the example page
 
-        expected_title = TEST_PARAMS[example]["title"]
-        if isinstance(expected_title, list):
-            # One example's title changes so expected_title is a list of possible
-            # titles in that case
-            assert page.title() in expected_title  # nosec
-        else:
-            assert page.title() == expected_title  # nosec
+    expected_title = TEST_PARAMS[example]["title"]
+    if isinstance(expected_title, list):
+        # One example's title changes so expected_title is a list of possible
+        # titles in that case
+        assert page.title() in expected_title  # nosec
+    else:
+        assert page.title() == expected_title  # nosec
 
-        # STEP 2: Test that pyodide is loading via messages displayed during loading
+    # STEP 2: Test that pyodide is loading via messages displayed during loading
 
-        pyodide_loading = False  # Flag to be set to True when condition met
+    pyodide_loading = False  # Flag to be set to True when condition met
 
-        for _ in range(TEST_ITERATIONS):
-            time.sleep(TEST_TIME_INCREMENT)
-            content = page.text_content("*")
-            for message in LOADING_MESSAGES:
-                if message in content:
-                    pyodide_loading = True
-            if pyodide_loading:
-                break
+    for _ in range(TEST_ITERATIONS):
+        time.sleep(TEST_TIME_INCREMENT)
+        content = page.text_content("*")
+        for message in LOADING_MESSAGES:
+            if message in content:
+                pyodide_loading = True
+        if pyodide_loading:
+            break
 
-        assert pyodide_loading  # nosec
+    assert pyodide_loading  # nosec
 
-        # STEP 3:
-        # Assert that rendering inserts data into the page as expected: search the
-        # DOM from within the timing loop for a string that is not present in the
-        # initial markup but should appear by way of rendering
+    # STEP 3:
+    # Assert that rendering inserts data into the page as expected: search the
+    # DOM from within the timing loop for a string that is not present in the
+    # initial markup but should appear by way of rendering
 
-        re_sub_content = re.compile(TEST_PARAMS[example]["pattern"])
-        py_rendered = False  # Flag to be set to True when condition met
+    re_sub_content = re.compile(TEST_PARAMS[example]["pattern"])
+    py_rendered = False  # Flag to be set to True when condition met
 
-        for _ in range(TEST_ITERATIONS):
-            time.sleep(TEST_TIME_INCREMENT)
-            content = page.inner_html("*")
-            if re_sub_content.search(content):
-                py_rendered = True
-                break
+    for _ in range(TEST_ITERATIONS):
+        time.sleep(TEST_TIME_INCREMENT)
+        content = page.inner_html("*")
+        if re_sub_content.search(content):
+            py_rendered = True
+            break
 
-        assert py_rendered  # nosec
-
-        browser.close()
+    assert py_rendered  # nosec
