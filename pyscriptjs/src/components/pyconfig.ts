@@ -12,6 +12,7 @@ import {
     Initializer,
 } from '../stores';
 import { loadInterpreter } from '../interpreter';
+import type { PyLoader } from './pyloader';
 import type { PyScript } from './pyscript';
 
 const DEFAULT_RUNTIME = {
@@ -69,8 +70,8 @@ mode.subscribe((value: string) => {
 });
 
 let pyodideReadyPromise;
-let loader;
 
+let loader: PyLoader | undefined;
 globalLoader.subscribe(value => {
     loader = value;
 });
@@ -84,7 +85,7 @@ export class PyodideRuntime extends Object {
     }
 
     async initialize() {
-        loader.log('Loading runtime...');
+        loader?.log('Loading runtime...');
         pyodideReadyPromise = loadInterpreter(this.src);
         const pyodide = await pyodideReadyPromise;
         const newEnv = {
@@ -96,21 +97,22 @@ export class PyodideRuntime extends Object {
         pyodideLoaded.set(pyodide);
 
         // Inject the loader into the runtime namespace
+        // eslint-disable-next-line
         pyodide.globals.set('pyscript_loader', loader);
 
-        loader.log('Runtime created...');
+        loader?.log('Runtime created...');
         loadedEnvironments.update((value: any): any => {
             value[newEnv['id']] = newEnv;
         });
 
         // now we call all initializers before we actually executed all page scripts
-        loader.log('Initializing components...');
+        loader?.log('Initializing components...');
         for (const initializer of initializers_) {
             await initializer();
         }
 
         // now we can actually execute the page scripts if we are in play mode
-        loader.log('Initializing scripts...');
+        loader?.log('Initializing scripts...');
         if (mode_ == 'play') {
             for (const script of scriptsQueue_) {
                 script.evaluate();
@@ -119,10 +121,10 @@ export class PyodideRuntime extends Object {
         }
 
         // now we call all post initializers AFTER we actually executed all page scripts
-        loader.log('Running post initializers...');
+        loader?.log('Running post initializers...');
 
         if (appConfig_ && appConfig_.autoclose_loader) {
-            loader.close();
+            loader?.close();
             console.log('------ loader closed ------');
         }
 

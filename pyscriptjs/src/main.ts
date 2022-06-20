@@ -31,7 +31,7 @@ if (!config) {
 }
 
 // add loader to the page body
-const loader = document.createElement('py-loader');
+const loader = <PyLoader>document.createElement('py-loader');
 document.body.append(loader);
 globalLoader.set(loader);
 
