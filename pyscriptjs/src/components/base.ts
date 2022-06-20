@@ -160,7 +160,7 @@ export class BaseEvalElement extends HTMLElement {
               await pyodide.runPythonAsync(`output_manager.revert()`);
             } else {
               await pyodide.runPython(`output_manager.revert()`);
-	    }
+            }
 
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
