@@ -12,4 +12,6 @@ dependencies:
 -   codespell
 -   pre-commit
 -   playwright
--   pytest-playwright
+
+-   pip:
+    -   pytest-playwright
