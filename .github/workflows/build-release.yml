@@ -2,8 +2,8 @@ name: '[CI] Build Release'
 
 on:
     push:
-        tags:
-        -   '**'
+        tags: 
+          - '[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9]'
 
 env:
     MINICONDA_PYTHON_VERSION: py38
