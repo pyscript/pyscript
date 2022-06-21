@@ -21,7 +21,6 @@ export class PyTitle extends BaseEvalElement {
         const divContent = document.createElement('h1');
 
         addClasses(mainDiv, ['py-title']);
-        addClasses(divContent, ['text-3xl', 'font-bold', 'text-gray-800', 'uppercase', 'tracking-tight']);
         divContent.innerHTML = this.label;
 
         mainDiv.id = this.id;

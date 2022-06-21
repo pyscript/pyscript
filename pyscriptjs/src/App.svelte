@@ -230,9 +230,3 @@ button, input, optgroup, select, textarea {
 
     /* Pop-up second layer end */
 </style>
-
-<!-- <script lang="ts">
-    import Tailwind from './Tailwind.svelte';
-</script> -->
-
-<!-- <Tailwind /> -->

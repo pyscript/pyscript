@@ -29,10 +29,10 @@ export default {
   ],
   plugins: [
     svelte({
-      // add postcss config with tailwind
+      // add postcss config
       preprocess: sveltePreprocess({
         postcss: {
-          plugins: [require("tailwindcss"), require("autoprefixer")],
+          plugins: [require("autoprefixer")],
         },
       }),
       compilerOptions: {
