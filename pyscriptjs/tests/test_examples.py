@@ -151,7 +151,7 @@ def test_examples(example, http_server, page):
     base_url = http_server
     example_path = urljoin(base_url, TEST_PARAMS[example]["file"])
 
-    page.goto(example_path)
+    page.goto(example_path, wait_until="commit")
 
     content = page.text_content("*")
     title = page.title()
