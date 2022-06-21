@@ -46,7 +46,7 @@ jobs:
             run: make setup
 
         -   name: Build and Test
-            run: make test
+            run: make build # Replace with make test later
 
         -   name: Prepare Release
             uses: softprops/action-gh-release@v1
