@@ -153,15 +153,17 @@ def test_examples(example, http_server, page):
 
     page.goto(example_path)
 
-    # STEP 1: Check page title proper initial loading of the example page
+    title = page.title()
+    content = page.text_content("*")
 
+    # STEP 1: Check page title proper initial loading of the example page
     expected_title = TEST_PARAMS[example]["title"]
     if isinstance(expected_title, list):
         # One example's title changes so expected_title is a list of possible
         # titles in that case
-        assert page.title() in expected_title  # nosec
+        assert title in expected_title  # nosec
     else:
-        assert page.title() == expected_title  # nosec
+        assert title == expected_title  # nosec
 
     # STEP 2: Test that pyodide is loading via messages displayed during loading
 
@@ -169,12 +171,12 @@ def test_examples(example, http_server, page):
 
     for _ in range(TEST_ITERATIONS):
         time.sleep(TEST_TIME_INCREMENT)
-        content = page.text_content("*")
         for message in LOADING_MESSAGES:
             if message in content:
                 pyodide_loading = True
         if pyodide_loading:
             break
+        content = page.text_content("*")
 
     assert pyodide_loading  # nosec
 
