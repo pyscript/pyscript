@@ -139,7 +139,7 @@ async function initHandlers() {
 }
 
 /** Initializes an element with the given pys-on* attribute and its handler */
-async function createElementsWithEventListeners(pyodide: any, pysAttribute: string) {
+async function createElementsWithEventListeners(pyodide: PyodideInterface, pysAttribute: string): Promise<void> {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pysAttribute}]`);
     for (const el of matches) {
         if (el.id.length === 0) {
