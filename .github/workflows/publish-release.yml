@@ -59,4 +59,3 @@ jobs:
         -   name: Sync to S3
             run: | # Overwrite "latest" alpha + versioned subdirectory
                 aws s3 sync --quiet ./examples/build/ s3://pyscript.net/alpha/${{ github.ref_name }}
-                aws s3 sync --quiet ./examples/build/ s3://pyscript.net/alpha/

@@ -71,4 +71,4 @@ jobs:
 
         -   name: Sync to S3
             if: github.ref == 'refs/heads/main'
-            run: aws s3 sync --quiet ./examples/build/ s3://pyscript.net/unstable
+            run: aws s3 sync --quiet ./examples/build/ s3://pyscript.net/latest/
