@@ -3,7 +3,7 @@ name: '[CI] Build Release'
 on:
     push:
         tags:
-        -   '[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9]'
+        -   '[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9]+'  # YYYY.MM.MICRO
 
 env:
     MINICONDA_PYTHON_VERSION: py38
@@ -46,7 +46,7 @@ jobs:
             run: make setup
 
         -   name: Build and Test
-            run: make build # Replace with make test later
+            run: make test
 
         -   name: Prepare Release
             uses: softprops/action-gh-release@v1
