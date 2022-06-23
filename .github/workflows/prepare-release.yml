@@ -1,4 +1,4 @@
-name: '[CI] Build Release'
+name: '[CI] Prepare Release'
 
 on:
     push:
