@@ -20,15 +20,15 @@
     <!-- <py-repl id="my-repl" auto-generate="true"> </py-repl> -->
   <py-script src="./todo.py">  </py-script>
 
-  <main class="max-w-xs mx-auto mt-4">
+  <main>
     <section>
 
     <div class="text-center w-full mb-8">
       <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-tight">To Do List</h1>
     </div>
     <div>
-      <input id="new-task-content" class="border flex-1 mr-3 border-gray-300 p-2 rounded" type="text">
-      <button id="new-task-btn" class="p-2 text-white bg-blue-600 border border-blue-600 rounded" type="submit" pys-onClick="add_task">
+      <input id="new-task-content" class="py-input" type="text">
+      <button id="new-task-btn" class="py-button" type="submit" pys-onClick="add_task">
         Add task
       </button>
     </div>
@@ -38,7 +38,7 @@
   </div>
 
     <template id="task-template">
-        <section class="task bg-white my-1">
+        <section class="task py-li-element">
             <label for="flex items-center p-2 ">
               <input class="mr-2" type="checkbox" class="task-check">
               <p class="m-0 inline"></p>

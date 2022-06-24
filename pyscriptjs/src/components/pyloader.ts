@@ -14,11 +14,13 @@ export class PyLoader extends BaseEvalElement {
     }
 
     connectedCallback() {
-        this.innerHTML = `<div id="pyscript_loading_splash" class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-600 opacity-75 flex flex-col items-center justify-center">
+        this.innerHTML = `<div id="pyscript_loading_splash" class="py-overlay">
+        <div class="py-pop-up">
         <div class="smooth spinner"></div>
         <div id="pyscript-loading-label" class="label">
           <div id="pyscript-operation-details">
           </div>
+        </div>
         </div>
       </div>`;
         this.mount_name = this.id.split('-').join('_');

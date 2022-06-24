@@ -40,7 +40,7 @@ export class PyScript extends BaseEvalElement {
         this.innerHTML = '';
 
         const mainDiv = document.createElement('div');
-        addClasses(mainDiv, ['parentBox', 'flex', 'flex-col', 'mx-8']);
+        addClasses(mainDiv, ['output']);
         // add Editor to main PyScript div
 
         if (this.hasAttribute('output')) {
