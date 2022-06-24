@@ -8,6 +8,7 @@ import {
 } from '../stores';
 import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
+import type { PyodideInterface } from '../pyodide';
 
 // Premise used to connect to the first available pyodide interpreter
 let pyodideReadyPromise;
@@ -24,11 +25,6 @@ loadedEnvironments.subscribe(value => {
 mode.subscribe(value => {
     currentMode = value;
 });
-
-// TODO: use type declaractions
-type PyodideInterface = {
-    registerJsModule(name: string, module: object): void;
-};
 
 export class PyScript extends BaseEvalElement {
     constructor() {
@@ -143,7 +139,7 @@ async function initHandlers() {
 }
 
 /** Initializes an element with the given pys-on* attribute and its handler */
-async function createElementsWithEventListeners(pyodide: any, pysAttribute: string) {
+async function createElementsWithEventListeners(pyodide: PyodideInterface, pysAttribute: string): Promise<void> {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pysAttribute}]`);
     for (const el of matches) {
         if (el.id.length === 0) {

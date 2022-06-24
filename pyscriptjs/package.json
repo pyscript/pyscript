@@ -27,6 +27,7 @@
     "postcss": "^8.4.13",
     "prettier": "^2.6.2",
     "prettier-plugin-svelte": "^2.7.0",
+    "pyodide": "^0.20.1-alpha.2",
     "rollup": "^2.71.1",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
