@@ -56,7 +56,6 @@ export class PyBox extends HTMLElement {
 
         this.widths.forEach((width, index) => {
             const node: ChildNode = mainDiv.childNodes[index];
-            // addClasses(node as HTMLElement, [width, 'mx-1']);
             (<HTMLElement>node).style.flex = width;
             addClasses((<HTMLElement>node), ['py-box-child']);
         });
