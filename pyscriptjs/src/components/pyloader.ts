@@ -22,7 +22,7 @@ export class PyLoader extends BaseEvalElement {
           </div>
         </div>
         </div>
-      </div>`
+      </div>`;
         this.mount_name = this.id.split('-').join('_');
         this.operation = document.getElementById('pyscript-operation');
         this.details = document.getElementById('pyscript-operation-details');
