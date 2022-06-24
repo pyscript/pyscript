@@ -58,5 +58,5 @@ jobs:
 
         -   name: Sync to S3
             run: | # Update /latest and create an explicitly versioned directory under releases/YYYY.MM.MICRO/
-                aws s3 sync --quiet ./examples/build/ s3://pyscript.net/latest
-                aws s3 sync --quiet ./examples/build/ s3://pyscript.net/releases/${{ github.ref_name }}
+                aws s3 sync --quiet ./examples/build/ s3://pyscript.net/latest/
+                aws s3 sync --quiet ./examples/build/ s3://pyscript.net/releases/${{ github.ref_name }}/
