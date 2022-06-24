@@ -43,7 +43,7 @@ now.strftime("%m/%d/%Y, %H:%M:%S")
 </html>
 ```
 
-You could try changing the code above to explore and play with pyscript yourself. 
+You could try changing the code above to explore and play with pyscript yourself.
 
 ## Installation
 
