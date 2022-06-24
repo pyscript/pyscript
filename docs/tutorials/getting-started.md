@@ -11,6 +11,8 @@ If you're using [VSCode](https://code.visualstudio.com/), the
 [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
 can be used to reload the page as you edit the HTML file.
 
+You will also need constant internet connection to access the other packages which are hosted online that pyscript depend on.
+
 ## Installation
 
 There is no installation required. In this document, we'll use
