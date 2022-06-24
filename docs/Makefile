@@ -31,7 +31,8 @@ shell:
 	@echo 'conda activate $(env)'
 
 htmlserve:
-	python -m http.server -d "$(BUILDDIR)/html/"
+	@echo 'visit docs at http://localhost:8080'
+	python -m http.server -d "$(BUILDDIR)/html/" 8080
 
 livehtml:
 	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

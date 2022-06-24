@@ -35,7 +35,7 @@ body:
             required: true
         -   label: I searched for other feature requests and couldn't find a duplicate (including also the ``type-feature`` tag)
             required: true
-        -   label: I confirmed that it's not related to another project are area (see the above section)
+        -   label: I confirmed that it's not related to another project area (see the above section)
             required: true
 -   type: textarea
     id: request-idea

@@ -5,16 +5,50 @@ This page will guide you through getting started with PyScript.
 ## Development setup
 
 PyScript does not require any development environment other
-than a web browser. We recommend using [Chrome](https://www.google.com/chrome/).
+than a web browser (we recommend using [Chrome](https://www.google.com/chrome/)) and a text editor, even though using your [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment) of choice might be convenient.
 
 If you're using [VSCode](https://code.visualstudio.com/), the
 [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
 can be used to reload the page as you edit the HTML file.
 
+## Trying before installing
+
+If you're new to programming and know nothing about HTML or just want to try some of PyScript features, we recommend using the [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) element in the [PyScript REPL example](https://pyscript.net/examples/repl.html) instead so you can have a programming experience in a REPL that doesn't require any setup. This REPL can be used to have an interactive experience using Python directly.
+
+ Alternatively, you can also use an online editor like W3School's [TryIt Editor](https://www.w3schools.com/html/tryit.asp?filename=tryhtml_default_default) and just plug the code below into it, as shown in the [example](https://docs.pyscript.net/latest/concepts/what-is-pyscript.html#example) page and click the run button.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>REPL</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  </head>
+
+  <body>
+    Hello world! <br>
+    This is the current date and time, as computed by Python:
+    <py-script>
+from datetime import datetime
+now = datetime.now()
+now.strftime("%m/%d/%Y, %H:%M:%S")
+    </py-script>
+  </body>
+</html>
+```
+
+You could try changing the code above to explore and play with pyscript yourself.
+
 ## Installation
 
 There is no installation required. In this document, we'll use
-the PyScript assets served on https://pyscript.net.
+the PyScript assets served on [https://pyscript.net](https://pyscript.net).
 
 If you want to download the source and build it yourself, follow
 the instructions in the [README.md](https://github.com/pyscript/pyscript/blob/main/README.md) file.
