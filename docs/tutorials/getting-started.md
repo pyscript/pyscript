@@ -13,7 +13,7 @@ can be used to reload the page as you edit the HTML file.
 
 ## Trying before installing
 
-If you're new to programming and know nothing about HTML or just want to try some of PyScript features, we recommend using the [](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) [PyScript REPL example](https://pyscript.net/examples/repl.html) instead so you can have a programming experience in a REPL that doesn't require any setup. This REPL can be used to have an interactive experience using Python directly.
+If you're new to programming and know nothing about HTML or just want to try some of PyScript features, we recommend using the [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) element in the [PyScript REPL example](https://pyscript.net/examples/repl.html) instead so you can have a programming experience in a REPL that doesn't require any setup. This REPL can be used to have an interactive experience using Python directly.
 
  Alternatively, you can also use an online editor like W3School's [TryIt Editor](https://www.w3schools.com/html/tryit.asp?filename=tryhtml_default_default) and just plug the code below into it, as shown in the [example](https://docs.pyscript.net/latest/concepts/what-is-pyscript.html#example) page and click the run button.
 
