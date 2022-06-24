@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>PyScript Upload Demo</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="./build/pyscript.css" />
+
+    <script defer src="./build/pyscript.js"></script>
+    <style>
+      .lds-dual-ring {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+      }
+      .lds-dual-ring:after {
+        content: " ";
+        display: block;
+        width: 30px;
+        height: 30px;
+        margin-top: 8px;
+        border-radius: 50%;
+        border: 3px solid #000;
+        border-color: #000 transparent #000 transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
+      }
+      @keyframes lds-dual-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <py-script>
+      def log_files(*args, **kwargs):
+        files = args[0].detail
+        for file in files:
+          with open(f"/{file}", "rb") as f:
+            print(f.read().decode('ascii'))
+    </py-script>
+    <py-upload pys-onUpload="log_files" multiple></py-upload>
+  </body>
+</html>
