@@ -90,7 +90,7 @@ export class BaseEvalElement extends HTMLElement {
         const imports: { [key: string]: unknown } = {};
 
         for (const node of document.querySelectorAll("script[type='importmap']")) {
-            let importmap = null
+            let importmap = null;
             try {
                 importmap = JSON.parse(node.textContent);
             } finally {
@@ -301,13 +301,13 @@ export class PyWidget extends HTMLElement {
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
 
-        this.addAttributes('src','name','klass')
+        this.addAttributes('src','name','klass');
     }
 
     addAttributes(...attrs:string[]){
         for (const each of attrs){
             if (this.hasAttribute(each)) {
-              this.source=this.getAttribute(each)
+              this.source=this.getAttribute(each);
             }
         }
     }
