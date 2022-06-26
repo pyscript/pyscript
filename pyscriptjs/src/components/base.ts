@@ -93,11 +93,10 @@ export class BaseEvalElement extends HTMLElement {
             let importmap;
             try {
                 importmap = JSON.parse(node.textContent);
+                if (importmap?.imports == null) continue;
             } catch {
-                importmap = null;
+                continue;
             }
-
-            if (importmap?.imports == null) continue;
 
             for (const [name, url] of Object.entries(importmap.imports)) {
                 if (typeof name != 'string' || typeof url != 'string') continue;
