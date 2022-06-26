@@ -90,9 +90,9 @@ export class BaseEvalElement extends HTMLElement {
         const imports: { [key: string]: unknown } = {};
 
         for (const node of document.querySelectorAll("script[type='importmap']")) {
-            let importmap=null
+            let importmap = null
             try {
-              importmap=JSON.parse(node.textContent)
+              importmap = JSON.parse(node.textContent)
             }
             finally {
               if (importmap?.imports == null) continue
