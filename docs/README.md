@@ -11,7 +11,7 @@ take a look at the general contributing guidelines for the PyScript project. You
 
 ## Documentation Principles
 
-The PyScript documentation is based on a documentation framework called [Diátaxis](https://diataxis.fr/). This framework helps to solve the problem of structure in technical documentation and identifies four modes of documentation - **tutorials, how-to guides, technical reference and explanation**. Each one of these modes answers to a different user need, fulfils a different purpose and requires a different approach to its creation.
+The PyScript documentation is based on a documentation framework called [Diátaxis](https://diataxis.fr/). This framework helps to solve the problem of structure in technical documentation and identifies four modes of documentation - **tutorials, how-to guides, technical reference and explanation**. Each one of these modes answers to a different user need, fulfills a different purpose and requires a different approach to its creation.
 
 The picture below gives a good visual representation of that separation of concerns:
 
@@ -24,4 +24,4 @@ So, please keep that in mind when contributing to the project documentation. For
 The `docs` directory in the pyscript repository contains a
 [Sphinx](https://www.sphinx-doc.org/) documentation project. Sphinx is a system
 that takes plaintext files containing documentation written in Markdown, along with
-and static files like templates and themes, to build the static end result.
+static files like templates and themes, to build the static end result.
