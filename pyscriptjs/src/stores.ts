@@ -1,7 +1,8 @@
 import { writable } from 'svelte/store';
+import type { PyLoader } from './components/pyloader';
 import type { PyScript } from './components/pyscript';
 
-type Initializer = () => Promise<void>;
+export type Initializer = () => Promise<void>;
 
 export const pyodideLoaded = writable({
     loaded: false,
@@ -20,6 +21,8 @@ export const mode = writable(DEFAULT_MODE);
 export const scriptsQueue = writable<PyScript[]>([]);
 export const initializers = writable<Initializer[]>([]);
 export const postInitializers = writable<Initializer[]>([]);
+export const globalLoader = writable<PyLoader | undefined>();
+export const appConfig = writable();
 
 let scriptsQueue_: PyScript[] = [];
 let initializers_: Initializer[] = [];
@@ -40,7 +43,7 @@ initializers.subscribe(value => {
 export const addInitializer = (initializer: Initializer) => {
     console.log('adding initializer', initializer);
     initializers.set([...initializers_, initializer]);
-    console.log('adding initializer', initializer);
+    console.log('added initializer', initializer);
 };
 
 postInitializers.subscribe(value => {
@@ -50,5 +53,5 @@ postInitializers.subscribe(value => {
 export const addPostInitializer = (initializer: Initializer) => {
     console.log('adding post initializer', initializer);
     postInitializers.set([...postInitializers_, initializer]);
-    console.log('adding post initializer', initializer);
+    console.log('added post initializer', initializer);
 };

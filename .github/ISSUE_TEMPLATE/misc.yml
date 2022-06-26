@@ -1,0 +1,37 @@
+name: Miscellaneous
+description: For issues that don't belong in other categories
+labels: ["type: misc", "needs-triage"]
+body:
+-   type: markdown
+    attributes:
+        value: |
+            Thanks for helping PyScript! 🐍
+
+            This issue is for things that doesn't make sense to put into the other issue categories and we don't want it to get lost.
+
+            Going through issues takes up a lot of time, so please be so kind and take a few minutes to fill out all the areas to the best of your ability.
+
+            There will always be more issues than there is time to do them, and so we will need to selectively close issues that don't provide enough information, so we can focus our time on helping people like you who fill out the issue form completely. Thank you for your collaboration!
+
+            There are also already a lot of open issues, so please take 2 minutes and search through existing ones to see if what you are experiencing already exists
+
+            Thanks for helping PyScript be amazing. We are nothing without people like you helping build a better community 💐!
+-   type: checkboxes
+    id: checks
+    attributes:
+        label: Checklist
+        description: Please confirm and check all the following options.
+        options:
+        -   label: I added a descriptive title
+            required: true
+        -   label: I searched for other issues and couldn't find a duplication
+            required: true
+        -   label: I already searched in Google and didn't find any good information or help
+            required: true
+-   type: textarea
+    id: what
+    attributes:
+        label: What is the issue/comment/problem?
+        description: This is a miscellaneous issue so this could be just about anything. We simply ask that you provide as many details as you can to help spur discussion or the outcome you want.
+    validations:
+        required: true

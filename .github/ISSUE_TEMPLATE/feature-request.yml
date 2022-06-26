@@ -1,0 +1,67 @@
+name: Feature Request
+description: Create a feature request to make PyScript even better
+labels: ["type: enhancement", "needs-triage"]
+body:
+-   type: markdown
+    attributes:
+        value: |
+            ### Thanks for helping PyScript! 🐍
+
+            Going through feature requests and issues takes up a lot of time, so please be so kind and take a few minutes to fill out all the areas to the best of your ability.
+
+            There will always be more great ideas than there is time to do them, and so we will need to selectively close issues that don't provide enough information, so everyone can focus our time on helping people like you who fill out the form completely. Thank you for your collaboration!
+
+            There are also already a lot of open requests, so please take 2 minutes and search through existing ones to see if your idea already exists. If you find something close, please upvote that request and comment.
+
+            Thanks for helping PyScript be amazing. We are nothing without people like you helping build a better community 💐!
+
+            ### Lets make sure you are in the right place. If you have an idea/request for:
+
+            - #### A specific package/library (such as pandas or scikit learn):
+
+              Search for that respective library on github repo or website. You will have much more success there.
+
+            - #### A general Python question/feature request:
+
+              Try out a forum post [here](https://discuss.python.org/c/users/7)
+
+-   type: checkboxes
+    id: checks
+    attributes:
+        label: Checklist
+        description: Please confirm and check all the following options
+        options:
+        -   label: I added a descriptive title
+            required: true
+        -   label: I searched for other feature requests and couldn't find a duplicate (including also the ``type-feature`` tag)
+            required: true
+        -   label: I confirmed that it's not related to another project area (see the above section)
+            required: true
+-   type: textarea
+    id: request-idea
+    attributes:
+        label: What is the idea?
+        description: Describe what the feature is and the desired state
+        placeholder: This feature would allow any user of PyScript to type in a simple command in the console and show all variables currently in use
+    validations:
+        required: true
+-   type: textarea
+    id: why
+    attributes:
+        label: Why is this needed
+        description: |
+            Who would benefit from this and why would this add value to them? What problem does this solve?
+        placeholder: This would benefit users who would like to see what is being used so they can learn and debug faster
+-   type: textarea
+    id: what
+    attributes:
+        label: What should happen?
+        description: |
+            What should be the user experience with the feature? Describe from a user perpective what they would do and see
+        placeholder: A user would type in ``PyScript debug`` in the browser console and see a list of all variables created.
+-   type: textarea
+    id: context
+    attributes:
+        label: Additional Context
+        description: |
+            Is there any other information that you think would be valuable for the team to know?

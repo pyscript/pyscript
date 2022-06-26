@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PyScript demo</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="./assets/css/main.css" />
+  <link rel="stylesheet" href="./assets/css/index.css" />
+</head>
+
+<body class="container">
+  <h1 class="title-main">PyScript demos</h1>
+  <section class="example">
+    <h2>Basic examples</h2>
+    <div class="container-card">
+      <div class="card">
+        <div class="card-content">
+          <a href="./hello_world.html" target="_blank">
+            <h2>Hello world</h2>
+          </a>
+          <p>
+            A static demo of the <code>&lt;py-script&gt;</code> tag
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <a href="./simple_clock.html" target="_blank">
+            <h2>Simple clock</h2>
+          </a>
+          <p>
+            A dynamic demo of the <code>&lt;py-script&gt;</code> tag
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <a href="./repl.html" target="_blank">
+            <h2>REPL</h2>
+          </a>
+          <p>
+            A Python REPL (Read Eval Print Loop)
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./repl2.html" target="_blank">
+              <h2>REPL2</h2>
+             </a>
+            <p>
+              A Python REPL (Read Eval Print Loop) with slightly better formatting
+            </p>
+          </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./todo.html" target="_blank">
+              <h2>TODO App</h2>
+            </a>
+            <p>
+              Simple TODO App
+            </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./todo-pylist.html" target="_blank">
+              <h2>PyScript Native TODO App</h2>
+            </a>
+              <p>
+                Simple TODO App using <code>&lt;py-list&gt;</code>
+              </p>
+          </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="example">
+    <h2>MIME Rendering</h2>
+    <div class="container-card">
+      <div class="card">
+        <div class="card-content">
+            <a href="./matplotlib.html" target="_blank">
+              <h2>Matplotlib</h2>
+            </a>
+            <p>
+              Demonstrates rendering a <a href="https://matplotlib.org/" target="_blank">Matplotlib</a> figure as output of the py-script tag
+            </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./altair.html" target="_blank">
+              <h2>
+                Altair
+              </h2>
+            </a>
+            <p>
+              Demonstrates rendering a <a href="https://altair-viz.github.io/" target="_blank">Altair</a> plot as output of the py-script tag
+            </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <a href="./folium.html" target="_blank">
+            <h2>
+              Folium
+            </h2>
+          </a>
+          <p>
+            Demonstrates rendering a
+            <a href="https://python-visualization.github.io/folium/" target="_blank">Folium</a>
+            map as output of the py-script tag
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="example">
+    <h2>JS Interaction</h2>
+    <div class="container-card">
+      <div class="card">
+        <div class="card-content">
+            <a href="./d3.html" target="_blank">
+              <h2>
+                Simple d3 visualization
+              </h2>
+            </a>
+            <p>
+              Minimal <a href="https://d3js.org/" target="_blank">D3</a>
+              demo demonstrating how to create a visualization
+            </p>
+          </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./webgl/raycaster/index.html" target="_blank">
+              <h2>
+                Webgl Icosahedron Example
+              </h2>
+            </a>
+            <p>
+              Demo showing how a Simple <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API" target="_blank">WebGL</a>
+              scene would work in PyScript</code> tag
+            </p>
+          </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="example">
+    <h2>Visualizations & Dashboards</h2>
+    <div class="container-card">
+      <div class="card">
+        <div class="card-content">
+            <a href="./bokeh.html" target="_blank">
+              <h2>
+                Simple Static Bokeh Plot
+              </h2>
+            </a>
+            <p>
+              Minimal Bokeh demo demonstrating how to create a simple
+              <a href="https://bokeh.org/" target="_blank">Bokeh</a>
+              plot from code
+            </p>
+          </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./bokeh_interactive.html" target="_blank">
+              <h2 class="text-2xl font-bold text-blue-600">
+                Bokeh Interactive
+              </h2>
+            </a>
+            <p>
+              Interactive demo using a
+              <a href="https://bokeh.org/" target="_blank">Bokeh</a>
+              slider widget to dynamically change a value in the page
+              WARNING: This examples takes a little longer to load. So be patient :)
+            </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./panel_kmeans.html" target="_blank">
+              <h2 class="text-2xl font-bold text-blue-600">
+                KMeans Demo in Panel
+              </h2>
+            </a>
+            <p>
+              Interactive KMeans Chart using
+              <a href="https://panel.holoviz.org/" target="_blank">Panel</a>
+              WARNING: This examples takes a little longer to load. So be patient :)
+            </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./panel_stream.html" target="_blank">
+              <h2 class="text-2xl font-bold text-blue-600">
+                Streaming Demo in Panel
+              </h2>
+            </a>
+            <p>
+              Interactive Streaming Table and Bokeh plot using
+              <a href="https://panel.holoviz.org/" target="_blank">Panel</a>
+              WARNING: This examples takes a little longer to load. So be patient :)
+            </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./panel.html" target="_blank">
+              <h2 class="text-3xl font-bold text-blue-600">
+                Simple Panel Demo
+              </h2>
+            </a>
+            <p>
+              Simple demo showing
+              <a href="https://panel.holoviz.org/" target="_blank">Panel</a>
+              widgets interacting with parts of the page
+              WARNING: This examples takes a little longer to load. So be patient :)
+            </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./panel_deckgl.html" target="_blank">
+              <h2 class="text-2xl font-bold text-blue-600">
+                NYC Taxi Data Panel DeckGL Demo
+              </h2>
+            </a>
+            <p>
+              Interactive application exploring the NYC Taxi dataset using
+              <a href="https://panel.holoviz.org/" target="_blank">Panel</a> and <a href="https://deck.gl/" target="_blank">DeckGL</a>
+              WARNING: This examples takes a little longer to load. So be patient :)
+            </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./toga/freedom.html" target="_blank">
+              <h2 class="text-2xl font-bold text-blue-600">
+                Freedom Units!
+              </h2>
+            </a>
+            <p>
+              A <a href="https://beeware.org/project/projects/libraries/toga/" target="_blank">Toga</a>
+              application (a Fahrenheit to Celsius converter), rendered as a Single Page App
+            </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+            <a href="./numpy_canvas_fractals.html" target="_blank">
+              <h2 class="text-2xl font-bold text-blue-600">
+                Fractals with NumPy and canvas
+              </h2>
+            </a>
+            <p>
+              Visualization of Mandelbrot and Julia sets with
+              <a href="https://numpy.org/" target="_blank">Numpy</a> and
+              <a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API" target="_blank">
+                HTML5 canvas
+              </a>
+            </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,6 +1,7 @@
 channels:
 -   defaults
 -   conda-forge
+-   microsoft
 dependencies:
 -   python=3.9
 -   pip=20.2.2
@@ -10,3 +11,7 @@ dependencies:
 -   isort
 -   codespell
 -   pre-commit
+-   playwright
+
+-   pip:
+    -   pytest-playwright

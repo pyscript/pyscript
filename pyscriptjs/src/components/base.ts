@@ -1,5 +1,6 @@
 import { loadedEnvironments, mode, pyodideLoaded } from '../stores';
-import { guidGenerator, addClasses } from '../utils';
+import { guidGenerator, addClasses, removeClasses } from '../utils';
+import type { PyodideInterface } from '../pyodide';
 // Premise used to connect to the first available pyodide interpreter
 let runtime;
 let environments;
@@ -17,11 +18,6 @@ mode.subscribe(value => {
     currentMode = value;
 });
 
-// TODO: use type declaractions
-type PyodideInterface = {
-    registerJsModule(name: string, module: object): void;
-};
-
 export class BaseEvalElement extends HTMLElement {
     shadow: ShadowRoot;
     wrapper: HTMLElement;
@@ -32,6 +28,7 @@ export class BaseEvalElement extends HTMLElement {
     outputElement: HTMLElement;
     errorElement: HTMLElement;
     theme: string;
+    appendOutput: boolean;
 
     constructor() {
         super();
@@ -40,6 +37,7 @@ export class BaseEvalElement extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open' });
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
+        this.setOutputMode("append");
     }
 
     addToOutput(s: string) {
@@ -47,14 +45,35 @@ export class BaseEvalElement extends HTMLElement {
         this.outputElement.hidden = false;
     }
 
+    setOutputMode(defaultMode = "append") {
+        const mode = this.hasAttribute('output-mode') ? this.getAttribute('output-mode') : defaultMode;
+
+        switch (mode) {
+            case "append":
+                this.appendOutput = true;
+                break;
+            case "replace":
+                this.appendOutput = false;
+                break;
+            default:
+                console.log(`${this.id}: custom output-modes are currently not implemented`);
+        }
+    }
+
+    // subclasses should overwrite this method to define custom logic
+    // before code gets evaluated
+    preEvaluate(): void {
+        return null;
+    }
+
     // subclasses should overwrite this method to define custom logic
     // after code has been evaluated
-    postEvaluate() {
+    postEvaluate(): void {
         return null;
     }
 
     checkId() {
-        if (!this.id) this.id = this.constructor.name + '-' + guidGenerator();
+        if (!this.id) this.id = 'py-' + guidGenerator();
     }
 
     getSourceFromElement(): string {
@@ -62,7 +81,6 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     async getSourceFromFile(s: string): Promise<string> {
-        const pyodide = runtime;
         const response = await fetch(s);
         this.code = await response.text();
         return this.code;
@@ -100,30 +118,27 @@ export class BaseEvalElement extends HTMLElement {
 
     async evaluate(): Promise<void> {
         console.log('evaluate');
+        this.preEvaluate();
+
         const pyodide = runtime;
         let source: string;
         let output;
         try {
-            if (this.source) {
-                source = await this.getSourceFromFile(this.source);
-            } else {
-                source = this.getSourceFromElement();
-            }
+            source = this.source ? await this.getSourceFromFile(this.source)
+                                 : this.getSourceFromElement();
+            const is_async = source.includes('asyncio')
 
             await this._register_esm(pyodide);
-
-            if (source.includes('asyncio')) {
+            if (is_async) {
                 await pyodide.runPythonAsync(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
                 output = await pyodide.runPythonAsync(source);
-                await pyodide.runPythonAsync(`output_manager.revert()`);
             } else {
                 output = pyodide.runPython(
-                    `output_manager.change("` + this.outputElement.id + `", "` + this.errorElement.id + `")`,
+                    `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
                 output = pyodide.runPython(source);
-                pyodide.runPython(`output_manager.revert()`);
             }
 
             if (output !== undefined) {
@@ -131,11 +146,30 @@ export class BaseEvalElement extends HTMLElement {
                     Element = pyodide.globals.get('Element');
                 }
                 const out = Element(this.outputElement.id);
-                out.write.callKwargs(output, { append: true });
+                out.write.callKwargs(output, { append: this.appendOutput });
 
                 this.outputElement.hidden = false;
                 this.outputElement.style.display = 'block';
             }
+
+            if (is_async) {
+              await pyodide.runPythonAsync(`output_manager.revert()`);
+            } else {
+              await pyodide.runPython(`output_manager.revert()`);
+            }
+
+            // check if this REPL contains errors, delete them and remove error classes
+            const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
+            if (errorElements.length > 0) {
+                for (const errorElement of errorElements) {
+                    errorElement.classList.add('hidden');
+                    if (this.hasAttribute('std-err')) {
+                        this.errorElement.hidden = true;
+                        this.errorElement.style.removeProperty('display');
+                    }
+                }
+            }
+            removeClasses(this.errorElement, ['bg-red-200', 'p-2']);
 
             this.postEvaluate();
         } catch (err) {
@@ -145,9 +179,12 @@ export class BaseEvalElement extends HTMLElement {
             const out = Element(this.errorElement.id);
 
             addClasses(this.errorElement, ['bg-red-200', 'p-2']);
-            out.write.callKwargs(err, { append: true });
+            out.write.callKwargs(err, { append: this.appendOutput });
+
+            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
             this.errorElement.hidden = false;
             this.errorElement.style.display = 'block';
+            this.errorElement.style.visibility = 'visible';
         }
     } // end evaluate
 
@@ -164,6 +201,16 @@ export class BaseEvalElement extends HTMLElement {
             console.log(err);
         }
     } // end eval
+
+    runAfterRuntimeInitialized(callback: () => Promise<void>){
+        pyodideLoaded.subscribe(value => {
+            if ('runPythonAsync' in value) {
+                setTimeout(async () => {
+                    await callback();
+                }, 100);
+            }
+        });
+    }
 }
 
 function createWidget(name: string, code: string, klass: string) {
@@ -192,25 +239,23 @@ function createWidget(name: string, code: string, klass: string) {
             //       ideally we can just wait for it to load and then run. To do
             //       so we need to replace using the promise and actually using
             //       the interpreter after it loads completely
-            // setTimeout(() => {
-            //     this.eval(this.code).then(() => {
-            //         this.proxy = this.proxyClass(this);
-            //         console.log('proxy', this.proxy);
-            //         this.proxy.connect();
-            //         this.registerWidget();
-            //     });
+            // setTimeout(async () => {
+            //     await this.eval(this.code);
+            //     this.proxy = this.proxyClass(this);
+            //     console.log('proxy', this.proxy);
+            //     this.proxy.connect();
+            //     this.registerWidget();
             // }, 2000);
             pyodideLoaded.subscribe(value => {
                 console.log('RUNTIME READY', value);
                 if ('runPythonAsync' in value) {
                     runtime = value;
-                    setTimeout(() => {
-                        this.eval(this.code).then(() => {
-                            this.proxy = this.proxyClass(this);
-                            console.log('proxy', this.proxy);
-                            this.proxy.connect();
-                            this.registerWidget();
-                        });
+                    setTimeout(async () => {
+                        await this.eval(this.code);
+                        this.proxy = this.proxyClass(this);
+                        console.log('proxy', this.proxy);
+                        this.proxy.connect();
+                        this.registerWidget();
                     }, 1000);
                 }
             });
@@ -272,22 +317,19 @@ export class PyWidget extends HTMLElement {
         }
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         if (this.id === undefined) {
             throw new ReferenceError(
                 `No id specified for component. Components must have an explicit id. Please use id="" to specify your component id.`,
             );
-            return;
         }
 
         const mainDiv = document.createElement('div');
         mainDiv.id = this.id + '-main';
         this.appendChild(mainDiv);
         console.log('reading source');
-        this.getSourceFromFile(this.source).then((code: string) => {
-            this.code = code;
-            createWidget(this.name, code, this.klass);
-        });
+        this.code = await this.getSourceFromFile(this.source);
+        createWidget(this.name, this.code, this.klass);
     }
 
     initOutErr(): void {
@@ -311,7 +353,7 @@ export class PyWidget extends HTMLElement {
             }
 
             if (this.hasAttribute('std-err')) {
-                this.outputElement = document.getElementById(this.getAttribute('std-err'));
+                this.errorElement = document.getElementById(this.getAttribute('std-err'));
             } else {
                 this.errorElement = this.outputElement;
             }

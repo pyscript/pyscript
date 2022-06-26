@@ -1,0 +1,77 @@
+name: '[Docs] Build Review'
+
+on:
+    pull_request:
+        branches:
+        -   '*'
+        paths:
+        -   docs/**
+
+concurrency:
+  # Concurrency group that uses the workflow name and PR number if available
+  # or commit SHA as a fallback. If a new build is triggered under that
+  # concurrency group while a previous build is running it will be canceled.
+  # Repeated pushes to a PR will cancel all previous builds, while multiple
+  # merges to main will not cancel.
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+    cancel-in-progress: true
+
+jobs:
+    build:
+        if: github.repository_owner == 'pyscript'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        env:
+            SPHINX_HTML_BASE_URL: https://docs.pyscript.net/
+        steps:
+
+        -   name: Checkout
+            uses: actions/checkout@v3
+            with:
+                persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+                fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+
+        -   name: Setup
+            uses: conda-incubator/setup-miniconda@v2
+            with:
+                auto-update-conda: true
+                activate-environment: docs
+                environment-file: docs/environment.yml
+                python-version: '3.9'
+
+        -   name: Build
+            shell: bash -l {0}
+            run: |
+                cd docs/
+                make html
+
+        -   name: Upload artifacts
+            uses: actions/upload-artifact@v3
+            with:
+                name: pyscript-docs-review-${{ github.event.number }}
+                path: docs/_build/html/
+
+        # Deploy to S3
+        -   name: Configure AWS credentials
+            uses: aws-actions/configure-aws-credentials@v1.6.1
+            with:
+                aws-region: ${{secrets.AWS_REGION}}
+                role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
+
+        -   name: Copy redirect file
+            run: aws s3 cp --quiet ./docs/_build/html/_static/redirect.html s3://docs.pyscript.net/index.html
+
+        # -   name: Delete review directory
+        #     run: aws s3 rm --recursive s3://docs.pyscript.net/review/${{ github.event.number }}/
+
+        -   name: Sync to S3
+            run: aws s3 sync --quiet ./docs/_build/html/ s3://docs.pyscript.net/review/${{ github.event.number }}/
+
+        -   name: Adding step summary
+            run: |
+                echo "### Review documentation" >> $GITHUB_STEP_SUMMARY
+                echo "As with any pull request, you can find the rendered documentation version for pull request ${{ github.event.number }} here:"
+                echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
+                echo "https://docs.pyscript.net/review/${{ github.event.number }}/" >> $GITHUB_STEP_SUMMARY

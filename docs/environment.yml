@@ -1,0 +1,18 @@
+channels:
+-   conda-forge
+-   defaults
+dependencies:
+-   python=3.9
+-   pip=20.2.2
+-   Sphinx=4.5.0
+-   myst-parser=0.17.2
+-   pydata-sphinx-theme
+-   sphinx-copybutton
+-   sphinx-design
+-   sphinx-togglebutton
+
+-   pip:
+    -   sphinxemoji
+    -   sphinx-sitemap
+    -   sphinx-autobuild
+    -   sphinxcontrib-youtube

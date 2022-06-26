@@ -4,11 +4,12 @@
 default_stages: [commit]
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v4.3.0
     hooks:
     -   id: check-builtin-literals
     -   id: check-case-conflict
     -   id: check-docstring-first
+    -   id: check-executables-have-shebangs
     -   id: check-json
         exclude: tsconfig.json
     -   id: check-toml
@@ -36,8 +37,8 @@ repos:
     hooks:
     -   id: codespell  # See 'setup.cfg' for args
 
--   repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.2
+-   repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
     hooks:
     -   id: flake8  # See 'setup.cfg' for args
         additional_dependencies: [flake8-bugbear, flake8-comprehensions]
@@ -54,10 +55,35 @@ repos:
     hooks:
     -   id: pretty-format-yaml
         args: [--autofix, --indent, '4']
+        exclude: .github/ISSUE_TEMPLATE/.*\.yml$
 
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.1
+    rev: v2.34.0
     hooks:
     -   id: pyupgrade
         args:
         -   --py310-plus
+
+-   repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.18.0
+    hooks:
+    -   id: eslint
+        files: pyscriptjs/src/.*\.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
+        types: [file]
+        additional_dependencies:
+        -   eslint
+        -   eslint-plugin-svelte3
+        -   typescript
+        -   '@typescript-eslint/eslint-plugin'
+        -   '@typescript-eslint/parser'
+
+# Commented out until mdformat-myst supports custom extensions
+# See https://github.com/executablebooks/mdformat-myst/pull/9
+# -   repo: https://github.com/executablebooks/mdformat
+#     rev: 0.7.14 # Use the ref you want to point at
+#     hooks:
+#     -   id: mdformat
+#         additional_dependencies:
+#         -   mdformat-gfm
+#         -   mdformat-myst
+#         -   mdformat-black
