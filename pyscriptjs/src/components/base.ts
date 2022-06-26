@@ -90,15 +90,13 @@ export class BaseEvalElement extends HTMLElement {
         const imports: { [key: string]: unknown } = {};
 
         for (const node of document.querySelectorAll("script[type='importmap']")) {
-            const importmap = (() => {
-                try {
-                    return JSON.parse(node.textContent);
-                } catch {
-                    return null;
-                }
-            })();
-
-            if (importmap?.imports == null) continue;
+            let importmap=null
+            try {
+              importmap=JSON.parse(node.textContent)
+            }
+            finally {
+              if (importmap?.imports == null) continue
+            }
 
             for (const [name, url] of Object.entries(importmap.imports)) {
                 if (typeof name != 'string' || typeof url != 'string') continue;
@@ -304,16 +302,14 @@ export class PyWidget extends HTMLElement {
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
 
-        if (this.hasAttribute('src')) {
-            this.source = this.getAttribute('src');
-        }
+        this.addAttributes('src','name','klass')
+    }
 
-        if (this.hasAttribute('name')) {
-            this.name = this.getAttribute('name');
-        }
-
-        if (this.hasAttribute('klass')) {
-            this.klass = this.getAttribute('klass');
+    addAttributes(...attrs:string[]){
+        for (const each of attrs){
+            if (this.hasAttribute(each)) {
+              this.source=this.getAttribute(each)
+            }
         }
     }
 
