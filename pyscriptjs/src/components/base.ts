@@ -94,7 +94,7 @@ export class BaseEvalElement extends HTMLElement {
             try {
                 importmap = JSON.parse(node.textContent);
             } catch {
-              importmap = null;
+                importmap = null;
             }
 
             if (importmap?.imports == null) continue;
