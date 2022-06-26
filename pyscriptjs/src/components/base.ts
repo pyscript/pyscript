@@ -92,10 +92,9 @@ export class BaseEvalElement extends HTMLElement {
         for (const node of document.querySelectorAll("script[type='importmap']")) {
             let importmap = null
             try {
-              importmap = JSON.parse(node.textContent)
-            }
-            finally {
-              if (importmap?.imports == null) continue
+                importmap = JSON.parse(node.textContent);
+            } finally {
+                if (importmap?.imports == null) continue;
             }
 
             for (const [name, url] of Object.entries(importmap.imports)) {
