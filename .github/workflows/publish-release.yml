@@ -57,5 +57,6 @@ jobs:
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
 
         -   name: Sync to S3
-            run: | # Overwrite "latest" alpha + versioned subdirectory
-                aws s3 sync --quiet ./examples/build/ s3://pyscript.net/releases/${{ github.ref_name }}
+            run: | # Update /latest and create an explicitly versioned directory under releases/YYYY.MM.MICRO/
+                aws s3 sync --quiet ./examples/build/ s3://pyscript.net/latest/
+                aws s3 sync --quiet ./examples/build/ s3://pyscript.net/releases/${{ github.ref_name }}/

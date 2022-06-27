@@ -13,7 +13,7 @@ export class PyButton extends BaseEvalElement {
     constructor() {
         super();
 
-        this.defaultClass = ['p-2', 'text-white', 'bg-blue-600', 'border', 'border-blue-600', 'rounded'];
+        this.defaultClass = ['py-button'];
 
         if (this.hasAttribute('label')) {
             this.label = this.getAttribute('label');
