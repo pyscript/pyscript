@@ -307,8 +307,9 @@ export class PyWidget extends HTMLElement {
 
     addAttributes(...attrs:string[]){
         for (const each of attrs){
+            const property = each === "src" ? "source" : each;
             if (this.hasAttribute(each)) {
-              this.source=this.getAttribute(each);
+              this[property]=this.getAttribute(each);
             }
         }
     }
