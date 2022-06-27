@@ -127,30 +127,119 @@ export class PyScript extends BaseEvalElement {
     }
 }
 
-/** Defines all possible pys-on* and their corresponding event types  */
-const pysAttributeToEvent: Map<string, string> = new Map<string, string>([
+/** Defines all possible py-on* and their corresponding event types  */
+const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
+        // Leaving pys-onClick and pys-onKeyDown for backward compatability
         ["pys-onClick", "click"],
-        ["pys-onKeyDown", "keydown"]
-]);
+        ["pys-onKeyDown", "keydown"],
+        ["py-onClick", "click"],
+        ["py-onKeyDown", "keydown"],
+        // Window Events
+        ["py-afterprint", "afterprint"],
+        ["py-beforeprint", "beforeprint"],
+        ["py-beforeunload", "beforeunload"],
+        ["py-error", "error"],
+        ["py-hashchange", "hashchange"],
+        ["py-load", "load"],
+        ["py-message", "message"],
+        ["py-offline", "offline"],
+        ["py-online", "online"],
+        ["py-pagehide", "pagehide"],
+        ["py-pageshow", "pageshow"],
+        ["py-popstate", "popstate"],
+        ["py-resize", "resize"],
+        ["py-storage", "storage"],
+        ["py-unload", "unload"],
 
-/** Initialize all elements with pys-on* handlers attributes  */
+        // Form Events
+        ["py-blur", "blur"],
+        ["py-change", "change"],
+        ["py-contextmenu", "contextmenu"],
+        ["py-focus", "focus"],
+        ["py-input", "input"],
+        ["py-invalid", "invalid"],
+        ["py-reset", "reset"],
+        ["py-search", "search"],
+        ["py-select", "select"],
+        ["py-submit", "submit"],
+
+        // Keyboard Events
+        ["py-keydown", "keydown"],
+        ["py-keypress", "keypress"],
+        ["py-keyup", "keyup"],
+
+        // Mouse Events
+        ["py-click", "click"],
+        ["py-dblclick", "dblclick"],
+        ["py-mousedown", "mousedown"],
+        ["py-mousemove", "mousemove"],
+        ["py-mouseout", "mouseout"],
+        ["py-mouseover", "mouseover"],
+        ["py-mouseup", "mouseup"],
+        ["py-mousewheel", "mousewheel"],
+        ["py-wheel", "wheel"],
+
+        // Drag Events
+        ["py-drag", "drag"],
+        ["py-dragend", "dragend"],
+        ["py-dragenter", "dragenter"],
+        ["py-dragleave", "dragleave"],
+        ["pyon-dragover", "dragover"],
+        ["py-dragstart", "dragstart"],
+        ["py-drop", "drop"],
+        ["py-scroll", "scroll"],
+
+        // Clipboard Events
+        ["py-copy", "copy"],
+        ["py-cut", "cut"],
+        ["py-paste", "paste"],
+
+        // Media Events
+        ["py-abort", "abort"],
+        ["py-canplay", "canplay"],
+        ["py-canplaythrough", "canplaythrough"],
+        ["py-cuechange", "cuechange"],
+        ["py-durationchange", "durationchange"],
+        ["py-emptied", "emptied"],
+        ["py-ended", "ended"],
+        ["py-loadeddata", "loadeddata"],
+        ["py-loadedmetadata", "loadedmetadata"],
+        ["py-loadstart", "loadstart"],
+        ["py-pause", "pause"],
+        ["py-play", "play"],
+        ["py-playing", "playing"],
+        ["py-progress", "progress"],
+        ["py-ratechange", "ratechange"],
+        ["py-seeked", "seeked"],
+        ["py-seeking", "seeking"],
+        ["py-stalled", "stalled"],
+        ["py-suspend", "suspend"],
+        ["py-timeupdate", "timeupdate"],
+        ["py-volumechange", "volumechange"],
+        ["py-waiting", "waiting"],
+
+        // Misc Events
+        ["py-toggle", "toggle"],
+        ]);
+
+/** Initialize all elements with py-on* handlers attributes  */
 async function initHandlers() {
     console.log('Collecting nodes...');
     const pyodide = await pyodideReadyPromise;
-    for (const pysAttribute of pysAttributeToEvent.keys()) {
-        await createElementsWithEventListeners(pyodide, pysAttribute);
+    for (const pyAttribute of pyAttributeToEvent.keys()) {
+        await createElementsWithEventListeners(pyodide, pyAttribute);
     }
 }
 
-/** Initializes an element with the given pys-on* attribute and its handler */
-async function createElementsWithEventListeners(pyodide: any, pysAttribute: string) {
-    const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pysAttribute}]`);
+/** Initializes an element with the given py-on* attribute and its handler */
+async function createElementsWithEventListeners(pyodide: any, pyAttribute: string) {
+    const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
     for (const el of matches) {
         if (el.id.length === 0) {
-            throw new TypeError(`<${el.tagName.toLowerCase()}> must have an id attribute, when using the ${pysAttribute} attribute`)
+            throw new TypeError(`<${el.tagName.toLowerCase()}> must have an id attribute, when using the ${pyAttribute} attribute`)
         }
-        const handlerCode = el.getAttribute(pysAttribute);
-        const event = pysAttributeToEvent.get(pysAttribute);
+        const handlerCode = el.getAttribute(pyAttribute);
+        const event = pyAttributeToEvent.get(pyAttribute);
         const source = `
         from pyodide import create_proxy
         Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
@@ -167,7 +256,7 @@ async function createElementsWithEventListeners(pyodide: any, pysAttribute: stri
         //   }).then(() => {
         //     console.log("resolved")
         //   });
-        //   // let handlerCode = el.getAttribute('pys-onClick');
+        //   // let handlerCode = el.getAttribute('py-onClick');
         //   // pyodide.runPython(handlerCode);
         // }
     }
