@@ -152,11 +152,8 @@ export class BaseEvalElement extends HTMLElement {
                 this.outputElement.style.display = 'block';
             }
 
-            if (is_async) {
-              await pyodide.runPythonAsync(`output_manager.revert()`);
-            } else {
-              await pyodide.runPython(`output_manager.revert()`);
-            }
+            is_async ? await pyodide.runPythonAsync(`output_manager.revert()`)
+                     : await pyodide.runPython(`output_manager.revert()`);
 
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
@@ -189,11 +186,10 @@ export class BaseEvalElement extends HTMLElement {
     } // end evaluate
 
     async eval(source: string): Promise<void> {
-        let output;
         const pyodide = runtime;
 
         try {
-            output = await pyodide.runPythonAsync(source);
+            const output = await pyodide.runPythonAsync(source);
             if (output !== undefined) {
                 console.log(output);
             }
@@ -268,10 +264,9 @@ function createWidget(name: string, code: string, klass: string) {
         }
 
         async eval(source: string): Promise<void> {
-            let output;
             const pyodide = runtime;
             try {
-                output = await pyodide.runPythonAsync(source);
+                const output = await pyodide.runPythonAsync(source);
                 this.proxyClass = pyodide.globals.get(this.klass);
                 if (output !== undefined) {
                     console.log(output);
@@ -281,7 +276,6 @@ function createWidget(name: string, code: string, klass: string) {
             }
         }
     }
-    const xPyWidget = customElements.define(name, CustomWidget);
 }
 
 export class PyWidget extends HTMLElement {
@@ -361,16 +355,14 @@ export class PyWidget extends HTMLElement {
     }
 
     async getSourceFromFile(s: string): Promise<string> {
-        const pyodide = runtime;
         const response = await fetch(s);
         return await response.text();
     }
 
     async eval(source: string): Promise<void> {
-        let output;
         const pyodide = runtime;
         try {
-            output = await pyodide.runPythonAsync(source);
+            const output = await pyodide.runPythonAsync(source);
             if (output !== undefined) {
                 console.log(output);
             }
