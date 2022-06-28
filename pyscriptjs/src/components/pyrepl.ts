@@ -5,14 +5,14 @@ import { keymap } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 
-import { componentDetailsNavOpen, loadedEnvironments, mode, pyodideLoaded } from '../stores';
+import { componentDetailsNavOpen, loadedEnvironments, mode, pyodideLoaded, type Environment } from '../stores';
 import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
 
 // Premise used to connect to the first available pyodide interpreter
 
 let pyodideReadyPromise;
-let environments;
+let environments: Record<Environment['id'], Environment> = {};
 let currentMode;
 
 pyodideLoaded.subscribe(value => {

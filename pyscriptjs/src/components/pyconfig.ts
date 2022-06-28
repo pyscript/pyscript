@@ -101,9 +101,10 @@ export class PyodideRuntime extends Object {
         pyodide.globals.set('pyscript_loader', loader);
 
         loader?.log('Runtime created...');
-        loadedEnvironments.update((value: any): any => {
-            value[newEnv['id']] = newEnv;
-        });
+        loadedEnvironments.update(environments => ({
+            ...environments,
+            [newEnv['id']]: newEnv,
+        }));
 
         // now we call all initializers before we actually executed all page scripts
         loader?.log('Initializing components...');

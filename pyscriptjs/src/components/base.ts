@@ -1,9 +1,9 @@
-import { loadedEnvironments, mode, pyodideLoaded } from '../stores';
+import { loadedEnvironments, mode, pyodideLoaded, type Environment } from '../stores';
 import { guidGenerator, addClasses, removeClasses } from '../utils';
 import type { PyodideInterface } from '../pyodide';
 // Premise used to connect to the first available pyodide interpreter
 let runtime;
-let environments;
+let environments: Record<Environment['id'], Environment> = {};
 let currentMode;
 let Element;
 
