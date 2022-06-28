@@ -125,7 +125,7 @@ export class PyScript extends BaseEvalElement {
 
 /** Defines all possible py-on* and their corresponding event types  */
 const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
-        // Leaving pys-onClick and pys-onKeyDown for backward compatability
+        // Leaving pys-onClick and pys-onKeyDown for backward compatibility
         ["pys-onClick", "click"],
         ["pys-onKeyDown", "keydown"],
         ["py-onClick", "click"],
