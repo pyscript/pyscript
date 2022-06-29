@@ -51,7 +51,7 @@ dev:
 build:
 	npm run build
 
-example:
+examples:
 	mkdir -p ./examples
 	cp -r ../examples/* ./examples
 	chmod -R 755 examples
@@ -59,7 +59,8 @@ example:
 	find ./examples/webgl -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../../build/+g {} \;
 	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+./build/+g {} \;
 test:
-	make example
+	make examples
+	npm run build
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
 test-py:
