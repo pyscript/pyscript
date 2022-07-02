@@ -1,0 +1,41 @@
+body{
+    background: #eeeeee;
+}
+
+.todo{
+    padding: 30px 0;
+}
+
+.todo-card{
+    border-radius: 4px;
+    background: #fff;
+    height: 100%;
+    padding: 20px;
+}
+
+
+.todo-box{
+    padding: 10px;
+}
+
+.todo-box h6{
+    padding: 30px;
+    border: 2px solid #000;
+    margin-top: 5px;
+}
+
+.todo-box .btn-delete{
+    padding: 10px;
+    width: 100px;
+    height: 80px;
+    margin-top: 5px;
+}
+
+.todo-box .btn-add{
+    padding: 10px;
+    width: 100px;
+    height: 50px;
+    margin-top: 4px;
+    
+}
+
