@@ -1,5 +1,5 @@
 # PyScript
-
+[English](README.md) | [Korean](doc_kr/README.md)
 ## What is PyScript
 
 ### Summary
