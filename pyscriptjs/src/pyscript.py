@@ -262,15 +262,15 @@ class PyItemTemplate(Element):
 
     def create(self):
         console.log("creating section")
-        new_child = create("section", self._id, "task bg-white my-1")
+        new_child = create("div", self._id, "py-li-element")
         console.log("creating values")
 
         console.log("creating innerHtml")
         new_child._element.innerHTML = dedent(
             f"""
-            <label for="flex items-center p-2 ">
+            <label id="{self._id}" for="flex items-center p-2 ">
               <input class="mr-2" type="checkbox" class="task-check">
-              <p class="m-0 inline">{self.render_content()}</p>
+              <p>{self.render_content()}</p>
             </label>
             """
         )
@@ -304,7 +304,7 @@ class PyItemTemplate(Element):
 
 
 class PyListTemplate:
-    theme = PyWidgetTheme("flex flex-col-reverse mt-8 mx-8")
+    theme = PyWidgetTheme("py-li-element")
     item_class = PyItemTemplate
 
     def __init__(self, parent):

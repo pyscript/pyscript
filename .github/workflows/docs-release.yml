@@ -1,15 +1,11 @@
 name: '[Docs] Build Release'
 
 on:
-  # Any time a tag or branch is created
-  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#create
-    create:
-        paths:
-        -   docs/**
+    release:
+        types: [published]
 
 jobs:
     build:
-        if: startsWith(github.ref, 'refs/tags') # Only if tagged
         runs-on: ubuntu-latest
         permissions:
             contents: read

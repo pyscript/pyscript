@@ -70,7 +70,7 @@ def toggle_video(evt):
 
 async def start_video():
   global isVideo
-  update_note.write("Inside sstart video")
+  update_note.write("Inside start video")
   status = await handTrack.startVideo(video.element)
   console.log("video started", status)
   if status:
@@ -129,7 +129,7 @@ pyscript.run_until_complete(start())
 
     <div class="mb10">
       <p>Use < > to move, ↓ to crouch and x to jump. If video is enabled, say hi to jump as well! </p>
-      <button  id="trackbutton" class="bx--btn bx--btn--secondary" type="button" pys-onClick="toggle_video">
+      <button  id="trackbutton" class="bx--btn bx--btn--secondary" type="button" py-onClick="toggle_video">
         Start Video
       </button>
       <div id="update-note" py-mount class="updatenote mt10" style="display: none;"">loading model ..</div>

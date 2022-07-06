@@ -1,4 +1,5 @@
 import { getLastPath } from './utils';
+import type { PyodideInterface } from './pyodide';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './pyscript.py';
@@ -6,7 +7,7 @@ import pyscript from './pyscript.py';
 let pyodideReadyPromise;
 let pyodide;
 
-const loadInterpreter = async function (indexUrl: string): Promise<any> {
+const loadInterpreter = async function (indexUrl: string): Promise<PyodideInterface> {
     console.log('creating pyodide runtime');
     // eslint-disable-next-line
     // @ts-ignore
@@ -28,7 +29,7 @@ const loadInterpreter = async function (indexUrl: string): Promise<any> {
     return pyodide;
 };
 
-const loadPackage = async function (package_name: string[] | string, runtime: any): Promise<any> {
+const loadPackage = async function (package_name: string[] | string, runtime: PyodideInterface): Promise<void> {
     if (package_name.length > 0){
         const micropip = pyodide.globals.get('micropip');
         await micropip.install(package_name);
@@ -36,7 +37,7 @@ const loadPackage = async function (package_name: string[] | string, runtime: an
     }
 };
 
-const loadFromFile = async function (s: string, runtime: any): Promise<any> {
+const loadFromFile = async function (s: string, runtime: PyodideInterface): Promise<void> {
     const filename = getLastPath(s);
     await runtime.runPythonAsync(
         `

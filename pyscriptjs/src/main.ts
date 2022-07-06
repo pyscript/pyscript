@@ -1,4 +1,5 @@
 import App from './App.svelte';
+import './styles/pyscript_base.css';
 
 import { PyScript } from './components/pyscript';
 import { PyRepl } from './components/pyrepl';
@@ -31,7 +32,7 @@ if (!config) {
 }
 
 // add loader to the page body
-const loader = document.createElement('py-loader');
+const loader = <PyLoader>document.createElement('py-loader');
 document.body.append(loader);
 globalLoader.set(loader);
 

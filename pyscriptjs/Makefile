@@ -10,8 +10,25 @@ CONDA_EXE := conda
 CONDA_ENV ?= ./env
 env := $(CONDA_ENV)
 conda_run := $(CONDA_EXE) run -p $(env)
+GOOD_NODE_VER := 14
+GOOD_NPM_VER := 6
+NODE_VER    := $(shell node -v | cut -d. -f1 | sed 's/^v\(.*\)/\1/')
+NPM_VER     := $(shell npm -v | cut -d. -f1)
+
+GOOD_NODE   := $(shell if [ $(NODE_VER) -ge $(GOOD_NODE_VER) ]; then echo true; else echo false; fi)
+GOOD_NPM    := $(shell if [ $(NPM_VER) -ge $(GOOD_NPM_VER) ]; then echo true; else echo false; fi)
+
+.PHONY: check-node
+check-node:
+	@echo Build requires Node $(GOOD_NODE_VER).x or higher: $(NODE_VER) detected && $(GOOD_NODE)
+
+.PHONY: check-npm
+check-npm:
+	@echo Build requires npm $(GOOD_NPM_VER).x or higher: $(NPM_VER) detected && $(GOOD_NPM)
 
 setup:
+	make check-node
+	make check-npm
 	npm install
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
@@ -34,16 +51,15 @@ dev:
 build:
 	npm run build
 
-example:
+examples:
 	mkdir -p ./examples
 	cp -r ../examples/* ./examples
 	chmod -R 755 examples
 	find ./examples/toga -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../build/+g {} \;
 	find ./examples/webgl -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../../build/+g {} \;
 	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+./build/+g {} \;
-
 test:
-	make example
+	make examples
 	npm run build
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 

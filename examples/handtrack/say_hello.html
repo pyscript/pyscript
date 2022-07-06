@@ -4,12 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>Svelte app</title>
-
+    <title>Mario Game</title>
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-
-
     <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
   </head>
 
@@ -107,7 +104,7 @@ pyscript.run_until_complete(start())
     </py-script>
 
     <div class="mb10">
-      <button  id="trackbutton" class="bx--btn bx--btn--secondary" type="button" pys-onClick="toggle_video">
+      <button  id="trackbutton" class="bx--btn bx--btn--secondary" type="button" py-onClick="toggle_video">
         Toggle Video
       </button>
       <button id="nextimagebutton" class="mt10 bx--btn bx--btn--secondary" type="button" disabled>

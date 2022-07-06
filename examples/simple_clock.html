@@ -7,20 +7,13 @@
     <title>Simple Clock Demo</title>
 
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="./build/pyscript.css" />
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
 
-    <script defer src="./build/pyscript.js"></script>
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
     <py-env>
     - paths:
       - ./utils.py
     </py-env>
-    <py-config>
-      autoclose_loader: false
-      runtimes:
-        - src: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
-          name: pyodide-0.20
-          lang: python
-    </py-config>
   </head>
 
   <body>
@@ -42,7 +35,7 @@ async def foo():
   while True:
     await asyncio.sleep(1)
     output = now()
-    pyscript.write("outputDiv2", output)
+    Element("outputDiv2").write(output)
 
     out3 = Element("outputDiv3")
     if output[-1] in ["0", "4", "8"]:

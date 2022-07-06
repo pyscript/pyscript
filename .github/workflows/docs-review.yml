@@ -18,8 +18,7 @@ concurrency:
 
 jobs:
     build:
-        if: >-
-            !github.event.repository.fork
+        if: github.repository_owner == 'pyscript'
         runs-on: ubuntu-latest
         permissions:
             contents: read

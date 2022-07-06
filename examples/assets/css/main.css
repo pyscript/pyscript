@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap");
+@import "./variables.css";
+@import "./reset.css";
+
+.container {
+    max-width: 1510px;
+    margin: auto;
+    padding: 0 2rem;
+}
+
+.title-main {
+    color: #000000;
+    font-size: 4.25rem;
+    font-family: "Inconsolata", monospace;
+    text-align: center;
+    margin: 2rem 0;
+}
