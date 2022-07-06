@@ -276,6 +276,7 @@ function createWidget(name: string, code: string, klass: string) {
             }
         }
     }
+    const xPyWidget = customElements.define(name, CustomWidget);
 }
 
 export class PyWidget extends HTMLElement {
