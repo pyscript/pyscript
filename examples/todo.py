@@ -28,7 +28,7 @@ def add_task(*ags, **kws):
 
     # add the task element to the page as new node in the list by cloning from a
     # template
-    task_html = task_template.clone(task_id, to=task_list)
+    task_html = task_template.clone(task_id)
     task_html_content = task_html.select("p")
     task_html_content.element.innerText = task["content"]
     task_html_check = task_html.select("input")
