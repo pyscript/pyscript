@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Compound</title>
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+<header>
+    <h1 id="header_h1">Welcome to the Compound Calculator!</h1>
+</header>
+
+<main style="">
+
+    <div class="flexelement" id="first_div">
+        <p id="first_p">
+            Welcome to the "Simple and Compound Interest Calculator!"
+            <br />
+            <strong>"how does it work?"</strong>
+            to use the "Simple and Compound Interest Calculator", please enter the input data into the form.
+            after clicking "Calculate", your result will be shown at the bottom of the form.
+        </p>
+
+        <div style="margin-left: 15%;">
+            <div style="width: 100%;">
+                <input type="radio" name='expander' id="expander-1">
+                <label class="expander_label" for="expander-1">Compound Interest Formula &#187;</label>
+                <img src="https://www.thecalculatorsite.com/images/compound-interest-formula-diagram.png"
+                     style="height: 200px;" />
+            </div>
+
+            <div style="margin-top: 25px;">
+                <input type="radio" name='expander' id="expander-2">
+                <label class="expander_label" for="expander-2">Simple Interest Formula &#187;</label>
+                <img src="https://cdn1.byjus.com/wp-content/uploads/2019/02/Simple-Interest-Formula.png"
+                     style="height: 150px;"/>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="flexelement">
+
+        <div id="form" style="">
+
+            <div>
+
+                <label>Principal:</label><br>
+                <input id="principal" type="number" style="color: black; min-height: 60px;" /> <br />
+
+                <label>Interest rate ( decimal, f.e. 0.8 ):</label><br>
+                <input id="interest_rate" type="number" style="color: black; min-height: 60px;" /> <br />
+
+                <label>Time ( years ):</label><br>
+                <input id="time" type="number" style="color: black; min-height: 60px;" /> <br />
+
+                <button pys-onClick="interest" id="calc" style="min-height: 60px;">Calculate</button>
+
+                <div style="margin-top: 2%;">
+                    <span id="simple_interest" "></span>
+                    <br />
+                    <span id="compound_interest"></span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <py-script>
+        def interest(*args, **kwargs):
+            p = float(Element("principal").value)
+            r = float(Element("interest_rate").value)
+            t = float(Element("time").value)
+            output1 = Element("simple_interest")
+            output2 = Element("compound_interest")
+            res1 = round(p+(p*r*t))
+            res2 = round(p*((1+r)**t))
+            output1.write("simple interest: " + str(res1))
+            output2.write("compound interest: " + str(res2))
+    </py-script>
+
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+
+</main>
+
+<footer>
+    <p id="footer_p">thank you for using the "Simple and Compound
+    Interest Calculator!", powered by PyScript!</p>
+</footer>
+
+</body>
+
+</html>
