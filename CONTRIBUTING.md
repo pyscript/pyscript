@@ -52,7 +52,7 @@ If you have questions about the project, using PyScript, or anything else, pleas
     cd pyscript/pyscriptjs
 ```
 * Install the dependencies with the command below
-    
+
 ```
     make setup
 ```
@@ -62,7 +62,7 @@ If you have questions about the project, using PyScript, or anything else, pleas
 ```
     make example
 ```
-* Run ***npm run dev*** to build and run the dev server. This will also watch for changes and rebuild when a file is saved. 
+* Run ***npm run dev*** to build and run the dev server. This will also watch for changes and rebuild when a file is saved.
 ```
     npm run dev
 ```
