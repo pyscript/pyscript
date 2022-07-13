@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>dna</title>
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+    <header>
+        <h1 id="header_h1">Welcome to the "Complementary DNA converter"!</h1>
+    </header>
+
+    <main style="">
+
+        <div class="flexelement" id="first_div">
+            <p id="first_p">
+                Welcome to the "Complementary DNA converter"
+                <br />
+                <strong>"how does it work?"</strong>
+                The "Complementary DNA converter", given one side of a DNA strand returns the other,
+                complementary side of said strand.
+                To learn more, please visit: 
+                <i>
+                    <a href="https://en.wikipedia.org/wiki/DNA#Transcription_and_translation"
+                       style="color: #0095E8;" target="_blank">
+                        about DNA transcription and translation
+                        <img src="dna.png" style="height: 275px; margin-top: 2%;" />
+
+                    </a>
+                </i>
+            </p>
+
+
+        </div>
+
+
+        <div class="flexelement">
+
+            <div id="form">
+
+                <div style="margin-top: 20%;">
+
+                    <label>Initial DNA strand:</label><br>
+                    <input id="initial_dna" type="text"/> <br />
+
+                    <button pys-onClick="dna" id="calc">Get Result</button>
+
+                    <div style="margin-top: 2%;">
+                        <span id="dna_result"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <py-script>
+            def dna(*args, **kwargs):
+                output = Element("dna_result")
+                p = str(Element("initial_dna").value)
+                res = p.translate(p.maketrans("ATCGatcg","TAGCTAGC"))
+                output.write("complementary side: " + str(res))
+        </py-script>
+
+        <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+
+    </main>
+
+    <footer>
+        <p id="footer_p">
+            Thank you for using the "Complementary DNA converter", 
+            powered by PyScript!
+        </p>
+    </footer>
+
+</body>
+
+</html>
