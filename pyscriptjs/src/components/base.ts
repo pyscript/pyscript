@@ -6,7 +6,7 @@ let runtime: PyodideInterface;
 let Element;
 
 pyodideLoaded.subscribe(value => {
-    runtime = <PyodideInterface>value;
+    runtime = value;
 });
 
 export class BaseEvalElement extends HTMLElement {
