@@ -45,16 +45,12 @@ const loadFromFile = async function (s: string, runtime: PyodideInterface): Prom
             from js import console
 
             try:
-                response = await pyfetch("` +
-            s +
-            `")
+                response = await pyfetch("${s}")
             except Exception as err:
                 console.warn("PyScript: Access to local files (using 'Paths:' in py-env) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
                 raise(err)
             content = await response.bytes()
-            with open("` +
-            filename +
-            `", "wb") as f:
+            with open("${filename}", "wb") as f:
                 f.write(content)
         `,
     );
