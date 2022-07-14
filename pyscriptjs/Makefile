@@ -64,7 +64,7 @@ test:
 	npm run build
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
-all: 
+all:
 	make examples
 	npm install
 	npm run build
