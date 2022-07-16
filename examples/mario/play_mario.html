@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>Svelte app</title>
+    <title>Mrio Game - pyscript</title>
 
     <link rel="icon" type="image/png" href="../favicon.png" />
     <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
@@ -12,7 +12,7 @@
     <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
   </head>
 
-  <body>
+  <body allow="autoplay; fullscreen">
     <script type="text/javascript" src="js/util.js"></script>
     <script type="text/javascript" src="js/input.js"></script>
     <script type="text/javascript" src="js/resources.js"></script>
@@ -38,9 +38,7 @@
     <script type="text/javascript" src="js/levels/11tunnel.js"></script>
     <script type="text/javascript" src="js/game.js"></script>
 
-    <py-script>
-from js import handTrack, setTimeout, requestAnimationFrame, player
-from pyodide import create_once_callable
+    <py-script style="display: none;">
 import asyncio
 
 context = canvas.element.getContext("2d")
@@ -134,7 +132,7 @@ pyscript.run_until_complete(start())
       <button  id="trackbutton" class="bx--btn bx--btn--secondary" type="button" py-onClick="toggle_video">
         Start Video
       </button>
-      <div id="update-note" py-mount class="updatenote mt10">loading model ..</div>
+      <div id="update-note" py-mount class="updatenote mt10" style="display: none;"">loading model ..</div>
     </div>
     <div>
       <video autoplay="autoplay" id="myvideo" py-mount="video"></video>
