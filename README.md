@@ -1,6 +1,6 @@
 # PyScript
 
-## What is PyScript
+## What is PyScript ?
 
 ### Summary
 
