@@ -25,12 +25,13 @@ repos:
     hooks:
     -   id: bandit
         args:
-        -   --skip=B201
+        -   --skip=B101,B201
 
 -   repo: https://github.com/psf/black
     rev: 22.6.0
     hooks:
     -   id: black
+
 
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.1.0
