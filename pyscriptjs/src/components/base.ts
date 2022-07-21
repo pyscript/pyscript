@@ -1,21 +1,12 @@
-import { loadedEnvironments, mode, pyodideLoaded, type Environment } from '../stores';
+import { pyodideLoaded } from '../stores';
 import { guidGenerator, addClasses, removeClasses } from '../utils';
 import type { PyodideInterface } from '../pyodide';
 // Premise used to connect to the first available pyodide interpreter
-let runtime;
-let environments: Record<Environment['id'], Environment> = {};
-let currentMode;
+let runtime: PyodideInterface;
 let Element;
 
 pyodideLoaded.subscribe(value => {
     runtime = value;
-});
-loadedEnvironments.subscribe(value => {
-    environments = value;
-});
-
-mode.subscribe(value => {
-    currentMode = value;
 });
 
 export class BaseEvalElement extends HTMLElement {
@@ -120,30 +111,29 @@ export class BaseEvalElement extends HTMLElement {
         console.log('evaluate');
         this.preEvaluate();
 
-        const pyodide = runtime;
         let source: string;
-        let output;
+        let output: string;
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
             const is_async = source.includes('asyncio')
 
-            await this._register_esm(pyodide);
+            await this._register_esm(runtime);
             if (is_async) {
-                await pyodide.runPythonAsync(
+                <string>await runtime.runPythonAsync(
                     `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
-                output = await pyodide.runPythonAsync(source);
+                output = <string>await runtime.runPythonAsync(source);
             } else {
-                output = pyodide.runPython(
+                output = <string>runtime.runPython(
                     `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
-                output = pyodide.runPython(source);
+                output = <string>runtime.runPython(source);
             }
 
             if (output !== undefined) {
                 if (Element === undefined) {
-                    Element = pyodide.globals.get('Element');
+                    Element = <Element>runtime.globals.get('Element');
                 }
                 const out = Element(this.outputElement.id);
                 out.write.callKwargs(output, { append: this.appendOutput });
@@ -152,8 +142,8 @@ export class BaseEvalElement extends HTMLElement {
                 this.outputElement.style.display = 'block';
             }
 
-            is_async ? await pyodide.runPythonAsync(`output_manager.revert()`)
-                     : await pyodide.runPython(`output_manager.revert()`);
+            is_async ? await runtime.runPythonAsync(`output_manager.revert()`)
+                     : await runtime.runPython(`output_manager.revert()`);
 
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
@@ -171,7 +161,7 @@ export class BaseEvalElement extends HTMLElement {
             this.postEvaluate();
         } catch (err) {
             if (Element === undefined) {
-                Element = pyodide.globals.get('Element');
+                Element = <Element>runtime.globals.get('Element');
             }
             const out = Element(this.errorElement.id);
 

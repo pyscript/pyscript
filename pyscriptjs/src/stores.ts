@@ -7,15 +7,12 @@ export type Initializer = () => Promise<void>;
 
 export type Environment = {
     id: string;
-    promise: Promise<PyodideInterface>;
+    // promise: Promise<PyodideInterface>;
     runtime: PyodideInterface;
     state: string;
 };
 
-export const pyodideLoaded = writable({
-    loaded: false,
-    premise: null,
-});
+export const pyodideLoaded = writable();
 
 export const loadedEnvironments = writable<Record<Environment['id'], Environment>>({});
 export const DEFAULT_MODE = 'play';
