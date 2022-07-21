@@ -36,6 +36,7 @@ Read the [contributing guide](CONTRIBUTING.md) to learn about our development pr
 * [Discussion board](https://community.anaconda.cloud/c/tech-topics/pyscript)
 * [Home Page](https://pyscript.net/)
 * [Blog Post](https://engineering.anaconda.com/2022/04/welcome-pyscript.html)
+* [Stack Overflow](https://stackoverflow.com/questions/tagged/PyScript)
 
 ## Notes
 
