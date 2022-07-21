@@ -1,0 +1,165 @@
+﻿body {
+    background-color: #F3F6F8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+}
+
+img {
+    flex: 1;
+    margin: 5%;
+    margin-left: 20%;
+}
+
+#first_div {
+    align-content: center;
+    margin: 1%;
+    flex: 1.25;
+}
+
+#first_p {
+    margin: 3.5%;
+    margin-left: 15%;
+    font-family: Tahoma, sans-serif;
+}
+
+.flexelement {
+    flex: 1;
+    padding: 2%;
+}
+
+
+
+#form {
+    margin-top: 7%;
+    height: 100%;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+#form input[type=number] {
+    border: 1px solid white;
+    border-radius: 0.3em;
+    height: 12%;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+
+#form button {
+    width: 100%;
+    height: 12%;
+    margin-bottom: 5px;
+}
+
+header {
+    height: 100px;
+}
+
+footer {
+    margin-top: auto;
+    height: 57px;
+}
+
+header, footer {
+    background-color: #1A1A27;
+}
+
+#header_h1 {
+    padding-top: 2.2%;
+    margin-left: 40%;
+    font-weight: bold;
+    color: white;
+}
+
+input[type=number] {
+    padding: 1%;
+}
+
+#principal, #interest_rate, #time {
+    width: 25%;
+}
+
+#calc {
+    width: 25%;
+    padding: 1%;
+    font-weight: bold;
+    margin-top: 2%;
+    color: white;
+    background-color: #0095E8;
+}
+
+#simple_interest, #compound_interest {
+    color: black;
+    font-weight: bold;
+}
+
+input[type=radio] {
+    display: none;
+}
+
+label {
+    cursor: pointer;
+}
+
+input[type=radio] ~ img {
+    animation: close 1.5;
+    display: none;
+    height: 0;
+    max-height: 500px;
+    overflow: hidden;
+}
+
+input[type=radio]:checked ~ img {
+    animation: open 1.5s;
+    display: block;
+    height: auto;
+    max-height: 500px;
+}
+
+@keyframes open {
+    from {
+        max-height: 0;
+    }
+
+    to {
+        max-height: auto;
+    }
+}
+
+@keyframes close {
+    from {
+        display: block;
+        max-height: auto;
+    }
+
+    to {
+        display: none;
+        height: 0;
+    }
+}
+
+.expander_label {
+    border: 1px solid #0095E8;
+    border-radius: 0.1em;
+    padding: 1%;
+    font-weight: 500;
+    color: white;
+    background-color: #0095E8;
+    background-color: #0095E8;
+}
+
+#footer_p {
+    font-weight: bold;
+    font-size: 13px;
+    text-align: center;
+    color: white;
+    vertical-align: central;
+    padding: 1.2%;
+}
