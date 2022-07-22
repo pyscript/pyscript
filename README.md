@@ -1,4 +1,5 @@
 # PyScript
+[English](README.md) | [Japanese](doc_jp/README.md)
 
 ## What is PyScript
 
