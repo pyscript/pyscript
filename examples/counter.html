@@ -1,0 +1,31 @@
+<<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env>
+        - paths:
+          - /counter.py
+      </py-env>
+    <title>Counter App</title>
+  </head>
+  <body>
+   <h1>Counter with Pyscript</h1>
+    <div>
+  <button id="new-task-btn" class="p-2 text-white bg-blue-600 border border-blue-600 rounded" type="submit" pys-onClick="count">
+    Increment
+  </button>
+  <br></br>
+  <b>The Count is </b>
+  <br></br>
+  <b><label id="id-count">0</label></b>
+  <py-script>
+    from counter import count
+    pyscript.write('id-count', count())
+
+  </py-script>
+</div>
+
+  </body>
+</html>
