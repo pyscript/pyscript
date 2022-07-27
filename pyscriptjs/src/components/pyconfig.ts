@@ -85,11 +85,9 @@ export class PyodideRuntime extends Object {
 
     async initialize() {
         loader?.log('Loading runtime...');
-        // pyodideReadyPromise =
         const pyodide: PyodideInterface = await loadInterpreter(this.src);
         const newEnv = {
             id: 'a',
-            // promise: pyodideReadyPromise,
             runtime: pyodide,
             state: 'loading',
         };

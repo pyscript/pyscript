@@ -7,7 +7,6 @@ export type Initializer = () => Promise<void>;
 
 export type Environment = {
     id: string;
-    // promise: Promise<PyodideInterface>;
     runtime: PyodideInterface;
     state: string;
 };
