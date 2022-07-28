@@ -14,6 +14,7 @@ import {
 import { loadInterpreter } from '../interpreter';
 import type { PyLoader } from './pyloader';
 import type { PyScript } from './pyscript';
+import type { PyodideInterface } from '../pyodide';
 
 const DEFAULT_RUNTIME = {
     src: 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js',
@@ -69,8 +70,6 @@ mode.subscribe((value: string) => {
     console.log('post initializers set');
 });
 
-let pyodideReadyPromise;
-
 let loader: PyLoader | undefined;
 globalLoader.subscribe(value => {
     loader = value;
@@ -86,11 +85,9 @@ export class PyodideRuntime extends Object {
 
     async initialize() {
         loader?.log('Loading runtime...');
-        pyodideReadyPromise = loadInterpreter(this.src);
-        const pyodide = await pyodideReadyPromise;
+        const pyodide: PyodideInterface = await loadInterpreter(this.src);
         const newEnv = {
             id: 'a',
-            promise: pyodideReadyPromise,
             runtime: pyodide,
             state: 'loading',
         };
@@ -116,7 +113,7 @@ export class PyodideRuntime extends Object {
         loader?.log('Initializing scripts...');
         if (mode_ == 'play') {
             for (const script of scriptsQueue_) {
-                script.evaluate();
+                await script.evaluate();
             }
             scriptsQueue.set([]);
         }
@@ -129,11 +126,9 @@ export class PyodideRuntime extends Object {
             console.log('------ loader closed ------');
         }
 
-        setTimeout(() => {
-            for (const initializer of postInitializers_) {
-                initializer();
-            }
-        }, 3000);
+        for (const initializer of postInitializers_) {
+            await initializer();
+        }
     }
 }
 
