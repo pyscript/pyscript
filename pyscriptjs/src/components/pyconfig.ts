@@ -6,6 +6,7 @@ import {
     mode,
     postInitializers,
     pyodideLoaded,
+    pluginsQueue,
     scriptsQueue,
     globalLoader,
     appConfig,
@@ -14,6 +15,7 @@ import {
 import { loadInterpreter } from '../interpreter';
 import type { PyLoader } from './pyloader';
 import type { PyScript } from './pyscript';
+import type { PyPlugin } from './pyplugin';
 
 const DEFAULT_RUNTIME = {
     src: 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js',
@@ -57,6 +59,11 @@ postInitializers.subscribe((value: Initializer[]) => {
     console.log('post initializers set');
 });
 
+let pluginsQueue_: PyPlugin[];
+pluginsQueue.subscribe((value: PyPlugin[]) => {
+    pluginsQueue_ = value;
+});
+
 let scriptsQueue_: PyScript[];
 scriptsQueue.subscribe((value: PyScript[]) => {
     scriptsQueue_ = value;
@@ -86,6 +93,7 @@ export class PyodideRuntime extends Object {
 
     async initialize() {
         loader?.log('Loading runtime...');
+
         pyodideReadyPromise = loadInterpreter(this.src);
         const pyodide = await pyodideReadyPromise;
         const newEnv = {
@@ -110,6 +118,13 @@ export class PyodideRuntime extends Object {
         loader?.log('Initializing components...');
         for (const initializer of initializers_) {
             await initializer();
+        }
+
+        // initialize the plugins beforfe executing the py-scripts
+        loader?.log('Loading plugins...');
+        for (const plugin of pluginsQueue_) {
+            // XXX: should this be sync or async?
+            plugin.load();
         }
 
         // now we can actually execute the page scripts if we are in play mode

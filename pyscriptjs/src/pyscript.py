@@ -435,3 +435,26 @@ class OutputManager:
 
 pyscript = PyScript()
 output_manager = OutputManager()
+
+
+def register_custom_widget(cls):
+    import js
+    import pyodide
+    name = cls.__tag__
+    # if we pass 'cls' to registerCustomWidget, pyodide creates a temporary
+    # proxy which is destroyed after the call. But we want the proxy to stay
+    # alive because it will be attached to CustomWidget, so we create it
+    # manually.
+    # Technically, this is a leak because the proxy is never destroyed. But in
+    # practice, custom widgets stay alive for the whole lifetime of the page
+    # anyway.
+    proxy_cls = pyodide.create_proxy(cls)
+    js.pyscript_registerCustomWidget(name, proxy_cls)
+
+
+# XXX this is a hack: make sure that this module is importable as 'import
+# pyscript'. We should use a better solution, e.g. loading this file as a
+# proper module.
+import sys
+import __main__
+sys.modules['pyscript'] = __main__

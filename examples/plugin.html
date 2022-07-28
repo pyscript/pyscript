@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Plugin example</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+    <py-env>
+    - paths:
+      - ./myplugin.py
+    </py-env>
+
+    <py-plugin pyimport="myplugin"></py-plugin>
+  </head>
+
+  <body>
+    <h1>PyScript plugin example</h1>
+
+    <p>The following is a <tt>&lt;my-hello&gt;</pre> tag, which is a custom tag
+      automatically registered by <tt>myplugin</tt></p>
+
+    <my-hello></my-hello>
+
+  </body>
+</html>

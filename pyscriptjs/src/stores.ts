@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 import type { PyLoader } from './components/pyloader';
 import type { PyScript } from './components/pyscript';
+import type { PyPlugin } from './components/pyplugin';
 import type { PyodideInterface } from './pyodide';
 
 export type Initializer = () => Promise<void>;
@@ -26,19 +27,29 @@ export const componentDetailsNavOpen = writable(false);
 export const mainDiv = writable(null);
 export const currentComponentDetails = writable([]);
 export const mode = writable(DEFAULT_MODE);
+export const pluginsQueue = writable<PyPlugin[]>([]);
 export const scriptsQueue = writable<PyScript[]>([]);
 export const initializers = writable<Initializer[]>([]);
 export const postInitializers = writable<Initializer[]>([]);
 export const globalLoader = writable<PyLoader | undefined>();
 export const appConfig = writable();
 
+let pluginsQueue_: PyPlugin[] = [];
 let scriptsQueue_: PyScript[] = [];
 let initializers_: Initializer[] = [];
 let postInitializers_: Initializer[] = [];
 
+pluginsQueue.subscribe(value => {
+    pluginsQueue_ = value;
+});
+
 scriptsQueue.subscribe(value => {
     scriptsQueue_ = value;
 });
+
+export const addToPluginsQueue = (x: PyPlugin) => {
+    pluginsQueue.set([...pluginsQueue_, x]);
+};
 
 export const addToScriptsQueue = (script: PyScript) => {
     scriptsQueue.set([...scriptsQueue_, script]);
