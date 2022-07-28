@@ -9,7 +9,7 @@ Thank you for wanting to contribute to the PyScript project!
     * [Reporting bugs](#reporting-bugs)
     * [Reporting security issues](#reporting-security-issues)
     * [Asking questions](#asking-questions)
-    * [Setting up your environment](#setting-up-your-environment)
+    * [Setting up your local environment](#setting-up-your-local-environment)
     * [Places to start](#places-to-start)
     * [Submitting a change](#submitting-a-change)
 * [License terms for contributions](#license-terms-for-contributions)
@@ -41,7 +41,7 @@ If you aren't confident that it is appropriate to submit a security issue using 
 
 If you have questions about the project, using PyScript, or anything else, please ask in the [PyScript forum](https://community.anaconda.cloud/c/tech-topics/pyscript).
 
-# Setting up your local environment
+## Setting up your local environment
 
 * Clone the repo using
 ```
@@ -56,11 +56,11 @@ If you have questions about the project, using PyScript, or anything else, pleas
 ```
     make setup
 ```
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: If `make setup` gives a node/npm version required  error then go to [troubleshooting](https://github.com/pyscript/governance/blob/main/TROUBLESHOOTING.md)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: If `make setup` gives a node/npm version required  error then go to [troubleshooting](https://github.com/pyscript/pyscript/blob/main/TROUBLESHOOTING.md)
 
 * You can also run the examples localy by running the command below in your terminal
 ```
-    make example
+    make examples
 ```
 * Run ***npm run dev*** to build and run the dev server. This will also watch for changes and rebuild when a file is saved.
 ```
@@ -71,7 +71,7 @@ If you have questions about the project, using PyScript, or anything else, pleas
 * When you make changes locally, double check that your contribution follows the PyScript formatting rules by running `npm run lint`. Note that in this case you're looking for the errors, <u>**NOT**</u> the warnings (Unless the warning is created by a local change). If an error is found by lint you should fix it <u>**before**</u> creating a pull request
 
 
-Now that node and npm have both been updated `make setup` should work, and you can continue [setting up your environment](#setting-up-your-environment) without problems (hopefully).
+Now that node and npm have both been updated `make setup` should work, and you can continue [setting up your local environment](#setting-up-your-local-environment) without problems (hopefully).
 
 ## Places to start
 
