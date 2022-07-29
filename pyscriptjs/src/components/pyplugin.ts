@@ -19,7 +19,7 @@ export class PyPlugin extends HTMLElement {
             console.log('ERROR: <py-plugin> without a pyimport', this);
             return;
         }
-        this.pyimport = this.attributes.pyimport.textContent;
+        this.pyimport = this.attributes['pyimport'].textContent;
         console.log(`py-plugin ${name} connected, adding to queue`);
         addToPluginsQueue(this);
     }
@@ -70,4 +70,4 @@ function registerCustomWidget(tag: string, pyclass: any) {
 
 
 // XXX: there must be better ways to export a "public JS API"
-window.pyscript_registerCustomWidget = registerCustomWidget
+(<any>window).pyscript_registerCustomWidget = registerCustomWidget
