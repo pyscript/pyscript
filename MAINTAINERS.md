@@ -11,6 +11,7 @@ This document lists the Maintainers of the Project. Maintainers may be added onc
 | Kevin Goldsmith      | Anaconda, Inc    |
 | Mariana Meireles     | Anaconda, Inc    |
 | Nicholas H.Tollervey | Anaconda, Inc    |
+| Madhur Tandon        | Anaconda, Inc    |
 | ---                  | ---              |
 
 ______________________________________________________________________
