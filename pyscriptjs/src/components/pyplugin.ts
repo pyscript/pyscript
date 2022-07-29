@@ -43,10 +43,13 @@ function registerCustomWidget(tag: string, pyclass: any) {
         pyclass: any = pyclass;
         pyinstance: any;
         shadow: ShadowRoot;
+        wrapper: HTMLElement;
 
         constructor() {
             super();
             this.shadow = this.attachShadow({ mode: 'open' });
+            this.wrapper = document.createElement('slot');
+            this.shadow.appendChild(this.wrapper);
         }
 
         connectedCallback() {

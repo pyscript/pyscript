@@ -6,16 +6,18 @@
     <title>Todo App</title>
 
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
 
-    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <py-env>
     - paths:
       - ./utils.py
+      - ./pylist_plugin.py
     </py-env>
-    <py-register-widget src="./pylist.py" name="py-list" klass="PyList"></py-register-widget>
+    <py-plugin pyimport="pylist_plugin"></py-plugin>
 
     <py-script>
+      from datetime import datetime as dt
       def add_task(*ags, **kws):
         # create a new dictionary representing the new task
         task = { "content": new_task_content.value,  "done": False, "created_at": dt.now() }
