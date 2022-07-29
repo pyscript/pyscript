@@ -145,15 +145,50 @@ TEST_PARAMS = {
 }
 
 
+def wait_for_load(page):
+    """
+    Assert that pyscript loading messages appear.
+    """
+    pyodide_loading = False  # Flag to be set to True when condition met
+
+    for _ in range(TEST_ITERATIONS):
+        content = page.text_content("*")
+        for message in LOADING_MESSAGES:
+            if message in content:
+                pyodide_loading = True
+        if pyodide_loading:
+            break
+        time.sleep(TEST_TIME_INCREMENT)
+
+    assert pyodide_loading  # nosec
+
+
+def wait_for_render(page, selector, pattern):
+    """
+    Assert that rendering inserts data into the page as expected: search the
+    DOM from within the timing loop for a string that is not present in the
+    initial markup but should appear by way of rendering
+    """
+    re_sub_content = re.compile(pattern)
+    py_rendered = False  # Flag to be set to True when condition met
+
+    for _ in range(TEST_ITERATIONS):
+        content = page.inner_html(selector)
+        if re_sub_content.search(content):
+            py_rendered = True
+            break
+        time.sleep(TEST_TIME_INCREMENT)
+
+    assert py_rendered  # nosec
+
+
 @pytest.mark.parametrize("example", EXAMPLES)
 def test_examples(example, http_server, page):
-
     base_url = http_server
     example_path = urljoin(base_url, TEST_PARAMS[example]["file"])
 
     page.goto(example_path, wait_until="commit")
 
-    content = page.text_content("*")
     title = page.title()
 
     # STEP 1: Check page title proper initial loading of the example page
@@ -166,33 +201,24 @@ def test_examples(example, http_server, page):
         assert title == expected_title  # nosec
 
     # STEP 2: Test that pyodide is loading via messages displayed during loading
+    wait_for_load(page)
 
-    pyodide_loading = False  # Flag to be set to True when condition met
+    # Step 3: Wait for expected pattern to appear on page
+    wait_for_render(page, "*", TEST_PARAMS[example]["pattern"])
 
+
+def test_simple_clock(http_server, page):
+    example_path = urljoin(http_server, TEST_PARAMS["simple_clock"]["file"])
+
+    page.goto(example_path, wait_until="commit")
+
+    wait_for_load(page)
+
+    pattern = r"\d{2}/\d{2}/\d{4}, \d{2}:\d{2}:\d{2}"
     for _ in range(TEST_ITERATIONS):
-        for message in LOADING_MESSAGES:
-            if message in content:
-                pyodide_loading = True
-        if pyodide_loading:
+        content = page.inner_html("#outputDiv2")
+        if re.match(pattern, content) and int(content[-1]) in (0, 4, 8):
+            assert page.inner_html("#outputDiv3") == "It's espresso time!"
             break
-        content = page.text_content("*")
-        time.sleep(TEST_TIME_INCREMENT)
-
-    assert pyodide_loading  # nosec
-
-    # STEP 3:
-    # Assert that rendering inserts data into the page as expected: search the
-    # DOM from within the timing loop for a string that is not present in the
-    # initial markup but should appear by way of rendering
-
-    re_sub_content = re.compile(TEST_PARAMS[example]["pattern"])
-    py_rendered = False  # Flag to be set to True when condition met
-
-    for _ in range(TEST_ITERATIONS):
-        time.sleep(TEST_TIME_INCREMENT)
-        content = page.inner_html("*")
-        if re_sub_content.search(content):
-            py_rendered = True
-            break
-
-    assert py_rendered  # nosec
+        else:
+            time.sleep(TEST_TIME_INCREMENT)
