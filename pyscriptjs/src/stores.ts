@@ -28,34 +28,18 @@ export const postInitializers = writable<Initializer[]>([]);
 export const globalLoader = writable<PyLoader | undefined>();
 export const appConfig = writable();
 
-let scriptsQueue_: PyScript[] = [];
-let initializers_: Initializer[] = [];
-let postInitializers_: Initializer[] = [];
-
-scriptsQueue.subscribe(value => {
-    scriptsQueue_ = value;
-});
-
 export const addToScriptsQueue = (script: PyScript) => {
-    scriptsQueue.set([...scriptsQueue_, script]);
+    scriptsQueue.update(scriptsQueue => [...scriptsQueue, script]);
 };
-
-initializers.subscribe(value => {
-    initializers_ = value;
-});
 
 export const addInitializer = (initializer: Initializer) => {
     console.log('adding initializer', initializer);
-    initializers.set([...initializers_, initializer]);
+    initializers.update(initializers => [...initializers, initializer]);
     console.log('added initializer', initializer);
 };
 
-postInitializers.subscribe(value => {
-    postInitializers_ = value;
-});
-
 export const addPostInitializer = (initializer: Initializer) => {
     console.log('adding post initializer', initializer);
-    postInitializers.set([...postInitializers_, initializer]);
+    postInitializers.update(postInitializers => [...postInitializers, initializer]);
     console.log('added post initializer', initializer);
 };
