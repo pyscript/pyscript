@@ -11,7 +11,7 @@ export type Environment = {
     state: string;
 };
 
-export const pyodideLoaded = writable();
+export const pyodideLoaded = writable<PyodideInterface>();
 
 export const loadedEnvironments = writable<Record<Environment['id'], Environment>>({});
 export const DEFAULT_MODE = 'play';
