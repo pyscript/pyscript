@@ -36,9 +36,3 @@ if (!config) {
 const loader = <PyLoader>document.createElement('py-loader');
 document.body.append(loader);
 globalLoader.set(loader);
-
-const app = new App({
-    target: document.body,
-});
-
-export default app;
