@@ -106,8 +106,8 @@ def format_mime(obj):
 
 def display(*objects, parent=None):
     """Display `objects` on parent.
-    All non-keyword arguments are converted using the global renderer mapper or using the object `__repr__`
-    if a renderer for that object is not present.
+    All non-keyword arguments are converted using the global renderer mapper or using the
+    object `__repr__` if a renderer for that object is not present.
     If `parent` is None, the parent object set at the global `py-script` tag level will be used.
     """
     parentElement = None
