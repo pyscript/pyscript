@@ -11,7 +11,7 @@ import { BaseEvalElement } from './base';
 import type { PyodideInterface } from '../pyodide';
 
 // Premise used to connect to the first available pyodide interpreter
-let pyodideReadyPromise;
+let pyodideReadyPromise: PyodideInterface;
 let environments: Record<Environment['id'], Environment> = {};
 
 pyodideLoaded.subscribe(value => {
