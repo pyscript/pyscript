@@ -175,7 +175,9 @@ class Element:
         if append:
             child = document.createElement("div")
             exec_id = self.element.childElementCount + 1
-            out_element_id = child.id = f"div{exec_id}" if out_element_id == "" else f"{self.id}-{exec_id}"
+            out_element_id = child.id = (
+                f"div{exec_id}" if out_element_id == "" else f"{self.id}-{exec_id}"
+            )
             self.element.appendChild(child)
 
         out_element = document.querySelector(f"#{out_element_id}")
