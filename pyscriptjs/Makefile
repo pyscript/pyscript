@@ -32,7 +32,7 @@ setup:
 	npm install
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
-	$(CONDA_EXE) install -c anaconda pytest
+	$(CONDA_EXE) install -c anaconda pytest -y
 
 clean:
 	find . -name \*.py[cod] -delete
