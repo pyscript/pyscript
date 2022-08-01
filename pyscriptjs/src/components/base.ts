@@ -112,7 +112,6 @@ export class BaseEvalElement extends HTMLElement {
         this.preEvaluate();
 
         let source: string;
-        let output: string;
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
@@ -123,23 +122,12 @@ export class BaseEvalElement extends HTMLElement {
                 <string>await runtime.runPythonAsync(
                     `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
-                output = <string>await runtime.runPythonAsync(source);
+                <string>await runtime.runPythonAsync(source);
             } else {
-                output = <string>runtime.runPython(
+                <string>runtime.runPython(
                     `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
-                output = <string>runtime.runPython(source);
-            }
-
-            if (output !== undefined) {
-                if (Element === undefined) {
-                    Element = <Element>runtime.globals.get('Element');
-                }
-                const out = Element(this.outputElement.id);
-                out.write.callKwargs(output, { append: this.appendOutput });
-
-                this.outputElement.hidden = false;
-                this.outputElement.style.display = 'block';
+                <string>runtime.runPython(source);
             }
 
             is_async ? await runtime.runPythonAsync(`output_manager.revert()`)

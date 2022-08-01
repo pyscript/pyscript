@@ -104,6 +104,22 @@ def format_mime(obj):
     return MIME_RENDERERS[mime_type](output, meta), mime_type
 
 
+def display(*objects, parent=None):
+    """Display `objects` on parent.
+    All non-keyword arguments are converted using the global renderer mapper or using the object `__repr__`
+    if a renderer for that object is not present.
+    If `parent` is None, the parent object set at the global `py-script` tag level will be used.
+    """
+    parentElement = None
+    append = False
+    if parent is None:
+        parentElement = document.getElementsByTagName("py-script")[0].parentElement
+        parent = parentElement.id
+        append = True
+    for object in objects:
+        Element(parent, parentElement).write(object, append)
+
+
 class PyScript:
     loop = loop
 
@@ -160,7 +176,7 @@ class Element:
         if append:
             child = document.createElement("div")
             exec_id = self.element.childElementCount + 1
-            out_element_id = child.id = f"{self.id}-{exec_id}"
+            out_element_id = child.id = f"div{exec_id}" if out_element_id == "" else f"{self.id}-{exec_id}"
             self.element.appendChild(child)
 
         out_element = document.querySelector(f"#{out_element_id}")
