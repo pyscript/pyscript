@@ -14,14 +14,12 @@ export type Environment = {
 export const pyodideLoaded = writable<PyodideInterface>();
 
 export const loadedEnvironments = writable<Record<Environment['id'], Environment>>({});
-export const DEFAULT_MODE = 'play';
 
 export const navBarOpen = writable(false);
 export const componentsNavOpen = writable(false);
 export const componentDetailsNavOpen = writable(false);
 export const mainDiv = writable(null);
 export const currentComponentDetails = writable([]);
-export const mode = writable(DEFAULT_MODE);
 export const scriptsQueue = writable<PyScript[]>([]);
 export const initializers = writable<Initializer[]>([]);
 export const postInitializers = writable<Initializer[]>([]);
