@@ -51,7 +51,7 @@ export class PyBox extends HTMLElement {
                 else this.widths.push(w)
             }
         } else {
-            this.widths = Array(mainDiv.children.length).fill('1 1 0')
+            this.widths = Array<string>(mainDiv.children.length).fill('1 1 0');
         }
 
         this.widths.forEach((width, index) => {
