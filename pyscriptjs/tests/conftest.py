@@ -1,14 +1,9 @@
 """All data required for testing examples"""
-import os
 import threading
 from http.server import HTTPServer as SuperHTTPServer
 from http.server import SimpleHTTPRequestHandler
-from pathlib import Path
 
 import pytest
-
-my_path = Path.cwd() / "examples"
-os.chdir(my_path)
 
 
 class HTTPServer(SuperHTTPServer):
