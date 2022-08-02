@@ -1,11 +1,11 @@
 import { getLastPath } from './utils';
 import type { PyodideInterface } from './pyodide';
+
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './pyscript.py';
 
-let pyodideReadyPromise;
-let pyodide;
+let pyodide: PyodideInterface;
 
 const loadInterpreter = async function (indexUrl: string): Promise<PyodideInterface> {
     console.log('creating pyodide runtime');
@@ -23,7 +23,11 @@ const loadInterpreter = async function (indexUrl: string): Promise<PyodideInterf
     await pyodide.loadPackage('micropip');
 
     console.log('loading pyscript...');
-    await pyodide.runPythonAsync(pyscript);
+
+    const output = await pyodide.runPythonAsync(pyscript);
+    if (output !== undefined) {
+        console.log(output);
+    }
 
     console.log('done setting up environment');
     return pyodide;
@@ -31,7 +35,7 @@ const loadInterpreter = async function (indexUrl: string): Promise<PyodideInterf
 
 const loadPackage = async function (package_name: string[] | string, runtime: PyodideInterface): Promise<void> {
     if (package_name.length > 0){
-        const micropip = pyodide.globals.get('micropip');
+        const micropip = runtime.globals.get('micropip');
         await micropip.install(package_name);
         micropip.destroy();
     }
@@ -45,19 +49,15 @@ const loadFromFile = async function (s: string, runtime: PyodideInterface): Prom
             from js import console
 
             try:
-                response = await pyfetch("` +
-            s +
-            `")
+                response = await pyfetch("${s}")
             except Exception as err:
-                console.warn("PyScript: Access to local files (using 'Paths:' in py-env) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
+                console.warn("PyScript: Access to local files (using 'paths:' in py-env) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
                 raise(err)
             content = await response.bytes()
-            with open("` +
-            filename +
-            `", "wb") as f:
+            with open("${filename}", "wb") as f:
                 f.write(content)
         `,
     );
 };
 
-export { loadInterpreter, pyodideReadyPromise, loadPackage, loadFromFile };
+export { loadInterpreter, loadPackage, loadFromFile };

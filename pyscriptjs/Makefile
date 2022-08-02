@@ -15,6 +15,12 @@ GOOD_NPM_VER := 6
 NODE_VER    := $(shell node -v | cut -d. -f1 | sed 's/^v\(.*\)/\1/')
 NPM_VER     := $(shell npm -v | cut -d. -f1)
 
+ifeq ($(shell uname -s), Darwin)
+    SED_I_ARG := -i ''
+else
+    SED_I_ARG := -i
+endif
+
 GOOD_NODE   := $(shell if [ $(NODE_VER) -ge $(GOOD_NODE_VER) ]; then echo true; else echo false; fi)
 GOOD_NPM    := $(shell if [ $(NPM_VER) -ge $(GOOD_NPM_VER) ]; then echo true; else echo false; fi)
 
@@ -32,7 +38,7 @@ setup:
 	npm install
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
-	$(CONDA_EXE) install -c anaconda pytest
+	$(CONDA_EXE) install -c anaconda pytest -y
 
 clean:
 	find . -name \*.py[cod] -delete

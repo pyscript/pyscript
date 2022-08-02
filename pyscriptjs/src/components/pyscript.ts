@@ -3,7 +3,6 @@ import {
     addPostInitializer,
     addToScriptsQueue,
     loadedEnvironments,
-    mode,
     pyodideLoaded,
     type Environment,
 } from '../stores';
@@ -12,19 +11,14 @@ import { BaseEvalElement } from './base';
 import type { PyodideInterface } from '../pyodide';
 
 // Premise used to connect to the first available pyodide interpreter
-let pyodideReadyPromise;
+let pyodideReadyPromise: PyodideInterface;
 let environments: Record<Environment['id'], Environment> = {};
-let currentMode;
 
 pyodideLoaded.subscribe(value => {
     pyodideReadyPromise = value;
 });
 loadedEnvironments.subscribe(value => {
     environments = value;
-});
-
-mode.subscribe(value => {
-    currentMode = value;
 });
 
 export class PyScript extends BaseEvalElement {
@@ -74,13 +68,8 @@ export class PyScript extends BaseEvalElement {
             }
         }
 
-        if (currentMode == 'edit') {
-            // TODO: We need to build a plan for this
-            this.appendChild(mainDiv);
-        } else {
-            this.appendChild(mainDiv);
-            addToScriptsQueue(this);
-        }
+        this.appendChild(mainDiv);
+        addToScriptsQueue(this);
 
         console.log('connected');
 

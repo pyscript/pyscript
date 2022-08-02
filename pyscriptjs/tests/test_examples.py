@@ -55,105 +55,144 @@ EXAMPLES = [
 
 TEST_PARAMS = {
     "altair": {
-        "file": "altair.html",
+        "file": "examples/altair.html",
         "pattern": '<canvas.*?class=\\"marks\\".*?>',
         "title": "Altair",
     },
     "bokeh": {
-        "file": "bokeh.html",
+        "file": "examples/bokeh.html",
         "pattern": '<div.*class=\\"bk\\".*>',
         "title": "Bokeh Example",
     },
     "bokeh_interactive": {
-        "file": "bokeh_interactive.html",
+        "file": "examples/bokeh_interactive.html",
         "pattern": '<div.*?class=\\"bk\\".*?>',
         "title": "Bokeh Example",
     },
     "d3": {
-        "file": "d3.html",
+        "file": "examples/d3.html",
         "pattern": "<svg.*?>",
         "title": "d3: JavaScript & PyScript visualizations side-by-side",
     },
-    "folium": {"file": "folium.html", "pattern": "<iframe srcdoc=", "title": "Folium"},
+    "folium": {
+        "file": "examples/folium.html",
+        "pattern": "<iframe srcdoc=",
+        "title": "Folium",
+    },
     "hello_world": {
-        "file": "hello_world.html",
+        "file": "examples/hello_world.html",
         "pattern": "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+",
         "title": "PyScript Hello World",
     },
     "matplotlib": {
-        "file": "matplotlib.html",
+        "file": "examples/matplotlib.html",
         "pattern": "<img src=['\"]data:image",
         "title": "Matplotlib",
     },
     "numpy_canvas_fractals": {
-        "file": "numpy_canvas_fractals.html",
+        "file": "examples/numpy_canvas_fractals.html",
         "pattern": "<div.*?id=['\"](mandelbrot|julia|newton)['\"].*?>",
         "title": "Visualization of Mandelbrot, Julia and "
         "Newton sets with NumPy and HTML5 canvas",
     },
     "panel": {
-        "file": "panel.html",
+        "file": "examples/panel.html",
         "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
         "title": "Panel Example",
     },
     "panel_deckgl": {
-        "file": "panel_deckgl.html",
+        "file": "examples/panel_deckgl.html",
         "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
         "title": "PyScript/Panel DeckGL Demo",
     },
     "panel_kmeans": {
-        "file": "panel_kmeans.html",
+        "file": "examples/panel_kmeans.html",
         "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
         "title": "Pyscript/Panel KMeans Demo",
     },
     "panel_stream": {
-        "file": "panel_stream.html",
+        "file": "examples/panel_stream.html",
         "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
         "title": "PyScript/Panel Streaming Demo",
     },
-    "repl": {"file": "repl.html", "pattern": "<py-repl.*?>", "title": "REPL"},
+    "repl": {"file": "examples/repl.html", "pattern": "<py-repl.*?>", "title": "REPL"},
     "repl2": {
-        "file": "repl2.html",
+        "file": "examples/repl2.html",
         "pattern": "<py-repl.*?>",
         "title": "Custom REPL Example",
     },
     "simple_clock": {
-        "file": "simple_clock.html",
+        "file": "examples/simple_clock.html",
         "pattern": "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+",
         "title": "Simple Clock Demo",
     },
     "todo": {
-        "file": "todo.html",
+        "file": "examples/todo.html",
         "pattern": "<input.*?id=['\"]new-task-content['\"].*?>",
         "title": "Todo App",
     },
     "todo_pylist": {
-        "file": "todo-pylist.html",
+        "file": "examples/todo-pylist.html",
         "pattern": "<input.*?id=['\"]new-task-content['\"].*?>",
         "title": "Todo App",
     },
     "toga_freedom": {
-        "file": "toga/freedom.html",
+        "file": "examples/toga/freedom.html",
         "pattern": "<(main|div).*?id=['\"]toga_\\d+['\"].*?>",
         "title": ["Loading...", "Freedom Units"],
     },
     "webgl_raycaster_index": {
-        "file": "webgl/raycaster/index.html",
+        "file": "examples/webgl/raycaster/index.html",
         "pattern": "<canvas.*?>",
         "title": "Raycaster",
     },
 }
 
 
+def wait_for_load(page):
+    """
+    Assert that pyscript loading messages appear.
+    """
+    pyodide_loading = False  # Flag to be set to True when condition met
+
+    for _ in range(TEST_ITERATIONS):
+        content = page.text_content("*")
+        for message in LOADING_MESSAGES:
+            if message in content:
+                pyodide_loading = True
+        if pyodide_loading:
+            break
+        time.sleep(TEST_TIME_INCREMENT)
+
+    assert pyodide_loading  # nosec
+
+
+def wait_for_render(page, selector, pattern):
+    """
+    Assert that rendering inserts data into the page as expected: search the
+    DOM from within the timing loop for a string that is not present in the
+    initial markup but should appear by way of rendering
+    """
+    re_sub_content = re.compile(pattern)
+    py_rendered = False  # Flag to be set to True when condition met
+
+    for _ in range(TEST_ITERATIONS):
+        content = page.inner_html(selector)
+        if re_sub_content.search(content):
+            py_rendered = True
+            break
+        time.sleep(TEST_TIME_INCREMENT)
+
+    assert py_rendered  # nosec
+
+
 @pytest.mark.parametrize("example", EXAMPLES)
 def test_examples(example, http_server, page):
-
     base_url = http_server
     example_path = urljoin(base_url, TEST_PARAMS[example]["file"])
 
     page.goto(example_path, wait_until="commit")
 
-    content = page.text_content("*")
     title = page.title()
 
     # STEP 1: Check page title proper initial loading of the example page
@@ -166,33 +205,24 @@ def test_examples(example, http_server, page):
         assert title == expected_title  # nosec
 
     # STEP 2: Test that pyodide is loading via messages displayed during loading
+    wait_for_load(page)
 
-    pyodide_loading = False  # Flag to be set to True when condition met
+    # Step 3: Wait for expected pattern to appear on page
+    wait_for_render(page, "*", TEST_PARAMS[example]["pattern"])
 
+
+def test_simple_clock(http_server, page):
+    example_path = urljoin(http_server, TEST_PARAMS["simple_clock"]["file"])
+
+    page.goto(example_path, wait_until="commit")
+
+    wait_for_load(page)
+
+    pattern = r"\d{2}/\d{2}/\d{4}, \d{2}:\d{2}:\d{2}"
     for _ in range(TEST_ITERATIONS):
-        for message in LOADING_MESSAGES:
-            if message in content:
-                pyodide_loading = True
-        if pyodide_loading:
+        content = page.inner_html("#outputDiv2")
+        if re.match(pattern, content) and int(content[-1]) in (0, 4, 8):
+            assert page.inner_html("#outputDiv3") == "It's espresso time!"
             break
-        content = page.text_content("*")
-        time.sleep(TEST_TIME_INCREMENT)
-
-    assert pyodide_loading  # nosec
-
-    # STEP 3:
-    # Assert that rendering inserts data into the page as expected: search the
-    # DOM from within the timing loop for a string that is not present in the
-    # initial markup but should appear by way of rendering
-
-    re_sub_content = re.compile(TEST_PARAMS[example]["pattern"])
-    py_rendered = False  # Flag to be set to True when condition met
-
-    for _ in range(TEST_ITERATIONS):
-        time.sleep(TEST_TIME_INCREMENT)
-        content = page.inner_html("*")
-        if re_sub_content.search(content):
-            py_rendered = True
-            break
-
-    assert py_rendered  # nosec
+        else:
+            time.sleep(TEST_TIME_INCREMENT)
