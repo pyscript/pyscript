@@ -5,7 +5,6 @@ import type { PyodideInterface } from './pyodide';
 // @ts-ignore
 import pyscript from './pyscript.py';
 
-let pyodideReadyPromise;
 let pyodide: PyodideInterface;
 
 const loadInterpreter = async function (indexUrl: string): Promise<PyodideInterface> {
@@ -61,4 +60,4 @@ const loadFromFile = async function (s: string, runtime: PyodideInterface): Prom
     );
 };
 
-export { loadInterpreter, pyodideReadyPromise, loadPackage, loadFromFile };
+export { loadInterpreter, loadPackage, loadFromFile };

@@ -3,7 +3,6 @@ import { BaseEvalElement } from './base';
 import {
     initializers,
     loadedEnvironments,
-    mode,
     postInitializers,
     pyodideLoaded,
     scriptsQueue,
@@ -64,12 +63,6 @@ scriptsQueue.subscribe((value: PyScript[]) => {
     console.log('post initializers set');
 });
 
-let mode_: string;
-mode.subscribe((value: string) => {
-    mode_ = value;
-    console.log('post initializers set');
-});
-
 let loader: PyLoader | undefined;
 globalLoader.subscribe(value => {
     loader = value;
@@ -109,14 +102,11 @@ export class PyodideRuntime extends Object {
             await initializer();
         }
 
-        // now we can actually execute the page scripts if we are in play mode
         loader?.log('Initializing scripts...');
-        if (mode_ == 'play') {
-            for (const script of scriptsQueue_) {
-                await script.evaluate();
-            }
-            scriptsQueue.set([]);
+        for (const script of scriptsQueue_) {
+            await script.evaluate();
         }
+        scriptsQueue.set([]);
 
         // now we call all post initializers AFTER we actually executed all page scripts
         loader?.log('Running post initializers...');
