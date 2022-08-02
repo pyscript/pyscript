@@ -15,6 +15,12 @@ GOOD_NPM_VER := 6
 NODE_VER    := $(shell node -v | cut -d. -f1 | sed 's/^v\(.*\)/\1/')
 NPM_VER     := $(shell npm -v | cut -d. -f1)
 
+ifeq ($(shell uname -s), Darwin)
+    SED_I_ARG := -i ''
+else
+    SED_I_ARG := -i
+endif
+
 GOOD_NODE   := $(shell if [ $(NODE_VER) -ge $(GOOD_NODE_VER) ]; then echo true; else echo false; fi)
 GOOD_NPM    := $(shell if [ $(NPM_VER) -ge $(GOOD_NPM_VER) ]; then echo true; else echo false; fi)
 
@@ -55,9 +61,9 @@ examples:
 	mkdir -p ./examples
 	cp -r ../examples/* ./examples
 	chmod -R 755 examples
-	find ./examples/toga -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../../build/+g {} \;
-	find ./examples/webgl -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../../../build/+g {} \;
-	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../build/+g {} \;
+	find ./examples/toga -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/alpha/+../../build/+g {} \;
+	find ./examples/webgl -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/alpha/+../../../build/+g {} \;
+	find ./examples -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/alpha/+../build/+g {} \;
 
 test:
 	make examples
