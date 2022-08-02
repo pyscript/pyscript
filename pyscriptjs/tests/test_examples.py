@@ -74,7 +74,11 @@ TEST_PARAMS = {
         "pattern": "<svg.*?>",
         "title": "d3: JavaScript & PyScript visualizations side-by-side",
     },
-    "folium": {"file": "examples/folium.html", "pattern": "<iframe srcdoc=", "title": "Folium"},
+    "folium": {
+        "file": "examples/folium.html",
+        "pattern": "<iframe srcdoc=",
+        "title": "Folium",
+    },
     "hello_world": {
         "file": "examples/hello_world.html",
         "pattern": "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+",
