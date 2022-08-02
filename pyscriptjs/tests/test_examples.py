@@ -55,90 +55,94 @@ EXAMPLES = [
 
 TEST_PARAMS = {
     "altair": {
-        "file": "altair.html",
+        "file": "examples/altair.html",
         "pattern": '<canvas.*?class=\\"marks\\".*?>',
         "title": "Altair",
     },
     "bokeh": {
-        "file": "bokeh.html",
+        "file": "examples/bokeh.html",
         "pattern": '<div.*class=\\"bk\\".*>',
         "title": "Bokeh Example",
     },
     "bokeh_interactive": {
-        "file": "bokeh_interactive.html",
+        "file": "examples/bokeh_interactive.html",
         "pattern": '<div.*?class=\\"bk\\".*?>',
         "title": "Bokeh Example",
     },
     "d3": {
-        "file": "d3.html",
+        "file": "examples/d3.html",
         "pattern": "<svg.*?>",
         "title": "d3: JavaScript & PyScript visualizations side-by-side",
     },
-    "folium": {"file": "folium.html", "pattern": "<iframe srcdoc=", "title": "Folium"},
+    "folium": {
+        "file": "examples/folium.html",
+        "pattern": "<iframe srcdoc=",
+        "title": "Folium",
+    },
     "hello_world": {
-        "file": "hello_world.html",
+        "file": "examples/hello_world.html",
         "pattern": "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+",
         "title": "PyScript Hello World",
     },
     "matplotlib": {
-        "file": "matplotlib.html",
+        "file": "examples/matplotlib.html",
         "pattern": "<img src=['\"]data:image",
         "title": "Matplotlib",
     },
     "numpy_canvas_fractals": {
-        "file": "numpy_canvas_fractals.html",
+        "file": "examples/numpy_canvas_fractals.html",
         "pattern": "<div.*?id=['\"](mandelbrot|julia|newton)['\"].*?>",
         "title": "Visualization of Mandelbrot, Julia and "
         "Newton sets with NumPy and HTML5 canvas",
     },
     "panel": {
-        "file": "panel.html",
+        "file": "examples/panel.html",
         "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
         "title": "Panel Example",
     },
     "panel_deckgl": {
-        "file": "panel_deckgl.html",
+        "file": "examples/panel_deckgl.html",
         "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
         "title": "PyScript/Panel DeckGL Demo",
     },
     "panel_kmeans": {
-        "file": "panel_kmeans.html",
+        "file": "examples/panel_kmeans.html",
         "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
         "title": "Pyscript/Panel KMeans Demo",
     },
     "panel_stream": {
-        "file": "panel_stream.html",
+        "file": "examples/panel_stream.html",
         "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
         "title": "PyScript/Panel Streaming Demo",
     },
-    "repl": {"file": "repl.html", "pattern": "<py-repl.*?>", "title": "REPL"},
+    "repl": {"file": "examples/repl.html", "pattern": "<py-repl.*?>", "title": "REPL"},
     "repl2": {
-        "file": "repl2.html",
+        "file": "examples/repl2.html",
         "pattern": "<py-repl.*?>",
         "title": "Custom REPL Example",
     },
     "simple_clock": {
-        "file": "simple_clock.html",
+        "file": "examples/simple_clock.html",
         "pattern": "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+",
         "title": "Simple Clock Demo",
     },
     "todo": {
-        "file": "todo.html",
+        "file": "examples/todo.html",
         "pattern": "<input.*?id=['\"]new-task-content['\"].*?>",
         "title": "Todo App",
     },
     "todo_pylist": {
-        "file": "todo-pylist.html",
+        "file": "examples/todo-pylist.html",
         "pattern": "<input.*?id=['\"]new-task-content['\"].*?>",
         "title": "Todo App",
     },
     "toga_freedom": {
-        "file": "toga/freedom.html",
+        "file": "examples/toga/freedom.html",
         "pattern": "<(main|div).*?id=['\"]toga_\\d+['\"].*?>",
         "title": ["Loading...", "Freedom Units"],
     },
     "webgl_raycaster_index": {
-        "file": "webgl/raycaster/index.html",
+        "file": "examples/webgl/raycaster/index.html",
         "pattern": "<canvas.*?>",
         "title": "Raycaster",
     },
