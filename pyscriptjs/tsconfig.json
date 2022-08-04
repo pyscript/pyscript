@@ -21,10 +21,15 @@
      */
     "sourceMap": true,
     /** Requests the runtime types from the svelte modules by default. Needed for TS files or else you get errors. */
-    "types": ["svelte"],
+    "types": ["svelte", "jest"],
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "es2016",
+      "dom",
+      "DOM.Iterable"
+    ]
   }
 }
