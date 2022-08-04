@@ -2,13 +2,14 @@ tag := latest
 git_hash ?= $(shell git log -1 --pretty=format:%h)
 
 base_dir ?= $(shell git rev-parse --show-toplevel)
-src_dir ?= $(base_dir)/src
+src_dir ?= $(base_dir)/pyscriptjs/src
 examples ?=  ../$(base_dir)/examples
 app_dir ?= $(shell git rev-parse --show-prefix)
 
 CONDA_EXE := conda
-CONDA_ENV ?= ./env
+CONDA_ENV ?= $(base_dir)/pyscriptjs/env
 env := $(CONDA_ENV)
+PYTHON_EXE := $(CONDA_ENV)/bin/python
 conda_run := $(CONDA_EXE) run -p $(env)
 GOOD_NODE_VER := 14
 GOOD_NPM_VER := 6
@@ -72,7 +73,7 @@ test:
 
 test-py:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
-	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
+	cd $(src_dir)/python; $(PYTHON_EXE) -m pytest -vv $(ARGS) $(base_dir)/pyscriptjs/tests/py-unit --log-cli-level=warning
 
 test-ts:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
