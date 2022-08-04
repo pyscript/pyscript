@@ -211,7 +211,7 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
 /** Initialize all elements with py-on* handlers attributes  */
 async function initHandlers() {
     console.log('Collecting nodes...');
-    const pyodide = await pyodideReadyPromise;
+    const pyodide = pyodideReadyPromise;
     for (const pyAttribute of pyAttributeToEvent.keys()) {
         await createElementsWithEventListeners(pyodide, pyAttribute);
     }
@@ -252,7 +252,7 @@ async function createElementsWithEventListeners(pyodide: PyodideInterface, pyAtt
 /** Mount all elements with attribute py-mount into the Python namespace */
 async function mountElements() {
     console.log('Collecting nodes to be mounted into python namespace...');
-    const pyodide = await pyodideReadyPromise;
+    const pyodide = pyodideReadyPromise;
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
 
     let source = '';
