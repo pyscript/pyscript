@@ -79,16 +79,21 @@ export class BaseEvalElement extends HTMLElement {
 
     protected async _register_esm(pyodide: PyodideInterface): Promise<void> {
         const imports: { [key: string]: unknown } = {};
-
-        for (const node of document.querySelectorAll("script[type='importmap']")) {
-            let importmap;
-            try {
-                importmap = JSON.parse(node.textContent);
-                if (importmap?.imports == null) continue;
-            } catch {
-                continue;
+        const nodes = document.querySelectorAll("script[type='importmap']");
+        let importmaps: Array<any>;
+        nodes.forEach( node =>
+            {
+                let importmap;
+                try {
+                    importmap = JSON.parse(node.textContent);
+                    if (importmap?.imports == null) return;
+                    importmaps.push(importmap);
+                } catch {
+                    return;
+                }
             }
-
+        )
+        for (const importmap of importmaps){
             for (const [name, url] of Object.entries(importmap.imports)) {
                 if (typeof name != 'string' || typeof url != 'string') continue;
 
@@ -116,7 +121,7 @@ export class BaseEvalElement extends HTMLElement {
                                  : this.getSourceFromElement();
             const is_async = source.includes('asyncio')
 
-            await this._register_esm(runtime);
+            this._register_esm(runtime);
             if (is_async) {
                 <string>await runtime.runPythonAsync(
                     `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
@@ -146,13 +151,15 @@ export class BaseEvalElement extends HTMLElement {
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
             if (errorElements.length > 0) {
-                for (const errorElement of errorElements) {
-                    errorElement.classList.add('hidden');
-                    if (this.hasAttribute('std-err')) {
-                        this.errorElement.hidden = true;
-                        this.errorElement.style.removeProperty('display');
+                errorElements.forEach( errorElement =>
+                    {
+                        errorElement.classList.add('hidden');
+                        if (this.hasAttribute('std-err')) {
+                            this.errorElement.hidden = true;
+                            this.errorElement.style.removeProperty('display');
+                        }
                     }
-                }
+                )
             }
             removeClasses(this.errorElement, ['bg-red-200', 'p-2']);
 
