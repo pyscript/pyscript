@@ -52,6 +52,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 pyscriptjs/examples
+pyscriptjs/coverage
 
 # Translations
 *.mo
