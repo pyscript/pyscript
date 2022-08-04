@@ -1,18 +1,19 @@
-import py
-import pytest
 import os
 
-ROOT = py.path.local(__file__).dirpath('..', '..')
-BUILD = ROOT.join('pyscriptjs', 'build')
+import py
+import pytest
 
-@pytest.mark.usefixtures('init')
+ROOT = py.path.local(__file__).dirpath("..", "..")
+BUILD = ROOT.join("pyscriptjs", "build")
+
+
+@pytest.mark.usefixtures("init")
 class PyScriptTest:
-
     @pytest.fixture()
     def init(self, tmpdir, http_server, page):
         self.tmpdir = tmpdir
         # create a symlink to BUILD inside tmpdir
-        tmpdir.join('build').mksymlinkto(BUILD)
+        tmpdir.join("build").mksymlinkto(BUILD)
         self.http_server = http_server
         self.page = page
         self.tmpdir.chdir()
@@ -22,12 +23,11 @@ class PyScriptTest:
         f.write(content)
 
     def goto(self, path):
-        url = f'{self.http_server}/{path}'
+        url = f"{self.http_server}/{path}"
         self.page.goto(url)
 
 
 class TestBasic(PyScriptTest):
-
     def test_basic(self):
         # very basic test, just to check that we can write, serve and read a
         # simple HTML (no pyscript yet)
@@ -41,11 +41,12 @@ class TestBasic(PyScriptTest):
         self.write("basic.html", doc)
         self.goto("basic.html")
         content = self.page.content()
-        assert '<h1>Hello world</h1>' in content
+        assert "<h1>Hello world</h1>" in content
 
     def test_pyscript_hello(self):
         # XXX we need a better way to implement wait_for_load
         from .test_examples import wait_for_load
+
         doc = f"""
         <html>
           <head>
