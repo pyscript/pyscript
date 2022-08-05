@@ -10,8 +10,13 @@ class TestElement:
 
     def test_element(self, monkeypatch):
         el = pyscript.Element("something")
-        monkeypatch.setattr(pyscript, "document", Mock())
+        document_mock = Mock()
+        call_result = "some_result"
+        document_mock.querySelector = Mock(side_effect=call_result)
+        monkeypatch.setattr(pyscript, "document", document_mock)
         assert not el._element
         real_element = el.element
         assert real_element
         assert pyscript.document.querySelector.call_count == 1
+        pyscript.document.querySelector.assert_called_with("#something")
+        assert real_element == call_result
