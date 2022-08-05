@@ -1,8 +1,6 @@
 import pytest
 import textwrap
-from .support import PyScriptTest, Error
-
-
+from .support import PyScriptTest, Error, MultipleErrors
 
 class TestSupport(PyScriptTest):
     """
@@ -81,3 +79,24 @@ class TestSupport(PyScriptTest):
         self.goto("basic.html")
         with pytest.raises(Error, match='this is an error'):
             self.check_errors()
+        # after a call to check_errors, the errors are cleared
+        self.check_errors()
+
+    def test_check_errors_multiple(self):
+        doc = """
+        <html>
+          <body>
+            <script>throw new Error('error 1');</script>
+            <script>throw new Error('error 2');</script>
+          </body>
+        </html>
+        """
+        self.write("basic.html", doc)
+        self.goto("basic.html")
+        with pytest.raises(MultipleErrors) as exc:
+            self.check_errors()
+        assert 'error 1' in str(exc.value)
+        assert 'error 2' in str(exc.value)
+        #
+        # check that errors are cleared
+        self.check_errors()

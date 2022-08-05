@@ -7,6 +7,19 @@ from playwright.sync_api import Error
 ROOT = py.path.local(__file__).dirpath("..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
 
+class MultipleErrors(Exception):
+    """
+    This is raised in case we get multiple JS errors in the page
+    """
+
+    def __init__(self, errors):
+        lines = ['Multiple JS errors found:']
+        for err in errors:
+            lines.append(repr(err))
+        msg = '\n'.join(lines)
+        super().__init__(msg)
+        self.errors = errors
+
 
 @pytest.mark.usefixtures("init")
 class PyScriptTest:
@@ -30,9 +43,16 @@ class PyScriptTest:
         self._page_errors.append(error)
 
     def check_errors(self):
-        assert len(self._page_errors) == 1
-        exc = self._page_errors.pop()
-        raise exc
+        if len(self._page_errors) == 0:
+            return
+        elif len(self._page_errors) == 1:
+            # if there is a single error, just raise it
+            exc = self._page_errors.pop()
+            raise exc
+        else:
+            errors = self._page_errors
+            self._page_errors = []
+            raise MultipleErrors(errors)
 
     def write(self, filename, content):
         f = self.tmpdir.join(filename)
