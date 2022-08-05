@@ -70,6 +70,11 @@ test:
 	npm run build
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
 
+test-local:
+	make examples
+	npm run build
+	pytest -vvs $(ARGS) tests/ --log-cli-level=warning
+
 test-py:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
 	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
