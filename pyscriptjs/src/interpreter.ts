@@ -30,6 +30,7 @@ const loadInterpreter = async function (indexUrl: string): Promise<PyodideInterf
     }
 
     console.log('done setting up environment');
+    console.log('===PYSCRIPT LOADED===');
     return pyodide;
 };
 
