@@ -1,4 +1,5 @@
 import pytest
+import textwrap
 from .support import PyScriptTest, Error
 
 
@@ -26,24 +27,47 @@ class TestSupport(PyScriptTest):
         content = self.page.content()
         assert "<h1>Hello world</h1>" in content
 
-    def test_console_log(self):
+    def test_console(self):
         """
         Test that we capture console.log messages correctly.
         """
         doc = """
         <html>
           <body>
-            <script>console.log("hello world");</script>
+            <script>
+                console.log("my log 1");
+                console.debug("my debug");
+                console.info("my info");
+                console.error("my error");
+                console.warn("my warning");
+                console.log("my log 2");
+            </script>
           </body>
         </html>
         """
         self.write("basic.html", doc)
         self.goto("basic.html")
-        assert len(self.console_log) == 1
-        msg = self.console_log[0]
-        assert msg.type == 'log'
-        assert msg.text == 'hello world'
-        assert self.console_text == ['hello world']
+        assert len(self.console.all.messages) == 6
+        assert self.console.all.lines == [
+            "my log 1",
+            "my debug",
+            "my info",
+            "my error",
+            "my warning",
+            "my log 2"
+        ]
+
+        assert self.console.all.text == textwrap.dedent("""
+            my log 1
+            my debug
+            my info
+            my error
+            my warning
+            my log 2
+        """).strip()
+
+        assert self.console.log.lines == ['my log 1', 'my log 2']
+        assert self.console.debug.lines == ['my debug']
 
     def test_check_errors(self):
         doc = """

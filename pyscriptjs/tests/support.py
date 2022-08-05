@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 import py
 import pytest
 from playwright.sync_api import Error
@@ -20,15 +21,10 @@ class PyScriptTest:
 
     def init_page(self, page):
         self.page = page
-        self.console_log = []
-        self.console_text = []
+        self.console = ConsoleMessageCollection()
         self._page_errors = []
-        page.on("console", self._on_console)
+        page.on("console", self.console.add_message)
         page.on("pageerror", self._on_pageerror)
-
-    def _on_console(self, msg):
-        self.console_log.append(msg)
-        self.console_text.append(msg.text)
 
     def _on_pageerror(self, error):
         self._page_errors.append(error)
@@ -45,3 +41,58 @@ class PyScriptTest:
     def goto(self, path):
         url = f"{self.http_server}/{path}"
         self.page.goto(url)
+
+
+class ConsoleMessageCollection:
+    """
+    Helper class to collect and expose ConsoleMessage in a Pythonic way.
+
+    Usage:
+
+      console.log.messages: list of ConsoleMessage with type=='log'
+      console.log.lines:    list of strings
+      console.log.text:     the whole text as single string
+
+      console.debug.*       same as above, but with different types
+      console.info.*
+      console.error.*
+      console.warning.*
+
+      console.all.*         same as above, but considering all messages, no filters
+    """
+
+    class View:
+        """
+        Filter console messages by the given msg_type
+        """
+        def __init__(self, console, msg_type):
+            self.console = console
+            self.msg_type = msg_type
+
+        @property
+        def messages(self):
+            if self.msg_type is None:
+                return self.console._messages
+            else:
+                return [msg for msg in self.console._messages if msg.type == self.msg_type]
+
+        @property
+        def lines(self):
+            return [msg.text for msg in self.messages]
+
+        @property
+        def text(self):
+            return '\n'.join(self.lines)
+
+
+    def __init__(self):
+        self._messages = []
+        self.all = self.View(self, None)
+        self.log = self.View(self, 'log')
+        self.debug = self.View(self, 'debug')
+        self.info = self.View(self, 'info')
+        self.error = self.View(self, 'error')
+        self.warning = self.View(self, 'warning')
+
+    def add_message(self, msg):
+        self._messages.append(msg)
