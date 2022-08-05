@@ -153,8 +153,10 @@ def wait_for_load(page):
     """
     Assert that pyscript loading messages appear.
     """
-    page.expect_console_message(lambda m: "===PYSCRIPT LOADED===" == m.text)
-    page.expect_console_message(lambda m: "===PYODIDE LOADED===" == m.text)
+    # this is printed by pyconfig.ts:PyodideRuntime.initialize
+    magic = "===PyScript page fully initialized==="
+    with page.expect_console_message(lambda m: m.text == magic):
+        pass
 
 
 def wait_for_render(page, selector, pattern):

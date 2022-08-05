@@ -1,6 +1,4 @@
-import pytest
-
-from .support import Error, MultipleErrors, PyScriptTest
+from .support import PyScriptTest
 
 
 class TestBasic(PyScriptTest):
@@ -26,3 +24,4 @@ class TestBasic(PyScriptTest):
         wait_for_load(self.page)
         content = self.page.content()
         # XXX write a test with the DOM
+        assert "hello pyscript" in content
