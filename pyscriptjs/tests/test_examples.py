@@ -156,6 +156,7 @@ def wait_for_load(page):
     page.expect_console_message(lambda m: "===PYSCRIPT LOADED===" == m.text)
     page.expect_console_message(lambda m: "===PYODIDE LOADED===" == m.text)
 
+
 def wait_for_render(page, selector, pattern):
     """
     Assert that rendering inserts data into the page as expected: search the
