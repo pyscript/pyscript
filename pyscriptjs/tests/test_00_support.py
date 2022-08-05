@@ -20,8 +20,8 @@ class TestSupport(PyScriptTest):
           </body>
         </html>
         """
-        self.write("basic.html", doc)
-        self.goto("basic.html")
+        self.write("mytest.html", doc)
+        self.goto("mytest.html")
         content = self.page.content()
         assert "<h1>Hello world</h1>" in content
 
@@ -43,8 +43,8 @@ class TestSupport(PyScriptTest):
           </body>
         </html>
         """
-        self.write("basic.html", doc)
-        self.goto("basic.html")
+        self.write("mytest.html", doc)
+        self.goto("mytest.html")
         assert len(self.console.all.messages) == 6
         assert self.console.all.lines == [
             "my log 1",
@@ -75,8 +75,8 @@ class TestSupport(PyScriptTest):
           </body>
         </html>
         """
-        self.write("basic.html", doc)
-        self.goto("basic.html")
+        self.write("mytest.html", doc)
+        self.goto("mytest.html")
         with pytest.raises(Error, match='this is an error'):
             self.check_errors()
         # after a call to check_errors, the errors are cleared
@@ -91,8 +91,8 @@ class TestSupport(PyScriptTest):
           </body>
         </html>
         """
-        self.write("basic.html", doc)
-        self.goto("basic.html")
+        self.write("mytest.html", doc)
+        self.goto("mytest.html")
         with pytest.raises(MultipleErrors) as exc:
             self.check_errors()
         assert 'error 1' in str(exc.value)

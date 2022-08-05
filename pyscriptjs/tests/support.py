@@ -39,6 +39,13 @@ class PyScriptTest:
         page.on("console", self.console.add_message)
         page.on("pageerror", self._on_pageerror)
 
+    def teardown_method(self):
+        # we call check_errors on teardown: this means that if there are still
+        # non-cleared errors, the test will fail. If you expect errors in your
+        # page and they should not cause the test to fail, you should call
+        # self.check_errors() in the test itself.
+        self.check_errors()
+
     def _on_pageerror(self, error):
         self._page_errors.append(error)
 
