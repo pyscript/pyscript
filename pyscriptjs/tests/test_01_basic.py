@@ -1,4 +1,5 @@
 import pytest
+
 from .support import Error, MultipleErrors, PyScriptTest
 
 
