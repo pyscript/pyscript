@@ -1,3 +1,7 @@
+import pytest
+from .support import Error, MultipleErrors, PyScriptTest
+
+
 class TestBasic(PyScriptTest):
     def test_pyscript_hello(self):
         # XXX we need a better way to implement wait_for_load
