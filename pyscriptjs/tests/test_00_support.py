@@ -58,19 +58,16 @@ class TestSupport(PyScriptTest):
             "my log 2",
         ]
 
-        assert (
-            self.console.all.text
-            == textwrap.dedent(
-                """
+        # fmt: off
+        assert self.console.all.text == textwrap.dedent("""
             my log 1
             my debug
             my info
             my error
             my warning
             my log 2
-        """
-            ).strip()
-        )
+        """).strip()
+        # fmt: on
 
         assert self.console.log.lines == ["my log 1", "my log 2"]
         assert self.console.debug.lines == ["my debug"]
