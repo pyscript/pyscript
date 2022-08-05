@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass
+
 import py
 import pytest
 from playwright.sync_api import Error
@@ -7,16 +8,17 @@ from playwright.sync_api import Error
 ROOT = py.path.local(__file__).dirpath("..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
 
+
 class MultipleErrors(Exception):
     """
     This is raised in case we get multiple JS errors in the page
     """
 
     def __init__(self, errors):
-        lines = ['Multiple JS errors found:']
+        lines = ["Multiple JS errors found:"]
         for err in errors:
             lines.append(repr(err))
-        msg = '\n'.join(lines)
+        msg = "\n".join(lines)
         super().__init__(msg)
         self.errors = errors
 
@@ -92,6 +94,7 @@ class ConsoleMessageCollection:
         """
         Filter console messages by the given msg_type
         """
+
         def __init__(self, console, msg_type):
             self.console = console
             self.msg_type = msg_type
@@ -101,7 +104,9 @@ class ConsoleMessageCollection:
             if self.msg_type is None:
                 return self.console._messages
             else:
-                return [msg for msg in self.console._messages if msg.type == self.msg_type]
+                return [
+                    msg for msg in self.console._messages if msg.type == self.msg_type
+                ]
 
         @property
         def lines(self):
@@ -109,17 +114,16 @@ class ConsoleMessageCollection:
 
         @property
         def text(self):
-            return '\n'.join(self.lines)
-
+            return "\n".join(self.lines)
 
     def __init__(self):
         self._messages = []
         self.all = self.View(self, None)
-        self.log = self.View(self, 'log')
-        self.debug = self.View(self, 'debug')
-        self.info = self.View(self, 'info')
-        self.error = self.View(self, 'error')
-        self.warning = self.View(self, 'warning')
+        self.log = self.View(self, "log")
+        self.debug = self.View(self, "debug")
+        self.info = self.View(self, "info")
+        self.error = self.View(self, "error")
+        self.warning = self.View(self, "warning")
 
     def add_message(self, msg):
         self._messages.append(msg)

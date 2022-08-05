@@ -1,8 +1,4 @@
-
-
-
 class TestBasic(PyScriptTest):
-
     def test_pyscript_hello(self):
         # XXX we need a better way to implement wait_for_load
         from .test_examples import wait_for_load

@@ -1,6 +1,9 @@
-import pytest
 import textwrap
-from .support import PyScriptTest, Error, MultipleErrors
+
+import pytest
+
+from .support import Error, MultipleErrors, PyScriptTest
+
 
 class TestSupport(PyScriptTest):
     """
@@ -52,20 +55,25 @@ class TestSupport(PyScriptTest):
             "my info",
             "my error",
             "my warning",
-            "my log 2"
+            "my log 2",
         ]
 
-        assert self.console.all.text == textwrap.dedent("""
+        assert (
+            self.console.all.text
+            == textwrap.dedent(
+                """
             my log 1
             my debug
             my info
             my error
             my warning
             my log 2
-        """).strip()
+        """
+            ).strip()
+        )
 
-        assert self.console.log.lines == ['my log 1', 'my log 2']
-        assert self.console.debug.lines == ['my debug']
+        assert self.console.log.lines == ["my log 1", "my log 2"]
+        assert self.console.debug.lines == ["my debug"]
 
     def test_check_errors(self):
         doc = """
@@ -77,7 +85,7 @@ class TestSupport(PyScriptTest):
         """
         self.write("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(Error, match='this is an error'):
+        with pytest.raises(Error, match="this is an error"):
             self.check_errors()
         # after a call to check_errors, the errors are cleared
         self.check_errors()
@@ -95,8 +103,8 @@ class TestSupport(PyScriptTest):
         self.goto("mytest.html")
         with pytest.raises(MultipleErrors) as exc:
             self.check_errors()
-        assert 'error 1' in str(exc.value)
-        assert 'error 2' in str(exc.value)
+        assert "error 1" in str(exc.value)
+        assert "error 2" in str(exc.value)
         #
         # check that errors are cleared
         self.check_errors()
