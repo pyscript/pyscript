@@ -1,9 +1,6 @@
-import os
-from dataclasses import dataclass
-
 import py
 import pytest
-from playwright.sync_api import Error
+from playwright.sync_api import Error  # noqa: F401
 
 ROOT = py.path.local(__file__).dirpath("..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
@@ -25,6 +22,24 @@ class MultipleErrors(Exception):
 
 @pytest.mark.usefixtures("init")
 class PyScriptTest:
+    """
+    Base class to write PyScript integration tests, based on playwright.
+
+    It provides a simple API to generate HTML files and load them in
+    playwright.
+
+    It also provides a Pythonic API on top of playwright for the most
+    common tasks; in particular:
+
+      - self.console collects all the JS console.* messages. Look at the doc
+        of ConsoleMessageCollection for more details.
+
+      - self.check_errors() checks that no JS errors have been thrown
+
+      - after each test, self.check_errors() is automatically run to ensure
+        that no JS error passes uncaught.
+    """
+
     @pytest.fixture()
     def init(self, tmpdir, http_server, page):
         self.tmpdir = tmpdir
