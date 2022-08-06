@@ -1,5 +1,6 @@
-from .support import PyScriptTest
 import pytest
+
+from .support import PyScriptTest
 
 
 class TestBasic(PyScriptTest):
