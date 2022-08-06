@@ -1,4 +1,5 @@
 from .support import PyScriptTest
+import pytest
 
 
 class TestBasic(PyScriptTest):
@@ -21,7 +22,8 @@ class TestBasic(PyScriptTest):
         """
         self.write("hello.html", doc)
         self.goto("hello.html")
+        # I wonder if we need to call wait_for_load in every single test?
+        # It's only relevant to call it on tests that are interfering somehow with the way we load the page, IMO
         wait_for_load(self.page)
         content = self.page.content()
-        # XXX write a test with the DOM
         assert "hello pyscript" in content
