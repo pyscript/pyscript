@@ -64,6 +64,8 @@ class PyScriptTest:
         self.check_errors()
 
     def _on_pageerror(self, error):
+        line = f"[JS exception   ] {error.stack}"
+        print(Color.set("red", line))
         self._page_errors.append(error)
 
     def check_errors(self):
@@ -141,4 +143,46 @@ class ConsoleMessageCollection:
         self.warning = self.View(self, "warning")
 
     def add_message(self, msg):
+        # print the message to stdout: pytest will capute the output and
+        # display the messages if the test fails.  {msg.type:7} is to
+        # make sure that messages of all levels are aligned, i.e.:
+        # [console.log    ] hello
+        # [console.warning] world
+        line = f"[console.{msg.type:7}] {msg.text}"
+        if msg.type == "error":
+            line = Color.set("red", line)
+        elif msg.type == "warning":
+            line = Color.set("brown", line)
+        print(line)
         self._messages.append(msg)
+
+
+class Color:
+    """
+    Helper method to print colored output using ANSI escape codes.
+    """
+
+    black = "30"
+    darkred = "31"
+    darkgreen = "32"
+    brown = "33"
+    darkblue = "34"
+    purple = "35"
+    teal = "36"
+    lightgray = "37"
+    darkgray = "30;01"
+    red = "31;01"
+    green = "32;01"
+    yellow = "33;01"
+    blue = "34;01"
+    fuchsia = "35;01"
+    turquoise = "36;01"
+    white = "37;01"
+
+    @classmethod
+    def set(cls, color, string):
+        try:
+            color = getattr(cls, color)
+        except AttributeError:
+            pass
+        return f"\x1b[{color}m{string}\x1b[00m"
