@@ -1,6 +1,7 @@
 import textwrap
 
 import pytest
+from playwright import sync_api
 
 from .support import JsError, JsMultipleErrors, PyScriptTest
 
@@ -135,3 +136,23 @@ class TestSupport(PyScriptTest):
         # actually run the setTimeout callback
         self.wait_for_console("Page loaded!", timeout=500)
         assert self.console.log.lines[-1] == "Page loaded!"
+
+    def test_wait_for_console_exception(self):
+        """
+        Test that if a JS exception is raised while waiting for the console, we
+        report the exception and not the timeout
+        """
+        doc = """
+        <html>
+          <body>
+            <script>throw new Error('this is an error');</script>
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        self.goto("mytest.html")
+        # "Page loaded!" will never appear, of course.
+        with pytest.raises(JsError) as exc:
+            self.wait_for_console("Page loaded!", timeout=200)
+        assert "this is an error" in str(exc.value)
+        assert isinstance(exc.value.__context__, sync_api.TimeoutError)

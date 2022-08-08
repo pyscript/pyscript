@@ -1,5 +1,6 @@
 import py
 import pytest
+from playwright import sync_api
 
 ROOT = py.path.local(__file__).dirpath("..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
@@ -54,16 +55,25 @@ class PyScriptTest:
         self._page_errors.append(error)
 
     def check_errors(self):
-        if len(self._page_errors) == 0:
-            return
-        elif len(self._page_errors) == 1:
-            # if there is a single error, just raise it
-            exc = self._page_errors.pop()
-            raise JsError(exc)
-        else:
-            errors = self._page_errors
-            self._page_errors = []
-            raise JsMultipleErrors(errors)
+        """
+        Check whether JS errors were reported.
+
+        If it finds a single JS error, raise JsError.
+        If it finds multiple JS errors, raise JsMultipleErrors.
+
+        Upon return, all the errors are cleared, so a subsequent call to
+        check_errors will not raise, unless NEW JS errors have been reported
+        in the meantime.
+        """
+        exc = None
+        if len(self._page_errors) == 1:
+            # if there is a single error, wrap it
+            exc = JsError(self._page_errors[0])
+        elif len(self._page_errors) >= 2:
+            exc = JsMultipleErrors(self._page_errors)
+        self._page_errors = []
+        if exc:
+            raise exc
 
     def writefile(self, filename, content):
         """
@@ -84,8 +94,19 @@ class PyScriptTest:
         If you need more control on the predicate (e.g. if you want to match a
         substring), use self.page.expect_console_message directly.
         """
-        with self.page.expect_console_message(lambda msg: msg.text == text):
-            pass
+        pred = lambda msg: msg.text == text
+        try:
+            with self.page.expect_console_message(pred, timeout=timeout):
+                pass
+        except sync_api.TimeoutError:
+            # if there are JS errors, there is a good chance that the
+            # TimeoutError occurred because the JS code crashed earlier. By
+            # calling self.check_errors() we ensure that those are reported in
+            # the traceback.
+            self.check_errors()
+            # if we are here it means that self.check_errors didn't
+            # raise. Just re-raise the original TimeoutError
+            raise
 
 
 # ============== Helpers and utility functions ==============
