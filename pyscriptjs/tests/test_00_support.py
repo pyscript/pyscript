@@ -105,3 +105,27 @@ class TestSupport(PyScriptTest):
         #
         # check that errors are cleared
         self.check_errors()
+
+    def test_wait_for_console(self):
+        """
+        Test that self.wait_for_console actually waits.
+        If it's buggy, the test will try to read self.console.log BEFORE the
+        log has been written and it will fail.
+        """
+        doc = """
+        <html>
+          <body>
+            <script>
+                setTimeout(function() {
+                    console.log('Page loaded!');
+                }, 250);
+            </script>
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        self.goto("mytest.html")
+        # we use a timeout of 500ms to give plenty of time to the page to
+        # actually run the setTimeout callback
+        self.wait_for_console("Page loaded!", timeout=500)
+        assert self.console.log.lines[-1] == "Page loaded!"

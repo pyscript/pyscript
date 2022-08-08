@@ -91,6 +91,17 @@ class PyScriptTest:
         url = f"{self.http_server}/{path}"
         self.page.goto(url)
 
+    def wait_for_console(self, text, *, timeout=None):
+        """
+        Wait until the given message appear in the console.
+
+        Note: it must be the *exact* string as printed by e.g. console.log.
+        If you need more control on the predicate (e.g. if you want to match a
+        substring), use self.page.expect_console_message directly.
+        """
+        with self.page.expect_console_message(lambda msg: msg.text == text):
+            pass
+
 
 class ConsoleMessageCollection:
     """
