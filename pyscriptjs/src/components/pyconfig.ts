@@ -3,7 +3,6 @@ import { BaseEvalElement } from './base';
 import {
     initializers,
     loadedEnvironments,
-    mode,
     postInitializers,
     pyodideLoaded,
     scriptsQueue,
@@ -14,6 +13,7 @@ import {
 import { loadInterpreter } from '../interpreter';
 import type { PyLoader } from './pyloader';
 import type { PyScript } from './pyscript';
+import type { PyodideInterface } from '../pyodide';
 
 const DEFAULT_RUNTIME = {
     src: 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js',
@@ -63,14 +63,6 @@ scriptsQueue.subscribe((value: PyScript[]) => {
     console.log('post initializers set');
 });
 
-let mode_: string;
-mode.subscribe((value: string) => {
-    mode_ = value;
-    console.log('post initializers set');
-});
-
-let pyodideReadyPromise;
-
 let loader: PyLoader | undefined;
 globalLoader.subscribe(value => {
     loader = value;
@@ -86,11 +78,9 @@ export class PyodideRuntime extends Object {
 
     async initialize() {
         loader?.log('Loading runtime...');
-        pyodideReadyPromise = loadInterpreter(this.src);
-        const pyodide = await pyodideReadyPromise;
+        const pyodide: PyodideInterface = await loadInterpreter(this.src);
         const newEnv = {
             id: 'a',
-            promise: pyodideReadyPromise,
             runtime: pyodide,
             state: 'loading',
         };
@@ -112,14 +102,11 @@ export class PyodideRuntime extends Object {
             await initializer();
         }
 
-        // now we can actually execute the page scripts if we are in play mode
         loader?.log('Initializing scripts...');
-        if (mode_ == 'play') {
-            for (const script of scriptsQueue_) {
-                script.evaluate();
-            }
-            scriptsQueue.set([]);
+        for (const script of scriptsQueue_) {
+            await script.evaluate();
         }
+        scriptsQueue.set([]);
 
         // now we call all post initializers AFTER we actually executed all page scripts
         loader?.log('Running post initializers...');
@@ -129,11 +116,9 @@ export class PyodideRuntime extends Object {
             console.log('------ loader closed ------');
         }
 
-        setTimeout(() => {
-            for (const initializer of postInitializers_) {
-                initializer();
-            }
-        }, 3000);
+        for (const initializer of postInitializers_) {
+            await initializer();
+        }
     }
 }
 

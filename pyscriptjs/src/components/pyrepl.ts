@@ -4,33 +4,9 @@ import { Compartment, StateCommand } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
-
-import { componentDetailsNavOpen, loadedEnvironments, mode, pyodideLoaded, type Environment } from '../stores';
 import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
 
-// Premise used to connect to the first available pyodide interpreter
-
-let pyodideReadyPromise;
-let environments: Record<Environment['id'], Environment> = {};
-let currentMode;
-
-pyodideLoaded.subscribe(value => {
-    pyodideReadyPromise = value;
-});
-
-loadedEnvironments.subscribe(value => {
-    environments = value;
-});
-
-let propertiesNavOpen;
-componentDetailsNavOpen.subscribe(value => {
-    propertiesNavOpen = value;
-});
-
-mode.subscribe(value => {
-    currentMode = value;
-});
 
 function createCmdHandler(el: PyRepl): StateCommand {
     // Creates a codemirror cmd handler that calls the el.evaluate when an event
@@ -217,12 +193,7 @@ export class PyRepl extends BaseEvalElement {
     }
 
     getSourceFromElement(): string {
-        const sourceStrings = [
-            `output_manager.change(out="${this.outputElement.id}", append=True)`,
-            ...this.editor.state.doc.toString().split('\n'),
-        ];
-
-        return sourceStrings.join('\n');
+        return this.editor.state.doc.toString();
     }
 
     render() {

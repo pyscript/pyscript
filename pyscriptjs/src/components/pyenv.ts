@@ -3,10 +3,10 @@ import * as jsyaml from 'js-yaml';
 import { pyodideLoaded, addInitializer } from '../stores';
 import { loadPackage, loadFromFile } from '../interpreter';
 import { handleFetchError } from '../utils';
+import type { PyodideInterface } from '../pyodide';
 
 // Premise used to connect to the first available pyodide interpreter
-let pyodideReadyPromise;
-let runtime;
+let runtime: PyodideInterface;
 
 pyodideLoaded.subscribe(value => {
     runtime = value;
@@ -18,7 +18,7 @@ export class PyEnv extends HTMLElement {
     wrapper: HTMLElement;
     code: string;
     environment: unknown;
-    runtime: any;
+    runtime: PyodideInterface;
     env: string[];
     paths: string[];
 
@@ -67,7 +67,7 @@ export class PyEnv extends HTMLElement {
                     await loadFromFile(singleFile, runtime);
                 } catch (e) {
                     //Should we still export full error contents to console?
-                    handleFetchError(e, singleFile);
+                    handleFetchError(<Error>e, singleFile);
                 }
             }
             console.log('paths loaded');

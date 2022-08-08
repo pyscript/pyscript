@@ -18,10 +18,10 @@ export default {
     sourcemap: true,
     format: "iife",
     name: "app",
-    file: "examples/build/pyscript.js",
+    file: "build/pyscript.js",
     },
     {
-      file: "examples/build/pyscript.min.js",
+      file: "build/pyscript.min.js",
       format: "iife",
       sourcemap: true,
       plugins: [terser()],

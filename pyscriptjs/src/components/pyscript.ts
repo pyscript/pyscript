@@ -3,7 +3,6 @@ import {
     addPostInitializer,
     addToScriptsQueue,
     loadedEnvironments,
-    mode,
     pyodideLoaded,
     type Environment,
 } from '../stores';
@@ -12,19 +11,14 @@ import { BaseEvalElement } from './base';
 import type { PyodideInterface } from '../pyodide';
 
 // Premise used to connect to the first available pyodide interpreter
-let pyodideReadyPromise;
+let pyodideReadyPromise: PyodideInterface;
 let environments: Record<Environment['id'], Environment> = {};
-let currentMode;
 
 pyodideLoaded.subscribe(value => {
     pyodideReadyPromise = value;
 });
 loadedEnvironments.subscribe(value => {
     environments = value;
-});
-
-mode.subscribe(value => {
-    currentMode = value;
 });
 
 export class PyScript extends BaseEvalElement {
@@ -74,13 +68,8 @@ export class PyScript extends BaseEvalElement {
             }
         }
 
-        if (currentMode == 'edit') {
-            // TODO: We need to build a plan for this
-            this.appendChild(mainDiv);
-        } else {
-            this.appendChild(mainDiv);
-            addToScriptsQueue(this);
-        }
+        this.appendChild(mainDiv);
+        addToScriptsQueue(this);
 
         console.log('connected');
 
@@ -222,7 +211,7 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
 /** Initialize all elements with py-on* handlers attributes  */
 async function initHandlers() {
     console.log('Collecting nodes...');
-    const pyodide = await pyodideReadyPromise;
+    const pyodide = pyodideReadyPromise;
     for (const pyAttribute of pyAttributeToEvent.keys()) {
         await createElementsWithEventListeners(pyodide, pyAttribute);
     }
@@ -263,7 +252,7 @@ async function createElementsWithEventListeners(pyodide: PyodideInterface, pyAtt
 /** Mount all elements with attribute py-mount into the Python namespace */
 async function mountElements() {
     console.log('Collecting nodes to be mounted into python namespace...');
-    const pyodide = await pyodideReadyPromise;
+    const pyodide = pyodideReadyPromise;
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
 
     let source = '';
