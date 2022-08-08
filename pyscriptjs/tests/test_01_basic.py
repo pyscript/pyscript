@@ -1,3 +1,5 @@
+import re
+
 from .support import PyScriptTest
 
 
@@ -6,10 +8,13 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
-                print('<b>hello pyscript</b>')
+                print('hello pyscript')
             </py-script>
         """
         )
-        content = self.page.content()
-        # XXX we should test the DOM
-        assert "hello pyscript" in content
+        # this is a very ugly way of checking the content of the DOM. If we
+        # find ourselves to write a lot of code in this style, we will
+        # probably want to write a nicer API for it.
+        inner_html = self.page.locator("py-script").inner_html()
+        pattern = r'<div id="py-.*">hello pyscript</div>'
+        assert re.search(pattern, inner_html)
