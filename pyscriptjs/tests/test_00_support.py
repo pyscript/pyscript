@@ -23,7 +23,7 @@ class TestSupport(PyScriptTest):
           </body>
         </html>
         """
-        self.write("mytest.html", doc)
+        self.writefile("mytest.html", doc)
         self.goto("mytest.html")
         content = self.page.content()
         assert "<h1>Hello world</h1>" in content
@@ -46,7 +46,7 @@ class TestSupport(PyScriptTest):
           </body>
         </html>
         """
-        self.write("mytest.html", doc)
+        self.writefile("mytest.html", doc)
         self.goto("mytest.html")
         assert len(self.console.all.messages) == 6
         assert self.console.all.lines == [
@@ -80,7 +80,7 @@ class TestSupport(PyScriptTest):
           </body>
         </html>
         """
-        self.write("mytest.html", doc)
+        self.writefile("mytest.html", doc)
         self.goto("mytest.html")
         with pytest.raises(Error, match="this is an error"):
             self.check_errors()
@@ -96,7 +96,7 @@ class TestSupport(PyScriptTest):
           </body>
         </html>
         """
-        self.write("mytest.html", doc)
+        self.writefile("mytest.html", doc)
         self.goto("mytest.html")
         with pytest.raises(MultipleErrors) as exc:
             self.check_errors()

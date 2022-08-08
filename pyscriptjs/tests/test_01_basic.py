@@ -19,7 +19,7 @@ class TestBasic(PyScriptTest):
           </body>
         </html>
         """
-        self.write("hello.html", doc)
+        self.writefile("hello.html", doc)
         self.goto("hello.html")
         wait_for_load(self.page)
         content = self.page.content()

@@ -80,7 +80,10 @@ class PyScriptTest:
             self._page_errors = []
             raise MultipleErrors(errors)
 
-    def write(self, filename, content):
+    def writefile(self, filename, content):
+        """
+        Very thin helper to write a file in the tmpdir
+        """
         f = self.tmpdir.join(filename)
         f.write(content)
 
