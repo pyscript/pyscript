@@ -27,7 +27,8 @@ class PyScriptTest:
     """
 
     @pytest.fixture()
-    def init(self, tmpdir, http_server, page):
+    def init(self, request, tmpdir, http_server, page):
+        self.testname = request.function.__name__.replace("test_", "")
         self.tmpdir = tmpdir
         # create a symlink to BUILD inside tmpdir
         tmpdir.join("build").mksymlinkto(BUILD)
@@ -107,6 +108,43 @@ class PyScriptTest:
             # if we are here it means that self.check_errors didn't
             # raise. Just re-raise the original TimeoutError
             raise
+
+    def wait_for_pyscript(self):
+        """
+        Wait until pyscript has been fully loaded.
+        """
+        # this is printed by pyconfig.ts:PyodideRuntime.initialize
+        self.wait_for_console("===PyScript page fully initialized===")
+
+    def pyscript_run(self, snippet):
+        """
+        Main entry point for pyscript tests.
+
+        snippet contains a fragment of HTML which will be put inside a full
+        HTML document. In particular, the <head> automatically contains the
+        correct <script> and <link> tags which are necessary to load pyscript
+        correctly.
+
+        This method does the following:
+          - write a full HTML file containing the snippet
+          - open a playwright page for it
+          - wait until pyscript has been fully loaded
+        """
+        doc = f"""
+        <html>
+          <head>
+              <link rel="stylesheet" href="{self.http_server}/build/pyscript.css" />
+              <script defer src="{self.http_server}/build/pyscript.js"></script>
+          </head>
+          <body>
+            {snippet}
+          </body>
+        </html>
+        """
+        filename = f"{self.testname}.html"
+        self.writefile(filename, doc)
+        self.goto(filename)
+        self.wait_for_pyscript()
 
 
 # ============== Helpers and utility functions ==============
