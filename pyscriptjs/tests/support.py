@@ -1,23 +1,8 @@
 import py
 import pytest
-from playwright.sync_api import Error  # noqa: F401
 
 ROOT = py.path.local(__file__).dirpath("..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
-
-
-class MultipleErrors(Exception):
-    """
-    This is raised in case we get multiple JS errors in the page
-    """
-
-    def __init__(self, errors):
-        lines = ["Multiple JS errors found:"]
-        for err in errors:
-            lines.append(repr(err))
-        msg = "\n".join(lines)
-        super().__init__(msg)
-        self.errors = errors
 
 
 @pytest.mark.usefixtures("init")
@@ -74,11 +59,11 @@ class PyScriptTest:
         elif len(self._page_errors) == 1:
             # if there is a single error, just raise it
             exc = self._page_errors.pop()
-            raise exc
+            raise JsError(exc)
         else:
             errors = self._page_errors
             self._page_errors = []
-            raise MultipleErrors(errors)
+            raise JsMultipleErrors(errors)
 
     def writefile(self, filename, content):
         """
@@ -101,6 +86,50 @@ class PyScriptTest:
         """
         with self.page.expect_console_message(lambda msg: msg.text == text):
             pass
+
+
+# ============== Helpers and utility functions ==============
+
+
+class JsError(Exception):
+    """
+    Represent an exception which happened in JS.
+
+    It's a thin wrapper around playwright.sync_api.Error, with two important
+    differences:
+
+    1. it has a better name: if you see JsError in a trabeback, it's
+       immediately obvious that it's a JS exception.
+
+    2. Show also the JS stacktrace by default, contrarily to
+       playwright.sync_api.Error
+    """
+
+    def __init__(self, error):
+        super().__init__(self.format_playwright_error(error))
+        self.error = error
+
+    @staticmethod
+    def format_playwright_error(error):
+        # apparently, playwright Error.stack contains all the info that we
+        # want: exception name, message and stacktrace. The docs say that
+        # error.stack is optional, so fallback to the standard repr if it's
+        # unavailable.
+        return error.stack or str(error)
+
+
+class JsMultipleErrors(Exception):
+    """
+    This is raised in case we get multiple JS errors in the page
+    """
+
+    def __init__(self, errors):
+        lines = ["Multiple JS errors found:"]
+        for err in errors:
+            lines.append(JsError.format_playwright_error(err))
+        msg = "\n".join(lines)
+        super().__init__(msg)
+        self.errors = errors
 
 
 class ConsoleMessageCollection:

@@ -2,7 +2,7 @@ import textwrap
 
 import pytest
 
-from .support import Error, MultipleErrors, PyScriptTest
+from .support import JsError, JsMultipleErrors, PyScriptTest
 
 
 class TestSupport(PyScriptTest):
@@ -82,8 +82,14 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(Error, match="this is an error"):
+        with pytest.raises(JsError) as exc:
             self.check_errors()
+        # check that the exception message contains the error message and the
+        # stack trace
+        msg = str(exc.value)
+        assert "Error: this is an error" in msg
+        assert f"at {self.http_server}/mytest.html" in msg
+        #
         # after a call to check_errors, the errors are cleared
         self.check_errors()
 
@@ -98,7 +104,7 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(MultipleErrors) as exc:
+        with pytest.raises(JsMultipleErrors) as exc:
             self.check_errors()
         assert "error 1" in str(exc.value)
         assert "error 2" in str(exc.value)
