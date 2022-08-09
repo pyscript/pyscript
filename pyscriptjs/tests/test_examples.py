@@ -33,7 +33,6 @@ LOADING_MESSAGES = [
 ]
 
 EXAMPLES = [
-    "altair",
     "bokeh",
     "bokeh_interactive",
     "d3",
@@ -53,11 +52,6 @@ EXAMPLES = [
 ]
 
 TEST_PARAMS = {
-    "altair": {
-        "file": "examples/altair.html",
-        "pattern": '<canvas.*?class=\\"marks\\".*?>',
-        "title": "Altair",
-    },
     "bokeh": {
         "file": "examples/bokeh.html",
         "pattern": '<div.*class=\\"bk\\".*>',
@@ -206,6 +200,13 @@ class TestExamples(PyScriptTest):
                 time.sleep(1)
         else:
             assert False, "Espresso time not found :("
+
+    def test_altair(self):
+        # XXX improve this test
+        self.goto("examples/altair.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Altair"
+        wait_for_render(self.page, "*", '<canvas.*?class=\\"marks\\".*?>')
 
     @pytest.mark.parametrize("example", EXAMPLES)
     def test_examples(self, example):
