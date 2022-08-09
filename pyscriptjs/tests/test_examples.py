@@ -38,7 +38,6 @@ EXAMPLES = [
     "bokeh_interactive",
     "d3",
     "folium",
-    "hello_world",
     "matplotlib",
     "numpy_canvas_fractals",
     "panel",
@@ -79,11 +78,6 @@ TEST_PARAMS = {
         "file": "examples/folium.html",
         "pattern": "<iframe srcdoc=",
         "title": "Folium",
-    },
-    "hello_world": {
-        "file": "examples/hello_world.html",
-        "pattern": "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+",
-        "title": "PyScript Hello World",
     },
     "matplotlib": {
         "file": "examples/matplotlib.html",
@@ -193,6 +187,14 @@ class TestExamples(PyScriptTest):
     def chdir(self):
         # make sure that the http server serves from the right directory
         ROOT.join("pyscriptjs").chdir()
+
+    def test_hello_world(self):
+        self.goto("examples/hello_world.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "PyScript Hello World"
+        content = self.page.content()
+        pattern = "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+"  # e.g. 08/09/2022 15:57:32
+        assert re.search(pattern, content)
 
     @pytest.mark.parametrize("example", EXAMPLES)
     def test_examples(self, example):
