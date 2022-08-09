@@ -13,11 +13,10 @@ session.
 import math
 import re
 import time
-from urllib.parse import urljoin
 
 import pytest
 
-from .support import ROOT
+from .support import ROOT, PyScriptTest
 
 MAX_TEST_TIME = 30  # Number of seconds allowed for checking a testing condition
 TEST_TIME_INCREMENT = 0.25  # 1/4 second, the length of each iteration
@@ -188,46 +187,44 @@ def wait_for_render(page, selector, pattern):
     assert py_rendered  # nosec
 
 
-@pytest.mark.parametrize("example", EXAMPLES)
-def test_examples(example, http_server, page):
-    # make sure that the http server serves from the right directory
-    ROOT.join("pyscriptjs").chdir()
+@pytest.mark.usefixtures("chdir")
+class TestExamples(PyScriptTest):
+    @pytest.fixture()
+    def chdir(self):
+        # make sure that the http server serves from the right directory
+        ROOT.join("pyscriptjs").chdir()
 
-    base_url = http_server
-    example_path = urljoin(base_url, TEST_PARAMS[example]["file"])
+    @pytest.mark.parametrize("example", EXAMPLES)
+    def test_examples(self, example):
+        filename = TEST_PARAMS[example]["file"]
+        self.goto(filename)
+        title = self.page.title()
 
-    page.goto(example_path, wait_until="commit")
-
-    title = page.title()
-
-    # STEP 1: Check page title proper initial loading of the example page
-    expected_title = TEST_PARAMS[example]["title"]
-    if isinstance(expected_title, list):
-        # One example's title changes so expected_title is a list of possible
-        # titles in that case
-        assert title in expected_title  # nosec
-    else:
-        assert title == expected_title  # nosec
-
-    # STEP 2: Test that pyodide is loading via messages displayed during loading
-    wait_for_load(page)
-
-    # Step 3: Wait for expected pattern to appear on page
-    wait_for_render(page, "*", TEST_PARAMS[example]["pattern"])
-
-
-def test_simple_clock(http_server, page):
-    example_path = urljoin(http_server, TEST_PARAMS["simple_clock"]["file"])
-
-    page.goto(example_path, wait_until="commit")
-
-    wait_for_load(page)
-
-    pattern = r"\d{2}/\d{2}/\d{4}, \d{2}:\d{2}:\d{2}"
-    for _ in range(TEST_ITERATIONS):
-        content = page.inner_html("#outputDiv2")
-        if re.match(pattern, content) and int(content[-1]) in (0, 4, 8):
-            assert page.inner_html("#outputDiv3") == "It's espresso time!"
-            break
+        # STEP 1: Check page title proper initial loading of the example page
+        expected_title = TEST_PARAMS[example]["title"]
+        if isinstance(expected_title, list):
+            # One example's title changes so expected_title is a list of possible
+            # titles in that case
+            assert title in expected_title  # nosec
         else:
-            time.sleep(TEST_TIME_INCREMENT)
+            assert title == expected_title  # nosec
+
+        # STEP 2: wait for pyscript to execute
+        wait_for_load(self.page)
+
+        # Step 3: Wait for expected pattern to appear on page
+        wait_for_render(self.page, "*", TEST_PARAMS[example]["pattern"])
+
+    def test_simple_clock(self):
+        filename = TEST_PARAMS["simple_clock"]["file"]
+        self.goto(filename)
+        self.wait_for_pyscript()
+
+        pattern = r"\d{2}/\d{2}/\d{4}, \d{2}:\d{2}:\d{2}"
+        for _ in range(TEST_ITERATIONS):
+            content = self.page.inner_html("#outputDiv2")
+            if re.match(pattern, content) and int(content[-1]) in (0, 4, 8):
+                assert self.page.inner_html("#outputDiv3") == "It's espresso time!"
+                break
+            else:
+                time.sleep(TEST_TIME_INCREMENT)
