@@ -23,6 +23,15 @@ class PyScriptTest:
 
       - after each test, self.check_errors() is automatically run to ensure
         that no JS error passes uncaught.
+
+      - self.wait_for_console waits until the specified message appears in the
+        console
+
+      - self.wait_for_pyscript waits until all the PyScript tags have been
+        evaluated
+
+      - self.pyscript_run is the main entry point for pyscript tests: it
+        creates an HTML page to run the specified snippet.
     """
 
     @pytest.fixture()
