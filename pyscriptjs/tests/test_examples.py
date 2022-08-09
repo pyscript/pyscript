@@ -33,7 +33,6 @@ LOADING_MESSAGES = [
 ]
 
 EXAMPLES = [
-    "bokeh",
     "bokeh_interactive",
     "d3",
     "folium",
@@ -52,11 +51,6 @@ EXAMPLES = [
 ]
 
 TEST_PARAMS = {
-    "bokeh": {
-        "file": "examples/bokeh.html",
-        "pattern": '<div.*class=\\"bk\\".*>',
-        "title": "Bokeh Example",
-    },
     "bokeh_interactive": {
         "file": "examples/bokeh_interactive.html",
         "pattern": '<div.*?class=\\"bk\\".*?>',
@@ -207,6 +201,13 @@ class TestExamples(PyScriptTest):
         self.wait_for_pyscript()
         assert self.page.title() == "Altair"
         wait_for_render(self.page, "*", '<canvas.*?class=\\"marks\\".*?>')
+
+    def test_bokeh(self):
+        # XXX improve this test
+        self.goto("examples/bokeh.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Bokeh Example"
+        wait_for_render(self.page, "*", '<div.*class=\\"bk\\".*>')
 
     @pytest.mark.parametrize("example", EXAMPLES)
     def test_examples(self, example):
