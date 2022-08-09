@@ -113,6 +113,7 @@ export class PyodideRuntime extends Object {
 
         if (appConfig_ && appConfig_.autoclose_loader) {
             loader?.close();
+            console.log('------ loader closed ------');
         }
 
         for (const initializer of postInitializers_) {
