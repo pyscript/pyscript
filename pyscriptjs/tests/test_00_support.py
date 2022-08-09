@@ -8,15 +8,17 @@ from .support import JsError, JsMultipleErrors, PyScriptTest
 
 class TestSupport(PyScriptTest):
     """
-    These are NOT tests about pyscripts.
+    These are NOT tests about PyScript.
 
     They test the PyScriptTest class, i.e. we want to ensure that all the
     testing machinery that we have works correctly.
     """
 
     def test_basic(self):
-        # very basic test, just to check that we can write, serve and read a
-        # simple HTML (no pyscript yet)
+        """
+        Very basic test, just to check that we can write, serve and read a simple
+        HTML (no pyscript yet)
+        """
         doc = """
         <html>
           <body>
