@@ -1,6 +1,5 @@
 import py
 import pytest
-from playwright import sync_api
 
 ROOT = py.path.local(__file__).dirpath("..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
@@ -76,6 +75,12 @@ class PyScriptTest:
         if exc:
             raise exc
 
+    def clear_errors(self):
+        """
+        Clear all JS errors.
+        """
+        self._page_errors = []
+
     def writefile(self, filename, content):
         """
         Very thin helper to write a file in the tmpdir
@@ -87,34 +92,49 @@ class PyScriptTest:
         url = f"{self.http_server}/{path}"
         self.page.goto(url)
 
-    def wait_for_console(self, text, *, timeout=None):
+    def wait_for_console(self, text, *, timeout=None, check_errors=True):
         """
         Wait until the given message appear in the console.
 
         Note: it must be the *exact* string as printed by e.g. console.log.
         If you need more control on the predicate (e.g. if you want to match a
         substring), use self.page.expect_console_message directly.
+
+        timeout is expressed in milliseconds. If it's None, it will use
+        playwright's own default value, which is 30 seconds).
+
+        If check_errors is True (the default), it also checks that no JS
+        errors were raised during the waiting.
         """
         pred = lambda msg: msg.text == text
         try:
             with self.page.expect_console_message(pred, timeout=timeout):
                 pass
-        except sync_api.TimeoutError:
-            # if there are JS errors, there is a good chance that the
-            # TimeoutError occurred because the JS code crashed earlier. By
-            # calling self.check_errors() we ensure that those are reported in
-            # the traceback.
-            self.check_errors()
-            # if we are here it means that self.check_errors didn't
-            # raise. Just re-raise the original TimeoutError
-            raise
+        finally:
+            # raise JsError if there were any javascript exception. Note that
+            # this might happen also in case of a TimeoutError. In that case,
+            # the JsError will shadow the TimeoutError but this is correct,
+            # because it's very likely that the console message never appeared
+            # precisely because of the exception in JS.
+            if check_errors:
+                self.check_errors()
 
-    def wait_for_pyscript(self):
+    def wait_for_pyscript(self, *, timeout=None, check_errors=True):
         """
         Wait until pyscript has been fully loaded.
+
+        Timeout is expressed in milliseconds. If it's None, it will use
+        playwright's own default value, which is 30 seconds).
+
+        If check_errors is True (the default), it also checks that no JS
+        errors were raised during the waiting.
         """
         # this is printed by pyconfig.ts:PyodideRuntime.initialize
-        self.wait_for_console("===PyScript page fully initialized===")
+        self.wait_for_console(
+            "===PyScript page fully initialized===",
+            timeout=timeout,
+            check_errors=check_errors,
+        )
 
     def pyscript_run(self, snippet):
         """
