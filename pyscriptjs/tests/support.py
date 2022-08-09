@@ -186,7 +186,7 @@ class JsError(Exception):
     It's a thin wrapper around playwright.sync_api.Error, with two important
     differences:
 
-    1. it has a better name: if you see JsError in a trabeback, it's
+    1. it has a better name: if you see JsError in a traceback, it's
        immediately obvious that it's a JS exception.
 
     2. Show also the JS stacktrace by default, contrarily to
