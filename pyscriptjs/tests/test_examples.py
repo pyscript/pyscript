@@ -46,7 +46,6 @@ EXAMPLES = [
     "panel_stream",
     "repl",
     "repl2",
-    "simple_clock",
     "todo",
     "todo_pylist",
     "toga_freedom",
@@ -115,11 +114,6 @@ TEST_PARAMS = {
         "file": "examples/repl2.html",
         "pattern": "<py-repl.*?>",
         "title": "Custom REPL Example",
-    },
-    "simple_clock": {
-        "file": "examples/simple_clock.html",
-        "pattern": "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+",
-        "title": "Simple Clock Demo",
     },
     "todo": {
         "file": "examples/todo.html",
@@ -196,6 +190,23 @@ class TestExamples(PyScriptTest):
         pattern = "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+"  # e.g. 08/09/2022 15:57:32
         assert re.search(pattern, content)
 
+    def test_simple_clock(self):
+        self.goto("examples/simple_clock.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Simple Clock Demo"
+        pattern = r"\d{2}/\d{2}/\d{4}, \d{2}:\d{2}:\d{2}"
+        # run for 5 seconds to be sure that we see the page with "It's
+        # espresso time!"
+        for _ in range(5):
+            content = self.page.inner_html("#outputDiv2")
+            if re.match(pattern, content) and int(content[-1]) in (0, 4, 8):
+                assert self.page.inner_html("#outputDiv3") == "It's espresso time!"
+                break
+            else:
+                time.sleep(1)
+        else:
+            assert False, "Espresso time not found :("
+
     @pytest.mark.parametrize("example", EXAMPLES)
     def test_examples(self, example):
         filename = TEST_PARAMS[example]["file"]
@@ -216,17 +227,3 @@ class TestExamples(PyScriptTest):
 
         # Step 3: Wait for expected pattern to appear on page
         wait_for_render(self.page, "*", TEST_PARAMS[example]["pattern"])
-
-    def test_simple_clock(self):
-        filename = TEST_PARAMS["simple_clock"]["file"]
-        self.goto(filename)
-        self.wait_for_pyscript()
-
-        pattern = r"\d{2}/\d{2}/\d{4}, \d{2}:\d{2}:\d{2}"
-        for _ in range(TEST_ITERATIONS):
-            content = self.page.inner_html("#outputDiv2")
-            if re.match(pattern, content) and int(content[-1]) in (0, 4, 8):
-                assert self.page.inner_html("#outputDiv3") == "It's espresso time!"
-                break
-            else:
-                time.sleep(TEST_TIME_INCREMENT)
