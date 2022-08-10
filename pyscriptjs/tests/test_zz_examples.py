@@ -197,7 +197,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() in ["Loading...", "Freedom Units"]
         wait_for_render(self.page, "*", "<(main|div).*?id=['\"]toga_\\d+['\"].*?>")
 
-    @pytest.mark.xfail(reason="it never finishes loading")
+    @pytest.mark.xfail(reason="it never finishes loading, issue #678")
     def test_webgl_raycaster_index(self):
         # XXX improve this test
         self.goto("examples/webgl/raycaster/index.html")
