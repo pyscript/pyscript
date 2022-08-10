@@ -153,9 +153,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
-    @pytest.mark.xfail(
-        reason="JsError: TypeError: Cannot read properties of undefined (reading 'setAttribute')"
-    )
+    @pytest.mark.xfail(reason="JsError: issue #677")
     def test_panel_stream(self):
         # XXX improve this test
         self.goto("examples/panel_stream.html")
