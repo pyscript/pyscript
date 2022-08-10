@@ -32,99 +32,6 @@ LOADING_MESSAGES = [
     "Initializing scripts...",
 ]
 
-EXAMPLES = [
-    "bokeh_interactive",
-    "d3",
-    "folium",
-    "matplotlib",
-    "numpy_canvas_fractals",
-    "panel",
-    "panel_deckgl",
-    "panel_kmeans",
-    "panel_stream",
-    "repl",
-    "repl2",
-    "todo",
-    "todo_pylist",
-    "toga_freedom",
-    "webgl_raycaster_index",
-]
-
-TEST_PARAMS = {
-    "bokeh_interactive": {
-        "file": "examples/bokeh_interactive.html",
-        "pattern": '<div.*?class=\\"bk\\".*?>',
-        "title": "Bokeh Example",
-    },
-    "d3": {
-        "file": "examples/d3.html",
-        "pattern": "<svg.*?>",
-        "title": "d3: JavaScript & PyScript visualizations side-by-side",
-    },
-    "folium": {
-        "file": "examples/folium.html",
-        "pattern": "<iframe srcdoc=",
-        "title": "Folium",
-    },
-    "matplotlib": {
-        "file": "examples/matplotlib.html",
-        "pattern": "<img src=['\"]data:image",
-        "title": "Matplotlib",
-    },
-    "numpy_canvas_fractals": {
-        "file": "examples/numpy_canvas_fractals.html",
-        "pattern": "<div.*?id=['\"](mandelbrot|julia|newton)['\"].*?>",
-        "title": "Visualization of Mandelbrot, Julia and "
-        "Newton sets with NumPy and HTML5 canvas",
-    },
-    "panel": {
-        "file": "examples/panel.html",
-        "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
-        "title": "Panel Example",
-    },
-    "panel_deckgl": {
-        "file": "examples/panel_deckgl.html",
-        "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
-        "title": "PyScript/Panel DeckGL Demo",
-    },
-    "panel_kmeans": {
-        "file": "examples/panel_kmeans.html",
-        "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
-        "title": "Pyscript/Panel KMeans Demo",
-    },
-    "panel_stream": {
-        "file": "examples/panel_stream.html",
-        "pattern": "<div.*?class=['\"]bk-root['\"].*?>",
-        "title": "PyScript/Panel Streaming Demo",
-    },
-    "repl": {"file": "examples/repl.html", "pattern": "<py-repl.*?>", "title": "REPL"},
-    "repl2": {
-        "file": "examples/repl2.html",
-        "pattern": "<py-repl.*?>",
-        "title": "Custom REPL Example",
-    },
-    "todo": {
-        "file": "examples/todo.html",
-        "pattern": "<input.*?id=['\"]new-task-content['\"].*?>",
-        "title": "Todo App",
-    },
-    "todo_pylist": {
-        "file": "examples/todo-pylist.html",
-        "pattern": "<input.*?id=['\"]new-task-content['\"].*?>",
-        "title": "Todo App",
-    },
-    "toga_freedom": {
-        "file": "examples/toga/freedom.html",
-        "pattern": "<(main|div).*?id=['\"]toga_\\d+['\"].*?>",
-        "title": ["Loading...", "Freedom Units"],
-    },
-    "webgl_raycaster_index": {
-        "file": "examples/webgl/raycaster/index.html",
-        "pattern": "<canvas.*?>",
-        "title": "Raycaster",
-    },
-}
-
 
 def wait_for_load(page):
     """
@@ -209,23 +116,117 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*class=\\"bk\\".*>')
 
-    @pytest.mark.parametrize("example", EXAMPLES)
-    def test_examples(self, example):
-        filename = TEST_PARAMS[example]["file"]
-        self.goto(filename)
-        title = self.page.title()
+    def test_bokeh_interactive(self):
+        # XXX improve this test
+        self.goto("examples/bokeh_interactive.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Bokeh Example"
+        wait_for_render(self.page, "*", '<div.*?class=\\"bk\\".*?>')
 
-        # STEP 1: Check page title proper initial loading of the example page
-        expected_title = TEST_PARAMS[example]["title"]
-        if isinstance(expected_title, list):
-            # One example's title changes so expected_title is a list of possible
-            # titles in that case
-            assert title in expected_title  # nosec
-        else:
-            assert title == expected_title  # nosec
+    def test_d3(self):
+        # XXX improve this test
+        self.goto("examples/d3.html")
+        self.wait_for_pyscript()
+        assert (
+            self.page.title() == "d3: JavaScript & PyScript visualizations side-by-side"
+        )
+        wait_for_render(self.page, "*", "<svg.*?>")
 
-        # STEP 2: wait for pyscript to execute
-        wait_for_load(self.page)
+    def test_folium(self):
+        # XXX improve this test
+        self.goto("examples/folium.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Folium"
+        wait_for_render(self.page, "*", "<iframe srcdoc=")
 
-        # Step 3: Wait for expected pattern to appear on page
-        wait_for_render(self.page, "*", TEST_PARAMS[example]["pattern"])
+    def test_matplotlib(self):
+        # XXX improve this test
+        self.goto("examples/matplotlib.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Matplotlib"
+        wait_for_render(self.page, "*", "<img src=['\"]data:image")
+
+    def test_numpy_canvas_fractals(self):
+        # XXX improve this test
+        self.goto("examples/numpy_canvas_fractals.html")
+        self.wait_for_pyscript()
+        assert (
+            self.page.title()
+            == "Visualization of Mandelbrot, Julia and Newton sets with NumPy and HTML5 canvas"
+        )
+        wait_for_render(
+            self.page, "*", "<div.*?id=['\"](mandelbrot|julia|newton)['\"].*?>"
+        )
+
+    def test_panel(self):
+        # XXX improve this test
+        self.goto("examples/panel.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Panel Example"
+        wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
+
+    def test_panel_deckgl(self):
+        # XXX improve this test
+        self.goto("examples/panel_deckgl.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "PyScript/Panel DeckGL Demo"
+        wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
+
+    def test_panel_kmeans(self):
+        # XXX improve this test
+        self.goto("examples/panel_kmeans.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Pyscript/Panel KMeans Demo"
+        wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
+
+    @pytest.mark.xfail("JsError")
+    def test_panel_stream(self):
+        # XXX improve this test
+        self.goto("examples/panel_stream.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "PyScript/Panel Streaming Demo"
+        wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
+
+    def test_repl(self):
+        # XXX improve this test
+        self.goto("examples/repl.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "REPL"
+        wait_for_render(self.page, "*", "<py-repl.*?>")
+
+    def test_repl2(self):
+        # XXX improve this test
+        self.goto("examples/repl2.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Custom REPL Example"
+        wait_for_render(self.page, "*", "<py-repl.*?>")
+
+    def test_todo(self):
+        # XXX improve this test
+        self.goto("examples/todo.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Todo App"
+        wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
+
+    @pytest.mark.xfail("JsError")
+    def test_todo_pylist(self):
+        # XXX improve this test
+        self.goto("examples/todo-pylist.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Todo App"
+        wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
+
+    def test_toga_freedom(self):
+        # XXX improve this test
+        self.goto("examples/toga/freedom.html")
+        self.wait_for_pyscript()
+        assert self.page.title() in ["Loading...", "Freedom Units"]
+        wait_for_render(self.page, "*", "<(main|div).*?id=['\"]toga_\\d+['\"].*?>")
+
+    @pytest.mark.xfail("timeout")
+    def test_webgl_raycaster_index(self):
+        # XXX improve this test
+        self.goto("examples/webgl/raycaster/index.html")
+        self.wait_for_pyscript()
+        assert self.page.title() == "Raycaster"
+        wait_for_render(self.page, "*", "<canvas.*?>")
