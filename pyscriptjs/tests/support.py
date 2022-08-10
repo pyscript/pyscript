@@ -66,6 +66,15 @@ class PyScriptTest:
         # this extra print is useful when using pytest -s, else we start printing
         # in the middle of the line
         print()
+        #
+        # if you use pytest --headed you can see the browser page while
+        # playwright executes the tests. However, the page is closed very
+        # quickly as soon as the test finishes. If you want to pause the test
+        # to have time to inspect it manually, uncomment the next two
+        # lines. The lines after the 'yield' will be executed during the
+        # teardown, leaving the page open until you exit pdb.
+        ## yield
+        ## import pdb;pdb.set_trace()
 
     def init_page(self, page):
         self.page = page
