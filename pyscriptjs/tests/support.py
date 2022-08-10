@@ -1,3 +1,5 @@
+import time
+
 import py
 import pytest
 
@@ -35,7 +37,7 @@ class PyScriptTest:
     """
 
     @pytest.fixture()
-    def init(self, request, tmpdir, http_server, page):
+    def init(self, request, tmpdir, http_server, logger, page):
         """
         Fixture to automatically initialize all the tests in this class and its
         subclasses.
@@ -56,13 +58,18 @@ class PyScriptTest:
         self.tmpdir = tmpdir
         # create a symlink to BUILD inside tmpdir
         tmpdir.join("build").mksymlinkto(BUILD)
-        self.http_server = http_server
         self.tmpdir.chdir()
+        self.http_server = http_server
+        self.logger = logger
         self.init_page(page)
+        #
+        # this extra print is useful when using pytest -s, else we start printing
+        # in the middle of the line
+        print()
 
     def init_page(self, page):
         self.page = page
-        self.console = ConsoleMessageCollection()
+        self.console = ConsoleMessageCollection(self.logger)
         self._page_errors = []
         page.on("console", self.console.add_message)
         page.on("pageerror", self._on_pageerror)
@@ -75,8 +82,7 @@ class PyScriptTest:
         self.check_errors()
 
     def _on_pageerror(self, error):
-        line = f"[JS exception   ] {error.stack}"
-        print(Color.set("red", line))
+        self.logger.log("JS exception", error.stack, color="red")
         self._page_errors.append(error)
 
     def check_errors(self):
@@ -114,6 +120,8 @@ class PyScriptTest:
         f.write(content)
 
     def goto(self, path):
+        self.logger.reset()
+        self.logger.log("page.goto", path, color="yellow")
         url = f"{self.http_server}/{path}"
         self.page.goto(url)
 
@@ -280,7 +288,13 @@ class ConsoleMessageCollection:
         def text(self):
             return "\n".join(self.lines)
 
-    def __init__(self):
+    _COLORS = {
+        "error": "red",
+        "warning": "brown",
+    }
+
+    def __init__(self, logger):
+        self.logger = logger
         self._messages = []
         self.all = self.View(self, None)
         self.log = self.View(self, "log")
@@ -290,18 +304,38 @@ class ConsoleMessageCollection:
         self.warning = self.View(self, "warning")
 
     def add_message(self, msg):
-        # print the message to stdout: pytest will capute the output and
-        # display the messages if the test fails.  {msg.type:7} is to
-        # make sure that messages of all levels are aligned, i.e.:
-        # [console.log    ] hello
-        # [console.warning] world
-        line = f"[console.{msg.type:7}] {msg.text}"
-        if msg.type == "error":
-            line = Color.set("red", line)
-        elif msg.type == "warning":
-            line = Color.set("brown", line)
-        print(line)
+        # log the message: pytest will capute the output and display the
+        # messages if the test fails.
+        category = f"console.{msg.type}"
+        color = self._COLORS.get(msg.type)
+        self.logger.log(category, msg.text, color=color)
         self._messages.append(msg)
+
+
+class Logger:
+    """
+    Helper class to log messages to stdout.
+
+    Features:
+      - nice formatted category
+      - keep track of time passed since the last reset
+      - support colors
+
+    NOTE: the (lowercase) logger fixture is defined in conftest.py
+    """
+
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.start_time = time.time()
+
+    def log(self, category, text, *, color=None):
+        delta = time.time() - self.start_time
+        line = f"[{delta:6.2f} {category:15}] {text}"
+        if color:
+            line = Color.set(color, line)
+        print(line)
 
 
 class Color:
