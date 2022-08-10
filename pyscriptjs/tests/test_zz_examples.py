@@ -179,7 +179,9 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
-    @pytest.mark.xfail("JsError")
+    @pytest.mark.xfail(
+        reason="JsError: TypeError: Cannot read properties of undefined (reading 'setAttribute')"
+    )
     def test_panel_stream(self):
         # XXX improve this test
         self.goto("examples/panel_stream.html")
@@ -208,7 +210,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Todo App"
         wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
 
-    @pytest.mark.xfail("JsError")
+    @pytest.mark.xfail(reason="JsError, issue #673")
     def test_todo_pylist(self):
         # XXX improve this test
         self.goto("examples/todo-pylist.html")
@@ -223,7 +225,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() in ["Loading...", "Freedom Units"]
         wait_for_render(self.page, "*", "<(main|div).*?id=['\"]toga_\\d+['\"].*?>")
 
-    @pytest.mark.xfail("timeout")
+    @pytest.mark.xfail(reason="it never finishes loading")
     def test_webgl_raycaster_index(self):
         # XXX improve this test
         self.goto("examples/webgl/raycaster/index.html")
