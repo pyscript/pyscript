@@ -24,32 +24,6 @@ TEST_ITERATIONS = math.ceil(
     MAX_TEST_TIME / TEST_TIME_INCREMENT
 )  # 120 iters of 1/4 second
 
-# Content that is displayed in the page while pyodide loads
-LOADING_MESSAGES = [
-    "Loading runtime...",
-    "Runtime created...",
-    "Initializing components...",
-    "Initializing scripts...",
-]
-
-
-def wait_for_load(page):
-    """
-    Assert that pyscript loading messages appear.
-    """
-    pyodide_loading = False  # Flag to be set to True when condition met
-
-    for _ in range(TEST_ITERATIONS):
-        content = page.text_content("*")
-        for message in LOADING_MESSAGES:
-            if message in content:
-                pyodide_loading = True
-        if pyodide_loading:
-            break
-        time.sleep(TEST_TIME_INCREMENT)
-
-    assert pyodide_loading  # nosec
-
 
 def wait_for_render(page, selector, pattern):
     """
