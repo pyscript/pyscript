@@ -1,15 +1,3 @@
-"""Each example requires the same three tests:
-
-- Test that the initial markup loads properly (currently done by testing the <title>
-  tag's content)
-- Testing that pyodide is loading properly
-- Testing that the page contains appropriate content after rendering
-
-The single function iterates through the examples, instantiates one playwright browser
-session per example, and runs all three of each example's tests in that same browser
-session.
- """
-
 import math
 import re
 import time
@@ -46,6 +34,15 @@ def wait_for_render(page, selector, pattern):
 
 @pytest.mark.usefixtures("chdir")
 class TestExamples(PyScriptTest):
+    """
+    Each example requires the same three tests:
+
+        - Test that the initial markup loads properly (currently done by
+          testing the <title> tag's content)
+        - Testing that pyscript is loading properly
+        - Testing that the page contains appropriate content after rendering
+    """
+
     @pytest.fixture()
     def chdir(self):
         # make sure that the http server serves from the right directory
