@@ -119,6 +119,7 @@ export class PyodideRuntime extends Object {
         for (const initializer of postInitializers_) {
             await initializer();
         }
+        console.log('===PyScript page fully initialized===');
     }
 }
 

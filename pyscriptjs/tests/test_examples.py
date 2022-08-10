@@ -17,6 +17,8 @@ from urllib.parse import urljoin
 
 import pytest
 
+from .support import ROOT
+
 MAX_TEST_TIME = 30  # Number of seconds allowed for checking a testing condition
 TEST_TIME_INCREMENT = 0.25  # 1/4 second, the length of each iteration
 TEST_ITERATIONS = math.ceil(
@@ -188,6 +190,9 @@ def wait_for_render(page, selector, pattern):
 
 @pytest.mark.parametrize("example", EXAMPLES)
 def test_examples(example, http_server, page):
+    # make sure that the http server serves from the right directory
+    ROOT.join("pyscriptjs").chdir()
+
     base_url = http_server
     example_path = urljoin(base_url, TEST_PARAMS[example]["file"])
 
