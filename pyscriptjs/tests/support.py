@@ -36,6 +36,22 @@ class PyScriptTest:
 
     @pytest.fixture()
     def init(self, request, tmpdir, http_server, page):
+        """
+        Fixture to automatically initialize all the tests in this class and its
+        subclasses.
+
+        The magic is done by the decorator @pyest.mark.usefixtures("init"),
+        which tells pytest to automatically use this fixture for all the test
+        method of this class.
+
+        Using the standard pytest behavior, we can request more fixtures:
+        tmpdir, http_server and page; 'page' is a fixture provided by
+        pytest-playwright.
+
+        Then, we save these fixtures on the self and proceed with more
+        initialization. The end result is that the requested fixtures are
+        automatically made available as self.xxx in all methods.
+        """
         self.testname = request.function.__name__.replace("test_", "")
         self.tmpdir = tmpdir
         # create a symlink to BUILD inside tmpdir
