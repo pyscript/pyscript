@@ -68,7 +68,8 @@ examples:
 test:
 	make examples
 	npm run build
-	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
+	make test-ts
+	make test-py
 
 test-py:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
@@ -76,7 +77,7 @@ test-py:
 
 test-ts:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
-	npm run tests
+	npm run test
 
 fmt: fmt-py fmt-ts
 	@echo "Format completed"

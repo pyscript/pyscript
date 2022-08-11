@@ -1,7 +1,7 @@
 import 'jest';
 import { PyRepl } from '../../src/components/pyrepl';
 
-const xPyRepl = customElements.define('py-repl', PyRepl);
+customElements.define('py-repl', PyRepl);
 
 describe('PyRepl', () => {
     // let instance = new PyRepl();
