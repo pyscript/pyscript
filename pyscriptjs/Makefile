@@ -10,6 +10,7 @@ CONDA_EXE := conda
 CONDA_ENV ?= $(base_dir)/pyscriptjs/env
 env := $(CONDA_ENV)
 PYTHON_EXE := $(CONDA_ENV)/bin/python
+PYTEST_EXE := $(CONDA_ENV)/bin/pytest
 conda_run := $(CONDA_EXE) run -p $(env)
 GOOD_NODE_VER := 14
 GOOD_NPM_VER := 6
@@ -69,7 +70,7 @@ examples:
 test:
 	make examples
 	npm run build
-	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
+	$(conda_run) pytest -vv $(ARGS) tests/integration --log-cli-level=warning
 
 test-local:
 	make examples
@@ -78,7 +79,7 @@ test-local:
 
 test-py:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
-	cd $(src_dir)/python; $(PYTHON_EXE) -m pytest -vv $(ARGS) $(base_dir)/pyscriptjs/tests/py-unit --log-cli-level=warning
+	$(PYTEST_EXE) -vv $(ARGS) $(base_dir)/pyscriptjs/tests/py-unit --log-cli-level=warning
 
 test-ts:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"

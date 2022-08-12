@@ -12,7 +12,7 @@ class TestElement:
         el = pyscript.Element("something")
         document_mock = Mock()
         call_result = "some_result"
-        document_mock.querySelector = Mock(side_effect=call_result)
+        document_mock.querySelector = Mock(return_value=call_result)
         monkeypatch.setattr(pyscript, "document", document_mock)
         assert not el._element
         real_element = el.element
