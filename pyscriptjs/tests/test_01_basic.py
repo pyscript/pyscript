@@ -46,8 +46,8 @@ class TestBasic(PyScriptTest):
         # we will probably need to tweak this test.
         self.pyscript_run(
             """
-            <py-script>import js; js.console.info(1>2)</py-script>
-            <py-script>import js; js.console.info(1<2)</py-script>
+            <py-script>import js; js.console.info(1<2, 1>2)</py-script>
+            <py-script>js.console.info("<div></div>")</py-script>
         """
         )
-        assert self.console.info.lines == ["false", "true"]
+        assert self.console.info.lines == ["true false", "<div></div>"]
