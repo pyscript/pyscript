@@ -39,7 +39,7 @@ class TestBasic(PyScriptTest):
 
     def test_escaping_of_angle_brackets(self):
         """
-        Check that they py-script tags escape angle brackets
+        Check that py-script tags escape angle brackets
         """
         # NOTE: this test relies on the fact that pyscript does not write
         # anything to console.info. If we start writing to info in the future,
