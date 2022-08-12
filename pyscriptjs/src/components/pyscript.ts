@@ -227,11 +227,7 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
         }
         const handlerCode = el.getAttribute(pyAttribute);
         const event = pyAttributeToEvent.get(pyAttribute);
-        const source = `
-        from pyodide.ffi import create_proxy
-        Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
-        `;
-        await runtime.run(source);
+        el.addEventListener(event, () => {pyodide.runPythonAsync(handlerCode)});
 
         // TODO: Should we actually map handlers in JS instead of Python?
         // el.onclick = (evt: any) => {
