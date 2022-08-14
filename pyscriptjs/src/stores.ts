@@ -25,13 +25,20 @@ export const componentDetailsNavOpen = writable(false);
 export const mainDiv = writable(null);
 export const currentComponentDetails = writable([]);
 export const scriptsQueue = writable<PyScript[]>([]);
+export const scriptsQueueEvaluated = writable(false); 
+let scriptsQueueEvaluated_=false;
+scriptsQueueEvaluated.subscribe((value)=>scriptsQueueEvaluated_=value);
 export const initializers = writable<Initializer[]>([]);
 export const postInitializers = writable<Initializer[]>([]);
 export const globalLoader = writable<PyLoader | undefined>();
 export const appConfig = writable();
 
 export const addToScriptsQueue = (script: PyScript) => {
-    scriptsQueue.update(scriptsQueue => [...scriptsQueue, script]);
+    if (scriptsQueueEvaluated_) {
+        script.evaluate();
+    } else {
+        scriptsQueue.update(scriptsQueue => [...scriptsQueue, script]);
+    }
 };
 
 export const addInitializer = (initializer: Initializer) => {
