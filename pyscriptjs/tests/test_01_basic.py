@@ -36,3 +36,18 @@ class TestBasic(PyScriptTest):
         """
         )
         assert self.console.info.lines == ["one", "two", "three", "four"]
+
+    def test_escaping_of_angle_brackets(self):
+        """
+        Check that py-script tags escape angle brackets
+        """
+        # NOTE: this test relies on the fact that pyscript does not write
+        # anything to console.info. If we start writing to info in the future,
+        # we will probably need to tweak this test.
+        self.pyscript_run(
+            """
+            <py-script>import js; js.console.info(1<2, 1>2)</py-script>
+            <py-script>js.console.info("<div></div>")</py-script>
+        """
+        )
+        assert self.console.info.lines == ["true false", "<div></div>"]

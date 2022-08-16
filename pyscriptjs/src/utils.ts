@@ -14,8 +14,12 @@ function getLastPath(str: string): string {
     return str.split('\\').pop().split('/').pop();
 }
 
+function escape(str: string): string {
+    return str.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+}
+
 function htmlDecode(input: string): string {
-    const doc = new DOMParser().parseFromString(ltrim(input), 'text/html');
+    const doc = new DOMParser().parseFromString(ltrim(escape(input)), 'text/html');
     return doc.documentElement.textContent;
 }
 
