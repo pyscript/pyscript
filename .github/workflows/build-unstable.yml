@@ -27,9 +27,6 @@ defaults:
 jobs:
     build:
         runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            id-token: write
         steps:
 
         -   name: Checkout
@@ -59,17 +56,49 @@ jobs:
         -   name: Setup Environment
             run: make setup
 
-        -   name: Build and Test
-            run: make test
+        -   name: Build
+            run: make build
 
-        # Deploy to S3
+        -   uses: actions/upload-artifact@v3
+            with:
+                name: pyscript
+                path: build/*
+
+
+    test:
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+        -   uses: actions/download-artifact@v3
+            with:
+                name: pyscript
+                path: ./build/
+
+        -   name: Test Python
+            run: make test-py
+
+        -   name: Test TypeScript
+            run: make test-ts
+
+    deploy:
+        runs-on: ubuntu-latest
+        needs: test
+        if: github.ref == 'refs/heads/main' # Only deploy on merge into main
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+        -   uses: actions/download-artifact@v3
+            with:
+                name: pyscript
+                path: ./build/
+
         -   name: Configure AWS credentials
-            if: github.ref == 'refs/heads/main' # Only deploy on merge into main
             uses: aws-actions/configure-aws-credentials@v1.6.1
             with:
                 aws-region: ${{secrets.AWS_REGION}}
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
 
         -   name: Sync to S3
-            if: github.ref == 'refs/heads/main'
             run: aws s3 sync --quiet ./build/ s3://pyscript.net/unstable/
