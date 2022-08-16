@@ -47,7 +47,7 @@ If you have questions about the project, using PyScript, or anything else, pleas
 ```
     git clone https://github.com/pyscript/pyscript
 ```
-* cd into the `pyscriptjs` folder using the line below in your terminal (if your terminal is already in pyscrpit then use **cd pyscriptjs** instead)
+* cd into the `pyscriptjs` folder using the line below in your terminal (if your terminal is already in pyscript then use **cd pyscriptjs** instead)
 ```
     cd pyscript/pyscriptjs
 ```
