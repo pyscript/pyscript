@@ -49,7 +49,7 @@ class TestExamples(PyScriptTest):
         ROOT.join("pyscriptjs").chdir()
 
     def test_hello_world(self):
-        self.goto("examples/hello_world.html")
+        self.goto("../examples/hello_world.html")
         self.wait_for_pyscript()
         assert self.page.title() == "PyScript Hello World"
         content = self.page.content()
@@ -57,7 +57,7 @@ class TestExamples(PyScriptTest):
         assert re.search(pattern, content)
 
     def test_simple_clock(self):
-        self.goto("examples/simple_clock.html")
+        self.goto("../examples/simple_clock.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Simple Clock Demo"
         pattern = r"\d{2}/\d{2}/\d{4}, \d{2}:\d{2}:\d{2}"
@@ -75,28 +75,28 @@ class TestExamples(PyScriptTest):
 
     def test_altair(self):
         # XXX improve this test
-        self.goto("examples/altair.html")
+        self.goto("../examples/altair.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Altair"
         wait_for_render(self.page, "*", '<canvas.*?class=\\"marks\\".*?>')
 
     def test_bokeh(self):
         # XXX improve this test
-        self.goto("examples/bokeh.html")
+        self.goto("../examples/bokeh.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*class=\\"bk\\".*>')
 
     def test_bokeh_interactive(self):
         # XXX improve this test
-        self.goto("examples/bokeh_interactive.html")
+        self.goto("../examples/bokeh_interactive.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*?class=\\"bk\\".*?>')
 
     def test_d3(self):
         # XXX improve this test
-        self.goto("examples/d3.html")
+        self.goto("../examples/d3.html")
         self.wait_for_pyscript()
         assert (
             self.page.title() == "d3: JavaScript & PyScript visualizations side-by-side"
@@ -105,21 +105,21 @@ class TestExamples(PyScriptTest):
 
     def test_folium(self):
         # XXX improve this test
-        self.goto("examples/folium.html")
+        self.goto("../examples/folium.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Folium"
         wait_for_render(self.page, "*", "<iframe srcdoc=")
 
     def test_matplotlib(self):
         # XXX improve this test
-        self.goto("examples/matplotlib.html")
+        self.goto("../examples/matplotlib.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Matplotlib"
         wait_for_render(self.page, "*", "<img src=['\"]data:image")
 
     def test_numpy_canvas_fractals(self):
         # XXX improve this test
-        self.goto("examples/numpy_canvas_fractals.html")
+        self.goto("../examples/numpy_canvas_fractals.html")
         self.wait_for_pyscript()
         assert (
             self.page.title()
@@ -131,21 +131,21 @@ class TestExamples(PyScriptTest):
 
     def test_panel(self):
         # XXX improve this test
-        self.goto("examples/panel.html")
+        self.goto("../examples/panel.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Panel Example"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
     def test_panel_deckgl(self):
         # XXX improve this test
-        self.goto("examples/panel_deckgl.html")
+        self.goto("../examples/panel_deckgl.html")
         self.wait_for_pyscript()
         assert self.page.title() == "PyScript/Panel DeckGL Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
     def test_panel_kmeans(self):
         # XXX improve this test
-        self.goto("examples/panel_kmeans.html")
+        self.goto("../examples/panel_kmeans.html")
         self.wait_for_pyscript(timeout=120 * 1000)
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
@@ -153,28 +153,28 @@ class TestExamples(PyScriptTest):
     @pytest.mark.xfail(reason="JsError: issue #677")
     def test_panel_stream(self):
         # XXX improve this test
-        self.goto("examples/panel_stream.html")
+        self.goto("../examples/panel_stream.html")
         self.wait_for_pyscript()
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
     def test_repl(self):
         # XXX improve this test
-        self.goto("examples/repl.html")
+        self.goto("../examples/repl.html")
         self.wait_for_pyscript()
         assert self.page.title() == "REPL"
         wait_for_render(self.page, "*", "<py-repl.*?>")
 
     def test_repl2(self):
         # XXX improve this test
-        self.goto("examples/repl2.html")
+        self.goto("../examples/repl2.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Custom REPL Example"
         wait_for_render(self.page, "*", "<py-repl.*?>")
 
     def test_todo(self):
         # XXX improve this test
-        self.goto("examples/todo.html")
+        self.goto("../examples/todo.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Todo App"
         wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
@@ -182,14 +182,14 @@ class TestExamples(PyScriptTest):
     @pytest.mark.xfail(reason="JsError, issue #673")
     def test_todo_pylist(self):
         # XXX improve this test
-        self.goto("examples/todo-pylist.html")
+        self.goto("../examples/todo-pylist.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Todo App"
         wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
 
     def test_toga_freedom(self):
         # XXX improve this test
-        self.goto("examples/toga/freedom.html")
+        self.goto("../examples/toga/freedom.html")
         self.wait_for_pyscript()
         assert self.page.title() in ["Loading...", "Freedom Units"]
         wait_for_render(self.page, "*", "<(main|div).*?id=['\"]toga_\\d+['\"].*?>")
@@ -197,7 +197,7 @@ class TestExamples(PyScriptTest):
     @pytest.mark.xfail(reason="it never finishes loading, issue #678")
     def test_webgl_raycaster_index(self):
         # XXX improve this test
-        self.goto("examples/webgl/raycaster/index.html")
+        self.goto("../examples/webgl/raycaster/index.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Raycaster"
         wait_for_render(self.page, "*", "<canvas.*?>")
