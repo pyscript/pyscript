@@ -3,7 +3,6 @@ git_hash ?= $(shell git log -1 --pretty=format:%h)
 
 base_dir ?= $(shell git rev-parse --show-toplevel)
 src_dir ?= $(base_dir)/src
-examples ?=  ../$(base_dir)/examples
 app_dir ?= $(shell git rev-parse --show-prefix)
 
 CONDA_EXE := conda
@@ -57,22 +56,12 @@ dev:
 build:
 	npm run build
 
-examples:
-	mkdir -p ./examples
-	cp -r ../examples/* ./examples
-	chmod -R 755 examples
-	find ./examples/toga -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../build/+g {} \;
-	find ./examples/webgl -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../../build/+g {} \;
-	find ./examples -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../build/+g {} \;
-
 test:
-	make examples
 	npm run build
 	make test-ts
 	make test-py
 
 test-local:
-	make examples
 	npm run build
 	pytest -vvs $(ARGS) tests/ --log-cli-level=warning
 
