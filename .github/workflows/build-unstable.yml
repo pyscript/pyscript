@@ -1,4 +1,4 @@
-name: '[CI] Build Unstable'
+name: '[CI] Unstable'
 
 on:
     push: # Only run on merges into main that modify files under pyscriptjs/
@@ -21,7 +21,7 @@ defaults:
         working-directory: pyscriptjs
 
 jobs:
-    build:
+    Build:
         runs-on: ubuntu-latest
         env:
             MINICONDA_PYTHON_VERSION: py38
@@ -64,13 +64,13 @@ jobs:
                 path: pyscriptjs/build/
                 if-no-files-found: error
 
-    test:
+    Test:
         runs-on: ubuntu-latest
-        needs: build
+        needs: Build
         steps:
         -   name: Checkout
             uses: actions/checkout@v3
-            
+
         -   uses: actions/download-artifact@v3
             with:
                 name: pyscript
@@ -82,9 +82,9 @@ jobs:
         -   name: Test TypeScript
             run: make test-ts
 
-    deploy:
+    Deploy:
         runs-on: ubuntu-latest
-        needs: test
+        needs: Test
         if: github.ref == 'refs/heads/main' # Only deploy on merge into main
         permissions:
             contents: read
