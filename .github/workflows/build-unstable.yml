@@ -61,9 +61,9 @@ jobs:
         -   uses: actions/upload-artifact@v3
             with:
                 name: pyscript
-                path: | 
-                  pyscriptjs/build/
-                  pyscriptjs/env/
+                path: |
+                    pyscriptjs/build/
+                    pyscriptjs/env/
                 if-no-files-found: error
 
     Test:
@@ -79,8 +79,8 @@ jobs:
         -   uses: actions/download-artifact@v3
             with:
                 name: pyscript
-                path: | 
-                  pyscriptjs/
+                path: |
+                    pyscriptjs/
 
         -   name: Test Python
             run: make test-py
