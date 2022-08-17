@@ -58,6 +58,11 @@ jobs:
         -   name: Build
             run: make build
 
+        -   run: | 
+                ls -l ./build/
+                ls -l ./env/
+                du -sh ./env/*
+
         -   uses: actions/upload-artifact@v3
             with:
                 name: pyscript
