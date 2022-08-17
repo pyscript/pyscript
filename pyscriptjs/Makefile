@@ -77,7 +77,6 @@ test-local:
 	pytest -vvs $(ARGS) tests/integration/ --log-cli-level=warning
 
 test-py:
-	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
 	$(conda_run) pytest -vv $(ARGS) tests/py-unit --log-cli-level=warning
 
 test-ts:
