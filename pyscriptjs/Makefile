@@ -10,6 +10,7 @@ CONDA_EXE := conda
 CONDA_ENV ?= $(base_dir)/pyscriptjs/env
 env := $(CONDA_ENV)
 conda_run := $(CONDA_EXE) run -p $(env)
+PYTEST_EXE := $(CONDA_ENV)/bin/pytest
 GOOD_NODE_VER := 14
 GOOD_NPM_VER := 6
 NODE_VER    := $(shell node -v | cut -d. -f1 | sed 's/^v\(.*\)/\1/')
@@ -78,7 +79,7 @@ test-local:
 
 test-py:
 	@echo "Tests from $(src_dir)"
-	$(conda_run) pytest -vv $(ARGS) tests/py-unit/ --log-cli-level=warning
+	$(PYTEST_EXE) -vv $(ARGS) tests/py-unit/ --log-cli-level=warning
 
 test-ts:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
