@@ -21,7 +21,7 @@ defaults:
         working-directory: pyscriptjs
 
 jobs:
-    Build:
+    Build-Test:
         runs-on: ubuntu-latest
         env:
             MINICONDA_PYTHON_VERSION: py38
@@ -58,44 +58,23 @@ jobs:
         -   name: Build
             run: make build
 
-        -   run: |
-                ls -l ./build/
-                ls -l ./env/
-                du -sh ./env/*
-
         -   uses: actions/upload-artifact@v3
             with:
                 name: pyscript
                 path: |
                     pyscriptjs/build/
-                    pyscriptjs/env/
                 if-no-files-found: error
+                retention-days: 7
 
-    Test:
-        runs-on: ubuntu-latest
-        needs: Build
-        steps:
-        -   name: Checkout
-            uses: actions/checkout@v3
-
-        -   name: setup Miniconda
-            uses: conda-incubator/setup-miniconda@v2
-
-        -   uses: actions/download-artifact@v3
-            with:
-                name: pyscript
-                path: |
-                    pyscriptjs/
-
-        -   name: Test Python
-            run: make test-py
-
-        -   name: Test TypeScript
+        -   name: TypeScript Tests
             run: make test-ts
+
+        -   name: Python Tests
+            run: make test-py
 
     Deploy:
         runs-on: ubuntu-latest
-        needs: Test
+        needs: Build-Test
         if: github.ref == 'refs/heads/main' # Only deploy on merge into main
         permissions:
             contents: read
