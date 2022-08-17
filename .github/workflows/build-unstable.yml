@@ -58,7 +58,7 @@ jobs:
         -   name: Build
             run: make build
 
-        -   run: | 
+        -   run: |
                 ls -l ./build/
                 ls -l ./env/
                 du -sh ./env/*
