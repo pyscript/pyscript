@@ -52,9 +52,9 @@ appConfig.subscribe((value: AppConfig) => {
 });
 
 export class PyodideRuntime extends Runtime {
-    src: string = 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js';
-    name: string = 'pyodide-default';
-    lang: string = 'python';
+    src = 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js';
+    name = 'pyodide-default';
+    lang = 'python';
     interpreter: PyodideInterface;
 
     async loadInterpreter(): Promise<void> {
