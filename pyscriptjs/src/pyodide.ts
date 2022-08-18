@@ -17,6 +17,12 @@ import {
     appConfig,
 } from './stores';
 
+/*
+Usage of initializers, postInitializers, scriptsQueue, etc.
+is moved here (from `pyconfig.ts`) along with the `PyodideRuntime` class
+which now extends from the `Runtime` parent class.
+*/
+
 let loader: PyLoader | undefined;
 globalLoader.subscribe(value => {
     loader = value;
@@ -67,7 +73,7 @@ export class PyodideRuntime extends Runtime {
             fullStdLib: false,
         });
 
-        // // now that we loaded, add additional convenience functions
+        // now that we loaded, add additional convenience functions
         console.log('loading micropip');
         await this.loadPackage('micropip');
 

@@ -6,11 +6,18 @@ import {
     runtimeLoaded,
     type Environment,
 } from '../stores';
+
+/*
+All references to `PyodideInterface` have been replaced with
+`Runtime` which has the available methods of running code asynchronously
+etc. which each runtime is responsible for implementing on its own.
+*/
+
 import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
 import type { Runtime } from '../runtime';
 
-// Premise used to connect to the first available pyodide interpreter
+// Premise used to connect to the first available runtime (can be pyodide or others)
 let runtimeReadyPromise: Runtime;
 let environments: Record<Environment['id'], Environment> = {};
 

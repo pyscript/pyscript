@@ -4,6 +4,14 @@ import { appConfig } from '../stores';
 import type { Runtime, AppConfig } from '../runtime';
 import { PyodideRuntime } from '../pyodide';
 
+/*
+Usage of initializers, postInitializers, scriptsQueue, etc.
+is moved to `pyodide.ts` along with the `PyodideRuntime` class
+which now extends from the `Runtime` parent class. This is because
+all code pertaining to the pyodide runtime is in one place now,
+not polluting / mixing up with the functionality of `PyConfig`
+*/
+
 const DEFAULT_RUNTIME: Runtime = new PyodideRuntime();
 
 export class PyConfig extends BaseEvalElement {

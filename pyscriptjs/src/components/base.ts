@@ -1,5 +1,13 @@
 import { runtimeLoaded } from '../stores';
 import { guidGenerator, addClasses, removeClasses } from '../utils';
+
+/*
+All references to `PyodideInterface` have been replaced with
+`Runtime` which has the available methods of running code asynchronously,
+getting the globals symbol table, etc. which each runtime is responsible
+for implementing on its own.
+*/
+
 import type { Runtime } from '../runtime';
 let runtime: Runtime;
 let Element;

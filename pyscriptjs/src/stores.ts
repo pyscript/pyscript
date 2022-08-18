@@ -11,6 +11,11 @@ export type Environment = {
     state: string;
 };
 
+/*
+Instead of having a store for Pyodide specifically,
+we now use a store for Runtime which can encompass any
+runtime, but currently only has Pyodide as its offering.
+*/
 export const runtimeLoaded = writable<Runtime>();
 
 export const loadedEnvironments = writable<Record<Environment['id'], Environment>>({});
