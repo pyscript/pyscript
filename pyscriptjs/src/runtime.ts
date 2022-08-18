@@ -131,8 +131,7 @@ export abstract class Runtime extends Object {
     abstract loadFromFile(s: string): Promise<void>;
 
     /**
-     * delegates the initialization of the page to the
-     * underlying interpreter which involves loading of runtime,
+     * initializes the page which involves loading of runtime,
      * as well as evaluating all the code inside <py-script> tags
      * along with initializers and postInitializers
      * */
