@@ -128,8 +128,9 @@ export class BaseEvalElement extends HTMLElement {
                 def is_async(source: str) -> bool:
                     console.warn("PARSING!")
                     node = ast.parse(source)
+                    async_statement_node_types = (ast.Await, ast.AsyncFor, ast.AsyncWith)
                     for n in ast.walk(node):
-                        if n.__class__ in [ast.Await, ast.AsyncFor, ast.AsyncWith]: return True
+                        if n.__class__ in async_statement_node_types: return True
                     return False
                 is_async
             `);
