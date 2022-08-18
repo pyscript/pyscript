@@ -3,7 +3,7 @@ import time
 import py
 import pytest
 
-ROOT = py.path.local(__file__).dirpath("..", "..")
+ROOT = py.path.local(__file__).dirpath("..", "..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
 
 

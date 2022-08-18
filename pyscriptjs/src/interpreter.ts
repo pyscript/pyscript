@@ -3,7 +3,7 @@ import type { PyodideInterface } from './pyodide';
 
 // eslint-disable-next-line
 // @ts-ignore
-import pyscript from './pyscript.py';
+import pyscript from './python/pyscript.py';
 
 let pyodide: PyodideInterface;
 
