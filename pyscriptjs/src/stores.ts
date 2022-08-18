@@ -12,8 +12,7 @@ export type Environment = {
 };
 
 /*
-Instead of having a store for Pyodide specifically,
-we now use a store for Runtime which can encompass any
+A store for Runtime which can encompass any
 runtime, but currently only has Pyodide as its offering.
 */
 export const runtimeLoaded = writable<Runtime>();

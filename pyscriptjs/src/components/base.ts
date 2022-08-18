@@ -1,14 +1,9 @@
 import { runtimeLoaded } from '../stores';
 import { guidGenerator, addClasses, removeClasses } from '../utils';
 
-/*
-All references to `PyodideInterface` have been replaced with
-`Runtime` which has the available methods of running code asynchronously,
-getting the globals symbol table, etc. which each runtime is responsible
-for implementing on its own.
-*/
-
 import type { Runtime } from '../runtime';
+
+// Global `Runtime` that implements the generic runtimes API
 let runtime: Runtime;
 let Element;
 
@@ -143,7 +138,7 @@ export class BaseEvalElement extends HTMLElement {
 
             if (output !== undefined) {
                 if (Element === undefined) {
-                    Element = <Element>runtime.getGlobals().get('Element');
+                    Element = <Element>runtime.globals.get('Element');
                 }
                 const out = Element(this.outputElement.id);
                 out.write.callKwargs(output, { append: this.appendOutput });
@@ -173,7 +168,7 @@ export class BaseEvalElement extends HTMLElement {
             this.postEvaluate();
         } catch (err) {
             if (Element === undefined) {
-                Element = <Element>runtime.getGlobals().get('Element');
+                Element = <Element>runtime.globals.get('Element');
             }
             const out = Element(this.errorElement.id);
 
@@ -259,13 +254,13 @@ function createWidget(name: string, code: string, klass: string) {
 
         registerWidget() {
             console.log('new widget registered:', this.name);
-            runtime.getGlobals().set(this.id, this.proxy);
+            runtime.globals.set(this.id, this.proxy);
         }
 
         async eval(source: string): Promise<void> {
             try {
                 const output = await runtime.runCodeAsync(source);
-                this.proxyClass = runtime.getGlobals().get(this.klass);
+                this.proxyClass = runtime.globals.get(this.klass);
                 if (output !== undefined) {
                     console.log(output);
                 }

@@ -7,22 +7,16 @@ import {
     type Environment,
 } from '../stores';
 
-/*
-All references to `PyodideInterface` have been replaced with
-`Runtime` which has the available methods of running code asynchronously
-etc. which each runtime is responsible for implementing on its own.
-*/
-
 import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
 import type { Runtime } from '../runtime';
 
 // Premise used to connect to the first available runtime (can be pyodide or others)
-let runtimeReadyPromise: Runtime;
+let runtime: Runtime;
 let environments: Record<Environment['id'], Environment> = {};
 
 runtimeLoaded.subscribe(value => {
-    runtimeReadyPromise = value;
+    runtime = value;
 });
 loadedEnvironments.subscribe(value => {
     environments = value;
@@ -218,7 +212,6 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
 /** Initialize all elements with py-on* handlers attributes  */
 async function initHandlers() {
     console.log('Collecting nodes...');
-    const runtime = runtimeReadyPromise;
     for (const pyAttribute of pyAttributeToEvent.keys()) {
         await createElementsWithEventListeners(runtime, pyAttribute);
     }
@@ -259,7 +252,6 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
 /** Mount all elements with attribute py-mount into the Python namespace */
 async function mountElements() {
     console.log('Collecting nodes to be mounted into python namespace...');
-    const runtime = runtimeReadyPromise;
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
 
     let source = '';

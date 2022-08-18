@@ -1,12 +1,5 @@
 import * as jsyaml from 'js-yaml';
 
-/*
-All references to `PyodideInterface` have been replaced with
-`Runtime` which has the available methods of installing packages,
-loading files, etc. which each runtime is responsible for
-implementing on its own.
-*/
-
 import { runtimeLoaded, addInitializer } from '../stores';
 import { handleFetchError } from '../utils';
 import type { Runtime } from '../runtime';
