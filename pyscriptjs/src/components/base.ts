@@ -84,7 +84,7 @@ export class BaseEvalElement extends HTMLElement {
         nodes.forEach( node =>
             {
                 let importmap;
-                try {
+                    try {
                     importmap = JSON.parse(node.textContent);
                     if (importmap?.imports == null) return;
                     importmaps.push(importmap);
@@ -119,7 +119,22 @@ export class BaseEvalElement extends HTMLElement {
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
-            const is_async = source.includes('asyncio')
+            //const is_async = source.includes('asyncio')
+
+
+            const async_detector = runtime.runPython(`
+                import ast
+
+                def is_async(source: str) -> bool:
+                    console.warn("PARSING!")
+                    node = ast.parse(source)
+                    for n in ast.walk(node):
+                        if n.__class__ in [ast.Await, ast.AsyncFor, ast.AsyncWith]: return True
+                    return False
+                is_async
+            `);
+
+            const is_async = async_detector(source)
 
             this._register_esm(runtime);
             if (is_async) {
