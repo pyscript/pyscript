@@ -1,17 +1,17 @@
 import { writable } from 'svelte/store';
 import type { PyLoader } from './components/pyloader';
 import type { PyScript } from './components/pyscript';
-import type { PyodideInterface } from './pyodide';
+import type { Runtime } from './runtime';
 
 export type Initializer = () => Promise<void>;
 
 export type Environment = {
     id: string;
-    runtime: PyodideInterface;
+    runtime: Runtime;
     state: string;
 };
 
-export const pyodideLoaded = writable<PyodideInterface>();
+export const runtimeLoaded = writable<Runtime>();
 
 export const loadedEnvironments = writable<Record<Environment['id'], Environment>>({});
 

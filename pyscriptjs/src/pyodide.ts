@@ -1,11 +1,13 @@
-import type { loadPyodide } from 'pyodide';
-import { loadInterpreter } from './interpreter';
-import { RuntimeEngine } from './runtime';
-import type { AppConfig } from './runtime';
+import { Runtime } from './runtime';
+import { getLastPath } from './utils';
+import type { AppConfig, PyodideInterface } from './runtime';
 import type { PyLoader } from './components/pyloader';
 import type { PyScript } from './components/pyscript';
+// eslint-disable-next-line
+// @ts-ignore
+import pyscript from './pyscript.py';
 import {
-    pyodideLoaded,
+    runtimeLoaded,
     globalLoader,
     loadedEnvironments,
     initializers,
@@ -49,27 +51,95 @@ appConfig.subscribe((value: AppConfig) => {
     console.log('config set!');
 });
 
-// The current release doesn't export `PyodideInterface` type
-export type PyodideInterface = Awaited<ReturnType<typeof loadPyodide>>;
-
-export class PyodideRuntime extends RuntimeEngine {
+export class PyodideRuntime extends Runtime {
     src: string = 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js';
     name: string = 'pyodide-default';
     lang: string = 'python';
+    interpreter: PyodideInterface;
+
+    async loadInterpreter(): Promise<void> {
+        console.log('creating pyodide runtime');
+        // eslint-disable-next-line
+        // @ts-ignore
+        this.interpreter = await loadPyodide({
+            stdout: console.log,
+            stderr: console.log,
+            fullStdLib: false,
+        });
+
+        // // now that we loaded, add additional convenience functions
+        console.log('loading micropip');
+        await this.loadPackage('micropip');
+
+        console.log('loading pyscript...');
+        const output = await this.runCodeAsync(pyscript);
+        if (output !== undefined) {
+            console.log(output);
+        }
+
+        console.log('done setting up environment');
+    }
+
+    runCode(code: string): any {
+        return this.interpreter.runPython(code);
+    }
+
+    async runCodeAsync(code: string): Promise<any> {
+        return await this.interpreter.runPythonAsync(code);
+    }
+
+    getGlobals(): any {
+        return this.interpreter.globals;
+    }
+
+    registerJsModule(name: string, module: object): void {
+        this.interpreter.registerJsModule(name, module);
+    }
+
+    async loadPackage(names: string | string[]): Promise<void> {
+        await this.interpreter.loadPackage(names);
+    }
+
+    async installPackage(package_name: string | string[]): Promise<void> {
+        if (package_name.length > 0){
+            const micropip = this.getGlobals().get('micropip');
+            await micropip.install(package_name);
+            micropip.destroy();
+        }
+    }
+
+    async loadFromFile(s: string): Promise<void> {
+        const filename = getLastPath(s);
+        await this.runCodeAsync(
+            `
+                from pyodide.http import pyfetch
+                from js import console
+
+                try:
+                    response = await pyfetch("${s}")
+                except Exception as err:
+                    console.warn("PyScript: Access to local files (using 'paths:' in py-env) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
+                    raise(err)
+                content = await response.bytes()
+                with open("${filename}", "wb") as f:
+                    f.write(content)
+            `,
+        );
+    }
 
     async initialize(): Promise<void> {
         loader?.log('Loading runtime...');
-        const pyodide: PyodideInterface = await loadInterpreter(this.src);
+        await this.loadInterpreter();
         const newEnv = {
             id: 'a',
-            runtime: pyodide,
+            runtime: this,
             state: 'loading',
         };
-        pyodideLoaded.set(pyodide);
+        runtimeLoaded.set(this);
 
         // Inject the loader into the runtime namespace
         // eslint-disable-next-line
-        pyodide.globals.set('pyscript_loader', loader);
+        this.getGlobals().set('pyscript_loader', loader);
 
         loader?.log('Runtime created...');
         loadedEnvironments.update(environments => ({

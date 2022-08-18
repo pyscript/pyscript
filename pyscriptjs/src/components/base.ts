@@ -1,11 +1,10 @@
-import { pyodideLoaded } from '../stores';
+import { runtimeLoaded } from '../stores';
 import { guidGenerator, addClasses, removeClasses } from '../utils';
-import type { PyodideInterface } from '../pyodide';
-// Premise used to connect to the first available pyodide interpreter
-let runtime: PyodideInterface;
+import type { Runtime } from '../runtime';
+let runtime: Runtime;
 let Element;
 
-pyodideLoaded.subscribe(value => {
+runtimeLoaded.subscribe(value => {
     runtime = value;
 });
 
@@ -77,10 +76,10 @@ export class BaseEvalElement extends HTMLElement {
         return this.code;
     }
 
-    protected async _register_esm(pyodide: PyodideInterface): Promise<void> {
+    protected async _register_esm(runtime: Runtime): Promise<void> {
         const imports: { [key: string]: unknown } = {};
         const nodes = document.querySelectorAll("script[type='importmap']");
-        const importmaps: Array<any> = [];
+        let importmaps: Array<any>;
         nodes.forEach( node =>
             {
                 let importmap;
@@ -107,7 +106,7 @@ export class BaseEvalElement extends HTMLElement {
             }
         }
 
-        pyodide.registerJsModule('esm', imports);
+        runtime.registerJsModule('esm', imports);
     }
 
     async evaluate(): Promise<void> {
@@ -123,20 +122,20 @@ export class BaseEvalElement extends HTMLElement {
 
             this._register_esm(runtime);
             if (is_async) {
-                <string>await runtime.runPythonAsync(
+                <string>await runtime.runCodeAsync(
                     `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
-                output = <string>await runtime.runPythonAsync(source);
+                output = <string>await runtime.runCodeAsync(source);
             } else {
-                output = <string>runtime.runPython(
+                output = <string>runtime.runCode(
                     `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
-                output = <string>runtime.runPython(source);
+                output = <string>runtime.runCode(source);
             }
 
             if (output !== undefined) {
                 if (Element === undefined) {
-                    Element = <Element>runtime.globals.get('Element');
+                    Element = <Element>runtime.getGlobals().get('Element');
                 }
                 const out = Element(this.outputElement.id);
                 out.write.callKwargs(output, { append: this.appendOutput });
@@ -145,8 +144,8 @@ export class BaseEvalElement extends HTMLElement {
                 this.outputElement.style.display = 'block';
             }
 
-            is_async ? await runtime.runPythonAsync(`output_manager.revert()`)
-                     : await runtime.runPython(`output_manager.revert()`);
+            is_async ? await runtime.runCodeAsync(`output_manager.revert()`)
+                     : await runtime.runCode(`output_manager.revert()`);
 
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
@@ -165,36 +164,24 @@ export class BaseEvalElement extends HTMLElement {
 
             this.postEvaluate();
         } catch (err) {
-            console.error(err);
-            try{
-                if (Element === undefined) {
-                    Element = <Element>runtime.globals.get('Element');
-                }
-                const out = Element(this.errorElement.id);
-
-                addClasses(this.errorElement, ['bg-red-200', 'p-2']);
-                out.write.callKwargs(err.toString(), { append: this.appendOutput });
-                if (this.errorElement.children.length === 0){
-                    this.errorElement.setAttribute('error', '');
-                }else{
-                    this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
-                }
-
-                this.errorElement.hidden = false;
-                this.errorElement.style.display = 'block';
-                this.errorElement.style.visibility = 'visible';
-            } catch (internalErr){
-                console.error("Unnable to write error to error element in page.")
+            if (Element === undefined) {
+                Element = <Element>runtime.getGlobals().get('Element');
             }
+            const out = Element(this.errorElement.id);
 
+            addClasses(this.errorElement, ['bg-red-200', 'p-2']);
+            out.write.callKwargs(err, { append: this.appendOutput });
+
+            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
+            this.errorElement.hidden = false;
+            this.errorElement.style.display = 'block';
+            this.errorElement.style.visibility = 'visible';
         }
     } // end evaluate
 
     async eval(source: string): Promise<void> {
-        const pyodide = runtime;
-
         try {
-            const output = await pyodide.runPythonAsync(source);
+            const output = await runtime.runCodeAsync(source);
             if (output !== undefined) {
                 console.log(output);
             }
@@ -204,8 +191,8 @@ export class BaseEvalElement extends HTMLElement {
     } // end eval
 
     runAfterRuntimeInitialized(callback: () => Promise<void>){
-        pyodideLoaded.subscribe(value => {
-            if ('runPythonAsync' in value) {
+        runtimeLoaded.subscribe(value => {
+            if ('runCodeAsync' in value) {
                 setTimeout(async () => {
                     await callback();
                 }, 100);
@@ -247,9 +234,9 @@ function createWidget(name: string, code: string, klass: string) {
             //     this.proxy.connect();
             //     this.registerWidget();
             // }, 2000);
-            pyodideLoaded.subscribe(value => {
+            runtimeLoaded.subscribe(value => {
                 console.log('RUNTIME READY', value);
-                if ('runPythonAsync' in value) {
+                if ('runCodeAsync' in value) {
                     runtime = value;
                     setTimeout(async () => {
                         await this.eval(this.code);
@@ -263,16 +250,14 @@ function createWidget(name: string, code: string, klass: string) {
         }
 
         registerWidget() {
-            const pyodide = runtime;
             console.log('new widget registered:', this.name);
-            pyodide.globals.set(this.id, this.proxy);
+            runtime.getGlobals().set(this.id, this.proxy);
         }
 
         async eval(source: string): Promise<void> {
-            const pyodide = runtime;
             try {
-                const output = await pyodide.runPythonAsync(source);
-                this.proxyClass = pyodide.globals.get(this.klass);
+                const output = await runtime.runCodeAsync(source);
+                this.proxyClass = runtime.getGlobals().get(this.klass);
                 if (output !== undefined) {
                     console.log(output);
                 }
@@ -365,9 +350,8 @@ export class PyWidget extends HTMLElement {
     }
 
     async eval(source: string): Promise<void> {
-        const pyodide = runtime;
         try {
-            const output = await pyodide.runPythonAsync(source);
+            const output = await runtime.runCodeAsync(source);
             if (output !== undefined) {
                 console.log(output);
             }

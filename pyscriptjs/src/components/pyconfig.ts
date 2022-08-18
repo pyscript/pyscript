@@ -1,10 +1,10 @@
 import * as jsyaml from 'js-yaml';
 import { BaseEvalElement } from './base';
 import { appConfig } from '../stores';
-import type { RuntimeEngine, AppConfig } from '../runtime';
+import type { Runtime, AppConfig } from '../runtime';
 import { PyodideRuntime } from '../pyodide';
 
-const DEFAULT_RUNTIME: RuntimeEngine = new PyodideRuntime();
+const DEFAULT_RUNTIME: Runtime = new PyodideRuntime();
 
 export class PyConfig extends BaseEvalElement {
     shadow: ShadowRoot;
