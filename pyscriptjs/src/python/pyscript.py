@@ -1,3 +1,4 @@
+import ast
 import asyncio
 import base64
 import io
@@ -435,3 +436,12 @@ class OutputManager:
 
 pyscript = PyScript()
 output_manager = OutputManager()
+
+
+def is_async(source: str) -> bool:
+    node = ast.parse(source)
+    async_statement_node_types = (ast.Await, ast.AsyncFor, ast.AsyncWith)
+    for n in ast.walk(node):
+        if n.__class__ in async_statement_node_types:
+            return True
+    return False

@@ -119,23 +119,8 @@ export class BaseEvalElement extends HTMLElement {
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
-            //const is_async = source.includes('asyncio')
 
-
-            const async_detector = runtime.runPython(`
-                import ast
-
-                def is_async(source: str) -> bool:
-                    console.warn("PARSING!")
-                    node = ast.parse(source)
-                    async_statement_node_types = (ast.Await, ast.AsyncFor, ast.AsyncWith)
-                    for n in ast.walk(node):
-                        if n.__class__ in async_statement_node_types: return True
-                    return False
-                is_async
-            `);
-
-            const is_async = async_detector(source)
+            const is_async = runtime.globals.get('is_async')(source);
 
             this._register_esm(runtime);
             if (is_async) {
