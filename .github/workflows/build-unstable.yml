@@ -1,4 +1,4 @@
-name: '[CI] Unstable'
+name: '[CI] Build Unstable'
 
 on:
     push: # Only run on merges into main that modify files under pyscriptjs/
@@ -21,7 +21,7 @@ defaults:
         working-directory: pyscriptjs
 
 jobs:
-    Build-Test:
+    BuildAndTest:
         runs-on: ubuntu-latest
         env:
             MINICONDA_PYTHON_VERSION: py38
@@ -74,7 +74,6 @@ jobs:
 
     Deploy:
         runs-on: ubuntu-latest
-        needs: Build-Test
         if: github.ref == 'refs/heads/main' # Only deploy on merge into main
         permissions:
             contents: read
