@@ -120,7 +120,7 @@ export class BaseEvalElement extends HTMLElement {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
 
-            const is_async = source.includes('asyncio') || runtime.globals.get('is_async')(source);
+            const is_async = runtime.globals.get('is_async')(source);
 
             this._register_esm(runtime);
             if (is_async) {
