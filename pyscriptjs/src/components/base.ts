@@ -125,15 +125,15 @@ export class BaseEvalElement extends HTMLElement {
 
             this._register_esm(runtime);
             if (is_async) {
-                <string>await runtime.runCodeAsync(
+                <string>await runtime.runAsync(
                     `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
-                output = <string>await runtime.runCodeAsync(source);
+                output = <string>await runtime.runAsync(source);
             } else {
-                output = <string>runtime.runCode(
+                output = <string>runtime.run(
                     `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
                 );
-                output = <string>runtime.runCode(source);
+                output = <string>runtime.run(source);
             }
 
             if (output !== undefined) {
@@ -147,8 +147,8 @@ export class BaseEvalElement extends HTMLElement {
                 this.outputElement.style.display = 'block';
             }
 
-            is_async ? await runtime.runCodeAsync(`output_manager.revert()`)
-                     : await runtime.runCode(`output_manager.revert()`);
+            is_async ? await runtime.runAsync(`output_manager.revert()`)
+                     : await runtime.run(`output_manager.revert()`);
 
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
@@ -184,7 +184,7 @@ export class BaseEvalElement extends HTMLElement {
 
     async eval(source: string): Promise<void> {
         try {
-            const output = await runtime.runCodeAsync(source);
+            const output = await runtime.runAsync(source);
             if (output !== undefined) {
                 console.log(output);
             }
@@ -259,7 +259,7 @@ function createWidget(name: string, code: string, klass: string) {
 
         async eval(source: string): Promise<void> {
             try {
-                const output = await runtime.runCodeAsync(source);
+                const output = await runtime.runAsync(source);
                 this.proxyClass = runtime.globals.get(this.klass);
                 if (output !== undefined) {
                     console.log(output);
@@ -354,7 +354,7 @@ export class PyWidget extends HTMLElement {
 
     async eval(source: string): Promise<void> {
         try {
-            const output = await runtime.runCodeAsync(source);
+            const output = await runtime.runAsync(source);
             if (output !== undefined) {
                 console.log(output);
             }

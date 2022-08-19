@@ -29,7 +29,7 @@ export class PyodideRuntime extends Runtime {
         await this.loadPackage('micropip');
 
         console.log('loading pyscript...');
-        const output = await this.runCodeAsync(pyscript);
+        const output = await this.runAsync(pyscript);
         if (output !== undefined) {
             console.log(output);
         }
@@ -37,11 +37,11 @@ export class PyodideRuntime extends Runtime {
         console.log('done setting up environment');
     }
 
-    runCode(code: string): any {
+    run(code: string): any {
         return this.interpreter.runPython(code);
     }
 
-    async runCodeAsync(code: string): Promise<any> {
+    async runAsync(code: string): Promise<any> {
         return await this.interpreter.runPythonAsync(code);
     }
 
@@ -61,15 +61,15 @@ export class PyodideRuntime extends Runtime {
         }
     }
 
-    async loadFromFile(s: string): Promise<void> {
-        const filename = getLastPath(s);
-        await this.runCodeAsync(
+    async loadFromFile(path: string): Promise<void> {
+        const filename = getLastPath(path);
+        await this.runAsync(
             `
                 from pyodide.http import pyfetch
                 from js import console
 
                 try:
-                    response = await pyfetch("${s}")
+                    response = await pyfetch("${path}")
                 except Exception as err:
                     console.warn("PyScript: Access to local files (using 'paths:' in py-env) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
                     raise(err)

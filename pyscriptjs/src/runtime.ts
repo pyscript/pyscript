@@ -95,13 +95,13 @@ export abstract class Runtime extends Object {
      * delegates the code to be run to the underlying interpreter
      * which can call its own API behind the scenes.
      * */
-    abstract runCode(code: string): any;
+    abstract run(code: string): any;
 
     /**
      * delegates the code to be run to the underlying interpreter
      * (asynchronously) which can call its own API behind the scenes.
      * */
-    abstract runCodeAsync(code: string): Promise<any>;
+    abstract runAsync(code: string): Promise<any>;
 
     /**
      * delegates the setting of JS objects to
@@ -128,7 +128,7 @@ export abstract class Runtime extends Object {
      * delegates the loading of files to the
      * underlying interpreter.
      * */
-    abstract loadFromFile(s: string): Promise<void>;
+    abstract loadFromFile(path: string): Promise<void>;
 
     /**
      * initializes the page which involves loading of runtime,
