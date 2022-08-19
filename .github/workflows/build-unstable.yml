@@ -58,6 +58,12 @@ jobs:
         -   name: Build
             run: make build
 
+        -   name: TypeScript Tests
+            run: make test-ts
+
+        -   name: Python Tests
+            run: make test-py
+
         -   uses: actions/upload-artifact@v3
             with:
                 name: pyscript
@@ -65,12 +71,6 @@ jobs:
                     pyscriptjs/build/
                 if-no-files-found: error
                 retention-days: 7
-
-        -   name: TypeScript Tests
-            run: make test-ts
-
-        -   name: Python Tests
-            run: make test-py
 
     Deploy:
         runs-on: ubuntu-latest
