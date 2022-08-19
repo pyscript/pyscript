@@ -74,6 +74,7 @@ jobs:
 
     Deploy:
         runs-on: ubuntu-latest
+        needs: BuildAndTest
         if: github.ref == 'refs/heads/main' # Only deploy on merge into main
         permissions:
             contents: read
