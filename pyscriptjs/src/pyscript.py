@@ -438,10 +438,25 @@ pyscript = PyScript()
 output_manager = OutputManager()
 
 
+class TopLevelAsyncFinder(ast.NodeVisitor):
+    def is_source_async(self, source):
+        self.async_found = False
+        node = ast.parse(source)
+        self.generic_visit(node)
+        return self.async_found
+
+    def visit_Await(self, node):
+        self.async_found = True
+
+    def visit_AsyncFor(self, node):
+        self.async_found = True
+
+    def visit_AsyncWith(self, node):
+        self.async_found = True
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
+        pass  # Do not visit children of async function defs
+
+
 def is_async(source: str) -> bool:
-    node = ast.parse(source)
-    async_statement_node_types = (ast.Await, ast.AsyncFor, ast.AsyncWith)
-    for n in ast.walk(node):
-        if n.__class__ in async_statement_node_types:
-            return True
-    return False
+    return TopLevelAsyncFinder().is_source_async(source)
