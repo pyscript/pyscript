@@ -139,7 +139,7 @@ export abstract class Runtime extends Object {
         loader?.log('Loading runtime...');
         await this.loadInterpreter();
         const newEnv = {
-            id: 'a',
+            id: 'default',
             runtime: this,
             state: 'loading',
         };
