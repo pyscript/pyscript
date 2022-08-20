@@ -80,7 +80,7 @@ export class BaseEvalElement extends HTMLElement {
     protected async _register_esm(pyodide: PyodideInterface): Promise<void> {
         const imports: { [key: string]: unknown } = {};
         const nodes = document.querySelectorAll("script[type='importmap']");
-        let importmaps: Array<any>;
+        const importmaps: Array<any> = [];
         nodes.forEach( node =>
             {
                 let importmap;
