@@ -214,6 +214,33 @@ class Element:
         self.element.classList.add(classname)
 
 
+class Elements:
+    __identifier = 0
+
+    def __init__(self, query, elements=None):
+        self._query = query
+        self._elements = elements
+        self._identifier = Elements.__identifier
+        Elements.__identifier += 1
+
+    @property
+    def query(self):
+        return self._query
+
+    @property
+    def elements(self):
+        """Return a list of dom elements"""
+        if not self._elements:
+            self._elements = []
+            i = 0
+            for el in document.querySelectorAll(f"{self.query}"):
+                if el.id == "":
+                    el.id = str(f"pys{self._identifier}{i}")
+                    i += 1
+                self._elements.append(Element(el.id))
+        return self._elements
+
+
 def add_classes(element, class_list):
     for klass in class_list.split(" "):
         element.classList.add(klass)
