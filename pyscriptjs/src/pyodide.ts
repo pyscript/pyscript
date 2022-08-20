@@ -3,7 +3,7 @@ import { getLastPath } from './utils';
 import type { PyodideInterface } from './runtime';
 // eslint-disable-next-line
 // @ts-ignore
-import pyscript from './pyscript.py';
+import pyscript from './python/pyscript.py';
 
 export class PyodideRuntime extends Runtime {
     src = 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js';
