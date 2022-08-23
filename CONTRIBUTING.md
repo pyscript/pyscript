@@ -58,7 +58,7 @@ If you have questions about the project, using PyScript, or anything else, pleas
 ```
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: If `make setup` gives a node/npm version required  error then go to [troubleshooting](https://github.com/pyscript/pyscript/blob/main/TROUBLESHOOTING.md)
 
-* You can also run the examples localy by running the command below in your terminal
+* You can also run the examples locally by running the command below in your terminal
 ```
     make examples
 ```

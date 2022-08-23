@@ -20,3 +20,11 @@ class TestElement:
         assert pyscript.document.querySelector.call_count == 1
         pyscript.document.querySelector.assert_called_with("#something")
         assert real_element == call_result
+
+
+def test_format_mime_str():
+    obj = "just a string"
+
+    res = pyscript.format_mime(obj)
+    assert res[0] == obj
+    assert res[1] == "text/plain"
