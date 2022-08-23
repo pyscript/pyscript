@@ -16,7 +16,7 @@ import type { PyScript } from './pyscript';
 import type { PyodideInterface } from '../pyodide';
 
 const DEFAULT_RUNTIME = {
-    src: 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js',
+    src: 'https://cdn.jsdelivr.net/pyodide/v0.21.1/full/pyodide.js',
     name: 'pyodide-default',
     lang: 'python',
 };
