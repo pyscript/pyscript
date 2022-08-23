@@ -7,7 +7,7 @@ import { loadPyodide } from 'pyodide';
 import pyscript from './python/pyscript.py';
 
 export class PyodideRuntime extends Runtime {
-    src = 'https://cdn.jsdelivr.net/pyodide/v0.21.0/full/pyodide.js';
+    src = 'https://cdn.jsdelivr.net/pyodide/v0.21.1/full/pyodide.js';
     name = 'pyodide-default';
     lang = 'python';
     interpreter: PyodideInterface;
