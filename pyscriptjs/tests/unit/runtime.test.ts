@@ -1,8 +1,15 @@
 import 'jest';
+
+import {jest} from '@jest/globals'
+
 import { Runtime } from '../../src/runtime';
 import { PyodideRuntime } from '../../src/pyodide';
 
 jest.mock('../../src/python/pyscript.py');
+
+import { TextEncoder, TextDecoder } from 'util'
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
 
 describe('PyodideRuntime', () => {
     let runtime: PyodideRuntime;
