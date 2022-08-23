@@ -12,8 +12,8 @@
     "lint": "eslint './src/**/*.{js,svelte,html,ts}'",
     "lint:fix": "eslint --fix './src/**/*.{js,svelte,html,ts}'",
     "xprelint": "npm run format",
-    "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
@@ -45,7 +45,8 @@
     "svelte-preprocess": "^4.10.6",
     "ts-jest": "^28.0.7",
     "tslib": "^2.4.0",
-    "typescript": "^4.6.4"
+    "typescript": "^4.6.4",
+    "cross-env": "^7.0.3"
   },
   "dependencies": {
     "@codemirror/basic-setup": "^0.19.1",

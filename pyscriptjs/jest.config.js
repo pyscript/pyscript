@@ -2,9 +2,11 @@
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'jest-environment-jsdom',
+    extensionsToTreatAsEsm: ['.ts'],
     globals: {
       'ts-jest': {
-          tsconfig: 'tsconfig.json'
+          tsconfig: 'tsconfig.json',
+          useESM: true
       }
     },
     verbose: true,
