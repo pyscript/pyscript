@@ -165,18 +165,28 @@ export class BaseEvalElement extends HTMLElement {
 
             this.postEvaluate();
         } catch (err) {
-            if (Element === undefined) {
-                Element = <Element>runtime.globals.get('Element');
+            console.error(err);
+            try{
+                if (Element === undefined) {
+                    Element = <Element>runtime.globals.get('Element');
+                }
+                const out = Element(this.errorElement.id);
+
+                addClasses(this.errorElement, ['bg-red-200', 'p-2']);
+                out.write.callKwargs(err.toString(), { append: this.appendOutput });
+                if (this.errorElement.children.length === 0){
+                    this.errorElement.setAttribute('error', '');
+                }else{
+                    this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
+                }
+
+                this.errorElement.hidden = false;
+                this.errorElement.style.display = 'block';
+                this.errorElement.style.visibility = 'visible';
+            } catch (internalErr){
+                console.error("Unnable to write error to error element in page.")
             }
-            const out = Element(this.errorElement.id);
 
-            addClasses(this.errorElement, ['bg-red-200', 'p-2']);
-            out.write.callKwargs(err, { append: this.appendOutput });
-
-            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
-            this.errorElement.hidden = false;
-            this.errorElement.style.display = 'block';
-            this.errorElement.style.visibility = 'visible';
         }
     } // end evaluate
 
