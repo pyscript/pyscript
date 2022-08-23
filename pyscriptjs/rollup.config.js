@@ -17,6 +17,7 @@ export default {
     {
     sourcemap: true,
     format: "iife",
+    inlineDynamicImports: true,
     name: "app",
     file: "build/pyscript.js",
     },
@@ -24,6 +25,7 @@ export default {
       file: "build/pyscript.min.js",
       format: "iife",
       sourcemap: true,
+      inlineDynamicImports: true,
       plugins: [terser()],
     },
   ],
