@@ -1,14 +1,13 @@
 import * as jsyaml from 'js-yaml';
 
-import { pyodideLoaded, addInitializer } from '../stores';
-import { loadPackage, loadFromFile } from '../interpreter';
+import { runtimeLoaded, addInitializer } from '../stores';
 import { handleFetchError } from '../utils';
-import type { PyodideInterface } from '../pyodide';
+import type { Runtime } from '../runtime';
 
-// Premise used to connect to the first available pyodide interpreter
-let runtime: PyodideInterface;
+// Premise used to connect to the first available runtime (can be pyodide or others)
+let runtime: Runtime;
 
-pyodideLoaded.subscribe(value => {
+runtimeLoaded.subscribe(value => {
     runtime = value;
     console.log('RUNTIME READY');
 });
@@ -18,7 +17,7 @@ export class PyEnv extends HTMLElement {
     wrapper: HTMLElement;
     code: string;
     environment: unknown;
-    runtime: PyodideInterface;
+    runtime: Runtime;
     env: string[];
     paths: string[];
 
@@ -56,7 +55,7 @@ export class PyEnv extends HTMLElement {
         this.paths = paths;
 
         async function loadEnv() {
-            await loadPackage(env, runtime);
+            await runtime.installPackage(env);
             console.log('environment loaded');
         }
 
@@ -64,7 +63,7 @@ export class PyEnv extends HTMLElement {
             for (const singleFile of paths) {
                 console.log(`loading ${singleFile}`);
                 try {
-                    await loadFromFile(singleFile, runtime);
+                    await runtime.loadFromFile(singleFile);
                 } catch (e) {
                     //Should we still export full error contents to console?
                     handleFetchError(<Error>e, singleFile);

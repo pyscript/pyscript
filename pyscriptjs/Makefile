@@ -40,6 +40,10 @@ setup:
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
 	$(CONDA_EXE) install -c anaconda pytest -y
+    # context for the removal of assert statement below: https://github.com/pyodide/pyodide/issues/2764
+    # the assert statement fails even if `arrayBuffer.constructor.name == "ArrayBuffer"` is `true`
+    # thus, the statement is removed from the auto-generated `pyodide.asm.js` file
+	sed $(SED_I_ARG) 's/assert(arrayBuffer instanceof ArrayBuffer,"bad input to processPackageData");//g' node_modules/pyodide/pyodide.asm.js
 
 clean:
 	find . -name \*.py[cod] -delete
@@ -65,16 +69,17 @@ examples:
 	find ./examples/toga -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../build/+g {} \;
 	find ./examples/webgl -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../../build/+g {} \;
 	find ./examples -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../build/+g {} \;
+	npm run build
+	cp -R ./build/ ./examples/build
+	@echo "To serve examples run: $(conda_run) python -m http.server 8080 --directory examples"
 
 test:
 	make examples
-	npm run build
 	make test-ts
 	make test-py
 
 test-local:
 	make examples
-	npm run build
 	pytest -vvs $(ARGS) tests/integration/ --log-cli-level=warning
 
 test-py:
