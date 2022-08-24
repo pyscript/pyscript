@@ -7,8 +7,9 @@ global.TextDecoder = TextDecoder
 
 describe('PyodideRuntime', () => {
     let runtime: PyodideRuntime;
-    beforeEach(() => {
+    beforeAll(async () => {
         runtime = new PyodideRuntime();
+        await runtime.initialize();
     });
 
     it('should check if runtime is an instance of abstract Runtime', async () => {
@@ -20,14 +21,12 @@ describe('PyodideRuntime', () => {
     });
 
     it('should check if runtime can run python code', async () => {
-        await runtime.initialize();
         expect(runtime.run("2+2")).toBe(4);
     });
 
-    // it('should check if runtime is able to load a package', async () => {
-    //     await runtime.initialize();
-    //     await runtime.loadPackage("numpy");
-    //     await runtime.runAsync("import numpy");
-    // });
+    it('should check if runtime is able to load a package', async () => {
+        await runtime.loadPackage("numpy");
+        await runtime.runAsync("import numpy");
+    });
 
   });
