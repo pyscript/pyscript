@@ -1,6 +1,6 @@
 import { Runtime } from './runtime';
 import { getLastPath, inJest } from './utils';
-import type { PyodideInterface } from './runtime';
+import type { PyodideInterface } from 'pyodide';
 import { loadPyodide } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore

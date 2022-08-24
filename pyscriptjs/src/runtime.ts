@@ -1,4 +1,4 @@
-import type { loadPyodide } from 'pyodide';
+import type { PyodideInterface } from 'pyodide';
 import type { PyLoader } from './components/pyloader';
 import {
     runtimeLoaded,
@@ -12,8 +12,6 @@ import {
 } from './stores'
 import type { PyScript } from './components/pyscript';
 
-// The current release doesn't export `PyodideInterface` type
-export type PyodideInterface = Awaited<ReturnType<typeof loadPyodide>>;
 export type RuntimeInterpreter = PyodideInterface | null;
 
 export type AppConfig = {
