@@ -1,10 +1,17 @@
 # How to Pass Objects from PyScript to Javascript (and Vice Versa)
 
-For our purposes, an 'object' is anything that can be bound to a variable (a number, string, object, [function](https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function), etc). Also, recall that the `import js` or `from js import ...` [in Pyodide](https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-using-js-obj-from-py) gets objects from the [JavaScript globalThis scope](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis), so keep the[ rules of JavaScript variable scoping](https://www.freecodecamp.org/news/var-let-and-const-whats-the-difference/) in mind.
+[Pyodide](https://pyodide.org), the runtime that underlies PyScript, does a lot of work under the hood to translate objects between Python and JavaScript. This allows code in one language to access objects defined in the other. 
+
+This guide discusses how to pass objects between JavaScript
+and the Python within PyScript. For more details on how Pyodide handles translating and proxying objects between the two languages, see the [Pyodide Type Translations Page](https://pyodide.org/en/stable/usage/type-conversions.html)
+
+For our purposes, an 'object' is anything that can be bound to a variable (a number, string, object, [function](https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function), etc).
 
 ## JavaScript to PyScript
 
-We can use the simple `from js import ...` to import JavaScript objects directly into PyScript. Simple JavaScript objects are converted to equivalent Python types; more complicated objects are wrapped in [JSProxy](https://pyodide.org/en/stable/usage/type-conversions.html) objects to make them behave like Python objects. See the [Pyodide Documentation on Type Conversion](https://pyodide.org/en/stable/usage/type-conversions.html) for more details.
+We can use the simple `from js import ...` to import JavaScript objects directly into PyScript. Simple JavaScript objects are converted to equivalent Python types; more complicated objects are wrapped in [JSProxy](https://pyodide.org/en/stable/usage/type-conversions.html) objects to make them behave like Python objects.
+
+`import js` and `from js import ...` [in Pyodide](https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-using-js-obj-from-py) get objects from the [JavaScript globalThis scope](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis), so keep the[ rules of JavaScript variable scoping](https://www.freecodecamp.org/news/var-let-and-const-whats-the-difference/) in mind.
 
 ```html
 <script>
@@ -21,7 +28,7 @@ We can use the simple `from js import ...` to import JavaScript objects directly
     # Import and use JS function and variable into Python
     from js import name, addTwoNumbers
 
-    #import the js developer console so we can display our results
+    #import the js browser's dev console so we can display our results
     from js import console
     console.log(f"Hello {name}")
     console.log("Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2)))
