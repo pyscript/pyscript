@@ -82,7 +82,7 @@ export class BaseEvalElement extends HTMLElement {
     protected async _register_esm(runtime: Runtime): Promise<void> {
         const imports: { [key: string]: unknown } = {};
         const nodes = document.querySelectorAll("script[type='importmap']");
-        let importmaps: Array<any>;
+        const importmaps: Array<any> = [];
         nodes.forEach( node =>
             {
                 let importmap;
@@ -167,18 +167,28 @@ export class BaseEvalElement extends HTMLElement {
 
             this.postEvaluate();
         } catch (err) {
-            if (Element === undefined) {
-                Element = <Element>runtime.globals.get('Element');
+            console.error(err);
+            try{
+                if (Element === undefined) {
+                    Element = <Element>runtime.globals.get('Element');
+                }
+                const out = Element(this.errorElement.id);
+
+                addClasses(this.errorElement, ['bg-red-200', 'p-2']);
+                out.write.callKwargs(err.toString(), { append: this.appendOutput });
+                if (this.errorElement.children.length === 0){
+                    this.errorElement.setAttribute('error', '');
+                }else{
+                    this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
+                }
+
+                this.errorElement.hidden = false;
+                this.errorElement.style.display = 'block';
+                this.errorElement.style.visibility = 'visible';
+            } catch (internalErr){
+                console.error("Unnable to write error to error element in page.")
             }
-            const out = Element(this.errorElement.id);
 
-            addClasses(this.errorElement, ['bg-red-200', 'p-2']);
-            out.write.callKwargs(err, { append: this.appendOutput });
-
-            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
-            this.errorElement.hidden = false;
-            this.errorElement.style.display = 'block';
-            this.errorElement.style.visibility = 'visible';
         }
     } // end evaluate
 
@@ -195,7 +205,7 @@ export class BaseEvalElement extends HTMLElement {
 
     runAfterRuntimeInitialized(callback: () => Promise<void>){
         runtimeLoaded.subscribe(value => {
-            if ('runCodeAsync' in value) {
+            if ('runAsync' in value) {
                 setTimeout(async () => {
                     await callback();
                 }, 100);
@@ -239,7 +249,7 @@ function createWidget(name: string, code: string, klass: string) {
             // }, 2000);
             runtimeLoaded.subscribe(value => {
                 console.log('RUNTIME READY', value);
-                if ('runCodeAsync' in value) {
+                if ('runAsync' in value) {
                     runtime = value;
                     setTimeout(async () => {
                         await this.eval(this.code);
