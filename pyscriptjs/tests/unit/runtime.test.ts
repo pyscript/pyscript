@@ -1,11 +1,5 @@
-import 'jest';
-
-import {jest} from '@jest/globals'
-
 import { Runtime } from '../../src/runtime';
 import { PyodideRuntime } from '../../src/pyodide';
-
-jest.mock('../../src/python/pyscript.py');
 
 import { TextEncoder, TextDecoder } from 'util'
 global.TextEncoder = TextEncoder
@@ -29,8 +23,4 @@ describe('PyodideRuntime', () => {
         await runtime.initialize();
         expect(runtime.run("2+2")).toBe(4);
     });
-
-    // test('empty string should result in zero', () => {
-    //   expect(add('')).toBe(0);
-    // });
   });
