@@ -40,6 +40,7 @@ setup:
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
 	$(CONDA_EXE) install -c anaconda pytest -y
+	sed $(SED_I_ARG) 's/assert(arrayBuffer instanceof ArrayBuffer,"bad input to processPackageData");//g' node_modules/pyodide/pyodide.asm.js
 
 clean:
 	find . -name \*.py[cod] -delete
