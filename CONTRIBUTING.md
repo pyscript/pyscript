@@ -73,27 +73,27 @@ If you have questions about the project, using PyScript, or anything else, pleas
 
 Now that node and npm have both been updated `make setup` should work, and you can continue [setting up your local environment](#setting-up-your-local-environment) without problems (hopefully).
 
-## Creating a Pull Request
+### Building the docs
 
-After you fork PyScript make sure to add a new remote. You can do that using the command:
+To build the documentation locally first make sure you are in the `docs` directory.
 
-```
-git remote add remote_nickname remote_url
-```
-
-You should have one remote that corresponds to your local repository and one remote that corresponds the upstream PyScript repository.
-
-We recommend you to create a new local branch and develop your changes in this branch. You can do that by using:
+You'll need `make` and `conda` installed in your machine. The rest of the environment should be automatically download and created for you once you use the command:
 
 ```
-git checkout -b branch_name #creates new branch
-git checkout branch_name #goes to branch
+make setup
 ```
 
-It's not mandatory but it's advisible to have one issue that is related to your PR, the more information you give and the clearer you can communicate your ideas the faster maintainers will be able to review your changes and merge your PR.
+Use `conda activate $environment_name` to activate your environment.
 
-Please try to keep the changes on your PR within the issue's scope. In case you don't have a related issue, limit the your PR's scope in a way that a short sentence summarizes its contents. This sentence should be the name of your PR. If you can't think of a sentence that summarizes your PR well, might be a sign that you need to split it in two or more PRs!
+To add new information to the documentation make sure you conform with PyScript's code of conduct and with the general principles of Diataxis. Don't worry about reading too much on it, just do your best to keep your contributions on the correct axis.
 
+You need to write your documentation files using [Markedly Structured Text](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html), which is very similar to vanilla Markdown but with some addons to create the documentation infrastructure.
+
+Once your changes are done you can initialize a server and check them on the following address: http:///127.0.0.1:8000, using the command:
+
+```
+make livehtml
+```
 
 ## Places to start
 
