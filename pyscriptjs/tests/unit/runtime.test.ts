@@ -23,4 +23,11 @@ describe('PyodideRuntime', () => {
         await runtime.initialize();
         expect(runtime.run("2+2")).toBe(4);
     });
+
+    // it('should check if runtime is able to load a package', async () => {
+    //     await runtime.initialize();
+    //     await runtime.loadPackage("numpy");
+    //     await runtime.runAsync("import numpy");
+    // });
+
   });

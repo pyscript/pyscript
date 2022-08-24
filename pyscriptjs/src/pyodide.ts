@@ -19,7 +19,7 @@ export class PyodideRuntime extends Runtime {
         // @ts-ignore
         let extraOpts: any = {}
         if (inJest()) {
-          extraOpts = {indexURL: "../node_modules/pyodide"}
+          extraOpts = {indexURL: [process.cwd(), 'node_modules', 'pyodide'].join('/') }
 	}
         this.interpreter = await loadPyodide({
             stdout: console.log,
