@@ -93,15 +93,9 @@ export abstract class Runtime extends Object {
 
     /**
      * delegates the code to be run to the underlying interpreter
-     * which can call its own API behind the scenes.
-     * */
-    abstract run(code: string): any;
-
-    /**
-     * delegates the code to be run to the underlying interpreter
      * (asynchronously) which can call its own API behind the scenes.
      * */
-    abstract runAsync(code: string): Promise<any>;
+    abstract run(code: string): Promise<any>;
 
     /**
      * delegates the setting of JS objects to

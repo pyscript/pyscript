@@ -35,7 +35,7 @@ export class PyodideRuntime extends Runtime {
         await this.loadPackage('micropip');
 
         console.log('loading pyscript...');
-        const output = await this.runAsync(pyscript);
+        const output = await this.run(pyscript);
         if (output !== undefined) {
             console.log(output);
         }
@@ -43,11 +43,7 @@ export class PyodideRuntime extends Runtime {
         console.log('done setting up environment');
     }
 
-    run(code: string): any {
-        return this.interpreter.runPython(code);
-    }
-
-    async runAsync(code: string): Promise<any> {
+    async run(code: string): Promise<any> {
         return await this.interpreter.runPythonAsync(code);
     }
 
@@ -69,7 +65,7 @@ export class PyodideRuntime extends Runtime {
 
     async loadFromFile(path: string): Promise<void> {
         const filename = getLastPath(path);
-        await this.runAsync(
+        await this.run(
             `
                 from pyodide.http import pyfetch
                 from js import console

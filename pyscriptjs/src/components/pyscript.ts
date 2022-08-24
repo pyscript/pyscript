@@ -230,7 +230,7 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
         from pyodide import create_proxy
         Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
         `;
-        await runtime.runAsync(source);
+        await runtime.run(source);
 
         // TODO: Should we actually map handlers in JS instead of Python?
         // el.onclick = (evt: any) => {
@@ -259,7 +259,7 @@ async function mountElements() {
         const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
         source += `\n${mountName} = Element("${el.id}")`;
     }
-    await runtime.runAsync(source);
+    await runtime.run(source);
 }
 addInitializer(mountElements);
 addPostInitializer(initHandlers);
