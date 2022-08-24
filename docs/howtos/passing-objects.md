@@ -15,13 +15,16 @@ We can use the simple `from js import ...` to import JavaScript objects directly
         return x + y;
     }
 </script>
+```
+```python
 <py-script>
-    # Import and use JS function and varaible into Python
+    # Import and use JS function and variable into Python
     from js import name, addTwoNumbers
 
     #import the js developer console so we can display our results
     from js import console
-    console.log("Hello " + name + ".Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2)))
+    console.log(f"Hello {name}")
+    console.log("Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2)))
 </py-script>
 ```
 
@@ -31,48 +34,25 @@ Since [PyScript doesn't export its instance of Pyodide](https://github.com/pyscr
 
 We can work around this limitation using [JavaScript's eval() function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval), which executes a string as code much like [Python's eval()](https://docs.python.org/3/library/functions.html#eval). First, we create a JS function `createObject` which takes an object and a string, then uses eval() to bind that string as a variable to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.
 
+Include the following script tag anywhere in your html document:
+
 ```html
 <script>
     function createObject(object, variableName){
         //Bind a variable whose name is the string variableName
         // to the object called 'object'
         let execString = variableName + " = object"
-        console.log("Running `" + execString + "`");
+        console.log("Running '" + execString + "'");
         eval(execString)
     }
 </script>
 ```
 
-This takes a Python Object and creates a variable pointing to it in the JavaScript global scope. We can use it to "export" individual Python objects to the JavaScript global scope if we wish:
+This function takes a Python Object and creates a variable pointing to it in the JavaScript global scope.
 
-```html
-<py-script>
-    import js
-        
-    // Create 3 python objects
-    language = "Python 3"
-    animals = ['Dog', 'Cat', 'Bird']
-    multiply3 = lambda a, b, c: a * b * c
+### Exporting all Global Python Objects
 
-    // js object can be named the same as Python objects...
-    js.createObject(language, "language") 
-
-    // ...but don't have to be
-    js.createObject(animals, "animals_from_py")
-
-    // functions are objects too, in both Python and Javascript
-    js.createObject(multiply3, "multiply")
-</py-script>
-```
-```html
-<script>
-    console.log("Nice job using ${language})
-    console.log("Do you like ${animals_from_py})
-    console.log("2 times 3 times 4 is ${multiply(2,3,4)}")
-</script>
-```
-
-But we can also "export" the Python global namespace as a js object:
+We can use our new `createObject` function to "export" the entire Python global object dictionary as a JavaScript object:
 
 ```python
 <py-script>
@@ -83,20 +63,20 @@ But we can also "export" the Python global namespace as a js object:
 ```
 This will make all Python global variables available in JavaScript with `pyodideGlobals.get('my_variable_name')`.
 
-For example:
+(Since PyScript tags evaluate after all JavaScript on the page, we can't just dump a `console.log(...)` into a `&lt;script&gt;` tag. The following example uses a button with `id="do-math"` to achieve this, but any method would be valid.)
 
 ```python
 <py-script>
-    // create some Python objects:
+    # create some Python objects:
     symbols = {'pi': 3.1415926, 'e': 2.7182818}
 
     def rough_exponential(x):
         return symbols['e']**x
-    
+
     class Circle():
         def __init__(self, radius):
             self.radius = radius
-        
+
         @property
         def area:
             return symbols['pi'] * self.radius**2
@@ -104,10 +84,53 @@ For example:
 ```
 
 ```html
+<input type="button" value="Log Python Variables" id="do-mmath">
 <script>
-    const exp = pyodideGlobals.get('rough_exponential')
-    console.log("e squared is about ${exp(2)}")
-    const c = pyodideGlobals.get('Circle')(4)
-    console.log("The area of c is ${c.area}")
+    document.getElementById("do-math").addEventListener("click", () => {
+        const exp = pyodideGlobals.get('rough_exponential');
+        console.log("e squared is about ${exp(2)}");
+        const c = pyodideGlobals.get('Circle')(4);
+        console.log("The area of c is ${c.area}");
+    });
+</script>
+```
+
+
+### Exporting Individual Python Objects
+
+We can also  individual Python objects to the JavaScript global scope if we wish.
+
+(As above, the following example uses a button to delay the execution of the `<script>` until after the PyScript has run.)
+
+```python
+<py-script>
+    import js
+    from pyodide import create_proxy
+
+    # Create 3 python objects
+    language = "Python 3"
+    animals = ['dog', 'cat', 'bird']
+    multiply3 = lambda a, b, c: a * b * c
+
+    # js object can be named the same as Python objects...
+    js.createObject(language, "language")
+
+    # ...but don't have to be
+    js.createObject(create_proxy(animals), "animals_from_py")
+
+    # functions are objects too, in both Python and Javascript
+    js.createObject(create_proxy(multiply3), "multiply")
+</py-script>
+```
+```html
+<input type="button" value="Log Python Variables" id="log-python-variables">
+<script>
+  document.getElementById("log-python-variables").addEventListener("click", () => {
+    console.log(`Nice job using ${language}`);
+    for (const animal of animals_from_py){
+      console.log(`Do you like ${animal}s? `);
+    }
+    console.log(`2 times 3 times 4 is ${multiply(2,3,4)}`);
+  });
 </script>
 ```
