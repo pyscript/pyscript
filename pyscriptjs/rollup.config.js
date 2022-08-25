@@ -8,6 +8,7 @@ import typescript from "@rollup/plugin-typescript";
 import css from "rollup-plugin-css-only";
 import serve from "rollup-plugin-serve";
 import { string } from "rollup-plugin-string";
+import copy from 'rollup-plugin-copy'
 
 const production = !process.env.ROLLUP_WATCH || (process.env.NODE_ENV === "production");
 
@@ -55,6 +56,12 @@ export default {
       sourceMap: !production,
       inlineSources: !production,
     }),
+    // This will make sure that examples will always get the latest build folder
+    !production && copy({
+        targets: [
+          { src: 'build/*', dest: 'examples/build' }
+        ]
+      }),
     !production && serve(),
     !production && livereload("public"),
     // production && terser(),
