@@ -3,8 +3,7 @@ import re
 import time
 
 import pytest
-
-from .support import ROOT, PyScriptTest
+from tests.integration.support import ROOT, PyScriptTest
 
 MAX_TEST_TIME = 30  # Number of seconds allowed for checking a testing condition
 TEST_TIME_INCREMENT = 0.25  # 1/4 second, the length of each iteration
@@ -169,6 +168,9 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
+    @pytest.mark.xfail(
+        reason="Test seems flaky, sometimes it doesn't return result from second repl"
+    )
     def test_repl(self):
         self.goto("examples/repl.html")
         self.wait_for_pyscript()
