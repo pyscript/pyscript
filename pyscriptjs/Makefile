@@ -80,7 +80,7 @@ test:
 
 test-integration:
 	make examples
-	pytest -vvs $(ARGS) tests/integration/ --log-cli-level=warning
+	$(PYTEST_EXE) -vvs $(ARGS) tests/integration/ --log-cli-level=warning
 
 test-py:
 	@echo "Tests from $(src_dir)"
