@@ -196,8 +196,8 @@ class Element:
         clone.id = new_id
 
         if to:
-            to.element.appendChild(clone)  # Does this appendChild have any effect
-            # This function is returning Element(clone.id, clone)
+            to.element.appendChild(clone)
+
         # Inject it into the DOM
         self.element.after(clone)
 
