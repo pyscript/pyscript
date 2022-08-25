@@ -15,17 +15,15 @@ export class PyodideRuntime extends Runtime {
 
     async loadInterpreter(): Promise<void> {
         console.log('creating pyodide runtime');
-        // eslint-disable-next-line
-        // @ts-ignore
-        let extraOpts: any = {}
-        if (inJest()) {
-          extraOpts = {indexURL: [process.cwd(), 'node_modules', 'pyodide'].join('/') }
-	}
+        let indexURL: string = this.src.substring(0, this.src.length - "/pyodide.js".length)
+        if (typeof process === 'object' && inJest()) {
+            indexURL = [process.cwd(), 'node_modules', 'pyodide'].join('/')
+        }
         this.interpreter = await loadPyodide({
             stdout: console.log,
             stderr: console.log,
             fullStdLib: false,
-            ...extraOpts
+            indexURL
         });
 
         this.globals = this.interpreter.globals;
