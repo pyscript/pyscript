@@ -48,7 +48,7 @@ export class PyButton extends BaseEvalElement {
 
         this.appendChild(mainDiv);
         this.code = this.code.split('self').join(this.mount_name);
-        let registrationCode = `from pyodide import create_proxy`;
+        let registrationCode = `from pyodide.ffi import create_proxy`;
         registrationCode += `\n${this.mount_name} = Element("${mainDiv.id}")`;
         if (this.code.includes('def on_focus')) {
             this.code = this.code.replace('def on_focus', `def on_focus_${this.mount_name}`);

@@ -71,17 +71,17 @@ def _link_docs(pydoc, jsdoc):
         if getattr(event, 'setter_id', None) is not None:
             return
         events = [event]
-        json_patch = jsdoc.create_json_patch_string(pyodide.to_js(events))
+        json_patch = jsdoc.create_json_patch_string(pyodide.ffi.to_js(events))
         pydoc.apply_json_patch(json.loads(json_patch))
 
-    jsdoc.on_change(pyodide.create_proxy(jssync), pyodide.to_js(False))
+    jsdoc.on_change(pyodide.ffi.create_proxy(jssync), pyodide.ffi.to_js(False))
 
     def pysync(event):
         json_patch, buffers = process_document_events([event], use_buffers=True)
         buffer_map = {}
         for (ref, buffer) in buffers:
             buffer_map[ref['id']] = buffer
-        jsdoc.apply_json_patch(JSON.parse(json_patch), pyodide.to_js(buffer_map), setter_id='js')
+        jsdoc.apply_json_patch(JSON.parse(json_patch), pyodide.ffi.to_js(buffer_map), setter_id='js')
 
     pydoc.on_change(pysync)
 

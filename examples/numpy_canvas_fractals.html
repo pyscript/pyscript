@@ -87,7 +87,7 @@
 </py-env>
 
 <py-script>
-from pyodide import to_js, create_proxy
+from pyodide.ffi import to_js, create_proxy
 
 import numpy as np
 import sympy

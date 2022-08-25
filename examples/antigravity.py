@@ -2,7 +2,7 @@ import random
 import sys
 
 from js import DOMParser, document, setInterval
-from pyodide import create_proxy
+from pyodide.ffi import create_proxy
 from pyodide.http import open_url
 
 
