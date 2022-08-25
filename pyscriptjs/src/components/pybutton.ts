@@ -2,9 +2,6 @@ import { BaseEvalElement } from './base';
 import { addClasses, htmlDecode } from '../utils';
 
 export class PyButton extends BaseEvalElement {
-    shadow: ShadowRoot;
-    wrapper: HTMLElement;
-    theme: string;
     widths: Array<string>;
     label: string;
     class: Array<string>;

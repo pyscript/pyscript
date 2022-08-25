@@ -16,15 +16,11 @@ const DEFAULT_RUNTIME: Runtime = new PyodideRuntime();
  */
 
 export class PyConfig extends BaseEvalElement {
-    shadow: ShadowRoot;
-    wrapper: HTMLElement;
-    theme: string;
     widths: Array<string>;
     label: string;
     mount_name: string;
     details: HTMLElement;
     operation: HTMLElement;
-    code: string;
     values: AppConfig;
     constructor() {
         super();

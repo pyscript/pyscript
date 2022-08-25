@@ -2,9 +2,6 @@ import { BaseEvalElement } from './base';
 import { addClasses, htmlDecode } from '../utils';
 
 export class PyInputBox extends BaseEvalElement {
-    shadow: ShadowRoot;
-    wrapper: HTMLElement;
-    theme: string;
     widths: Array<string>;
     label: string;
     mount_name: string;
