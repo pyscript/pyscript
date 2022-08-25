@@ -67,7 +67,9 @@ examples:
 
 # run prerequisites and serve pyscript examples at http://localhost:8000/examples/
 run-examples: setup build examples
-	$(conda_run) python -m http.server --bind 127.0.0.1 --directory .
+	make examples
+	npm install
+	make dev
 
 test:
 	make examples
