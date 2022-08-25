@@ -1,4 +1,4 @@
-import 'jest';
+import { jest } from '@jest/globals';
 import { PyButton } from '../../src/components/pybutton';
 
 customElements.define('py-button', PyButton);
