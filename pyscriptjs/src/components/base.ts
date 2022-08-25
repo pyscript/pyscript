@@ -194,11 +194,11 @@ export class BaseEvalElement extends HTMLElement {
         }
     } // end eval
 
-    runAfterRuntimeInitialized(callback: () => Promise<void>){
+    runAfterRuntimeInitialized(callback: () => Promise<void>) {
         runtimeLoaded.subscribe(value => {
             if ('run' in value) {
-                setTimeout(async () => {
-                    await callback();
+                setTimeout(() => {
+                    void callback();
                 }, 100);
             }
         });
@@ -231,23 +231,27 @@ function createWidget(name: string, code: string, klass: string) {
             //       ideally we can just wait for it to load and then run. To do
             //       so we need to replace using the promise and actually using
             //       the interpreter after it loads completely
-            // setTimeout(async () => {
-            //     await this.eval(this.code);
-            //     this.proxy = this.proxyClass(this);
-            //     console.log('proxy', this.proxy);
-            //     this.proxy.connect();
-            //     this.registerWidget();
+            // setTimeout(() => {
+            //     void (async () => {
+            //         await this.eval(this.code);
+            //         this.proxy = this.proxyClass(this);
+            //         console.log('proxy', this.proxy);
+            //         this.proxy.connect();
+            //         this.registerWidget();
+            //     })();
             // }, 2000);
             runtimeLoaded.subscribe(value => {
                 console.log('RUNTIME READY', value);
                 if ('run' in value) {
                     runtime = value;
-                    setTimeout(async () => {
-                        await this.eval(this.code);
-                        this.proxy = this.proxyClass(this);
-                        console.log('proxy', this.proxy);
-                        this.proxy.connect();
-                        this.registerWidget();
+                    setTimeout(() => {
+                        void (async () => {
+                            await this.eval(this.code);
+                            this.proxy = this.proxyClass(this);
+                            console.log('proxy', this.proxy);
+                            this.proxy.connect();
+                            this.registerWidget();
+                        })();
                     }, 1000);
                 }
             });
