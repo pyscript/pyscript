@@ -3,7 +3,8 @@ import re
 import time
 
 import pytest
-from tests.integration.support import ROOT, PyScriptTest
+
+from .support import ROOT, PyScriptTest
 
 MAX_TEST_TIME = 30  # Number of seconds allowed for checking a testing condition
 TEST_TIME_INCREMENT = 0.25  # 1/4 second, the length of each iteration
