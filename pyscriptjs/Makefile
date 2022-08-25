@@ -73,6 +73,12 @@ examples:
 	cp -R ./build/ ./examples/build
 	@echo "To serve examples run: $(conda_run) python -m http.server 8080 --directory examples"
 
+# run prerequisites and serve pyscript examples at http://localhost:8000/examples/
+run-examples: setup build examples
+	make examples
+	npm install
+	make dev
+
 test:
 	make examples
 	make test-ts
