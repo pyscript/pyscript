@@ -78,7 +78,7 @@ test:
 	make test-ts
 	make test-py
 
-test-local:
+test-integration:
 	make examples
 	pytest -vvs $(ARGS) tests/integration/ --log-cli-level=warning
 

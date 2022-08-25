@@ -62,6 +62,9 @@ jobs:
         -   name: Build and Test
             run: make test
 
+        -   name: Integration Tests
+            run: make test-integration
+
         # Deploy to S3
         -   name: Configure AWS credentials
             if: github.ref == 'refs/heads/main' # Only deploy on merge into main
