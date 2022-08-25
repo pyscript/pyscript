@@ -227,7 +227,7 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
         const handlerCode = el.getAttribute(pyAttribute);
         const event = pyAttributeToEvent.get(pyAttribute);
         const source = `
-        from pyodide import create_proxy
+        from pyodide.ffi import create_proxy
         Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
         `;
         await runtime.run(source);
