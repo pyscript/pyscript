@@ -194,11 +194,11 @@ export class BaseEvalElement extends HTMLElement {
         }
     } // end eval
 
-    runAfterRuntimeInitialized(callback: () => Promise<void>){
+    runAfterRuntimeInitialized(callback: () => Promise<void>) {
         runtimeLoaded.subscribe(value => {
             if ('run' in value) {
-                setTimeout(async () => {
-                    await callback();
+                setTimeout(() => {
+                    void callback();
                 }, 100);
             }
         });
