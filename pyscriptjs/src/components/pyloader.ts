@@ -1,9 +1,6 @@
 import { BaseEvalElement } from './base';
 
 export class PyLoader extends BaseEvalElement {
-    shadow: ShadowRoot;
-    wrapper: HTMLElement;
-    theme: string;
     widths: Array<string>;
     label: string;
     mount_name: string;
