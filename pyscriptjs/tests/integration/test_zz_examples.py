@@ -169,9 +169,6 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
-    @pytest.mark.xfail(
-        reason="Test seems flaky, sometimes it doesn't return result from second repl"
-    )
     def test_repl(self):
         self.goto("examples/repl.html")
         self.wait_for_pyscript()
@@ -187,7 +184,16 @@ class TestExamples(PyScriptTest):
         self.page.locator("#my-repl-2").type("2*2")
         self.page.keyboard.press("Shift+Enter")
 
-        assert self.page.locator("#my-repl-2-2").text_content() == "4"
+        # Sometimes the result isn't immediately available after running
+        # so we will check that we have a result before asserting if
+        # we don't have a result we will wait a very small amount
+        # which seems to work after
+        repl_result = self.page.locator("#my-repl-2-2").text_content()
+        if repl_result:
+            assert repl_result == "4"
+        else:
+            time.sleep(0.1)
+            assert self.page.locator("#my-repl-2-2").text_content() == "4"
 
     def test_repl2(self):
         self.goto("examples/repl2.html")
@@ -197,6 +203,9 @@ class TestExamples(PyScriptTest):
         # confirm we can import utils and run one command
         self.page.locator("py-repl").type("import utils\nutils.now()")
         self.page.locator("button").click()
+        # Wait a tiny amount so repl has time to return before us
+        # checking the page content
+        time.sleep(0.1)
         # utils.now returns current date time
         content = self.page.content()
         pattern = "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+"  # e.g. 08/09/2022 15:57:32
