@@ -1,4 +1,4 @@
-import { Runtime } from './runtime';
+import { Runtime, RuntimeConfig } from './runtime';
 import { getLastPath, inJest } from './utils';
 import type { PyodideInterface } from 'pyodide';
 import { loadPyodide } from 'pyodide';
@@ -6,7 +6,7 @@ import { loadPyodide } from 'pyodide';
 // @ts-ignore
 import pyscript from './python/pyscript.py';
 
-export const DEFAULT_RUNTIME_CONFIG = {
+export const DEFAULT_RUNTIME_CONFIG: RuntimeConfig = {
     src: 'https://cdn.jsdelivr.net/pyodide/v0.21.1/full/pyodide.js',
     name: 'pyodide-default',
     lang: 'python'
@@ -20,9 +20,9 @@ export class PyodideRuntime extends Runtime {
     globals: any;
 
     constructor(
-        src = 'https://cdn.jsdelivr.net/pyodide/v0.21.1/full/pyodide.js',
-        name = 'pyodide-default',
-        lang = 'python',
+        src = DEFAULT_RUNTIME_CONFIG.src,
+        name = DEFAULT_RUNTIME_CONFIG.name,
+        lang = DEFAULT_RUNTIME_CONFIG.lang,
     ) {
         super();
         this.src = src;

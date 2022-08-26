@@ -1,8 +1,7 @@
 import * as jsyaml from 'js-yaml';
 import { BaseEvalElement } from './base';
 import { appConfig } from '../stores';
-import type { AppConfig } from '../runtime';
-import { Runtime } from '../runtime';
+import type { AppConfig, Runtime } from '../runtime';
 import { PyodideRuntime, DEFAULT_RUNTIME_CONFIG } from '../pyodide';
 
 /**
@@ -59,12 +58,12 @@ export class PyConfig extends BaseEvalElement {
 
     loadRuntimes() {
         console.log('Initializing runtimes...');
-        for (let runtime of this.values.runtimes) {
-            runtime = new PyodideRuntime(runtime.src, runtime.name, runtime.lang);
+        for (const runtime of this.values.runtimes) {
+            const runtimeObj: Runtime = new PyodideRuntime(runtime.src, runtime.name, runtime.lang);
             const script = document.createElement('script'); // create a script DOM node
-            script.src = runtime.src; // set its src to the provided URL
+            script.src = runtimeObj.src; // set its src to the provided URL
             script.addEventListener('load', () => {
-                void runtime.initialize();
+                void runtimeObj.initialize();
             });
             document.head.appendChild(script);
         }
