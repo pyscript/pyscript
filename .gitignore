@@ -136,3 +136,5 @@ dmypy.json
 .pyre/
 
 node_modules/
+
+coverage/
