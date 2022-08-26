@@ -13,6 +13,13 @@ export class PyodideRuntime extends Runtime {
     interpreter: PyodideInterface;
     globals: any;
 
+    constructor(src?: string, name?: string, lang?:string) {
+        super();
+        this.src = src;
+        this.name = name;
+        this.lang = lang;
+    }
+
     async loadInterpreter(): Promise<void> {
         console.log('creating pyodide runtime');
         let indexURL: string = this.src.substring(0, this.src.length - "/pyodide.js".length)
