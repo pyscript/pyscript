@@ -6,6 +6,12 @@ import { loadPyodide } from 'pyodide';
 // @ts-ignore
 import pyscript from './python/pyscript.py';
 
+export const DEFAULT_RUNTIME_CONFIG = {
+    src: 'https://cdn.jsdelivr.net/pyodide/v0.21.1/full/pyodide.js',
+    name: 'pyodide-default',
+    lang: 'python'
+};
+
 export class PyodideRuntime extends Runtime {
     src: string;
     name?: string;
