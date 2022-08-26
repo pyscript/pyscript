@@ -6,24 +6,41 @@ import { loadPyodide } from 'pyodide';
 // @ts-ignore
 import pyscript from './python/pyscript.py';
 
+export const DEFAULT_RUNTIME_CONFIG = {
+    src: 'https://cdn.jsdelivr.net/pyodide/v0.21.1/full/pyodide.js',
+    name: 'pyodide-default',
+    lang: 'python'
+};
+
 export class PyodideRuntime extends Runtime {
-    src = 'https://cdn.jsdelivr.net/pyodide/v0.21.1/full/pyodide.js';
-    name = 'pyodide-default';
-    lang = 'python';
+    src: string;
+    name?: string;
+    lang?: string;
     interpreter: PyodideInterface;
     globals: any;
 
+    constructor(
+        src = 'https://cdn.jsdelivr.net/pyodide/v0.21.1/full/pyodide.js',
+        name = 'pyodide-default',
+        lang = 'python',
+    ) {
+        super();
+        this.src = src;
+        this.name = name;
+        this.lang = lang;
+    }
+
     async loadInterpreter(): Promise<void> {
         console.log('creating pyodide runtime');
-        let indexURL: string = this.src.substring(0, this.src.length - "/pyodide.js".length)
+        let indexURL: string = this.src.substring(0, this.src.length - '/pyodide.js'.length);
         if (typeof process === 'object' && inJest()) {
-            indexURL = [process.cwd(), 'node_modules', 'pyodide'].join('/')
+            indexURL = [process.cwd(), 'node_modules', 'pyodide'].join('/');
         }
         this.interpreter = await loadPyodide({
             stdout: console.log,
             stderr: console.log,
             fullStdLib: false,
-            indexURL
+            indexURL,
         });
 
         this.globals = this.interpreter.globals;
@@ -54,7 +71,7 @@ export class PyodideRuntime extends Runtime {
     }
 
     async installPackage(package_name: string | string[]): Promise<void> {
-        if (package_name.length > 0){
+        if (package_name.length > 0) {
             const micropip = this.globals.get('micropip');
             await micropip.install(package_name);
             micropip.destroy();
