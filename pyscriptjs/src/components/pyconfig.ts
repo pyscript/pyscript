@@ -63,9 +63,7 @@ export class PyConfig extends BaseEvalElement {
     loadRuntimes() {
         console.log('Initializing runtimes...');
         for (let runtime of this.values.runtimes) {
-
-            if (!(runtime instanceof Runtime))
-            {
+            if (!(runtime instanceof Runtime)) {
                 if (runtime.src.endsWith('pyodide.js')) {
                     runtime = new PyodideRuntime(runtime.src, runtime.name, runtime.lang);
                 }
