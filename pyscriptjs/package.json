@@ -9,8 +9,8 @@
     "validate": "svelte-check",
     "format:check": "prettier --check './src/**/*.{js,html,ts}'",
     "format": "prettier --write './src/**/*.{js,html,ts}'",
-    "lint": "eslint './src/**/*.{js,svelte,html,ts}'",
-    "lint:fix": "eslint --fix './src/**/*.{js,svelte,html,ts}'",
+    "lint": "eslint './src/**/*.{js,html,ts}'",
+    "lint:fix": "eslint --fix './src/**/*.{js,html,ts}'",
     "xprelint": "npm run format",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch"
@@ -28,7 +28,6 @@
     "autoprefixer": "^10.4.7",
     "cross-env": "^7.0.3",
     "eslint": "^8.14.0",
-    "eslint-plugin-svelte3": "^3.4.1",
     "jest": "^28.1.3",
     "jest-environment-jsdom": "^28.1.3",
     "prettier": "^2.6.2",
