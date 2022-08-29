@@ -83,16 +83,17 @@ git remote add remote_nickname remote_url
 
 You should have one remote that corresponds to your local repository and one remote that corresponds the upstream PyScript repository.
 
-We recommend you to create a new local branch and develop your changes in this brance=h. You can do that by using:
+We recommend you to create a new local branch and develop your changes in this branch. You can do that by using:
 
 ```
 git checkout -b branch_name #creates new branch
 git checkout branch_name #goes to branch
 ```
 
-The changes should try to be kept within the scope of the issue, or within a well defined scope that should be clearly explained on the PR title. If you can't think of a title that explains your PR well might be a sign that you need to split it in two or more PRs!
-
 It's not mandatory but it's advisible to have one issue that is related to your PR, the more information you give and the clearer you can communicate your ideas the faster maintainers will be able to review your changes and merge your PR.
+
+Please try to keep the changes on your PR within the issue's scope. In case you don't have a related issue, limit the your PR's scope in a way that a short sentence summarizes its contents. This sentence should be the name of your PR. If you can't think of a sentence that summarizes your PR well, might be a sign that you need to split it in two or more PRs!
+
 
 ## Places to start
 
