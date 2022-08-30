@@ -15,11 +15,11 @@ class TestPyConfig(PyScriptTest):
                 print('hello pyscript')
             </py-script>
         """,
-            config="""
+            config=f"""
             <py-config>
                 autoclose_loader: true
                 runtimes:
-                - src: "/pyodide/pyodide.js"
+                - src: "{self.http_server}/pyodide/pyodide.js"
                   name: pyodide-0.21
                   lang: python
             </py-config>
