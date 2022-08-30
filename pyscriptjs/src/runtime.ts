@@ -14,11 +14,17 @@ import type { PyScript } from './components/pyscript';
 
 export type RuntimeInterpreter = PyodideInterface | null;
 
+export type RuntimeConfig = {
+    src: string;
+    name?: string;
+    lang?: string;
+};
+
 export type AppConfig = {
     autoclose_loader: boolean;
     name?: string;
     version?: string;
-    runtimes?: Array<Runtime>;
+    runtimes?: Array<RuntimeConfig>;
 };
 
 let loader: PyLoader | undefined;

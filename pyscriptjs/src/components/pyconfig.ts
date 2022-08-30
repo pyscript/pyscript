@@ -1,10 +1,8 @@
 import * as jsyaml from 'js-yaml';
 import { BaseEvalElement } from './base';
 import { appConfig } from '../stores';
-import type { Runtime, AppConfig } from '../runtime';
-import { PyodideRuntime } from '../pyodide';
-
-const DEFAULT_RUNTIME: Runtime = new PyodideRuntime();
+import type { AppConfig, Runtime } from '../runtime';
+import { PyodideRuntime, DEFAULT_RUNTIME_CONFIG } from '../pyodide';
 
 /**
  * Configures general metadata about the PyScript application such
@@ -16,15 +14,11 @@ const DEFAULT_RUNTIME: Runtime = new PyodideRuntime();
  */
 
 export class PyConfig extends BaseEvalElement {
-    shadow: ShadowRoot;
-    wrapper: HTMLElement;
-    theme: string;
     widths: Array<string>;
     label: string;
     mount_name: string;
     details: HTMLElement;
     operation: HTMLElement;
-    code: string;
     values: AppConfig;
     constructor() {
         super();
@@ -38,15 +32,14 @@ export class PyConfig extends BaseEvalElement {
         if (loadedValues === undefined) {
             this.values = {
                 autoclose_loader: true,
+                runtimes: [DEFAULT_RUNTIME_CONFIG]
             };
         } else {
             // eslint-disable-next-line
             // @ts-ignore
             this.values = loadedValues;
         }
-        if (this.values.runtimes === undefined) {
-            this.values.runtimes = [DEFAULT_RUNTIME];
-        }
+
         appConfig.set(this.values);
         console.log('config set', this.values);
 
@@ -66,10 +59,11 @@ export class PyConfig extends BaseEvalElement {
     loadRuntimes() {
         console.log('Initializing runtimes...');
         for (const runtime of this.values.runtimes) {
+            const runtimeObj: Runtime = new PyodideRuntime(runtime.src, runtime.name, runtime.lang);
             const script = document.createElement('script'); // create a script DOM node
-            script.src = runtime.src; // set its src to the provided URL
+            script.src = runtimeObj.src; // set its src to the provided URL
             script.addEventListener('load', () => {
-                void runtime.initialize();
+                void runtimeObj.initialize();
             });
             document.head.appendChild(script);
         }

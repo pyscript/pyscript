@@ -1,4 +1,4 @@
-import { Runtime } from './runtime';
+import { Runtime, RuntimeConfig } from './runtime';
 import { getLastPath, inJest } from './utils';
 import type { PyodideInterface } from 'pyodide';
 import { loadPyodide } from 'pyodide';
@@ -6,26 +6,41 @@ import { loadPyodide } from 'pyodide';
 // @ts-ignore
 import pyscript from './python/pyscript.py';
 
+export const DEFAULT_RUNTIME_CONFIG: RuntimeConfig = {
+    src: 'https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js',
+    name: 'pyodide-default',
+    lang: 'python'
+};
+
 export class PyodideRuntime extends Runtime {
-    src = 'https://cdn.jsdelivr.net/pyodide/v0.21.1/full/pyodide.js';
-    name = 'pyodide-default';
-    lang = 'python';
+    src: string;
+    name?: string;
+    lang?: string;
     interpreter: PyodideInterface;
     globals: any;
 
+    constructor(
+        src = DEFAULT_RUNTIME_CONFIG.src,
+        name = DEFAULT_RUNTIME_CONFIG.name,
+        lang = DEFAULT_RUNTIME_CONFIG.lang,
+    ) {
+        super();
+        this.src = src;
+        this.name = name;
+        this.lang = lang;
+    }
+
     async loadInterpreter(): Promise<void> {
         console.log('creating pyodide runtime');
-        // eslint-disable-next-line
-        // @ts-ignore
-        let extraOpts: any = {}
-        if (inJest()) {
-          extraOpts = {indexURL: [process.cwd(), 'node_modules', 'pyodide'].join('/') }
-	}
+        let indexURL: string = this.src.substring(0, this.src.length - '/pyodide.js'.length);
+        if (typeof process === 'object' && inJest()) {
+            indexURL = [process.cwd(), 'node_modules', 'pyodide'].join('/');
+        }
         this.interpreter = await loadPyodide({
             stdout: console.log,
             stderr: console.log,
             fullStdLib: false,
-            ...extraOpts
+            indexURL,
         });
 
         this.globals = this.interpreter.globals;
@@ -56,7 +71,7 @@ export class PyodideRuntime extends Runtime {
     }
 
     async installPackage(package_name: string | string[]): Promise<void> {
-        if (package_name.length > 0){
+        if (package_name.length > 0) {
             const micropip = this.globals.get('micropip');
             await micropip.install(package_name);
             micropip.destroy();

@@ -109,7 +109,7 @@ for (const d of data) {
 </script>
 
 <py-script>
-from pyodide import create_proxy, to_js
+from pyodide.ffi import create_proxy, to_js
 import d3
 
 fruits = [

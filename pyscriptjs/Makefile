@@ -40,10 +40,6 @@ setup:
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
 	$(CONDA_EXE) install -c anaconda pytest -y
-    # context for the removal of assert statement below: https://github.com/pyodide/pyodide/issues/2764
-    # the assert statement fails even if `arrayBuffer.constructor.name == "ArrayBuffer"` is `true`
-    # thus, the statement is removed from the auto-generated `pyodide.asm.js` file
-	sed $(SED_I_ARG) 's/assert(arrayBuffer instanceof ArrayBuffer,"bad input to processPackageData");//g' node_modules/pyodide/pyodide.asm.js
 
 clean:
 	find . -name \*.py[cod] -delete
@@ -73,14 +69,20 @@ examples:
 	cp -R ./build/ ./examples/build
 	@echo "To serve examples run: $(conda_run) python -m http.server 8080 --directory examples"
 
+# run prerequisites and serve pyscript examples at http://localhost:8000/examples/
+run-examples: setup build examples
+	make examples
+	npm install
+	make dev
+
 test:
 	make examples
 	make test-ts
 	make test-py
 
-test-local:
+test-integration:
 	make examples
-	pytest -vvs $(ARGS) tests/integration/ --log-cli-level=warning
+	$(PYTEST_EXE) -vvs $(ARGS) tests/integration/ --log-cli-level=warning
 
 test-py:
 	@echo "Tests from $(src_dir)"

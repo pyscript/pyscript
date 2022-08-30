@@ -169,6 +169,9 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
+    @pytest.mark.xfail(
+        reason="Test seems flaky, sometimes it doesn't return result from second repl"
+    )
     def test_repl(self):
         self.goto("examples/repl.html")
         self.wait_for_pyscript()

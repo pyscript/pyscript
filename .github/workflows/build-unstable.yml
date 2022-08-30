@@ -64,6 +64,9 @@ jobs:
         -   name: Python Tests
             run: make test-py
 
+        -   name: Integration Tests
+            run: make test-integration
+
         -   uses: actions/upload-artifact@v3
             with:
                 name: pyscript
@@ -86,6 +89,7 @@ jobs:
                 name: pyscript
                 path: ./build/
 
+        # Deploy to S3
         -   name: Configure AWS credentials
             uses: aws-actions/configure-aws-credentials@v1.6.1
             with:
