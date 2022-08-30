@@ -29,6 +29,22 @@ export class PyodideRuntime extends Runtime {
         this.lang = lang;
     }
 
+    /**
+     * Although `loadPyodide` is used below,
+     * notice that it is not imported i.e.
+     * import { loadPyodide } from 'pyodide';
+     * is not used at the top of this file.
+     *
+     * This is because, if it's used, loadPyodide
+     * behaves mischievously i.e. it tries to load
+     * `pyodide.asm.js` and `pyodide_py.tar` but
+     * with paths that are wrong such as:
+     *
+     * http://127.0.0.1:8080/build/pyodide_py.tar
+     * which results in a 404 since `build` doesn't
+     * contain these files and is clearly the wrong
+     * path.
+     */
     async loadInterpreter(): Promise<void> {
         console.log('creating pyodide runtime');
         // eslint-disable-next-line
