@@ -19,7 +19,7 @@ class TestPyConfig(PyScriptTest):
             <py-config>
                 autoclose_loader: true
                 runtimes:
-                - src: "./pyodide/pyodide.js"
+                - src: "/pyodide/pyodide.js"
                   name: pyodide-0.21
                   lang: python
             </py-config>
