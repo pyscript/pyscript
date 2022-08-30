@@ -1,7 +1,6 @@
 import { Runtime, RuntimeConfig } from './runtime';
-import { getLastPath, inJest } from './utils';
+import { getLastPath } from './utils';
 import type { PyodideInterface } from 'pyodide';
-import { loadPyodide } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
@@ -32,15 +31,12 @@ export class PyodideRuntime extends Runtime {
 
     async loadInterpreter(): Promise<void> {
         console.log('creating pyodide runtime');
-        let indexURL: string = this.src.substring(0, this.src.length - '/pyodide.js'.length);
-        if (typeof process === 'object' && inJest()) {
-            indexURL = [process.cwd(), 'node_modules', 'pyodide'].join('/');
-        }
+        // eslint-disable-next-line
+        // @ts-ignore
         this.interpreter = await loadPyodide({
             stdout: console.log,
             stderr: console.log,
             fullStdLib: false,
-            indexURL,
         });
 
         this.globals = this.interpreter.globals;
