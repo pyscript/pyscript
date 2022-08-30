@@ -52,7 +52,7 @@ def onMouseMove(event):
   event.preventDefault();
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-js.document.addEventListener('mousemove', pyodide.create_proxy(onMouseMove))
+js.document.addEventListener('mousemove', pyodide.ffi.create_proxy(onMouseMove))
 
 camera = THREE.PerspectiveCamera.new( 35, window.innerWidth / window.innerHeight, 1, 500 )
 scene = THREE.Scene.new()
