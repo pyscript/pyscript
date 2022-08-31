@@ -9,6 +9,22 @@ describe('PyodideRuntime', () => {
     let runtime: PyodideRuntime;
     beforeAll(async () => {
         runtime = new PyodideRuntime();
+        /**
+         * Since import { loadPyodide } from 'pyodide';
+         * is not used inside `src/pyodide.ts`, the function
+         * `runtime.initialize();` below which calls
+         * `loadInterpreter` and thus `loadPyodide` results
+         * in an expected issue of:
+         *   ReferenceError: loadPyodide is not defined
+         *
+         * To make jest happy, while also not importing
+         * explicitly inside `src/pyodide.ts`, the
+         * following lines - so as to dynamically import
+         * and make it available in the global namespace
+         * - are used.
+         */
+        const pyodideSpec = await import('pyodide');
+        global.loadPyodide = pyodideSpec.loadPyodide;
         await runtime.initialize();
     });
 
