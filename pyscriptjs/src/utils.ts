@@ -14,8 +14,12 @@ function getLastPath(str: string): string {
     return str.split('\\').pop().split('/').pop();
 }
 
+function escape(str: string): string {
+    return str.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+}
+
 function htmlDecode(input: string): string {
-    const doc = new DOMParser().parseFromString(ltrim(input), 'text/html');
+    const doc = new DOMParser().parseFromString(ltrim(escape(input)), 'text/html');
     return doc.documentElement.textContent;
 }
 
@@ -60,7 +64,7 @@ function showError(msg: string): void {
 
 function handleFetchError(e: Error, singleFile: string) {
     //Should we still export full error contents to console?
-    console.warn('Caught an error in loadPaths:\r\n' + e);
+    console.warn(`Caught an error in loadPaths:\r\n ${e.toString()}`);
     let errorContent: string;
     if (e.message.includes('TypeError: Failed to fetch')) {
         errorContent = `<p>PyScript: Access to local files
@@ -80,4 +84,11 @@ function handleFetchError(e: Error, singleFile: string) {
     showError(errorContent);
 }
 
-export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError };
+/**
+ * determines if the process is running inside the testing suite i.e. jest
+ */
+function inJest(): boolean {
+    return process.env.JEST_WORKER_ID !== undefined;
+}
+
+export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, inJest };

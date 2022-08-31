@@ -4,14 +4,14 @@ channels:
 -   microsoft
 dependencies:
 -   python=3.9
--   pip=20.2.2
+-   pip
 -   pytest=7
 -   nodejs=16
 -   black
 -   isort
 -   codespell
 -   pre-commit
--   playwright
 
 -   pip:
+    -   playwright
     -   pytest-playwright

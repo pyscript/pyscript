@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="../https://pyscript.net/alpha/pyscript.css" />
     <link rel="stylesheet" href="css/game.css" />
 
-    <script defer src="../https://pyscript.net/alpha/pyscript.js"></script>
+
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
 
   <body>
@@ -43,7 +44,6 @@
       from js import handTrack, setTimeout, requestAnimationFrame, player
       from pyodide import create_once_callable
       import asyncio
-
       context = canvas.element.getContext("2d")
 
       isVideo = False

@@ -1,14 +1,16 @@
 """All data required for testing examples"""
-import os
 import threading
 from http.server import HTTPServer as SuperHTTPServer
 from http.server import SimpleHTTPRequestHandler
-from pathlib import Path
 
 import pytest
 
-my_path = Path.cwd() / "examples"
-os.chdir(my_path)
+from .support import Logger
+
+
+@pytest.fixture(scope="session")
+def logger():
+    return Logger()
 
 
 class HTTPServer(SuperHTTPServer):
@@ -28,12 +30,17 @@ class HTTPServer(SuperHTTPServer):
 
 
 @pytest.fixture(scope="session")
-def http_server():
+def http_server(logger):
+    class MyHTTPRequestHandler(SimpleHTTPRequestHandler):
+        def log_message(self, fmt, *args):
+            logger.log("http_server", fmt % args, color="blue")
+
     host, port = "127.0.0.1", 8080
     base_url = f"http://{host}:{port}"
 
     # serve_Run forever under thread
-    server = HTTPServer((host, port), SimpleHTTPRequestHandler)
+    server = HTTPServer((host, port), MyHTTPRequestHandler)
+
     thread = threading.Thread(None, server.run)
     thread.start()
 

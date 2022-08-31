@@ -7,7 +7,7 @@
   "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
   "compilerOptions": {
     "moduleResolution": "node",
-    "target": "es2017",
+    "target": "esnext",
     "module": "esnext",
     /**
       Svelte Preprocess cannot figure out whether you have a value or a type, so tell TypeScript
@@ -21,10 +21,15 @@
      */
     "sourceMap": true,
     /** Requests the runtime types from the svelte modules by default. Needed for TS files or else you get errors. */
-    "types": ["svelte"],
+    "types": ["svelte", "jest", "node"],
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "es2017",
+      "dom",
+      "DOM.Iterable"
+    ]
   }
 }

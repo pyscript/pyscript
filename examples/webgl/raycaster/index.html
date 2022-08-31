@@ -22,18 +22,17 @@
   </div>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/89/three.min.js'></script>
 
-<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
-<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+<script defer src="https://pyscript.net/latest/pyscript.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
 <script>
 
 </script>
 <py-script>
-from pyodide import create_proxy, to_js
+from pyodide.ffi import create_proxy, to_js
 from js import window
 from js import Math
 from js import THREE
 from js import performance
-from pyodide import to_js
 from js import Object
 
 

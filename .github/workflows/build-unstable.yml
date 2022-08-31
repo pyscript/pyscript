@@ -14,6 +14,7 @@ on:
         paths:
         -   pyscriptjs/**
         -   .github/workflows/build-latest.yml # Test that workflow works when changed
+    workflow_dispatch:
 
 env:
     MINICONDA_PYTHON_VERSION: py38
@@ -61,6 +62,9 @@ jobs:
         -   name: Build and Test
             run: make test
 
+        -   name: Integration Tests
+            run: make test-integration
+
         # Deploy to S3
         -   name: Configure AWS credentials
             if: github.ref == 'refs/heads/main' # Only deploy on merge into main
@@ -71,4 +75,4 @@ jobs:
 
         -   name: Sync to S3
             if: github.ref == 'refs/heads/main'
-            run: aws s3 sync --quiet ./examples/build/ s3://pyscript.net/unstable/
+            run: aws s3 sync --quiet ./build/ s3://pyscript.net/unstable/

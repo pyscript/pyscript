@@ -25,20 +25,21 @@ repos:
     hooks:
     -   id: bandit
         args:
-        -   --skip=B201
+        -   --skip=B101,B201
 
 -   repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 22.6.0
     hooks:
     -   id: black
 
+
 -   repo: https://github.com/codespell-project/codespell
-    rev: v2.1.0
+    rev: v2.2.1
     hooks:
     -   id: codespell  # See 'setup.cfg' for args
 
 -   repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+    rev: 5.0.4
     hooks:
     -   id: flake8  # See 'setup.cfg' for args
         additional_dependencies: [flake8-bugbear, flake8-comprehensions]
@@ -51,21 +52,21 @@ repos:
         args: [--profile, black]
 
 -   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.3.0
+    rev: v2.4.0
     hooks:
     -   id: pretty-format-yaml
         args: [--autofix, --indent, '4']
         exclude: .github/ISSUE_TEMPLATE/.*\.yml$
 
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v2.34.0
+    rev: v2.37.3
     hooks:
     -   id: pyupgrade
         args:
         -   --py310-plus
 
 -   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.18.0
+    rev: v8.23.0
     hooks:
     -   id: eslint
         files: pyscriptjs/src/.*\.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx

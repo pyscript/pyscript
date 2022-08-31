@@ -2,20 +2,44 @@ tag := latest
 git_hash ?= $(shell git log -1 --pretty=format:%h)
 
 base_dir ?= $(shell git rev-parse --show-toplevel)
-src_dir ?= $(base_dir)/src
+src_dir ?= $(base_dir)/pyscriptjs/src
 examples ?=  ../$(base_dir)/examples
 app_dir ?= $(shell git rev-parse --show-prefix)
 
 CONDA_EXE := conda
-CONDA_ENV ?= ./env
+CONDA_ENV ?= $(base_dir)/pyscriptjs/env
 env := $(CONDA_ENV)
 conda_run := $(CONDA_EXE) run -p $(env)
+PYTEST_EXE := $(CONDA_ENV)/bin/pytest
+GOOD_NODE_VER := 14
+GOOD_NPM_VER := 6
+NODE_VER    := $(shell node -v | cut -d. -f1 | sed 's/^v\(.*\)/\1/')
+NPM_VER     := $(shell npm -v | cut -d. -f1)
+
+ifeq ($(shell uname -s), Darwin)
+    SED_I_ARG := -i ''
+else
+    SED_I_ARG := -i
+endif
+
+GOOD_NODE   := $(shell if [ $(NODE_VER) -ge $(GOOD_NODE_VER) ]; then echo true; else echo false; fi)
+GOOD_NPM    := $(shell if [ $(NPM_VER) -ge $(GOOD_NPM_VER) ]; then echo true; else echo false; fi)
+
+.PHONY: check-node
+check-node:
+	@echo Build requires Node $(GOOD_NODE_VER).x or higher: $(NODE_VER) detected && $(GOOD_NODE)
+
+.PHONY: check-npm
+check-npm:
+	@echo Build requires npm $(GOOD_NPM_VER).x or higher: $(NPM_VER) detected && $(GOOD_NPM)
 
 setup:
+	make check-node
+	make check-npm
 	npm install
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
-	$(CONDA_EXE) install -c anaconda pytest
+	$(CONDA_EXE) install -c anaconda pytest -y
 
 clean:
 	find . -name \*.py[cod] -delete
@@ -34,26 +58,39 @@ dev:
 build:
 	npm run build
 
-example:
+examples:
 	mkdir -p ./examples
 	cp -r ../examples/* ./examples
 	chmod -R 755 examples
-	find ./examples/toga -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../build/+g {} \;
-	find ./examples/webgl -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+../../build/+g {} \;
-	find ./examples -type f -name '*.html' -exec sed -i '' s+https://pyscript.net/alpha/+./build/+g {} \;
+	find ./examples/toga -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../build/+g {} \;
+	find ./examples/webgl -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../../build/+g {} \;
+	find ./examples -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../build/+g {} \;
+	npm run build
+	cp -R ./build/ ./examples/build
+	@echo "To serve examples run: $(conda_run) python -m http.server 8080 --directory examples"
+
+# run prerequisites and serve pyscript examples at http://localhost:8000/examples/
+run-examples: setup build examples
+	make examples
+	npm install
+	make dev
 
 test:
-	make example
-	npm run build
-	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
+	make examples
+	make test-ts
+	make test-py
+
+test-integration:
+	make examples
+	$(PYTEST_EXE) -vvs $(ARGS) tests/integration/ --log-cli-level=warning
 
 test-py:
-	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
-	$(conda_run) pytest -vv $(ARGS) tests/ --log-cli-level=warning
+	@echo "Tests from $(src_dir)"
+	$(PYTEST_EXE) -vv $(ARGS) tests/py-unit/ --log-cli-level=warning
 
 test-ts:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
-	npm run tests
+	npm run test
 
 fmt: fmt-py fmt-ts
 	@echo "Format completed"

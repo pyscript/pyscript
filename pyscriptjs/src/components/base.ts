@@ -1,21 +1,14 @@
-import { loadedEnvironments, mode, pyodideLoaded, type Environment } from '../stores';
+import { runtimeLoaded } from '../stores';
 import { guidGenerator, addClasses, removeClasses } from '../utils';
-import type { PyodideInterface } from '../pyodide';
-// Premise used to connect to the first available pyodide interpreter
-let runtime;
-let environments: Record<Environment['id'], Environment> = {};
-let currentMode;
+
+import type { Runtime } from '../runtime';
+
+// Global `Runtime` that implements the generic runtimes API
+let runtime: Runtime;
 let Element;
 
-pyodideLoaded.subscribe(value => {
+runtimeLoaded.subscribe(value => {
     runtime = value;
-});
-loadedEnvironments.subscribe(value => {
-    environments = value;
-});
-
-mode.subscribe(value => {
-    currentMode = value;
 });
 
 export class BaseEvalElement extends HTMLElement {
@@ -86,20 +79,23 @@ export class BaseEvalElement extends HTMLElement {
         return this.code;
     }
 
-    protected async _register_esm(pyodide: PyodideInterface): Promise<void> {
+    protected async _register_esm(runtime: Runtime): Promise<void> {
         const imports: { [key: string]: unknown } = {};
-
-        for (const node of document.querySelectorAll("script[type='importmap']")) {
-            const importmap = (() => {
+        const nodes = document.querySelectorAll("script[type='importmap']");
+        const importmaps: Array<any> = [];
+        nodes.forEach( node =>
+            {
+                let importmap;
                 try {
-                    return JSON.parse(node.textContent);
+                    importmap = JSON.parse(node.textContent);
+                    if (importmap?.imports == null) return;
+                    importmaps.push(importmap);
                 } catch {
-                    return null;
+                    return;
                 }
-            })();
-
-            if (importmap?.imports == null) continue;
-
+            }
+        )
+        for (const importmap of importmaps){
             for (const [name, url] of Object.entries(importmap.imports)) {
                 if (typeof name != 'string' || typeof url != 'string') continue;
 
@@ -113,37 +109,28 @@ export class BaseEvalElement extends HTMLElement {
             }
         }
 
-        pyodide.registerJsModule('esm', imports);
+        runtime.registerJsModule('esm', imports);
     }
 
     async evaluate(): Promise<void> {
         console.log('evaluate');
         this.preEvaluate();
 
-        const pyodide = runtime;
         let source: string;
-        let output;
+        let output: string;
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
-            const is_async = source.includes('asyncio')
 
-            await this._register_esm(pyodide);
-            if (is_async) {
-                await pyodide.runPythonAsync(
-                    `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
-                );
-                output = await pyodide.runPythonAsync(source);
-            } else {
-                output = pyodide.runPython(
-                    `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
-                );
-                output = pyodide.runPython(source);
-            }
+            this._register_esm(runtime);
+            <string>await runtime.run(
+                `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
+            );
+            output = <string>await runtime.run(source);
 
             if (output !== undefined) {
                 if (Element === undefined) {
-                    Element = pyodide.globals.get('Element');
+                    Element = <Element>runtime.globals.get('Element');
                 }
                 const out = Element(this.outputElement.id);
                 out.write.callKwargs(output, { append: this.appendOutput });
@@ -152,44 +139,53 @@ export class BaseEvalElement extends HTMLElement {
                 this.outputElement.style.display = 'block';
             }
 
-            is_async ? await pyodide.runPythonAsync(`output_manager.revert()`)
-                     : await pyodide.runPython(`output_manager.revert()`);
+            await runtime.run(`output_manager.revert()`);
 
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
             if (errorElements.length > 0) {
-                for (const errorElement of errorElements) {
-                    errorElement.classList.add('hidden');
-                    if (this.hasAttribute('std-err')) {
-                        this.errorElement.hidden = true;
-                        this.errorElement.style.removeProperty('display');
+                errorElements.forEach( errorElement =>
+                    {
+                        errorElement.classList.add('hidden');
+                        if (this.hasAttribute('std-err')) {
+                            this.errorElement.hidden = true;
+                            this.errorElement.style.removeProperty('display');
+                        }
                     }
-                }
+                )
             }
             removeClasses(this.errorElement, ['bg-red-200', 'p-2']);
 
             this.postEvaluate();
         } catch (err) {
-            if (Element === undefined) {
-                Element = pyodide.globals.get('Element');
+            console.error(err);
+            try{
+                if (Element === undefined) {
+                    Element = <Element>runtime.globals.get('Element');
+                }
+                const out = Element(this.errorElement.id);
+
+                addClasses(this.errorElement, ['bg-red-200', 'p-2']);
+                out.write.callKwargs(err.toString(), { append: this.appendOutput });
+                if (this.errorElement.children.length === 0){
+                    this.errorElement.setAttribute('error', '');
+                }else{
+                    this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
+                }
+
+                this.errorElement.hidden = false;
+                this.errorElement.style.display = 'block';
+                this.errorElement.style.visibility = 'visible';
+            } catch (internalErr){
+                console.error("Unnable to write error to error element in page.")
             }
-            const out = Element(this.errorElement.id);
 
-            addClasses(this.errorElement, ['bg-red-200', 'p-2']);
-            out.write.callKwargs(err, { append: this.appendOutput });
-
-            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
-            this.errorElement.hidden = false;
-            this.errorElement.style.display = 'block';
-            this.errorElement.style.visibility = 'visible';
         }
     } // end evaluate
 
     async eval(source: string): Promise<void> {
-        const pyodide = runtime;
-
         try {
-            const output = await pyodide.runPythonAsync(source);
+            const output = await runtime.run(source);
             if (output !== undefined) {
                 console.log(output);
             }
@@ -198,11 +194,11 @@ export class BaseEvalElement extends HTMLElement {
         }
     } // end eval
 
-    runAfterRuntimeInitialized(callback: () => Promise<void>){
-        pyodideLoaded.subscribe(value => {
-            if ('runPythonAsync' in value) {
-                setTimeout(async () => {
-                    await callback();
+    runAfterRuntimeInitialized(callback: () => Promise<void>) {
+        runtimeLoaded.subscribe(value => {
+            if ('run' in value) {
+                setTimeout(() => {
+                    void callback();
                 }, 100);
             }
         });
@@ -235,39 +231,41 @@ function createWidget(name: string, code: string, klass: string) {
             //       ideally we can just wait for it to load and then run. To do
             //       so we need to replace using the promise and actually using
             //       the interpreter after it loads completely
-            // setTimeout(async () => {
-            //     await this.eval(this.code);
-            //     this.proxy = this.proxyClass(this);
-            //     console.log('proxy', this.proxy);
-            //     this.proxy.connect();
-            //     this.registerWidget();
+            // setTimeout(() => {
+            //     void (async () => {
+            //         await this.eval(this.code);
+            //         this.proxy = this.proxyClass(this);
+            //         console.log('proxy', this.proxy);
+            //         this.proxy.connect();
+            //         this.registerWidget();
+            //     })();
             // }, 2000);
-            pyodideLoaded.subscribe(value => {
+            runtimeLoaded.subscribe(value => {
                 console.log('RUNTIME READY', value);
-                if ('runPythonAsync' in value) {
+                if ('run' in value) {
                     runtime = value;
-                    setTimeout(async () => {
-                        await this.eval(this.code);
-                        this.proxy = this.proxyClass(this);
-                        console.log('proxy', this.proxy);
-                        this.proxy.connect();
-                        this.registerWidget();
+                    setTimeout(() => {
+                        void (async () => {
+                            await this.eval(this.code);
+                            this.proxy = this.proxyClass(this);
+                            console.log('proxy', this.proxy);
+                            this.proxy.connect();
+                            this.registerWidget();
+                        })();
                     }, 1000);
                 }
             });
         }
 
         registerWidget() {
-            const pyodide = runtime;
             console.log('new widget registered:', this.name);
-            pyodide.globals.set(this.id, this.proxy);
+            runtime.globals.set(this.id, this.proxy);
         }
 
         async eval(source: string): Promise<void> {
-            const pyodide = runtime;
             try {
-                const output = await pyodide.runPythonAsync(source);
-                this.proxyClass = pyodide.globals.get(this.klass);
+                const output = await runtime.run(source);
+                this.proxyClass = runtime.globals.get(this.klass);
                 if (output !== undefined) {
                     console.log(output);
                 }
@@ -276,6 +274,7 @@ function createWidget(name: string, code: string, klass: string) {
             }
         }
     }
+    const xPyWidget = customElements.define(name, CustomWidget);
 }
 
 export class PyWidget extends HTMLElement {
@@ -298,16 +297,15 @@ export class PyWidget extends HTMLElement {
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
 
-        if (this.hasAttribute('src')) {
-            this.source = this.getAttribute('src');
-        }
+        this.addAttributes('src','name','klass');
+    }
 
-        if (this.hasAttribute('name')) {
-            this.name = this.getAttribute('name');
-        }
-
-        if (this.hasAttribute('klass')) {
-            this.klass = this.getAttribute('klass');
+    addAttributes(...attrs:string[]){
+        for (const each of attrs){
+            const property = each === "src" ? "source" : each;
+            if (this.hasAttribute(each)) {
+              this[property]=this.getAttribute(each);
+            }
         }
     }
 
@@ -360,9 +358,8 @@ export class PyWidget extends HTMLElement {
     }
 
     async eval(source: string): Promise<void> {
-        const pyodide = runtime;
         try {
-            const output = await pyodide.runPythonAsync(source);
+            const output = await runtime.run(source);
             if (output !== undefined) {
                 console.log(output);
             }
