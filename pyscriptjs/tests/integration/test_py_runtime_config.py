@@ -1,23 +1,32 @@
 import os
 import tarfile
+import tempfile
 
+import pytest
 import requests
 
 from .support import PyScriptTest
 
 URL = "https://github.com/pyodide/pyodide/releases/download/0.20.0/pyodide-build-0.20.0.tar.bz2"
 TAR_NAME = "pyodide-build-0.20.0.tar.bz2"
-TMP_DIR = "/tmp/pyscript-test-cache"
-TMP_TAR_LOCATION = os.path.join(TMP_DIR, TAR_NAME)
 
 
-def download_and_unzip(url, extract_to="."):
-    if not (os.path.exists(TMP_DIR) and TAR_NAME in os.listdir(TMP_DIR)):
-        os.makedirs(TMP_DIR, exist_ok=True)
-        response = requests.get(url, stream=True)
+@pytest.fixture
+def tar_location(request):
+    val = request.config.cache.get("pyodide-0.20-tar", None)
+    if val is None:
+        response = requests.get(URL, stream=True)
+        TMP_DIR = tempfile.mkdtemp()
+        TMP_TAR_LOCATION = os.path.join(TMP_DIR, TAR_NAME)
         with open(TMP_TAR_LOCATION, "wb") as f:
             f.write(response.raw.read())
-    file = tarfile.open(name=TMP_TAR_LOCATION, mode="r:bz2")
+        val = TMP_TAR_LOCATION
+        request.config.cache.set("pyodide-0.20-tar", val)
+    return val
+
+
+def unzip(location, extract_to="."):
+    file = tarfile.open(name=location, mode="r:bz2")
     file.extractall(path=extract_to)
 
 
@@ -29,9 +38,9 @@ class TestRuntimeConfig(PyScriptTest):
     # The test checks if loading a different runtime is possible
     # and that too from a locally downloaded file without needing
     # the use of explicit `indexURL` calculation.
-    def test_runtime_config(self):
-        download_and_unzip(
-            url=URL,
+    def test_runtime_config(self, tar_location):
+        unzip(
+            location=tar_location,
             extract_to=self.tmpdir,
         )
 
