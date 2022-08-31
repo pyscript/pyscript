@@ -8,6 +8,7 @@
 
     <link rel="icon" type="image/png" href="../favicon.png" />
     <link rel="stylesheet" href="../https://pyscript.net/alpha/pyscript.css" />
+    <link rel="stylesheet" href="css/game.css" />
 
     <script defer src="../https://pyscript.net/alpha/pyscript.js"></script>
   </head>
@@ -38,107 +39,108 @@
     <script type="text/javascript" src="js/levels/11tunnel.js"></script>
     <script type="text/javascript" src="js/game.js"></script>
 
-    <py-script>
-from js import handTrack, setTimeout, requestAnimationFrame, player
-from pyodide import create_once_callable
-import asyncio
+    <py-script style="display: none; float: center;">
+      from js import handTrack, setTimeout, requestAnimationFrame, player
+      from pyodide import create_once_callable
+      import asyncio
 
-context = canvas.element.getContext("2d")
+      context = canvas.element.getContext("2d")
 
-isVideo = False
-model = None
-last_position = 0
-direction = "stop"
-
-modelParams = {
-  "flipHorizontal": True, # flip e.g for video
-  "maxNumBoxes": 20, # maximum number of boxes to detect
-  "iouThreshold": 0.5, # ioU threshold for non-max suppression
-  "scoreThreshold": 0.6, # confidence threshold for predictions.
-}
-
-def toggle_video(evt):
-  global isVideo
-  player.jump()
-
-  if (not isVideo):
-    update_note.write("Starting video")
-    pyscript.run_until_complete(start_video())
-  else:
-    update_note.write("Stopping video")
-    handTrack.stopVideo(video.element)
-    isVideo = False
-    update_note.write("Video stopped")
-
-async def start_video():
-  global isVideo
-  update_note.write("Inside sstart video")
-  status = await handTrack.startVideo(video.element)
-  console.log("video started", status)
-  if status:
-    update_note.write("Video started. Now tracking")
-    isVideo = True
-    console.log( "Calling RUN DETECTION")
-    y = await run_detection()
-  else:
-    update_note.write( "Please enable video")
-
-def sync_run_detection(evt):
-  pyscript.run_until_complete(run_detection())
-
-async def run_detection():
-  global model
-  global isVideo
-  global last_position
-  global direction
-
-  predictions = await model.detect(video.element)
-  model.renderPredictions(predictions, canvas.element, context, video.element);
-
-  if predictions:
-    curr_position = predictions[0].bbox[0] + (predictions[0].bbox[2] / 2)
-    delta = last_position - curr_position
-    last_position = curr_position
-    #console.log(delta, curr_position, last_position)
-    if abs(delta) < 2:
+      isVideo = False
+      model = None
+      last_position = 0
       direction = "stop"
-    elif delta > 0:
-      direction = "left"
-    else:
-      direction = "right"
 
-    for prediction in predictions:
-      if prediction.label == 'open':
+      modelParams = {
+        "flipHorizontal": True, # flip e.g for video
+        "maxNumBoxes": 20, # maximum number of boxes to detect
+        "iouThreshold": 0.5, # ioU threshold for non-max suppression
+        "scoreThreshold": 0.6, # confidence threshold for predictions.
+      }
+
+      def toggle_video(evt):
+        global isVideo
         player.jump()
-      elif prediction.label == 'close':
-        player.crouch()
 
-  if (isVideo):
-    await requestAnimationFrame(create_once_callable(sync_run_detection));
+        if (not isVideo):
+          update_note.write("Starting video")
+          pyscript.run_until_complete(start_video())
+        else:
+          update_note.write("Stopping video")
+          handTrack.stopVideo(video.element)
+          isVideo = False
+          update_note.write("Video stopped")
 
-def handle_model(lmodel):
-  global model
-  model = lmodel
-  update_note.write("Loaded Model!")
+      async def start_video():
+        global isVideo
+        update_note.write("Inside sstart video")
+        status = await handTrack.startVideo(video.element)
+        console.log("video started", status)
+        if status:
+          update_note.write("Video started. Now tracking")
+          isVideo = True
+          console.log( "Calling RUN DETECTION")
+          y = await run_detection()
+        else:
+          update_note.write( "Please enable video")
 
-async def start():
-  model = await handTrack.load(modelParams)#.then(handle_model)
-  handle_model(model)
+      def sync_run_detection(evt):
+        pyscript.run_until_complete(run_detection())
 
-pyscript.run_until_complete(start())
+      async def run_detection():
+        global model
+        global isVideo
+        global last_position
+        global direction
+
+        predictions = await model.detect(video.element)
+        model.renderPredictions(predictions, canvas.element, context, video.element);
+
+        if predictions:
+          curr_position = predictions[0].bbox[0] + (predictions[0].bbox[2] / 2)
+          delta = last_position - curr_position
+          last_position = curr_position
+          #console.log(delta, curr_position, last_position)
+          if abs(delta) < 2:
+            direction = "stop"
+          elif delta > 0:
+            direction = "left"
+          else:
+            direction = "right"
+
+          for prediction in predictions:
+            if prediction.label == 'open':
+              player.jump()
+            elif prediction.label == 'close':
+              player.crouch()
+
+        if (isVideo):
+          await requestAnimationFrame(create_once_callable(sync_run_detection));
+
+      def handle_model(lmodel):
+        global model
+        model = lmodel
+        update_note.write("Loaded Model!")
+
+      async def start():
+        model = await handTrack.load(modelParams)#.then(handle_model)
+        handle_model(model)
+
+      pyscript.run_until_complete(start())
 
     </py-script>
 
     <div class="mb10">
-      <p>Use < > to move, ↓ to crouch and x to jump. If video is enabled, say hi to jump as well! </p>
+      <p>Use < > to move, ↓ to crouch and x to jump. <br/> If video is enabled, say hi to jump as well! </p>
       <button  id="trackbutton" class="bx--btn bx--btn--secondary" type="button" py-onClick="toggle_video">
         Start Video
       </button>
       <div id="update-note" py-mount class="updatenote mt10">loading model ..</div>
     </div>
-    <div>
+    <div id = "canvas_div">
       <video autoplay="autoplay" id="myvideo" py-mount="video"></video>
-      <canvas id="canvas" py-mount class="border canvasbox"></canvas>
+        <canvas id="canvas" py-mount class="border canvasbox" style="aspect-ratio: 16/9;"></canvas>
     </div>
     <script src="../handtrack/lib/handtrack.min.js"> </script>
+  </body>
 </html>

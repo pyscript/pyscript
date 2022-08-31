@@ -4,9 +4,15 @@ html, body, ul, li {
   padding: 0;
 }
 
+.mb10 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 2% 0 0 2%;
+}
+
 canvas {
   display: block;
-  width: 762;
   margin: 0 auto;
   background-color: blue;
 }
