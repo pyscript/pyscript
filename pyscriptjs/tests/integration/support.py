@@ -1,4 +1,5 @@
 import pdb
+import re
 import time
 
 import py
@@ -345,12 +346,21 @@ class Logger:
 
     def __init__(self):
         self.reset()
+        # capture things like [pyscript/main]
+        self.prefix_regexp = re.compile(r"(\[.+?\])")
 
     def reset(self):
         self.start_time = time.time()
 
+    def colorize_prefix(self, text, *, color):
+        # find the first occurrence of something like [pyscript/main] and
+        # colorize it
+        start, end = Color.escape_pair(color)
+        return self.prefix_regexp.sub(rf"{start}\1{end}", text, 1)
+
     def log(self, category, text, *, color=None):
         delta = time.time() - self.start_time
+        text = self.colorize_prefix(text, color="teal")
         line = f"[{delta:6.2f} {category:15}] {text}"
         if color:
             line = Color.set(color, line)
@@ -381,8 +391,15 @@ class Color:
 
     @classmethod
     def set(cls, color, string):
+        start, end = cls.escape_pair(color)
+        return f"{start}{string}{end}"
+
+    @classmethod
+    def escape_pair(cls, color):
         try:
             color = getattr(cls, color)
         except AttributeError:
             pass
-        return f"\x1b[{color}m{string}\x1b[00m"
+        start = f"\x1b[{color}m"
+        end = "\x1b[00m"
+        return start, end
