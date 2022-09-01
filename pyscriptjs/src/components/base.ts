@@ -241,7 +241,6 @@ function createWidget(name: string, code: string, klass: string) {
             //     })();
             // }, 2000);
             runtimeLoaded.subscribe(value => {
-                console.log('RUNTIME READY', value);
                 if ('run' in value) {
                     runtime = value;
                     setTimeout(() => {

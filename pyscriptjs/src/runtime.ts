@@ -35,19 +35,16 @@ globalLoader.subscribe(value => {
 let initializers_: Initializer[];
 initializers.subscribe((value: Initializer[]) => {
     initializers_ = value;
-    console.log('initializers set');
 });
 
 let postInitializers_: Initializer[];
 postInitializers.subscribe((value: Initializer[]) => {
     postInitializers_ = value;
-    console.log('post initializers set');
 });
 
 let scriptsQueue_: PyScript[];
 scriptsQueue.subscribe((value: PyScript[]) => {
     scriptsQueue_ = value;
-    console.log('scripts queue set');
 });
 
 let appConfig_: AppConfig = {
@@ -58,7 +55,6 @@ appConfig.subscribe((value: AppConfig) => {
     if (value) {
         appConfig_ = value;
     }
-    console.log('config set!');
 });
 
 /*

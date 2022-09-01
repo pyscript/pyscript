@@ -9,7 +9,6 @@ let runtime: Runtime;
 
 runtimeLoaded.subscribe(value => {
     runtime = value;
-    console.log('RUNTIME READY');
 });
 
 export class PyEnv extends HTMLElement {
