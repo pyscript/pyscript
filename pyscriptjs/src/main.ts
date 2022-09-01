@@ -13,7 +13,7 @@ import { globalLoader } from './stores';
 import { PyConfig } from './components/pyconfig';
 import { getLogger } from './logger';
 
-const logger = getLogger('py-main');
+const logger = getLogger('pyscript/main');
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const xPyScript = customElements.define('py-script', PyScript);
