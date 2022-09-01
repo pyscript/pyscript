@@ -35,13 +35,9 @@ export const addToScriptsQueue = (script: PyScript) => {
 };
 
 export const addInitializer = (initializer: Initializer) => {
-    console.log('adding initializer', initializer);
     initializers.update(initializers => [...initializers, initializer]);
-    console.log('added initializer', initializer);
 };
 
 export const addPostInitializer = (initializer: Initializer) => {
-    console.log('adding post initializer', initializer);
     postInitializers.update(postInitializers => [...postInitializers, initializer]);
-    console.log('added post initializer', initializer);
 };
