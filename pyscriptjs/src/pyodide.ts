@@ -1,10 +1,13 @@
 import { Runtime, RuntimeConfig } from './runtime';
 import { getLastPath, inJest } from './utils';
+import { getLogger } from './logger';
 import type { PyodideInterface } from 'pyodide';
 import { loadPyodide } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
+
+const logger = getLogger('pyscript/pyodide');
 
 export const DEFAULT_RUNTIME_CONFIG: RuntimeConfig = {
     src: 'https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js',
@@ -24,6 +27,7 @@ export class PyodideRuntime extends Runtime {
         name = DEFAULT_RUNTIME_CONFIG.name,
         lang = DEFAULT_RUNTIME_CONFIG.lang,
     ) {
+        logger.info('Runtime config:', { name, lang, src });
         super();
         this.src = src;
         this.name = name;
