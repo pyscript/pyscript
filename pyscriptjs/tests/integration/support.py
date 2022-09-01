@@ -1,3 +1,4 @@
+import pdb
 import time
 
 import py
@@ -68,13 +69,21 @@ class PyScriptTest:
         print()
         #
         # if you use pytest --headed you can see the browser page while
-        # playwright executes the tests. However, the page is closed very
-        # quickly as soon as the test finishes. If you want to pause the test
-        # to have time to inspect it manually, uncomment the next two
-        # lines. The lines after the 'yield' will be executed during the
-        # teardown, leaving the page open until you exit pdb.
-        ## yield
-        ## import pdb;pdb.set_trace()
+        # playwright executes the tests, but the page is closed very quickly
+        # as soon as the test finishes. To avoid that, we automatically start
+        # a pdb so that we can wait as long as we want.
+        yield
+        if request.config.option.headed:
+            pdb.Pdb.intro = (
+                "\n"
+                "This (Pdb) was started automatically because you passed --headed:\n"
+                "the execution of the test pauses here to give you the time to inspect\n"
+                "the browser. When you are done, type one of the following commands:\n"
+                "    (Pdb) continue\n"
+                "    (Pdb) cont\n"
+                "    (Pdb) c\n"
+            )
+            pdb.set_trace()
 
     def init_page(self, page):
         self.page = page
