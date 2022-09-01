@@ -84,11 +84,4 @@ function handleFetchError(e: Error, singleFile: string) {
     showError(errorContent);
 }
 
-/**
- * determines if the process is running inside the testing suite i.e. jest
- */
-function inJest(): boolean {
-    return process.env.JEST_WORKER_ID !== undefined;
-}
-
-export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, inJest };
+export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError };

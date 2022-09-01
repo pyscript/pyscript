@@ -187,7 +187,7 @@ class PyScriptTest:
             check_errors=check_errors,
         )
 
-    def pyscript_run(self, snippet):
+    def pyscript_run(self, snippet, *, extra_head=""):
         """
         Main entry point for pyscript tests.
 
@@ -206,6 +206,7 @@ class PyScriptTest:
           <head>
               <link rel="stylesheet" href="{self.http_server}/build/pyscript.css" />
               <script defer src="{self.http_server}/build/pyscript.js"></script>
+              {extra_head}
           </head>
           <body>
             {snippet}

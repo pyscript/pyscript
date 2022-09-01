@@ -1,8 +1,7 @@
 import { Runtime, RuntimeConfig } from './runtime';
-import { getLastPath, inJest } from './utils';
+import { getLastPath } from './utils';
 import { getLogger } from './logger';
 import type { PyodideInterface } from 'pyodide';
-import { loadPyodide } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
@@ -34,17 +33,30 @@ export class PyodideRuntime extends Runtime {
         this.lang = lang;
     }
 
+    /**
+     * Although `loadPyodide` is used below,
+     * notice that it is not imported i.e.
+     * import { loadPyodide } from 'pyodide';
+     * is not used at the top of this file.
+     *
+     * This is because, if it's used, loadPyodide
+     * behaves mischievously i.e. it tries to load
+     * `pyodide.asm.js` and `pyodide_py.tar` but
+     * with paths that are wrong such as:
+     *
+     * http://127.0.0.1:8080/build/pyodide_py.tar
+     * which results in a 404 since `build` doesn't
+     * contain these files and is clearly the wrong
+     * path.
+     */
     async loadInterpreter(): Promise<void> {
         console.log('creating pyodide runtime');
-        let indexURL: string = this.src.substring(0, this.src.length - '/pyodide.js'.length);
-        if (typeof process === 'object' && inJest()) {
-            indexURL = [process.cwd(), 'node_modules', 'pyodide'].join('/');
-        }
+        // eslint-disable-next-line
+        // @ts-ignore
         this.interpreter = await loadPyodide({
             stdout: console.log,
             stderr: console.log,
             fullStdLib: false,
-            indexURL,
         });
 
         this.globals = this.interpreter.globals;
