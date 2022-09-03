@@ -1,32 +1,19 @@
 import './styles/pyscript_base.css';
 
 import { PyScript } from './components/pyscript';
-import { PyRepl } from './components/pyrepl';
 import { PyEnv } from './components/pyenv';
-import { PyBox } from './components/pybox';
-import { PyButton } from './components/pybutton';
-import { PyTitle } from './components/pytitle';
-import { PyInputBox } from './components/pyinputbox';
-import { PyWidget } from './components/base';
 import { PyLoader } from './components/pyloader';
-import { globalLoader } from './stores';
 import { PyConfig } from './components/pyconfig';
 import { getLogger } from './logger';
+import { globalLoader } from './stores';
 
 const logger = getLogger('pyscript/main');
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
+// /* eslint-disable @typescript-eslint/no-unused-vars */
 const xPyScript = customElements.define('py-script', PyScript);
-const xPyRepl = customElements.define('py-repl', PyRepl);
-const xPyEnv = customElements.define('py-env', PyEnv);
-const xPyBox = customElements.define('py-box', PyBox);
-const xPyButton = customElements.define('py-button', PyButton);
-const xPyTitle = customElements.define('py-title', PyTitle);
-const xPyInputBox = customElements.define('py-inputbox', PyInputBox);
-const xPyWidget = customElements.define('py-register-widget', PyWidget);
 const xPyLoader = customElements.define('py-loader', PyLoader);
 const xPyConfig = customElements.define('py-config', PyConfig);
-/* eslint-enable @typescript-eslint/no-unused-vars */
+const xPyEnv = customElements.define('py-env', PyEnv);
 
 // As first thing, loop for application configs
 logger.info('checking for py-confing');

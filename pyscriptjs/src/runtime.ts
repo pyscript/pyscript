@@ -8,8 +8,9 @@ import {
     postInitializers,
     Initializer,
     scriptsQueue,
-    appConfig
-} from './stores'
+    appConfig,
+} from './stores';
+import { createCustomElements } from './components/elements';
 import type { PyScript } from './components/pyscript';
 import { getLogger } from './logger';
 
@@ -169,6 +170,7 @@ export abstract class Runtime extends Object {
 
         if (appConfig_ && appConfig_.autoclose_loader) {
             loader?.close();
+            createCustomElements();
         }
 
         for (const initializer of postInitializers_) {
