@@ -191,6 +191,10 @@ class PyScriptTest:
             timeout=timeout,
             check_errors=check_errors,
         )
+        # We need this very small wait time for pyscript to append
+        # the script to the page, otherwise clicks and other actions
+        # won't be registered in the test.
+        self.page.wait_for_timeout(100)
 
     def pyscript_run(self, snippet, *, extra_head=""):
         """
