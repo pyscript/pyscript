@@ -181,9 +181,9 @@ class PyScriptTest:
         If check_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
-        # this is printed by pyconfig.ts:PyodideRuntime.initialize
+        # this is printed by runtime.ts:Runtime.initialize
         self.wait_for_console(
-            "===PyScript page fully initialized===",
+            "[pyscript/runtime] PyScript page fully initialized",
             timeout=timeout,
             check_errors=check_errors,
         )

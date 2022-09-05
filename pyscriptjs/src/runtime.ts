@@ -11,6 +11,9 @@ import {
     appConfig
 } from './stores'
 import type { PyScript } from './components/pyscript';
+import { getLogger } from './logger';
+
+const logger = getLogger('pyscript/runtime');
 
 export type RuntimeInterpreter = PyodideInterface | null;
 
@@ -171,6 +174,9 @@ export abstract class Runtime extends Object {
         for (const initializer of postInitializers_) {
             await initializer();
         }
-        console.log('===PyScript page fully initialized===');
+        // NOTE: this message is used by integration tests to know that
+        // pyscript initialization has complete. If you change it, you need to
+        // change it also in tests/integration/support.py
+        logger.info('PyScript page fully initialized');
     }
 }
