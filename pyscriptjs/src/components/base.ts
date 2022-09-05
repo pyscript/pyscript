@@ -119,29 +119,14 @@ export class BaseEvalElement extends HTMLElement {
         this.preEvaluate();
 
         let source: string;
-        let output: string;
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
-
+            //idk what the line underneath does
             this._register_esm(runtime);
-            <string>await runtime.run(
-                `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
-            );
-            output = <string>await runtime.run(source);
 
-            if (output !== undefined) {
-                if (Element === undefined) {
-                    Element = <Element>runtime.globals.get('Element');
-                }
-                const out = Element(this.outputElement.id);
-                out.write.callKwargs(output, { append: this.appendOutput });
-
-                this.outputElement.hidden = false;
-                this.outputElement.style.display = 'block';
-            }
-
-            await runtime.run(`output_manager.revert()`);
+            <string>await runtime.run(`set_current_display_target(element="${this.id}")`);
+            <string>await runtime.run(source);
 
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);

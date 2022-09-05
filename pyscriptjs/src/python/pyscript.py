@@ -123,6 +123,17 @@ class PyScript:
             )
         )
 
+current_py_script_tag = None
+
+def set_current_display_target(element):
+    global current_py_script_tag
+    current_py_script_tag = element
+
+def display(value, parent=None, append=True):
+    if parent is None:
+        global current_py_script_tag
+        parent = current_py_script_tag
+    Element(parent).write(value, append)
 
 class Element:
     def __init__(self, element_id, element=None):
@@ -166,7 +177,7 @@ class Element:
         if mime_type in ("application/javascript", "text/html"):
             script_element = document.createRange().createContextualFragment(html)
             out_element.appendChild(script_element)
-        else:
+        elif hasattr(out_element, "innerHTML"):
             out_element.innerHTML = html
 
     def clear(self):
@@ -365,59 +376,4 @@ class PyListTemplate:
         pass
 
 
-class OutputCtxManager:
-    def __init__(self, out=None, output_to_console=True, append=True):
-        self._out = out
-        self._prev = out
-        self.output_to_console = output_to_console
-        self._append = append
-
-    def change(self, out=None, output_to_console=True, append=True):
-        self._prev = self._out
-        self._out = out
-        self.output_to_console = output_to_console
-        self._append = append
-
-    def revert(self):
-        self._out = self._prev
-
-    def write(self, value):
-        if self._out:
-            Element(self._out).write(value, self._append)
-
-        if self.output_to_console:
-            console.info(value)
-
-
-class OutputManager:
-    def __init__(self, out=None, err=None, output_to_console=True, append=True):
-        sys.stdout = self._out_manager = OutputCtxManager(
-            out=out, output_to_console=output_to_console, append=append
-        )
-        sys.stderr = self._err_manager = OutputCtxManager(
-            out=err, output_to_console=output_to_console, append=append
-        )
-        self.output_to_console = output_to_console
-        self._append = append
-
-    def change(self, out=None, err=None, output_to_console=True, append=True):
-        self._out_manager.change(
-            out=out, output_to_console=output_to_console, append=append
-        )
-        sys.stdout = self._out_manager
-        self._err_manager.change(
-            out=err, output_to_console=output_to_console, append=append
-        )
-        sys.stderr = self._err_manager
-        self.output_to_console = output_to_console
-        self._append = append
-
-    def revert(self):
-        self._out_manager.revert()
-        self._err_manager.revert()
-        sys.stdout = self._out_manager
-        sys.stderr = self._err_manager
-
-
 pyscript = PyScript()
-output_manager = OutputManager()
