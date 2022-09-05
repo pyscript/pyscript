@@ -113,7 +113,6 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     async evaluate(): Promise<void> {
-        console.log('evaluate');
         this.preEvaluate();
 
         let source: string;
