@@ -149,8 +149,6 @@ class Element:
         return self.element.innerHtml
 
     def write(self, value, append=False):
-        console.log(f"Element.write: {value} --> {append}")
-
         out_element_id = self.id
 
         html, mime_type = format_mime(value)
@@ -186,7 +184,7 @@ class Element:
         if _el:
             return Element(_el.id, _el)
         else:
-            console.log(f"WARNING: can't find element matching query {query}")
+            console.warn(f"WARNING: can't find element matching query {query}")
 
     def clone(self, new_id=None, to=None):
         if new_id is None:
@@ -261,11 +259,7 @@ class PyItemTemplate(Element):
             self._id = None
 
     def create(self):
-        console.log("creating section")
         new_child = create("div", self._id, "py-li-element")
-        console.log("creating values")
-
-        console.log("creating innerHtml")
         new_child._element.innerHTML = dedent(
             f"""
             <label id="{self._id}" for="flex items-center p-2 ">
@@ -274,8 +268,6 @@ class PyItemTemplate(Element):
             </label>
             """
         )
-
-        console.log("returning")
         return new_child
 
     def on_click(self, evt):
@@ -331,7 +323,6 @@ class PyListTemplate:
             print(txt)
 
         def foo(evt):
-            console.log(evt)
             evtEl = evt.srcElement
             srcEl = Element(binds[evtEl.id])
             srcEl.element.onclick()
@@ -358,7 +349,6 @@ class PyListTemplate:
         return self._add(child)
 
     def _add(self, child_elem):
-        console.log("appending child", child_elem.element)
         self.pre_child_append(child_elem)
         child_elem.pre_append()
         self._children.append(child_elem)
@@ -387,14 +377,11 @@ class OutputCtxManager:
         self._out = out
         self.output_to_console = output_to_console
         self._append = append
-        console.log("----> changed out to", self._out, self._append)
 
     def revert(self):
-        console.log("----> reverted")
         self._out = self._prev
 
     def write(self, value):
-        console.log("writing to", self._out, value, self._append)
         if self._out:
             Element(self._out).write(value, self._append)
 
@@ -430,7 +417,6 @@ class OutputManager:
         self._err_manager.revert()
         sys.stdout = self._out_manager
         sys.stderr = self._err_manager
-        console.log("----> reverted")
 
 
 pyscript = PyScript()
