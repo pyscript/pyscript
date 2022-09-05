@@ -386,7 +386,7 @@ class OutputCtxManager:
             Element(self._out).write(value, self._append)
 
         if self.output_to_console:
-            console.log(self._out, value)
+            console.info(f"[pyscript.py/OutputCtxManager] out={self._out}:", value)
 
 
 class OutputManager:
