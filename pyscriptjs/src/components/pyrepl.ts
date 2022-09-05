@@ -142,7 +142,7 @@ export class PyRepl extends BaseEvalElement {
 
         this.appendChild(mainDiv);
         this.editor.focus();
-        logger.debug('element %s successfully connected', this.id);
+        logger.debug(`element ${this.id} successfully connected`);
     }
 
     addToOutput(s: string): void {
