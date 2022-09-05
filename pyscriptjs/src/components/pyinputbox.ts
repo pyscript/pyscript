@@ -1,5 +1,8 @@
 import { BaseEvalElement } from './base';
 import { addClasses, htmlDecode } from '../utils';
+import { getLogger } from '../logger'
+
+const logger = getLogger('py-inputbox');
 
 export class PyInputBox extends BaseEvalElement {
     widths: Array<string>;
@@ -43,7 +46,7 @@ export class PyInputBox extends BaseEvalElement {
         this.runAfterRuntimeInitialized(async () => {
             await this.eval(this.code);
             await this.eval(registrationCode);
-            console.log('registered handlers');
+            logger.debug('registered handlers');
         });
     }
 }
