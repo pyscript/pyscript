@@ -37,6 +37,7 @@ export class PyLoader extends BaseEvalElement {
     }
 
     close() {
+        logger.info('Closing');
         this.remove();
     }
 }
