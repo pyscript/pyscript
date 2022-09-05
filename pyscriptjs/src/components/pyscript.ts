@@ -252,8 +252,8 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
 
 /** Mount all elements with attribute py-mount into the Python namespace */
 async function mountElements() {
-    console.log('Collecting nodes to be mounted into python namespace...');
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
+    logger.info(`py-mount: found ${matches.length} elements`);
 
     let source = '';
     for (const el of matches) {
