@@ -2,6 +2,9 @@ import { runtimeLoaded } from '../stores';
 import { guidGenerator, addClasses, removeClasses } from '../utils';
 
 import type { Runtime } from '../runtime';
+import { getLogger } from '../logger';
+
+const logger = getLogger('pyscript/base');
 
 // Global `Runtime` that implements the generic runtimes API
 let runtime: Runtime;
@@ -49,7 +52,7 @@ export class BaseEvalElement extends HTMLElement {
                 this.appendOutput = false;
                 break;
             default:
-                console.log(`${this.id}: custom output-modes are currently not implemented`);
+                logger.warn(`${this.id}: custom output-modes are currently not implemented`);
         }
     }
 
@@ -104,7 +107,7 @@ export class BaseEvalElement extends HTMLElement {
                     // "can't read 'name' of undefined" at import time
                     imports[name] = { ...(await import(url)) };
                 } catch {
-                    console.error(`failed to fetch '${url}' for '${name}'`);
+                    logger.error(`failed to fetch '${url}' for '${name}'`);
                 }
             }
         }
@@ -157,7 +160,7 @@ export class BaseEvalElement extends HTMLElement {
 
             this.postEvaluate();
         } catch (err) {
-            console.error(err);
+            logger.error(err);
             try{
                 if (Element === undefined) {
                     Element = <Element>runtime.globals.get('Element');
@@ -176,7 +179,7 @@ export class BaseEvalElement extends HTMLElement {
                 this.errorElement.style.display = 'block';
                 this.errorElement.style.visibility = 'visible';
             } catch (internalErr){
-                console.error("Unnable to write error to error element in page.")
+                logger.error("Unnable to write error to error element in page.")
             }
 
         }
@@ -186,10 +189,10 @@ export class BaseEvalElement extends HTMLElement {
         try {
             const output = await runtime.run(source);
             if (output !== undefined) {
-                console.log(output);
+                logger.info(output);
             }
         } catch (err) {
-            console.log(err);
+            logger.error(err);
         }
     } // end eval
 
@@ -246,7 +249,6 @@ function createWidget(name: string, code: string, klass: string) {
                         void (async () => {
                             await this.eval(this.code);
                             this.proxy = this.proxyClass(this);
-                            console.log('proxy', this.proxy);
                             this.proxy.connect();
                             this.registerWidget();
                         })();
@@ -256,7 +258,7 @@ function createWidget(name: string, code: string, klass: string) {
         }
 
         registerWidget() {
-            console.log('new widget registered:', this.name);
+            logger.info('new widget registered:', this.name);
             runtime.globals.set(this.id, this.proxy);
         }
 
@@ -265,10 +267,10 @@ function createWidget(name: string, code: string, klass: string) {
                 const output = await runtime.run(source);
                 this.proxyClass = runtime.globals.get(this.klass);
                 if (output !== undefined) {
-                    console.log(output);
+                    logger.info('CustomWidget.eval: ', output);
                 }
             } catch (err) {
-                console.log(err);
+                logger.error('CustomWidget.eval: ', err);
             }
         }
     }
@@ -317,7 +319,7 @@ export class PyWidget extends HTMLElement {
         const mainDiv = document.createElement('div');
         mainDiv.id = this.id + '-main';
         this.appendChild(mainDiv);
-        console.log('reading source');
+        logger.debug('PyWidget: reading source', this.source);
         this.code = await this.getSourceFromFile(this.source);
         createWidget(this.name, this.code, this.klass);
     }
@@ -359,10 +361,10 @@ export class PyWidget extends HTMLElement {
         try {
             const output = await runtime.run(source);
             if (output !== undefined) {
-                console.log(output);
+                logger.info('PyWidget.eval: ', output);
             }
         } catch (err) {
-            console.log(err);
+            logger.error('PyWidget.eval: ', err);
         }
     }
 }
