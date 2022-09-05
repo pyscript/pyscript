@@ -189,6 +189,7 @@ class TestExamples(PyScriptTest):
 
         assert self.page.locator("#my-repl-2-2").text_content() == "4"
 
+    @pytest.mark.xfail(reason="Test seems flaky")
     def test_repl2(self):
         self.goto("examples/repl2.html")
         self.wait_for_pyscript()
