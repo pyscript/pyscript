@@ -80,7 +80,9 @@ export class PyodideRuntime extends Runtime {
 
     async loadPackage(names: string | string[]): Promise<void> {
         logger.info(`pyodide.loadPackage: ${names.toString()}`);
-        await this.interpreter.loadPackage(names);
+        await this.interpreter.loadPackage(names,
+                                           logger.info.bind(logger),
+                                           logger.info.bind(logger));
     }
 
     async installPackage(package_name: string | string[]): Promise<void> {
