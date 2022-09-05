@@ -38,6 +38,10 @@ class PyScriptTest:
         creates an HTML page to run the specified snippet.
     """
 
+    # Pyodide always print()s this message upon initialization. Make it
+    # available to all tests so that it's easiert to check.
+    PY_COMPLETE = "Python initialization complete"
+
     @pytest.fixture()
     def init(self, request, tmpdir, http_server, logger, page):
         """

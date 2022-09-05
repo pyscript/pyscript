@@ -26,11 +26,11 @@ class TestPyInputBox(PyScriptTest):
                 import js
                 def on_keypress(evt):
                     if evt.key == "Enter":
-                        js.console.info(evt.target.value)
+                        js.console.log(evt.target.value)
             </py-inputbox>
             """
         )
-        assert self.console.info.lines == []
+        assert self.console.log.lines == [self.PY_COMPLETE]
         input = self.page.locator("input")
         # We need to wait some time before we can type any text
         # otherwise it won't be registered. This was the smallest
@@ -39,4 +39,4 @@ class TestPyInputBox(PyScriptTest):
         input.type("Hello")
         input.press("Enter")
 
-        assert self.console.info.text == "Hello"
+        assert self.console.log.lines == [self.PY_COMPLETE, "Hello"]
