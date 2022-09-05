@@ -122,7 +122,6 @@ export class BaseEvalElement extends HTMLElement {
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
-            //idk what the line underneath does
             this._register_esm(runtime);
 
             <string>await runtime.run(`set_current_display_target(element="${this.id}")`);
