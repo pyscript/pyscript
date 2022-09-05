@@ -92,7 +92,7 @@ def format_mime(obj):
         break
     if output is None:
         if not_available:
-            console.warning(
+            console.warn(
                 f"Rendered object requested unavailable MIME renderers: {not_available}"
             )
         output = repr(output)
