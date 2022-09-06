@@ -9,7 +9,7 @@ import { globalLoader } from './stores';
 
 const logger = getLogger('pyscript/main');
 
-// /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const xPyScript = customElements.define('py-script', PyScript);
 const xPyLoader = customElements.define('py-loader', PyLoader);
 const xPyConfig = customElements.define('py-config', PyConfig);
