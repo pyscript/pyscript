@@ -170,8 +170,9 @@ export abstract class Runtime extends Object {
 
         if (appConfig_ && appConfig_.autoclose_loader) {
             loader?.close();
-            createCustomElements();
         }
+
+        createCustomElements();
 
         for (const initializer of postInitializers_) {
             await initializer();
