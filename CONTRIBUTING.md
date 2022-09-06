@@ -73,6 +73,28 @@ If you have questions about the project, using PyScript, or anything else, pleas
 
 Now that node and npm have both been updated `make setup` should work, and you can continue [setting up your local environment](#setting-up-your-local-environment) without problems (hopefully).
 
+## Creating a Pull Request
+
+After you fork PyScript make sure to add a new remote. You can do that using the command:
+
+```
+git remote add remote_nickname remote_url
+```
+
+You should have one remote that corresponds to your local repository and one remote that corresponds the upstream PyScript repository.
+
+We recommend you to create a new local branch and develop your changes in this branch. You can do that by using:
+
+```
+git checkout -b branch_name #creates new branch
+git checkout branch_name #goes to branch
+```
+
+It's not mandatory but it's advisible to have one issue that is related to your PR, the more information you give and the clearer you can communicate your ideas the faster maintainers will be able to review your changes and merge your PR.
+
+Please try to keep the changes on your PR within the issue's scope. In case you don't have a related issue, limit the your PR's scope in a way that a short sentence summarizes its contents. This sentence should be the name of your PR. If you can't think of a sentence that summarizes your PR well, might be a sign that you need to split it in two or more PRs!
+
+
 ## Places to start
 
 If you would like to contribute to PyScript, but you aren't sure where to begin, here are some suggestions.
