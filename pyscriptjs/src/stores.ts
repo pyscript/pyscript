@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 import type { PyLoader } from './components/pyloader';
 import type { PyScript } from './components/pyscript';
 import type { Runtime } from './runtime';
+import { getLogger } from './logger';
 
 export type Initializer = () => Promise<void>;
 
@@ -35,13 +36,9 @@ export const addToScriptsQueue = (script: PyScript) => {
 };
 
 export const addInitializer = (initializer: Initializer) => {
-    console.log('adding initializer', initializer);
     initializers.update(initializers => [...initializers, initializer]);
-    console.log('added initializer', initializer);
 };
 
 export const addPostInitializer = (initializer: Initializer) => {
-    console.log('adding post initializer', initializer);
     postInitializers.update(postInitializers => [...postInitializers, initializer]);
-    console.log('added post initializer', initializer);
 };

@@ -6,6 +6,9 @@ import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
+import { getLogger } from '../logger';
+
+const logger = getLogger('py-repl');
 
 
 function createCmdHandler(el: PyRepl): StateCommand {
@@ -102,8 +105,8 @@ export class PyRepl extends BaseEvalElement {
         });
 
         if (!this.id) {
-            console.log(
-                "WARNING: <pyrepl> define with an id. <pyrepl> should always have an id. More than one <pyrepl> on a page won't work otherwise!",
+            logger.warn(
+                "WARNING: <py-repl> defined without an id. <py-repl> should always have an id, otherwise multiple <py-repl> in the same page will not work!"
             );
         }
 
@@ -139,7 +142,7 @@ export class PyRepl extends BaseEvalElement {
 
         this.appendChild(mainDiv);
         this.editor.focus();
-        console.log('connected');
+        logger.debug(`element ${this.id} successfully connected`);
     }
 
     addToOutput(s: string): void {
@@ -194,9 +197,5 @@ export class PyRepl extends BaseEvalElement {
 
     getSourceFromElement(): string {
         return this.editor.state.doc.toString();
-    }
-
-    render() {
-        console.log('rendered');
     }
 }

@@ -24,11 +24,11 @@ class TestPyButton(PyScriptTest):
             <py-button label="my button">
                 import js
                 def on_click(evt):
-                    js.console.info('clicked!')
+                    js.console.log('clicked!')
             </py-button>
         """
         )
-        assert self.console.info.lines == []
+        assert self.console.log.lines == [self.PY_COMPLETE]
         self.page.locator("text=my button").click()
         self.page.locator("text=my button").click()
-        assert self.console.info.lines == ["clicked!", "clicked!"]
+        assert self.console.log.lines == [self.PY_COMPLETE, "clicked!", "clicked!"]

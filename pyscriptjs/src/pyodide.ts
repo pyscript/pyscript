@@ -1,9 +1,12 @@
 import { Runtime, RuntimeConfig } from './runtime';
 import { getLastPath } from './utils';
+import { getLogger } from './logger';
 import type { PyodideInterface } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
+
+const logger = getLogger('pyscript/pyodide');
 
 export const DEFAULT_RUNTIME_CONFIG: RuntimeConfig = {
     src: 'https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js',
@@ -23,6 +26,7 @@ export class PyodideRuntime extends Runtime {
         name = DEFAULT_RUNTIME_CONFIG.name,
         lang = DEFAULT_RUNTIME_CONFIG.lang,
     ) {
+        logger.info('Runtime config:', { name, lang, src });
         super();
         this.src = src;
         this.name = name;
@@ -46,7 +50,7 @@ export class PyodideRuntime extends Runtime {
      * path.
      */
     async loadInterpreter(): Promise<void> {
-        console.log('creating pyodide runtime');
+        logger.info('Loading pyodide');
         // eslint-disable-next-line
         // @ts-ignore
         this.interpreter = await loadPyodide({
@@ -57,17 +61,13 @@ export class PyodideRuntime extends Runtime {
 
         this.globals = this.interpreter.globals;
 
-        // now that we loaded, add additional convenience functions
-        console.log('loading micropip');
+        // XXX: ideally, we should load micropip only if we actually need it
         await this.loadPackage('micropip');
 
-        console.log('loading pyscript...');
-        const output = await this.run(pyscript);
-        if (output !== undefined) {
-            console.log(output);
-        }
+        logger.info('importing pyscript.py');
+        await this.run(pyscript);
 
-        console.log('done setting up environment');
+        logger.info('pyodide loaded and initialized');
     }
 
     async run(code: string): Promise<any> {
@@ -79,11 +79,15 @@ export class PyodideRuntime extends Runtime {
     }
 
     async loadPackage(names: string | string[]): Promise<void> {
-        await this.interpreter.loadPackage(names);
+        logger.info(`pyodide.loadPackage: ${names.toString()}`);
+        await this.interpreter.loadPackage(names,
+                                           logger.info.bind(logger),
+                                           logger.info.bind(logger));
     }
 
     async installPackage(package_name: string | string[]): Promise<void> {
         if (package_name.length > 0) {
+            logger.info(`micropip install ${package_name.toString()}`);
             const micropip = this.globals.get('micropip');
             await micropip.install(package_name);
             micropip.destroy();

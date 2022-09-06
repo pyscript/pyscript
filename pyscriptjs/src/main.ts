@@ -11,6 +11,9 @@ import { PyWidget } from './components/base';
 import { PyLoader } from './components/pyloader';
 import { globalLoader } from './stores';
 import { PyConfig } from './components/pyconfig';
+import { getLogger } from './logger';
+
+const logger = getLogger('pyscript/main');
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const xPyScript = customElements.define('py-script', PyScript);
@@ -26,6 +29,7 @@ const xPyConfig = customElements.define('py-config', PyConfig);
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
 // As first thing, loop for application configs
+logger.info('checking for py-confing');
 const config: PyConfig = document.querySelector('py-config');
 if (!config) {
     const loader = document.createElement('py-config');
@@ -33,6 +37,7 @@ if (!config) {
 }
 
 // add loader to the page body
+logger.info('add py-loader');
 const loader = <PyLoader>document.createElement('py-loader');
 document.body.append(loader);
 globalLoader.set(loader);

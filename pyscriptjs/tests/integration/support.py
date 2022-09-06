@@ -1,3 +1,5 @@
+import pdb
+import re
 import time
 
 import py
@@ -36,6 +38,10 @@ class PyScriptTest:
         creates an HTML page to run the specified snippet.
     """
 
+    # Pyodide always print()s this message upon initialization. Make it
+    # available to all tests so that it's easiert to check.
+    PY_COMPLETE = "Python initialization complete"
+
     @pytest.fixture()
     def init(self, request, tmpdir, http_server, logger, page):
         """
@@ -68,13 +74,21 @@ class PyScriptTest:
         print()
         #
         # if you use pytest --headed you can see the browser page while
-        # playwright executes the tests. However, the page is closed very
-        # quickly as soon as the test finishes. If you want to pause the test
-        # to have time to inspect it manually, uncomment the next two
-        # lines. The lines after the 'yield' will be executed during the
-        # teardown, leaving the page open until you exit pdb.
-        ## yield
-        ## import pdb;pdb.set_trace()
+        # playwright executes the tests, but the page is closed very quickly
+        # as soon as the test finishes. To avoid that, we automatically start
+        # a pdb so that we can wait as long as we want.
+        yield
+        if request.config.option.headed:
+            pdb.Pdb.intro = (
+                "\n"
+                "This (Pdb) was started automatically because you passed --headed:\n"
+                "the execution of the test pauses here to give you the time to inspect\n"
+                "the browser. When you are done, type one of the following commands:\n"
+                "    (Pdb) continue\n"
+                "    (Pdb) cont\n"
+                "    (Pdb) c\n"
+            )
+            pdb.set_trace()
 
     def init_page(self, page):
         self.page = page
@@ -171,9 +185,9 @@ class PyScriptTest:
         If check_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
-        # this is printed by pyconfig.ts:PyodideRuntime.initialize
+        # this is printed by runtime.ts:Runtime.initialize
         self.wait_for_console(
-            "===PyScript page fully initialized===",
+            "[pyscript/runtime] PyScript page fully initialized",
             timeout=timeout,
             check_errors=check_errors,
         )
@@ -336,12 +350,21 @@ class Logger:
 
     def __init__(self):
         self.reset()
+        # capture things like [pyscript/main]
+        self.prefix_regexp = re.compile(r"(\[.+?\])")
 
     def reset(self):
         self.start_time = time.time()
 
+    def colorize_prefix(self, text, *, color):
+        # find the first occurrence of something like [pyscript/main] and
+        # colorize it
+        start, end = Color.escape_pair(color)
+        return self.prefix_regexp.sub(rf"{start}\1{end}", text, 1)
+
     def log(self, category, text, *, color=None):
         delta = time.time() - self.start_time
+        text = self.colorize_prefix(text, color="teal")
         line = f"[{delta:6.2f} {category:15}] {text}"
         if color:
             line = Color.set(color, line)
@@ -372,8 +395,15 @@ class Color:
 
     @classmethod
     def set(cls, color, string):
+        start, end = cls.escape_pair(color)
+        return f"{start}{string}{end}"
+
+    @classmethod
+    def escape_pair(cls, color):
         try:
             color = getattr(cls, color)
         except AttributeError:
             pass
-        return f"\x1b[{color}m{string}\x1b[00m"
+        start = f"\x1b[{color}m"
+        end = "\x1b[00m"
+        return start, end

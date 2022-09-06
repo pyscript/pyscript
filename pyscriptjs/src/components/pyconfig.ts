@@ -3,6 +3,9 @@ import { BaseEvalElement } from './base';
 import { appConfig } from '../stores';
 import type { AppConfig, Runtime } from '../runtime';
 import { PyodideRuntime, DEFAULT_RUNTIME_CONFIG } from '../pyodide';
+import { getLogger } from '../logger';
+
+const logger = getLogger('py-config');
 
 /**
  * Configures general metadata about the PyScript application such
@@ -41,7 +44,7 @@ export class PyConfig extends BaseEvalElement {
         }
 
         appConfig.set(this.values);
-        console.log('config set', this.values);
+        logger.info('config set:', this.values);
 
         this.loadRuntimes();
     }
@@ -57,7 +60,7 @@ export class PyConfig extends BaseEvalElement {
     }
 
     loadRuntimes() {
-        console.log('Initializing runtimes...');
+        logger.info('Initializing runtimes');
         for (const runtime of this.values.runtimes) {
             const runtimeObj: Runtime = new PyodideRuntime(runtime.src, runtime.name, runtime.lang);
             const script = document.createElement('script'); // create a script DOM node

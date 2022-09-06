@@ -49,7 +49,7 @@ class TestRuntimeConfig(PyScriptTest):
             <py-script>
                 import sys, js
                 pyodide_version = sys.modules["pyodide"].__version__
-                js.console.info("version", pyodide_version)
+                js.console.log("version", pyodide_version)
                 pyodide_version
             </py-script>
         """,
@@ -63,6 +63,6 @@ class TestRuntimeConfig(PyScriptTest):
         """,
         )
 
-        assert self.console.info.lines == ["version 0.20.0"]
+        assert self.console.log.lines == [self.PY_COMPLETE, "version 0.20.0"]
         version = self.page.locator("py-script").inner_text()
         assert version == "0.20.0"

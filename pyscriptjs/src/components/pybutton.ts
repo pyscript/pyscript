@@ -1,5 +1,9 @@
 import { BaseEvalElement } from './base';
 import { addClasses, htmlDecode } from '../utils';
+import { getLogger } from '../logger'
+
+const logger = getLogger('py-button');
+
 
 export class PyButton extends BaseEvalElement {
     widths: Array<string>;
@@ -65,9 +69,9 @@ export class PyButton extends BaseEvalElement {
         this.runAfterRuntimeInitialized(async () => {
             await this.eval(this.code);
             await this.eval(registrationCode);
-            console.log('registered handlers');
+            logger.debug('registered handlers');
         });
 
-        console.log('py-button connected');
+        logger.debug('py-button connected');
     }
 }

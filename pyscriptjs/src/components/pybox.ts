@@ -1,4 +1,7 @@
 import { addClasses } from '../utils';
+import { getLogger } from '../logger';
+
+const logger = getLogger('py-box');
 
 export class PyBox extends HTMLElement {
     shadow: ShadowRoot;
@@ -24,7 +27,6 @@ export class PyBox extends HTMLElement {
         // meaning that we end up with 2 editors, if there's a <py-repl> inside the <py-box>
         // so, if we have more than 2 children with the cm-editor class, we remove one of them
         while (this.childNodes.length > 0) {
-            console.log(this.firstChild);
             if (this.firstChild.nodeName == 'PY-REPL') {
                 // in this case we need to remove the child and create a new one from scratch
                 const replDiv = document.createElement('div');
@@ -61,6 +63,6 @@ export class PyBox extends HTMLElement {
         });
 
         this.appendChild(mainDiv);
-        console.log('py-box connected');
+        logger.info('py-box connected');
     }
 }

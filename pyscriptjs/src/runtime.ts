@@ -11,6 +11,9 @@ import {
     appConfig
 } from './stores'
 import type { PyScript } from './components/pyscript';
+import { getLogger } from './logger';
+
+const logger = getLogger('pyscript/runtime');
 
 export type RuntimeInterpreter = PyodideInterface | null;
 
@@ -35,19 +38,16 @@ globalLoader.subscribe(value => {
 let initializers_: Initializer[];
 initializers.subscribe((value: Initializer[]) => {
     initializers_ = value;
-    console.log('initializers set');
 });
 
 let postInitializers_: Initializer[];
 postInitializers.subscribe((value: Initializer[]) => {
     postInitializers_ = value;
-    console.log('post initializers set');
 });
 
 let scriptsQueue_: PyScript[];
 scriptsQueue.subscribe((value: PyScript[]) => {
     scriptsQueue_ = value;
-    console.log('scripts queue set');
 });
 
 let appConfig_: AppConfig = {
@@ -58,7 +58,6 @@ appConfig.subscribe((value: AppConfig) => {
     if (value) {
         appConfig_ = value;
     }
-    console.log('config set!');
 });
 
 /*
@@ -170,12 +169,14 @@ export abstract class Runtime extends Object {
 
         if (appConfig_ && appConfig_.autoclose_loader) {
             loader?.close();
-            console.log('------ loader closed ------');
         }
 
         for (const initializer of postInitializers_) {
             await initializer();
         }
-        console.log('===PyScript page fully initialized===');
+        // NOTE: this message is used by integration tests to know that
+        // pyscript initialization has complete. If you change it, you need to
+        // change it also in tests/integration/support.py
+        logger.info('PyScript page fully initialized');
     }
 }
