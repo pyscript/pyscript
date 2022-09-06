@@ -26,7 +26,7 @@ class TestPyRepl(PyScriptTest):
         self.page.locator("button").click()
 
         # The result gets the id of the repl + n
-        repl_result = self.page.locator("#my-repl-1")
+        repl_result = self.page.wait_for_selector("#my-repl-1", state="attached")
 
         assert repl_result.inner_text() == "4"
 
@@ -40,6 +40,6 @@ class TestPyRepl(PyScriptTest):
 
         # Confirm that we get a result by using the keys shortcut
         self.page.keyboard.press("Shift+Enter")
-        repl_result = self.page.locator("#my-repl-1")
+        repl_result = self.page.wait_for_selector("#my-repl-1", state="attached")
 
         assert repl_result.text_content() == "4"
