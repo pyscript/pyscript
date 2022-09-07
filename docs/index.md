@@ -24,7 +24,7 @@ Check out our [getting started guide](tutorials/getting-started.md)!
 :::
 :::{grid-item-card} [How-to guides](howtos/index.md)
 
-[Working with JavaScript and Python](howtos/passing-objects.md)
+[Passing Objects between JavaScript and Python](howtos/passing-objects.md)
 
 :::
 :::{grid-item-card} [Concepts](concepts/index.md)

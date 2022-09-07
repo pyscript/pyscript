@@ -2,20 +2,19 @@
 
 [Pyodide](https://pyodide.org), the runtime that underlies PyScript, does a lot of work under the hood to translate objects between Python and JavaScript. This allows code in one language to access objects defined in the other. 
 
-This guide discusses how to pass objects between JavaScript
-and the Python within PyScript. For more details on how Pyodide handles translating and proxying objects between the two languages, see the [Pyodide Type Translations Page](https://pyodide.org/en/stable/usage/type-conversions.html)
+This guide discusses how to pass objects between JavaScript and Python within PyScript. For more details on how Pyodide handles translating and proxying objects between the two languages, see the [Pyodide Type Translations Page](https://pyodide.org/en/stable/usage/type-conversions.html).
 
 For our purposes, an 'object' is anything that can be bound to a variable (a number, string, object, [function](https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function), etc).
 
 ## JavaScript to PyScript
 
-We can use the simple `from js import ...` to import JavaScript objects directly into PyScript. Simple JavaScript objects are converted to equivalent Python types; more complicated objects are wrapped in [JSProxy](https://pyodide.org/en/stable/usage/type-conversions.html) objects to make them behave like Python objects.
+We can use the syntax `from js import ...` to import JavaScript objects directly into PyScript. Simple JavaScript objects are converted to equivalent Python types; these are called [implicit conversions](https://pyodide.org/en/stable/usage/type-conversions.html#implicit-conversions). More complicated objects are wrapped in [JSProxy](https://pyodide.org/en/stable/usage/type-conversions.html) objects to make them behave like Python objects.
 
 `import js` and `from js import ...` [in Pyodide](https://pyodide.org/en/stable/usage/type-conversions.html#type-translations-using-js-obj-from-py) get objects from the [JavaScript globalThis scope](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis), so keep the[ rules of JavaScript variable scoping](https://www.freecodecamp.org/news/var-let-and-const-whats-the-difference/) in mind.
 
 ```html
 <script>
-    name = "Jeff" //A JS variable
+    name = "Guido" //A JS variable
 
     // Define a JS Function
     function addTwoNumbers(x, y){
@@ -39,7 +38,7 @@ We can use the simple `from js import ...` to import JavaScript objects directly
 
 Since [PyScript doesn't export its instance of Pyodide](https://github.com/pyscript/pyscript/issues/494) and only one instance of Pyodide can be running in a browser window at a time, there isn't currently a way for Javascript to access Objects defined inside PyScript tags "directly".
 
-We can work around this limitation using [JavaScript's eval() function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval), which executes a string as code much like [Python's eval()](https://docs.python.org/3/library/functions.html#eval). First, we create a JS function `createObject` which takes an object and a string, then uses eval() to bind that string as a variable to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.
+We can work around this limitation using [JavaScript's eval() function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval), which executes a string as code much like [Python's eval()](https://docs.python.org/3/library/functions.html#eval). First, we create a JS function `createObject` which takes an object and a string, then uses `eval()` to create a variable named after the string and bind it to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.
 
 Include the following script tag anywhere in your html document:
 
@@ -64,13 +63,13 @@ We can use our new `createObject` function to "export" the entire Python global 
 ```python
 <py-script>
     from js import createObject
-    from pyodide import create_proxy
+    from pyodide.ffi import create_proxy
     createObject(create_proxy(globals()), "pyodideGlobals")
 </py-script>
 ```
 This will make all Python global variables available in JavaScript with `pyodideGlobals.get('my_variable_name')`.
 
-(Since PyScript tags evaluate after all JavaScript on the page, we can't just dump a `console.log(...)` into a `&lt;script&gt;` tag. The following example uses a button with `id="do-math"` to achieve this, but any method would be valid.)
+(Since PyScript tags evaluate _after_ all JavaScript on the page, we can't just dump a `console.log(...)` into a `<script>` tag, since that tag will evaluate before any PyScript has a chance to. We need to delay accessing the Python variable in JavaScript until after the Python code has a chance to run. The following example uses a button with `id="do-math"` to achieve this, but any method would be valid.)
 
 ```python
 <py-script>
@@ -105,14 +104,14 @@ This will make all Python global variables available in JavaScript with `pyodide
 
 ### Exporting Individual Python Objects
 
-We can also  individual Python objects to the JavaScript global scope if we wish.
+We can also export individual Python objects to the JavaScript global scope if we wish.
 
 (As above, the following example uses a button to delay the execution of the `<script>` until after the PyScript has run.)
 
 ```python
 <py-script>
     import js
-    from pyodide import create_proxy
+    from pyodide.ffi import create_proxy
 
     # Create 3 python objects
     language = "Python 3"
