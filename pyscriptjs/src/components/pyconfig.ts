@@ -1,11 +1,26 @@
-import * as jsyaml from 'js-yaml';
+import jstoml from '@ltd/j-toml';
 import { BaseEvalElement } from './base';
-import { appConfig } from '../stores';
+import { appConfig, addInitializer, runtimeLoaded } from '../stores';
 import type { AppConfig, Runtime } from '../runtime';
-import { PyodideRuntime, DEFAULT_RUNTIME_CONFIG } from '../pyodide';
+import { PyodideRuntime } from '../pyodide';
 import { getLogger } from '../logger';
+import { readTextFromPath, handleFetchError } from '../utils'
+
+// Premise used to connect to the first available runtime (can be pyodide or others)
+let runtimeSpec: Runtime;
+runtimeLoaded.subscribe(value => {
+    runtimeSpec = value;
+});
+
+let appConfig_: AppConfig;
+appConfig.subscribe(value => {
+    appConfig_ = value;
+});
 
 const logger = getLogger('py-config');
+// eslint-disable-next-line
+// @ts-ignore
+import defaultConfig from '../manifest.toml'
 
 /**
  * Configures general metadata about the PyScript application such
@@ -28,24 +43,37 @@ export class PyConfig extends BaseEvalElement {
     }
 
     connectedCallback() {
-        this.code = this.innerHTML;
-        this.innerHTML = '';
+        let loadedValues: object = {};
 
-        const loadedValues = jsyaml.load(this.code);
-        if (loadedValues === undefined) {
-            this.values = {
-                autoclose_loader: true,
-                runtimes: [DEFAULT_RUNTIME_CONFIG]
-            };
-        } else {
-            // eslint-disable-next-line
-            // @ts-ignore
-            this.values = loadedValues;
+        // load config from source
+        if (this.hasAttribute('src'))
+        {
+            const srcConfig = readTextFromPath(this.getAttribute('src'));
+            logger.info('config set from src attribute', srcConfig);
+            loadedValues = jstoml.parse(srcConfig);
         }
+        // load config from inline
+        else if (this.innerHTML!=='')
+        {
+            this.code = this.innerHTML;
+            this.innerHTML = '';
+            logger.info('config set from inline', this.code);
+            loadedValues = jstoml.parse(this.code);
+        }
+        // load from default if still undefined
+        if (Object.keys(loadedValues).length === 0) {
+            logger.info('no config set, loading default', defaultConfig);
+            loadedValues = jstoml.parse(defaultConfig);
+        }
+        // eslint-disable-next-line
+        // @ts-ignore
+        this.values = loadedValues;
 
         appConfig.set(this.values);
         logger.info('config set:', this.values);
 
+        addInitializer(this.loadEnv);
+        addInitializer(this.loadPaths);
         this.loadRuntimes();
     }
 
@@ -57,6 +85,27 @@ export class PyConfig extends BaseEvalElement {
 
     close() {
         this.remove();
+    }
+
+    loadEnv = async () => {
+        const env = appConfig_.dependencies.packages;
+        logger.info("Loading env: ", env);
+        await runtimeSpec.installPackage(env);
+    }
+
+    loadPaths = async () => {
+        const paths = appConfig_.dependencies.paths;
+        logger.info("Paths to load: ", paths)
+        for (const singleFile of paths) {
+            logger.info(`  loading path: ${singleFile}`);
+            try {
+                await runtimeSpec.loadFromFile(singleFile);
+            } catch (e) {
+                //Should we still export full error contents to console?
+                handleFetchError(<Error>e, singleFile);
+            }
+        }
+        logger.info("All paths loaded");
     }
 
     loadRuntimes() {

@@ -8,7 +8,7 @@ describe('PyConfig', () => {
     beforeEach(() => {
         instance = new PyConfig();
         let runtime_config: RuntimeConfig = {src: "/demo/covfefe.js", name: "covfefe", lang: "covfefe"};
-        let app_config: AppConfig = {autoclose_loader: true, runtimes: [runtime_config]};
+        let app_config: AppConfig = { settings: {autoclose_loader: true}, runtimes: [runtime_config]};
         instance.values = app_config;
     });
 

@@ -84,4 +84,13 @@ function handleFetchError(e: Error, singleFile: string) {
     showError(errorContent);
 }
 
-export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError };
+function readTextFromPath(path: string) {
+    const request = new XMLHttpRequest();
+    request.open("GET", path, false);
+    request.send();
+    const returnValue = request.responseText;
+
+    return returnValue;
+}
+
+export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath };

@@ -34,6 +34,9 @@ export default {
     string({
       include: "./src/**/*.py",
     }),
+    string({
+      include: "./src/**/*.toml",
+    }),
     resolve({
       browser: true,
       dedupe: ["svelte"],

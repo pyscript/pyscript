@@ -51,6 +51,7 @@
     "@codemirror/state": "^0.19.9",
     "@codemirror/theme-one-dark": "^0.19.1",
     "@fortawesome/free-solid-svg-icons": "^6.0.0",
+    "@ltd/j-toml": "^1.35.2",
     "codemirror": "^5.65.3",
     "js-yaml": "^4.1.0",
     "sirv-cli": "^1.0.0",

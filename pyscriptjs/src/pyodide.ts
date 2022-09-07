@@ -8,12 +8,6 @@ import pyscript from './python/pyscript.py';
 
 const logger = getLogger('pyscript/pyodide');
 
-export const DEFAULT_RUNTIME_CONFIG: RuntimeConfig = {
-    src: 'https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js',
-    name: 'pyodide-default',
-    lang: 'python'
-};
-
 export class PyodideRuntime extends Runtime {
     src: string;
     name?: string;
@@ -22,9 +16,9 @@ export class PyodideRuntime extends Runtime {
     globals: any;
 
     constructor(
-        src = DEFAULT_RUNTIME_CONFIG.src,
-        name = DEFAULT_RUNTIME_CONFIG.name,
-        lang = DEFAULT_RUNTIME_CONFIG.lang,
+        src = 'https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js',
+        name = 'pyodide-default',
+        lang = 'python',
     ) {
         logger.info('Runtime config:', { name, lang, src });
         super();
