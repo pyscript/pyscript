@@ -227,7 +227,17 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
         }
         const handlerCode = el.getAttribute(pyAttribute);
         const event = pyAttributeToEvent.get(pyAttribute);
-        el.addEventListener(event, async () => {await runtime.run(handlerCode)});
+        
+        if (pyAttribute === 'pys-onClick' || pyAttribute === 'pys-onKeyDown'){
+            console.warn("Use of pys-onClick and pys-onKeyDown attributes is deprecated in favor of py-onClick() and py-onKeyDown(). pys-on* attributes will be deprecated in a future version of PyScript.")
+            const source = `
+            from pyodide.ffi import create_proxy
+            Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
+            `;
+            await runtime.run(source);
+        }
+        else{
+            el.addEventListener(event, async () => {await runtime.run(handlerCode)});
 
         // TODO: Should we actually map handlers in JS instead of Python?
         // el.onclick = (evt: any) => {
