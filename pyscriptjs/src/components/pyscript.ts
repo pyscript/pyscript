@@ -227,7 +227,7 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
         }
         const handlerCode = el.getAttribute(pyAttribute);
         const event = pyAttributeToEvent.get(pyAttribute);
-        
+
         if (pyAttribute === 'pys-onClick' || pyAttribute === 'pys-onKeyDown'){
             console.warn("Use of pys-onClick and pys-onKeyDown attributes is deprecated in favor of py-onClick() and py-onKeyDown(). pys-on* attributes will be deprecated in a future version of PyScript.")
             const source = `
