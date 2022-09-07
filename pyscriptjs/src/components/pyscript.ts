@@ -172,7 +172,7 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
         ["py-dragend", "dragend"],
         ["py-dragenter", "dragenter"],
         ["py-dragleave", "dragleave"],
-        ["pyon-dragover", "dragover"],
+        ["py-dragover", "dragover"],
         ["py-dragstart", "dragstart"],
         ["py-drop", "drop"],
         ["py-scroll", "scroll"],
