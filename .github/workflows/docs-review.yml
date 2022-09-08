@@ -57,7 +57,7 @@ jobs:
         -   name: Configure AWS credentials
             uses: aws-actions/configure-aws-credentials@v1.6.1
             with:
-                aws-region: ${{secrets.AWS_REGION}}
+                aws-region: ${{ secrets.AWS_REGION }}
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
 
         -   name: Copy redirect file
