@@ -25,3 +25,7 @@ The `docs` directory in the pyscript repository contains a
 [Sphinx](https://www.sphinx-doc.org/) documentation project. Sphinx is a system
 that takes plaintext files containing documentation written in Markdown, along with
 static files like templates and themes, to build the static end result.
+
+### Build
+
+To learn how to build the docs, head over the [CONTRIBUTING](../CONTRIBUTING.md) page.
