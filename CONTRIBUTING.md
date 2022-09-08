@@ -87,13 +87,15 @@ Use `conda activate $environment_name` to activate your environment.
 
 To add new information to the documentation make sure you conform with PyScript's code of conduct and with the general principles of Diataxis. Don't worry about reading too much on it, just do your best to keep your contributions on the correct axis.
 
-You need to write your documentation files using [Markedly Structured Text](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html), which is very similar to vanilla Markdown but with some addons to create the documentation infrastructure.
+Write your documentation files using [Markedly Structured Text](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html), which is very similar to vanilla Markdown but with some addons to create the documentation infrastructure.
 
-Once your changes are done you can initialize a server and check them on the following address: http:///127.0.0.1:8000, using the command:
+Once done, initialize a server to check your work:
 
 ```
 make livehtml
 ```
+
+Visible here: http:///127.0.0.1:8000
 
 ## Places to start
 
