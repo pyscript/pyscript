@@ -27,10 +27,8 @@ We can use the syntax `from js import ...` to import JavaScript objects directly
     # Import and use JS function and variable into Python
     from js import name, addTwoNumbers
 
-    #import the js browser's dev console so we can display our results
-    from js import console
-    console.log(f"Hello {name}")
-    console.log("Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2)))
+    print(f"Hello {name}")
+    print("Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2)))
 </py-script>
 ```
 
