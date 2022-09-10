@@ -1,26 +1,18 @@
 {
-    "project": {
-        "name": "pyscript",
-        "version": "0.1",
-        "author": "madhur",
-        "author_email": "madhurtandon23@gmail.com",
-        "type": "app",
-        "description": "default",
-        "license": "Apache"
-    },
-    "settings": {
-        "autoclose_loader": true
-    },
-    "dependencies": {
-        "packages": [],
-        "paths": []
-    },
+    "name": "pyscript",
+    "description": "default config",
+    "version": "0.1",
+    "type": "app",
+    "author_name": "madhur",
+    "author_email": "madhurtandon23@gmail.com",
+    "license": "Apache",
+    "autoclose_loader": true,
     "runtimes": [{
         "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
         "name": "pyodide-0.21.2",
         "lang": "python"
     }],
-    "plugins": {
-        "src": []
-    }
+    "packages": [],
+    "paths": [],
+    "plugins": []
 }

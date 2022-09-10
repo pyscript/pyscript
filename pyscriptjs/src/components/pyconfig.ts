@@ -87,13 +87,13 @@ export class PyConfig extends BaseEvalElement {
     }
 
     loadEnv = async () => {
-        const env = appConfig_.dependencies?.packages;
+        const env = appConfig_.packages;
         logger.info("Loading env: ", env);
         await runtimeSpec.installPackage(env);
     }
 
     loadPaths = async () => {
-        const paths = appConfig_.dependencies?.paths;
+        const paths = appConfig_.paths;
         logger.info("Paths to load: ", paths)
         for (const singleFile of paths) {
             logger.info(`  loading path: ${singleFile}`);

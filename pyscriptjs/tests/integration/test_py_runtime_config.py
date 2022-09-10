@@ -56,18 +56,14 @@ class TestRuntimeConfig(PyScriptTest):
             extra_head="""
             <py-config>
                 {
-                    "settings": {
-                        "autoclose_loader": true
-                    },
+                    "autoclose_loader": true,
                     "runtimes": [{
                         "src": "/pyodide/pyodide.js",
                         "name": "pyodide-0.20.0",
                         "lang": "python"
                     }],
-                    "dependencies": {
-                        "packages": [],
-                        "paths": []
-                    }
+                    "packages": [],
+                    "paths": []
                 }
             </py-config>
         """,

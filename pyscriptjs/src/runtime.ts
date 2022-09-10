@@ -17,41 +17,25 @@ const logger = getLogger('pyscript/runtime');
 
 export type RuntimeInterpreter = PyodideInterface | null;
 
-export type ProjectConfig = {
-    name: string;
-    version: string;
-    author: string;
-    author_email: string;
-    type: string;
+export type AppConfig = {
+    name?: string;
     description?: string;
-    license: string;
-};
-
-export type SettingsConfig = {
+    version?: string;
+    type?: string;
+    author_name?: string;
+    author_email?: string;
+    license?: string;
     autoclose_loader: boolean;
-};
-
-export type DependencyConfig = {
+    runtimes?: Array<RuntimeConfig>;
     packages?: Array<string>;
     paths?: Array<string>;
+    plugins?: Array<string>;
 };
 
 export type RuntimeConfig = {
     src: string;
     name?: string;
     lang?: string;
-};
-
-export type PluginConfig = {
-    src?: Array<string>;
-};
-
-export type AppConfig = {
-    project?: ProjectConfig;
-    settings: SettingsConfig;
-    dependencies?: DependencyConfig;
-    runtimes?: Array<RuntimeConfig>;
-    plugins?: PluginConfig;
 };
 
 let loader: PyLoader | undefined;
@@ -75,7 +59,7 @@ scriptsQueue.subscribe((value: PyScript[]) => {
 });
 
 let appConfig_: AppConfig = {
-    settings: {autoclose_loader: true,}
+    autoclose_loader: true
 };
 
 appConfig.subscribe((value: AppConfig) => {
@@ -191,7 +175,7 @@ export abstract class Runtime extends Object {
         // now we call all post initializers AFTER we actually executed all page scripts
         loader?.log('Running post initializers...');
 
-        if (appConfig_ && appConfig_.settings.autoclose_loader) {
+        if (appConfig_ && appConfig_.autoclose_loader) {
             loader?.close();
         }
 
