@@ -12,8 +12,8 @@
         "autoclose_loader": true
     },
     "dependencies": {
-        "packages": ["numpy"],
-        "paths": ["./utils.py"]
+        "packages": [],
+        "paths": []
     },
     "runtimes": [{
         "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
