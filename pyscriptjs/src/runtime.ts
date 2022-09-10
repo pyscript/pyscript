@@ -22,6 +22,7 @@ export type ProjectConfig = {
     version: string;
     author: string;
     author_email: string;
+    type: string;
     description?: string;
     license: string;
 };

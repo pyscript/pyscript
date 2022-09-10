@@ -1,0 +1,26 @@
+{
+    "project": {
+        "name": "covfefe",
+        "version": "0.1",
+        "author": "madhur",
+        "author_email": "madhurtandon23@gmail.com",
+        "type": "app",
+        "description": "default",
+        "license": "Apache"
+    },
+    "settings": {
+        "autoclose_loader": true
+    },
+    "dependencies": {
+        "packages": [],
+        "paths": []
+    },
+    "runtimes": [{
+        "src": "/demo/covfefe.js",
+        "name": "covfefe",
+        "lang": "covfefe"
+    }],
+    "plugins": {
+        "src": []
+    }
+}

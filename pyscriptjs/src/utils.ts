@@ -93,4 +93,8 @@ function readTextFromPath(path: string) {
     return returnValue;
 }
 
-export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath };
+function inJest(): boolean {
+    return typeof process === 'object' && process.env.JEST_WORKER_ID !== undefined;
+}
+
+export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest };

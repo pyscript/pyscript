@@ -35,7 +35,7 @@ export default {
       include: "./src/**/*.py",
     }),
     string({
-      include: "./src/**/*.toml",
+      include: "./src/**/*.json",
     }),
     resolve({
       browser: true,

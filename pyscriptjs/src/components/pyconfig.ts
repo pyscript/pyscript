@@ -1,10 +1,9 @@
-import jstoml from '@ltd/j-toml';
 import { BaseEvalElement } from './base';
 import { appConfig, addInitializer, runtimeLoaded } from '../stores';
 import type { AppConfig, Runtime } from '../runtime';
 import { PyodideRuntime } from '../pyodide';
 import { getLogger } from '../logger';
-import { readTextFromPath, handleFetchError } from '../utils'
+import { readTextFromPath, handleFetchError, inJest } from '../utils'
 
 // Premise used to connect to the first available runtime (can be pyodide or others)
 let runtimeSpec: Runtime;
@@ -20,7 +19,7 @@ appConfig.subscribe(value => {
 const logger = getLogger('py-config');
 // eslint-disable-next-line
 // @ts-ignore
-import defaultConfig from '../manifest.toml'
+import defaultConfig from '../pyscript.json';
 
 /**
  * Configures general metadata about the PyScript application such
@@ -50,7 +49,7 @@ export class PyConfig extends BaseEvalElement {
         {
             const srcConfig = readTextFromPath(this.getAttribute('src'));
             logger.info('config set from src attribute', srcConfig);
-            loadedValues = jstoml.parse(srcConfig);
+            loadedValues = JSON.parse(srcConfig);
         }
         // load config from inline
         else if (this.innerHTML!=='')
@@ -58,12 +57,12 @@ export class PyConfig extends BaseEvalElement {
             this.code = this.innerHTML;
             this.innerHTML = '';
             logger.info('config set from inline', this.code);
-            loadedValues = jstoml.parse(this.code);
+            loadedValues = JSON.parse(this.code);
         }
         // load from default if still undefined
         if (Object.keys(loadedValues).length === 0) {
             logger.info('no config set, loading default', defaultConfig);
-            loadedValues = jstoml.parse(defaultConfig);
+            loadedValues = inJest() ? defaultConfig : JSON.parse(defaultConfig);
         }
         // eslint-disable-next-line
         // @ts-ignore
