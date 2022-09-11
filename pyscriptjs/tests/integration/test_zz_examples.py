@@ -105,7 +105,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*?class=\\"bk\\".*?>')
 
-    @pytest.mark.xfail("Reason: Flaky test(#759)")
+    @pytest.mark.xfail(reason="Flaky test #759")
     def test_d3(self):
         # XXX improve this test
         self.goto("examples/d3.html")
