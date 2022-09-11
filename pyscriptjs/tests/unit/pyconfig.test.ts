@@ -8,6 +8,15 @@ customElements.define('py-config', PyConfig);
 
 describe('PyConfig', () => {
     let instance: PyConfig;
+
+    const xhrMockClass = () => ({
+        open            : jest.fn(),
+        send            : jest.fn(),
+        responseText    : JSON.stringify(covfefeConfig)
+    });
+    // @ts-ignore
+    window.XMLHttpRequest = jest.fn().mockImplementation(xhrMockClass)
+
     beforeEach(() => {
         instance = new PyConfig();
     });
@@ -38,18 +47,21 @@ describe('PyConfig', () => {
     });
 
     it('should load the config from src attribute', ()=> {
-        const xhrMockClass = () => ({
-            open            : jest.fn(),
-            send            : jest.fn(),
-            responseText    : JSON.stringify(covfefeConfig)
-        });
-        // @ts-ignore
-        window.XMLHttpRequest = jest.fn().mockImplementation(xhrMockClass)
         instance.setAttribute("src", "/covfefe.json");
         instance.connectedCallback();
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe("covfefe");
         // version wasn't present in `config from src` but is still set due to merging with default
         expect(instance.values.version).toBe("0.1");
+    });
+
+    it('should load the config from both inline and src', ()=> {
+        instance.innerHTML = JSON.stringify({"version": "0.2a"});
+        instance.setAttribute("src", "/covfefe.json");
+        instance.connectedCallback();
+        // @ts-ignore
+        expect(instance.values.runtimes[0].lang).toBe("covfefe");
+        // version wasn't present in `config from src` but is still set due to merging with default and inline
+        expect(instance.values.version).toBe("0.2a");
     });
 });
