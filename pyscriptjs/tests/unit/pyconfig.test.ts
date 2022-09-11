@@ -33,6 +33,7 @@ describe('PyConfig', () => {
         instance.connectedCallback();
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe("covfefe");
+        // version wasn't present in `inline config` but is still set due to merging with default
         expect(instance.values.version).toBe("0.1");
     });
 
@@ -48,6 +49,7 @@ describe('PyConfig', () => {
         instance.connectedCallback();
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe("covfefe");
+        // version wasn't present in `config from src` but is still set due to merging with default
         expect(instance.values.version).toBe("0.1");
     });
 });
