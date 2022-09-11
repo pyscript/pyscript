@@ -53,6 +53,9 @@ export class PyConfig extends BaseEvalElement {
             this.code = this.innerHTML;
             this.innerHTML = '';
             inlineConfig = JSON.parse(this.code);
+            // first make config from src whole if it is partial
+            srcConfig = mergeConfig(srcConfig, inJest() ? defaultConfig : JSON.parse(defaultConfig));
+            // then merge inline config and config from src
             loadedValues = mergeConfig(inlineConfig, srcConfig);
             logger.info('config set from src attribute and inline both, merging', JSON.stringify(loadedValues));
         }
@@ -61,8 +64,8 @@ export class PyConfig extends BaseEvalElement {
         {
             const srcText = readTextFromPath(this.getAttribute('src'));
             srcConfig = JSON.parse(srcText);
-            logger.info('config set from src attribute', srcText);
-            loadedValues = srcConfig;
+            logger.info('config set from src attribute, merging with default', srcText);
+            loadedValues = mergeConfig(srcConfig, inJest() ? defaultConfig : JSON.parse(defaultConfig));
         }
         // load config from inline
         else if (this.innerHTML!=='')

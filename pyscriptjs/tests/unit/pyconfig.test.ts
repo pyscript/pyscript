@@ -33,6 +33,7 @@ describe('PyConfig', () => {
         instance.connectedCallback();
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe("covfefe");
+        expect(instance.values.version).toBe("0.1");
     });
 
     it('should load the config from src attribute', ()=> {
@@ -47,5 +48,6 @@ describe('PyConfig', () => {
         instance.connectedCallback();
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe("covfefe");
+        expect(instance.values.version).toBe("0.1");
     });
 });
