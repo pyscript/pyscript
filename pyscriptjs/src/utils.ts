@@ -108,10 +108,10 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
     const author_email = inlineConfig.author_email || externalConfig.author_email;
     const license = inlineConfig.license || externalConfig.license;
     const autoclose_loader = (typeof inlineConfig.autoclose_loader !== "undefined") ? inlineConfig.autoclose_loader : externalConfig.autoclose_loader;
-    const runtimes = (typeof inlineConfig.runtimes !== "undefined") ? inlineConfig.runtimes : externalConfig.runtimes
-    const packages = (typeof inlineConfig.packages !== "undefined") ? inlineConfig.packages : externalConfig.packages
-    const paths = (typeof inlineConfig.paths !== "undefined") ? inlineConfig.paths : externalConfig.paths
-    const plugins = (typeof inlineConfig.plugins !== "undefined") ? inlineConfig.plugins : externalConfig.plugins
+    const runtimes = inlineConfig.runtimes || externalConfig.runtimes;
+    const packages = inlineConfig.packages || externalConfig.packages;
+    const paths = inlineConfig.paths || externalConfig.paths;
+    const plugins = inlineConfig.plugins || externalConfig.plugins;
     const merged: AppConfig = {
         name,
         description,
