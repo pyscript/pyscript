@@ -70,8 +70,8 @@ export class PyConfig extends BaseEvalElement {
             this.code = this.innerHTML;
             this.innerHTML = '';
             inlineConfig = JSON.parse(this.code);
-            logger.info('config set from inline', this.code);
-            loadedValues = inlineConfig;
+            logger.info('config set from inline, merging with default', this.code);
+            loadedValues = mergeConfig(inlineConfig, inJest() ? defaultConfig : JSON.parse(defaultConfig));
         }
         // load from default if still undefined
         if (Object.keys(loadedValues).length === 0) {
