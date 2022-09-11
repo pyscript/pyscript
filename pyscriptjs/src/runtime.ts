@@ -168,11 +168,12 @@ export abstract class Runtime extends Object {
         // now we call all post initializers AFTER we actually executed all page scripts
         loader?.log('Running post initializers...');
 
+        // Finally create the custom elements for pyscript such as pybutton
+        createCustomElements();
+
         if (appConfig_ && appConfig_.autoclose_loader) {
             loader?.close();
         }
-
-        createCustomElements();
 
         for (const initializer of postInitializers_) {
             await initializer();
