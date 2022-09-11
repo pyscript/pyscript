@@ -25,7 +25,7 @@ export type AppConfig = {
     author_name?: string;
     author_email?: string;
     license?: string;
-    autoclose_loader: boolean;
+    autoclose_loader?: boolean;
     runtimes?: Array<RuntimeConfig>;
     packages?: Array<string>;
     paths?: Array<string>;

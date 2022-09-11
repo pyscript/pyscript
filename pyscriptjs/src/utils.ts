@@ -1,3 +1,5 @@
+import type { AppConfig } from "./runtime";
+
 function addClasses(element: HTMLElement, classes: Array<string>) {
     for (const entry of classes) {
         element.classList.add(entry);
@@ -97,4 +99,35 @@ function inJest(): boolean {
     return typeof process === 'object' && process.env.JEST_WORKER_ID !== undefined;
 }
 
-export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest };
+function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppConfig {
+    const name = inlineConfig.name || externalConfig.name;
+    const description = inlineConfig.description || externalConfig.description;
+    const version = inlineConfig.version || externalConfig.version;
+    const type = inlineConfig.type || externalConfig.type;
+    const author_name = inlineConfig.author_name || externalConfig.author_name;
+    const author_email = inlineConfig.author_email || externalConfig.author_email;
+    const license = inlineConfig.license || externalConfig.license;
+    const autoclose_loader = (typeof inlineConfig.autoclose_loader !== "undefined") ? inlineConfig.autoclose_loader : externalConfig.autoclose_loader;
+    const runtimes = (typeof inlineConfig.runtimes !== "undefined") ? [...inlineConfig.runtimes, ...externalConfig.runtimes] : externalConfig.runtimes
+    const packages = (typeof inlineConfig.packages !== "undefined") ? [...inlineConfig.packages, ...externalConfig.packages] : externalConfig.packages
+    const paths = (typeof inlineConfig.paths !== "undefined") ? [...inlineConfig.paths, ...externalConfig.paths] : externalConfig.paths
+    const plugins = (typeof inlineConfig.plugins !== "undefined") ? [...inlineConfig.plugins, ...externalConfig.plugins] : externalConfig.plugins
+    const merged: AppConfig = {
+        name,
+        description,
+        version,
+        type,
+        author_name,
+        author_email,
+        license,
+        autoclose_loader,
+        runtimes,
+        packages,
+        paths,
+        plugins
+    };
+
+    return merged;
+}
+
+export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, mergeConfig };

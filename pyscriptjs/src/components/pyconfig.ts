@@ -3,7 +3,7 @@ import { appConfig, addInitializer, runtimeLoaded } from '../stores';
 import type { AppConfig, Runtime } from '../runtime';
 import { PyodideRuntime } from '../pyodide';
 import { getLogger } from '../logger';
-import { readTextFromPath, handleFetchError, inJest } from '../utils'
+import { readTextFromPath, handleFetchError, inJest, mergeConfig } from '../utils'
 
 // Premise used to connect to the first available runtime (can be pyodide or others)
 let runtimeSpec: Runtime;
@@ -43,21 +43,35 @@ export class PyConfig extends BaseEvalElement {
 
     connectedCallback() {
         let loadedValues: object = {};
+        let srcConfig: object = {};
+        let inlineConfig: object = {};
 
-        // load config from source
-        if (this.hasAttribute('src'))
+        // load config from src and inline
+        if (this.hasAttribute('src') && this.innerHTML!=='')
         {
-            const srcConfig = readTextFromPath(this.getAttribute('src'));
-            logger.info('config set from src attribute', srcConfig);
-            loadedValues = JSON.parse(srcConfig);
+            srcConfig = JSON.parse(readTextFromPath(this.getAttribute('src')));
+            this.code = this.innerHTML;
+            this.innerHTML = '';
+            inlineConfig = JSON.parse(this.code);
+            loadedValues = mergeConfig(inlineConfig, srcConfig);
+            logger.info('config set from src attribute and inline both, merging', JSON.stringify(loadedValues));
+        }
+        // load config from src only
+        else if (this.hasAttribute('src'))
+        {
+            const srcText = readTextFromPath(this.getAttribute('src'));
+            srcConfig = JSON.parse(srcText);
+            logger.info('config set from src attribute', srcText);
+            loadedValues = srcConfig;
         }
         // load config from inline
         else if (this.innerHTML!=='')
         {
             this.code = this.innerHTML;
             this.innerHTML = '';
+            inlineConfig = JSON.parse(this.code);
             logger.info('config set from inline', this.code);
-            loadedValues = JSON.parse(this.code);
+            loadedValues = inlineConfig;
         }
         // load from default if still undefined
         if (Object.keys(loadedValues).length === 0) {
