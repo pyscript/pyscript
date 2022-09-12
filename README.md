@@ -18,8 +18,8 @@ PyScript is a meta project that aims to combine multiple open technologies into 
 To try PyScript, import the appropriate pyscript files into the ```<head>``` tag of your html page with:
 ```html
 <head>
-<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+<script defer src="https://pyscript.net/latest/pyscript.js"></script>
 </head>
 ```
 You can then use PyScript components in your html page. PyScript currently implements the following elements:
