@@ -130,4 +130,61 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
     return merged;
 }
 
-export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, mergeConfig };
+function validateConfig(configText: string) {
+    let config: object;
+    try {
+        config = JSON.parse(configText);
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+
+    const finalConfig: AppConfig = {}
+    const allKeys = {
+        "string": ["name", "description", "version", "type", "author_name", "author_email", "license"],
+        "boolean": ["autoclose_loader"],
+        "array": ["runtimes", "packages", "paths", "plugins"]
+    };
+
+    for (const keyType in allKeys)
+    {
+        const keys = allKeys[keyType];
+        keys.forEach(function(item: string){
+            if (validateParamInConfig(item, keyType, config))
+            {
+                if (item === "runtimes")
+                {
+                    finalConfig[item] = [];
+                    const runtimes = config[item];
+                    runtimes.forEach(function(eachRuntime: object){
+                        const runtimeConfig: object = {};
+                        for (const eachRuntimeParam in eachRuntime)
+                        {
+                            if (validateParamInConfig(eachRuntimeParam, "string", eachRuntime))
+                            {
+                                runtimeConfig[eachRuntimeParam] = eachRuntime[eachRuntimeParam];
+                            }
+                        }
+                        finalConfig[item].push(runtimeConfig);
+                    });
+                }
+                else
+                {
+                    finalConfig[item] = config[item];
+                }
+            }
+        });
+    }
+
+    return finalConfig;
+}
+
+function validateParamInConfig(paramName: string, paramType: string, config: object): boolean {
+    if (paramName in config)
+    {
+        return paramType === "array" ? Array.isArray(config[paramName]) : typeof config[paramName] === paramType;
+    }
+    return false;
+}
+
+export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, mergeConfig, validateConfig };

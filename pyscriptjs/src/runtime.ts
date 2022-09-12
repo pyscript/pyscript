@@ -33,7 +33,7 @@ export type AppConfig = {
 };
 
 export type RuntimeConfig = {
-    src: string;
+    src?: string;
     name?: string;
     lang?: string;
 };

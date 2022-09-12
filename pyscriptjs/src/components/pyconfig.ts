@@ -3,7 +3,7 @@ import { appConfig, addInitializer, runtimeLoaded } from '../stores';
 import type { AppConfig, Runtime } from '../runtime';
 import { PyodideRuntime } from '../pyodide';
 import { getLogger } from '../logger';
-import { readTextFromPath, handleFetchError, inJest, mergeConfig } from '../utils'
+import { readTextFromPath, handleFetchError, inJest, mergeConfig, validateConfig } from '../utils'
 
 // Premise used to connect to the first available runtime (can be pyodide or others)
 let runtimeSpec: Runtime;
@@ -49,10 +49,10 @@ export class PyConfig extends BaseEvalElement {
         // load config from src and inline
         if (this.hasAttribute('src') && this.innerHTML!=='')
         {
-            srcConfig = JSON.parse(readTextFromPath(this.getAttribute('src')));
+            srcConfig = validateConfig(readTextFromPath(this.getAttribute('src')));
             this.code = this.innerHTML;
             this.innerHTML = '';
-            inlineConfig = JSON.parse(this.code);
+            inlineConfig = validateConfig(this.code);
             // first make config from src whole if it is partial
             srcConfig = mergeConfig(srcConfig, inJest() ? defaultConfig : JSON.parse(defaultConfig));
             // then merge inline config and config from src
@@ -63,7 +63,7 @@ export class PyConfig extends BaseEvalElement {
         else if (this.hasAttribute('src'))
         {
             const srcText = readTextFromPath(this.getAttribute('src'));
-            srcConfig = JSON.parse(srcText);
+            srcConfig = validateConfig(srcText);
             logger.info('config set from src attribute, merging with default', srcText);
             loadedValues = mergeConfig(srcConfig, inJest() ? defaultConfig : JSON.parse(defaultConfig));
         }
@@ -72,7 +72,7 @@ export class PyConfig extends BaseEvalElement {
         {
             this.code = this.innerHTML;
             this.innerHTML = '';
-            inlineConfig = JSON.parse(this.code);
+            inlineConfig = validateConfig(this.code);
             logger.info('config set from inline, merging with default', this.code);
             loadedValues = mergeConfig(inlineConfig, inJest() ? defaultConfig : JSON.parse(defaultConfig));
         }
