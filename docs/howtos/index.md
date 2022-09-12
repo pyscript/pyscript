@@ -14,5 +14,5 @@ maxdepth: 2
 glob:
 caption: 'Contents:'
 ---
-*
+passing-objects
 ```
