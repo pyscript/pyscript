@@ -1,11 +1,16 @@
-import { pyodideLoaded } from '../stores';
+import { runtimeLoaded } from '../stores';
 import { guidGenerator, addClasses, removeClasses } from '../utils';
-import type { PyodideInterface } from '../pyodide';
-// Premise used to connect to the first available pyodide interpreter
-let runtime: PyodideInterface;
+
+import type { Runtime } from '../runtime';
+import { getLogger } from '../logger';
+
+const logger = getLogger('pyscript/base');
+
+// Global `Runtime` that implements the generic runtimes API
+let runtime: Runtime;
 let Element;
 
-pyodideLoaded.subscribe(value => {
+runtimeLoaded.subscribe(value => {
     runtime = value;
 });
 
@@ -47,7 +52,7 @@ export class BaseEvalElement extends HTMLElement {
                 this.appendOutput = false;
                 break;
             default:
-                console.log(`${this.id}: custom output-modes are currently not implemented`);
+                logger.warn(`${this.id}: custom output-modes are currently not implemented`);
         }
     }
 
@@ -77,10 +82,10 @@ export class BaseEvalElement extends HTMLElement {
         return this.code;
     }
 
-    protected async _register_esm(pyodide: PyodideInterface): Promise<void> {
+    protected async _register_esm(runtime: Runtime): Promise<void> {
         const imports: { [key: string]: unknown } = {};
         const nodes = document.querySelectorAll("script[type='importmap']");
-        let importmaps: Array<any>;
+        const importmaps: Array<any> = [];
         nodes.forEach( node =>
             {
                 let importmap;
@@ -102,16 +107,15 @@ export class BaseEvalElement extends HTMLElement {
                     // "can't read 'name' of undefined" at import time
                     imports[name] = { ...(await import(url)) };
                 } catch {
-                    console.error(`failed to fetch '${url}' for '${name}'`);
+                    logger.error(`failed to fetch '${url}' for '${name}'`);
                 }
             }
         }
 
-        pyodide.registerJsModule('esm', imports);
+        runtime.registerJsModule('esm', imports);
     }
 
     async evaluate(): Promise<void> {
-        console.log('evaluate');
         this.preEvaluate();
 
         let source: string;
@@ -119,20 +123,12 @@ export class BaseEvalElement extends HTMLElement {
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
-            const is_async = source.includes('asyncio')
 
             this._register_esm(runtime);
-            if (is_async) {
-                <string>await runtime.runPythonAsync(
-                    `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
-                );
-                output = <string>await runtime.runPythonAsync(source);
-            } else {
-                output = <string>runtime.runPython(
-                    `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
-                );
-                output = <string>runtime.runPython(source);
-            }
+            <string>await runtime.run(
+                `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
+            );
+            output = <string>await runtime.run(source);
 
             if (output !== undefined) {
                 if (Element === undefined) {
@@ -145,8 +141,7 @@ export class BaseEvalElement extends HTMLElement {
                 this.outputElement.style.display = 'block';
             }
 
-            is_async ? await runtime.runPythonAsync(`output_manager.revert()`)
-                     : await runtime.runPython(`output_manager.revert()`);
+            await runtime.run(`output_manager.revert()`);
 
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
@@ -165,39 +160,47 @@ export class BaseEvalElement extends HTMLElement {
 
             this.postEvaluate();
         } catch (err) {
-            if (Element === undefined) {
-                Element = <Element>runtime.globals.get('Element');
+            logger.error(err);
+            try{
+                if (Element === undefined) {
+                    Element = <Element>runtime.globals.get('Element');
+                }
+                const out = Element(this.errorElement.id);
+
+                addClasses(this.errorElement, ['bg-red-200', 'p-2']);
+                out.write.callKwargs(err.toString(), { append: this.appendOutput });
+                if (this.errorElement.children.length === 0){
+                    this.errorElement.setAttribute('error', '');
+                }else{
+                    this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
+                }
+
+                this.errorElement.hidden = false;
+                this.errorElement.style.display = 'block';
+                this.errorElement.style.visibility = 'visible';
+            } catch (internalErr){
+                logger.error("Unnable to write error to error element in page.")
             }
-            const out = Element(this.errorElement.id);
 
-            addClasses(this.errorElement, ['bg-red-200', 'p-2']);
-            out.write.callKwargs(err, { append: this.appendOutput });
-
-            this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
-            this.errorElement.hidden = false;
-            this.errorElement.style.display = 'block';
-            this.errorElement.style.visibility = 'visible';
         }
     } // end evaluate
 
     async eval(source: string): Promise<void> {
-        const pyodide = runtime;
-
         try {
-            const output = await pyodide.runPythonAsync(source);
+            const output = await runtime.run(source);
             if (output !== undefined) {
-                console.log(output);
+                logger.info(output);
             }
         } catch (err) {
-            console.log(err);
+            logger.error(err);
         }
     } // end eval
 
-    runAfterRuntimeInitialized(callback: () => Promise<void>){
-        pyodideLoaded.subscribe(value => {
-            if ('runPythonAsync' in value) {
-                setTimeout(async () => {
-                    await callback();
+    runAfterRuntimeInitialized(callback: () => Promise<void>) {
+        runtimeLoaded.subscribe(value => {
+            if ('run' in value) {
+                setTimeout(() => {
+                    void callback();
                 }, 100);
             }
         });
@@ -230,44 +233,44 @@ function createWidget(name: string, code: string, klass: string) {
             //       ideally we can just wait for it to load and then run. To do
             //       so we need to replace using the promise and actually using
             //       the interpreter after it loads completely
-            // setTimeout(async () => {
-            //     await this.eval(this.code);
-            //     this.proxy = this.proxyClass(this);
-            //     console.log('proxy', this.proxy);
-            //     this.proxy.connect();
-            //     this.registerWidget();
+            // setTimeout(() => {
+            //     void (async () => {
+            //         await this.eval(this.code);
+            //         this.proxy = this.proxyClass(this);
+            //         console.log('proxy', this.proxy);
+            //         this.proxy.connect();
+            //         this.registerWidget();
+            //     })();
             // }, 2000);
-            pyodideLoaded.subscribe(value => {
-                console.log('RUNTIME READY', value);
-                if ('runPythonAsync' in value) {
+            runtimeLoaded.subscribe(value => {
+                if ('run' in value) {
                     runtime = value;
-                    setTimeout(async () => {
-                        await this.eval(this.code);
-                        this.proxy = this.proxyClass(this);
-                        console.log('proxy', this.proxy);
-                        this.proxy.connect();
-                        this.registerWidget();
+                    setTimeout(() => {
+                        void (async () => {
+                            await this.eval(this.code);
+                            this.proxy = this.proxyClass(this);
+                            this.proxy.connect();
+                            this.registerWidget();
+                        })();
                     }, 1000);
                 }
             });
         }
 
         registerWidget() {
-            const pyodide = runtime;
-            console.log('new widget registered:', this.name);
-            pyodide.globals.set(this.id, this.proxy);
+            logger.info('new widget registered:', this.name);
+            runtime.globals.set(this.id, this.proxy);
         }
 
         async eval(source: string): Promise<void> {
-            const pyodide = runtime;
             try {
-                const output = await pyodide.runPythonAsync(source);
-                this.proxyClass = pyodide.globals.get(this.klass);
+                const output = await runtime.run(source);
+                this.proxyClass = runtime.globals.get(this.klass);
                 if (output !== undefined) {
-                    console.log(output);
+                    logger.info('CustomWidget.eval: ', output);
                 }
             } catch (err) {
-                console.log(err);
+                logger.error('CustomWidget.eval: ', err);
             }
         }
     }
@@ -316,7 +319,7 @@ export class PyWidget extends HTMLElement {
         const mainDiv = document.createElement('div');
         mainDiv.id = this.id + '-main';
         this.appendChild(mainDiv);
-        console.log('reading source');
+        logger.debug('PyWidget: reading source', this.source);
         this.code = await this.getSourceFromFile(this.source);
         createWidget(this.name, this.code, this.klass);
     }
@@ -355,14 +358,13 @@ export class PyWidget extends HTMLElement {
     }
 
     async eval(source: string): Promise<void> {
-        const pyodide = runtime;
         try {
-            const output = await pyodide.runPythonAsync(source);
+            const output = await runtime.run(source);
             if (output !== undefined) {
-                console.log(output);
+                logger.info('PyWidget.eval: ', output);
             }
         } catch (err) {
-            console.log(err);
+            logger.error('PyWidget.eval: ', err);
         }
     }
 }

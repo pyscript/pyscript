@@ -1,9 +1,9 @@
 import { BaseEvalElement } from './base';
+import { getLogger } from '../logger';
+
+const logger = getLogger('py-loader');
 
 export class PyLoader extends BaseEvalElement {
-    shadow: ShadowRoot;
-    wrapper: HTMLElement;
-    theme: string;
     widths: Array<string>;
     label: string;
     mount_name: string;
@@ -29,12 +29,15 @@ export class PyLoader extends BaseEvalElement {
     }
 
     log(msg: string) {
+        // loader messages are showed both in the HTML and in the console
+        logger.info(msg);
         const newLog = document.createElement('p');
         newLog.innerText = msg;
         this.details.appendChild(newLog);
     }
 
     close() {
+        logger.info('Closing');
         this.remove();
     }
 }

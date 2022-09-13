@@ -19,7 +19,6 @@ To try it in your browser, copy the code below into an online HTML editor like W
 
 ```{literalinclude} ../_static/examples/what-is-pyscript.html
 ---
-linenos:
 ```
 
 :::

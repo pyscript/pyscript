@@ -1,16 +1,17 @@
 import * as jsyaml from 'js-yaml';
 
-import { pyodideLoaded, addInitializer } from '../stores';
-import { loadPackage, loadFromFile } from '../interpreter';
+import { runtimeLoaded, addInitializer } from '../stores';
 import { handleFetchError } from '../utils';
-import type { PyodideInterface } from '../pyodide';
+import type { Runtime } from '../runtime';
+import { getLogger } from '../logger';
 
-// Premise used to connect to the first available pyodide interpreter
-let runtime: PyodideInterface;
+const logger = getLogger('py-env');
 
-pyodideLoaded.subscribe(value => {
+// Premise used to connect to the first available runtime (can be pyodide or others)
+let runtime: Runtime;
+
+runtimeLoaded.subscribe(value => {
     runtime = value;
-    console.log('RUNTIME READY');
 });
 
 export class PyEnv extends HTMLElement {
@@ -18,7 +19,7 @@ export class PyEnv extends HTMLElement {
     wrapper: HTMLElement;
     code: string;
     environment: unknown;
-    runtime: PyodideInterface;
+    runtime: Runtime;
     env: string[];
     paths: string[];
 
@@ -56,25 +57,25 @@ export class PyEnv extends HTMLElement {
         this.paths = paths;
 
         async function loadEnv() {
-            await loadPackage(env, runtime);
-            console.log('environment loaded');
+            logger.info("Loading env: ", env);
+            await runtime.installPackage(env);
         }
 
         async function loadPaths() {
+            logger.info("Paths to load: ", paths)
             for (const singleFile of paths) {
-                console.log(`loading ${singleFile}`);
+                logger.info(`  loading path: ${singleFile}`);
                 try {
-                    await loadFromFile(singleFile, runtime);
+                    await runtime.loadFromFile(singleFile);
                 } catch (e) {
                     //Should we still export full error contents to console?
                     handleFetchError(<Error>e, singleFile);
                 }
             }
-            console.log('paths loaded');
+            logger.info("All paths loaded");
         }
 
         addInitializer(loadEnv);
         addInitializer(loadPaths);
-        console.log('environment loading...', this.env);
     }
 }

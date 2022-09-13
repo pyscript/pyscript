@@ -3,19 +3,23 @@ import {
     addPostInitializer,
     addToScriptsQueue,
     loadedEnvironments,
-    pyodideLoaded,
+    runtimeLoaded,
     type Environment,
 } from '../stores';
+
 import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
-import type { PyodideInterface } from '../pyodide';
+import type { Runtime } from '../runtime';
+import { getLogger } from '../logger';
 
-// Premise used to connect to the first available pyodide interpreter
-let pyodideReadyPromise: PyodideInterface;
+const logger = getLogger('py-script');
+
+// Premise used to connect to the first available runtime (can be pyodide or others)
+let runtime: Runtime;
 let environments: Record<Environment['id'], Environment> = {};
 
-pyodideLoaded.subscribe(value => {
-    pyodideReadyPromise = value;
+runtimeLoaded.subscribe(value => {
+    runtime = value;
 });
 loadedEnvironments.subscribe(value => {
     environments = value;
@@ -71,14 +75,12 @@ export class PyScript extends BaseEvalElement {
         this.appendChild(mainDiv);
         addToScriptsQueue(this);
 
-        console.log('connected');
-
         if (this.hasAttribute('src')) {
             this.source = this.getAttribute('src');
         }
     }
 
-    protected async _register_esm(pyodide: PyodideInterface): Promise<void> {
+    protected async _register_esm(runtime: Runtime): Promise<void> {
         for (const node of document.querySelectorAll("script[type='importmap']")) {
             const importmap = (() => {
                 try {
@@ -99,11 +101,11 @@ export class PyScript extends BaseEvalElement {
                     // "can't read 'name' of undefined" at import time
                     exports = { ...(await import(url)) };
                 } catch {
-                    console.warn(`failed to fetch '${url}' for '${name}'`);
+                    logger.warn(`failed to fetch '${url}' for '${name}'`);
                     continue;
                 }
 
-                pyodide.registerJsModule(name, exports);
+                runtime.registerJsModule(name, exports);
             }
         }
     }
@@ -170,7 +172,7 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
         ["py-dragend", "dragend"],
         ["py-dragenter", "dragenter"],
         ["py-dragleave", "dragleave"],
-        ["pyon-dragover", "dragover"],
+        ["py-dragover", "dragover"],
         ["py-dragstart", "dragstart"],
         ["py-drop", "drop"],
         ["py-scroll", "scroll"],
@@ -208,17 +210,16 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
         ["py-toggle", "toggle"],
         ]);
 
-/** Initialize all elements with py-on* handlers attributes  */
+/** Initialize all elements with py-* handlers attributes  */
 async function initHandlers() {
-    console.log('Collecting nodes...');
-    const pyodide = pyodideReadyPromise;
+    logger.debug('Initializing py-* event handlers...');
     for (const pyAttribute of pyAttributeToEvent.keys()) {
-        await createElementsWithEventListeners(pyodide, pyAttribute);
+        await createElementsWithEventListeners(runtime, pyAttribute);
     }
 }
 
 /** Initializes an element with the given py-on* attribute and its handler */
-async function createElementsWithEventListeners(pyodide: PyodideInterface, pyAttribute: string): Promise<void> {
+async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: string): Promise<void> {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
     for (const el of matches) {
         if (el.id.length === 0) {
@@ -227,10 +228,10 @@ async function createElementsWithEventListeners(pyodide: PyodideInterface, pyAtt
         const handlerCode = el.getAttribute(pyAttribute);
         const event = pyAttributeToEvent.get(pyAttribute);
         const source = `
-        from pyodide import create_proxy
+        from pyodide.ffi import create_proxy
         Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
         `;
-        await pyodide.runPythonAsync(source);
+        await runtime.run(source);
 
         // TODO: Should we actually map handlers in JS instead of Python?
         // el.onclick = (evt: any) => {
@@ -251,16 +252,15 @@ async function createElementsWithEventListeners(pyodide: PyodideInterface, pyAtt
 
 /** Mount all elements with attribute py-mount into the Python namespace */
 async function mountElements() {
-    console.log('Collecting nodes to be mounted into python namespace...');
-    const pyodide = pyodideReadyPromise;
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
+    logger.info(`py-mount: found ${matches.length} elements`);
 
     let source = '';
     for (const el of matches) {
         const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
         source += `\n${mountName} = Element("${el.id}")`;
     }
-    await pyodide.runPythonAsync(source);
+    await runtime.run(source);
 }
 addInitializer(mountElements);
 addPostInitializer(initHandlers);

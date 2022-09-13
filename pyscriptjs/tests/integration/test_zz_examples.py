@@ -74,11 +74,22 @@ class TestExamples(PyScriptTest):
             assert False, "Espresso time not found :("
 
     def test_altair(self):
-        # XXX improve this test
-        self.goto("../examples/altair.html")
+        self.goto("examples/altair.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Altair"
         wait_for_render(self.page, "*", '<canvas.*?class=\\"marks\\".*?>')
+        save_as_png_link = self.page.locator("text=Save as PNG")
+        see_source_link = self.page.locator("text=View Source")
+
+        # These shouldn't be visible since we didn't click the menu
+        assert not save_as_png_link.is_visible()
+        assert not see_source_link.is_visible()
+
+        self.page.locator("summary").click()
+
+        # Let's confirm that the links are visible now after clicking the menu
+        assert save_as_png_link.is_visible()
+        assert see_source_link.is_visible()
 
     def test_bokeh(self):
         # XXX improve this test
@@ -94,6 +105,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*?class=\\"bk\\".*?>')
 
+    @pytest.mark.xfail(reason="Flaky test #759")
     def test_d3(self):
         # XXX improve this test
         self.goto("../examples/d3.html")
@@ -150,7 +162,6 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
-    @pytest.mark.xfail(reason="JsError: issue #677")
     def test_panel_stream(self):
         # XXX improve this test
         self.goto("../examples/panel_stream.html")
@@ -159,27 +170,69 @@ class TestExamples(PyScriptTest):
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
     def test_repl(self):
-        # XXX improve this test
-        self.goto("../examples/repl.html")
+        self.goto("examples/repl.html")
         self.wait_for_pyscript()
         assert self.page.title() == "REPL"
         wait_for_render(self.page, "*", "<py-repl.*?>")
 
+        self.page.locator("py-repl").type("print('Hello, World!')")
+        self.page.locator("button").click()
+
+        assert self.page.locator("#my-repl-1").text_content() == "Hello, World!"
+
+        # Confirm that using the second repl still works properly
+        self.page.locator("#my-repl-2").type("2*2")
+        self.page.keyboard.press("Shift+Enter")
+        # Make sure that the child of the second repl is attached properly
+        # before looking into the text_content
+        second_repl_result = self.page.wait_for_selector(
+            "#my-repl-2-2", state="attached"
+        )
+        assert second_repl_result.text_content() == "4"
+
+    @pytest.mark.xfail(reason="Test seems flaky")
     def test_repl2(self):
-        # XXX improve this test
-        self.goto("../examples/repl2.html")
+        self.goto("examples/repl2.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Custom REPL Example"
         wait_for_render(self.page, "*", "<py-repl.*?>")
+        # confirm we can import utils and run one command
+        self.page.locator("py-repl").type("import utils\nutils.now()")
+        self.page.locator("button").click()
+        # Make sure the output is in the page
+        self.page.wait_for_selector("#output")
+        # utils.now returns current date time
+        content = self.page.content()
+        pattern = "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+"  # e.g. 08/09/2022 15:57:32
+        assert re.search(pattern, content)
 
     def test_todo(self):
-        # XXX improve this test
-        self.goto("../examples/todo.html")
+        self.goto("examples/todo.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Todo App"
         wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
+        todo_input = self.page.locator("input")
+        submit_task_button = self.page.locator("button")
 
-    @pytest.mark.xfail(reason="JsError, issue #673")
+        todo_input.type("Fold laundry")
+        submit_task_button.click()
+
+        first_task = self.page.locator("#task-0")
+        assert "Fold laundry" in first_task.inner_text()
+
+        task_checkbox = first_task.locator("input")
+        # Confirm that the new task isn't checked
+        assert not task_checkbox.is_checked()
+
+        # Let's mark it as done now
+        task_checkbox.check()
+
+        # Basic check that the task has the line-through class
+        assert (
+            '<p class="m-0 inline line-through">Fold laundry</p>'
+            in first_task.inner_html()
+        )
+
     def test_todo_pylist(self):
         # XXX improve this test
         self.goto("../examples/todo-pylist.html")
@@ -188,11 +241,20 @@ class TestExamples(PyScriptTest):
         wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
 
     def test_toga_freedom(self):
-        # XXX improve this test
-        self.goto("../examples/toga/freedom.html")
+        self.goto("examples/toga/freedom.html")
         self.wait_for_pyscript()
         assert self.page.title() in ["Loading...", "Freedom Units"]
         wait_for_render(self.page, "*", "<(main|div).*?id=['\"]toga_\\d+['\"].*?>")
+
+        page_content = self.page.content()
+
+        assert "Fahrenheit" in page_content
+        assert "Celsius" in page_content
+
+        self.page.locator("#toga_f_input").fill("105")
+        self.page.locator("button#toga_calculate").click()
+        result = self.page.locator("#toga_c_input")
+        assert "40.555" in result.input_value()
 
     @pytest.mark.xfail(reason="it never finishes loading, issue #678")
     def test_webgl_raycaster_index(self):
