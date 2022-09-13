@@ -27,8 +27,8 @@ If you're new to programming and know nothing about HTML or just want to try som
     <title>REPL</title>
 
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
 
   <body>
@@ -65,8 +65,8 @@ open an HTML by double-clicking it in your file explorer.
 ```html
 <html>
   <head>
-    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
   <body> <py-script> print('Hello, World!') </py-script> </body>
 </html>
@@ -84,8 +84,8 @@ print back onto the page. For example, we can compute π.
 ```html
 <html>
   <head>
-    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
   <body>
       <py-script>
@@ -117,8 +117,8 @@ the `<py-script>` tag to write to.
 ```html
 <html>
     <head>
-      <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-      <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+      <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+      <script defer src="https://pyscript.net/latest/pyscript.js"></script>
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     </head>
 
@@ -166,8 +166,8 @@ as a shortcut, which takes the expression on the last line of the script and run
 ```html
 <html>
     <head>
-      <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-      <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+      <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+      <script defer src="https://pyscript.net/latest/pyscript.js"></script>
       <py-env>
         - numpy
         - matplotlib
@@ -215,8 +215,8 @@ In the HTML tag `<py-env>`, paths to local modules are provided in the
 ```html
 <html>
     <head>
-      <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-      <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+      <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+      <script defer src="https://pyscript.net/latest/pyscript.js"></script>
       <py-env>
         - numpy
         - matplotlib
@@ -247,8 +247,8 @@ The `<py-repl>` tag creates a REPL component that is rendered to the page as a c
 ```html
 <html>
   <head>
-    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
   <py-repl></py-repl>
 </html>
