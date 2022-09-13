@@ -191,6 +191,9 @@ class PyScriptTest:
             timeout=timeout,
             check_errors=check_errors,
         )
+        # We still don't know why this wait is necessary, but without it
+        # events aren't being triggered in the tests.
+        self.page.wait_for_timeout(100)
 
     def pyscript_run(self, snippet, *, extra_head=""):
         """

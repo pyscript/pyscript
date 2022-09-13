@@ -105,6 +105,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*?class=\\"bk\\".*?>')
 
+    @pytest.mark.xfail(reason="Flaky test #759")
     def test_d3(self):
         # XXX improve this test
         self.goto("examples/d3.html")
@@ -161,7 +162,6 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
-    @pytest.mark.xfail(reason="JsError: issue #677")
     def test_panel_stream(self):
         # XXX improve this test
         self.goto("examples/panel_stream.html")
@@ -169,9 +169,6 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
-    @pytest.mark.xfail(
-        reason="Test seems flaky, sometimes it doesn't return result from second repl"
-    )
     def test_repl(self):
         self.goto("examples/repl.html")
         self.wait_for_pyscript()
@@ -186,8 +183,12 @@ class TestExamples(PyScriptTest):
         # Confirm that using the second repl still works properly
         self.page.locator("#my-repl-2").type("2*2")
         self.page.keyboard.press("Shift+Enter")
-
-        assert self.page.locator("#my-repl-2-2").text_content() == "4"
+        # Make sure that the child of the second repl is attached properly
+        # before looking into the text_content
+        second_repl_result = self.page.wait_for_selector(
+            "#my-repl-2-2", state="attached"
+        )
+        assert second_repl_result.text_content() == "4"
 
     @pytest.mark.xfail(reason="Test seems flaky")
     def test_repl2(self):
@@ -198,6 +199,8 @@ class TestExamples(PyScriptTest):
         # confirm we can import utils and run one command
         self.page.locator("py-repl").type("import utils\nutils.now()")
         self.page.locator("button").click()
+        # Make sure the output is in the page
+        self.page.wait_for_selector("#output")
         # utils.now returns current date time
         content = self.page.content()
         pattern = "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+"  # e.g. 08/09/2022 15:57:32
@@ -230,7 +233,6 @@ class TestExamples(PyScriptTest):
             in first_task.inner_html()
         )
 
-    @pytest.mark.xfail(reason="JsError, issue #673")
     def test_todo_pylist(self):
         # XXX improve this test
         self.goto("examples/todo-pylist.html")
