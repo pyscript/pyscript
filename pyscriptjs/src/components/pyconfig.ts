@@ -41,6 +41,21 @@ export class PyConfig extends BaseEvalElement {
         super();
     }
 
+    extractFromSrc() {
+        return validateConfig(readTextFromPath(this.getAttribute('src')));
+    }
+
+    extractFromInline() {
+        this.code = this.innerHTML;
+        this.innerHTML = '';
+        return validateConfig(this.code);
+    }
+
+    getDefaultConfig()
+    {
+        return inJest() ? defaultConfig : JSON.parse(defaultConfig);
+    }
+
     connectedCallback() {
         let loadedValues: object = {};
         let srcConfig: object = {};
@@ -49,12 +64,10 @@ export class PyConfig extends BaseEvalElement {
         // load config from src and inline
         if (this.hasAttribute('src') && this.innerHTML!=='')
         {
-            srcConfig = validateConfig(readTextFromPath(this.getAttribute('src')));
-            this.code = this.innerHTML;
-            this.innerHTML = '';
-            inlineConfig = validateConfig(this.code);
+            srcConfig = this.extractFromSrc();
+            inlineConfig = this.extractFromInline();
             // first make config from src whole if it is partial
-            srcConfig = mergeConfig(srcConfig, inJest() ? defaultConfig : JSON.parse(defaultConfig));
+            srcConfig = mergeConfig(srcConfig, this.getDefaultConfig());
             // then merge inline config and config from src
             loadedValues = mergeConfig(inlineConfig, srcConfig);
             logger.info('config set from src attribute and inline both, merging', JSON.stringify(loadedValues));
@@ -62,24 +75,21 @@ export class PyConfig extends BaseEvalElement {
         // load config from src only
         else if (this.hasAttribute('src'))
         {
-            const srcText = readTextFromPath(this.getAttribute('src'));
-            srcConfig = validateConfig(srcText);
-            logger.info('config set from src attribute, merging with default', srcText);
-            loadedValues = mergeConfig(srcConfig, inJest() ? defaultConfig : JSON.parse(defaultConfig));
+            srcConfig = this.extractFromSrc();
+            logger.info('config set from src attribute, merging with default', srcConfig);
+            loadedValues = mergeConfig(srcConfig, this.getDefaultConfig());
         }
         // load config from inline
         else if (this.innerHTML!=='')
         {
-            this.code = this.innerHTML;
-            this.innerHTML = '';
-            inlineConfig = validateConfig(this.code);
-            logger.info('config set from inline, merging with default', this.code);
-            loadedValues = mergeConfig(inlineConfig, inJest() ? defaultConfig : JSON.parse(defaultConfig));
+            inlineConfig = this.extractFromInline();
+            logger.info('config set from inline, merging with default', inlineConfig);
+            loadedValues = mergeConfig(inlineConfig, this.getDefaultConfig());
         }
         // load from default if still undefined
         if (Object.keys(loadedValues).length === 0) {
             logger.info('no config set, loading default', defaultConfig);
-            loadedValues = inJest() ? defaultConfig : JSON.parse(defaultConfig);
+            loadedValues = this.getDefaultConfig();
         }
         // eslint-disable-next-line
         // @ts-ignore
