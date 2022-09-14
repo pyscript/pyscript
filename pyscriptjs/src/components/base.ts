@@ -127,21 +127,7 @@ export class BaseEvalElement extends HTMLElement {
             <string>await runtime.run(`set_current_display_target(element="${this.id}")`);
             <string>await runtime.run(source);
 
-            // check if this REPL contains errors, delete them and remove error classes
-            const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
-            if (errorElements.length > 0) {
-                errorElements.forEach( errorElement =>
-                    {
-                        errorElement.classList.add('hidden');
-                        if (this.hasAttribute('std-err')) {
-                            this.errorElement.hidden = true;
-                            this.errorElement.style.removeProperty('display');
-                        }
-                    }
-                )
-            }
-            removeClasses(this.errorElement, ['bg-red-200', 'p-2']);
-
+            removeClasses(this.errorElement, ['py-error']);
             this.postEvaluate();
         } catch (err) {
             logger.error(err);
@@ -151,7 +137,7 @@ export class BaseEvalElement extends HTMLElement {
                 }
                 const out = Element(this.errorElement.id);
 
-                addClasses(this.errorElement, ['bg-red-200', 'p-2']);
+                addClasses(this.errorElement, ['py-error']);
                 out.write.callKwargs(err.toString(), { append: this.appendOutput });
                 if (this.errorElement.children.length === 0){
                     this.errorElement.setAttribute('error', '');
@@ -306,34 +292,6 @@ export class PyWidget extends HTMLElement {
         logger.debug('PyWidget: reading source', this.source);
         this.code = await this.getSourceFromFile(this.source);
         createWidget(this.name, this.code, this.klass);
-    }
-
-    initOutErr(): void {
-        if (this.hasAttribute('output')) {
-            this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
-
-            // in this case, the default output-mode is append, if hasn't been specified
-            if (!this.hasAttribute('output-mode')) {
-                this.setAttribute('output-mode', 'append');
-            }
-        } else {
-            if (this.hasAttribute('std-out')) {
-                this.outputElement = document.getElementById(this.getAttribute('std-out'));
-            } else {
-                // In this case neither output or std-out have been provided so we need
-                // to create a new output div to output to
-                this.outputElement = document.createElement('div');
-                this.outputElement.classList.add('output');
-                this.outputElement.hidden = true;
-                this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
-            }
-
-            if (this.hasAttribute('std-err')) {
-                this.errorElement = document.getElementById(this.getAttribute('std-err'));
-            } else {
-                this.errorElement = this.outputElement;
-            }
-        }
     }
 
     async getSourceFromFile(s: string): Promise<string> {

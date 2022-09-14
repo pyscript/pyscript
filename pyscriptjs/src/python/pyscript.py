@@ -123,16 +123,16 @@ class PyScript:
             )
         )
 
-current_py_script_tag = None
+CURRENT_PY_SCRIPT_TAG = None
 
 def set_current_display_target(element):
-    global current_py_script_tag
-    current_py_script_tag = element
+    global CURRENT_PY_SCRIPT_TAG
+    CURRENT_PY_SCRIPT_TAG = element
 
 def display(value, parent=None, append=True):
     if parent is None:
-        global current_py_script_tag
-        parent = current_py_script_tag
+        global CURRENT_PY_SCRIPT_TAG
+        parent = CURRENT_PY_SCRIPT_TAG
     Element(parent).write(value, append)
 
 class Element:

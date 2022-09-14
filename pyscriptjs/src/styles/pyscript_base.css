@@ -89,6 +89,7 @@ html {
     opacity: 1;
 }
 
+color: #0f172a;
 .py-pop-up {
     text-align: center;
     width: 600px;
@@ -107,7 +108,16 @@ html {
     right: 5%;
 }
 
-.py-box {
+/* Pop-up second layer end */
+
+.py-error{
+    background-color: rgb(254 226 226);
+    border: solid;
+    border-color: #fca5a5;
+    color: #ff0000;
+}
+
+.py-box{
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
