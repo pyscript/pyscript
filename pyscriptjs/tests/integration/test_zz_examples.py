@@ -240,7 +240,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Todo App"
         wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
 
-    @pytest.mark.xpass(reason="To be moved to collective and updated, see issue #686")
+    @pytest.mark.xfail(reason="To be moved to collective and updated, see issue #686")
     def test_toga_freedom(self):
         self.goto("examples/toga/freedom.html")
         self.wait_for_pyscript()
