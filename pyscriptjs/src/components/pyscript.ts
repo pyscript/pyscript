@@ -237,7 +237,9 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
             await runtime.run(source);
         }
         else{
-                el.addEventListener(event, async () => {await runtime.run(handlerCode)});
+            el.addEventListener(event, () => {
+                (async() => {await runtime.run(handlerCode)})();
+            });
         }
         // TODO: Should we actually map handlers in JS instead of Python?
         // el.onclick = (evt: any) => {
