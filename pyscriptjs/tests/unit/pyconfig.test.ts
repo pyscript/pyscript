@@ -1,5 +1,13 @@
 import { PyConfig } from '../../src/components/pyconfig';
-import covfefeConfig from './covfefe.json';
+const covfefeConfig = {
+    "name": "covfefe",
+    "runtimes": [{
+        "src": "/demo/covfefe.js",
+        "name": "covfefe",
+        "lang": "covfefe"
+    }]
+};
+
 import {jest} from '@jest/globals';
 
 customElements.define('py-config', PyConfig);

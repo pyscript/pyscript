@@ -1,8 +1,0 @@
-{
-    "name": "covfefe",
-    "runtimes": [{
-        "src": "/demo/covfefe.js",
-        "name": "covfefe",
-        "lang": "covfefe"
-    }]
-}
