@@ -154,7 +154,7 @@ function validateConfig(configText: string) {
         config = JSON.parse(configText);
     }
     catch (err) {
-        console.log(err.message);
+        showError(`<p>config supplied: ${configText} is invalid and cannot be parsed: ${err.message}</p>`);
     }
 
     const finalConfig: AppConfig = {}
