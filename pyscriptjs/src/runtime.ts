@@ -15,12 +15,14 @@ import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/runtime');
 
+export const version = "<<VERSION>>";
 export type RuntimeInterpreter = PyodideInterface | null;
 
-export type AppConfig = {
+export interface AppConfig extends Record<string, any> {
     name?: string;
     description?: string;
     version?: string;
+    schema?: number;
     type?: string;
     author_name?: string;
     author_email?: string;
@@ -31,7 +33,7 @@ export type AppConfig = {
     paths?: Array<string>;
     plugins?: Array<string>;
     pyscript?: PyScriptMetadata;
-};
+}
 
 export type PyScriptMetadata = {
     version?: string;

@@ -1,11 +1,13 @@
 import { PyConfig } from '../../src/components/pyconfig';
+// inspired by trump typos
 const covfefeConfig = {
     "name": "covfefe",
     "runtimes": [{
         "src": "/demo/covfefe.js",
         "name": "covfefe",
         "lang": "covfefe"
-    }]
+    }],
+    "wonerful": "discgrace"
 };
 
 import {jest} from '@jest/globals';
@@ -62,17 +64,24 @@ describe('PyConfig', () => {
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe("covfefe");
         expect(instance.values.pyscript?.time).not.toBeNull();
+        // wonerful is an extra key supplied by the user and is unaffected by merging process
+        expect(instance.values.wonerful).toBe("discgrace");
         // version wasn't present in `config from src` but is still set due to merging with default
         expect(instance.values.version).toBe("0.1");
     });
 
     it('should load the config from both inline and src', ()=> {
-        instance.innerHTML = JSON.stringify({"version": "0.2a"});
+        instance.innerHTML = JSON.stringify({"version": "0.2a", "wonerful": "highjacked"});
         instance.setAttribute("src", "/covfefe.json");
         instance.connectedCallback();
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe("covfefe");
         expect(instance.values.pyscript?.time).not.toBeNull();
+        // config from src had an extra key "wonerful" with value "discgrace"
+        // inline config had the same extra key "wonerful" with value "highjacked"
+        // the merge process works for extra keys that clash as well
+        // so the final value is "highjacked" since inline takes precedence over src
+        expect(instance.values.wonerful).toBe("highjacked");
         // version wasn't present in `config from src` but is still set due to merging with default and inline
         expect(instance.values.version).toBe("0.2a");
     });

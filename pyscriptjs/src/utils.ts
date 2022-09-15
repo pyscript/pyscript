@@ -1,9 +1,17 @@
 import type { AppConfig } from "./runtime";
 
+const allKeys = {
+    "string": ["name", "description", "version", "type", "author_name", "author_email", "license"],
+    "number": ["schema"],
+    "boolean": ["autoclose_loader"],
+    "array": ["runtimes", "packages", "paths", "plugins"]
+};
+
 const defaultConfig: AppConfig = {
     "name": "pyscript",
     "description": "default config",
     "version": "0.1",
+    "schema": 1,
     "type": "app",
     "author_name": "anonymous coder",
     "author_email": "foo@bar.com",
@@ -119,6 +127,19 @@ function inJest(): boolean {
     return typeof process === 'object' && process.env.JEST_WORKER_ID !== undefined;
 }
 
+function fillUserData(inputConfig: AppConfig, resultConfig: AppConfig): AppConfig
+{
+    for (const key in inputConfig)
+    {
+        // fill in all extra keys ignored by the validator
+        if (!(key in defaultConfig))
+        {
+            resultConfig[key] = inputConfig[key];
+        }
+    }
+    return resultConfig;
+}
+
 function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppConfig {
     if (Object.keys(inlineConfig).length === 0 && Object.keys(externalConfig).length === 0)
     {
@@ -134,32 +155,27 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
     }
     else
     {
-        const name = inlineConfig.name || externalConfig.name;
-        const description = inlineConfig.description || externalConfig.description;
-        const version = inlineConfig.version || externalConfig.version;
-        const type = inlineConfig.type || externalConfig.type;
-        const author_name = inlineConfig.author_name || externalConfig.author_name;
-        const author_email = inlineConfig.author_email || externalConfig.author_email;
-        const license = inlineConfig.license || externalConfig.license;
-        const autoclose_loader = (typeof inlineConfig.autoclose_loader !== "undefined") ? inlineConfig.autoclose_loader : externalConfig.autoclose_loader;
-        const runtimes = inlineConfig.runtimes || externalConfig.runtimes;
-        const packages = inlineConfig.packages || externalConfig.packages;
-        const paths = inlineConfig.paths || externalConfig.paths;
-        const plugins = inlineConfig.plugins || externalConfig.plugins;
-        const merged: AppConfig = {
-            name,
-            description,
-            version,
-            type,
-            author_name,
-            author_email,
-            license,
-            autoclose_loader,
-            runtimes,
-            packages,
-            paths,
-            plugins
-        };
+        let merged: AppConfig = {};
+
+        for (const keyType in allKeys)
+        {
+            const keys = allKeys[keyType];
+            keys.forEach(function(item: string){
+                if (keyType === "boolean")
+                {
+                    merged[item] = (typeof inlineConfig[item] !== "undefined") ? inlineConfig[item] : externalConfig[item];
+                }
+                else
+                {
+                    merged[item] = inlineConfig[item] || externalConfig[item];
+                }
+            });
+        }
+
+        // fill extra keys from external first
+        // they will be overridden by inline if extra keys also clash
+        merged = fillUserData(externalConfig, merged);
+        merged = fillUserData(inlineConfig, merged);
 
         return merged;
     }
@@ -176,11 +192,6 @@ function validateConfig(configText: string) {
     }
 
     const finalConfig: AppConfig = {}
-    const allKeys = {
-        "string": ["name", "description", "version", "type", "author_name", "author_email", "license"],
-        "boolean": ["autoclose_loader"],
-        "array": ["runtimes", "packages", "paths", "plugins"]
-    };
 
     for (const keyType in allKeys)
     {
@@ -212,7 +223,7 @@ function validateConfig(configText: string) {
         });
     }
 
-    return finalConfig;
+    return fillUserData(config, finalConfig);
 }
 
 function validateParamInConfig(paramName: string, paramType: string, config: object): boolean {

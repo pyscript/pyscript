@@ -1,6 +1,7 @@
 import { BaseEvalElement } from './base';
 import { appConfig, addInitializer, runtimeLoaded } from '../stores';
 import type { AppConfig, Runtime } from '../runtime';
+import { version } from '../runtime';
 import { PyodideRuntime } from '../pyodide';
 import { getLogger } from '../logger';
 import { readTextFromPath, handleFetchError, mergeConfig, validateConfig, defaultConfig } from '../utils'
@@ -60,7 +61,7 @@ export class PyConfig extends BaseEvalElement {
 
     injectMetadata() {
         this.values.pyscript = {
-            "version": "",
+            "version": version,
             "time": new Date().toISOString()
         };
     }
