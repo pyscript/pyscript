@@ -55,10 +55,13 @@ class TestRuntimeConfig(PyScriptTest):
         """,
             extra_head="""
             <py-config>
-                runtimes:
-                - src: "/pyodide/pyodide.js"
-                  name: pyodide-0.20.0
-                  lang: python
+                {
+                    "runtimes": [{
+                        "src": "/pyodide/pyodide.js",
+                        "name": "pyodide-0.20.0",
+                        "lang": "python"
+                    }]
+                }
             </py-config>
         """,
         )

@@ -31,6 +31,7 @@ export class PyEnv extends HTMLElement {
     }
 
     connectedCallback() {
+        logger.info("The <py-env> tag is deprecated, please use <py-config> instead.")
         this.code = this.innerHTML;
         this.innerHTML = '';
 

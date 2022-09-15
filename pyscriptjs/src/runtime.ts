@@ -16,19 +16,35 @@ import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/runtime');
 
+export const version = "<<VERSION>>";
 export type RuntimeInterpreter = PyodideInterface | null;
 
+export interface AppConfig extends Record<string, any> {
+    name?: string;
+    description?: string;
+    version?: string;
+    schema_version?: number;
+    type?: string;
+    author_name?: string;
+    author_email?: string;
+    license?: string;
+    autoclose_loader?: boolean;
+    runtimes?: Array<RuntimeConfig>;
+    packages?: Array<string>;
+    paths?: Array<string>;
+    plugins?: Array<string>;
+    pyscript?: PyScriptMetadata;
+}
+
+export type PyScriptMetadata = {
+    version?: string;
+    time?: string;
+}
+
 export type RuntimeConfig = {
-    src: string;
+    src?: string;
     name?: string;
     lang?: string;
-};
-
-export type AppConfig = {
-    autoclose_loader: boolean;
-    name?: string;
-    version?: string;
-    runtimes?: Array<RuntimeConfig>;
 };
 
 let loader: PyLoader | undefined;
@@ -52,7 +68,7 @@ scriptsQueue.subscribe((value: PyScript[]) => {
 });
 
 let appConfig_: AppConfig = {
-    autoclose_loader: true,
+    autoclose_loader: true
 };
 
 appConfig.subscribe((value: AppConfig) => {
