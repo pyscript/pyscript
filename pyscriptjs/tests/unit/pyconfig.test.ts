@@ -1,6 +1,4 @@
 import { PyConfig } from '../../src/components/pyconfig';
-// eslint-disable-next-line
-// @ts-ignore
 import covfefeConfig from './covfefe.json';
 import {jest} from '@jest/globals';
 
