@@ -5,7 +5,7 @@ import { PyodideRuntime } from '../pyodide';
 import { getLogger } from '../logger';
 import { readTextFromPath, handleFetchError, inJest, mergeConfig, validateConfig } from '../utils'
 
-// Premise used to connect to the first available runtime (can be pyodide or others)
+// Subscriber used to connect to the first available runtime (can be pyodide or others)
 let runtimeSpec: Runtime;
 runtimeLoaded.subscribe(value => {
     runtimeSpec = value;
@@ -42,13 +42,23 @@ export class PyConfig extends BaseEvalElement {
     }
 
     extractFromSrc() {
-        return validateConfig(readTextFromPath(this.getAttribute('src')));
+        if (this.hasAttribute('src'))
+        {
+            logger.info('config set from src attribute');
+            return validateConfig(readTextFromPath(this.getAttribute('src')));
+        }
+        return {};
     }
 
     extractFromInline() {
-        this.code = this.innerHTML;
-        this.innerHTML = '';
-        return validateConfig(this.code);
+        if (this.innerHTML!=='')
+        {
+            this.code = this.innerHTML;
+            this.innerHTML = '';
+            logger.info('config set from inline');
+            return validateConfig(this.code);
+        }
+        return {};
     }
 
     getDefaultConfig()
@@ -57,48 +67,17 @@ export class PyConfig extends BaseEvalElement {
     }
 
     connectedCallback() {
-        let loadedValues: object = {};
-        let srcConfig: object = {};
-        let inlineConfig: object = {};
-
-        // load config from src and inline
-        if (this.hasAttribute('src') && this.innerHTML!=='')
-        {
-            srcConfig = this.extractFromSrc();
-            inlineConfig = this.extractFromInline();
-            // first make config from src whole if it is partial
-            srcConfig = mergeConfig(srcConfig, this.getDefaultConfig());
-            // then merge inline config and config from src
-            loadedValues = mergeConfig(inlineConfig, srcConfig);
-            logger.info('config set from src attribute and inline both, merging', JSON.stringify(loadedValues));
-        }
-        // load config from src only
-        else if (this.hasAttribute('src'))
-        {
-            srcConfig = this.extractFromSrc();
-            logger.info('config set from src attribute, merging with default', srcConfig);
-            loadedValues = mergeConfig(srcConfig, this.getDefaultConfig());
-        }
-        // load config from inline
-        else if (this.innerHTML!=='')
-        {
-            inlineConfig = this.extractFromInline();
-            logger.info('config set from inline, merging with default', inlineConfig);
-            loadedValues = mergeConfig(inlineConfig, this.getDefaultConfig());
-        }
-        // load from default if still undefined
-        if (Object.keys(loadedValues).length === 0) {
-            logger.info('no config set, loading default', defaultConfig);
-            loadedValues = this.getDefaultConfig();
-        }
-        // eslint-disable-next-line
-        // @ts-ignore
-        this.values = loadedValues;
+        let srcConfig = this.extractFromSrc();
+        const inlineConfig = this.extractFromInline();
+        // first make config from src whole if it is partial
+        srcConfig = mergeConfig(srcConfig, this.getDefaultConfig());
+        // then merge inline config and config from src
+        this.values = mergeConfig(inlineConfig, srcConfig);
 
         appConfig.set(this.values);
         logger.info('config set:', this.values);
 
-        addInitializer(this.loadEnv);
+        addInitializer(this.loadPackages);
         addInitializer(this.loadPaths);
         this.loadRuntimes();
     }
@@ -113,7 +92,7 @@ export class PyConfig extends BaseEvalElement {
         this.remove();
     }
 
-    loadEnv = async () => {
+    loadPackages = async () => {
         const env = appConfig_.packages;
         logger.info("Loading env: ", env);
         await runtimeSpec.installPackage(env);

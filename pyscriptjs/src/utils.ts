@@ -1,4 +1,7 @@
 import type { AppConfig } from "./runtime";
+// eslint-disable-next-line
+// @ts-ignore
+import defaultConfig from './pyscript.json';
 
 function addClasses(element: HTMLElement, classes: Array<string>) {
     for (const entry of classes) {
@@ -100,34 +103,49 @@ function inJest(): boolean {
 }
 
 function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppConfig {
-    const name = inlineConfig.name || externalConfig.name;
-    const description = inlineConfig.description || externalConfig.description;
-    const version = inlineConfig.version || externalConfig.version;
-    const type = inlineConfig.type || externalConfig.type;
-    const author_name = inlineConfig.author_name || externalConfig.author_name;
-    const author_email = inlineConfig.author_email || externalConfig.author_email;
-    const license = inlineConfig.license || externalConfig.license;
-    const autoclose_loader = (typeof inlineConfig.autoclose_loader !== "undefined") ? inlineConfig.autoclose_loader : externalConfig.autoclose_loader;
-    const runtimes = inlineConfig.runtimes || externalConfig.runtimes;
-    const packages = inlineConfig.packages || externalConfig.packages;
-    const paths = inlineConfig.paths || externalConfig.paths;
-    const plugins = inlineConfig.plugins || externalConfig.plugins;
-    const merged: AppConfig = {
-        name,
-        description,
-        version,
-        type,
-        author_name,
-        author_email,
-        license,
-        autoclose_loader,
-        runtimes,
-        packages,
-        paths,
-        plugins
-    };
+    if (Object.keys(inlineConfig).length === 0 && Object.keys(externalConfig).length === 0)
+    {
+        return JSON.parse(defaultConfig);
+    }
+    else if (Object.keys(inlineConfig).length === 0)
+    {
+        return externalConfig;
+    }
+    else if(Object.keys(externalConfig).length === 0)
+    {
+        return inlineConfig;
+    }
+    else
+    {
+        const name = inlineConfig.name || externalConfig.name;
+        const description = inlineConfig.description || externalConfig.description;
+        const version = inlineConfig.version || externalConfig.version;
+        const type = inlineConfig.type || externalConfig.type;
+        const author_name = inlineConfig.author_name || externalConfig.author_name;
+        const author_email = inlineConfig.author_email || externalConfig.author_email;
+        const license = inlineConfig.license || externalConfig.license;
+        const autoclose_loader = (typeof inlineConfig.autoclose_loader !== "undefined") ? inlineConfig.autoclose_loader : externalConfig.autoclose_loader;
+        const runtimes = inlineConfig.runtimes || externalConfig.runtimes;
+        const packages = inlineConfig.packages || externalConfig.packages;
+        const paths = inlineConfig.paths || externalConfig.paths;
+        const plugins = inlineConfig.plugins || externalConfig.plugins;
+        const merged: AppConfig = {
+            name,
+            description,
+            version,
+            type,
+            author_name,
+            author_email,
+            license,
+            autoclose_loader,
+            runtimes,
+            packages,
+            paths,
+            plugins
+        };
 
-    return merged;
+        return merged;
+    }
 }
 
 function validateConfig(configText: string) {

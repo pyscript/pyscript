@@ -33,6 +33,8 @@ describe('PyConfig', () => {
 
     it('should load the default config from pyscript.json', ()=> {
         instance.connectedCallback();
+        expect(instance.values.name).toBe("pyscript");
+        expect(instance.values.author_email).toBe("foo@bar.com");
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe("python");
     });

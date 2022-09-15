@@ -3,8 +3,8 @@
     "description": "default config",
     "version": "0.1",
     "type": "app",
-    "author_name": "madhur",
-    "author_email": "madhurtandon23@gmail.com",
+    "author_name": "anonymous coder",
+    "author_email": "foo@bar.com",
     "license": "Apache",
     "autoclose_loader": true,
     "runtimes": [{
