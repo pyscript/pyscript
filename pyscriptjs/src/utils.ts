@@ -1,5 +1,24 @@
 import type { AppConfig } from "./runtime";
-import defaultConfig from './pyscript.json';
+
+const defaultConfig: AppConfig = {
+    "name": "pyscript",
+    "description": "default config",
+    "version": "0.1",
+    "type": "app",
+    "author_name": "anonymous coder",
+    "author_email": "foo@bar.com",
+    "license": "Apache",
+    "autoclose_loader": true,
+    "runtimes": [{
+        "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
+        "name": "pyodide-0.21.2",
+        "lang": "python"
+    }],
+    "packages": [],
+    "paths": [],
+    "plugins": []
+}
+
 
 function addClasses(element: HTMLElement, classes: Array<string>) {
     for (const entry of classes) {
@@ -204,4 +223,4 @@ function validateParamInConfig(paramName: string, paramType: string, config: obj
     return false;
 }
 
-export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, mergeConfig, validateConfig };
+export { defaultConfig, addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, mergeConfig, validateConfig };

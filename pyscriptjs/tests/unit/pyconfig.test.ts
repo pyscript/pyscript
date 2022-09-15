@@ -31,7 +31,7 @@ describe('PyConfig', () => {
         expect(document.scripts[0].src).toBe("http://localhost/demo/covfefe.js");
     });
 
-    it('should load the default config from pyscript.json', ()=> {
+    it('should load the default config', ()=> {
         instance.connectedCallback();
         expect(instance.values.name).toBe("pyscript");
         expect(instance.values.author_email).toBe("foo@bar.com");
