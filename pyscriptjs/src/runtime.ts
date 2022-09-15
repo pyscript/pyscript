@@ -22,7 +22,7 @@ export interface AppConfig extends Record<string, any> {
     name?: string;
     description?: string;
     version?: string;
-    schema?: number;
+    schema_version?: number;
     type?: string;
     author_name?: string;
     author_email?: string;

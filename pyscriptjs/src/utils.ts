@@ -2,7 +2,7 @@ import type { AppConfig } from "./runtime";
 
 const allKeys = {
     "string": ["name", "description", "version", "type", "author_name", "author_email", "license"],
-    "number": ["schema"],
+    "number": ["schema_version"],
     "boolean": ["autoclose_loader"],
     "array": ["runtimes", "packages", "paths", "plugins"]
 };
@@ -11,7 +11,7 @@ const defaultConfig: AppConfig = {
     "name": "pyscript",
     "description": "default config",
     "version": "0.1",
-    "schema": 1,
+    "schema_version": 1,
     "type": "app",
     "author_name": "anonymous coder",
     "author_email": "foo@bar.com",
