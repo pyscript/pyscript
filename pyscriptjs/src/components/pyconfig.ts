@@ -3,7 +3,7 @@ import { appConfig, addInitializer, runtimeLoaded } from '../stores';
 import type { AppConfig, Runtime } from '../runtime';
 import { PyodideRuntime } from '../pyodide';
 import { getLogger } from '../logger';
-import { readTextFromPath, handleFetchError, inJest, mergeConfig, validateConfig } from '../utils'
+import { readTextFromPath, handleFetchError, mergeConfig, validateConfig } from '../utils'
 
 // Subscriber used to connect to the first available runtime (can be pyodide or others)
 let runtimeSpec: Runtime;
@@ -17,8 +17,6 @@ appConfig.subscribe(value => {
 });
 
 const logger = getLogger('py-config');
-// eslint-disable-next-line
-// @ts-ignore
 import defaultConfig from '../pyscript.json';
 
 /**
@@ -61,16 +59,11 @@ export class PyConfig extends BaseEvalElement {
         return {};
     }
 
-    getDefaultConfig()
-    {
-        return inJest() ? defaultConfig : JSON.parse(defaultConfig);
-    }
-
     connectedCallback() {
         let srcConfig = this.extractFromSrc();
         const inlineConfig = this.extractFromInline();
         // first make config from src whole if it is partial
-        srcConfig = mergeConfig(srcConfig, this.getDefaultConfig());
+        srcConfig = mergeConfig(srcConfig, defaultConfig);
         // then merge inline config and config from src
         this.values = mergeConfig(inlineConfig, srcConfig);
 

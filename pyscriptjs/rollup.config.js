@@ -34,9 +34,6 @@ export default {
     string({
       include: "./src/**/*.py",
     }),
-    string({
-      include: "./src/**/*.json",
-    }),
     resolve({
       browser: true,
       dedupe: ["svelte"],

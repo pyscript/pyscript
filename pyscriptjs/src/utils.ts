@@ -1,6 +1,4 @@
 import type { AppConfig } from "./runtime";
-// eslint-disable-next-line
-// @ts-ignore
 import defaultConfig from './pyscript.json';
 
 function addClasses(element: HTMLElement, classes: Array<string>) {
@@ -105,7 +103,7 @@ function inJest(): boolean {
 function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppConfig {
     if (Object.keys(inlineConfig).length === 0 && Object.keys(externalConfig).length === 0)
     {
-        return JSON.parse(defaultConfig);
+        return defaultConfig;
     }
     else if (Object.keys(inlineConfig).length === 0)
     {
