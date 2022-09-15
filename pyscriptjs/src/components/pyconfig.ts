@@ -58,6 +58,13 @@ export class PyConfig extends BaseEvalElement {
         return {};
     }
 
+    injectMetadata() {
+        this.values.pyscript = {
+            "version": "",
+            "time": new Date().toISOString()
+        };
+    }
+
     connectedCallback() {
         let srcConfig = this.extractFromSrc();
         const inlineConfig = this.extractFromInline();
@@ -65,6 +72,7 @@ export class PyConfig extends BaseEvalElement {
         srcConfig = mergeConfig(srcConfig, defaultConfig);
         // then merge inline config and config from src
         this.values = mergeConfig(inlineConfig, srcConfig);
+        this.injectMetadata();
 
         appConfig.set(this.values);
         logger.info('config set:', this.values);

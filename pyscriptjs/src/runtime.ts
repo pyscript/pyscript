@@ -30,7 +30,13 @@ export type AppConfig = {
     packages?: Array<string>;
     paths?: Array<string>;
     plugins?: Array<string>;
+    pyscript?: PyScriptMetadata;
 };
+
+export type PyScriptMetadata = {
+    version?: string;
+    time?: string;
+}
 
 export type RuntimeConfig = {
     src?: string;
