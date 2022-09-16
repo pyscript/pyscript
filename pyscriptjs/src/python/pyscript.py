@@ -1,7 +1,6 @@
 import asyncio
 import base64
 import io
-import sys
 import time
 from textwrap import dedent
 
