@@ -48,7 +48,5 @@ describe('PyLoader', () => {
     instance.close()
     expect(logger.info).toHaveBeenCalledWith("Closing")
     expect(instance.remove).toHaveBeenCalled()
-
-
   })
 })

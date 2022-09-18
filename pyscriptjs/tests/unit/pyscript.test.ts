@@ -16,16 +16,16 @@ describe('PyScript', () => {
   })
 
   it('connectedCallback gets or sets a new id', async () => {
-      expect(instance.id).toBe('');
+    expect(instance.id).toBe('');
 
-      instance.connectedCallback();
-      const instanceId = instance.id;
-      // id should be similar to py-4850c8c3-d70d-d9e0-03c1-3cfeb0bcec0d-container
-      expect(instanceId).toMatch(/py-(\w+-){1,5}/);
+    instance.connectedCallback();
+    const instanceId = instance.id;
+    // id should be similar to py-4850c8c3-d70d-d9e0-03c1-3cfeb0bcec0d-container
+    expect(instanceId).toMatch(/py-(\w+-){1,5}/);
 
-      // calling checkId directly should return the same id
-      instance.checkId();
-      expect(instance.id).toEqual(instanceId);
+    // calling checkId directly should return the same id
+    instance.checkId();
+    expect(instance.id).toEqual(instanceId);
   });
 
   it('connectedCallback creates output div', async () => {
@@ -41,7 +41,6 @@ describe('PyScript', () => {
     instance.connectedCallback();
 
     expect(instance.outputElement.getAttribute('id')).toBe("std-out")
-
   })
 
   it('confirm that std-err id element sets errorElement', async () => {
@@ -52,7 +51,6 @@ describe('PyScript', () => {
 
     // We should have an errorElement
     expect(instance.errorElement.getAttribute('id')).toBe("std-err")
-
   })
 
   it('test output attribute path', async () => {
@@ -65,7 +63,6 @@ describe('PyScript', () => {
     instance.connectedCallback();
 
     expect(instance.innerHTML).toBe('<div class="output"></div>')
-
   })
 
   it('getSourceFromElement returns decoded html', async () => {

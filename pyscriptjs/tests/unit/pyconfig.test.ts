@@ -169,6 +169,5 @@ describe('PyConfig', () => {
         instance.remove = jest.fn()
         instance.close()
         expect(instance.remove).toHaveBeenCalled()
-
   })
 });
