@@ -14,7 +14,7 @@ describe('PyButton', () => {
         expect(instance).toBeInstanceOf(PyButton);
     });
 
-    it('confirm that  runAfterRuntimeInitialized is called', async () => {
+    it('confirm that runAfterRuntimeInitialized is called', async () => {
         const mockedRunAfterRuntimeInitialized = jest
             .spyOn(instance, 'runAfterRuntimeInitialized')
             .mockImplementation(jest.fn());
