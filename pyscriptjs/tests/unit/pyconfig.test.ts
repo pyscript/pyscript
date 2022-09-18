@@ -1,3 +1,5 @@
+import { jest } from "@jest/globals"
+import type { AppConfig, RuntimeConfig } from '../../src/runtime';
 import { PyConfig } from '../../src/components/pyconfig';
 // inspired by trump typos
 const covfefeConfig = {
@@ -21,7 +23,6 @@ name = "covfefe"
 lang = "covfefe"
 `;
 
-import {jest} from '@jest/globals';
 
 customElements.define('py-config', PyConfig);
 
@@ -135,4 +136,39 @@ describe('PyConfig', () => {
         instance.setAttribute("src", "/covfefe.json");
         instance.connectedCallback();
     });
+    it('connectedCallback should call loadRuntimes', async () => {
+        const mockedMethod = jest.fn()
+        instance.loadRuntimes = mockedMethod;
+
+        instance.connectedCallback();
+
+        expect(mockedMethod).toHaveBeenCalled()
+    })
+
+    it('confirm connectedCallback happy path', async () => {
+        const mockedMethod = jest.fn()
+        instance.loadRuntimes = mockedMethod;
+        instance.innerHTML = "test"
+
+        instance.connectedCallback();
+
+        expect(instance.code).toBe("test")
+        expect(instance.values["0"]).toBe("test")
+    })
+
+    it('log should add new message to the page', async () => {
+        // details are undefined, so let's create a div for it
+        instance.details = document.createElement("div")
+        instance.log("this is a log")
+
+        // @ts-ignore: typescript complains about accessing innerText
+        expect(instance.details.childNodes[0].innerText).toBe("this is a log")
+    })
+
+    it('confirm that calling close removes element', async () => {
+        instance.remove = jest.fn()
+        instance.close()
+        expect(instance.remove).toHaveBeenCalled()
+
+  })
 });

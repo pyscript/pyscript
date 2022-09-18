@@ -12,7 +12,7 @@ describe("PyInputBox", () => {
     instance.runAfterRuntimeInitialized = jest.fn();
   })
 
-  it("PyInputBox initializes correctly", async () => {
+  it("PyInputBox instantiates correctly", async () => {
     expect(instance).toBeInstanceOf(PyInputBox)
   })
 
