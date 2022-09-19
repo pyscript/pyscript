@@ -195,7 +195,7 @@ await pyodide.http.pyfetch(url: str, **kwargs: Any) -> FetchResponse
 ```
 Use `pyfetch` to make HTTP requests in `PyScript`. This is a wrapper around the `fetch` API. Returns a `FetchResponse`.
 
-### [Docs.](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.pyfetch)
+### [`pyfetch` Docs.](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.pyfetch)
 
 ## pyodide.http.FetchResponse
 ### Usage
@@ -207,4 +207,4 @@ json = await response.json()
 Class for handling HTTP responses. This is a wrapper around the `JavaScript` fetch `Response`. Contains common (async)
 methods and properties for handling HTTP responses, such as `json()`, `url`, `status`, `headers`, etc.
 
-### [Docs.](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.FetchResponse)
+### [`FetchResponse` Docs.](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.FetchResponse)
