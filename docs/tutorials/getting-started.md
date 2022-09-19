@@ -256,9 +256,30 @@ The `<py-repl>` tag creates a REPL component that is rendered to the page as a c
 
 ## The py-config tag
 
-Use the `<py-config>` tag to set and configure general metadata about your PyScript application in YAML format. If you are unfamiliar with YAML, consider reading [Red Hat's YAML for beginners](https://www.redhat.com/sysadmin/yaml-beginners) guide for more information.
+Use the `<py-config>` tag to set and configure general metadata for your PyScript application. 
+The configuration has to be set in JSON format. If you are unfamiliar with JSON, consider reading [freecodecamp's JSON for beginners](https://www.freecodecamp.org/news/what-is-json-a-json-file-example/) guide for more information.
+
+The ideal place to use `<py-config>` is in between the `<head>...</head>` tags.
 
 The `<py-config>` tag can be used as follows:
+
+```html
+<py-config>
+  {
+    "autoclose_loader": true,
+    "runtimes": [{
+      "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
+      "name": "pyodide-0.21.2",
+      "lang": "python"
+    }]
+  }
+</py-config>
+```
+
+**Warning**: Please note that earlier versions of PyScript used YAML instead of JSON in the `<py-config>` tag to specify application's dependencies.
+Please see [Red Hat's YAML for beginners](https://www.redhat.com/sysadmin/yaml-beginners) for more information about YAML.
+
+Therefore, if you're using the **alpha** version of PyScript, the `<py-config>` tag should be defined as follows:
 
 ```html
 <py-config>
@@ -269,6 +290,8 @@ The `<py-config>` tag can be used as follows:
       lang: python
 </py-config>
 ```
+
+Support for all YAML-based specifications has been deprecated in PyScript, and they will not be further supported in future releases.
 
 The following optional values are supported by `<py-config>`:
 | Value | Type | Description |
