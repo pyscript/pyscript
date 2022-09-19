@@ -17,7 +17,7 @@ const xPyEnv = customElements.define('py-env', PyEnv);
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 // As first thing, loop for application configs
-logger.info('checking for py-confing');
+logger.info('checking for py-config');
 const config: PyConfig = document.querySelector('py-config');
 if (!config) {
     const loader = document.createElement('py-config');
