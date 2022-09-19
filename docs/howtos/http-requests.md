@@ -22,12 +22,12 @@ parameters can be called from python using the `pyfetch` wrapper.
 ## Pyodide.http, pyfetch, and FetchResponse
 
 [Pyodide.http module](https://pyodide.org/en/stable/usage/api/python-api/http.html#module-pyodide.http) is a python API
-for dealing with HTTP requests. It provides the `pyfetch` function as a wrapper for the `fetch` API, 
+for dealing with HTTP requests. It provides the `pyfetch` function as a wrapper for the `fetch` API,
 which returns a `FetchResponse` object whenever a request is made. Extra keyword arguments can be passed to `pyfetch`
-which will be passed to the `fetch` API. 
+which will be passed to the `fetch` API.
 
-The returned object `FetchResponse` has familiar methods and properties 
-for dealing with the response, such as `json()` or `status`. See the 
+The returned object `FetchResponse` has familiar methods and properties
+for dealing with the response, such as `json()` or `status`. See the
 [FetchResponse documentation](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.FetchResponse)
 for more information.
 
@@ -167,24 +167,24 @@ faster ones.
 
 ### HTTP Requests
 HTTP requests are a very common way to communicate with a server. They are used for everything from getting data from
-a database, to sending emails, to authorization, and more. Due to safety concerns, files loaded from the 
-local file system are not accessible by `PyScript`. Therefore, the proper way to load data into `PyScript` is also 
+a database, to sending emails, to authorization, and more. Due to safety concerns, files loaded from the
+local file system are not accessible by `PyScript`. Therefore, the proper way to load data into `PyScript` is also
 through HTTP requests.
 
 In our example, we show how to pass in a request `body`, `headers`, and specify the request `method`, in order to make
-`GET`, `POST`, `PUT`, and `DELETE` requests, although methods such as `PATCH` are also available. Additional 
-parameters for the `fetch` API are also available, which can be specified as keyword arguments passed to our helper 
+`GET`, `POST`, `PUT`, and `DELETE` requests, although methods such as `PATCH` are also available. Additional
+parameters for the `fetch` API are also available, which can be specified as keyword arguments passed to our helper
 function or to `pyfetch`. See the
 [fetch documentation](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters) for more information.
 HTTP requests are defined by standards-setting bodies in [RFC 1945](https://www.rfc-editor.org/info/rfc1945) and
-[RFC 9110](https://www.rfc-editor.org/info/rfc9110). 
+[RFC 9110](https://www.rfc-editor.org/info/rfc9110).
 
 # Conclusion
 This tutorial demonstrates how to make HTTP requests using `pyfetch` and the `FetchResponse` objects. Importing python
-code/files into the `PyScript` using the `py-env` tag is also covered. 
+code/files into the `PyScript` using the `py-env` tag is also covered.
 
 Although a simple example, the principals here can be used to create complex web applications inside of `PyScript`,
-or load data into `PyScript` for use by an application, all served as a static HTML page, which is pretty amazing! 
+or load data into `PyScript` for use by an application, all served as a static HTML page, which is pretty amazing!
 
 
 # API Quick Reference
