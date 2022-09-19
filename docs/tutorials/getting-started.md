@@ -256,7 +256,7 @@ The `<py-repl>` tag creates a REPL component that is rendered to the page as a c
 
 ## The py-config tag
 
-Use the `<py-config>` tag to set and configure general metadata for your PyScript application. 
+Use the `<py-config>` tag to set and configure general metadata for your PyScript application.
 The configuration has to be set in JSON format. If you are unfamiliar with JSON, consider reading [freecodecamp's JSON for beginners](https://www.freecodecamp.org/news/what-is-json-a-json-file-example/) guide for more information.
 
 The ideal place to use `<py-config>` is in between the `<head>...</head>` tags.
