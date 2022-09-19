@@ -185,3 +185,26 @@ code/files into the `PyScript` using the `py-env` tag is also covered.
 
 Although a simple example, the principals here can be used to create complex web applications inside of `PyScript`,
 or load data into `PyScript` for use by an application, all served as a static HTML page, which is pretty amazing! 
+
+
+# API Quick Reference
+## pyodide.http.pyfetch
+### Usage
+```python
+await pyodide.http.pyfetch(url: str, **kwargs: Any) -> FetchResponse
+```
+Use `pyfetch` to make HTTP requests in `PyScript`. This is a wrapper around the `fetch` API. Returns a `FetchResponse`.
+
+### [Docs.](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.pyfetch)
+
+## pyodide.http.FetchResponse
+### Usage
+```python
+response: pyodide.http.FetchResponse = await <pyfetch call>
+status = response.status
+json = await response.json()
+```
+Class for handling HTTP responses. This is a wrapper around the `JavaScript` fetch `Response`. Contains common (async)
+methods and properties for handling HTTP responses, such as `json()`, `url`, `status`, `headers`, etc.
+
+### [Docs.](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.FetchResponse)
