@@ -43,10 +43,20 @@ If you have questions about the project, using PyScript, or anything else, pleas
 
 ## Setting up your local environment
 
-* Clone the repo using
+* Fork the repository - [quicklink](https://github.com/pyscript/pyscript/fork)
+
+* Clone your fork of the project
+
 ```
-    git clone https://github.com/pyscript/pyscript
+    git clone https://github.com/<your username>/pyscript
 ```
+
+* Add the original project as your upstream (this will allow you to pull the latest changes)
+
+```
+    git remote add upstream git@github.com:pyscript/pyscript.git
+```
+
 * cd into the `pyscriptjs` folder using the line below in your terminal (if your terminal is already in pyscript then use **cd pyscriptjs** instead)
 ```
     cd pyscript/pyscriptjs
@@ -68,10 +78,87 @@ If you have questions about the project, using PyScript, or anything else, pleas
 ```
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: To access your local build paste `http://localhost:8080` into your browser
 
-* When you make changes locally, double check that your contribution follows the PyScript formatting rules by running `npm run lint`. Note that in this case you're looking for the errors, <u>**NOT**</u> the warnings (Unless the warning is created by a local change). If an error is found by lint you should fix it <u>**before**</u> creating a pull request
-
 
 Now that node and npm have both been updated `make setup` should work, and you can continue [setting up your local environment](#setting-up-your-local-environment) without problems (hopefully).
+
+### Developing
+
+* First, make sure you are using the latest version of the pyscript main branch
+
+```
+    git pull upstream main
+```
+
+* Update your fork with the latest changes
+
+```
+    git push origin main
+```
+
+* Activate the conda environment (this environment will contain all the necessary dependencies)
+
+```
+    conda activate pyscriptjs/env/
+```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: We are assuming you are in the root folder. If you are in the pyscriptjs you can run `conda activate env/` instead.
+
+* Install pre-commit (you only need to do this once)
+
+```
+    pre-commit install
+```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: On first run, pre-commit installs a bunch of hooks that will be run when you commit changes to your branch - this will make sure that your code is following our style (it will also lint your code automatically).
+
+* Create a branch for the issue that you want to work on
+
+```
+    git checkout -b <your branch name>
+```
+
+* Work on your change
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: If you are working on a python file, you may encounter linting issues when pre-commit runs. Pyscript uses [black](https://black.readthedocs.io/en/stable/) to fix any linting problems automatically. All you need to do is add the changes again and commit using your previous commit message (the previous one that failed didn't complete due to black formatting files).
+
+* Run tests before pushing the changes
+
+```
+    make tests
+```
+
+* When you make changes locally, double check that your contribution follows the PyScript formatting rules by running `npm run lint`. Note that in this case you're looking for the errors, <u>**NOT**</u> the warnings (Unless the warning is created by a local change). If an error is found by lint you should fix it <u>**before**</u> creating a pull request
+
+#### Rebasing changes
+
+Sometimes you might be asked to rebase main into your branch. You can do such by:
+
+* Checkout into your main branch and pull the upstream changes
+
+```
+    git checkout main
+    git pull upstream main
+```
+
+* Checkout your branch and rebase on main
+
+```
+    git rebase -i main
+```
+
+If you have conflicts, you must fix them by comparing yours and incoming changes. Your editor can probably help you with this, but do ask for help if you need it!
+
+* Once all conflicts have been fixed
+
+```
+    git rebase --continue
+```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: You may see more conflicts that you need to address until all are resolved.
+
+* Force push the fixed conflicts
+
+```
+    git push -f origin <your branch name>
+```
+
 
 ### Building the docs
 
@@ -112,9 +199,8 @@ All contributions must be licensed Apache 2.0, and all files must have a copy of
 
 To create a change for PyScript, you can follow the process described [here](https://docs.github.com/en/get-started/quickstart/contributing-to-projects).
 
-* Fork a personal copy of the PyScript project.
-* Make the changes you would like (don't forget to test them!)
-* Please squash all commits for a change into a single commit (this can be done using "git rebase -i"). Do your best to have a well-formed commit message for the change.
+* Follow the steps in [setting your local environment](#setting-up-your-local-environment) and [developing](#developing)
+* Make the changes you would like (don't forget to test them with `make test`)
 * Open a pull request back to the PyScript project and address any comments/questions from the maintainers and other contributors.
 
 ## License terms for contributions

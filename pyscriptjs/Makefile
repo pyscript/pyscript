@@ -111,10 +111,4 @@ fmt-py:
 fmt-py-check:
 	$(conda_run) black -l 88 --check .
 
-lint: lint-ts
-	@echo "Format check completed"
-
-lint-ts:
-	$(conda_run) npm run lint
-
 .PHONY: $(MAKECMDGOALS)
