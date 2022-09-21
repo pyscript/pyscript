@@ -1,4 +1,4 @@
-import { TOML } from './fast-toml';
+import {toml} from './toml'
 import type { AppConfig } from "./runtime";
 
 const allKeys = {
@@ -185,7 +185,7 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
 function parseToml(configText: string) {
     let config: object;
     try {
-        config = TOML.parse(configText);
+        config = toml.parse(configText);
     }
     catch (err) {
         const errMessage: string = err.toString();
