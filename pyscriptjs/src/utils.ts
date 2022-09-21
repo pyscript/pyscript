@@ -1,3 +1,4 @@
+import jstoml from 'fast-toml';
 import type { AppConfig } from "./runtime";
 
 const allKeys = {
@@ -181,14 +182,27 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
     }
 }
 
+function parseToml(configText: string) {
+    let config: object;
+    try {
+        config = jstoml.parse(configText);
+    }
+    catch (err) {
+        const errMessage: string = err.toString();
+        showError(`<p>config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}</p>`);
+    }
+    return config;
+}
+
 function validateConfig(configText: string) {
     let config: object;
     try {
         config = JSON.parse(configText);
     }
     catch (err) {
+        config = parseToml(configText);
         const errMessage: string = err.toString();
-        showError(`<p>config supplied: ${configText} is invalid and cannot be parsed: ${errMessage}</p>`);
+        showError(`<p>config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}</p>`);
     }
 
     const finalConfig: AppConfig = {}

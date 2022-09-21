@@ -10,6 +10,17 @@ const covfefeConfig = {
     "wonerful": "discgrace"
 };
 
+const covfefeConfigToml = `
+name = "covfefe"
+
+wonerful = "highjacked"
+
+[[runtimes]]
+src = "/demo/covfefe.js"
+name = "covfefe"
+lang = "covfefe"
+`;
+
 import {jest} from '@jest/globals';
 
 customElements.define('py-config', PyConfig);
@@ -84,5 +95,32 @@ describe('PyConfig', () => {
         expect(instance.values.wonerful).toBe("highjacked");
         // version wasn't present in `config from src` but is still set due to merging with default and inline
         expect(instance.values.version).toBe("0.2a");
+    });
+
+    it('should be able to load an inline config in TOML format', () => {
+        instance.innerHTML = covfefeConfigToml;
+        instance.connectedCallback();
+        // @ts-ignore
+        expect(instance.values.runtimes[0].lang).toBe("covfefe");
+        expect(instance.values.pyscript?.time).not.toBeNull();
+        // version wasn't present in `inline config` but is still set due to merging with default
+        expect(instance.values.version).toBe("0.1");
+        expect(instance.values.wonerful).toBe("highjacked");
+    });
+
+    it('should be able to load an inline config in TOML format and a JSON config from src attribute', () => {
+        instance.innerHTML = covfefeConfigToml;
+        instance.setAttribute("src", "/covfefe.json");
+        instance.connectedCallback();
+        // @ts-ignore
+        expect(instance.values.runtimes[0].lang).toBe("covfefe");
+        expect(instance.values.pyscript?.time).not.toBeNull();
+        // config from src (JSON) had an extra key "wonerful" with value "discgrace"
+        // inline config (TOML) had the same extra key "wonerful" with value "highjacked"
+        // the merge process works for extra keys that clash as well
+        // so the final value is "highjacked" since inline takes precedence over src
+        expect(instance.values.wonerful).toBe("highjacked");
+        // version wasn't present in `config from src` but is still set due to merging with default
+        expect(instance.values.version).toBe("0.1");
     });
 });
