@@ -66,7 +66,9 @@ examples:
 	find ./examples/webgl -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../../build/+g {} \;
 	find ./examples -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../build/+g {} \;
 	npm run build
-	cp -R ./build/ ./examples/build
+	rm -rf ./examples/build
+	mkdir -p ./examples/build
+	cp -R ./build/* ./examples/build
 	@echo "To serve examples run: $(conda_run) python -m http.server 8080 --directory examples"
 
 # run prerequisites and serve pyscript examples at http://localhost:8000/examples/
@@ -82,7 +84,7 @@ test:
 
 test-integration:
 	make examples
-	$(PYTEST_EXE) -vvs $(ARGS) tests/integration/ --log-cli-level=warning
+	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning
 
 test-py:
 	@echo "Tests from $(src_dir)"
@@ -110,11 +112,5 @@ fmt-py:
 
 fmt-py-check:
 	$(conda_run) black -l 88 --check .
-
-lint: lint-ts
-	@echo "Format check completed"
-
-lint-ts:
-	$(conda_run) npm run lint
 
 .PHONY: $(MAKECMDGOALS)

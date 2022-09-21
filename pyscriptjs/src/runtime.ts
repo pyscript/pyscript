@@ -8,23 +8,43 @@ import {
     postInitializers,
     Initializer,
     scriptsQueue,
-    appConfig
-} from './stores'
+    appConfig,
+} from './stores';
+import { createCustomElements } from './components/elements';
 import type { PyScript } from './components/pyscript';
+import { getLogger } from './logger';
 
+const logger = getLogger('pyscript/runtime');
+
+export const version = "<<VERSION>>";
 export type RuntimeInterpreter = PyodideInterface | null;
 
+export interface AppConfig extends Record<string, any> {
+    name?: string;
+    description?: string;
+    version?: string;
+    schema_version?: number;
+    type?: string;
+    author_name?: string;
+    author_email?: string;
+    license?: string;
+    autoclose_loader?: boolean;
+    runtimes?: Array<RuntimeConfig>;
+    packages?: Array<string>;
+    paths?: Array<string>;
+    plugins?: Array<string>;
+    pyscript?: PyScriptMetadata;
+}
+
+export type PyScriptMetadata = {
+    version?: string;
+    time?: string;
+}
+
 export type RuntimeConfig = {
-    src: string;
+    src?: string;
     name?: string;
     lang?: string;
-};
-
-export type AppConfig = {
-    autoclose_loader: boolean;
-    name?: string;
-    version?: string;
-    runtimes?: Array<RuntimeConfig>;
 };
 
 let loader: PyLoader | undefined;
@@ -35,30 +55,26 @@ globalLoader.subscribe(value => {
 let initializers_: Initializer[];
 initializers.subscribe((value: Initializer[]) => {
     initializers_ = value;
-    console.log('initializers set');
 });
 
 let postInitializers_: Initializer[];
 postInitializers.subscribe((value: Initializer[]) => {
     postInitializers_ = value;
-    console.log('post initializers set');
 });
 
 let scriptsQueue_: PyScript[];
 scriptsQueue.subscribe((value: PyScript[]) => {
     scriptsQueue_ = value;
-    console.log('scripts queue set');
 });
 
 let appConfig_: AppConfig = {
-    autoclose_loader: true,
+    autoclose_loader: true
 };
 
 appConfig.subscribe((value: AppConfig) => {
     if (value) {
         appConfig_ = value;
     }
-    console.log('config set!');
 });
 
 /*
@@ -168,14 +184,19 @@ export abstract class Runtime extends Object {
         // now we call all post initializers AFTER we actually executed all page scripts
         loader?.log('Running post initializers...');
 
+        // Finally create the custom elements for pyscript such as pybutton
+        createCustomElements();
+
         if (appConfig_ && appConfig_.autoclose_loader) {
             loader?.close();
-            console.log('------ loader closed ------');
         }
 
         for (const initializer of postInitializers_) {
             await initializer();
         }
-        console.log('===PyScript page fully initialized===');
+        // NOTE: this message is used by integration tests to know that
+        // pyscript initialization has complete. If you change it, you need to
+        // change it also in tests/integration/support.py
+        logger.info('PyScript page fully initialized');
     }
 }

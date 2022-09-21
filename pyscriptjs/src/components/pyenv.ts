@@ -3,13 +3,15 @@ import * as jsyaml from 'js-yaml';
 import { runtimeLoaded, addInitializer } from '../stores';
 import { handleFetchError } from '../utils';
 import type { Runtime } from '../runtime';
+import { getLogger } from '../logger';
+
+const logger = getLogger('py-env');
 
 // Premise used to connect to the first available runtime (can be pyodide or others)
 let runtime: Runtime;
 
 runtimeLoaded.subscribe(value => {
     runtime = value;
-    console.log('RUNTIME READY');
 });
 
 export class PyEnv extends HTMLElement {
@@ -29,6 +31,7 @@ export class PyEnv extends HTMLElement {
     }
 
     connectedCallback() {
+        logger.info("The <py-env> tag is deprecated, please use <py-config> instead.")
         this.code = this.innerHTML;
         this.innerHTML = '';
 
@@ -55,13 +58,14 @@ export class PyEnv extends HTMLElement {
         this.paths = paths;
 
         async function loadEnv() {
+            logger.info("Loading env: ", env);
             await runtime.installPackage(env);
-            console.log('environment loaded');
         }
 
         async function loadPaths() {
+            logger.info("Paths to load: ", paths)
             for (const singleFile of paths) {
-                console.log(`loading ${singleFile}`);
+                logger.info(`  loading path: ${singleFile}`);
                 try {
                     await runtime.loadFromFile(singleFile);
                 } catch (e) {
@@ -69,11 +73,10 @@ export class PyEnv extends HTMLElement {
                     handleFetchError(<Error>e, singleFile);
                 }
             }
-            console.log('paths loaded');
+            logger.info("All paths loaded");
         }
 
         addInitializer(loadEnv);
         addInitializer(loadPaths);
-        console.log('environment loading...', this.env);
     }
 }

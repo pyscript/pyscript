@@ -8,28 +8,23 @@ on:
         -   pyscriptjs/**
         -   .github/workflows/build-latest.yml # Test that workflow works when changed
 
-    pull_request: # Run on any PR that modifies files in pyscriptjs/
+    pull_request: # Run on any PR that modifies files under pyscriptjs/
         branches:
         -   main
         paths:
         -   pyscriptjs/**
-        -   .github/workflows/build-latest.yml # Test that workflow works when changed
+        -   .github/workflows/build-unstable.yml # Test that workflow works when changed
     workflow_dispatch:
 
-env:
-    MINICONDA_PYTHON_VERSION: py38
-    MINICONDA_VERSION: 4.11.0
-
-defaults:
-    run:
-        working-directory: pyscriptjs
-
 jobs:
-    build:
+    BuildAndTest:
         runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            id-token: write
+        defaults:
+            run:
+                working-directory: pyscriptjs
+        env:
+            MINICONDA_PYTHON_VERSION: py38
+            MINICONDA_VERSION: 4.11.0
         steps:
 
         -   name: Checkout
@@ -59,20 +54,46 @@ jobs:
         -   name: Setup Environment
             run: make setup
 
-        -   name: Build and Test
-            run: make test
+        -   name: Build
+            run: make build
+
+        -   name: TypeScript Tests
+            run: make test-ts
+
+        -   name: Python Tests
+            run: make test-py
 
         -   name: Integration Tests
             run: make test-integration
 
+        -   uses: actions/upload-artifact@v3
+            with:
+                name: pyscript
+                path: |
+                    pyscriptjs/build/
+                if-no-files-found: error
+                retention-days: 7
+
+    Deploy:
+        runs-on: ubuntu-latest
+        needs: BuildAndTest
+        if: github.ref == 'refs/heads/main' # Only deploy on merge into main
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+        -   uses: actions/download-artifact@v3
+            with:
+                name: pyscript
+                path: ./build/
+
         # Deploy to S3
         -   name: Configure AWS credentials
-            if: github.ref == 'refs/heads/main' # Only deploy on merge into main
             uses: aws-actions/configure-aws-credentials@v1.6.1
             with:
-                aws-region: ${{secrets.AWS_REGION}}
+                aws-region: ${{ secrets.AWS_REGION }}
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
 
         -   name: Sync to S3
-            if: github.ref == 'refs/heads/main'
             run: aws s3 sync --quiet ./build/ s3://pyscript.net/unstable/

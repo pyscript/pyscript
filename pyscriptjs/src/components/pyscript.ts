@@ -10,6 +10,9 @@ import {
 import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
 import type { Runtime } from '../runtime';
+import { getLogger } from '../logger';
+
+const logger = getLogger('py-script');
 
 // Premise used to connect to the first available runtime (can be pyodide or others)
 let runtime: Runtime;
@@ -72,8 +75,6 @@ export class PyScript extends BaseEvalElement {
         this.appendChild(mainDiv);
         addToScriptsQueue(this);
 
-        console.log('connected');
-
         if (this.hasAttribute('src')) {
             this.source = this.getAttribute('src');
         }
@@ -100,7 +101,7 @@ export class PyScript extends BaseEvalElement {
                     // "can't read 'name' of undefined" at import time
                     exports = { ...(await import(url)) };
                 } catch {
-                    console.warn(`failed to fetch '${url}' for '${name}'`);
+                    logger.warn(`failed to fetch '${url}' for '${name}'`);
                     continue;
                 }
 
@@ -171,7 +172,7 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
         ["py-dragend", "dragend"],
         ["py-dragenter", "dragenter"],
         ["py-dragleave", "dragleave"],
-        ["pyon-dragover", "dragover"],
+        ["py-dragover", "dragover"],
         ["py-dragstart", "dragstart"],
         ["py-drop", "drop"],
         ["py-scroll", "scroll"],
@@ -209,9 +210,9 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
         ["py-toggle", "toggle"],
         ]);
 
-/** Initialize all elements with py-on* handlers attributes  */
+/** Initialize all elements with py-* handlers attributes  */
 async function initHandlers() {
-    console.log('Collecting nodes...');
+    logger.debug('Initializing py-* event handlers...');
     for (const pyAttribute of pyAttributeToEvent.keys()) {
         await createElementsWithEventListeners(runtime, pyAttribute);
     }
@@ -226,12 +227,20 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
         }
         const handlerCode = el.getAttribute(pyAttribute);
         const event = pyAttributeToEvent.get(pyAttribute);
-        const source = `
-        from pyodide.ffi import create_proxy
-        Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
-        `;
-        await runtime.run(source);
 
+        if (pyAttribute === 'pys-onClick' || pyAttribute === 'pys-onKeyDown'){
+            console.warn("Use of pys-onClick and pys-onKeyDown attributes is deprecated in favor of py-onClick() and py-onKeyDown(). pys-on* attributes will be deprecated in a future version of PyScript.")
+            const source = `
+            from pyodide.ffi import create_proxy
+            Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
+            `;
+            await runtime.run(source);
+        }
+        else{
+            el.addEventListener(event, () => {
+                (async() => {await runtime.run(handlerCode)})();
+            });
+        }
         // TODO: Should we actually map handlers in JS instead of Python?
         // el.onclick = (evt: any) => {
         //   console.log("click");
@@ -251,8 +260,8 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
 
 /** Mount all elements with attribute py-mount into the Python namespace */
 async function mountElements() {
-    console.log('Collecting nodes to be mounted into python namespace...');
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
+    logger.info(`py-mount: found ${matches.length} elements`);
 
     let source = '';
     for (const el of matches) {

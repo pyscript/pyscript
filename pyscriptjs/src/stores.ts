@@ -1,7 +1,8 @@
 import { writable } from 'svelte/store';
 import type { PyLoader } from './components/pyloader';
 import type { PyScript } from './components/pyscript';
-import type { Runtime } from './runtime';
+import type { Runtime, AppConfig } from './runtime';
+import { getLogger } from './logger';
 
 export type Initializer = () => Promise<void>;
 
@@ -28,20 +29,16 @@ export const scriptsQueue = writable<PyScript[]>([]);
 export const initializers = writable<Initializer[]>([]);
 export const postInitializers = writable<Initializer[]>([]);
 export const globalLoader = writable<PyLoader | undefined>();
-export const appConfig = writable();
+export const appConfig = writable<AppConfig>();
 
 export const addToScriptsQueue = (script: PyScript) => {
     scriptsQueue.update(scriptsQueue => [...scriptsQueue, script]);
 };
 
 export const addInitializer = (initializer: Initializer) => {
-    console.log('adding initializer', initializer);
     initializers.update(initializers => [...initializers, initializer]);
-    console.log('added initializer', initializer);
 };
 
 export const addPostInitializer = (initializer: Initializer) => {
-    console.log('adding post initializer', initializer);
     postInitializers.update(postInitializers => [...postInitializers, initializer]);
-    console.log('added post initializer', initializer);
 };

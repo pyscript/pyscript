@@ -1,3 +1,33 @@
+import type { AppConfig } from "./runtime";
+
+const allKeys = {
+    "string": ["name", "description", "version", "type", "author_name", "author_email", "license"],
+    "number": ["schema_version"],
+    "boolean": ["autoclose_loader"],
+    "array": ["runtimes", "packages", "paths", "plugins"]
+};
+
+const defaultConfig: AppConfig = {
+    "name": "pyscript",
+    "description": "default config",
+    "version": "0.1",
+    "schema_version": 1,
+    "type": "app",
+    "author_name": "anonymous coder",
+    "author_email": "foo@bar.com",
+    "license": "Apache",
+    "autoclose_loader": true,
+    "runtimes": [{
+        "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
+        "name": "pyodide-0.21.2",
+        "lang": "python"
+    }],
+    "packages": [],
+    "paths": [],
+    "plugins": []
+}
+
+
 function addClasses(element: HTMLElement, classes: Array<string>) {
     for (const entry of classes) {
         element.classList.add(entry);
@@ -84,11 +114,124 @@ function handleFetchError(e: Error, singleFile: string) {
     showError(errorContent);
 }
 
-/**
- * determines if the process is running inside the testing suite i.e. jest
- */
-function inJest(): boolean {
-    return process.env.JEST_WORKER_ID !== undefined;
+function readTextFromPath(path: string) {
+    const request = new XMLHttpRequest();
+    request.open("GET", path, false);
+    request.send();
+    const returnValue = request.responseText;
+
+    return returnValue;
 }
 
-export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, inJest };
+function inJest(): boolean {
+    return typeof process === 'object' && process.env.JEST_WORKER_ID !== undefined;
+}
+
+function fillUserData(inputConfig: AppConfig, resultConfig: AppConfig): AppConfig
+{
+    for (const key in inputConfig)
+    {
+        // fill in all extra keys ignored by the validator
+        if (!(key in defaultConfig))
+        {
+            resultConfig[key] = inputConfig[key];
+        }
+    }
+    return resultConfig;
+}
+
+function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppConfig {
+    if (Object.keys(inlineConfig).length === 0 && Object.keys(externalConfig).length === 0)
+    {
+        return defaultConfig;
+    }
+    else if (Object.keys(inlineConfig).length === 0)
+    {
+        return externalConfig;
+    }
+    else if(Object.keys(externalConfig).length === 0)
+    {
+        return inlineConfig;
+    }
+    else
+    {
+        let merged: AppConfig = {};
+
+        for (const keyType in allKeys)
+        {
+            const keys = allKeys[keyType];
+            keys.forEach(function(item: string){
+                if (keyType === "boolean")
+                {
+                    merged[item] = (typeof inlineConfig[item] !== "undefined") ? inlineConfig[item] : externalConfig[item];
+                }
+                else
+                {
+                    merged[item] = inlineConfig[item] || externalConfig[item];
+                }
+            });
+        }
+
+        // fill extra keys from external first
+        // they will be overridden by inline if extra keys also clash
+        merged = fillUserData(externalConfig, merged);
+        merged = fillUserData(inlineConfig, merged);
+
+        return merged;
+    }
+}
+
+function validateConfig(configText: string) {
+    let config: object;
+    try {
+        config = JSON.parse(configText);
+    }
+    catch (err) {
+        const errMessage: string = err.toString();
+        showError(`<p>config supplied: ${configText} is invalid and cannot be parsed: ${errMessage}</p>`);
+    }
+
+    const finalConfig: AppConfig = {}
+
+    for (const keyType in allKeys)
+    {
+        const keys = allKeys[keyType];
+        keys.forEach(function(item: string){
+            if (validateParamInConfig(item, keyType, config))
+            {
+                if (item === "runtimes")
+                {
+                    finalConfig[item] = [];
+                    const runtimes = config[item];
+                    runtimes.forEach(function(eachRuntime: object){
+                        const runtimeConfig: object = {};
+                        for (const eachRuntimeParam in eachRuntime)
+                        {
+                            if (validateParamInConfig(eachRuntimeParam, "string", eachRuntime))
+                            {
+                                runtimeConfig[eachRuntimeParam] = eachRuntime[eachRuntimeParam];
+                            }
+                        }
+                        finalConfig[item].push(runtimeConfig);
+                    });
+                }
+                else
+                {
+                    finalConfig[item] = config[item];
+                }
+            }
+        });
+    }
+
+    return fillUserData(config, finalConfig);
+}
+
+function validateParamInConfig(paramName: string, paramType: string, config: object): boolean {
+    if (paramName in config)
+    {
+        return paramType === "array" ? Array.isArray(config[paramName]) : typeof config[paramName] === paramType;
+    }
+    return false;
+}
+
+export { defaultConfig, addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, mergeConfig, validateConfig };
