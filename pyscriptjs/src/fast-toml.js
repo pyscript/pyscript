@@ -1,3 +1,5 @@
+// taken from https://github.com/Gin-Quin/fast-toml
+/* eslint-disable */
 export const TOML = (function () {
     "use strict";
     let e = "",
@@ -440,4 +442,3 @@ export const TOML = (function () {
       h
     );
   })();
-  
