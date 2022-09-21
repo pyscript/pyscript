@@ -66,7 +66,9 @@ examples:
 	find ./examples/webgl -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../../build/+g {} \;
 	find ./examples -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../build/+g {} \;
 	npm run build
-	cp -R ./build/ ./examples/build
+	rm -rf ./examples/build
+	mkdir -p ./examples/build
+	cp -R ./build/* ./examples/build
 	@echo "To serve examples run: $(conda_run) python -m http.server 8080 --directory examples"
 
 # run prerequisites and serve pyscript examples at http://localhost:8000/examples/
