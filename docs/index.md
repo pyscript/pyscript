@@ -27,7 +27,7 @@ Check out our [getting started guide](tutorials/getting-started.md)!
 You already know the basics and want to learn specifics!
 
 [Passing Objects between JavaScript and Python](howtos/passing-objects.md)
-[Making async HTTP requests in pure python](howtos/http-requests.md)
+[Making async HTTP requests in pure Python](howtos/http-requests.md)
 
 :::
 :::{grid-item-card} [Concepts](concepts/index.md)

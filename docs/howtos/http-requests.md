@@ -1,27 +1,27 @@
-# How to make HTTP requests using `PyScript`, in pure Python
+# How to make HTTP requests using `PyScript`, in pure `Python`
 
 [Pyodide](https://pyodide.org), the runtime that underlies `PyScript`, does not have the `requests` module
-(or other similar modules) available by default, which are traditionally used to make HTTP requests in Python.
+(or other similar modules) available by default, which are traditionally used to make HTTP requests in `Python`.
 However, it is possible to make HTTP requests in Pyodide using the modern `JavaScript` `fetch` API
 ([docs](https://developer.mozilla.org/en-US/docs/Web/API/fetch)). This example shows how to make common HTTP request
-(GET, POST, PUT, DELETE) to an API, using only python code! We will use asynchronous functions with
+(GET, POST, PUT, DELETE) to an API, using only `Python` code! We will use asynchronous functions with
 async/await syntax, as concurrent code is preferred for HTTP requests.
 
 The purpose of this guide is not to teach the basics of HTTP requests, but to show how to make them
-from `PyScript` using python, since currently, the common tools such as `requests` and `httpx` are not available.
+from `PyScript` using `Python`, since currently, the common tools such as `requests` and `httpx` are not available.
 
 ## Fetch
 
 The `fetch` API is a modern way to make HTTP requests. It is available in all modern browsers, and in Pyodide.
 
-Although there are two ways to use `fetch`, 1) using `JavaScript` from `PyScript`, and 2) using Pyodide's python wrapper,
-`Pyodide.http.pyfetch`, this example will only show how to use the python wrapper. Still, the
+Although there are two ways to use `fetch`, 1) using `JavaScript` from `PyScript`, and 2) using Pyodide's `Python` wrapper,
+`Pyodide.http.pyfetch`, this example will only show how to use the `Python` wrapper. Still, the
 [fetch documentation](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters) is a useful reference, as its
-parameters can be called from python using the `pyfetch` wrapper.
+parameters can be called from `Python` using the `pyfetch` wrapper.
 
 ## Pyodide.http, pyfetch, and FetchResponse
 
-[Pyodide.http module](https://pyodide.org/en/stable/usage/api/python-api/http.html#module-pyodide.http) is a python API
+[Pyodide.http module](https://pyodide.org/en/stable/usage/api/python-api/http.html#module-pyodide.http) is a `Python` API
 for dealing with HTTP requests. It provides the `pyfetch` function as a wrapper for the `fetch` API,
 which returns a `FetchResponse` object whenever a request is made. Extra keyword arguments can be passed to `pyfetch`
 which will be passed to the `fetch` API.
@@ -32,11 +32,11 @@ for dealing with the response, such as `json()` or `status`. See the
 for more information.
 
 # Example
-We will make async HTTP requests to [JSONPlaceholder](https://jsonplaceholder.typicode.com/) fake API using `pyfetch`.
-First we write a helper function in pure python that makes a request and returns the response. This function
+We will make async HTTP requests to [JSONPlaceholder](https://jsonplaceholder.typicode.com/)'s fake API using `pyfetch`.
+First we write a helper function in pure `Python` that makes a request and returns the response. This function
 makes it easier to make specific types of requests with the most common parameters.
 
-## Python convenience function
+## `Python` convenience function
 
 ```python
 from pyodide.http import pyfetch, FetchResponse
@@ -71,15 +71,15 @@ so it must be awaited. It also has type hints, which are not required, but are u
 The basic idea is that the `PyScript` will import and call this function, then await the response. Therefore,
 the script containing this function must be importable by `PyScript`.
 
-For this example, we will name the file `request.py` and place it in the same directory as the file
-containing the html code below.
+For this example, we will name the file containing the `Python` code `request.py` and place it in the same directory as the file
+containing the html code, which is described below.
 
 ## `PyScript` HTML code
 
-In this How-to, the HTML code is split into separate code blocks to enable context highlighting (coloring of the python
+In this How-to, the HTML code is split into separate code blocks to enable context highlighting (coloring of the `Python`
 code inside the html code block), but in reality it is all in the same file. The first part is a bare bones `PyScript`
 html page, using the [community examples](https://github.com/pyscript/pyscript-collective/) set-up. The second part is
-the actual python code for HTTP requests, which is wrapped in `<py-script>` tags, while the third block has the
+the actual `Python` code for HTTP requests, which is wrapped in `<py-script>` tags, while the third block has the
 concluding html code.
 
 ```html
@@ -153,12 +153,12 @@ print(f"DELETE request=> status:{new_post.status}, json:{await new_post.json()}"
 ```
 
 ## Explanation
-### `py-env` tag for importing our python code
-The very first thing to notice is the `py-env` tag. This tag is used to import python files into the `PyScript`.
+### `py-env` tag for importing our `Python` code
+The very first thing to notice is the `py-env` tag. This tag is used to import `Python` files into the `PyScript`.
 In this case, we are importing the `request.py` file, which contains the `request` function we wrote above.
 
 ### `py-script` tag for making async HTTP requests.
-Next, the `py-script` tag contains the actual python code where we import `asyncio` and `json`,
+Next, the `py-script` tag contains the actual `Python` code where we import `asyncio` and `json`,
 which are required or helpful for the `request` function.
 The `# GET`, `# POST`, `# PUT`, `# DELETE` blocks show examples of how to use the `request` function to make basic
 HTTP requests. The `await` keyword is required not only for the `request` function, but also for certain methods of the
@@ -180,7 +180,7 @@ HTTP requests are defined by standards-setting bodies in [RFC 1945](https://www.
 [RFC 9110](https://www.rfc-editor.org/info/rfc9110).
 
 # Conclusion
-This tutorial demonstrates how to make HTTP requests using `pyfetch` and the `FetchResponse` objects. Importing python
+This tutorial demonstrates how to make HTTP requests using `pyfetch` and the `FetchResponse` objects. Importing `Python`
 code/files into the `PyScript` using the `py-env` tag is also covered.
 
 Although a simple example, the principals here can be used to create complex web applications inside of `PyScript`,
