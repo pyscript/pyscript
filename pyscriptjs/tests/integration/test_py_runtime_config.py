@@ -54,7 +54,7 @@ class TestRuntimeConfig(PyScriptTest):
             </py-script>
         """,
             extra_head="""
-            <py-config>
+            <py-config type="json">
                 {
                     "runtimes": [{
                         "src": "/pyodide/pyodide.js",

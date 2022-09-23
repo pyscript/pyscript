@@ -1,3 +1,4 @@
+import {toml} from './toml'
 import type { AppConfig } from "./runtime";
 
 const allKeys = {
@@ -181,15 +182,43 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
     }
 }
 
-function validateConfig(configText: string) {
+function parseConfig(configText: string, configType = "toml") {
     let config: object;
-    try {
-        config = JSON.parse(configText);
+    if (configType === "toml") {
+        try {
+            // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
+            if (configText.trim()[0] === "{")
+            {
+                const errMessage = `config supplied: ${configText} is an invalid TOML and cannot be parsed`;
+                showError(`<p>${errMessage}</p>`);
+                throw Error(errMessage);
+            }
+            config = toml.parse(configText);
+        }
+        catch (err) {
+            const errMessage: string = err.toString();
+            showError(`<p>config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}</p>`);
+            throw err;
+        }
     }
-    catch (err) {
-        const errMessage: string = err.toString();
-        showError(`<p>config supplied: ${configText} is invalid and cannot be parsed: ${errMessage}</p>`);
+    else if (configType === "json") {
+        try {
+            config = JSON.parse(configText);
+        }
+        catch (err) {
+            const errMessage: string = err.toString();
+            showError(`<p>config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}</p>`);
+            throw err;
+        }
     }
+    else {
+        showError(`<p>type of config supplied is: ${configType}, supported values are ["toml", "json"].</p>`);
+    }
+    return config;
+}
+
+function validateConfig(configText: string, configType = "toml") {
+    const config = parseConfig(configText, configType);
 
     const finalConfig: AppConfig = {}
 

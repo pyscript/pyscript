@@ -39,22 +39,22 @@ export class PyConfig extends BaseEvalElement {
         super();
     }
 
-    extractFromSrc() {
+    extractFromSrc(configType: string) {
         if (this.hasAttribute('src'))
         {
             logger.info('config set from src attribute');
-            return validateConfig(readTextFromPath(this.getAttribute('src')));
+            return validateConfig(readTextFromPath(this.getAttribute('src')), configType);
         }
         return {};
     }
 
-    extractFromInline() {
+    extractFromInline(configType: string) {
         if (this.innerHTML!=='')
         {
             this.code = this.innerHTML;
             this.innerHTML = '';
             logger.info('config set from inline');
-            return validateConfig(this.code);
+            return validateConfig(this.code, configType);
         }
         return {};
     }
@@ -67,8 +67,9 @@ export class PyConfig extends BaseEvalElement {
     }
 
     connectedCallback() {
-        let srcConfig = this.extractFromSrc();
-        const inlineConfig = this.extractFromInline();
+        const configType: string = this.hasAttribute("type") ? this.getAttribute("type") : "toml";
+        let srcConfig = this.extractFromSrc(configType);
+        const inlineConfig = this.extractFromInline(configType);
         // first make config from src whole if it is partial
         srcConfig = mergeConfig(srcConfig, defaultConfig);
         // then merge inline config and config from src
