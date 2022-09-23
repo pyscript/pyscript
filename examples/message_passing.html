@@ -7,11 +7,13 @@
 </head>
 
 <body>
-    <py-env>
-        - numpy
-        - networkx
-        - matplotlib
-    </py-env>
+    <py-config>
+packages = [
+    "numpy",
+    "networkx",
+    "matplotlib"
+]
+    </py-config>
     <py-script>
 import numpy as np
 import networkx as nx

@@ -43,13 +43,15 @@
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
 
-  <py-env>
-    - altair
-    - numpy
-    - pandas
-    - scikit-learn
-    - panel==0.13.1
-  </py-env>
+  <py-config>
+packages = [
+  "altair",
+  "numpy",
+  "pandas",
+  "scikit-learn",
+  "panel==0.13.1"
+]
+  </py-config>
 
   <body>
     <div class="container-fluid d-flex flex-column vh-100 overflow-hidden" id="container">

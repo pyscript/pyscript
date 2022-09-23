@@ -78,13 +78,18 @@
         </div>
       </div>
 
-<py-env>
-- numpy
-- sympy
-- paths:
-  - ./palettes.py
-  - ./fractals.py
-</py-env>
+<py-config type="json">
+{
+  "packages": [
+    "numpy",
+    "sympy"
+  ],
+  "paths": [
+    "./palettes.py",
+    "./fractals.py"
+  ]
+}
+</py-config>
 
 <py-script>
 from pyodide.ffi import to_js, create_proxy

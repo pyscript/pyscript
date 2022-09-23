@@ -5,11 +5,13 @@
     <link rel="icon" type="image/x-icon" href="./favicon.png">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <py-env>
-      - altair
-      - pandas
-      - vega_datasets
-    </py-env>
+    <py-config>
+packages = [
+    "altair",
+    "pandas",
+    "vega_datasets"
+]
+    </py-config>
     </head>
     <body>
       <div id="altair" style="width: 100%; height: 100%"></div>

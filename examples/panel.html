@@ -10,11 +10,13 @@
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
-  <py-env>
-    - bokeh
-    - numpy
-    - panel==0.13.1
-  </py-env>
+  <py-config>
+packages = [
+    "bokeh",
+    "numpy",
+    "panel==0.13.1"
+]
+  </py-config>
   <body>
     <h1>Panel Example</h1>
     <div id="simple_app"></div>
