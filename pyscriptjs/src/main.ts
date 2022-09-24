@@ -4,7 +4,6 @@ import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
 import { PyScript } from './components/pyscript';
-import { PyEnv } from './components/pyenv';
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
@@ -31,7 +30,6 @@ class PyScriptApp {
         /* eslint-disable @typescript-eslint/no-unused-vars */
         const xPyScript = customElements.define('py-script', PyScript);
         const xPyLoader = customElements.define('py-loader', PyLoader);
-        const xPyEnv = customElements.define('py-env', PyEnv);
         /* eslint-disable @typescript-eslint/no-unused-vars */
 
         // add loader to the page body
