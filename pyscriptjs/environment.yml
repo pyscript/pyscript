@@ -11,6 +11,7 @@ dependencies:
 -   isort
 -   codespell
 -   pre-commit
+-   pillow
 
 -   pip:
     -   playwright

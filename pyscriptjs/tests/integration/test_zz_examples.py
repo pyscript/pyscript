@@ -1,8 +1,13 @@
+import base64
+import io
 import math
+import os
 import re
 import time
 
+import numpy as np
 import pytest
+from PIL import Image
 
 from .support import ROOT, PyScriptTest
 
@@ -80,7 +85,6 @@ class TestExamples(PyScriptTest):
         wait_for_render(self.page, "*", '<canvas.*?class=\\"marks\\".*?>')
         save_as_png_link = self.page.locator("text=Save as PNG")
         see_source_link = self.page.locator("text=View Source")
-
         # These shouldn't be visible since we didn't click the menu
         assert not save_as_png_link.is_visible()
         assert not see_source_link.is_visible()
@@ -143,11 +147,27 @@ class TestExamples(PyScriptTest):
         zoom_out.click()
 
     def test_matplotlib(self):
-        # Can't do much here since we are rendering an image
         self.goto("examples/matplotlib.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Matplotlib"
         wait_for_render(self.page, "*", "<img src=['\"]data:image")
+        # The image is being rended using base64, lets fetch its source
+        # and replace everything but the actual base64 string.\
+        img_src = (
+            self.page.wait_for_selector("img")
+            .get_attribute("src")
+            .replace("data:image/png;charset=utf-8;base64,", "")
+        )
+        # Finally, let's  get the np array from the previous data
+        img_data = np.asarray(Image.open(io.BytesIO(base64.b64decode(img_src))))
+        with Image.open(
+            os.path.join(os.path.dirname(__file__), "test_assets", "tripcolor.png"),
+        ) as image:
+            ref_data = np.asarray(image)
+        # Now that we have both images data as a numpy array
+        # let's confirm that they are the same
+        deviation = np.mean(np.abs(img_data - ref_data))
+        assert deviation == 0.0
 
     def test_numpy_canvas_fractals(self):
         self.goto("examples/numpy_canvas_fractals.html")
