@@ -1,5 +1,5 @@
 # SNAPSHOT PUBLISHING
-# Copy /unstable/ to shapshots/2022.09.1.RC1/
+# Copy /unstable/ to /snapshots/2022.09.1.RC1/
 
 on:
     workflow_dispatch:
