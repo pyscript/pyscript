@@ -1,4 +1,4 @@
-# SNAPSHOT PUBLISHING
+name: '[CI] Publish Snapshot'
 # Copy /unstable/ to /snapshots/2022.09.1.RC1/
 
 on:
