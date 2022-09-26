@@ -12,6 +12,7 @@ dependencies:
 -   codespell
 -   pre-commit
 -   pillow
+-   numpy
 
 -   pip:
     -   playwright
