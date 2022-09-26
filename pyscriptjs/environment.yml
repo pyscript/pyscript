@@ -11,6 +11,8 @@ dependencies:
 -   isort
 -   codespell
 -   pre-commit
+-   pillow
+-   numpy
 
 -   pip:
     -   playwright

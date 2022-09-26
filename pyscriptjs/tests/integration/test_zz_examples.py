@@ -1,8 +1,13 @@
+import base64
+import io
 import math
+import os
 import re
 import time
 
+import numpy as np
 import pytest
+from PIL import Image
 
 from .support import ROOT, PyScriptTest
 
@@ -80,7 +85,6 @@ class TestExamples(PyScriptTest):
         wait_for_render(self.page, "*", '<canvas.*?class=\\"marks\\".*?>')
         save_as_png_link = self.page.locator("text=Save as PNG")
         see_source_link = self.page.locator("text=View Source")
-
         # These shouldn't be visible since we didn't click the menu
         assert not save_as_png_link.is_visible()
         assert not see_source_link.is_visible()
@@ -105,32 +109,66 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*?class=\\"bk\\".*?>')
 
-    @pytest.mark.xfail(reason="Flaky test #759")
     def test_d3(self):
-        # XXX improve this test
         self.goto("examples/d3.html")
         self.wait_for_pyscript()
         assert (
             self.page.title() == "d3: JavaScript & PyScript visualizations side-by-side"
         )
         wait_for_render(self.page, "*", "<svg.*?>")
+        assert "PyScript version" in self.page.content()
+        pyscript_chart = self.page.wait_for_selector("#py")
+
+        # Let's simply assert that the text of the chart is as expected which
+        # means that the chart rendered successfully and with the right text
+        assert "🍊21\n🍇13\n🍏8\n🍌5\n🍐3\n🍋2\n🍎1\n🍉1" in pyscript_chart.inner_text()
 
     def test_folium(self):
-        # XXX improve this test
         self.goto("examples/folium.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Folium"
         wait_for_render(self.page, "*", "<iframe srcdoc=")
 
+        # We need to look into the iframe first
+        iframe = self.page.frame_locator("iframe")
+
+        # Just checking that legend was rendered correctly
+        legend = iframe.locator("#legend")
+        assert "Unemployment Rate (%)" in legend.inner_html()
+
+        # Let's check that the zoom buttons are rendered and clickable
+        # Note: if element is not clickable it will timeout
+        zoom_in = iframe.locator("[aria-label='Zoom in']")
+        assert "+" in zoom_in.inner_text()
+        zoom_in.click()
+        zoom_out = iframe.locator("[aria-label='Zoom out']")
+        assert "−" in zoom_out.inner_text()
+        zoom_out.click()
+
     def test_matplotlib(self):
-        # XXX improve this test
         self.goto("examples/matplotlib.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Matplotlib"
         wait_for_render(self.page, "*", "<img src=['\"]data:image")
+        # The image is being rended using base64, lets fetch its source
+        # and replace everything but the actual base64 string.\
+        img_src = (
+            self.page.wait_for_selector("img")
+            .get_attribute("src")
+            .replace("data:image/png;charset=utf-8;base64,", "")
+        )
+        # Finally, let's  get the np array from the previous data
+        img_data = np.asarray(Image.open(io.BytesIO(base64.b64decode(img_src))))
+        with Image.open(
+            os.path.join(os.path.dirname(__file__), "test_assets", "tripcolor.png"),
+        ) as image:
+            ref_data = np.asarray(image)
+        # Now that we have both images data as a numpy array
+        # let's confirm that they are the same
+        deviation = np.mean(np.abs(img_data - ref_data))
+        assert deviation == 0.0
 
     def test_numpy_canvas_fractals(self):
-        # XXX improve this test
         self.goto("examples/numpy_canvas_fractals.html")
         self.wait_for_pyscript()
         assert (
@@ -141,12 +179,57 @@ class TestExamples(PyScriptTest):
             self.page, "*", "<div.*?id=['\"](mandelbrot|julia|newton)['\"].*?>"
         )
 
+        # Assert that we get the title and canvas for each element
+        mandelbrot = self.page.wait_for_selector("#mandelbrot")
+        assert "Mandelbrot set" in mandelbrot.inner_text()
+        assert "<canvas" in mandelbrot.inner_html()
+
+        julia = self.page.wait_for_selector("#julia")
+        assert "Julia set" in julia.inner_text()
+        assert "<canvas" in julia.inner_html()
+
+        newton = self.page.wait_for_selector("#newton")
+        assert "Newton set" in newton.inner_text()
+        assert "<canvas" in newton.inner_html()
+
+        # Confirm that all fieldsets are rendered correctly
+        poly = newton.wait_for_selector("#poly")
+        assert poly.input_value() == "z**3 - 2*z + 2"
+
+        coef = newton.wait_for_selector("#coef")
+        assert coef.input_value() == "1"
+
+        # Let's now change some x/y values to confirm that they
+        # are editable (is it the best way to test this?)
+        x0 = newton.wait_for_selector("#x0")
+        y0 = newton.wait_for_selector("#y0")
+
+        x0.fill("50")
+        assert x0.input_value() == "50"
+        y0.fill("-25")
+        assert y0.input_value() == "-25"
+
+        # This was the first computation with the default values
+        assert self.console.log.lines[-2] == "Computing Newton set ..."
+        # Confirm that changing the input values, triggered a new computation
+        assert self.console.log.lines[-1] == "Computing Newton set ..."
+
     def test_panel(self):
-        # XXX improve this test
         self.goto("examples/panel.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Panel Example"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
+        slider_title = self.page.wait_for_selector(".bk-slider-title")
+        assert slider_title.inner_text() == "Amplitude: 0"
+
+        slider_result = self.page.wait_for_selector(".bk-clearfix")
+        assert slider_result.inner_text() == "Amplitude is: 0"
+
+        amplitude_bar = self.page.wait_for_selector(".noUi-connects")
+        amplitude_bar.click()
+
+        # Let's confirm that slider title changed
+        assert slider_title.inner_text() == "Amplitude: 5"
 
     def test_panel_deckgl(self):
         # XXX improve this test
@@ -190,7 +273,6 @@ class TestExamples(PyScriptTest):
         )
         assert second_repl_result.text_content() == "4"
 
-    @pytest.mark.xfail(reason="Test seems flaky")
     def test_repl2(self):
         self.goto("examples/repl2.html")
         self.wait_for_pyscript()
