@@ -23,4 +23,4 @@ jobs:
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
         -   name: Sync to S3
             run: >
-                aws s3 sync --dryrun s3://pyscript.net/unstable/ s3://pyscript.net/snapshots/${{ inputs.snapshot_version }}/
+                aws s3 sync s3://pyscript.net/unstable/ s3://pyscript.net/snapshots/${{ inputs.snapshot_version }}/
