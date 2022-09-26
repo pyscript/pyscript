@@ -167,7 +167,7 @@ describe('PyConfig', () => {
         expect(instance.details.childNodes[0].innerText).toBe('this is a log');
     });
 
-    it('confirm that calling close removes element', async () => {
+    it('confirm that calling close would call this.remove', async () => {
         instance.remove = jest.fn();
         instance.close();
         expect(instance.remove).toHaveBeenCalled();
