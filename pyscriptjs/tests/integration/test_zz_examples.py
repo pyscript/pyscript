@@ -128,7 +128,6 @@ class TestExamples(PyScriptTest):
         self.wait_for_pyscript()
         assert self.page.title() == "Folium"
         wait_for_render(self.page, "*", "<iframe srcdoc=")
-        # assert "Unemployment Rate (%)" in self.page.content()
 
         # We need to look into the iframe first
         iframe = self.page.frame_locator("iframe")
