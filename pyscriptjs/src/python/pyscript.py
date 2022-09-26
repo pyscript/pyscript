@@ -131,11 +131,12 @@ def set_current_display_target(element):
     CURRENT_PY_SCRIPT_TAG = element
 
 
-def display(value, parent=None, append=True):
+def display(*value, parent=None, append=True):
     if parent is None:
         global CURRENT_PY_SCRIPT_TAG
         parent = CURRENT_PY_SCRIPT_TAG
-    Element(parent).write(value, append)
+        for v in value:
+            Element(parent).write(v, append)
 
 
 class Element:
@@ -180,7 +181,7 @@ class Element:
         if mime_type in ("application/javascript", "text/html"):
             script_element = document.createRange().createContextualFragment(html)
             out_element.appendChild(script_element)
-        elif hasattr(out_element, "innerHTML"):
+        else:
             out_element.innerHTML = html
 
     def clear(self):
