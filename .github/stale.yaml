@@ -6,8 +6,9 @@ daysUntilClose: 7
 
 # Issues with these labels will never be considered stale
 exemptLabels:
--   pinned
--   security
+-   backlog
+-   needs-triage
+-   needs-work
 
 # Label to use when marking an issue as stale
 staleLabel: stale
