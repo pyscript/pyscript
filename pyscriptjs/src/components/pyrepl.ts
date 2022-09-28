@@ -1,5 +1,6 @@
-import { basicSetup, EditorState, EditorView } from '@codemirror/basic-setup';
+import { basicSetup, EditorView } from 'codemirror';
 import { python } from '@codemirror/lang-python';
+import { indentUnit } from '@codemirror/language'
 import { Compartment, StateCommand } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
@@ -59,10 +60,8 @@ export class PyRepl extends BaseEvalElement {
         }
 
         this.editor = new EditorView({
-            state: EditorState.create({
-                doc: this.code.trim(),
-                extensions,
-            }),
+            doc: this.code.trim(),
+            extensions,
             parent: this.editorNode,
         });
 
