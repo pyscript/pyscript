@@ -46,6 +46,7 @@ export class PyRepl extends BaseEvalElement {
         const languageConf = new Compartment();
 
         const extensions = [
+            indentUnit.of("    "),
             basicSetup,
             languageConf.of(python()),
             keymap.of([
