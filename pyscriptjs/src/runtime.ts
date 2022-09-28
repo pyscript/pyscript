@@ -176,11 +176,9 @@ export abstract class Runtime extends Object {
         }
 
         loader?.log('Initializing scripts...');
-        const scriptPromises = [];
         for (const script of scriptsQueue_) {
-            scriptPromises.push( script.evaluate() );
+            void script.evaluate();
         }
-        await Promise.all(scriptPromises);
         scriptsQueue.set([]);
 
         // now we call all post initializers AFTER we actually executed all page scripts
