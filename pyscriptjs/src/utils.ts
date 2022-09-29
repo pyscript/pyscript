@@ -16,7 +16,9 @@ const defaultConfig: AppConfig = {
         "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
         "name": "pyodide-0.21.2",
         "lang": "python"
-    }]
+    }],
+    "packages":[],
+    "paths":[]
 }
 
 function addClasses(element: HTMLElement, classes: Array<string>) {
