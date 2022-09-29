@@ -25,6 +25,42 @@ function pyscript_get_config() {
 globalExport('pyscript_get_config', pyscript_get_config);
 
 
+function loadConfigFromElement(el: HTMLElement): AppConfig {
+    const configType: string = el.hasAttribute("type") ? el.getAttribute("type") : "toml";
+    let srcConfig = extractFromSrc(el, configType);
+    const inlineConfig = extractFromInline(el, configType);
+    // first make config from src whole if it is partial
+    srcConfig = mergeConfig(srcConfig, defaultConfig);
+    // then merge inline config and config from src
+    const result = mergeConfig(inlineConfig, srcConfig);
+    result.pyscript = {
+        "version": version,
+        "time": new Date().toISOString()
+    };
+    return result;
+}
+
+function extractFromSrc(el: HTMLElement, configType: string) {
+    if (el.hasAttribute('src'))
+    {
+        logger.info('config set from src attribute');
+        return validateConfig(readTextFromPath(el.getAttribute('src')), configType);
+    }
+    return {};
+}
+
+
+function extractFromInline(el: HTMLElement, configType: string) {
+    if (el.innerHTML!=='')
+    {
+        logger.info('config set from inline');
+        return validateConfig(el.innerHTML, configType);
+    }
+    return {};
+}
+
+
+
 /**
  * Configures general metadata about the PyScript application such
  * as a list of runtimes, name, version, closing the loader
@@ -45,43 +81,8 @@ export class PyConfig extends BaseEvalElement {
         super();
     }
 
-    extractFromSrc(configType: string) {
-        if (this.hasAttribute('src'))
-        {
-            logger.info('config set from src attribute');
-            return validateConfig(readTextFromPath(this.getAttribute('src')), configType);
-        }
-        return {};
-    }
-
-    extractFromInline(configType: string) {
-        if (this.innerHTML!=='')
-        {
-            this.code = this.innerHTML;
-            this.innerHTML = '';
-            logger.info('config set from inline');
-            return validateConfig(this.code, configType);
-        }
-        return {};
-    }
-
-    injectMetadata() {
-        this.values.pyscript = {
-            "version": version,
-            "time": new Date().toISOString()
-        };
-    }
-
     connectedCallback() {
-        const configType: string = this.hasAttribute("type") ? this.getAttribute("type") : "toml";
-        let srcConfig = this.extractFromSrc(configType);
-        const inlineConfig = this.extractFromInline(configType);
-        // first make config from src whole if it is partial
-        srcConfig = mergeConfig(srcConfig, defaultConfig);
-        // then merge inline config and config from src
-        this.values = mergeConfig(inlineConfig, srcConfig);
-        this.injectMetadata();
-
+        this.values = loadConfigFromElement(this);
         appConfig.set(this.values);
         logger.info('config set:', this.values);
 

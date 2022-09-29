@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import type { AppConfig, RuntimeConfig } from '../../src/runtime';
+import type { AppConfig, RuntimeConfig } from '../../src/config';
 import { PyConfig } from '../../src/components/pyconfig';
 // inspired by trump typos
 const covfefeConfig = {
@@ -154,7 +154,6 @@ describe('PyConfig', () => {
 
         instance.connectedCallback();
 
-        expect(instance.code).toBe('test');
         expect(instance.values['0']).toBe('test');
     });
 
