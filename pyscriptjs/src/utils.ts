@@ -9,25 +9,15 @@ const allKeys = {
 };
 
 const defaultConfig: AppConfig = {
-    "name": "pyscript",
-    "description": "default config",
-    "version": "0.1",
     "schema_version": 1,
     "type": "app",
-    "author_name": "anonymous coder",
-    "author_email": "foo@bar.com",
-    "license": "Apache",
     "autoclose_loader": true,
     "runtimes": [{
         "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
         "name": "pyodide-0.21.2",
         "lang": "python"
-    }],
-    "packages": [],
-    "paths": [],
-    "plugins": []
+    }]
 }
-
 
 function addClasses(element: HTMLElement, classes: Array<string>) {
     for (const entry of classes) {
