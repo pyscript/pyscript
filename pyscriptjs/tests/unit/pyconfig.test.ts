@@ -54,8 +54,6 @@ describe('PyConfig', () => {
 
     it('should load the default config', () => {
         instance.connectedCallback();
-        expect(instance.values.name).toBe('pyscript');
-        expect(instance.values.author_email).toBe('foo@bar.com');
         expect(instance.values.pyscript?.time).not.toBeNull();
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe('python');
@@ -68,8 +66,6 @@ describe('PyConfig', () => {
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe('covfefe');
         expect(instance.values.pyscript?.time).not.toBeNull();
-        // version wasn't present in `inline config` but is still set due to merging with default
-        expect(instance.values.version).toBe('0.1');
     });
 
     it('should load the JSON config from src attribute', () => {
@@ -81,8 +77,6 @@ describe('PyConfig', () => {
         expect(instance.values.pyscript?.time).not.toBeNull();
         // wonerful is an extra key supplied by the user and is unaffected by merging process
         expect(instance.values.wonerful).toBe('discgrace');
-        // version wasn't present in `config from src` but is still set due to merging with default
-        expect(instance.values.version).toBe('0.1');
     });
 
     it('should load the JSON config from both inline and src', () => {
@@ -109,8 +103,6 @@ describe('PyConfig', () => {
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe('covfefe');
         expect(instance.values.pyscript?.time).not.toBeNull();
-        // version wasn't present in `inline config` but is still set due to merging with default
-        expect(instance.values.version).toBe('0.1');
         expect(instance.values.wonerful).toBe('highjacked');
     });
 
