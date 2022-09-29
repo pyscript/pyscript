@@ -430,7 +430,7 @@ as a shortcut, which takes the expression on the last line of the script and run
 
 ### Local modules with py-env (Deprecated)
 
-**The <py-env> tag is deprecated as of `2022.09.1` release but you can still use the functionality explained below. It will be removed in the next release. To specify packages in the recommended way, please see the <py-config> section.**
+**The <py-env> tag is deprecated as of `2022.09.1` release but you can still use the functionality explained below. It will be removed in the next release. To specify local modules in the recommended way, please see the <py-config> section.**
 
 In addition to packages, you can declare local Python modules that will
 be imported in the `<py-script>` tag. For example, we can place the random
