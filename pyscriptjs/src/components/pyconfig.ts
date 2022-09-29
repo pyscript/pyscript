@@ -1,10 +1,10 @@
 import { BaseEvalElement } from './base';
 import { appConfig, addInitializer, runtimeLoaded } from '../stores';
 import type { AppConfig, Runtime } from '../runtime';
-import { version } from '../runtime';
 import { PyodideRuntime } from '../pyodide';
 import { getLogger } from '../logger';
-import { readTextFromPath, handleFetchError, mergeConfig, validateConfig, defaultConfig, globalExport } from '../utils'
+import { loadConfigFromElement } from '../config';
+import { readTextFromPath, handleFetchError, globalExport } from '../utils'
 
 // Subscriber used to connect to the first available runtime (can be pyodide or others)
 let runtimeSpec: Runtime;
@@ -23,42 +23,6 @@ function pyscript_get_config() {
     return appConfig_;
 }
 globalExport('pyscript_get_config', pyscript_get_config);
-
-
-function loadConfigFromElement(el: HTMLElement): AppConfig {
-    const configType: string = el.hasAttribute("type") ? el.getAttribute("type") : "toml";
-    let srcConfig = extractFromSrc(el, configType);
-    const inlineConfig = extractFromInline(el, configType);
-    srcConfig = mergeConfig(srcConfig, defaultConfig);
-    // then merge inline config and config from src
-    const result = mergeConfig(inlineConfig, srcConfig);
-    result.pyscript = {
-        "version": version,
-        "time": new Date().toISOString()
-    };
-    return result;
-}
-
-function extractFromSrc(el: HTMLElement, configType: string) {
-    if (el.hasAttribute('src'))
-    {
-        const src = el.getAttribute('src');
-        logger.info('loading ', src)
-        return validateConfig(readTextFromPath(src), configType);
-    }
-    return {};
-}
-
-
-function extractFromInline(el: HTMLElement, configType: string) {
-    if (el.innerHTML!=='')
-    {
-        logger.info('loading <py-config> content');
-        return validateConfig(el.innerHTML, configType);
-    }
-    return {};
-}
-
 
 
 /**
