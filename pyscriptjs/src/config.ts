@@ -40,7 +40,7 @@ const allKeys = {
     "array": ["runtimes", "packages", "paths", "plugins"]
 };
 
-const defaultConfig: AppConfig = {
+export const defaultConfig: AppConfig = {
     "name": "pyscript",
     "description": "default config",
     "version": "0.1",
