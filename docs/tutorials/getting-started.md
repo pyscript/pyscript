@@ -180,7 +180,7 @@ Alternatively, a JSON config can be passed using the `type` attribute.
 Besides passing the config as inline (as shown above), one can also pass it with the `src` attribute. This is demonstrated below:
 
 ```
-<py-config "src="./custom.toml"></py-config>
+<py-config src="./custom.toml"></py-config>
 ```
 
 where `custom.toml` contains
@@ -196,7 +196,7 @@ lang = "python"
 This can also be done via JSON using the `type` attribute. By default, `type` is set to `"toml"` if not supplied.
 
 ```
-<py-config type="json "src="./custom.json"></py-config>
+<py-config type="json" src="./custom.json"></py-config>
 ```
 
 where `custom.json` contains
