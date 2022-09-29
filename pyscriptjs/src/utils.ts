@@ -18,7 +18,8 @@ const defaultConfig: AppConfig = {
         "lang": "python"
     }],
     "packages":[],
-    "paths":[]
+    "paths":[],
+    "plugins": []
 }
 
 function addClasses(element: HTMLElement, classes: Array<string>) {
