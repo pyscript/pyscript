@@ -29,7 +29,6 @@ function loadConfigFromElement(el: HTMLElement): AppConfig {
     const configType: string = el.hasAttribute("type") ? el.getAttribute("type") : "toml";
     let srcConfig = extractFromSrc(el, configType);
     const inlineConfig = extractFromInline(el, configType);
-    // first make config from src whole if it is partial
     srcConfig = mergeConfig(srcConfig, defaultConfig);
     // then merge inline config and config from src
     const result = mergeConfig(inlineConfig, srcConfig);
@@ -43,8 +42,9 @@ function loadConfigFromElement(el: HTMLElement): AppConfig {
 function extractFromSrc(el: HTMLElement, configType: string) {
     if (el.hasAttribute('src'))
     {
-        logger.info('config set from src attribute');
-        return validateConfig(readTextFromPath(el.getAttribute('src')), configType);
+        const src = el.getAttribute('src');
+        logger.info('loading ', src)
+        return validateConfig(readTextFromPath(src), configType);
     }
     return {};
 }
@@ -53,7 +53,7 @@ function extractFromSrc(el: HTMLElement, configType: string) {
 function extractFromInline(el: HTMLElement, configType: string) {
     if (el.innerHTML!=='')
     {
-        logger.info('config set from inline');
+        logger.info('loading <py-config> content');
         return validateConfig(el.innerHTML, configType);
     }
     return {};
