@@ -4,7 +4,7 @@ import type { AppConfig, Runtime } from '../runtime';
 import { version } from '../runtime';
 import { PyodideRuntime } from '../pyodide';
 import { getLogger } from '../logger';
-import { readTextFromPath, handleFetchError, mergeConfig, validateConfig, defaultConfig } from '../utils'
+import { readTextFromPath, handleFetchError, mergeConfig, validateConfig, defaultConfig, globalExport } from '../utils'
 
 // Subscriber used to connect to the first available runtime (can be pyodide or others)
 let runtimeSpec: Runtime;
@@ -18,6 +18,12 @@ appConfig.subscribe(value => {
 });
 
 const logger = getLogger('py-config');
+
+function pyscript_get_config() {
+    return appConfig_;
+}
+globalExport('pyscript_get_config', pyscript_get_config);
+
 
 /**
  * Configures general metadata about the PyScript application such

@@ -141,6 +141,16 @@ function fillUserData(inputConfig: AppConfig, resultConfig: AppConfig): AppConfi
     return resultConfig;
 }
 
+function globalExport(name: string, obj: any) {
+    // attach the given object to the global object, so that it is globally
+    // visible everywhere. Should be used very sparingly!
+
+    // `window` in the browser, `global` in node
+    const _global = (window || global) as any;
+    _global[name] = obj;
+}
+
+
 function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppConfig {
     if (Object.keys(inlineConfig).length === 0 && Object.keys(externalConfig).length === 0)
     {
@@ -263,4 +273,4 @@ function validateParamInConfig(paramName: string, paramType: string, config: obj
     return false;
 }
 
-export { defaultConfig, addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, mergeConfig, validateConfig };
+export { defaultConfig, addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, globalExport, mergeConfig, validateConfig };
