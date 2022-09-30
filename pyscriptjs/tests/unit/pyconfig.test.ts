@@ -143,8 +143,31 @@ describe('loadConfigFromElement', () => {
         el.innerHTML = covfefeConfigToml;
         loadConfigFromElement(el);
     });
+});
 
-    /*
+
+// old tests about PyConfig.connectedCallback behavior, should be moved
+// somewhere else
+
+import { PyConfig } from '../../src/components/pyconfig';
+customElements.define('py-config', PyConfig);
+
+describe('PyConfig', () => {
+    let instance: PyConfig;
+
+    beforeEach(() => {
+        instance = new PyConfig();
+    });
+
+    it('should get the Config to just instantiate', async () => {
+        expect(instance).toBeInstanceOf(PyConfig);
+    });
+
+    it('should load runtime from config and set as script src', () => {
+        instance.values = covfefeConfig;
+        instance.loadRuntimes();
+        expect(document.scripts[0].src).toBe('http://localhost/demo/covfefe.js');
+    });
 
     it('connectedCallback should call loadRuntimes', async () => {
         const mockedMethod = jest.fn();
@@ -178,31 +201,5 @@ describe('loadConfigFromElement', () => {
         instance.remove = jest.fn();
         instance.close();
         expect(instance.remove).toHaveBeenCalled();
-    });
-    */
-});
-
-
-// old tests about PyConfig.connectedCallback behavior, should be moved
-// somewhere else
-
-import { PyConfig } from '../../src/components/pyconfig';
-customElements.define('py-config', PyConfig);
-
-describe('PyConfig', () => {
-    let instance: PyConfig;
-
-    beforeEach(() => {
-        instance = new PyConfig();
-    });
-
-    it('should get the Config to just instantiate', async () => {
-        expect(instance).toBeInstanceOf(PyConfig);
-    });
-
-    it('should load runtime from config and set as script src', () => {
-        instance.values = covfefeConfig;
-        instance.loadRuntimes();
-        expect(document.scripts[0].src).toBe('http://localhost/demo/covfefe.js');
     });
 })
