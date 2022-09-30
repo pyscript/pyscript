@@ -40,10 +40,16 @@ class FakeElement extends HTMLElement {
 }
 customElements.define('fake-element', FakeElement);
 
+function make_config_element(attrs) {
+    const el = new FakeElement();
+    for (const [key, value] of Object.entries(attrs)) {
+        el.setAttribute(key, value as string);
+    }
+    return el;
+}
+
 
 describe('loadConfigFromElement', () => {
-    let element: HTMLElement;
-
     const xhrMockClass = () => ({
         open: jest.fn(),
         send: jest.fn(),
@@ -52,15 +58,6 @@ describe('loadConfigFromElement', () => {
     // @ts-ignore
     window.XMLHttpRequest = jest.fn().mockImplementation(xhrMockClass);
 
-    beforeEach(() => {
-        element = new FakeElement();
-    });
-
-    it('FakeElement can be instantiated', async () => {
-        expect(element).toBeInstanceOf(HTMLElement);
-    });
-
-
     it('should load the default config', () => {
         const config = loadConfigFromElement(null);
         expect(config).toBe(defaultConfig);
@@ -68,34 +65,34 @@ describe('loadConfigFromElement', () => {
     });
 
     it('an empty <py-config> should load the default config', () => {
-        let config = loadConfigFromElement(element);
+        const el = make_config_element({});
+        let config = loadConfigFromElement(el);
         expect(config).toBe(defaultConfig);
+        expect(config.pyscript.version).toBe(version);
     });
 
-    /*
     it('should load the JSON config from inline', () => {
-        instance.setAttribute('type', 'json');
-        instance.innerHTML = JSON.stringify(covfefeConfig);
-        instance.connectedCallback();
-        // @ts-ignore
-        expect(instance.values.runtimes[0].lang).toBe('covfefe');
-        expect(instance.values.pyscript?.time).not.toBeNull();
+        const el = make_config_element({ type: 'json' });
+        el.innerHTML = JSON.stringify(covfefeConfig);
+        const config = loadConfigFromElement(el);
+        expect(config.runtimes[0].lang).toBe('covfefe');
+        expect(config.pyscript?.time).not.toBeNull();
         // version wasn't present in `inline config` but is still set due to merging with default
-        expect(instance.values.version).toBe('0.1');
+        expect(config.version).toBe('0.1');
     });
 
     it('should load the JSON config from src attribute', () => {
-        instance.setAttribute('type', 'json');
-        instance.setAttribute('src', '/covfefe.json');
-        instance.connectedCallback();
-        // @ts-ignore
-        expect(instance.values.runtimes[0].lang).toBe('covfefe');
-        expect(instance.values.pyscript?.time).not.toBeNull();
+        const el = make_config_element({ type: 'json', src: '/covfefe.json' });
+        const config = loadConfigFromElement(el);
+        expect(config.runtimes[0].lang).toBe('covfefe');
+        expect(config.pyscript?.time).not.toBeNull();
         // wonerful is an extra key supplied by the user and is unaffected by merging process
-        expect(instance.values.wonerful).toBe('discgrace');
+        expect(config.wonerful).toBe('discgrace');
         // version wasn't present in `config from src` but is still set due to merging with default
-        expect(instance.values.version).toBe('0.1');
+        expect(config.version).toBe('0.1');
     });
+
+    /*
 
     it('should load the JSON config from both inline and src', () => {
         instance.setAttribute('type', 'json');
