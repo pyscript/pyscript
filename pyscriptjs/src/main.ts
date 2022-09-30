@@ -6,11 +6,10 @@ import type { Runtime } from './runtime';
 import { PyScript } from './components/pyscript';
 import { PyEnv } from './components/pyenv';
 import { PyLoader } from './components/pyloader';
-import { PyConfig } from './components/pyconfig';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
 import { globalLoader, appConfig, runtimeLoaded, addInitializer } from './stores';
-import { handleFetchError } from './utils'
+import { handleFetchError, globalExport } from './utils'
 
 const logger = getLogger('pyscript/main');
 
@@ -32,7 +31,6 @@ class PyScriptApp {
         /* eslint-disable @typescript-eslint/no-unused-vars */
         const xPyScript = customElements.define('py-script', PyScript);
         const xPyLoader = customElements.define('py-loader', PyLoader);
-        //const xPyConfig = customElements.define('py-config', PyConfig);
         const xPyEnv = customElements.define('py-env', PyEnv);
         /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -53,8 +51,7 @@ class PyScriptApp {
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
 
         // XXX kill me eventually
-        const py_config = new PyConfig(this.config);
-        py_config.connectedCallback();
+        appConfig.set(this.config);
     }
 
     initialize() {
@@ -98,6 +95,10 @@ class PyScriptApp {
 
 }
 
+function pyscript_get_config() {
+    return globalApp.config;
+}
+globalExport('pyscript_get_config', pyscript_get_config);
 
 // main entry point of execution
 const globalApp = new PyScriptApp();

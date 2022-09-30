@@ -18,10 +18,6 @@ appConfig.subscribe(value => {
 
 const logger = getLogger('py-config');
 
-function pyscript_get_config() {
-    return appConfig_;
-}
-globalExport('pyscript_get_config', pyscript_get_config);
 
 
 /**
