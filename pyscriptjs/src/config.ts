@@ -62,11 +62,18 @@ export const defaultConfig: AppConfig = {
 
 
 export function loadConfigFromElement(el: HTMLElement): AppConfig {
-    const configType: string = el.hasAttribute("type") ? el.getAttribute("type") : "toml";
-    let srcConfig = extractFromSrc(el, configType);
-    const inlineConfig = extractFromInline(el, configType);
+    let srcConfig;
+    let inlineConfig;
+    if (el === null) {
+        srcConfig = {};
+        inlineConfig = {};
+    }
+    else {
+        const configType: string = el.hasAttribute("type") ? el.getAttribute("type") : "toml";
+        srcConfig = extractFromSrc(el, configType);
+        inlineConfig = extractFromInline(el, configType);
+    }
     srcConfig = mergeConfig(srcConfig, defaultConfig);
-    // then merge inline config and config from src
     const result = mergeConfig(inlineConfig, srcConfig);
     result.pyscript = {
         "version": version,

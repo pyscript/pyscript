@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
 import type { AppConfig, RuntimeConfig } from '../../src/config';
 import { loadConfigFromElement, defaultConfig } from '../../src/config';
+import { version } from '../../src/runtime';
 
 // inspired by trump typos
 const covfefeConfig = {
@@ -60,11 +61,11 @@ describe('loadConfigFromElement', () => {
     });
 
 
-    // XXX fix me
-    // it('should load the default config', () => {
-    //     const config = loadConfigFromElement(null);
-    //     expect(config).toBe(defaultConfig);
-    // });
+    it('should load the default config', () => {
+        const config = loadConfigFromElement(null);
+        expect(config).toBe(defaultConfig);
+        expect(config.pyscript.version).toBe(version);
+    });
 
     it('an empty <py-config> should load the default config', () => {
         let config = loadConfigFromElement(element);
