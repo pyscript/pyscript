@@ -3,7 +3,6 @@ import { appConfig, addInitializer, runtimeLoaded } from '../stores';
 import type { AppConfig, Runtime } from '../runtime';
 import { PyodideRuntime } from '../pyodide';
 import { getLogger } from '../logger';
-import { loadConfigFromElement } from '../config';
 import { readTextFromPath, handleFetchError, globalExport } from '../utils'
 
 // Subscriber used to connect to the first available runtime (can be pyodide or others)
@@ -34,19 +33,18 @@ globalExport('pyscript_get_config', pyscript_get_config);
  * the default runtime based on Pyodide is used.
  */
 
-export class PyConfig extends BaseEvalElement {
+export class PyConfig {
     widths: Array<string>;
     label: string;
     mount_name: string;
     details: HTMLElement;
     operation: HTMLElement;
     values: AppConfig;
-    constructor() {
-        super();
+    constructor(config: AppConfig) {
+        this.values = config;
     }
 
     connectedCallback() {
-        this.values = loadConfigFromElement(this);
         appConfig.set(this.values);
         logger.info('config set:', this.values);
 
@@ -62,7 +60,7 @@ export class PyConfig extends BaseEvalElement {
     }
 
     close() {
-        this.remove();
+        //this.remove();
     }
 
     loadPackages = async () => {

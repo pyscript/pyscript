@@ -61,7 +61,7 @@ export const defaultConfig: AppConfig = {
 }
 
 
-export function loadConfigFromElement(el: HTMLElement): AppConfig {
+export function loadConfigFromElement(el: Element): AppConfig {
     let srcConfig;
     let inlineConfig;
     if (el === null) {
@@ -82,7 +82,7 @@ export function loadConfigFromElement(el: HTMLElement): AppConfig {
     return result;
 }
 
-function extractFromSrc(el: HTMLElement, configType: string) {
+function extractFromSrc(el: Element, configType: string) {
     if (el.hasAttribute('src'))
     {
         const src = el.getAttribute('src');
@@ -93,7 +93,7 @@ function extractFromSrc(el: HTMLElement, configType: string) {
 }
 
 
-function extractFromInline(el: HTMLElement, configType: string) {
+function extractFromInline(el: Element, configType: string) {
     if (el.innerHTML!=='')
     {
         logger.info('loading <py-config> content');
