@@ -47,8 +47,6 @@ export class PyConfig {
     connectedCallback() {
         appConfig.set(this.values);
         logger.info('config set:', this.values);
-
-        this.loadRuntimes();
     }
 
     log(msg: string) {
@@ -62,16 +60,4 @@ export class PyConfig {
     }
 
 
-    loadRuntimes() {
-        logger.info('Initializing runtimes');
-        for (const runtime of this.values.runtimes) {
-            const runtimeObj: Runtime = new PyodideRuntime(runtime.src, runtime.name, runtime.lang);
-            const script = document.createElement('script'); // create a script DOM node
-            script.src = runtimeObj.src; // set its src to the provided URL
-            script.addEventListener('load', () => {
-                void runtimeObj.initialize();
-            });
-            document.head.appendChild(script);
-        }
-    }
 }

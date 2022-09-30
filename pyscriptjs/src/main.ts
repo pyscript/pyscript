@@ -7,12 +7,14 @@ import { PyScript } from './components/pyscript';
 import { PyEnv } from './components/pyenv';
 import { PyLoader } from './components/pyloader';
 import { PyConfig } from './components/pyconfig';
+import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
 import { globalLoader, appConfig, runtimeLoaded, addInitializer } from './stores';
 import { handleFetchError } from './utils'
 
 const logger = getLogger('pyscript/main');
 
+// XXX this should be killed eventually
 let runtimeSpec: Runtime;
 runtimeLoaded.subscribe(value => {
     runtimeSpec = value;
@@ -58,6 +60,7 @@ class PyScriptApp {
     initialize() {
         addInitializer(this.loadPackages);
         addInitializer(this.loadPaths);
+        this.loadRuntimes();
     }
 
     loadPackages = async () => {
@@ -78,6 +81,19 @@ class PyScriptApp {
             }
         }
         logger.info("All paths loaded");
+    }
+
+    loadRuntimes() {
+        logger.info('Initializing runtimes');
+        for (const runtime of this.config.runtimes) {
+            const runtimeObj: Runtime = new PyodideRuntime(runtime.src, runtime.name, runtime.lang);
+            const script = document.createElement('script'); // create a script DOM node
+            script.src = runtimeObj.src; // set its src to the provided URL
+            script.addEventListener('load', () => {
+                void runtimeObj.initialize();
+            });
+            document.head.appendChild(script);
+        }
     }
 
 }
