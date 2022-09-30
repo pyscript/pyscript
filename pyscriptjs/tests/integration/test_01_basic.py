@@ -51,3 +51,26 @@ class TestBasic(PyScriptTest):
         """
         )
         assert self.console.log.lines == [self.PY_COMPLETE, "true false", "<div></div>"]
+
+    def test_paths(self):
+        self.writefile("a.py", "x = 'hello from A'")
+        self.writefile("b.py", "x = 'hello from B'")
+        self.pyscript_run(
+            """
+            <py-config>
+                paths = ["./a.py", "./b.py"]
+            </py-config>
+
+            <py-script>
+                import js
+                import a, b
+                js.console.log(a.x)
+                js.console.log(b.x)
+            </py-script>
+            """
+        )
+        assert self.console.log.lines == [
+            self.PY_COMPLETE,
+            "hello from A",
+            "hello from B",
+        ]
