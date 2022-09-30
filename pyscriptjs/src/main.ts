@@ -39,7 +39,7 @@ class PyScriptApp {
         logger.info('searching for <py-config>');
         const el = document.querySelector('py-config');
         this.config = loadConfigFromElement(el);
-        logger.info('config loaded:', this.config);
+        logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
 
         // XXX kill me eventually
         const py_config = new PyConfig(this.config);
