@@ -77,8 +77,8 @@ describe('loadConfigFromElement', () => {
         const config = loadConfigFromElement(el);
         expect(config.runtimes[0].lang).toBe('covfefe');
         expect(config.pyscript?.time).not.toBeNull();
-        // version wasn't present in `inline config` but is still set due to merging with default
-        expect(config.version).toBe('0.1');
+        // schema_version wasn't present in `inline config` but is still set due to merging with default
+        expect(config.schema_version).toBe(1);
     });
 
     it('should load the JSON config from src attribute', () => {
@@ -88,8 +88,8 @@ describe('loadConfigFromElement', () => {
         expect(config.pyscript?.time).not.toBeNull();
         // wonderful is an extra key supplied by the user and is unaffected by merging process
         expect(config.wonderful).toBe('disgrace');
-        // version wasn't present in `config from src` but is still set due to merging with default
-        expect(config.version).toBe('0.1');
+        // schema_version wasn't present in `config from src` but is still set due to merging with default
+        expect(config.schema_version).toBe(1);
     });
 
 
@@ -115,8 +115,8 @@ describe('loadConfigFromElement', () => {
         const config = loadConfigFromElement(el);
         expect(config.runtimes[0].lang).toBe('covfefe');
         expect(config.pyscript?.time).not.toBeNull();
-        // version wasn't present in `inline config` but is still set due to merging with default
-        expect(config.version).toBe('0.1');
+        // schema_version wasn't present in `inline config` but is still set due to merging with default
+        expect(config.schema_version).toBe(1);
         expect(config.wonderful).toBe('hijacked');
     });
 
@@ -150,13 +150,13 @@ describe('loadConfigFromElement', () => {
 // somewhere else
 
 import { PyConfig } from '../../src/components/pyconfig';
-customElements.define('py-config', PyConfig);
+//customElements.define('py-config', PyConfig);
 
 describe('PyConfig', () => {
     let instance: PyConfig;
 
     beforeEach(() => {
-        instance = new PyConfig();
+        instance = new PyConfig({});
     });
 
     it('should get the Config to just instantiate', async () => {
@@ -178,16 +178,6 @@ describe('PyConfig', () => {
         expect(mockedMethod).toHaveBeenCalled();
     });
 
-    it('confirm connectedCallback happy path', async () => {
-        const mockedMethod = jest.fn();
-        instance.loadRuntimes = mockedMethod;
-        instance.innerHTML = 'test';
-
-        instance.connectedCallback();
-
-        expect(instance.values['0']).toBe('test');
-    });
-
     it('log should add new message to the page', async () => {
         // details are undefined, so let's create a div for it
         instance.details = document.createElement('div');
@@ -195,11 +185,5 @@ describe('PyConfig', () => {
 
         // @ts-ignore: typescript complains about accessing innerText
         expect(instance.details.childNodes[0].innerText).toBe('this is a log');
-    });
-
-    it('confirm that calling close would call this.remove', async () => {
-        instance.remove = jest.fn();
-        instance.close();
-        expect(instance.remove).toHaveBeenCalled();
     });
 })

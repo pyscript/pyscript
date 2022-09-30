@@ -40,7 +40,7 @@ const allKeys = {
     "array": ["runtimes", "packages", "paths", "plugins"]
 };
 
-const defaultConfig: AppConfig = {
+export const defaultConfig: AppConfig = {
     "schema_version": 1,
     "type": "app",
     "autoclose_loader": true,
