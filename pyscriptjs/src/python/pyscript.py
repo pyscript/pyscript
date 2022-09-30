@@ -386,7 +386,7 @@ class OutputCtxManager:
             Element(self._out).write(value, self._append)
 
         if self.output_to_console:
-            console.info( value )
+            console.info(value)
 
 
 class OutputManager:
