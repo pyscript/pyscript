@@ -339,9 +339,9 @@ The following optional values are supported by `<py-config>`:
 | `version` | string | Version of the user application. This field can be any string and is to be used by the application author for their own customization purposes. It is not related to the PyScript version. |
 | `schema_version` | number | The version of the config schema which determines what all keys are supported. This can be supplied by the user so PyScript knows what to expect in the config. If not supplied, the latest version for the schema is automatically used. |
 | `type` | string | Type of the project. The default is an "app" i.e. a user application |
-| `author_name` | string | Name of the author. If not supplied, the value "anonymous coder" is used. |
-| `author_email` | string | Email of the author. If not supplied, the value "foo@bar.com" is used. |
-| `license` | string | License to be used for the user application. The default is an "Apache". |
+| `author_name` | string | Name of the author. |
+| `author_email` | string | Email of the author. |
+| `license` | string | License to be used for the user application. |
 | `autoclose_loader` | boolean | If false, PyScript will not close the loading splash screen when the startup operations finish. |
 | `packages` | List of Packages | Dependencies on 3rd party OSS packages are specified here. The default value is an empty list. |
 | `paths` | List of Paths | Local Python modules are to be specified here. The default value is an empty list. |
