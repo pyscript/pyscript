@@ -8,7 +8,7 @@ import { PyEnv } from './components/pyenv';
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
-import { globalLoader, appConfig, runtimeLoaded, addInitializer } from './stores';
+import { globalLoader, runtimeLoaded, addInitializer } from './stores';
 import { handleFetchError, globalExport } from './utils'
 
 const logger = getLogger('pyscript/main');
@@ -49,9 +49,6 @@ class PyScriptApp {
         const el = document.querySelector('py-config');
         this.config = loadConfigFromElement(el);
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
-
-        // XXX kill me eventually
-        appConfig.set(this.config);
     }
 
     initialize() {
@@ -83,7 +80,8 @@ class PyScriptApp {
     loadRuntimes() {
         logger.info('Initializing runtimes');
         for (const runtime of this.config.runtimes) {
-            const runtimeObj: Runtime = new PyodideRuntime(runtime.src, runtime.name, runtime.lang);
+            const runtimeObj: Runtime = new PyodideRuntime(this.config, runtime.src,
+                                                           runtime.name, runtime.lang);
             const script = document.createElement('script'); // create a script DOM node
             script.src = runtimeObj.src; // set its src to the provided URL
             script.addEventListener('load', () => {

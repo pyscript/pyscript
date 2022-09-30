@@ -1,3 +1,4 @@
+import type { AppConfig } from './pyconfig';
 import type { PyodideInterface } from 'pyodide';
 import type { PyLoader } from './components/pyloader';
 import {
@@ -8,7 +9,6 @@ import {
     postInitializers,
     Initializer,
     scriptsQueue,
-    appConfig,
 } from './stores';
 import { createCustomElements } from './components/elements';
 import type { PyScript } from './components/pyscript';
@@ -19,33 +19,6 @@ const logger = getLogger('pyscript/runtime');
 export const version = "<<VERSION>>";
 export type RuntimeInterpreter = PyodideInterface | null;
 
-export interface AppConfig extends Record<string, any> {
-    name?: string;
-    description?: string;
-    version?: string;
-    schema_version?: number;
-    type?: string;
-    author_name?: string;
-    author_email?: string;
-    license?: string;
-    autoclose_loader?: boolean;
-    runtimes?: Array<RuntimeConfig>;
-    packages?: Array<string>;
-    paths?: Array<string>;
-    plugins?: Array<string>;
-    pyscript?: PyScriptMetadata;
-}
-
-export type PyScriptMetadata = {
-    version?: string;
-    time?: string;
-}
-
-export type RuntimeConfig = {
-    src?: string;
-    name?: string;
-    lang?: string;
-};
 
 let loader: PyLoader | undefined;
 globalLoader.subscribe(value => {
@@ -67,15 +40,6 @@ scriptsQueue.subscribe((value: PyScript[]) => {
     scriptsQueue_ = value;
 });
 
-let appConfig_: AppConfig = {
-    autoclose_loader: true
-};
-
-appConfig.subscribe((value: AppConfig) => {
-    if (value) {
-        appConfig_ = value;
-    }
-});
 
 /*
 Runtime class is a super class that all different runtimes must respect
@@ -95,6 +59,7 @@ For an example implementation, refer to the `PyodideRuntime` class
 in `pyodide.ts`
 */
 export abstract class Runtime extends Object {
+    config: AppConfig;
     abstract src: string;
     abstract name?: string;
     abstract lang?: string;
@@ -103,6 +68,11 @@ export abstract class Runtime extends Object {
      * global symbols table for the underlying interpreter.
      * */
     abstract globals: any;
+
+    constructor(config: AppConfig) {
+        super();
+        this.config = config;
+    }
 
     /**
      * loads the interpreter for the runtime and saves an instance of it
@@ -187,7 +157,7 @@ export abstract class Runtime extends Object {
         // Finally create the custom elements for pyscript such as pybutton
         createCustomElements();
 
-        if (appConfig_ && appConfig_.autoclose_loader) {
+        if (this.config.autoclose_loader) {
             loader?.close();
         }
 
