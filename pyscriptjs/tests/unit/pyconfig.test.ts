@@ -13,13 +13,13 @@ const covfefeConfig = {
             lang: 'covfefe',
         },
     ],
-    wonerful: 'discgrace',
+    wonderful: 'disgrace',
 };
 
 const covfefeConfigToml = `
 name = "covfefe"
 
-wonerful = "highjacked"
+wonderful = "hijacked"
 
 [[runtimes]]
 src = "/demo/covfefe.js"
@@ -86,8 +86,8 @@ describe('loadConfigFromElement', () => {
         const config = loadConfigFromElement(el);
         expect(config.runtimes[0].lang).toBe('covfefe');
         expect(config.pyscript?.time).not.toBeNull();
-        // wonerful is an extra key supplied by the user and is unaffected by merging process
-        expect(config.wonerful).toBe('discgrace');
+        // wonderful is an extra key supplied by the user and is unaffected by merging process
+        expect(config.wonderful).toBe('disgrace');
         // version wasn't present in `config from src` but is still set due to merging with default
         expect(config.version).toBe('0.1');
     });
@@ -96,17 +96,17 @@ describe('loadConfigFromElement', () => {
 
     it('should load the JSON config from both inline and src', () => {
         instance.setAttribute('type', 'json');
-        instance.innerHTML = JSON.stringify({ version: '0.2a', wonerful: 'highjacked' });
+        instance.innerHTML = JSON.stringify({ version: '0.2a', wonderful: 'hijacked' });
         instance.setAttribute('src', '/covfefe.json');
         instance.connectedCallback();
         // @ts-ignore
         expect(instance.values.runtimes[0].lang).toBe('covfefe');
         expect(instance.values.pyscript?.time).not.toBeNull();
-        // config from src had an extra key "wonerful" with value "discgrace"
-        // inline config had the same extra key "wonerful" with value "highjacked"
+        // config from src had an extra key "wonderful" with value "disgrace"
+        // inline config had the same extra key "wonderful" with value "hijacked"
         // the merge process works for extra keys that clash as well
-        // so the final value is "highjacked" since inline takes precedence over src
-        expect(instance.values.wonerful).toBe('highjacked');
+        // so the final value is "hijacked" since inline takes precedence over src
+        expect(instance.values.wonderful).toBe('hijacked');
         // version wasn't present in `config from src` but is still set due to merging with default and inline
         expect(instance.values.version).toBe('0.2a');
     });
@@ -120,7 +120,7 @@ describe('loadConfigFromElement', () => {
         expect(instance.values.pyscript?.time).not.toBeNull();
         // version wasn't present in `inline config` but is still set due to merging with default
         expect(instance.values.version).toBe('0.1');
-        expect(instance.values.wonerful).toBe('highjacked');
+        expect(instance.values.wonderful).toBe('hijacked');
     });
 
     it.failing('should NOT be able to load an inline config in JSON format with type as TOML', () => {
