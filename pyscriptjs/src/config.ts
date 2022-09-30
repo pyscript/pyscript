@@ -40,23 +40,17 @@ const allKeys = {
     "array": ["runtimes", "packages", "paths", "plugins"]
 };
 
-export const defaultConfig: AppConfig = {
-    "name": "pyscript",
-    "description": "default config",
-    "version": "0.1",
+const defaultConfig: AppConfig = {
     "schema_version": 1,
     "type": "app",
-    "author_name": "anonymous coder",
-    "author_email": "foo@bar.com",
-    "license": "Apache",
     "autoclose_loader": true,
     "runtimes": [{
         "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
         "name": "pyodide-0.21.2",
         "lang": "python"
     }],
-    "packages": [],
-    "paths": [],
+    "packages":[],
+    "paths":[],
     "plugins": []
 }
 
