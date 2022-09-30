@@ -1,7 +1,7 @@
 import './styles/pyscript_base.css';
 
-import { loadConfigFromElement } from './config';
-import type { AppConfig } from './config';
+import { loadConfigFromElement } from './pyconfig';
+import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
 import { PyScript } from './components/pyscript';
 import { PyEnv } from './components/pyenv';

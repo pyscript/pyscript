@@ -1,5 +1,3 @@
-import type { AppConfig } from "./config";
-
 function addClasses(element: HTMLElement, classes: Array<string>) {
     for (const entry of classes) {
         element.classList.add(entry);

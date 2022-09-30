@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
-import type { AppConfig, RuntimeConfig } from '../../src/config';
-import { loadConfigFromElement, defaultConfig } from '../../src/config';
+import type { AppConfig, RuntimeConfig } from '../../src/pyconfig';
+import { loadConfigFromElement, defaultConfig } from '../../src/pyconfig';
 import { version } from '../../src/runtime';
 
 // inspired by trump typos
