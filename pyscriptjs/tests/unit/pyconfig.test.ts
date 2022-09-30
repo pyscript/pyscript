@@ -108,24 +108,25 @@ describe('loadConfigFromElement', () => {
         expect(config.version).toBe('0.2a');
     });
 
-    /*
-
     it('should be able to load an inline TOML config', () => {
-        // type of config is TOML if not supplied
-        instance.innerHTML = covfefeConfigToml;
-        instance.connectedCallback();
-        // @ts-ignore
-        expect(instance.values.runtimes[0].lang).toBe('covfefe');
-        expect(instance.values.pyscript?.time).not.toBeNull();
+        // TOML is the default type
+        const el = make_config_element({});
+        el.innerHTML = covfefeConfigToml;
+        const config = loadConfigFromElement(el);
+        expect(config.runtimes[0].lang).toBe('covfefe');
+        expect(config.pyscript?.time).not.toBeNull();
         // version wasn't present in `inline config` but is still set due to merging with default
-        expect(instance.values.version).toBe('0.1');
-        expect(instance.values.wonderful).toBe('hijacked');
+        expect(config.version).toBe('0.1');
+        expect(config.wonderful).toBe('hijacked');
     });
 
     it.failing('should NOT be able to load an inline config in JSON format with type as TOML', () => {
-        instance.innerHTML = JSON.stringify(covfefeConfig);
-        instance.connectedCallback();
+        const el = make_config_element({});
+        el.innerHTML = JSON.stringify(covfefeConfig);
+        loadConfigFromElement(el);
     });
+
+    /*
 
     it.failing('should NOT be able to load an inline config in TOML format with type as JSON', () => {
         instance.setAttribute('type', 'json');
