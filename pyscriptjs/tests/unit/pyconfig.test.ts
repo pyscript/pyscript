@@ -92,24 +92,23 @@ describe('loadConfigFromElement', () => {
         expect(config.version).toBe('0.1');
     });
 
-    /*
 
     it('should load the JSON config from both inline and src', () => {
-        instance.setAttribute('type', 'json');
-        instance.innerHTML = JSON.stringify({ version: '0.2a', wonderful: 'hijacked' });
-        instance.setAttribute('src', '/covfefe.json');
-        instance.connectedCallback();
-        // @ts-ignore
-        expect(instance.values.runtimes[0].lang).toBe('covfefe');
-        expect(instance.values.pyscript?.time).not.toBeNull();
+        const el = make_config_element({ type: 'json', src: '/covfefe.json' });
+        el.innerHTML = JSON.stringify({ version: '0.2a', wonderful: 'hijacked' });
+        const config = loadConfigFromElement(el);
+        expect(config.runtimes[0].lang).toBe('covfefe');
+        expect(config.pyscript?.time).not.toBeNull();
         // config from src had an extra key "wonderful" with value "disgrace"
         // inline config had the same extra key "wonderful" with value "hijacked"
         // the merge process works for extra keys that clash as well
         // so the final value is "hijacked" since inline takes precedence over src
-        expect(instance.values.wonderful).toBe('hijacked');
+        expect(config.wonderful).toBe('hijacked');
         // version wasn't present in `config from src` but is still set due to merging with default and inline
-        expect(instance.values.version).toBe('0.2a');
+        expect(config.version).toBe('0.2a');
     });
+
+    /*
 
     it('should be able to load an inline TOML config', () => {
         // type of config is TOML if not supplied
