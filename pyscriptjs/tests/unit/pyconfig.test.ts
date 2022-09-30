@@ -126,26 +126,25 @@ describe('loadConfigFromElement', () => {
         loadConfigFromElement(el);
     });
 
-    /*
-
     it.failing('should NOT be able to load an inline config in TOML format with type as JSON', () => {
-        instance.setAttribute('type', 'json');
-        instance.innerHTML = covfefeConfigToml;
-        instance.connectedCallback();
+        const el = make_config_element({ type: 'json' });
+        el.innerHTML = covfefeConfigToml;
+        loadConfigFromElement(el);
     });
 
     it.failing('should NOT be able to load an inline TOML config with a JSON config from src with type as toml', () => {
-        instance.innerHTML = covfefeConfigToml;
-        instance.setAttribute('src', '/covfefe.json');
-        instance.connectedCallback();
+        const el = make_config_element({ src: '/covfefe.json' });
+        el.innerHTML = covfefeConfigToml;
+        loadConfigFromElement(el);
     });
 
     it.failing('should NOT be able to load an inline TOML config with a JSON config from src with type as json', () => {
-        instance.setAttribute('type', 'json');
-        instance.innerHTML = covfefeConfigToml;
-        instance.setAttribute('src', '/covfefe.json');
-        instance.connectedCallback();
+        const el = make_config_element({ type: 'json', src: '/covfefe.json' });
+        el.innerHTML = covfefeConfigToml;
+        loadConfigFromElement(el);
     });
+
+    /*
 
     it('connectedCallback should call loadRuntimes', async () => {
         const mockedMethod = jest.fn();
