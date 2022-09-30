@@ -48,7 +48,6 @@ export class PyConfig {
         appConfig.set(this.values);
         logger.info('config set:', this.values);
 
-        addInitializer(this.loadPaths);
         this.loadRuntimes();
     }
 
@@ -62,20 +61,6 @@ export class PyConfig {
         //this.remove();
     }
 
-    loadPaths = async () => {
-        const paths = appConfig_.paths;
-        logger.info("Paths to load: ", paths)
-        for (const singleFile of paths) {
-            logger.info(`  loading path: ${singleFile}`);
-            try {
-                await runtimeSpec.loadFromFile(singleFile);
-            } catch (e) {
-                //Should we still export full error contents to console?
-                handleFetchError(<Error>e, singleFile);
-            }
-        }
-        logger.info("All paths loaded");
-    }
 
     loadRuntimes() {
         logger.info('Initializing runtimes');

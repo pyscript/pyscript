@@ -9,6 +9,7 @@ import { PyLoader } from './components/pyloader';
 import { PyConfig } from './components/pyconfig';
 import { getLogger } from './logger';
 import { globalLoader, appConfig, runtimeLoaded, addInitializer } from './stores';
+import { handleFetchError } from './utils'
 
 const logger = getLogger('pyscript/main');
 
@@ -56,13 +57,29 @@ class PyScriptApp {
 
     initialize() {
         addInitializer(this.loadPackages);
+        addInitializer(this.loadPaths);
     }
 
     loadPackages = async () => {
-        const env = this.config.packages;
-        logger.info("Loading env: ", env);
-        await runtimeSpec.installPackage(env);
+        logger.info("Packages to install: ", this.config.packages);
+        await runtimeSpec.installPackage(this.config.packages);
     }
+
+    loadPaths = async () => {
+        const paths = this.config.paths;
+        logger.info("Paths to load: ", paths)
+        for (const singleFile of paths) {
+            logger.info(`  loading path: ${singleFile}`);
+            try {
+                await runtimeSpec.loadFromFile(singleFile);
+            } catch (e) {
+                //Should we still export full error contents to console?
+                handleFetchError(<Error>e, singleFile);
+            }
+        }
+        logger.info("All paths loaded");
+    }
+
 }
 
 
