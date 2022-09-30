@@ -2,14 +2,21 @@ import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './config';
 import type { AppConfig } from './config';
+import type { Runtime } from './runtime';
 import { PyScript } from './components/pyscript';
 import { PyEnv } from './components/pyenv';
 import { PyLoader } from './components/pyloader';
 import { PyConfig } from './components/pyconfig';
 import { getLogger } from './logger';
-import { globalLoader, appConfig } from './stores';
+import { globalLoader, appConfig, runtimeLoaded, addInitializer } from './stores';
 
 const logger = getLogger('pyscript/main');
+
+let runtimeSpec: Runtime;
+runtimeLoaded.subscribe(value => {
+    runtimeSpec = value;
+});
+
 
 class PyScriptApp {
 
@@ -17,6 +24,7 @@ class PyScriptApp {
 
     main() {
         this.loadConfig();
+        this.initialize();
 
         /* eslint-disable @typescript-eslint/no-unused-vars */
         const xPyScript = customElements.define('py-script', PyScript);
@@ -46,6 +54,15 @@ class PyScriptApp {
         py_config.connectedCallback();
     }
 
+    initialize() {
+        addInitializer(this.loadPackages);
+    }
+
+    loadPackages = async () => {
+        const env = this.config.packages;
+        logger.info("Loading env: ", env);
+        await runtimeSpec.installPackage(env);
+    }
 }
 
 

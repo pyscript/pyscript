@@ -48,7 +48,6 @@ export class PyConfig {
         appConfig.set(this.values);
         logger.info('config set:', this.values);
 
-        addInitializer(this.loadPackages);
         addInitializer(this.loadPaths);
         this.loadRuntimes();
     }
@@ -61,12 +60,6 @@ export class PyConfig {
 
     close() {
         //this.remove();
-    }
-
-    loadPackages = async () => {
-        const env = appConfig_.packages;
-        logger.info("Loading env: ", env);
-        await runtimeSpec.installPackage(env);
     }
 
     loadPaths = async () => {
