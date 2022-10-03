@@ -44,7 +44,8 @@ class PyScriptApp {
     loadConfig() {
         // find the <py-config> tag. If not found, we get null which means
         // "use the default config"
-        // XXX: what happens if we have multiple ones?
+        // XXX: we should actively complain if there are multiple <py-config>
+        // and show a big error. PRs welcome :)
         logger.info('searching for <py-config>');
         const el = document.querySelector('py-config');
         this.config = loadConfigFromElement(el);
