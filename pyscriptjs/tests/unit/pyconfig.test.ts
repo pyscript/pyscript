@@ -130,6 +130,17 @@ describe('PyConfig', () => {
         instance.connectedCallback();
     });
 
+    it('should error out when passing an invalid JSON', () => {
+        instance.setAttribute('type', 'json');
+        instance.innerHTML = '[[';
+        expect(()=>instance.connectedCallback()).toThrow(SyntaxError);
+    });
+
+    it('should error out when passing an invalid TOML', () => {
+        instance.innerHTML = '[[';
+        expect(()=>instance.connectedCallback()).toThrow(SyntaxError);
+    });
+
     it('connectedCallback should call loadRuntimes', async () => {
         const mockedMethod = jest.fn();
         instance.loadRuntimes = mockedMethod;
