@@ -1,4 +1,5 @@
-import {toml} from './toml'
+import {TOML} from './toml'
+
 import type { AppConfig } from "./runtime";
 
 const allKeys = {
@@ -186,7 +187,7 @@ function parseConfig(configText: string, configType = "toml") {
                 showError(`<p>${errMessage}</p>`);
                 throw Error(errMessage);
             }
-            config = toml.parse(configText);
+            config = TOML().parse(configText);
         }
         catch (err) {
             const errMessage: string = err.toString();
