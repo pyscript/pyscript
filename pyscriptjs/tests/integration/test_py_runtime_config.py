@@ -5,7 +5,7 @@ import tempfile
 import pytest
 import requests
 
-from .support import PyScriptTest, JsError
+from .support import JsError, PyScriptTest
 
 URL = "https://github.com/pyodide/pyodide/releases/download/0.20.0/pyodide-build-0.20.0.tar.bz2"
 TAR_NAME = "pyodide-build-0.20.0.tar.bz2"
@@ -70,7 +70,6 @@ class TestRuntimeConfig(PyScriptTest):
         version = self.page.locator("py-script").inner_text()
         assert version == "0.20.0"
 
-
     def test_invalid_json_config(self):
         with pytest.raises(JsError) as exc:
             self.pyscript_run(
@@ -84,7 +83,6 @@ class TestRuntimeConfig(PyScriptTest):
 
         msg = str(exc.value)
         assert "SyntaxError" in msg
-
 
     def test_invalid_toml_config(self):
         with pytest.raises(JsError) as exc:
