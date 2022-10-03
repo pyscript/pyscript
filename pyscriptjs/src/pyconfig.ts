@@ -88,7 +88,7 @@ function extractFromSrc(el: Element, configType: string) {
 
 
 function extractFromInline(el: Element, configType: string) {
-    if (el.innerHTML!=='')
+    if (el.innerHTML !== '')
     {
         logger.info('loading <py-config> content');
         return validateConfig(el.innerHTML, configType);
