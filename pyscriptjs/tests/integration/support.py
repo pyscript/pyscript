@@ -1,6 +1,7 @@
 import pdb
 import re
 import time
+import hashlib
 
 import py
 import pytest
@@ -92,6 +93,30 @@ class PyScriptTest:
 
     def init_page(self, page):
         self.page = page
+        # cache to store data via sha256(url)
+        cache = {}
+        # router to cache with fail 2x on requests
+        def router(route):
+            # hash of url
+            hash = hashlib.sha256( route.request.url.encode('utf-8') ).hexdigest()
+            # cached?
+            if hash in cache:
+                # fullfill via cache
+                route.fulfill(status=200, response=cache.get(hash))
+            else:
+                try:
+                    # fetch, cache, fullfill 1x
+                    response = page.request.fetch(route.request)
+                    cache[hash] = response
+                    route.fulfill(status=200, response=response)
+                except:
+                    # fetch, cache, fullfill 2x
+                    response = page.request.fetch(route.request)
+                    cache[hash] = response
+                    route.fulfill(status=200, response=response)
+        
+        # route all urls through router
+        self.page.route( "**", router)
         self.console = ConsoleMessageCollection(self.logger)
         self._page_errors = []
         page.on("console", self.console.add_message)
