@@ -1,7 +1,7 @@
+import hashlib
 import pdb
 import re
 import time
-import hashlib
 
 import py
 import pytest
@@ -98,7 +98,7 @@ class PyScriptTest:
         # router to cache with fail 2x on requests
         def router(route):
             # hash of url
-            hash = hashlib.sha256( route.request.url.encode('utf-8') ).hexdigest()
+            hash = hashlib.sha256(route.request.url.encode("utf-8")).hexdigest()
             # cached?
             if hash in cache:
                 # fullfill via cache
@@ -114,9 +114,9 @@ class PyScriptTest:
                     response = page.request.fetch(route.request)
                     cache[hash] = response
                     route.fulfill(status=200, response=response)
-        
+
         # route all urls through router
-        self.page.route( "**", router)
+        self.page.route("**", router)
         self.console = ConsoleMessageCollection(self.logger)
         self._page_errors = []
         page.on("console", self.console.add_message)
