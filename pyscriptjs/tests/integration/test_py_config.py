@@ -30,7 +30,42 @@ def unzip(location, extract_to="."):
     file.extractall(path=extract_to)
 
 
-class TestRuntimeConfig(PyScriptTest):
+class TestConfig(PyScriptTest):
+    def test_py_config_inline(self):
+        self.pyscript_run(
+            """
+        <py-config type="toml">
+            name = "foobar"
+        </py-config>
+
+        <py-script>
+            import js
+            config = js.pyscript_get_config()
+            js.console.log("config name:", config.name)
+        </py-script>
+        """
+        )
+        assert self.console.log.lines[-1] == "config name: foobar"
+
+    def test_py_config_external(self):
+        pyconfig_toml = """
+            name = "app with external config"
+        """
+        self.writefile("pyconfig.toml", pyconfig_toml)
+        self.pyscript_run(
+            """
+        <py-config src="pyconfig.toml" type="toml">
+        </py-config>
+
+        <py-script>
+            import js
+            config = js.pyscript_get_config()
+            js.console.log("config name:", config.name)
+        </py-script>
+        """
+        )
+        assert self.console.log.lines[-1] == "config name: app with external config"
+
     # The default pyodide version is 0.21.2 as of writing
     # this test which is newer than the one we are loading below
     # (after downloading locally) -- which is 0.20.0

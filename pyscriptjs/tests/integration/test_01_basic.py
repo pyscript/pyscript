@@ -51,3 +51,50 @@ class TestBasic(PyScriptTest):
         """
         )
         assert self.console.log.lines == [self.PY_COMPLETE, "true false", "<div></div>"]
+
+    def test_paths(self):
+        self.writefile("a.py", "x = 'hello from A'")
+        self.writefile("b.py", "x = 'hello from B'")
+        self.pyscript_run(
+            """
+            <py-config>
+                paths = ["./a.py", "./b.py"]
+            </py-config>
+
+            <py-script>
+                import js
+                import a, b
+                js.console.log(a.x)
+                js.console.log(b.x)
+            </py-script>
+            """
+        )
+        assert self.console.log.lines == [
+            self.PY_COMPLETE,
+            "hello from A",
+            "hello from B",
+        ]
+
+    def test_packages(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                # we use asciitree because it's one of the smallest packages
+                # which are built and distributed with pyodide
+                packages = ["asciitree"]
+            </py-config>
+
+            <py-script>
+                import js
+                import asciitree
+                js.console.log('hello', asciitree.__name__)
+            </py-script>
+            <py-repl></py-repl>
+            """
+        )
+        assert self.console.log.lines == [
+            self.PY_COMPLETE,
+            "Loading asciitree",  # printed by pyodide
+            "Loaded asciitree",  # printed by pyodide
+            "hello asciitree",  # printed by us
+        ]

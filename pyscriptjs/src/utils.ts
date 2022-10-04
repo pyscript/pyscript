@@ -1,27 +1,3 @@
-import toml from '../src/toml'
-import type { AppConfig } from "./runtime";
-
-const allKeys = {
-    "string": ["name", "description", "version", "type", "author_name", "author_email", "license"],
-    "number": ["schema_version"],
-    "boolean": ["autoclose_loader"],
-    "array": ["runtimes", "packages", "paths", "plugins"]
-};
-
-const defaultConfig: AppConfig = {
-    "schema_version": 1,
-    "type": "app",
-    "autoclose_loader": true,
-    "runtimes": [{
-        "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
-        "name": "pyodide-0.21.2",
-        "lang": "python"
-    }],
-    "packages":[],
-    "paths":[],
-    "plugins": []
-}
-
 function addClasses(element: HTMLElement, classes: Array<string>) {
     for (const entry of classes) {
         element.classList.add(entry);
@@ -121,139 +97,15 @@ function inJest(): boolean {
     return typeof process === 'object' && process.env.JEST_WORKER_ID !== undefined;
 }
 
-function fillUserData(inputConfig: AppConfig, resultConfig: AppConfig): AppConfig
-{
-    for (const key in inputConfig)
-    {
-        // fill in all extra keys ignored by the validator
-        if (!(key in defaultConfig))
-        {
-            resultConfig[key] = inputConfig[key];
-        }
-    }
-    return resultConfig;
+function globalExport(name: string, obj: any) {
+    // attach the given object to the global object, so that it is globally
+    // visible everywhere. Should be used very sparingly!
+
+    // `window` in the browser, `global` in node
+    const _global = (window || global) as any;
+    _global[name] = obj;
 }
 
-function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppConfig {
-    if (Object.keys(inlineConfig).length === 0 && Object.keys(externalConfig).length === 0)
-    {
-        return defaultConfig;
-    }
-    else if (Object.keys(inlineConfig).length === 0)
-    {
-        return externalConfig;
-    }
-    else if(Object.keys(externalConfig).length === 0)
-    {
-        return inlineConfig;
-    }
-    else
-    {
-        let merged: AppConfig = {};
 
-        for (const keyType in allKeys)
-        {
-            const keys = allKeys[keyType];
-            keys.forEach(function(item: string){
-                if (keyType === "boolean")
-                {
-                    merged[item] = (typeof inlineConfig[item] !== "undefined") ? inlineConfig[item] : externalConfig[item];
-                }
-                else
-                {
-                    merged[item] = inlineConfig[item] || externalConfig[item];
-                }
-            });
-        }
 
-        // fill extra keys from external first
-        // they will be overridden by inline if extra keys also clash
-        merged = fillUserData(externalConfig, merged);
-        merged = fillUserData(inlineConfig, merged);
-
-        return merged;
-    }
-}
-
-function parseConfig(configText: string, configType = "toml") {
-    let config: object;
-    if (configType === "toml") {
-        try {
-            // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
-            if (configText.trim()[0] === "{")
-            {
-                const errMessage = `config supplied: ${configText} is an invalid TOML and cannot be parsed`;
-                showError(`<p>${errMessage}</p>`);
-                throw Error(errMessage);
-            }
-            config = toml.parse(configText);
-        }
-        catch (err) {
-            const errMessage: string = err.toString();
-            showError(`<p>config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}</p>`);
-            throw err;
-        }
-    }
-    else if (configType === "json") {
-        try {
-            config = JSON.parse(configText);
-        }
-        catch (err) {
-            const errMessage: string = err.toString();
-            showError(`<p>config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}</p>`);
-            throw err;
-        }
-    }
-    else {
-        showError(`<p>type of config supplied is: ${configType}, supported values are ["toml", "json"].</p>`);
-    }
-    return config;
-}
-
-function validateConfig(configText: string, configType = "toml") {
-    const config = parseConfig(configText, configType);
-
-    const finalConfig: AppConfig = {}
-
-    for (const keyType in allKeys)
-    {
-        const keys = allKeys[keyType];
-        keys.forEach(function(item: string){
-            if (validateParamInConfig(item, keyType, config))
-            {
-                if (item === "runtimes")
-                {
-                    finalConfig[item] = [];
-                    const runtimes = config[item];
-                    runtimes.forEach(function(eachRuntime: object){
-                        const runtimeConfig: object = {};
-                        for (const eachRuntimeParam in eachRuntime)
-                        {
-                            if (validateParamInConfig(eachRuntimeParam, "string", eachRuntime))
-                            {
-                                runtimeConfig[eachRuntimeParam] = eachRuntime[eachRuntimeParam];
-                            }
-                        }
-                        finalConfig[item].push(runtimeConfig);
-                    });
-                }
-                else
-                {
-                    finalConfig[item] = config[item];
-                }
-            }
-        });
-    }
-
-    return fillUserData(config, finalConfig);
-}
-
-function validateParamInConfig(paramName: string, paramType: string, config: object): boolean {
-    if (paramName in config)
-    {
-        return paramType === "array" ? Array.isArray(config[paramName]) : typeof config[paramName] === paramType;
-    }
-    return false;
-}
-
-export { defaultConfig, addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, mergeConfig, validateConfig };
+export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, globalExport, };

@@ -1,3 +1,4 @@
+import type { AppConfig } from '../../src/pyconfig';
 import { Runtime } from '../../src/runtime';
 import { PyodideRuntime } from '../../src/pyodide';
 
@@ -8,7 +9,8 @@ global.TextDecoder = TextDecoder
 describe('PyodideRuntime', () => {
     let runtime: PyodideRuntime;
     beforeAll(async () => {
-        runtime = new PyodideRuntime();
+        const config: AppConfig = {};
+        runtime = new PyodideRuntime(config);
         /**
          * Since import { loadPyodide } from 'pyodide';
          * is not used inside `src/pyodide.ts`, the function

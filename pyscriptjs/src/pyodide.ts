@@ -1,4 +1,4 @@
-import { Runtime, RuntimeConfig } from './runtime';
+import { Runtime } from './runtime';
 import { getLastPath } from './utils';
 import { getLogger } from './logger';
 import type { PyodideInterface } from 'pyodide';
@@ -16,12 +16,13 @@ export class PyodideRuntime extends Runtime {
     globals: any;
 
     constructor(
+        config,
         src = 'https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js',
         name = 'pyodide-default',
         lang = 'python',
     ) {
         logger.info('Runtime config:', { name, lang, src });
-        super();
+        super(config);
         this.src = src;
         this.name = name;
         this.lang = lang;
