@@ -84,11 +84,11 @@ test:
 
 test-integration:
 	make examples
-	$(PYTEST_EXE) --numprocesses auto -vv $(ARGS) tests/integration/  --log-cli-level=warning
+	$(PYTEST_EXE) -vv $(ARGS) tests/integration/  --log-cli-level=warning
 
 test-py:
 	@echo "Tests from $(src_dir)"
-	$(PYTEST_EXE) --numprocesses auto -vv $(ARGS) tests/py-unit/ --log-cli-level=warning
+	$(PYTEST_EXE) -vv $(ARGS) tests/py-unit/ --log-cli-level=warning
 
 test-ts:
 	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"

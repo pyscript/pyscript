@@ -17,4 +17,3 @@ dependencies:
 -   pip:
     -   playwright
     -   pytest-playwright
-    -   pytest-xdist
