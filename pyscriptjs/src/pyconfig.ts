@@ -1,4 +1,4 @@
-import { toml } from './toml'
+import toml from '../src/toml'
 import { getLogger } from './logger';
 import { version } from './runtime';
 import { readTextFromPath, showError } from './utils'

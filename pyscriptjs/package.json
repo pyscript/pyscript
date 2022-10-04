@@ -5,6 +5,7 @@
     "build-min": "NODE_ENV=production rollup -c",
     "build": "rollup -c",
     "dev": "rollup -c -w",
+    "tsc":"tsc --noEmit",
     "start": "sirv public --no-clear --port 8080",
     "validate": "svelte-check",
     "format:check": "prettier --check './src/**/*.{js,html,ts}'",
@@ -17,6 +18,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-legacy": "^2.2.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
     "@rollup/plugin-typescript": "^8.4.0",
     "@tsconfig/svelte": "^1.0.0",

@@ -143,4 +143,17 @@ describe('loadConfigFromElement', () => {
         el.innerHTML = covfefeConfigToml;
         loadConfigFromElement(el);
     });
+
+    it('should error out when passing an invalid JSON', () => {
+        const el = make_config_element({ type: 'json' });
+        el.innerHTML = '[[';
+        expect(()=>loadConfigFromElement(el)).toThrow(SyntaxError);
+    });
+
+    it('should error out when passing an invalid TOML', () => {
+        const el = make_config_element({});
+        el.innerHTML = '[[';
+        expect(()=>loadConfigFromElement(el)).toThrow(SyntaxError);
+    });
+
 });
