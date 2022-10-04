@@ -1,10 +1,5 @@
 # PyScript
 
-```{warning}
-Please note, this documentation is just a placeholder and **should not be used
-in reference material**. Thank you!
-```
-
 Welcome to the PyScript documentation!
 
 PyScript provides a way for you to run Python code directly in your browser, giving
