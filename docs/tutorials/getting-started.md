@@ -147,7 +147,7 @@ the `<py-script>` tag to write to.
 
 Use the `<py-config>` tag to set and configure general metadata along with declaring dependencies for your PyScript application. The configuration has to be set in either TOML or JSON format. If you are unfamiliar with JSON, consider reading [freecodecamp's JSON for beginners](https://www.freecodecamp.org/news/what-is-json-a-json-file-example/) guide for more information. And for TOML, consider reading about it [here](https://learnxinyminutes.com/docs/toml/).
 
-The ideal place to use `<py-config>` in between the `<head>...</head>` tags.
+The ideal place to use `<py-config>` in between the `<body>...</body>` tags.
 
 The `<py-config>` tag can be used as follows:
 
@@ -269,16 +269,16 @@ as a shortcut, which takes the expression on the last line of the script and run
     <head>
       <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
       <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-      <py-config type="json">
-        {
-          "packages": ["numpy", "matplotlib"]
-        }
-      </py-config>
     </head>
 
   <body>
     <h1>Let's plot random numbers</h1>
     <div id="plot"></div>
+    <py-config type="json">
+        {
+          "packages": ["numpy", "matplotlib"]
+        }
+    </py-config>
     <py-script output="plot">
       import matplotlib.pyplot as plt
       import numpy as np
@@ -315,15 +315,15 @@ In the HTML tag `<py-config>`, paths to local modules are provided in the
     <head>
       <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
       <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-      <py-config type="toml">
-        packages = ["numpy", "matplotlib"]
-        paths = ["./data.py"]
-      </py-config>
     </head>
 
   <body>
     <h1>Let's plot random numbers</h1>
     <div id="plot"></div>
+    <py-config type="toml">
+        packages = ["numpy", "matplotlib"]
+        paths = ["./data.py"]
+    </py-config>
     <py-script output="plot">
       import matplotlib.pyplot as plt
       from data import make_x_and_y

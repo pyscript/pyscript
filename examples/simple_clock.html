@@ -10,17 +10,17 @@
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
 
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <py-config>
-      paths = [
-          "./utils.py"
-      ]
-    </py-config>
   </head>
 
   <body>
     <div class="font-mono">start time: <label id="outputDiv"></label></div>
     <div id="outputDiv2" class="font-mono"></div>
     <div id="outputDiv3" class="font-mono"></div>
+    <py-config>
+      paths = [
+          "./utils.py"
+      ]
+    </py-config>
     <py-script output="outputDiv">
 # demonstrates how use the global PyScript pyscript_loader
 # to send operation log messages to it

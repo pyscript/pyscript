@@ -14,16 +14,17 @@
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
 
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <py-config>
-      packages = [
-        "bokeh",
-        "numpy"
-      ]
-    </py-config>
     </head>
     <body>
         <h1>Bokeh Example</h1>
         <div id="myplot"></div>
+
+        <py-config>
+          packages = [
+            "bokeh",
+            "numpy"
+          ]
+        </py-config>
 
     <py-script id="main">
 import json

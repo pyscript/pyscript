@@ -5,15 +5,17 @@
     <link rel="icon" type="image/x-icon" href="./favicon.png">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <py-config>
-      packages = [
-        "folium",
-        "pandas"
-      ]
-    </py-config>
     </head>
     <body>
       <div id="folium" style="width: 100%; height: 100%"></div>
+
+      <py-config>
+        packages = [
+          "folium",
+          "pandas"
+        ]
+      </py-config>
+
       <py-script output="folium">
 import folium
 import json

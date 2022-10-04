@@ -40,14 +40,6 @@
     </style>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <py-config>
-      packages = [
-        "bokeh",
-        "numpy",
-        "pandas",
-        "panel==0.13.1"
-      ]
-    </py-config>
   </head>
 
   <body>
@@ -76,6 +68,15 @@
 	</div>
       </div>
     </div>
+
+    <py-config>
+      packages = [
+        "bokeh",
+        "numpy",
+        "pandas",
+        "panel==0.13.1"
+      ]
+    </py-config>
 
     <py-script>
       import panel as pn
