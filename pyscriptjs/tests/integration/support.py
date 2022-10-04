@@ -103,16 +103,16 @@ class PyScriptTest:
             hash = hashlib.sha256(route.request.url.encode("utf-8")).hexdigest()
             # cached?
             if hash in cache:
-                # fullfill via cache
+                # fulfill via cache
                 route.fulfill(status=200, response=cache.get(hash))
             else:
                 try:
-                    # fetch, cache, fullfill 1x
+                    # fetch, cache, fulfill 1x
                     response = page.request.fetch(route.request)
                     cache[hash] = response
                     route.fulfill(status=200, response=response)
                 except Exception:
-                    # fetch, cache, fullfill 2x
+                    # fetch, cache, fulfill 2x
                     response = page.request.fetch(route.request)
                     cache[hash] = response
                     route.fulfill(status=200, response=response)
