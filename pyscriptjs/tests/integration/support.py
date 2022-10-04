@@ -95,9 +95,9 @@ class PyScriptTest:
         self.page = page
         # cache to store data via sha256(url)
         cache = {}
-        
+
         # router to cache with fail 2x on requests
-        
+
         def router(route):
             # hash of url
             hash = hashlib.sha256(route.request.url.encode("utf-8")).hexdigest()
