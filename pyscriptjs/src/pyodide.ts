@@ -1,4 +1,4 @@
-import { Runtime, RuntimeConfig } from './runtime';
+import { Runtime } from './runtime';
 import { getLastPath } from './utils';
 import { getLogger } from './logger';
 import type { PyodideInterface } from 'pyodide';
@@ -16,12 +16,13 @@ export class PyodideRuntime extends Runtime {
     globals: any;
 
     constructor(
+        config,
         src = 'https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js',
         name = 'pyodide-default',
         lang = 'python',
     ) {
         logger.info('Runtime config:', { name, lang, src });
-        super();
+        super(config);
         this.src = src;
         this.name = name;
         this.lang = lang;
@@ -98,7 +99,7 @@ export class PyodideRuntime extends Runtime {
                 try:
                     response = await pyfetch("${path}")
                 except Exception as err:
-                    console.warn("PyScript: Access to local files (using 'paths:' in py-env) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
+                    console.warn("PyScript: Access to local files (using 'paths:' in py-config) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
                     raise(err)
                 content = await response.bytes()
                 with open("${filename}", "wb") as f:

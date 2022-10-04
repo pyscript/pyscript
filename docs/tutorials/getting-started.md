@@ -258,9 +258,12 @@ OR in JSON like
 ```
 
 If your `.whl` is not a pure Python wheel, then open a PR or issue with [pyodide](https://github.com/pyodide/pyodide) to get it added [here](https://github.com/pyodide/pyodide/tree/main/packages).
+
 If there's enough popular demand, the pyodide team will likely work on supporting your package. Regardless, things will likely move faster if you make the PR and consult with the team to get unblocked.
+
 For example, NumPy and Matplotlib are available. Notice here we're using `<py-script output="plot">`
 as a shortcut, which takes the expression on the last line of the script and runs `pyscript.write('plot', fig)`.
+
 ```html
 <html>
     <head>
@@ -290,9 +293,11 @@ as a shortcut, which takes the expression on the last line of the script and run
 ```
 
 ### Local modules
+
 In addition to packages, you can declare local Python modules that will
 be imported in the `<py-script>` tag. For example, we can place the random
 number generation steps in a function in the file `data.py`.
+
 ```python
 # data.py
 import numpy as np
@@ -376,104 +381,6 @@ OR in JSON like
 ```
 
 If this `"magic"` key is present in config supplied via `src` and also present in config supplied via `inline`, then the value in the inline config is given priority i.e. the overriding process also works for custom keys.
-
-## The py-env tag (Deprecated)
-
-**The <py-env> tag is deprecated as of `2022.09.1` release but you can still use the functionality explained below. It will be removed in the next release. To specify packages in the recommended way, please see the <py-config> section.**
-
-In addition to the [Python Standard Library](https://docs.python.org/3/library/) and
-the `pyscript` module, many 3rd-party OSS packages will work out-of-the-box with PyScript.
-
-In order to use them, you will need to declare the dependencies using the `<py-env>` tag in the
-HTML head. You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/examples/toga/freedom.html).
-
-```
-<py-env>
-- './static/wheels/travertino-0.1.3-py3-none-any.whl'
-</py-env>
-```
-
-If your `.whl` is not a pure Python wheel, then open a PR or issue with [pyodide](https://github.com/pyodide/pyodide) to get it added [here](https://github.com/pyodide/pyodide/tree/main/packages).
-If there's enough popular demand, the pyodide team will likely work on supporting your package. Regardless, things will likely move faster if you make the PR and consult with the team to get unblocked.
-
-For example, NumPy and Matplotlib are available. Notice here we're using `<py-script output="plot">`
-as a shortcut, which takes the expression on the last line of the script and runs `pyscript.write('plot', fig)`.
-
-```html
-<html>
-    <head>
-      <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-      <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-      <py-env>
-        - numpy
-        - matplotlib
-      </py-env>
-    </head>
-
-  <body>
-    <h1>Let's plot random numbers</h1>
-    <div id="plot"></div>
-    <py-script output="plot">
-      import matplotlib.pyplot as plt
-      import numpy as np
-
-      x = np.random.randn(1000)
-      y = np.random.randn(1000)
-
-      fig, ax = plt.subplots()
-      ax.scatter(x, y)
-      fig
-    </py-script>
-  </body>
-</html>
-```
-
-### Local modules with py-env (Deprecated)
-
-**The <py-env> tag is deprecated as of `2022.09.1` release but you can still use the functionality explained below. It will be removed in the next release. To specify local modules in the recommended way, please see the <py-config> section.**
-
-In addition to packages, you can declare local Python modules that will
-be imported in the `<py-script>` tag. For example, we can place the random
-number generation steps in a function in the file `data.py`.
-```python
-# data.py
-import numpy as np
-def make_x_and_y(n):
-    x = np.random.randn(n)
-    y = np.random.randn(n)
-    return x, y
-```
-
-In the HTML tag `<py-env>`, paths to local modules are provided in the
-`paths:` key.
-
-```html
-<html>
-    <head>
-      <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-      <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-      <py-env>
-        - numpy
-        - matplotlib
-        - paths:
-          - ./data.py
-      </py-env>
-    </head>
-
-  <body>
-    <h1>Let's plot random numbers</h1>
-    <div id="plot"></div>
-    <py-script output="plot">
-      import matplotlib.pyplot as plt
-      from data import make_x_and_y
-      x, y = make_x_and_y(n=1000)
-      fig, ax = plt.subplots()
-      ax.scatter(x, y)
-      fig
-    </py-script>
-  </body>
-</html>
-```
 
 ## The py-repl tag
 

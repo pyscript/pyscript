@@ -11,18 +11,17 @@
     <link rel="stylesheet" href="repl.css" />
 
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <py-config>
+      packages = [
+        "bokeh",
+        "numpy"
+      ]
+      paths = [
+        "./utils.py",
+        "./antigravity.py"
+      ]
+    </py-config>
   </head>
-
-  <py-config>
-packages = [
-  "bokeh",
-  "numpy"
-]
-paths = [
-    "./utils.py",
-    "./antigravity.py"
-]
-  </py-config>
 
   <body>
       <h1 class="font-semibold text-2xl ml-5">Custom REPL</h1>
