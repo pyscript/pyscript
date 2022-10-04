@@ -120,28 +120,28 @@ describe('loadConfigFromElement', () => {
         expect(config.wonderful).toBe('hijacked');
     });
 
-    it.failing('should NOT be able to load an inline config in JSON format with type as TOML', () => {
+    it('should NOT be able to load an inline config in JSON format with type as TOML', () => {
         const el = make_config_element({});
         el.innerHTML = JSON.stringify(covfefeConfig);
-        loadConfigFromElement(el);
+        expect(()=>loadConfigFromElement(el)).toThrow(/config supplied: {.*} is an invalid TOML and cannot be parsed/);
     });
 
-    it.failing('should NOT be able to load an inline config in TOML format with type as JSON', () => {
+    it('should NOT be able to load an inline config in TOML format with type as JSON', () => {
         const el = make_config_element({ type: 'json' });
         el.innerHTML = covfefeConfigToml;
-        loadConfigFromElement(el);
+        expect(()=>loadConfigFromElement(el)).toThrow(SyntaxError);
     });
 
-    it.failing('should NOT be able to load an inline TOML config with a JSON config from src with type as toml', () => {
+    it('should NOT be able to load an inline TOML config with a JSON config from src with type as toml', () => {
         const el = make_config_element({ src: '/covfefe.json' });
         el.innerHTML = covfefeConfigToml;
-        loadConfigFromElement(el);
+        expect(()=>loadConfigFromElement(el)).toThrow(/config supplied: {.*} is an invalid TOML and cannot be parsed/);
     });
 
-    it.failing('should NOT be able to load an inline TOML config with a JSON config from src with type as json', () => {
+    it('should NOT be able to load an inline TOML config with a JSON config from src with type as json', () => {
         const el = make_config_element({ type: 'json', src: '/covfefe.json' });
         el.innerHTML = covfefeConfigToml;
-        loadConfigFromElement(el);
+        expect(()=>loadConfigFromElement(el)).toThrow(SyntaxError);
     });
 
     it('should error out when passing an invalid JSON', () => {
