@@ -130,6 +130,17 @@ describe('PyConfig', () => {
         instance.connectedCallback();
     });
 
+    it('should error out when passing an invalid JSON', () => {
+        instance.setAttribute('type', 'json');
+        instance.innerHTML = '[[';
+        expect(()=>instance.connectedCallback()).toThrow(SyntaxError);
+    });
+
+    it('should error out when passing an invalid TOML', () => {
+        instance.innerHTML = '[[';
+        expect(()=>instance.connectedCallback()).toThrow(SyntaxError);
+    });
+
     it('connectedCallback should call loadRuntimes', async () => {
         const mockedMethod = jest.fn();
         instance.loadRuntimes = mockedMethod;
@@ -142,12 +153,12 @@ describe('PyConfig', () => {
     it('confirm connectedCallback happy path', async () => {
         const mockedMethod = jest.fn();
         instance.loadRuntimes = mockedMethod;
-        instance.innerHTML = 'test';
+        instance.innerHTML = 'test = 42';
 
         instance.connectedCallback();
 
-        expect(instance.code).toBe('test');
-        expect(instance.values['0']).toBe('test');
+        expect(instance.code).toBe('test = 42');
+        expect(instance.values['test']).toBe(42);
     });
 
     it('log should add new message to the page', async () => {
