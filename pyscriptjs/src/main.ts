@@ -8,7 +8,7 @@ import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
 import { globalLoader, runtimeLoaded, addInitializer } from './stores';
-import { handleFetchError, globalExport } from './utils'
+import { handleFetchError, showError, globalExport } from './utils'
 
 const logger = getLogger('pyscript/main');
 
@@ -45,7 +45,18 @@ class PyScriptApp {
         // XXX: we should actively complain if there are multiple <py-config>
         // and show a big error. PRs welcome :)
         logger.info('searching for <py-config>');
-        const el = document.querySelector('py-config');
+        const elements = document.getElementsByTagName('py-config');
+        let el = null;
+        if (elements.length > 0)
+            el = elements[0];
+        if (elements.length >= 2) {
+            // XXX: ideally, I would like to have a way to raise "fatal
+            // errors" and stop the computation, but currently our life cycle
+            // is too messy to implement it reliably. We might want to revisit
+            // this once it's in a better shape.
+            showError("Multiple &lt;py-config&gt; tags detected. Only the first is " +
+                      "going to be parsed, all the others will be ignored");
+        }
         this.config = loadConfigFromElement(el);
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
     }

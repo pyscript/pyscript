@@ -131,3 +131,28 @@ class TestConfig(PyScriptTest):
             )
         msg = str(exc)
         assert "<ExceptionInfo JsError" in msg
+
+    def test_multiple_py_config(self):
+        self.pyscript_run(
+            """
+            <py-config>
+            name = "foobar"
+            </py-config>
+
+            <py-config>
+            this is ignored and won't even be parsed
+            </py-config>
+
+            <py-script>
+                import js
+                config = js.pyscript_get_config()
+                js.console.log("config name:", config.name)
+            </py-script>
+            """
+        )
+        div = self.page.wait_for_selector(".py-error")
+        expected = (
+            "Multiple <py-config> tags detected. Only the first "
+            "is going to be parsed, all the others will be ignored"
+        )
+        assert div.text_content() == expected

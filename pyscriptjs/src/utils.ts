@@ -54,6 +54,8 @@ function guidGenerator(): string {
  */
 function showError(msg: string): void {
     const warning = document.createElement('div');
+    // XXX: the style should go to css instead of here probably
+    warning.className = "py-error";
     warning.style.backgroundColor = 'LightCoral';
     warning.style.alignContent = 'center';
     warning.style.margin = '4px';
