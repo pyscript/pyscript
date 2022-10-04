@@ -32,16 +32,15 @@
 
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <py-config>
+      packages = [
+        "bokeh",
+        "numpy",
+        "pandas",
+        "panel==0.13.1"
+      ]
+    </py-config>
   </head>
-
-  <py-config>
-packages = [
-  "bokeh",
-  "numpy",
-  "pandas",
-  "panel==0.13.1"
-]
-  </py-config>
 
   <body>
     <div class="container-fluid d-flex flex-column vh-100 overflow-hidden" id="container">

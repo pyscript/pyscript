@@ -99,7 +99,7 @@ export class PyodideRuntime extends Runtime {
                 try:
                     response = await pyfetch("${path}")
                 except Exception as err:
-                    console.warn("PyScript: Access to local files (using 'paths:' in py-env) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
+                    console.warn("PyScript: Access to local files (using 'paths:' in py-config) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
                     raise(err)
                 content = await response.bytes()
                 with open("${filename}", "wb") as f:

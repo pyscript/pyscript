@@ -9,14 +9,14 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@holoviz/panel@0.13.1/dist/panel.min.js"></script>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <py-config>
+      packages = [
+        "bokeh",
+        "numpy",
+        "panel==0.13.1"
+      ]
+    </py-config>
   </head>
-  <py-config>
-packages = [
-    "bokeh",
-    "numpy",
-    "panel==0.13.1"
-]
-  </py-config>
   <body>
     <h1>Panel Example</h1>
     <div id="simple_app"></div>
