@@ -1,4 +1,4 @@
-import {toml} from './toml'
+import toml from '../src/toml'
 import type { AppConfig } from "./runtime";
 
 const allKeys = {
