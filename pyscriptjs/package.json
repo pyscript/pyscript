@@ -5,6 +5,7 @@
     "build-min": "NODE_ENV=production rollup -c",
     "build": "rollup -c",
     "dev": "rollup -c -w",
+    "tsc":"tsc --noEmit",
     "start": "sirv public --no-clear --port 8080",
     "validate": "svelte-check",
     "format:check": "prettier --check './src/**/*.{js,html,ts}'",
