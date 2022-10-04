@@ -84,7 +84,7 @@ test:
 
 test-integration:
 	make examples
-	$(PYTEST_EXE) -vv $(ARGS) tests/integration/  --log-cli-level=warning
+	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning
 
 test-py:
 	@echo "Tests from $(src_dir)"
