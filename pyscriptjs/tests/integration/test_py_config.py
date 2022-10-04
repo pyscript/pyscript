@@ -80,15 +80,7 @@ class TestConfig(PyScriptTest):
         )
 
         self.pyscript_run(
-            snippet="""
-            <py-script>
-                import sys, js
-                pyodide_version = sys.modules["pyodide"].__version__
-                js.console.log("version", pyodide_version)
-                pyodide_version
-            </py-script>
-        """,
-            extra_head="""
+            """
             <py-config type="json">
                 {
                     "runtimes": [{
@@ -98,6 +90,13 @@ class TestConfig(PyScriptTest):
                     }]
                 }
             </py-config>
+
+            <py-script>
+                import sys, js
+                pyodide_version = sys.modules["pyodide"].__version__
+                js.console.log("version", pyodide_version)
+                pyodide_version
+            </py-script>
         """,
         )
 
@@ -108,12 +107,11 @@ class TestConfig(PyScriptTest):
     def test_invalid_json_config(self):
         with pytest.raises(JsError) as exc:
             self.pyscript_run(
-                snippet="",
-                extra_head="""
-                    <py-config type="json">
-                        [[
-                    </py-config>
-                """,
+                snippet="""
+                <py-config type="json">
+                    [[
+                </py-config>
+                """
             )
 
         msg = str(exc.value)
@@ -122,12 +120,11 @@ class TestConfig(PyScriptTest):
     def test_invalid_toml_config(self):
         with pytest.raises(JsError) as exc:
             self.pyscript_run(
-                snippet="",
-                extra_head="""
-                    <py-config>
-                        [[
-                    </py-config>
-                """,
+                snippet="""
+                <py-config>
+                    [[
+                </py-config>
+                """
             )
         msg = str(exc)
         assert "<ExceptionInfo JsError" in msg

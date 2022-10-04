@@ -5,14 +5,16 @@
     <link rel="icon" type="image/x-icon" href="./favicon.png">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <py-config>
-      packages = [
-        "matplotlib"
-      ]
-    </py-config>
     </head>
     <body>
       <div id="mpl"></div>
+
+      <py-config>
+        packages = [
+          "matplotlib"
+        ]
+      </py-config>
+
       <py-script output="mpl">
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
