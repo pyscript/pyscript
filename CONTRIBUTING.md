@@ -201,6 +201,7 @@ To create a change for PyScript, you can follow the process described [here](htt
 
 * Follow the steps in [setting your local environment](#setting-up-your-local-environment) and [developing](#developing)
 * Make the changes you would like (don't forget to test them with `make test`)
+* Add tests relevant to the feature or bug you fixed
 * Open a pull request back to the PyScript project and address any comments/questions from the maintainers and other contributors.
 
 ## License terms for contributions
