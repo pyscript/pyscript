@@ -50,9 +50,26 @@ jobs:
 
         -   name: setup Miniconda
             uses: conda-incubator/setup-miniconda@v2
+            with:
+                miniforge-variant: Mambaforge
+                miniforge-version: latest
+                activate-environment: my-env
+                use-mamba: true
+
+        -   name: Set cache date
+            run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+
+        -   uses: actions/cache@v3
+            env:
+                cache-name: cache-conda
+            with:
+                path: ${{ matrix.prefix }}
+                key: ${{ matrix.label }}-conda-${{ hashFiles('environment.yml') }}-${{ env.DATE }}-${{ env.CACHE_NUMBER }}
+            id: cache
 
         -   name: Setup Environment
             run: make setup
+            if: steps.cache.outputs.cache-hit != 'true'
 
         -   name: Build
             run: make build
