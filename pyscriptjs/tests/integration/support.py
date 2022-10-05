@@ -5,6 +5,7 @@ import time
 
 import py
 import pytest
+from utils import retry
 
 ROOT = py.path.local(__file__).dirpath("..", "..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
@@ -101,21 +102,19 @@ class PyScriptTest:
         def router(route):
             # hash of url
             hash = hashlib.sha256(route.request.url.encode("utf-8")).hexdigest()
+
+            @retry(times=2, exceptions=(Exception,))
+            def fetch_and_put_in_cache():
+                response = page.request.fetch(route.request)
+                cache[hash] = response
+                route.fulfill(status=200, response=response)
+
             # cached?
             if hash in cache:
                 # fulfill via cache
                 route.fulfill(status=200, response=cache.get(hash))
             else:
-                try:
-                    # fetch, cache, fulfill 1x
-                    response = page.request.fetch(route.request)
-                    cache[hash] = response
-                    route.fulfill(status=200, response=response)
-                except Exception:
-                    # fetch, cache, fulfill 2x
-                    response = page.request.fetch(route.request)
-                    cache[hash] = response
-                    route.fulfill(status=200, response=response)
+                fetch_and_put_in_cache()
 
         # route all urls through router
         self.page.route("**", router)
