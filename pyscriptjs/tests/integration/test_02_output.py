@@ -1,5 +1,7 @@
 import re
 
+import pytest
+
 from .support import PyScriptTest
 
 
@@ -34,6 +36,27 @@ class TestOutuput(PyScriptTest):
         assert re.search(pattern, inner_html)
         pattern = r'<div id="py-.*">hello 2</div>'
         assert re.search(pattern, inner_html)
+
+    @pytest.mark.xfail(reason="fixme")
+    def test_no_implicit_target(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                def display_hello():
+                    # this fails because we don't have any implicit target
+                    # from event handlers
+                    display('hello')
+            </py-script>
+            <button id="my-button" py-onClick="display_hello()">Click me</button>
+        """
+        )
+        self.page.locator("text=Click me").click()
+        import pdb
+
+        pdb.set_trace()
+        text = self.page.text_content("body")
+        assert "hello" not in text
+        # XXX check that it raises an error, somehow
 
     def test_display_line_break(self):
         self.pyscript_run(
