@@ -16,9 +16,6 @@ on:
         -   .github/workflows/build-unstable.yml # Test that workflow works when changed
     workflow_dispatch:
 
-env:
-    CACHE_NUMBER: 0  # increase to reset cache manually
-
 jobs:
     BuildAndTest:
         runs-on: ubuntu-latest
@@ -53,26 +50,9 @@ jobs:
 
         -   name: setup Miniconda
             uses: conda-incubator/setup-miniconda@v2
-            with:
-                miniforge-variant: Mambaforge
-                miniforge-version: latest
-                activate-environment: my-env
-                use-mamba: true
-
-        -   name: Set cache date
-            run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
-
-        -   uses: actions/cache@v3
-            env:
-                cache-name: cache-conda
-            with:
-                path: /usr/share/miniconda3/envs/my-env
-                key: linux-64-conda-${{ hashFiles('environment.yml') }}-${{ env.DATE }}-${{ env.CACHE_NUMBER }}
-            id: cache
 
         -   name: Setup Environment
             run: make setup
-            if: steps.cache.outputs.cache-hit != 'true'
 
         -   name: Build
             run: make build
