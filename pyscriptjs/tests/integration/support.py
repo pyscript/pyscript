@@ -110,16 +110,17 @@ class PyScriptTest:
                 response = page.request.fetch(route.request)
                 cache[hash] = response
                 route.fulfill(status=200, response=response)
-            
-            def content_type( url ):
+
+            def content_type(url):
                 dots = url.split()
-                ending = dots[len(dots)-1]
+                ending = dots[len(dots) - 1]
                 if ending == "js":
                     return "application/javascript"
                 elif ending == "html":
                     return "text/html"
                 else:
                     return ""
+
             # cached?
             if hash in cache:
                 # fulfill via cache
@@ -128,8 +129,12 @@ class PyScriptTest:
                 # local in examples
                 if route.request.url.startswith("http://localhost:8080/"):
                     path_url = route.request.url[22:]
-                    with open(path_url, 'rb') as file:
-                        route.fulfill(status=200, body=file.read(), content_type=content_type(path_url))
+                    with open(path_url, "rb") as file:
+                        route.fulfill(
+                            status=200,
+                            body=file.read(),
+                            content_type=content_type(path_url),
+                        )
                 # remote file
                 else:
                     fetch_and_put_in_cache()
