@@ -95,7 +95,7 @@ class PyScriptTest:
 
     def init_page(self, page, headed):
         self.page = page
-        # cache to store data via sha256(url)
+        # cache storing request objects by a key computed as the sha256 of the url
         cache = {}
 
         # router to cache with fail 2x on requests
