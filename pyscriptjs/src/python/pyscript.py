@@ -126,16 +126,25 @@ class PyScript:
 def set_current_display_target(element):
     get_current_display_target._obj = element
 
+
 def get_current_display_target():
     return get_current_display_target._obj
 
+
 get_current_display_target._obj = None
 
-def display(*value, parent=None, append=True):
-    if parent is None:
-        parent = get_current_display_target()
-        for v in value:
-            Element(parent).write(v, append)
+
+def display(x):
+    """
+    # def display(*value, parent=None, append=True):
+    """
+    parent = get_current_display_target()
+    Element(parent).write(x, append=True)
+
+    ## if parent is None:
+    ##     parent = get_current_display_target()
+    ##     for v in value:
+    ##         Element(parent).write(v, append)
 
 
 class Element:
