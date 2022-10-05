@@ -35,6 +35,18 @@ class TestOutuput(PyScriptTest):
         pattern = r'<div id="py-.*">hello 2</div>'
         assert re.search(pattern, inner_html)
 
+    def test_display_line_break(self):
+        self.pyscript_run(
+            r"""
+            <py-script>
+            display('hello\nworld')
+            </py-script>
+        """
+        )
+        inner_text = self.page.inner_text("html")
+        # XXX fixme
+        assert "1 1" == inner_text
+
 
 ##     def test_empty_HTML_and_console_output(self):
 ##         self.pyscript_run(
@@ -66,17 +78,6 @@ class TestOutuput(PyScriptTest):
 ##         assert 'print from python' in console_text
 ##         assert 'print from js' in console_text
 ##         assert 'error from js' in console_text
-
-##     def test_display_line_break(self):
-##         self.pyscript_run(
-##             """
-##             <py-script>
-##             display('1\\n1'.encode('latin-1', 'backslashreplace').decode('unicode-escape'))
-##             </py-script>
-##         """
-##         )
-##         inner_text = self.page.inner_text('html')
-##         assert '1 1' == inner_text
 
 ##     def test_console_line_break(self):
 ##         self.pyscript_run(
