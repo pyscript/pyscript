@@ -5,8 +5,8 @@ import time
 
 import py
 import pytest
-from utils import retry
 from playwright._impl._api_types import Error as PlaywrightRequestError
+from utils import retry
 
 ROOT = py.path.local(__file__).dirpath("..", "..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
