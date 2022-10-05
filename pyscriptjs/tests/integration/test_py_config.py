@@ -84,8 +84,8 @@ class TestConfig(PyScriptTest):
             <py-config type="json">
                 {
                     "runtimes": [{
-                        "src": "/pyodide/pyodide.js",
-                        "name": "pyodide-0.20.0",
+                        "src": "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js",
+                        "name": "pyodide-0.21.3",
                         "lang": "python"
                     }]
                 }
@@ -100,9 +100,9 @@ class TestConfig(PyScriptTest):
         """,
         )
 
-        assert self.console.log.lines == [self.PY_COMPLETE, "version 0.20.0"]
+        assert self.console.log.lines == [self.PY_COMPLETE, "version 0.21.3"]
         version = self.page.locator("py-script").inner_text()
-        assert version == "0.20.0"
+        assert version == "0.21.3"
 
     def test_invalid_json_config(self):
         with pytest.raises(JsError) as exc:
