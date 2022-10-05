@@ -46,7 +46,7 @@ class PyScriptTest:
     PY_COMPLETE = "Python initialization complete"
 
     @pytest.fixture()
-    def init(self, request, tmpdir, http_server, logger, page):
+    def init(self, request, tmpdir, logger, page):
         """
         Fixture to automatically initialize all the tests in this class and its
         subclasses.
@@ -68,7 +68,7 @@ class PyScriptTest:
         # create a symlink to BUILD inside tmpdir
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
-        self.http_server = http_server
+        self.http_server = "http://localhost:8080"
         self.logger = logger
         self.init_page(page, request.config.option.headed)
         #
@@ -106,16 +106,33 @@ class PyScriptTest:
 
             @retry(times=2, exceptions=(PlaywrightRequestError,))
             def fetch_and_put_in_cache():
+
                 response = page.request.fetch(route.request)
                 cache[hash] = response
                 route.fulfill(status=200, response=response)
-
+            
+            def content_type( url ):
+                dots = url.split()
+                ending = dots[len(dots)-1]
+                if ending == "js":
+                    return "application/javascript"
+                elif ending == "html":
+                    return "text/html"
+                else:
+                    return ""
             # cached?
             if hash in cache:
                 # fulfill via cache
                 route.fulfill(status=200, response=cache.get(hash))
             else:
-                fetch_and_put_in_cache()
+                # local in examples
+                if route.request.url.startswith("http://localhost:8080/"):
+                    path_url = route.request.url[22:]
+                    with open(path_url, 'rb') as file:
+                        route.fulfill(status=200, body=file.read(), content_type=content_type(path_url))
+                # remote file
+                else:
+                    fetch_and_put_in_cache()
 
         # route all urls through router
         if not headed:
