@@ -4,7 +4,7 @@ from .support import PyScriptTest
 
 
 class TestOutuput(PyScriptTest):
-    def test_display(self):
+    def test_simple_display(self):
         self.pyscript_run(
             """
             <py-script>
@@ -16,25 +16,25 @@ class TestOutuput(PyScriptTest):
         pattern = r'<div id="py-.*">hello world</div>'
         assert re.search(pattern, inner_html)
 
+    def test_consecutive_display(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                display('hello 1')
+            </py-script>
+            <py-script>
+                display('hello 2')
+            </py-script>
+        """
+        )
+        # need to improve this to get the first/second input
+        # instead of just searching for it in the page
+        inner_html = self.page.content()
+        pattern = r'<div id="py-.*">hello 1</div>'
+        assert re.search(pattern, inner_html)
+        pattern = r'<div id="py-.*">hello 2</div>'
+        assert re.search(pattern, inner_html)
 
-##     def test_consecutive_display(self):
-##         self.pyscript_run(
-##             """
-##             <py-script>
-##                 display('1')
-##             </py-script>
-##             <py-script>
-##                 display('2')
-##             </py-script>
-##         """
-##         )
-##         #need to improve this to get the first/second input
-##         #instead of just searching for it in the page
-##         inner_html = self.page.content()
-##         pattern = r'<div id="py-.*">1</div>'
-##         assert re.search(pattern, inner_html)
-##         pattern = r'<div id="py-.*">2</div>'
-##         assert re.search(pattern, inner_html)
 
 ##     def test_empty_HTML_and_console_output(self):
 ##         self.pyscript_run(
