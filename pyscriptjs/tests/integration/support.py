@@ -6,6 +6,7 @@ import time
 import py
 import pytest
 from utils import retry
+from playwright._impl._api_types import Error as PlaywrightRequestError
 
 ROOT = py.path.local(__file__).dirpath("..", "..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
@@ -69,7 +70,7 @@ class PyScriptTest:
         self.tmpdir.chdir()
         self.http_server = http_server
         self.logger = logger
-        self.init_page(page)
+        self.init_page(page, request.config.option.headed)
         #
         # this extra print is useful when using pytest -s, else we start printing
         # in the middle of the line
@@ -92,7 +93,7 @@ class PyScriptTest:
             )
             pdb.set_trace()
 
-    def init_page(self, page):
+    def init_page(self, page, headed):
         self.page = page
         # cache to store data via sha256(url)
         cache = {}
@@ -103,7 +104,7 @@ class PyScriptTest:
             # hash of url
             hash = hashlib.sha256(route.request.url.encode("utf-8")).hexdigest()
 
-            @retry(times=2, exceptions=(Exception,))
+            @retry(times=2, exceptions=(PlaywrightRequestError,))
             def fetch_and_put_in_cache():
                 response = page.request.fetch(route.request)
                 cache[hash] = response
@@ -117,7 +118,8 @@ class PyScriptTest:
                 fetch_and_put_in_cache()
 
         # route all urls through router
-        self.page.route("**", router)
+        if not headed:
+            self.page.route("**", router)
         self.console = ConsoleMessageCollection(self.logger)
         self._page_errors = []
         page.on("console", self.console.add_message)
