@@ -126,15 +126,22 @@ class PyScriptTest:
                 # fulfill via cache
                 route.fulfill(status=200, response=cache.get(hash))
             else:
-                # local in examples
-                if route.request.url.startswith("http://localhost:8080/"):
+                # from pyodide zip in temp dir
+                if route.request.url.startswith("http://localhost:8080/pyodide/"):
+                    path_url = route.request.url[21:]
+                    route.fulfill(
+                        status=200,
+                        path=self.tmpdir + path_url,
+                        content_type=content_type(path_url),
+                    )
+                # from examples dir
+                elif route.request.url.startswith("http://localhost:8080/"):
                     path_url = route.request.url[22:]
-                    with open(path_url, "rb") as file:
-                        route.fulfill(
-                            status=200,
-                            body=file.read(),
-                            content_type=content_type(path_url),
-                        )
+                    route.fulfill(
+                        status=200,
+                        path=path_url,
+                        content_type=content_type(path_url),
+                    )
                 # remote file
                 else:
                     fetch_and_put_in_cache()
