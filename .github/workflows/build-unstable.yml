@@ -16,6 +16,9 @@ on:
         -   .github/workflows/build-unstable.yml # Test that workflow works when changed
     workflow_dispatch:
 
+env:
+    CACHE_NUMBER: 0  # increase to reset cache manually
+
 jobs:
     BuildAndTest:
         runs-on: ubuntu-latest
@@ -63,8 +66,8 @@ jobs:
             env:
                 cache-name: cache-conda
             with:
-                path: ${{ matrix.prefix }}
-                key: ${{ matrix.label }}-conda-${{ hashFiles('environment.yml') }}-${{ env.DATE }}-${{ env.CACHE_NUMBER }}
+                path: /usr/share/miniconda3/envs/my-env
+                key: linux-64-conda-${{ hashFiles('environment.yml') }}-${{ env.DATE }}-${{ env.CACHE_NUMBER }}
             id: cache
 
         -   name: Setup Environment
