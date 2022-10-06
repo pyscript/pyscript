@@ -54,7 +54,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "_env", "README.md"]
 #
 html_theme = "pydata_sphinx_theme"
 
-html_logo = "_static/images/avatar.jpg"
+html_logo = "_static/images/pyscript.svg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
