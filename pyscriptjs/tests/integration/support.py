@@ -51,7 +51,7 @@ class PyScriptTest:
         Fixture to automatically initialize all the tests in this class and its
         subclasses.
 
-        The magic is done by the decorator @pyest.mark.usefixtures("init"),
+        The magic is done by the decorator @pytest.mark.usefixtures("init"),
         which tells pytest to automatically use this fixture for all the test
         method of this class.
 
@@ -95,6 +95,10 @@ class PyScriptTest:
 
     def init_page(self, page, headed):
         self.page = page
+
+        # set default timout to 60000 millliseconds from 30000
+        page.set_default_timeout(60000)
+        
         # cache storing request objects by a key computed as the sha256 of the url
         cache = {}
 
@@ -191,7 +195,7 @@ class PyScriptTest:
         self.logger.reset()
         self.logger.log("page.goto", path, color="yellow")
         url = f"{self.http_server}/{path}"
-        self.page.goto(url, wait_until="domcontentloaded", timeout=0)
+        self.page.goto(url,timeout=0)
 
     def wait_for_console(self, text, *, timeout=None, check_errors=True):
         """
@@ -220,7 +224,7 @@ class PyScriptTest:
             if check_errors:
                 self.check_errors()
 
-    def wait_for_pyscript(self, *, timeout=60000, check_errors=True):
+    def wait_for_pyscript(self, *, timeout=None, check_errors=True):
         """
         Wait until pyscript has been fully loaded.
 
