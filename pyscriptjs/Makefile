@@ -86,10 +86,6 @@ test-integration:
 	make examples
 	$(PYTEST_EXE) --numprocesses auto -vv $(ARGS) tests/integration/ --log-cli-level=warning
 
-test-one:
-	make examples
-	$(PYTEST_EXE) -vv $(ARGS) tests/integration/test_py_config.py::TestConfig::test_runtime_config --log-cli-level=warning
-
 test-py:
 	@echo "Tests from $(src_dir)"
 	$(PYTEST_EXE) -vv $(ARGS) tests/py-unit/ --log-cli-level=warning
