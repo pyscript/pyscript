@@ -137,12 +137,12 @@ get_current_display_target._obj = None
 def display(*values, target=None, append=True):
     default_target = get_current_display_target()
 
-    if default_target is None:
+    if default_target is None and target is None:
         raise Exception('Implicit target not allowed here. Please use display(..., target=...)')
 
     if target is not None:
         for v in values:
-            Element(target).write(values, append=append)
+            Element(target).write(v, append=append)
     else:
         for v in values:
             Element(default_target).write(v, append=append)

@@ -32,9 +32,26 @@ class TestOutuput(PyScriptTest):
         # need to improve this to get the first/second input
         # instead of just searching for it in the page
         inner_html = self.page.content()
-        pattern = r'<div id="py-.*">hello 1</div>'
+        first_pattern = r'<div id="py-.*?-2">hello 1</div>'
+        assert re.search(first_pattern, inner_html)
+        second_pattern = r'<div id="py-.*?-2">hello 2</div>'
+        assert re.search(second_pattern, inner_html)
+
+        assert first_pattern is not second_pattern
+
+    def test_multiple_display_calls_same_tag(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                display('hello')
+                display('world')
+            </py-script>
+        """
+        )
+        inner_html = self.page.content()
+        pattern = r'<div id="py-.*?-2">hello</div>'
         assert re.search(pattern, inner_html)
-        pattern = r'<div id="py-.*">hello 2</div>'
+        pattern = r'<div id="py-.*?-3">world</div>'
         assert re.search(pattern, inner_html)
 
     def test_no_implicit_target(self):
@@ -93,7 +110,7 @@ class TestOutuput(PyScriptTest):
         text = self.page.text_content("body")
         assert "hello" in text
 
-    def test_explicit_multiple_targets_pyscript_tag(self):
+    def test_explicit_different_target_from_call(self):
         self.pyscript_run(
             """
             <py-script id="first-pyscript-tag">
