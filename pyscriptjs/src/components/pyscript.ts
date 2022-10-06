@@ -2,9 +2,7 @@ import {
     addInitializer,
     addPostInitializer,
     addToScriptsQueue,
-    loadedEnvironments,
     runtimeLoaded,
-    type Environment,
 } from '../stores';
 
 import { addClasses, htmlDecode } from '../utils';
@@ -16,13 +14,9 @@ const logger = getLogger('py-script');
 
 // Premise used to connect to the first available runtime (can be pyodide or others)
 let runtime: Runtime;
-let environments: Record<Environment['id'], Environment> = {};
 
 runtimeLoaded.subscribe(value => {
     runtime = value;
-});
-loadedEnvironments.subscribe(value => {
-    environments = value;
 });
 
 export class PyScript extends BaseEvalElement {

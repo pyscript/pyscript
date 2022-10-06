@@ -3,7 +3,6 @@ import type { PyodideInterface } from 'pyodide';
 import type { PyLoader } from './components/pyloader';
 import {
     runtimeLoaded,
-    loadedEnvironments,
     globalLoader,
     initializers,
     postInitializers,
@@ -134,10 +133,6 @@ export abstract class Runtime extends Object {
         this.globals.set('pyscript_loader', loader);
 
         loader?.log('Runtime created...');
-        loadedEnvironments.update(environments => ({
-            ...environments,
-            [newEnv['id']]: newEnv,
-        }));
 
         // now we call all initializers before we actually executed all page scripts
         loader?.log('Initializing components...');
