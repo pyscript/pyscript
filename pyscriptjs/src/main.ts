@@ -9,7 +9,6 @@ import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
 import {
     runtimeLoaded,
-    globalLoader,
     scriptsQueue,
 } from './stores';
 import { handleFetchError, showError, globalExport } from './utils'
@@ -49,6 +48,8 @@ scriptsQueue.subscribe((value: PyScript[]) => {
 
    7. run user scripts
 
+   8. initialize the rest of web components such as py-button, py-repl, etc.
+
 More concretely:
 
   - Points 1-4 are implemented sequentially in PyScriptApp.main().
@@ -69,18 +70,8 @@ class PyScriptApp {
     // lifecycle (1)
     main() {
         this.loadConfig();
-
-        // lifecycle (3)
-        /* eslint-disable @typescript-eslint/no-unused-vars */
-        const xPyScript = customElements.define('py-script', PyScript);
-        const xPyLoader = customElements.define('py-loader', PyLoader);
-        /* eslint-disable @typescript-eslint/no-unused-vars */
-
-        // add loader to the page body
-        logger.info('add py-loader');
-        this.loader = <PyLoader>document.createElement('py-loader');
-        document.body.append(this.loader);
-
+        customElements.define('py-script', PyScript);
+        this.showLoader();
         this.loadRuntime();
     }
 
@@ -107,29 +98,16 @@ class PyScriptApp {
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
     }
 
-    // XXX this should probably be moved around
-    loadPackages = async () => {
-        logger.info("Packages to install: ", this.config.packages);
-        await runtimeSpec.installPackage(this.config.packages);
-    }
-
-    // XXX this should probably be moved around
-    loadPaths = async () => {
-        const paths = this.config.paths;
-        logger.info("Paths to load: ", paths)
-        for (const singleFile of paths) {
-            logger.info(`  loading path: ${singleFile}`);
-            try {
-                await runtimeSpec.loadFromFile(singleFile);
-            } catch (e) {
-                //Should we still export full error contents to console?
-                handleFetchError(<Error>e, singleFile);
-            }
-        }
-        logger.info("All paths loaded");
-    }
-
     // lifecycle (3)
+    showLoader() {
+        // add loader to the page body
+        logger.info('add py-loader');
+        customElements.define('py-loader', PyLoader);
+        this.loader = <PyLoader>document.createElement('py-loader');
+        document.body.append(this.loader);
+    }
+
+    // lifecycle (4)
     loadRuntime() {
         logger.info('Initializing runtime');
         if (this.config.runtimes.length == 0) {
@@ -153,9 +131,10 @@ class PyScriptApp {
         document.head.appendChild(script);
     }
 
-    // lifecycle (5). See the overview comment above for an explanation of how
-    // we jump from point (4) to point (5).
-
+    // lifecycle (5)
+    // See the overview comment above for an explanation of how we jump from
+    // point (4) to point (5).
+    //
     // Invariant: this.config and this.loader are set and available.
     async afterRuntimeLoad(runtime: Runtime): Promise<void> {
         // XXX what is the JS/TS standard way of doing asserts?
@@ -165,38 +144,25 @@ class PyScriptApp {
         this.loader.log('Loading runtime...');
         await runtime.loadInterpreter();
         runtimeLoaded.set(runtime);
+        this.loader.log('Runtime created...');
 
-        // Inject the loader into the runtime namespace
         // eslint-disable-next-line
         runtime.globals.set('pyscript_loader', this.loader);
 
-        this.loader.log('Runtime created...');
-
-        // now we call all initializers before we actually executed all page scripts
         this.loader.log('Setting up virtual environment...');
-        // XXX: maybe the following calls could be parallelized, instead of
-        // await()ing immediately. For now I'm using await to be 100%
-        // compatible with the old behavior.
-        await this.loadPackages();
-        await this.loadPaths();
+        await this.setupVirtualEnv(runtime);
         await mountElements(runtime);
 
-        this.loader.log('Execute <py-script> tags...');
-        for (const script of scriptsQueue_) {
-            void script.evaluate();
-        }
-        scriptsQueue.set([]);
+        this.loader.log('Executing <py-script> tags...');
+        this.executeScripts(runtime);
 
-        // now we call all post initializers AFTER we actually executed all page scripts
-        this.loader.log('Running post initializers...');
-
-        // Finally create the custom elements for pyscript such as pybutton
+        this.loader.log('Initializing web components...');
+        // lifecycle (8)
         createCustomElements();
 
         if (runtime.config.autoclose_loader) {
             this.loader.close();
         }
-
         await initHandlers(runtime);
 
         // NOTE: runtime message is used by integration tests to know that
@@ -205,6 +171,44 @@ class PyScriptApp {
         logger.info('PyScript page fully initialized');
     }
 
+
+    // lifecycle (6)
+    async setupVirtualEnv(runtime: Runtime): Promise<void> {
+        // XXX: maybe the following calls could be parallelized, instead of
+        // await()ing immediately. For now I'm using await to be 100%
+        // compatible with the old behavior.
+        logger.info("Packages to install: ", this.config.packages);
+        await runtime.installPackage(this.config.packages);
+        await this.fetchPaths();
+    }
+
+    fetchPaths = async () => {
+        // XXX this can be VASTLY improved: for each path we need to fetch a
+        // URL and write to the virtual filesystem: pyodide.loadFromFile does
+        // it in Python, which means we need to have the runtime
+        // initialized. But we could easily do it in JS in parallel with the
+        // download/startup of pyodide.
+        const paths = this.config.paths;
+        logger.info("Paths to fetch: ", paths)
+        for (const singleFile of paths) {
+            logger.info(`  fetching path: ${singleFile}`);
+            try {
+                await runtimeSpec.loadFromFile(singleFile);
+            } catch (e) {
+                //Should we still export full error contents to console?
+                handleFetchError(<Error>e, singleFile);
+            }
+        }
+        logger.info("All paths fetched");
+    }
+
+    // lifecycle (7)
+    executeScripts(runtime: Runtime) {
+        for (const script of scriptsQueue_) {
+            void script.evaluate();
+        }
+        scriptsQueue.set([]);
+    }
 }
 
 function pyscript_get_config() {
