@@ -191,7 +191,7 @@ class PyScriptTest:
         self.logger.reset()
         self.logger.log("page.goto", path, color="yellow")
         url = f"{self.http_server}/{path}"
-        self.page.goto(url)
+        self.page.goto(url,wait_until='domcontentloaded',timeout=0)
 
     def wait_for_console(self, text, *, timeout=None, check_errors=True):
         """
@@ -220,7 +220,7 @@ class PyScriptTest:
             if check_errors:
                 self.check_errors()
 
-    def wait_for_pyscript(self, *, timeout=None, check_errors=True):
+    def wait_for_pyscript(self, *, timeout=60000, check_errors=True):
         """
         Wait until pyscript has been fully loaded.
 
