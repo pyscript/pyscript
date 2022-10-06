@@ -37,7 +37,6 @@ class TestOutuput(PyScriptTest):
         pattern = r'<div id="py-.*">hello 2</div>'
         assert re.search(pattern, inner_html)
 
-    @pytest.mark.xfail(reason="fixme")
     def test_no_implicit_target(self):
         self.pyscript_run(
             """
@@ -51,24 +50,60 @@ class TestOutuput(PyScriptTest):
         """
         )
         self.page.locator("text=Click me").click()
-        import pdb
-
-        pdb.set_trace()
         text = self.page.text_content("body")
         assert "hello" not in text
-        # XXX check that it raises an error, somehow
 
-    def test_display_line_break(self):
+        # currently the test infrastructure doesn't allow to easily assert that js exceptions were raised
+        # this is a workaround but we need a better fix. Antonio promised to write it
+        assert len(self._page_errors) == 1
+        console_text = self._page_errors
+        assert 'Implicit target not allowed here. Please use display(..., target=...)' in console_text[0].message
+        self._page_errors = []
+
+    def test_explicit_target_pyscript_tag(self):
         self.pyscript_run(
-            r"""
+            """
             <py-script>
-            display('hello\nworld')
+                def display_hello():
+                    # this fails because we don't have any implicit target
+                    # from event handlers
+                    display('hello', target='second-pyscript-tag')
+            </py-script>
+            <py-script id="second-pyscript-tag">
+                display_hello()
             </py-script>
         """
         )
-        inner_text = self.page.inner_text("html")
-        # XXX fixme
-        assert "1 1" == inner_text
+        text = self.page.text_content("body")
+        assert "hello" in text
+
+    def test_explicit_target_on_button_tag(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                def display_hello():
+                    # this fails because we don't have any implicit target
+                    # from event handlers
+                    display('hello', target='my-button')
+            </py-script>
+            <button id="my-button" py-onClick="display_hello()">Click me</button>
+        """
+        )
+        self.page.locator("text=Click me").click()
+        text = self.page.text_content("body")
+        assert "hello" in text
+
+    # def test_display_line_break(self):
+    #     self.pyscript_run(
+    #         r"""
+    #         <py-script>
+    #         display('hello\nworld')
+    #         </py-script>
+    #     """
+    #     )
+    #     inner_text = self.page.inner_text("html")
+    #     # XXX fixme
+    #     assert "1 1" == inner_text
 
 
 ##     def test_empty_HTML_and_console_output(self):

@@ -124,8 +124,9 @@ export class BaseEvalElement extends HTMLElement {
                                  : this.getSourceFromElement();
             this._register_esm(runtime);
 
-            <string>await runtime.run(`set_current_display_target(element="${this.id}")`);
+            <string>await runtime.run(`set_current_display_target(target_id="${this.id}")`);
             <string>await runtime.run(source);
+            <string>await runtime.run(`set_current_display_target(target_id=None)`);
 
             removeClasses(this.errorElement, ['py-error']);
             this.postEvaluate();

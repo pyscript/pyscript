@@ -123,8 +123,8 @@ class PyScript:
         )
 
 
-def set_current_display_target(element):
-    get_current_display_target._obj = element
+def set_current_display_target(target_id):
+    get_current_display_target._obj = target_id
 
 
 def get_current_display_target():
@@ -134,12 +134,16 @@ def get_current_display_target():
 get_current_display_target._obj = None
 
 
-def display(x):
-    """
-    # def display(*value, parent=None, append=True):
-    """
-    parent = get_current_display_target()
-    Element(parent).write(x, append=True)
+def display(values, target=None):
+    default_target = get_current_display_target()
+
+    if default_target is None:
+        raise Exception('Implicit target not allowed here. Please use display(..., target=...)')
+
+    if target is not None:
+        Element(target).write(values, append=True)
+    else:
+        Element(default_target).write(values, append=True)
 
     ## if parent is None:
     ##     parent = get_current_display_target()
