@@ -153,3 +153,47 @@ class TestConfig(PyScriptTest):
             "is going to be parsed, all the others will be ignored"
         )
         assert div.text_content() == expected
+
+    def test_no_runtimes(self):
+        snippet = """
+            <py-config type="json">
+            {
+                "runtimes": []
+            }
+            </py-config>
+        """
+        self.pyscript_run(snippet, wait_for_pyscript=False)
+        div = self.page.wait_for_selector(".py-error")
+        assert div.text_content() == "Fatal error: config.runtimes is empty"
+
+    def test_multiple_runtimes(self):
+        snippet = """
+            <py-config type="json">
+            {
+                "runtimes": [
+                    {
+                        "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
+                        "name": "pyodide-0.21.2",
+                        "lang": "python"
+                    },
+                    {
+                        "src": "http://...",
+                        "name": "this will be ignored",
+                        "lang": "this as well"
+                    }
+                ]
+            }
+            </py-config>
+
+            <py-script>
+                import js
+                js.console.log("hello world");
+            </py-script>
+        """
+        self.pyscript_run(snippet)
+        div = self.page.wait_for_selector(".py-error")
+        expected = (
+            "Multiple runtimes are not supported yet. Only the first will be used"
+        )
+        assert div.text_content() == expected
+        assert self.console.log.lines[-1] == "hello world"

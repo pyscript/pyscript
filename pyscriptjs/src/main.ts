@@ -89,18 +89,25 @@ class PyScriptApp {
 
     loadRuntimes() {
         logger.info('Initializing runtimes');
-        for (const runtime of this.config.runtimes) {
-            const runtimeObj: Runtime = new PyodideRuntime(this.config, runtime.src,
-                                                           runtime.name, runtime.lang);
-            const script = document.createElement('script'); // create a script DOM node
-            script.src = runtimeObj.src; // set its src to the provided URL
-            script.addEventListener('load', () => {
-                void runtimeObj.initialize();
-            });
-            document.head.appendChild(script);
+        if (this.config.runtimes.length == 0) {
+            showError("Fatal error: config.runtimes is empty");
+            return;
         }
-    }
 
+        if (this.config.runtimes.length > 1) {
+            showError("Multiple runtimes are not supported yet. " +
+                      "Only the first will be used");
+        }
+        const runtime_cfg = this.config.runtimes[0];
+        const runtime: Runtime = new PyodideRuntime(this.config, runtime_cfg.src,
+                                                    runtime_cfg.name, runtime_cfg.lang);
+        const script = document.createElement('script'); // create a script DOM node
+        script.src = runtime.src;
+        script.addEventListener('load', () => {
+            void runtime.initialize();
+        });
+        document.head.appendChild(script);
+    }
 }
 
 function pyscript_get_config() {
