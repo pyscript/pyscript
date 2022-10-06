@@ -187,64 +187,50 @@ class TestOutuput(PyScriptTest):
         pattern = r'<style id="matplotlib-figure-styles">'
         assert re.search(pattern, inner_html)
 
-##     def test_empty_HTML_and_console_output(self):
-##         self.pyscript_run(
-##             """
-##             <py-script>
-##                 print('1')
-##                 console.log('2')
-##                 console.error("3");
-##             </py-script>
-##         """
-##         )
-##         inner_html = self.page.content()
-##         assert re.search('', inner_html)
+    def test_empty_HTML_and_console_output(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                print('1')
+                console.log('2')
+                console.error("3");
+            </py-script>
+        """
+        )
+        inner_html = self.page.content()
+        assert re.search('', inner_html)
 
-##     def test_text_HTML_and_console_output(self):
-##         self.pyscript_run(
-##             """
-##             <py-script>
-##                 display('0')
-##                 print('print from python')
-##                 console.log('print from js')
-##                 console.error('error from js');
-##             </py-script>
-##         """
-##         )
-##         inner_text = self.page.inner_text('html')
-##         assert '0' == inner_text
-##         console_text = self.console.all.lines
-##         assert 'print from python' in console_text
-##         assert 'print from js' in console_text
-##         assert 'error from js' in console_text
+    def test_text_HTML_and_console_output(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                display('0')
+                print('print from python')
+                console.log('print from js')
+                console.error('error from js');
+            </py-script>
+        """
+        )
+        inner_text = self.page.inner_text('html')
+        assert '0' == inner_text
+        console_text = self.console.all.lines
+        assert 'print from python' in console_text
+        assert 'print from js' in console_text
+        assert 'error from js' in console_text
 
-##     def test_console_line_break(self):
-##         self.pyscript_run(
-##             """
-##             <py-script>
-##             print('1print\\n2print')
-##             print('1console\\n2console')
-##             </py-script>
-##         """
-##         )
-##         console_text = self.console.all.lines
-##         assert console_text.index('1print') == (console_text.index('2print') - 1)
-##         assert console_text.index('1console') == (console_text.index('2console') - 1)
+    def test_console_line_break(self):
+        self.pyscript_run(
+            """
+            <py-script>
+            print('1print\\n2print')
+            print('1console\\n2console')
+            </py-script>
+        """
+        )
+        console_text = self.console.all.lines
+        assert console_text.index('1print') == (console_text.index('2print') - 1)
+        assert console_text.index('1console') == (console_text.index('2console') - 1)
 
-##     def test_display_multiple_python_types(self):
-##         self.pyscript_run(
-##             """
-##             <py-script>
-##                 l = ['A', 1, '!']
-##                 d = {'B': 2, 'List': l}
-##                 t = ('C', 3, '!')
-##                 display(l, d, t)
-##             </py-script>
-##             """
-##         )
-##         inner_text = self.page.inner_text('html')
-##         print(inner_text)
-##         assert inner_text == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
 
 ##     @pytest.mark.xfail(reason=':p fixme later')
 ##     def test_multiple_async_display(self):
@@ -285,21 +271,3 @@ class TestOutuput(PyScriptTest):
 ##         inner_text_B = self.page.locator('id=pyB').all_inner_texts()
 ##         assert inner_text_A[0] == 'A\nA'
 ##         assert inner_text_B[0] == 'B\nB'
-
-
-
-## # TODO:
-
-## #when i pass argument parent
-
-## #test errors in the REPL
-
-## # test if the err output was removed from repl after repl run successfully, after it ran and fail
-
-## # test the following kinds of output
-##     # "text/html": identity,
-##     # "image/png": lambda value, meta: render_image("image/png", value, meta),
-##     # "image/jpeg": lambda value, meta: render_image("image/jpeg", value, meta),
-##     # "image/svg+xml": identity,
-##     # "application/json": identity,
-##     # "application/javascript": lambda value, meta: f"<script>{value}</script>",
