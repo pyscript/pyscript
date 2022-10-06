@@ -93,18 +93,50 @@ class TestOutuput(PyScriptTest):
         text = self.page.text_content("body")
         assert "hello" in text
 
-    # def test_display_line_break(self):
-    #     self.pyscript_run(
-    #         r"""
-    #         <py-script>
-    #         display('hello\nworld')
-    #         </py-script>
-    #     """
-    #     )
-    #     inner_text = self.page.inner_text("html")
-    #     # XXX fixme
-    #     assert "1 1" == inner_text
+    def test_explicit_multiple_targets_pyscript_tag(self):
+        self.pyscript_run(
+            """
+            <py-script id="first-pyscript-tag">
+                def display_hello():
+                    # this fails because we don't have any implicit target
+                    # from event handlers
+                    display('hello', target='second-pyscript-tag')
+            </py-script>
+            <py-script id="second-pyscript-tag">
+                print('nothing to see here')
+            </py-script>
+            <py-script>
+                display_hello()
+            </py-script>
+        """
+        )
+        text = self.page.locator("id=second-pyscript-tag").all_inner_texts()
+        assert "hello" in text
 
+    def test_append_true(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                display('hello world', append=True)
+            </py-script>
+        """
+        )
+        inner_html = self.page.content()
+        pattern = r'<div id="py-.*">hello world</div>'
+        assert re.search(pattern, inner_html)
+
+
+    def test_append_false(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                display('hello world', append=False)
+            </py-script>
+        """
+        )
+        inner_html = self.page.content()
+        pattern = r'<py-script id="py-.*">hello world</py-script>'
+        assert re.search(pattern, inner_html)
 
 ##     def test_empty_HTML_and_console_output(self):
 ##         self.pyscript_run(
@@ -164,21 +196,6 @@ class TestOutuput(PyScriptTest):
 ##         inner_text = self.page.inner_text('html')
 ##         print(inner_text)
 ##         assert inner_text == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
-
-
-##     def test_button_display(self):
-##         self.pyscript_run(
-##             """
-##                 <py-script id='py1'>
-##                 def say_hello():
-##                     display('hello')
-##                 </py-script>
-##                 <button id='py2' py-onclick="say_hello()">Click me</button>
-##             """
-##         )
-##         self.page.locator("text=Click me").click()
-##         inner_text = self.page.locator('id=py1-2').inner_text()
-##         assert inner_text == 'hello'
 
 ##     @pytest.mark.xfail(reason=':p fixme later')
 ##     def test_multiple_async_display(self):

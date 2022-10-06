@@ -134,16 +134,16 @@ def get_current_display_target():
 get_current_display_target._obj = None
 
 
-def display(values, target=None):
+def display(values, target=None, append=True):
     default_target = get_current_display_target()
 
     if default_target is None:
         raise Exception('Implicit target not allowed here. Please use display(..., target=...)')
 
     if target is not None:
-        Element(target).write(values, append=True)
+        Element(target).write(values, append=append)
     else:
-        Element(default_target).write(values, append=True)
+        Element(default_target).write(values, append=append)
 
     ## if parent is None:
     ##     parent = get_current_display_target()
