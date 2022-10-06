@@ -111,36 +111,24 @@ class PyScriptTest:
                 cache[hash] = response
                 route.fulfill(status=200, response=response)
 
-            def content_type(url):
-                dots = url.split()
-                ending = dots[len(dots) - 1]
-                if ending == "js":
-                    return "application/javascript"
-                elif ending == "html":
-                    return "text/html"
-                else:
-                    return ""
-
             # cached?
             if hash in cache:
                 # fulfill via cache
                 route.fulfill(status=200, response=cache.get(hash))
             else:
                 # from pyodide zip in temp dir
-                if route.request.url.startswith("http://localhost:8080/pyodide/"):
+                if route.request.url.startswith(f"{self.http_server}/pyodide/"):
                     path_url = route.request.url[21:]
                     route.fulfill(
                         status=200,
                         path=self.tmpdir + path_url,
-                        content_type=content_type(path_url),
                     )
                 # from examples dir
-                elif route.request.url.startswith("http://localhost:8080/"):
+                elif route.request.url.startswith(f"{self.http_server}/"):
                     path_url = route.request.url[22:]
                     route.fulfill(
                         status=200,
                         path=path_url,
-                        content_type=content_type(path_url),
                     )
                 # remote file
                 else:
