@@ -191,7 +191,7 @@ class PyScriptTest:
         self.logger.reset()
         self.logger.log("page.goto", path, color="yellow")
         url = f"{self.http_server}/{path}"
-        self.page.goto(url,wait_until='domcontentloaded',timeout=0)
+        self.page.goto(url, wait_until="domcontentloaded", timeout=0)
 
     def wait_for_console(self, text, *, timeout=None, check_errors=True):
         """
