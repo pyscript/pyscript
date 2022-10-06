@@ -98,7 +98,7 @@ class PyScriptTest:
 
         # set default timout to 60000 millliseconds from 30000
         page.set_default_timeout(60000)
-        
+
         # cache storing request objects by a key computed as the sha256 of the url
         cache = {}
 
@@ -195,7 +195,7 @@ class PyScriptTest:
         self.logger.reset()
         self.logger.log("page.goto", path, color="yellow")
         url = f"{self.http_server}/{path}"
-        self.page.goto(url,timeout=0)
+        self.page.goto(url, timeout=0)
 
     def wait_for_console(self, text, *, timeout=None, check_errors=True):
         """
