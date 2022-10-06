@@ -170,6 +170,23 @@ class TestOutuput(PyScriptTest):
         print(inner_text)
         assert inner_text == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
 
+    def test_image_display(self):
+        self.pyscript_run(
+            """
+                <py-env>- matplotlib</py-env>
+                <py-script>
+                    import matplotlib.pyplot as plt
+                    xpoints = [3, 6, 9]
+                    ypoints = [1, 2, 3]
+                    plt.plot(xpoints, ypoints)
+                    plt.show()
+                </py-script>
+            """
+        )
+        inner_html = self.page.content()
+        pattern = r'<style id="matplotlib-figure-styles">'
+        assert re.search(pattern, inner_html)
+
 ##     def test_empty_HTML_and_console_output(self):
 ##         self.pyscript_run(
 ##             """
@@ -269,22 +286,6 @@ class TestOutuput(PyScriptTest):
 ##         assert inner_text_A[0] == 'A\nA'
 ##         assert inner_text_B[0] == 'B\nB'
 
-##     def test_image_display(self):
-##         self.pyscript_run(
-##             """
-##                 <py-env>- matplotlib</py-env>
-##                 <py-script>
-##                     import matplotlib.pyplot as plt
-##                     xpoints = [3, 6, 9]
-##                     ypoints = [1, 2, 3]
-##                     plt.plot(xpoints, ypoints)
-##                     plt.show()
-##                 </py-script>
-##             """
-##         )
-##         inner_html = self.page.content()
-##         pattern = r'<style id="matplotlib-figure-styles">'
-##         assert re.search(pattern, inner_html)
 
 
 ## # TODO:
