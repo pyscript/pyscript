@@ -138,6 +138,21 @@ class TestOutuput(PyScriptTest):
         pattern = r'<py-script id="py-.*">hello world</py-script>'
         assert re.search(pattern, inner_html)
 
+    def test_display_multiple_values(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                l = ['A', 1, '!']
+                d = {'B': 2, 'List': l}
+                t = ('C', 3, '!')
+                display(l, d, t)
+            </py-script>
+            """
+        )
+        inner_text = self.page.inner_text('html')
+        print(inner_text)
+        assert inner_text == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
+
 ##     def test_empty_HTML_and_console_output(self):
 ##         self.pyscript_run(
 ##             """
