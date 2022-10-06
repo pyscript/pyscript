@@ -3,6 +3,7 @@ import base64
 import html
 import io
 import time
+from collections import namedtuple
 from textwrap import dedent
 
 import micropip  # noqa: F401
@@ -134,6 +135,33 @@ class PyScript:
         Element(<id>).write instead."""
             )
         )
+
+    # Data, to be overwritten at CI/CD build time
+    # and updated on tagged release
+    _version_data = {
+        "year": 2022,
+        "month": 9,
+        "patch": 1,
+        "release_level": "dev",
+        "commit": "commit",
+    }
+
+    # Human-readable version info
+    __version__ = ".".join(
+        [
+            f"{_version_data['year']:04}",
+            f"{_version_data['month']:02}",
+            f"{_version_data['patch']:02}",
+            f"{_version_data['release_level']}",
+            f"{_version_data['commit']}",
+        ]
+    )
+
+    # Format mimics sys.version_info
+    _VersionInfo = namedtuple("version_info", _version_data.keys())
+    version_info = _VersionInfo(**_version_data)
+
+    del _version_data
 
 
 def set_current_display_target(target_id):
