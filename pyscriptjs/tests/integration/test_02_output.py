@@ -191,14 +191,18 @@ class TestOutuput(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
-                print('1')
-                console.log('2')
-                console.error("3");
+                print('print from python')
+                console.log('print from js')
+                console.error('error from js');
             </py-script>
         """
         )
         inner_html = self.page.content()
         assert re.search('', inner_html)
+        console_text = self.console.all.lines
+        assert 'print from python' in console_text
+        assert 'print from js' in console_text
+        assert 'error from js' in console_text
 
     def test_text_HTML_and_console_output(self):
         self.pyscript_run(
@@ -231,43 +235,41 @@ class TestOutuput(PyScriptTest):
         assert console_text.index('1print') == (console_text.index('2print') - 1)
         assert console_text.index('1console') == (console_text.index('2console') - 1)
 
+    def test_multiple_async_display(self):
+        self.pyscript_run(
+            """
+                <py-script id="py1">
+                def say_hello():
+                    display('hello')
+                </py-script>
+                <py-script id="py2">
+                    say_hello()
+                </py-script>
+            """
+        )
+        inner_html = self.page.content()
+        pattern = r'<div id="py2-2">hello</div>'
+        assert re.search(pattern, inner_html)
 
-##     @pytest.mark.xfail(reason=':p fixme later')
-##     def test_multiple_async_display(self):
-##         self.pyscript_run(
-##             """
-##                 <py-script id="py1">
-##                 def say_hello():
-##                     display('hello')
-##                 </py-script>
-##                 <py-script id="py2">
-##                     say_hello()
-##                 </py-script>
-##             """
-##         )
-##         inner_html = self.page.content()
-##         pattern = r'<div id="py2">hello</div>'
-##         assert re.search(pattern, inner_html)
+    def test_multiple_async_multiple_display(self):
+        self.pyscript_run(
+            """
+                <py-script id='pyA'>
+                    import asyncio
+                    for i in range(2):
+                        display('A')
+                        await asyncio.sleep(0.1)
+                </py-script>
 
-##     def test_multiple_async_multiple_display(self):
-##         self.pyscript_run(
-##             """
-##                 <py-script id='pyA'>
-##                     import asyncio
-##                     for i in range(2):
-##                         display('A')
-##                         await asyncio.sleep(0.1)
-##                 </py-script>
-
-##                 <py-script id='pyB'>
-##                     import asyncio
-##                     for i in range(2):
-##                         display('B')
-##                         await asyncio.sleep(0.1)
-##                 </py-script>
-##             """
-##         )
-##         inner_text_A = self.page.locator('id=pyA').all_inner_texts()
-##         inner_text_B = self.page.locator('id=pyB').all_inner_texts()
-##         assert inner_text_A[0] == 'A\nA'
-##         assert inner_text_B[0] == 'B\nB'
+                <py-script id='pyB'>
+                    import asyncio
+                    for i in range(2):
+                        display('B')
+                        await asyncio.sleep(0.1)
+                </py-script>
+            """
+        )
+        inner_text_A = self.page.locator('id=pyA').all_inner_texts()
+        inner_text_B = self.page.locator('id=pyB').all_inner_texts()
+        assert inner_text_A[0] == 'A\nA'
+        assert inner_text_B[0] == 'B\nB'
