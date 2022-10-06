@@ -1,16 +1,5 @@
 import type { AppConfig } from './pyconfig';
 import type { PyodideInterface } from 'pyodide';
-import type { PyLoader } from './components/pyloader';
-import {
-    runtimeLoaded,
-    globalLoader,
-    initializers,
-    postInitializers,
-    Initializer,
-    scriptsQueue,
-} from './stores';
-import { createCustomElements } from './components/elements';
-import type { PyScript } from './components/pyscript';
 import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/runtime');
@@ -18,26 +7,6 @@ const logger = getLogger('pyscript/runtime');
 export const version = "<<VERSION>>";
 export type RuntimeInterpreter = PyodideInterface | null;
 
-
-let loader: PyLoader | undefined;
-globalLoader.subscribe(value => {
-    loader = value;
-});
-
-let initializers_: Initializer[];
-initializers.subscribe((value: Initializer[]) => {
-    initializers_ = value;
-});
-
-let postInitializers_: Initializer[];
-postInitializers.subscribe((value: Initializer[]) => {
-    postInitializers_ = value;
-});
-
-let scriptsQueue_: PyScript[];
-scriptsQueue.subscribe((value: PyScript[]) => {
-    scriptsQueue_ = value;
-});
 
 
 /*
@@ -112,51 +81,4 @@ export abstract class Runtime extends Object {
      * underlying interpreter.
      * */
     abstract loadFromFile(path: string): Promise<void>;
-
-    /**
-     * initializes the page which involves loading of runtime,
-     * as well as evaluating all the code inside <py-script> tags
-     * along with initializers and postInitializers
-     * */
-    async initialize(): Promise<void> {
-        loader?.log('Loading runtime...');
-        await this.loadInterpreter();
-        runtimeLoaded.set(this);
-
-        // Inject the loader into the runtime namespace
-        // eslint-disable-next-line
-        this.globals.set('pyscript_loader', loader);
-
-        loader?.log('Runtime created...');
-
-        // now we call all initializers before we actually executed all page scripts
-        loader?.log('Initializing components...');
-        for (const initializer of initializers_) {
-            await initializer();
-        }
-
-        loader?.log('Initializing scripts...');
-        for (const script of scriptsQueue_) {
-            void script.evaluate();
-        }
-        scriptsQueue.set([]);
-
-        // now we call all post initializers AFTER we actually executed all page scripts
-        loader?.log('Running post initializers...');
-
-        // Finally create the custom elements for pyscript such as pybutton
-        createCustomElements();
-
-        if (this.config.autoclose_loader) {
-            loader?.close();
-        }
-
-        for (const initializer of postInitializers_) {
-            await initializer();
-        }
-        // NOTE: this message is used by integration tests to know that
-        // pyscript initialization has complete. If you change it, you need to
-        // change it also in tests/integration/support.py
-        logger.info('PyScript page fully initialized');
-    }
 }

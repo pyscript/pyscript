@@ -187,7 +187,7 @@ class PyScriptTest:
         """
         # this is printed by runtime.ts:Runtime.initialize
         self.wait_for_console(
-            "[pyscript/runtime] PyScript page fully initialized",
+            "[pyscript/main] PyScript page fully initialized",
             timeout=timeout,
             check_errors=check_errors,
         )
