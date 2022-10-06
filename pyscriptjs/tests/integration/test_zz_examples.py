@@ -241,7 +241,7 @@ class TestExamples(PyScriptTest):
     def test_panel_kmeans(self):
         # XXX improve this test
         self.goto("examples/panel_kmeans.html")
-        self.wait_for_pyscript(timeout=120 * 1000)
+        self.wait_for_pyscript()
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
@@ -339,7 +339,6 @@ class TestExamples(PyScriptTest):
         result = self.page.locator("#toga_c_input")
         assert "40.555" in result.input_value()
 
-    @pytest.mark.xfail(reason="it never finishes loading, issue #678")
     def test_webgl_raycaster_index(self):
         # XXX improve this test
         self.goto("examples/webgl/raycaster/index.html")
