@@ -179,7 +179,7 @@ class PyScriptApp {
         // compatible with the old behavior.
         await this.loadPackages();
         await this.loadPaths();
-        await mountElements();
+        await mountElements(runtime);
 
         this.loader.log('Execute <py-script> tags...');
         for (const script of scriptsQueue_) {
@@ -197,7 +197,7 @@ class PyScriptApp {
             this.loader.close();
         }
 
-        await initHandlers();
+        await initHandlers(runtime);
 
         // NOTE: runtime message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
