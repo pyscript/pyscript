@@ -70,7 +70,7 @@ class PyScriptTest:
         self.tmpdir.chdir()
         self.http_server = "http://localhost:8080"
         self.logger = logger
-        self.init_page(page, request.config.option.headed)
+        self.init_page(page)
         #
         # this extra print is useful when using pytest -s, else we start printing
         # in the middle of the line
@@ -93,7 +93,7 @@ class PyScriptTest:
             )
             pdb.set_trace()
 
-    def init_page(self, page, headed):
+    def init_page(self, page):
         self.page = page
 
         # set default timout to 60000 millliseconds from 30000
@@ -139,8 +139,7 @@ class PyScriptTest:
                     fetch_and_put_in_cache()
 
         # route all urls through router
-        if not headed:
-            self.page.route("**", router)
+        self.page.route("**", router)
         self.console = ConsoleMessageCollection(self.logger)
         self._page_errors = []
         page.on("console", self.console.add_message)
