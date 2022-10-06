@@ -121,11 +121,6 @@ export abstract class Runtime extends Object {
     async initialize(): Promise<void> {
         loader?.log('Loading runtime...');
         await this.loadInterpreter();
-        const newEnv = {
-            id: 'default',
-            runtime: this,
-            state: 'loading',
-        };
         runtimeLoaded.set(this);
 
         // Inject the loader into the runtime namespace
