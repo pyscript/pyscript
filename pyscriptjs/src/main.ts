@@ -17,12 +17,6 @@ import { createCustomElements } from './components/elements';
 
 const logger = getLogger('pyscript/main');
 
-// XXX this should be killed eventually
-let runtimeSpec: Runtime;
-runtimeLoaded.subscribe(value => {
-    runtimeSpec = value;
-});
-
 let scriptsQueue_: PyScript[];
 scriptsQueue.subscribe((value: PyScript[]) => {
     scriptsQueue_ = value;
@@ -179,10 +173,10 @@ class PyScriptApp {
         // compatible with the old behavior.
         logger.info("Packages to install: ", this.config.packages);
         await runtime.installPackage(this.config.packages);
-        await this.fetchPaths();
+        await this.fetchPaths(runtime);
     }
 
-    fetchPaths = async () => {
+    async fetchPaths(runtime: Runtime) {
         // XXX this can be VASTLY improved: for each path we need to fetch a
         // URL and write to the virtual filesystem: pyodide.loadFromFile does
         // it in Python, which means we need to have the runtime
@@ -193,7 +187,7 @@ class PyScriptApp {
         for (const singleFile of paths) {
             logger.info(`  fetching path: ${singleFile}`);
             try {
-                await runtimeSpec.loadFromFile(singleFile);
+                await runtime.loadFromFile(singleFile);
             } catch (e) {
                 //Should we still export full error contents to console?
                 handleFetchError(<Error>e, singleFile);
