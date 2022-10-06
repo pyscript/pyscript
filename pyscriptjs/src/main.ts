@@ -3,18 +3,13 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
-import { PyScript } from './components/pyscript';
+import { PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
 import {
-    addInitializer,
-    addPostInitializer,
     runtimeLoaded,
     globalLoader,
-    initializers,
-    postInitializers,
-    Initializer,
     scriptsQueue,
 } from './stores';
 import { handleFetchError, showError, globalExport } from './utils'
@@ -27,16 +22,6 @@ const logger = getLogger('pyscript/main');
 let runtimeSpec: Runtime;
 runtimeLoaded.subscribe(value => {
     runtimeSpec = value;
-});
-
-let initializers_: Initializer[];
-initializers.subscribe((value: Initializer[]) => {
-    initializers_ = value;
-});
-
-let postInitializers_: Initializer[];
-postInitializers.subscribe((value: Initializer[]) => {
-    postInitializers_ = value;
 });
 
 let scriptsQueue_: PyScript[];
@@ -84,11 +69,6 @@ class PyScriptApp {
     // lifecycle (1)
     main() {
         this.loadConfig();
-
-        // XXX this needs refactoring: they implement lifecycle (6) and they
-        // are called by afterRuntimeLoad
-        addInitializer(this.loadPackages);
-        addInitializer(this.loadPaths);
 
         // lifecycle (3)
         /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -193,12 +173,15 @@ class PyScriptApp {
         this.loader.log('Runtime created...');
 
         // now we call all initializers before we actually executed all page scripts
-        this.loader.log('Initializing components...');
-        for (const initializer of initializers_) {
-            await initializer();
-        }
+        this.loader.log('Setting up virtual environment...');
+        // XXX: maybe the following calls could be parallelized, instead of
+        // await()ing immediately. For now I'm using await to be 100%
+        // compatible with the old behavior.
+        await this.loadPackages();
+        await this.loadPaths();
+        await mountElements();
 
-        this.loader.log('Initializing scripts...');
+        this.loader.log('Execute <py-script> tags...');
         for (const script of scriptsQueue_) {
             void script.evaluate();
         }
@@ -214,9 +197,8 @@ class PyScriptApp {
             this.loader.close();
         }
 
-        for (const initializer of postInitializers_) {
-            await initializer();
-        }
+        await initHandlers();
+
         // NOTE: runtime message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
         // change it also in tests/integration/support.py

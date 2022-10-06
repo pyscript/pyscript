@@ -5,8 +5,6 @@ import type { Runtime } from './runtime';
 import type { AppConfig } from './pyconfig';
 import { getLogger } from './logger';
 
-export type Initializer = () => Promise<void>;
-
 /*
 A store for Runtime which can encompass any
 runtime, but currently only has Pyodide as its offering.
@@ -19,18 +17,8 @@ export const componentDetailsNavOpen = writable(false);
 export const mainDiv = writable(null);
 export const currentComponentDetails = writable([]);
 export const scriptsQueue = writable<PyScript[]>([]);
-export const initializers = writable<Initializer[]>([]);
-export const postInitializers = writable<Initializer[]>([]);
 export const globalLoader = writable<PyLoader | undefined>();
 
 export const addToScriptsQueue = (script: PyScript) => {
     scriptsQueue.update(scriptsQueue => [...scriptsQueue, script]);
-};
-
-export const addInitializer = (initializer: Initializer) => {
-    initializers.update(initializers => [...initializers, initializer]);
-};
-
-export const addPostInitializer = (initializer: Initializer) => {
-    postInitializers.update(postInitializers => [...postInitializers, initializer]);
 };

@@ -1,10 +1,9 @@
 import {
-    addInitializer,
-    addPostInitializer,
     addToScriptsQueue,
     runtimeLoaded,
 } from '../stores';
 
+import type { AppConfig } from '../pyconfig';
 import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
 import type { Runtime } from '../runtime';
@@ -205,7 +204,7 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
         ]);
 
 /** Initialize all elements with py-* handlers attributes  */
-async function initHandlers() {
+export async function initHandlers() {
     logger.debug('Initializing py-* event handlers...');
     for (const pyAttribute of pyAttributeToEvent.keys()) {
         await createElementsWithEventListeners(runtime, pyAttribute);
@@ -253,7 +252,7 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
-async function mountElements() {
+export async function mountElements() {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
     logger.info(`py-mount: found ${matches.length} elements`);
 
@@ -264,5 +263,3 @@ async function mountElements() {
     }
     await runtime.run(source);
 }
-addInitializer(mountElements);
-addPostInitializer(initHandlers);
