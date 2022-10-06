@@ -84,6 +84,10 @@ test:
 
 test-integration:
 	make examples
+	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning
+
+test-integration-parallel:
+	make examples
 	$(PYTEST_EXE) --numprocesses auto -vv $(ARGS) tests/integration/ --log-cli-level=warning
 
 test-py:
