@@ -497,6 +497,10 @@ class SmartRouter:
                 pdb.post_mortem(info[2])
             route.abort()
 
+    def log_request(self, status, kind, url):
+        color = "blue" if status == 200 else "red"
+        self.logger.log("request", f"{status} - {kind} - {url}", color=color)
+
     def _router(self, route):
         full_url = route.request.url
         url = urllib.parse.urlparse(full_url)
@@ -505,7 +509,7 @@ class SmartRouter:
         # requests to http://fake_server/ are served from the current dir and
         # never cached
         if url.netloc == self.fake_server:
-            self.logger.log("request LOCAL", full_url, color="blue")
+            self.log_request(200, "fake_server", full_url)
             assert url.path[0] == "/"
             relative_path = url.path[1:]
             route.fulfill(status=200, path=relative_path)
@@ -513,13 +517,14 @@ class SmartRouter:
 
         # network requests might be cached
         if full_url in self._cache:
-            self.logger.log("request CACHED", full_url, color="blue")
+            kind = "CACHED"
             resp = self._cache[full_url]
         else:
-            self.logger.log("request", full_url, color="blue")
+            kind = "NETWORK"
             resp = self.fetch_from_network(route.request)
             self._cache[full_url] = resp
 
+        self.log_request(resp.status, kind, full_url)
         route.fulfill(status=resp.status, headers=resp.headers, body=resp.body)
 
     def fetch_from_network(self, request):
