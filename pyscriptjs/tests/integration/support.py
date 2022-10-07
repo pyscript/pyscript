@@ -1,7 +1,9 @@
 import hashlib
 import pdb
 import re
+import sys
 import time
+import traceback
 import urllib
 
 import py
@@ -57,8 +59,7 @@ class PyScriptTest:
         method of this class.
 
         Using the standard pytest behavior, we can request more fixtures:
-        tmpdir, http_server and page; 'page' is a fixture provided by
-        pytest-playwright.
+        tmpdir, and page; 'page' is a fixture provided by pytest-playwright.
 
         Then, we save these fixtures on the self and proceed with more
         initialization. The end result is that the requested fixtures are
@@ -69,8 +70,12 @@ class PyScriptTest:
         # create a symlink to BUILD inside tmpdir
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
-        self.http_server = "http://fakeserver"
         self.logger = logger
+        self.fake_server = "http://fake_server"
+        self.router = SmartRouter(
+            "fake_server", logger=logger, usepdb=request.config.option.usepdb
+        )
+        self.router.install(page)
         self.init_page(page)
         #
         # this extra print is useful when using pytest -s, else we start printing
@@ -100,41 +105,6 @@ class PyScriptTest:
         # set default timeout to 60000 millliseconds from 30000
         page.set_default_timeout(60000)
 
-        # cache storing request objects by a key computed as the sha256 of the url
-        cache = {}
-
-        # router to cache with fail 2x on requests
-
-        def router(route):
-            full_url = route.request.url
-            url = urllib.parse.urlparse(full_url)
-            # we don't really know what to do with other protocols
-            assert url.scheme in ("http", "https")
-
-            hash = hashlib.sha256(full_url.encode("utf-8")).hexdigest()
-
-            @retry(times=2, exceptions=(PlaywrightRequestError,))
-            def fetch_and_put_in_cache():
-                response = page.request.fetch(route.request)
-                cache[hash] = response
-                route.fulfill(status=200, response=response)
-
-            # cached?
-            if hash in cache:
-                # fulfill via cache
-                route.fulfill(status=200, response=cache.get(hash))
-            else:
-                # requests to http://fakeserver/ are served from the current dir
-                if url.netloc == "fakeserver":
-                    assert url.path[0] == "/"
-                    relative_path = url.path[1:]
-                    route.fulfill(status=200, path=relative_path)
-                # other servers
-                else:
-                    fetch_and_put_in_cache()
-
-        # route all urls through router
-        self.page.route("**", router)
         self.console = ConsoleMessageCollection(self.logger)
         self._page_errors = []
         page.on("console", self.console.add_message)
@@ -188,7 +158,7 @@ class PyScriptTest:
     def goto(self, path):
         self.logger.reset()
         self.logger.log("page.goto", path, color="yellow")
-        url = f"{self.http_server}/{path}"
+        url = f"{self.fake_server}/{path}"
         self.page.goto(url, timeout=0)
 
     def wait_for_console(self, text, *, timeout=None, check_errors=True):
@@ -255,8 +225,8 @@ class PyScriptTest:
         doc = f"""
         <html>
           <head>
-              <link rel="stylesheet" href="{self.http_server}/build/pyscript.css" />
-              <script defer src="{self.http_server}/build/pyscript.js"></script>
+              <link rel="stylesheet" href="{self.fake_server}/build/pyscript.css" />
+              <script defer src="{self.fake_server}/build/pyscript.js"></script>
               {extra_head}
           </head>
           <body>
@@ -453,3 +423,94 @@ class Color:
         start = f"\x1b[{color}m"
         end = "\x1b[00m"
         return start, end
+
+
+class SmartRouter:
+    """
+    A smart router to be used in conjunction with playwright.Page.route.
+
+    Main features:
+
+      - it intercepts the requests to a local "fake server" and serve them
+        statically from disk
+
+      - it intercepts the requests to the network and cache the results
+        locally
+    """
+
+    # NOTE: this is a class attribute, which means that the cache is
+    # automatically shared between all instances of Fake_Server (and thus all
+    # tests of the pytest session)
+    # _cache = {} # XXX it doesn't work
+
+    def __init__(self, fake_server, *, logger, usepdb=False):
+        """
+        fake_server: the domain name of the fake server
+        """
+        self.fake_server = fake_server
+        self.logger = logger
+        self.usepdb = usepdb
+        self.page = None
+        self._cache = {}  # XXX this should be class-wide!
+
+    def install(self, page):
+        """
+        Install the smart router on a page
+        """
+        self.page = page
+        self.page.route("**", self.router)
+
+    def router(self, route):
+        """
+        Intercept and fulfill playwright requests.
+
+        NOTE!
+        If we raise an exception inside router, playwright just hangs and the
+        exception seems not to be propagated outside. It's very likely a
+        playwright bug.
+
+        This means that for example pytest doesn't have any chance to
+        intercept the exception and fail in a meaningful way.
+
+        As a workaround, we try to intercept exceptions by ourselves, print
+        something reasonable on the console and abort the request (hoping that
+        the test will fail cleaninly, that's the best we can do). We also try
+        to respect pytest --pdb, for what it's possible.
+        """
+        try:
+            return self._router(route)
+        except Exception:
+            print("***** Error inside Fake_Server.router *****")
+            info = sys.exc_info()
+            print(traceback.format_exc())
+            if self.usepdb:
+                pdb.post_mortem(info[2])
+            route.abort()
+
+    def _router(self, route):
+        full_url = route.request.url
+        url = urllib.parse.urlparse(full_url)
+        self.logger.log("request", full_url, color="blue")
+        assert url.scheme in ("http", "https")
+
+        hash = hashlib.sha256(full_url.encode("utf-8")).hexdigest()
+
+        @retry(times=2, exceptions=(PlaywrightRequestError,))
+        def fetch_and_put_in_cache():
+            response = self.page.request.fetch(route.request)
+            self._cache[hash] = response
+            route.fulfill(status=200, response=response)
+
+        # cached?
+        if hash in self._cache:
+            # fulfill via cache
+            route.fulfill(status=200, response=self._cache.get(hash))
+        else:
+            # requests to http://fake_server/ are served from the current dir
+            if url.netloc == self.fake_server:
+                assert url.path[0] == "/"
+                relative_path = url.path[1:]
+                route.fulfill(status=200, path=relative_path)
+            # other servers
+            else:
+                fetch_and_put_in_cache()
