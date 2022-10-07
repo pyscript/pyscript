@@ -2,7 +2,6 @@ import {
     addToScriptsQueue,
 } from '../stores';
 
-import type { AppConfig } from '../pyconfig';
 import { addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
 import type { Runtime } from '../runtime';
