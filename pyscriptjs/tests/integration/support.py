@@ -4,11 +4,11 @@ import sys
 import time
 import traceback
 import urllib
+from dataclasses import dataclass
 
 import py
 import pytest
-from playwright._impl._api_types import Error as PlaywrightRequestError
-from utils import retry
+from playwright.sync_api import Error as PlaywrightError
 
 ROOT = py.path.local(__file__).dirpath("..", "..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
@@ -437,10 +437,22 @@ class SmartRouter:
         locally
     """
 
+    @dataclass
+    class CachedResponse:
+        """
+        We cannot put playwright's APIResponse instances inside _cache, because
+        they are valid only in the context of the same page. As a workaround,
+        we manually save status, headers and body of each cached response.
+        """
+
+        status: int
+        headers: dict
+        body: str
+
     # NOTE: this is a class attribute, which means that the cache is
     # automatically shared between all instances of Fake_Server (and thus all
     # tests of the pytest session)
-    # _cache = {} # XXX it doesn't work
+    _cache = {}
 
     def __init__(self, fake_server, *, logger, usepdb=False):
         """
@@ -450,7 +462,6 @@ class SmartRouter:
         self.logger = logger
         self.usepdb = usepdb
         self.page = None
-        self._cache = {}  # XXX this should be class-wide!
 
     def install(self, page):
         """
@@ -489,25 +500,42 @@ class SmartRouter:
     def _router(self, route):
         full_url = route.request.url
         url = urllib.parse.urlparse(full_url)
-        self.logger.log("request", full_url, color="blue")
         assert url.scheme in ("http", "https")
 
-        @retry(times=2, exceptions=(PlaywrightRequestError,))
-        def fetch_and_put_in_cache():
-            response = self.page.request.fetch(route.request)
-            self._cache[full_url] = response
-            route.fulfill(status=200, response=response)
+        # requests to http://fake_server/ are served from the current dir and
+        # never cached
+        if url.netloc == self.fake_server:
+            self.logger.log("request LOCAL", full_url, color="blue")
+            assert url.path[0] == "/"
+            relative_path = url.path[1:]
+            route.fulfill(status=200, path=relative_path)
+            return
 
-        # cached?
+        # network requests might be cached
         if full_url in self._cache:
-            # fulfill via cache
-            route.fulfill(status=200, response=self._cache.get(full_url))
+            self.logger.log("request CACHED", full_url, color="blue")
+            resp = self._cache[full_url]
         else:
-            # requests to http://fake_server/ are served from the current dir
-            if url.netloc == self.fake_server:
-                assert url.path[0] == "/"
-                relative_path = url.path[1:]
-                route.fulfill(status=200, path=relative_path)
-            # other servers
-            else:
-                fetch_and_put_in_cache()
+            self.logger.log("request", full_url, color="blue")
+            resp = self.fetch_from_network(route.request)
+            self._cache[full_url] = resp
+
+        route.fulfill(status=resp.status, headers=resp.headers, body=resp.body)
+
+    def fetch_from_network(self, request):
+        # sometimes the network is flaky and if the first request doesn't
+        # work, a subsequent one works. Instead of giving up immediately,
+        # let's try twice
+        try:
+            api_response = self.page.request.fetch(request)
+        except PlaywrightError:
+            # sleep a bit and try again
+            time.sleep(0.5)
+            api_response = self.page.request.fetch(request)
+
+        cached_response = self.CachedResponse(
+            status=api_response.status,
+            headers=api_response.headers,
+            body=api_response.body(),
+        )
+        return cached_response
