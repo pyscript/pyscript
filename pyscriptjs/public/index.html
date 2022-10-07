@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css@1.12/mvp.css">
+    <link rel="stylesheet" href="pyscript.css">
+    <script defer src="pyscript.min.js"></script>
+    <title>PyScript</title>
+</head>
+
+<body>
+    <main>
+        <h1>&lt;py-script&gt;</h1>
+        <ul>
+            <li><a href="pyscript.min.js.map">pyscript.min.js.map</a></li>
+            <li><a href="pyscript.min.js">pyscript.min.js</a></li>
+            <li><a href="pyscript.js.map">pyscript.js.map</a></li>
+            <li><a href="pyscript.js">pyscript.js</a></li>
+            <li><a href="pyscript.css">pyscript.css</a></li>
+        </ul>
+        <div id="out"></div>
+        <py-script std-out="out">
+            import sys
+            print(sys.version)
+        </py-script>
+
+        <h2>Hello World Example</h2>
+        <pre style="padding:1em;border:1px solid #000000;">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot; /&gt;
+    &lt;title&gt;PyScript Hello World&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://pyscript.net/latest/pyscript.css&quot; /&gt;
+    &lt;script defer src=&quot;https://pyscript.net/latest/build/pyscript.js&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+    Hello world! &lt;br&gt;
+    This is the current date and time, as computed by Python:
+    &lt;py-script&gt;
+from datetime import datetime
+now = datetime.now()
+now.strftime(&quot;%m/%d/%Y, %H:%M:%S&quot;)
+    &lt;/py-script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+    </main>
+</body>
+
+</html>

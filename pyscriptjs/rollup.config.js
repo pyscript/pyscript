@@ -48,7 +48,8 @@ export default {
     // This will make sure that examples will always get the latest build folder
     !production && copy({
         targets: [
-          { src: 'build/*', dest: 'examples/build' }
+          { src: 'build/*', dest: 'examples/build' },
+          { src: 'public/index.html', dest: 'build/' },
         ]
       }),
     !production && serve(),
