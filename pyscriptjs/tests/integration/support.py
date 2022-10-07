@@ -2,6 +2,7 @@ import hashlib
 import pdb
 import re
 import time
+import urllib
 
 import py
 import pytest
@@ -68,7 +69,7 @@ class PyScriptTest:
         # create a symlink to BUILD inside tmpdir
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
-        self.http_server = "http://localhost:8080"
+        self.http_server = "http://fakeserver"
         self.logger = logger
         self.init_page(page)
         #
@@ -96,7 +97,7 @@ class PyScriptTest:
     def init_page(self, page):
         self.page = page
 
-        # set default timout to 60000 millliseconds from 30000
+        # set default timeout to 60000 millliseconds from 30000
         page.set_default_timeout(60000)
 
         # cache storing request objects by a key computed as the sha256 of the url
@@ -105,12 +106,15 @@ class PyScriptTest:
         # router to cache with fail 2x on requests
 
         def router(route):
-            # hash of url
-            hash = hashlib.sha256(route.request.url.encode("utf-8")).hexdigest()
+            full_url = route.request.url
+            url = urllib.parse.urlparse(full_url)
+            # we don't really know what to do with other protocols
+            assert url.scheme in ("http", "https")
+
+            hash = hashlib.sha256(full_url.encode("utf-8")).hexdigest()
 
             @retry(times=2, exceptions=(PlaywrightRequestError,))
             def fetch_and_put_in_cache():
-
                 response = page.request.fetch(route.request)
                 cache[hash] = response
                 route.fulfill(status=200, response=response)
@@ -120,21 +124,12 @@ class PyScriptTest:
                 # fulfill via cache
                 route.fulfill(status=200, response=cache.get(hash))
             else:
-                # from pyodide zip in temp dir
-                if route.request.url.startswith(f"{self.http_server}/pyodide/"):
-                    path_url = route.request.url[21:]
-                    route.fulfill(
-                        status=200,
-                        path=self.tmpdir + path_url,
-                    )
-                # from examples dir
-                elif route.request.url.startswith(f"{self.http_server}/"):
-                    path_url = route.request.url[22:]
-                    route.fulfill(
-                        status=200,
-                        path=path_url,
-                    )
-                # remote file
+                # requests to http://fakeserver/ are served from the current dir
+                if url.netloc == "fakeserver":
+                    assert url.path[0] == "/"
+                    relative_path = url.path[1:]
+                    route.fulfill(status=200, path=relative_path)
+                # other servers
                 else:
                     fetch_and_put_in_cache()
 
