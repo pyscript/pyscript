@@ -27,7 +27,7 @@ describe('PyodideRuntime', () => {
          */
         const pyodideSpec = await import('pyodide');
         global.loadPyodide = pyodideSpec.loadPyodide;
-        await runtime.initialize();
+        await runtime.loadInterpreter();
     });
 
     it('should check if runtime is an instance of abstract Runtime', async () => {

@@ -187,7 +187,7 @@ class PyScriptTest:
         """
         # this is printed by runtime.ts:Runtime.initialize
         self.wait_for_console(
-            "[pyscript/runtime] PyScript page fully initialized",
+            "[pyscript/main] PyScript page fully initialized",
             timeout=timeout,
             check_errors=check_errors,
         )
@@ -195,7 +195,7 @@ class PyScriptTest:
         # events aren't being triggered in the tests.
         self.page.wait_for_timeout(100)
 
-    def pyscript_run(self, snippet, *, extra_head=""):
+    def pyscript_run(self, snippet, *, extra_head="", wait_for_pyscript=True):
         """
         Main entry point for pyscript tests.
 
@@ -224,7 +224,8 @@ class PyScriptTest:
         filename = f"{self.testname}.html"
         self.writefile(filename, doc)
         self.goto(filename)
-        self.wait_for_pyscript()
+        if wait_for_pyscript:
+            self.wait_for_pyscript()
 
 
 # ============== Helpers and utility functions ==============

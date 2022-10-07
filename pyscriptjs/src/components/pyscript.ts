@@ -1,10 +1,5 @@
 import {
-    addInitializer,
-    addPostInitializer,
     addToScriptsQueue,
-    loadedEnvironments,
-    runtimeLoaded,
-    type Environment,
 } from '../stores';
 
 import { addClasses, htmlDecode } from '../utils';
@@ -13,17 +8,6 @@ import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-script');
-
-// Premise used to connect to the first available runtime (can be pyodide or others)
-let runtime: Runtime;
-let environments: Record<Environment['id'], Environment> = {};
-
-runtimeLoaded.subscribe(value => {
-    runtime = value;
-});
-loadedEnvironments.subscribe(value => {
-    environments = value;
-});
 
 export class PyScript extends BaseEvalElement {
     constructor() {
@@ -211,7 +195,7 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
         ]);
 
 /** Initialize all elements with py-* handlers attributes  */
-async function initHandlers() {
+export async function initHandlers(runtime: Runtime) {
     logger.debug('Initializing py-* event handlers...');
     for (const pyAttribute of pyAttributeToEvent.keys()) {
         await createElementsWithEventListeners(runtime, pyAttribute);
@@ -259,7 +243,7 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
-async function mountElements() {
+export async function mountElements(runtime: Runtime) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
     logger.info(`py-mount: found ${matches.length} elements`);
 
@@ -270,5 +254,3 @@ async function mountElements() {
     }
     await runtime.run(source);
 }
-addInitializer(mountElements);
-addPostInitializer(initHandlers);
