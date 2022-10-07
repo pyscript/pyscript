@@ -116,7 +116,7 @@ class PyScriptApp {
         const runtime_cfg = this.config.runtimes[0];
         const runtime: Runtime = new PyodideRuntime(this.config, runtime_cfg.src,
                                                     runtime_cfg.name, runtime_cfg.lang);
-        this.loader.log('Loading runtime...');
+        this.loader.log(`Downloading ${runtime_cfg.name}...`);
         const script = document.createElement('script'); // create a script DOM node
         script.src = runtime.src;
         script.addEventListener('load', () => {
@@ -135,10 +135,10 @@ class PyScriptApp {
         console.assert(this.config !== undefined);
         console.assert(this.loader !== undefined);
 
-        this.loader.log('Loading runtime...');
+        this.loader.log('Python startup...');
         await runtime.loadInterpreter();
         runtimeLoaded.set(runtime);
-        this.loader.log('Runtime created...');
+        this.loader.log('Python ready!');
 
         // eslint-disable-next-line
         runtime.globals.set('pyscript_loader', this.loader);
