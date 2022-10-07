@@ -91,7 +91,7 @@ class TestSupport(PyScriptTest):
         # stack trace
         msg = str(exc.value)
         assert "Error: this is an error" in msg
-        assert f"at {self.http_server}/mytest.html" in msg
+        assert f"at {self.fake_server}/mytest.html" in msg
         #
         # after a call to check_errors, the errors are cleared
         self.check_errors()
