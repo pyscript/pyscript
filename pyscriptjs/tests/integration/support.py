@@ -1,4 +1,3 @@
-import hashlib
 import pdb
 import re
 import sys
@@ -493,18 +492,16 @@ class SmartRouter:
         self.logger.log("request", full_url, color="blue")
         assert url.scheme in ("http", "https")
 
-        hash = hashlib.sha256(full_url.encode("utf-8")).hexdigest()
-
         @retry(times=2, exceptions=(PlaywrightRequestError,))
         def fetch_and_put_in_cache():
             response = self.page.request.fetch(route.request)
-            self._cache[hash] = response
+            self._cache[full_url] = response
             route.fulfill(status=200, response=response)
 
         # cached?
-        if hash in self._cache:
+        if full_url in self._cache:
             # fulfill via cache
-            route.fulfill(status=200, response=self._cache.get(hash))
+            route.fulfill(status=200, response=self._cache.get(full_url))
         else:
             # requests to http://fake_server/ are served from the current dir
             if url.netloc == self.fake_server:
