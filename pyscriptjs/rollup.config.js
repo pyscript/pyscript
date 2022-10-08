@@ -13,13 +13,13 @@ const production = !process.env.ROLLUP_WATCH || (process.env.NODE_ENV === "produ
 
 export default {
   input: "src/main.ts",
-  output:[
+  output: [
     {
-    sourcemap: true,
-    format: "iife",
-    inlineDynamicImports: true,
-    name: "app",
-    file: "build/pyscript.js",
+      sourcemap: true,
+      format: "iife",
+      inlineDynamicImports: true,
+      name: "app",
+      file: "build/pyscript.js",
     },
     {
       file: "build/pyscript.min.js",
@@ -47,18 +47,22 @@ export default {
     }),
     // This will make sure that examples will always get the latest build folder
     !production && copy({
-        targets: [
-          { src: 'build/*', dest: 'examples/build' },
-          { src: 'public/index.html', dest: 'build/' },
-        ]
-      }),
+      targets: [
+        { src: 'build/*', dest: 'examples/build' },
+      ]
+    }),
+    copy({
+      targets: [
+        { src: 'public/index.html', dest: 'build' },
+      ]
+    }),
     !production && serve(),
     !production && livereload("public"),
     // production && terser(),
     !production && serve({
       port: 8080,
-      contentBase: 'examples'}
-      )
+      contentBase: 'examples'
+    })
   ],
   watch: {
     clearScreen: false,
