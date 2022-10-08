@@ -53,7 +53,7 @@ export default {
     }),
     copy({
       targets: [
-        { src: 'public/index.html', dest: 'build/' },
+        { src: 'public/index.html', dest: 'build' },
       ]
     }),
     !production && serve(),
