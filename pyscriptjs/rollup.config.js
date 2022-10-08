@@ -62,8 +62,7 @@ export default {
     !production && serve({
       port: 8080,
       contentBase: 'examples'
-    }
-    )
+    })
   ],
   watch: {
     clearScreen: false,
