@@ -2,7 +2,6 @@ import asyncio
 import base64
 import html
 import io
-import json
 import sys
 import time
 from collections import namedtuple
@@ -139,7 +138,7 @@ class PyScript:
         )
 
     @classmethod
-    def set_version_info(cls, version_from_appconfig: str):
+    def set_version_info(cls, version_from_appconfig: dict):
         """Sets the __version__ and version_info properties from provided JSON data
 
         Args:
@@ -147,21 +146,19 @@ class PyScript:
                 required keys are: year (number), month (number), patch (number),
                 releaselevel (string), commit (string)
         """
-        version_data = json.loads(version_from_appconfig)
-
         cls.__version__ = ".".join(
             [
-                f"{version_data['year']:04}",
-                f"{version_data['month']:02}",
-                f"{version_data['patch']:02}",
-                f"{version_data['releaselevel']}",
-                f"{version_data['commit']}",
+                f"{version_from_appconfig['year']:04}",
+                f"{version_from_appconfig['month']:02}",
+                f"{version_from_appconfig['patch']:02}",
+                f"{version_from_appconfig['releaselevel']}",
+                f"{version_from_appconfig['commit']}",
             ]
         )
 
         # Format mimics sys.version_info
-        _VersionInfo = namedtuple("version_info", version_data.keys())
-        cls.version_info = _VersionInfo(**version_data)
+        _VersionInfo = namedtuple("version_info", version_from_appconfig.keys())
+        cls.version_info = _VersionInfo(**version_from_appconfig)
 
         # tidy up class namespace
         del cls.set_version_info

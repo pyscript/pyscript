@@ -9,7 +9,7 @@ const logger = getLogger('py-config');
 export interface AppConfig extends Record<string, any> {
     name?: string;
     description?: string;
-    version?: string;
+    version?: JSON;
     schema_version?: number;
     type?: string;
     author_name?: string;
@@ -37,7 +37,7 @@ export type RuntimeConfig = {
 };
 
 export type PyScriptMetadata = {
-    version?: string;
+    version?: JSON;
     time?: string;
 };
 
