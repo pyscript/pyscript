@@ -78,7 +78,10 @@ export class PyodideRuntime extends Runtime {
 
     async importAppConfig(config: AppConfig): Promise<any> {
         console.assert(config !== undefined);
-        await this.run(`import json; APP_CONFIG = json.loads(r'${JSON.stringify(this.config)}')`)
+        await this.run(`
+        import json
+        APP_CONFIG = json.loads(r'${JSON.stringify(this.config)}')
+        PyScript.set_version_info(APP_CONFIG['pyscript']['version'])`)
     }
 
     async run(code: string): Promise<any> {

@@ -2,6 +2,8 @@ import asyncio
 import base64
 import html
 import io
+import json
+import sys
 import time
 from collections import namedtuple
 from textwrap import dedent
@@ -136,32 +138,33 @@ class PyScript:
             )
         )
 
-    # Data, to be overwritten at CI/CD build time
-    # and updated on tagged release
-    _version_data = {
-        "year": 2022,
-        "month": 9,
-        "patch": 1,
-        "release_level": "dev",
-        "commit": "commit",
-    }
+    @classmethod
+    def set_version_info(cls, version_from_appconfig: str):
+        """Sets the __version__ and version_info properties from provided JSON data
 
-    # Human-readable version info
-    __version__ = ".".join(
-        [
-            f"{_version_data['year']:04}",
-            f"{_version_data['month']:02}",
-            f"{_version_data['patch']:02}",
-            f"{_version_data['release_level']}",
-            f"{_version_data['commit']}",
-        ]
-    )
+        Args:
+            version_from_appconfig (str): A JSON-formatted string containing the version information
+                required keys are: year (number), month (number), patch (number),
+                releaselevel (string), commit (string)
+        """
+        version_data = json.loads(version_from_appconfig)
 
-    # Format mimics sys.version_info
-    _VersionInfo = namedtuple("version_info", _version_data.keys())
-    version_info = _VersionInfo(**_version_data)
+        cls.__version__ = ".".join(
+            [
+                f"{version_data['year']:04}",
+                f"{version_data['month']:02}",
+                f"{version_data['patch']:02}",
+                f"{version_data['releaselevel']}",
+                f"{version_data['commit']}",
+            ]
+        )
 
-    del _version_data
+        # Format mimics sys.version_info
+        _VersionInfo = namedtuple("version_info", version_data.keys())
+        cls.version_info = _VersionInfo(**version_data)
+
+        # tidy up class namespace
+        del cls.set_version_info
 
 
 def set_current_display_target(target_id):
