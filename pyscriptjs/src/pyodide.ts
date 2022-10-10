@@ -2,6 +2,7 @@ import { Runtime } from './runtime';
 import { getLogger } from './logger';
 import { FetchError } from './exceptions'
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
+import type { AppConfig } from './pyconfig';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
@@ -73,6 +74,11 @@ export class PyodideRuntime extends Runtime {
         await this.run(pyscript as string);
 
         logger.info('pyodide loaded and initialized');
+    }
+
+    async importAppConfig(config: AppConfig): Promise<any> {
+        console.assert(config !== undefined);
+        await this.run(`import json; APP_CONFIG = json.loads(r'${JSON.stringify(this.config)}')`)
     }
 
     async run(code: string): Promise<any> {

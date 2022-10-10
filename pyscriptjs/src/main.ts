@@ -155,6 +155,8 @@ export class PyScriptApp {
 
         this.loader.log('Python startup...');
         await runtime.loadInterpreter();
+        await runtime.importAppConfig(this.config);
+        runtimeLoaded.set(runtime);
         this.loader.log('Python ready!');
 
         // eslint-disable-next-line

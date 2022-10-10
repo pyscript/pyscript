@@ -48,6 +48,13 @@ export abstract class Runtime extends Object {
     abstract loadInterpreter(): Promise<void>;
 
     /**
+     * imports the information from the AppConfig object into the runtime.
+     * what (if anything) the runtime does with this data is runtime-specific
+     */
+     abstract importAppConfig(config: AppConfig): Promise<any>;
+
+
+    /**
      * delegates the code to be run to the underlying interpreter
      * (asynchronously) which can call its own API behind the scenes.
      * Python exceptions are turned into JS exceptions.
