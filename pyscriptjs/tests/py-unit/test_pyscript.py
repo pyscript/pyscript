@@ -29,7 +29,6 @@ def test_format_mime_str():
     assert out == obj
     assert mime == "text/plain"
 
-
 def test_format_mime_str_escaping():
     obj = "<p>hello</p>"
     out, mime = pyscript.format_mime(obj)
@@ -48,3 +47,12 @@ def test_format_mime_HTML():
     out, mime = pyscript.format_mime(obj)
     assert out == "<p>hello</p>"
     assert mime == "text/html"
+
+    res = pyscript.format_mime(obj)
+    assert res[0] == obj
+    assert res[1] == "text/plain"
+
+def test_set_version():
+    pyscript.PyScript.set_version_info('{"year": 1234, "month": 56, "patch": 78, "releaselevel": "testing", "commit": "dummycommit"}')
+    assert pyscript.PyScript.__version__ == "1234.56.78.testing.dummycommit"
+    assert pyscript.PyScript.version_info == (1234, 56, 78, "testing", "dummycommit")
