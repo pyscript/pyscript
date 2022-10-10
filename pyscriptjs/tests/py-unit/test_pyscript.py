@@ -1,5 +1,6 @@
 import sys
 from unittest.mock import Mock
+import json
 
 import pyscript
 
@@ -55,7 +56,7 @@ def test_format_mime_HTML():
 
 def test_set_version():
     pyscript.PyScript.set_version_info(
-        '{"year": 1234, "month": 56, "patch": 78, "releaselevel": "testing", "commit": "dummycommit"}'
+        json.loads('{"year": 1234, "month": 56, "patch": 78, "releaselevel": "testing", "commit": "dummycommit"}')
     )
     assert pyscript.PyScript.__version__ == "1234.56.78.testing.dummycommit"
     assert pyscript.PyScript.version_info == (1234, 56, 78, "testing", "dummycommit")
