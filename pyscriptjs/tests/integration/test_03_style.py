@@ -34,7 +34,7 @@ class TestStyle(PyScriptTest):
         expect(self.page.locator("py-button")).to_be_hidden()
         expect(self.page.locator("py-box")).to_be_hidden()
 
-    def test_pyscript_not_defined(self):
+    def test_pyscript_defined(self):
         """Test elements have visibility that should"""
         self.pyscript_run(
             """
