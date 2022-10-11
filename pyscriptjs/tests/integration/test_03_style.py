@@ -1,7 +1,9 @@
 import re
 
-from .support import PyScriptTest
 from playwright.sync_api import expect
+
+from .support import PyScriptTest
+
 
 class TestStyle(PyScriptTest):
     def test_pyscript_not_defined(self):
@@ -34,7 +36,8 @@ class TestStyle(PyScriptTest):
 
     def test_pyscript_not_defined(self):
         """Test elements have visibility that should"""
-        self.pyscript_run( """
+        self.pyscript_run(
+            """
             <py-config>
             name = "foo"
             </py-config>
