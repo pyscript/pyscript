@@ -28,7 +28,7 @@ repos:
         -   --skip=B101,B201
 
 -   repo: https://github.com/psf/black
-    rev: 22.8.0
+    rev: 22.10.0
     hooks:
     -   id: black
 
@@ -59,14 +59,14 @@ repos:
         exclude: .github/ISSUE_TEMPLATE/.*\.yml$
 
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v2.38.2
+    rev: v3.1.0
     hooks:
     -   id: pyupgrade
         args:
         -   --py310-plus
 
 -   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.23.1
+    rev: v8.25.0
     hooks:
     -   id: eslint
         files: pyscriptjs/src/.*\.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
