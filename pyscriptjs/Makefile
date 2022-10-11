@@ -22,7 +22,7 @@ VERSION_PATCH := 99
 VERSION_RELEASE := "makefile\"
 VERSION_COMMIT := "commit\"
 VERSION_JSON := "{"year": ${VERSION_YEAR}}"
-VERSION_JSON := VERSION_JSON := \'{\"year\": ${VERSION_YEAR}, \"month\": ${VERSION_MONTH}, \"patch\": ${VERSION_PATCH}, \"releaselevel\": ${VERSION_RELEASE}, \"commit\": ${VERSION_COMMIT}}\' 
+VERSION_JSON := VERSION_JSON := \'{\"year\": ${VERSION_YEAR}, \"month\": ${VERSION_MONTH}, \"patch\": ${VERSION_PATCH}, \"releaselevel\": ${VERSION_RELEASE}, \"commit\": ${VERSION_COMMIT}}\'
 
 ifeq ($(shell uname -s), Darwin)
     SED_I_ARG := -i ''
