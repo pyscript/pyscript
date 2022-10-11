@@ -1,6 +1,5 @@
 import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
-import livereload from "rollup-plugin-livereload";
 import { terser } from "rollup-plugin-terser";
 import legacy from '@rollup/plugin-legacy';
 import typescript from "@rollup/plugin-typescript";
@@ -9,31 +8,27 @@ import serve from "rollup-plugin-serve";
 import { string } from "rollup-plugin-string";
 import copy from 'rollup-plugin-copy'
 
-const production = !process.env.ROLLUP_WATCH || (process.env.NODE_ENV === "production");
+const production = (process.env.NODE_ENV === "production");
 
-let copy_targets
-
-if (!production){
-  copy_targets = [
-    { src: 'build/*', dest: 'examples/build' },
-    { src: 'public/index.html', dest: 'build' },
+const copy_targets = {
+  targets: [
+    { src: 'public/index.html', dest: 'build' }
   ]
 }
-else{
-  copy_targets = [
-    { src: 'build/*', dest: 'examples/build' },
-  ]
+
+if( !production ){
+  copy_targets.targets.push({ src: 'build/*', dest: 'examples/build' })
 }
 
 export default {
   input: "src/main.ts",
-  output: [
+  output:[
     {
-      sourcemap: true,
-      format: "iife",
-      inlineDynamicImports: true,
-      name: "app",
-      file: "build/pyscript.js",
+    sourcemap: true,
+    format: "iife",
+    inlineDynamicImports: true,
+    name: "app",
+    file: "build/pyscript.js",
     },
     {
       file: "build/pyscript.min.js",
@@ -60,16 +55,12 @@ export default {
       inlineSources: !production,
     }),
     // This will make sure that examples will always get the latest build folder
-    !production && copy({
-      targets: copy_targets
-    }),
-    !production && serve(),
-    !production && livereload("public"),
+    copy(copy_targets),
     // production && terser(),
     !production && serve({
       port: 8080,
-      contentBase: 'examples'
-    })
+      contentBase: 'examples'}
+      )
   ],
   watch: {
     clearScreen: false,
