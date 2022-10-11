@@ -1,8 +1,8 @@
-/* config - not a component */
+/* py-config - not a component */
 py-config {
     display: none
 }
-/* py- - components not defined */
+/* py-{el} - components not defined */
 py-script:not(:defined) {
     display: none
 }
