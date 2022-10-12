@@ -7,11 +7,11 @@ import { getLogger } from '../logger';
 const logger = getLogger('pyscript/base');
 
 // Global `Runtime` that implements the generic runtimes API
-let runtime: Runtime;
+let globalRuntime: Runtime;
 let Element;
 
 runtimeLoaded.subscribe(value => {
-    runtime = value;
+    globalRuntime = value;
 });
 
 export class BaseEvalElement extends HTMLElement {
@@ -124,15 +124,15 @@ export class BaseEvalElement extends HTMLElement {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
 
-            this._register_esm(runtime);
-            <string>await runtime.run(
+            this._register_esm(globalRuntime);
+            <string>await globalRuntime.run(
                 `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
             );
-            output = <string>await runtime.run(source);
+            output = <string>await globalRuntime.run(source);
 
             if (output !== undefined) {
                 if (Element === undefined) {
-                    Element = <Element>runtime.globals.get('Element');
+                    Element = <Element>globalRuntime.globals.get('Element');
                 }
                 const out = Element(this.outputElement.id);
                 out.write.callKwargs(output, { append: this.appendOutput });
@@ -141,7 +141,7 @@ export class BaseEvalElement extends HTMLElement {
                 this.outputElement.style.display = 'block';
             }
 
-            await runtime.run(`output_manager.revert()`);
+            await globalRuntime.run(`output_manager.revert()`);
 
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
@@ -163,7 +163,7 @@ export class BaseEvalElement extends HTMLElement {
             logger.error(err);
             try{
                 if (Element === undefined) {
-                    Element = <Element>runtime.globals.get('Element');
+                    Element = <Element>globalRuntime.globals.get('Element');
                 }
                 const out = Element(this.errorElement.id);
 
@@ -187,7 +187,7 @@ export class BaseEvalElement extends HTMLElement {
 
     async eval(source: string): Promise<void> {
         try {
-            const output = await runtime.run(source);
+            const output = await globalRuntime.run(source);
             if (output !== undefined) {
                 logger.info(output);
             }
@@ -244,7 +244,7 @@ function createWidget(name: string, code: string, klass: string) {
             // }, 2000);
             runtimeLoaded.subscribe(value => {
                 if ('run' in value) {
-                    runtime = value;
+                    globalRuntime = value;
                     setTimeout(() => {
                         void (async () => {
                             await this.eval(this.code);
@@ -259,13 +259,13 @@ function createWidget(name: string, code: string, klass: string) {
 
         registerWidget() {
             logger.info('new widget registered:', this.name);
-            runtime.globals.set(this.id, this.proxy);
+            globalRuntime.globals.set(this.id, this.proxy);
         }
 
         async eval(source: string): Promise<void> {
             try {
-                const output = await runtime.run(source);
-                this.proxyClass = runtime.globals.get(this.klass);
+                const output = await globalRuntime.run(source);
+                this.proxyClass = globalRuntime.globals.get(this.klass);
                 if (output !== undefined) {
                     logger.info('CustomWidget.eval: ', output);
                 }
@@ -359,7 +359,7 @@ export class PyWidget extends HTMLElement {
 
     async eval(source: string): Promise<void> {
         try {
-            const output = await runtime.run(source);
+            const output = await globalRuntime.run(source);
             if (output !== undefined) {
                 logger.info('PyWidget.eval: ', output);
             }
