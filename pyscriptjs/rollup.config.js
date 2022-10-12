@@ -8,7 +8,7 @@ import serve from "rollup-plugin-serve";
 import { string } from "rollup-plugin-string";
 import copy from 'rollup-plugin-copy'
 
-const production = (process.env.NODE_ENV === "production");
+const production = !process.env.ROLLUP_WATCH || (process.env.NODE_ENV === "production");
 
 const copy_targets = {
   targets: [
