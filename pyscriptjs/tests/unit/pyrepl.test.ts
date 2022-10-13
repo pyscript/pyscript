@@ -1,11 +1,14 @@
 import 'jest';
+import type { Runtime } from "../../src/runtime"
+import { FakeRuntime } from "./fakeruntime"
+import { make_PyRepl } from '../../src/components/pyrepl';
 
-import { PyRepl } from '../../src/components/pyrepl';
-
+const runtime: Runtime = new FakeRuntime();
+const PyRepl = make_PyRepl(runtime);
 customElements.define('py-repl', PyRepl);
 
 describe('PyRepl', () => {
-    let instance: PyRepl;
+    let instance;
     beforeEach(() => {
         instance = new PyRepl();
     });
