@@ -1,18 +1,13 @@
 import { BaseEvalElement } from './base';
 import { addClasses, htmlDecode } from '../utils';
 import { getLogger } from '../logger'
-import { runtimeLoaded } from '../stores';
 import type { Runtime } from '../runtime';
-
-let globalRuntime: Runtime;
-runtimeLoaded.subscribe(value => {
-    globalRuntime = value;
-});
 
 const logger = getLogger('py-button');
 
+export function make_PyButton(runtime: Runtime) {
 
-export class PyButton extends BaseEvalElement {
+class PyButton extends BaseEvalElement {
     widths: Array<string>;
     label: string;
     class: Array<string>;
@@ -74,11 +69,14 @@ export class PyButton extends BaseEvalElement {
         // now that we appended and the element is attached, lets connect with the event handlers
         // defined for this widget
         this.runAfterRuntimeInitialized(async () => {
-            await globalRuntime.runButDontRaise(this.code);
-            await globalRuntime.runButDontRaise(registrationCode);
+            await runtime.runButDontRaise(this.code);
+            await runtime.runButDontRaise(registrationCode);
             logger.debug('registered handlers');
         });
 
         logger.debug('py-button connected');
     }
+}
+
+    return PyButton;
 }

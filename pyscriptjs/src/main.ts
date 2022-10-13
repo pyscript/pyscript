@@ -152,7 +152,7 @@ class PyScriptApp {
 
         this.loader.log('Initializing web components...');
         // lifecycle (8)
-        createCustomElements();
+        createCustomElements(runtime);
 
         if (runtime.config.autoclose_loader) {
             this.loader.close();

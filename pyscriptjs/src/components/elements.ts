@@ -1,6 +1,7 @@
+import type { Runtime } from '../runtime';
 import { PyRepl } from './pyrepl';
 import { PyBox } from './pybox';
-import { PyButton } from './pybutton';
+import { make_PyButton } from './pybutton';
 import { PyTitle } from './pytitle';
 import { PyInputBox } from './pyinputbox';
 import { PyWidget } from './pywidget';
@@ -21,7 +22,9 @@ the utils.js file was causing jest to fail with weird errors such as:
 from the PyScript class.
 
 */
-function createCustomElements() {
+function createCustomElements(runtime: Runtime) {
+    const PyButton = make_PyButton(runtime);
+
     /* eslint-disable @typescript-eslint/no-unused-vars */
     const xPyRepl = customElements.define('py-repl', PyRepl);
     const xPyBox = customElements.define('py-box', PyBox);
