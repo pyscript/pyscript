@@ -89,7 +89,6 @@ class TestBasic(PyScriptTest):
                 import asciitree
                 js.console.log('hello', asciitree.__name__)
             </py-script>
-            <py-repl></py-repl>
             """
         )
         assert self.console.log.lines == [
