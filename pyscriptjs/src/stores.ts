@@ -5,11 +5,6 @@ import type { Runtime } from './runtime';
 import type { AppConfig } from './pyconfig';
 import { getLogger } from './logger';
 
-/*
-A store for Runtime which can encompass any
-runtime, but currently only has Pyodide as its offering.
-*/
-export const runtimeLoaded = writable<Runtime>();
 
 export const navBarOpen = writable(false);
 export const componentsNavOpen = writable(false);

@@ -18,7 +18,7 @@ export function make_PyRepl(runtime: Runtime) {
         // Creates a codemirror cmd handler that calls the el.evaluate when an event
         // triggers that specific cmd
         return () => {
-            void el.evaluate();
+            void el.evaluate(runtime);
             return true;
         };
     }
@@ -103,7 +103,7 @@ export function make_PyRepl(runtime: Runtime) {
             this.editorNode.appendChild(this.btnRun);
 
             this.btnRun.addEventListener('click', () => {
-                void this.evaluate();
+                void this.evaluate(runtime);
             });
 
             if (!this.id) {

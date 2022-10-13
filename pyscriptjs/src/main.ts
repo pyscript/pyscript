@@ -7,10 +7,7 @@ import { PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
-import {
-    runtimeLoaded,
-    scriptsQueue,
-} from './stores';
+import { scriptsQueue } from './stores';
 import { handleFetchError, showError, globalExport } from './utils'
 import { createCustomElements } from './components/elements';
 
@@ -137,7 +134,6 @@ class PyScriptApp {
 
         this.loader.log('Python startup...');
         await runtime.loadInterpreter();
-        runtimeLoaded.set(runtime);
         this.loader.log('Python ready!');
 
         // eslint-disable-next-line
@@ -199,7 +195,7 @@ class PyScriptApp {
     // lifecycle (7)
     executeScripts(runtime: Runtime) {
         for (const script of scriptsQueue_) {
-            void script.evaluate();
+            void script.evaluate(runtime);
         }
         scriptsQueue.set([]);
     }

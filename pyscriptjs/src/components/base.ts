@@ -1,18 +1,10 @@
-import { runtimeLoaded } from '../stores';
 import { guidGenerator, addClasses, removeClasses } from '../utils';
-
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 
 const logger = getLogger('pyscript/base');
 
-// Global `Runtime` that implements the generic runtimes API
-let globalRuntime: Runtime;
 let Element;
-
-runtimeLoaded.subscribe(value => {
-    globalRuntime = value;
-});
 
 export class BaseEvalElement extends HTMLElement {
     shadow: ShadowRoot;
@@ -115,7 +107,7 @@ export class BaseEvalElement extends HTMLElement {
         runtime.registerJsModule('esm', imports);
     }
 
-    async evaluate(): Promise<void> {
+    async evaluate(runtime: Runtime): Promise<void> {
         this.preEvaluate();
 
         let source: string;
@@ -124,15 +116,15 @@ export class BaseEvalElement extends HTMLElement {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
 
-            this._register_esm(globalRuntime);
-            <string>await globalRuntime.run(
+            this._register_esm(runtime);
+            <string>await runtime.run(
                 `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
             );
-            output = <string>await globalRuntime.run(source);
+            output = <string>await runtime.run(source);
 
             if (output !== undefined) {
                 if (Element === undefined) {
-                    Element = <Element>globalRuntime.globals.get('Element');
+                    Element = <Element>runtime.globals.get('Element');
                 }
                 const out = Element(this.outputElement.id);
                 out.write.callKwargs(output, { append: this.appendOutput });
@@ -141,7 +133,7 @@ export class BaseEvalElement extends HTMLElement {
                 this.outputElement.style.display = 'block';
             }
 
-            await globalRuntime.run(`output_manager.revert()`);
+            await runtime.run(`output_manager.revert()`);
 
             // check if this REPL contains errors, delete them and remove error classes
             const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
@@ -163,7 +155,7 @@ export class BaseEvalElement extends HTMLElement {
             logger.error(err);
             try{
                 if (Element === undefined) {
-                    Element = <Element>globalRuntime.globals.get('Element');
+                    Element = <Element>runtime.globals.get('Element');
                 }
                 const out = Element(this.errorElement.id);
 
