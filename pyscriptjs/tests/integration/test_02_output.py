@@ -34,7 +34,7 @@ class TestOutuput(PyScriptTest):
         inner_html = self.page.content()
         first_pattern = r'<div id="py-.*?-2">hello 1</div>'
         assert re.search(first_pattern, inner_html)
-        second_pattern = r'<div id="py-.*?-2">hello 2</div>'
+        second_pattern = r'<div id="py-.*?-3">hello 2</div>'
         assert re.search(second_pattern, inner_html)
 
         assert first_pattern is not second_pattern
@@ -173,7 +173,7 @@ class TestOutuput(PyScriptTest):
     def test_image_display(self):
         self.pyscript_run(
             """
-                <py-env>- matplotlib</py-env>
+                <py-config> packages = [  "matplotlib"] </py-config>
                 <py-script>
                     import matplotlib.pyplot as plt
                     xpoints = [3, 6, 9]
@@ -258,18 +258,16 @@ class TestOutuput(PyScriptTest):
                     import asyncio
                     for i in range(2):
                         display('A')
-                        await asyncio.sleep(0.1)
+                        await asyncio.sleep(0)
                 </py-script>
 
                 <py-script id='pyB'>
                     import asyncio
                     for i in range(2):
                         display('B')
-                        await asyncio.sleep(0.1)
+                        await asyncio.sleep(0)
                 </py-script>
             """
         )
-        inner_text_A = self.page.locator('id=pyA').all_inner_texts()
-        inner_text_B = self.page.locator('id=pyB').all_inner_texts()
-        assert inner_text_A[0] == 'A\nA'
-        assert inner_text_B[0] == 'B\nB'
+        inner_text = self.page.inner_text('html')
+        assert 'A\nB\nA\nB'

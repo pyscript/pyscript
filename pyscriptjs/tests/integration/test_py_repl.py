@@ -74,7 +74,7 @@ class TestPyRepl(PyScriptTest):
 
     # console errors are observable on the headed instance
     # but is just not possible to access them using the self object
-    @pytest.mark.xfail(reason='cannot access console errors')
+    @pytest.mark.xfail(reason='Cannot access console errors')
     def test_repl_error_ouput_console(self):
         self.pyscript_run(
             """
