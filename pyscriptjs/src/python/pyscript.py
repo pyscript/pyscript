@@ -138,7 +138,9 @@ def display(*values, target=None, append=True):
     default_target = get_current_display_target()
 
     if default_target is None and target is None:
-        raise Exception('Implicit target not allowed here. Please use display(..., target=...)')
+        raise Exception(
+            "Implicit target not allowed here. Please use display(..., target=...)"
+        )
 
     if target is not None:
         for v in values:

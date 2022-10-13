@@ -22,7 +22,7 @@ class TestPyRepl(PyScriptTest):
             """
         )
 
-        self.page.locator("py-repl").type("display(\"hello\")")
+        self.page.locator("py-repl").type('display("hello")')
 
         # We only have one button in the page
         self.page.locator("button").click()
@@ -38,7 +38,7 @@ class TestPyRepl(PyScriptTest):
             <py-repl id="my-repl" auto-generate="true"> </py-repl>
             """
         )
-        self.page.locator("py-repl").type("display(\"hello\")")
+        self.page.locator("py-repl").type('display("hello")')
 
         # Confirm that we get a result by using the keys shortcut
         self.page.keyboard.press("Shift+Enter")
@@ -74,7 +74,7 @@ class TestPyRepl(PyScriptTest):
 
     # console errors are observable on the headed instance
     # but is just not possible to access them using the self object
-    @pytest.mark.xfail(reason='Cannot access console errors')
+    @pytest.mark.xfail(reason="Cannot access console errors")
     def test_repl_error_ouput_console(self):
         self.pyscript_run(
             """

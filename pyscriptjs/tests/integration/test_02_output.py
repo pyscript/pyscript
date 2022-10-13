@@ -74,7 +74,10 @@ class TestOutuput(PyScriptTest):
         # this is a workaround but we need a better fix. Antonio promised to write it
         assert len(self._page_errors) == 1
         console_text = self._page_errors
-        assert 'Implicit target not allowed here. Please use display(..., target=...)' in console_text[0].message
+        assert (
+            "Implicit target not allowed here. Please use display(..., target=...)"
+            in console_text[0].message
+        )
         self._page_errors = []
 
     def test_explicit_target_pyscript_tag(self):
@@ -142,7 +145,6 @@ class TestOutuput(PyScriptTest):
         pattern = r'<div id="py-.*">hello world</div>'
         assert re.search(pattern, inner_html)
 
-
     def test_append_false(self):
         self.pyscript_run(
             """
@@ -166,9 +168,12 @@ class TestOutuput(PyScriptTest):
             </py-script>
             """
         )
-        inner_text = self.page.inner_text('html')
+        inner_text = self.page.inner_text("html")
         print(inner_text)
-        assert inner_text == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
+        assert (
+            inner_text
+            == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
+        )
 
     def test_image_display(self):
         self.pyscript_run(
@@ -198,11 +203,11 @@ class TestOutuput(PyScriptTest):
         """
         )
         inner_html = self.page.content()
-        assert re.search('', inner_html)
+        assert re.search("", inner_html)
         console_text = self.console.all.lines
-        assert 'print from python' in console_text
-        assert 'print from js' in console_text
-        assert 'error from js' in console_text
+        assert "print from python" in console_text
+        assert "print from js" in console_text
+        assert "error from js" in console_text
 
     def test_text_HTML_and_console_output(self):
         self.pyscript_run(
@@ -215,12 +220,12 @@ class TestOutuput(PyScriptTest):
             </py-script>
         """
         )
-        inner_text = self.page.inner_text('html')
-        assert '0' == inner_text
+        inner_text = self.page.inner_text("html")
+        assert "0" == inner_text
         console_text = self.console.all.lines
-        assert 'print from python' in console_text
-        assert 'print from js' in console_text
-        assert 'error from js' in console_text
+        assert "print from python" in console_text
+        assert "print from js" in console_text
+        assert "error from js" in console_text
 
     def test_console_line_break(self):
         self.pyscript_run(
@@ -232,8 +237,8 @@ class TestOutuput(PyScriptTest):
         """
         )
         console_text = self.console.all.lines
-        assert console_text.index('1print') == (console_text.index('2print') - 1)
-        assert console_text.index('1console') == (console_text.index('2console') - 1)
+        assert console_text.index("1print") == (console_text.index("2print") - 1)
+        assert console_text.index("1console") == (console_text.index("2console") - 1)
 
     def test_multiple_async_display(self):
         self.pyscript_run(
@@ -269,5 +274,5 @@ class TestOutuput(PyScriptTest):
                 </py-script>
             """
         )
-        inner_text = self.page.inner_text('html')
-        assert 'A\nB\nA\nB'
+        inner_text = self.page.inner_text("html")
+        assert "A\nB\nA\nB"
