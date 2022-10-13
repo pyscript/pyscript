@@ -3,7 +3,7 @@ import { PyBox } from './pybox';
 import { PyButton } from './pybutton';
 import { PyTitle } from './pytitle';
 import { PyInputBox } from './pyinputbox';
-import { PyWidget } from './base';
+import { PyWidget } from './pywidget';
 
 /*
 These were taken from main.js because some of our components call
