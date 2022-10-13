@@ -1,6 +1,13 @@
 import { BaseEvalElement } from './base';
 import { addClasses, htmlDecode } from '../utils';
 import { getLogger } from '../logger'
+import { runtimeLoaded } from '../stores';
+import type { Runtime } from '../runtime';
+
+let globalRuntime: Runtime;
+runtimeLoaded.subscribe(value => {
+    globalRuntime = value;
+});
 
 const logger = getLogger('py-inputbox');
 
@@ -44,8 +51,8 @@ export class PyInputBox extends BaseEvalElement {
         // TODO: For now we delay execution to allow pyodide to load but in the future this
         //       should really wait for it to load..
         this.runAfterRuntimeInitialized(async () => {
-            await this.eval(this.code);
-            await this.eval(registrationCode);
+            await globalRuntime.runButDontRaise(this.code);
+            await globalRuntime.runButDontRaise(registrationCode);
             logger.debug('registered handlers');
         });
     }

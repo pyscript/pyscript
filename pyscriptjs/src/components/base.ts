@@ -185,17 +185,6 @@ export class BaseEvalElement extends HTMLElement {
         }
     } // end evaluate
 
-    async eval(source: string): Promise<void> {
-        try {
-            const output = await globalRuntime.run(source);
-            if (output !== undefined) {
-                logger.info(output);
-            }
-        } catch (err) {
-            logger.error(err);
-        }
-    } // end eval
-
     runAfterRuntimeInitialized(callback: () => Promise<void>) {
         runtimeLoaded.subscribe(value => {
             if ('run' in value) {
@@ -247,7 +236,8 @@ function createWidget(name: string, code: string, klass: string) {
                     globalRuntime = value;
                     setTimeout(() => {
                         void (async () => {
-                            await this.eval(this.code);
+                            await globalRuntime.runButDontRaise(this.code);
+                            this.proxyClass = globalRuntime.globals.get(this.klass);
                             this.proxy = this.proxyClass(this);
                             this.proxy.connect();
                             this.registerWidget();
@@ -260,18 +250,6 @@ function createWidget(name: string, code: string, klass: string) {
         registerWidget() {
             logger.info('new widget registered:', this.name);
             globalRuntime.globals.set(this.id, this.proxy);
-        }
-
-        async eval(source: string): Promise<void> {
-            try {
-                const output = await globalRuntime.run(source);
-                this.proxyClass = globalRuntime.globals.get(this.klass);
-                if (output !== undefined) {
-                    logger.info('CustomWidget.eval: ', output);
-                }
-            } catch (err) {
-                logger.error('CustomWidget.eval: ', err);
-            }
         }
     }
     const xPyWidget = customElements.define(name, CustomWidget);
@@ -355,16 +333,5 @@ export class PyWidget extends HTMLElement {
     async getSourceFromFile(s: string): Promise<string> {
         const response = await fetch(s);
         return await response.text();
-    }
-
-    async eval(source: string): Promise<void> {
-        try {
-            const output = await globalRuntime.run(source);
-            if (output !== undefined) {
-                logger.info('PyWidget.eval: ', output);
-            }
-        } catch (err) {
-            logger.error('PyWidget.eval: ', err);
-        }
     }
 }

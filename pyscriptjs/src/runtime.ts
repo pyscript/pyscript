@@ -52,8 +52,22 @@ export abstract class Runtime extends Object {
     /**
      * delegates the code to be run to the underlying interpreter
      * (asynchronously) which can call its own API behind the scenes.
+     * Python exceptions are turned into JS exceptions.
      * */
     abstract run(code: string): Promise<any>;
+
+    /**
+     * Same as run, but Python exceptions are not propagated: instead, they
+     * are logged to the console.
+     *
+     * This is a bad API and should be killed/refactored/changed eventually,
+     * but for now we have code which relies on it.
+     * */
+    async runButDontRaise(code: string): Promise<any> {
+        return this.run(code).catch(err => {
+            logger.error(err);
+        });
+    }
 
     /**
      * delegates the setting of JS objects to
