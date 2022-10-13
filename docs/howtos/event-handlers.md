@@ -1,10 +1,88 @@
-# How to Pass Objects from PyScript to Javascript (and Vice Versa)
+# Event handlers in PyScript
 
-[Pyodide](https://pyodide.org), the runtime that underlies PyScript, does a lot of work under the hood to translate objects between Python and JavaScript. This allows code in one language to access objects defined in the other.
+PyScript offer two ways to subscribe to Javascript event handlers:
 
-This guide discusses how to pass objects between JavaScript and Python within PyScript. For more details on how Pyodide handles translating and proxying objects between the two languages, see the [Pyodide Type Translations Page](https://pyodide.org/en/stable/usage/type-conversions.html).
+## Subscribe to event with `py-*` attributes
 
-For our purposes, an 'object' is anything that can be bound to a variable (a number, string, object, [function](https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function), etc).
+You can subscribe to an event as you would with Javascript, by adding a `py-*` attribute to an HTML element. The value of the attribute should be a Python function.
+
+```html
+<button id="noParam" py-click="say_hello_no_param()">
+ No Event - No Params py-click
+</button>
+<button id="withParam" py-click="say_hello_with_param('World')">
+ No Event - With Params py-click
+</button>
+```
+
+```python
+<py-script>
+    def say_hello_no_param():
+        print("Hello!")
+    def say_hello_with_param(name):
+        print("Hello " + name + "!")
+</py-script>
+```
+
+Note that py-\* attributes need a _function call_
+
+Supported py-\* attributes can be seen in the [PyScript API reference](<[../api-reference.md](https://github.com/pyscript/pyscript/blob/66b57bf812dcc472ed6ffee075ace5ced89bbc7c/pyscriptjs/src/components/pyscript.ts#L119-L260)>).
+
+## Subscribe to event with `addEventListener`
+
+You can also subscribe to an event using the `addEventListener` method of the DOM element. This is useful if you want to pass event object to the event handler.
+
+```html
+<button id="two">add_event_listener passes event</button>
+```
+
+```python
+<py-script>
+  from js import console, document
+  from pyodide.ffi.wrappers import add_event_listener
+
+  def hello_args(*args):
+    console.log(f"Hi! I got some args! {args}")
+
+  add_event_listener(document.getElementById("two"), "click", hello_args)
+</py-script>
+```
+
+or using the `addEventListener` method of the DOM element:
+
+```html
+<button id="three">add_event_listener passes event</button>
+```
+
+```python
+<py-script>
+  from js import console, document
+  from pyodide.ffi import create_proxy
+
+  def hello_args(*args):
+    console.log(f"Hi! I got some args! {args}")
+
+    document.getElementById("three").addEventListener("click", create_proxy(hello_args))
+</py-script>
+```
+
+or using the PyScript Element class:
+
+```html
+<button id="four">add_event_listener passes event</button>
+```
+
+```python
+<py-script>
+  from js import console
+  from pyodide.ffi import create_proxy
+
+  def hello_args(*args):
+    console.log(f"Hi! I got some args! {args}")
+
+  Element("four").element.addEventListener("click", create_proxy(hello_args))
+</py-script>
+```
 
 ## JavaScript to PyScript
 
