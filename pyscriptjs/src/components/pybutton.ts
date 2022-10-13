@@ -38,7 +38,7 @@ export function make_PyButton(runtime: Runtime) {
             }
         }
 
-        connectedCallback() {
+        async connectedCallback() {
             this.checkId();
             this.code = htmlDecode(this.innerHTML);
             this.mount_name = this.id.split('-').join('_');
@@ -67,12 +67,8 @@ export function make_PyButton(runtime: Runtime) {
 
             // now that we appended and the element is attached, lets connect with the event handlers
             // defined for this widget
-            this.runAfterRuntimeInitialized(async () => {
-                await runtime.runButDontRaise(this.code);
-                await runtime.runButDontRaise(registrationCode);
-                logger.debug('registered handlers');
-            });
-
+            await runtime.runButDontRaise(this.code);
+            await runtime.runButDontRaise(registrationCode);
             logger.debug('py-button connected');
         }
     }

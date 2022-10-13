@@ -18,7 +18,7 @@ export function make_PyInputBox(runtime: Runtime) {
             }
         }
 
-        connectedCallback() {
+        async connectedCallback() {
             this.checkId();
             this.code = htmlDecode(this.innerHTML);
             this.mount_name = this.id.split('-').join('_');
@@ -43,13 +43,9 @@ export function make_PyInputBox(runtime: Runtime) {
                 registrationCode += `\n${this.mount_name}.element.addEventListener('keypress', create_proxy(on_keypress_${this.mount_name}))`;
             }
 
-            // TODO: For now we delay execution to allow pyodide to load but in the future this
-            //       should really wait for it to load..
-            this.runAfterRuntimeInitialized(async () => {
-                await runtime.runButDontRaise(this.code);
-                await runtime.runButDontRaise(registrationCode);
-                logger.debug('registered handlers');
-            });
+            await runtime.runButDontRaise(this.code);
+            await runtime.runButDontRaise(registrationCode);
+            logger.debug('py-inputbox connected');
         }
     }
 

@@ -184,14 +184,4 @@ export class BaseEvalElement extends HTMLElement {
 
         }
     } // end evaluate
-
-    runAfterRuntimeInitialized(callback: () => Promise<void>) {
-        runtimeLoaded.subscribe(value => {
-            if ('run' in value) {
-                setTimeout(() => {
-                    void callback();
-                }, 100);
-            }
-        });
-    }
 }
