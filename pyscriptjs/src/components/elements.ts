@@ -1,5 +1,5 @@
 import type { Runtime } from '../runtime';
-import { PyRepl } from './pyrepl';
+import { make_PyRepl } from './pyrepl';
 import { PyBox } from './pybox';
 import { make_PyButton } from './pybutton';
 import { PyTitle } from './pytitle';
@@ -26,6 +26,7 @@ function createCustomElements(runtime: Runtime) {
     const PyInputBox = make_PyInputBox(runtime);
     const PyButton = make_PyButton(runtime);
     const PyWidget = make_PyWidget(runtime);
+    const PyRepl = make_PyRepl(runtime);
 
     /* eslint-disable @typescript-eslint/no-unused-vars */
     const xPyRepl = customElements.define('py-repl', PyRepl);
