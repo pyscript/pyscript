@@ -3,7 +3,7 @@ import { PyRepl } from './pyrepl';
 import { PyBox } from './pybox';
 import { make_PyButton } from './pybutton';
 import { PyTitle } from './pytitle';
-import { PyInputBox } from './pyinputbox';
+import { make_PyInputBox } from './pyinputbox';
 import { PyWidget } from './pywidget';
 
 /*
@@ -23,6 +23,7 @@ from the PyScript class.
 
 */
 function createCustomElements(runtime: Runtime) {
+    const PyInputBox = make_PyInputBox(runtime);
     const PyButton = make_PyButton(runtime);
 
     /* eslint-disable @typescript-eslint/no-unused-vars */
