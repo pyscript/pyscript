@@ -1,17 +1,10 @@
-import { runtimeLoaded } from '../stores';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 
-const logger = getLogger('pyscript/pywidget');
+const logger = getLogger('py-register-widget');
 
-// Global `Runtime` that implements the generic runtimes API
-let globalRuntime: Runtime;
 
-runtimeLoaded.subscribe(value => {
-    globalRuntime = value;
-});
-
-function createWidget(name: string, code: string, klass: string) {
+function createWidget(runtime: Runtime, name: string, code: string, klass: string) {
     class CustomWidget extends HTMLElement {
         shadow: ShadowRoot;
         wrapper: HTMLElement;
@@ -33,31 +26,28 @@ function createWidget(name: string, code: string, klass: string) {
         }
 
         connectedCallback() {
-            runtimeLoaded.subscribe(value => {
-                if ('run' in value) {
-                    globalRuntime = value;
                     setTimeout(() => {
                         void (async () => {
-                            await globalRuntime.runButDontRaise(this.code);
-                            this.proxyClass = globalRuntime.globals.get(this.klass);
+                            await runtime.runButDontRaise(this.code);
+                            this.proxyClass = runtime.globals.get(this.klass);
                             this.proxy = this.proxyClass(this);
                             this.proxy.connect();
                             this.registerWidget();
                         })();
                     }, 1000);
-                }
-            });
         }
 
         registerWidget() {
             logger.info('new widget registered:', this.name);
-            globalRuntime.globals.set(this.id, this.proxy);
+            runtime.globals.set(this.id, this.proxy);
         }
     }
     const xPyWidget = customElements.define(name, CustomWidget);
 }
 
-export class PyWidget extends HTMLElement {
+export function make_PyWidget(runtime: Runtime) {
+
+class PyWidget extends HTMLElement {
     shadow: ShadowRoot;
     name: string;
     klass: string;
@@ -101,7 +91,7 @@ export class PyWidget extends HTMLElement {
         this.appendChild(mainDiv);
         logger.debug('PyWidget: reading source', this.source);
         this.code = await this.getSourceFromFile(this.source);
-        createWidget(this.name, this.code, this.klass);
+        createWidget(runtime, this.name, this.code, this.klass);
     }
 
     initOutErr(): void {
@@ -136,4 +126,7 @@ export class PyWidget extends HTMLElement {
         const response = await fetch(s);
         return await response.text();
     }
+}
+
+    return PyWidget;
 }

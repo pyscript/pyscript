@@ -4,7 +4,7 @@ import { PyBox } from './pybox';
 import { make_PyButton } from './pybutton';
 import { PyTitle } from './pytitle';
 import { make_PyInputBox } from './pyinputbox';
-import { PyWidget } from './pywidget';
+import { make_PyWidget } from './pywidget';
 
 /*
 These were taken from main.js because some of our components call
@@ -25,6 +25,7 @@ from the PyScript class.
 function createCustomElements(runtime: Runtime) {
     const PyInputBox = make_PyInputBox(runtime);
     const PyButton = make_PyButton(runtime);
+    const PyWidget = make_PyWidget(runtime);
 
     /* eslint-disable @typescript-eslint/no-unused-vars */
     const xPyRepl = customElements.define('py-repl', PyRepl);
