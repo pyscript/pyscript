@@ -70,7 +70,6 @@ class TestPyRepl(PyScriptTest):
         )
         self.page.locator("py-repl").type("this is an error")
         self.page.locator("button").click()
-        repl_result = self.page.wait_for_selector("#my-repl-1", state="attached")
         expect(self.page.locator(".py-error")).to_be_visible()
 
     # console errors are observable on the headed instance
@@ -93,7 +92,6 @@ class TestPyRepl(PyScriptTest):
         )
         self.page.locator("py-repl").type("this is an error")
         self.page.locator("button").click()
-        repl_result = self.page.wait_for_selector("#my-repl-1", state="attached")
         assert self.page.locator(".py-error").is_visible()
         self.page.keyboard.press("Shift+Enter")
         assert self.page.locator(".py-error").is_visible()

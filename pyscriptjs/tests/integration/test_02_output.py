@@ -1,7 +1,5 @@
 import re
 
-import pytest
-
 from .support import PyScriptTest
 
 
@@ -70,8 +68,9 @@ class TestOutuput(PyScriptTest):
         text = self.page.text_content("body")
         assert "hello" not in text
 
-        # currently the test infrastructure doesn't allow to easily assert that js exceptions were raised
-        # this is a workaround but we need a better fix. Antonio promised to write it
+        # currently the test infrastructure doesn't allow to easily assert that
+        # js exceptions were raised this is a workaround but we need a better fix.
+        # Antonio promised to write it
         assert len(self._page_errors) == 1
         console_text = self._page_errors
         assert (
@@ -282,4 +281,4 @@ class TestOutuput(PyScriptTest):
             """
         )
         inner_text = self.page.inner_text("html")
-        assert "A\nB\nA\nB"
+        assert "A\nB\nA\nB" in inner_text
