@@ -85,8 +85,6 @@ class TestOutuput(PyScriptTest):
             """
             <py-script>
                 def display_hello():
-                    # this fails because we don't have any implicit target
-                    # from event handlers
                     display('hello', target='second-pyscript-tag')
             </py-script>
             <py-script id="second-pyscript-tag">
@@ -94,7 +92,7 @@ class TestOutuput(PyScriptTest):
             </py-script>
         """
         )
-        text = self.page.text_content("body")
+        text = self.page.locator("id=second-pyscript-tag-2").inner_text()
         assert "hello" in text
 
     def test_explicit_target_on_button_tag(self):
@@ -102,15 +100,13 @@ class TestOutuput(PyScriptTest):
             """
             <py-script>
                 def display_hello():
-                    # this fails because we don't have any implicit target
-                    # from event handlers
                     display('hello', target='my-button')
             </py-script>
             <button id="my-button" py-onClick="display_hello()">Click me</button>
         """
         )
         self.page.locator("text=Click me").click()
-        text = self.page.text_content("body")
+        text = self.page.locator("id=my-button").inner_text()
         assert "hello" in text
 
     def test_explicit_different_target_from_call(self):
@@ -118,8 +114,6 @@ class TestOutuput(PyScriptTest):
             """
             <py-script id="first-pyscript-tag">
                 def display_hello():
-                    # this fails because we don't have any implicit target
-                    # from event handlers
                     display('hello', target='second-pyscript-tag')
             </py-script>
             <py-script id="second-pyscript-tag">
@@ -158,6 +152,19 @@ class TestOutuput(PyScriptTest):
         assert re.search(pattern, inner_html)
 
     def test_display_multiple_values(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                hello = 'hello'
+                world = 'world'
+                display(hello, world)
+            </py-script>
+            """
+        )
+        inner_text = self.page.inner_text('html')
+        assert inner_text == "hello\nworld"
+
+    def test_display_list_dict_tuple(self):
         self.pyscript_run(
             """
             <py-script>

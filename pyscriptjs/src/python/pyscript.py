@@ -124,14 +124,14 @@ class PyScript:
 
 
 def set_current_display_target(target_id):
-    get_current_display_target._obj = target_id
+    get_current_display_target._id = target_id
 
 
 def get_current_display_target():
-    return get_current_display_target._obj
+    return get_current_display_target._id
 
 
-get_current_display_target._obj = None
+get_current_display_target._id = None
 
 
 def display(*values, target=None, append=True):
