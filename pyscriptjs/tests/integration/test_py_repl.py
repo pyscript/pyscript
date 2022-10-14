@@ -92,9 +92,9 @@ class TestPyRepl(PyScriptTest):
         )
         self.page.locator("py-repl").type("this is an error")
         self.page.locator("button").click()
-        assert self.page.locator(".py-error").is_visible()
+        expect(self.page.locator(".py-error")).to_be_visible()
         self.page.keyboard.press("Shift+Enter")
-        assert self.page.locator(".py-error").is_visible()
+        expect(self.page.locator(".py-error")).to_be_visible()
 
     # this tests the fact that a new error div should be created once there's
     # an error but also that it should disappear automatically once the error
@@ -107,7 +107,7 @@ class TestPyRepl(PyScriptTest):
         )
         self.page.locator("py-repl").type("d")
         self.page.keyboard.press("Shift+Enter")
-        assert self.page.locator(".py-error").is_visible()
+        expect(self.page.locator(".py-error")).to_be_visible()
         self.page.locator("py-repl").type("isplay('ok')")
         self.page.keyboard.press("Shift+Enter")
         repl_result = self.page.wait_for_selector("#my-repl-2", state="attached")
