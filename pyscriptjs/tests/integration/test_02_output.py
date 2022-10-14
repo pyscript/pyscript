@@ -161,7 +161,7 @@ class TestOutuput(PyScriptTest):
             </py-script>
             """
         )
-        inner_text = self.page.inner_text('html')
+        inner_text = self.page.inner_text("html")
         assert inner_text == "hello\nworld"
 
     def test_display_list_dict_tuple(self):
