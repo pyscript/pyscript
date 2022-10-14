@@ -108,7 +108,8 @@ class TestPyRepl(PyScriptTest):
         self.page.locator("py-repl").type("d")
         self.page.keyboard.press("Shift+Enter")
         expect(self.page.locator(".py-error")).to_be_visible()
-        self.page.locator("py-repl").type("isplay('ok')")
+        self.page.keyboard.press("Backspace")
+        self.page.locator("py-repl").type("display('ok')")
         self.page.keyboard.press("Shift+Enter")
         repl_result = self.page.wait_for_selector("#my-repl-2", state="attached")
         assert repl_result.inner_text() == "ok"
