@@ -88,7 +88,7 @@ This will make all Python global variables available in JavaScript with `pyodide
 ```
 
 ```html
-<input type="button" value="Log Python Variables" id="do-mmath">
+<input type="button" value="Log Python Variables" id="do-math">
 <script>
     document.getElementById("do-math").addEventListener("click", () => {
         const exp = pyodideGlobals.get('rough_exponential');
