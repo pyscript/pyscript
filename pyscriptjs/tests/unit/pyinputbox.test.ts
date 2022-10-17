@@ -1,11 +1,16 @@
 import { jest } from "@jest/globals"
+import type { Runtime } from "../../src/runtime"
+import { FakeRuntime } from "./fakeruntime"
+import { make_PyInputBox } from "../../src/components/pyinputbox"
 
-import { PyInputBox } from "../../src/components/pyinputbox"
+const runtime: Runtime = new FakeRuntime();
+const PyInputBox = make_PyInputBox(runtime);
 
 customElements.define('py-inputbox', PyInputBox)
 
 describe("PyInputBox", () => {
-  let instance: PyInputBox;
+
+  let instance;
 
   beforeEach(() => {
     instance = new PyInputBox()
@@ -28,16 +33,6 @@ describe("PyInputBox", () => {
     instance.checkId();
     expect(instance.id).toEqual(instanceId);
   });
-
-  it('confirm that runAfterRuntimeInitialized is called', async () => {
-    const mockedRunAfterRuntimeInitialized = jest
-      .spyOn(instance, 'runAfterRuntimeInitialized')
-      .mockImplementation(jest.fn());
-
-    instance.connectedCallback();
-
-    expect(mockedRunAfterRuntimeInitialized).toHaveBeenCalled();
-  })
 
   it('onCallback sets mount_name based on id', async () => {
     expect(instance.id).toBe('');

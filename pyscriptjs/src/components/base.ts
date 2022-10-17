@@ -1,18 +1,10 @@
-import { runtimeLoaded } from '../stores';
 import { guidGenerator, addClasses, removeClasses } from '../utils';
-
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 
 const logger = getLogger('pyscript/base');
 
-// Global `Runtime` that implements the generic runtimes API
-let runtime: Runtime;
 let Element;
-
-runtimeLoaded.subscribe(value => {
-    runtime = value;
-});
 
 export class BaseEvalElement extends HTMLElement {
     shadow: ShadowRoot;
@@ -115,7 +107,7 @@ export class BaseEvalElement extends HTMLElement {
         runtime.registerJsModule('esm', imports);
     }
 
-    async evaluate(): Promise<void> {
+    async evaluate(runtime: Runtime): Promise<void> {
         this.preEvaluate();
 
         let source: string;
@@ -184,187 +176,4 @@ export class BaseEvalElement extends HTMLElement {
 
         }
     } // end evaluate
-
-    async eval(source: string): Promise<void> {
-        try {
-            const output = await runtime.run(source);
-            if (output !== undefined) {
-                logger.info(output);
-            }
-        } catch (err) {
-            logger.error(err);
-        }
-    } // end eval
-
-    runAfterRuntimeInitialized(callback: () => Promise<void>) {
-        runtimeLoaded.subscribe(value => {
-            if ('run' in value) {
-                setTimeout(() => {
-                    void callback();
-                }, 100);
-            }
-        });
-    }
-}
-
-function createWidget(name: string, code: string, klass: string) {
-    class CustomWidget extends HTMLElement {
-        shadow: ShadowRoot;
-        wrapper: HTMLElement;
-
-        name: string = name;
-        klass: string = klass;
-        code: string = code;
-        proxy: any;
-        proxyClass: any;
-
-        constructor() {
-            super();
-
-            // attach shadow so we can preserve the element original innerHtml content
-            this.shadow = this.attachShadow({ mode: 'open' });
-
-            this.wrapper = document.createElement('slot');
-            this.shadow.appendChild(this.wrapper);
-        }
-
-        connectedCallback() {
-            // TODO: we are calling with a 2secs delay to allow pyodide to load
-            //       ideally we can just wait for it to load and then run. To do
-            //       so we need to replace using the promise and actually using
-            //       the interpreter after it loads completely
-            // setTimeout(() => {
-            //     void (async () => {
-            //         await this.eval(this.code);
-            //         this.proxy = this.proxyClass(this);
-            //         console.log('proxy', this.proxy);
-            //         this.proxy.connect();
-            //         this.registerWidget();
-            //     })();
-            // }, 2000);
-            runtimeLoaded.subscribe(value => {
-                if ('run' in value) {
-                    runtime = value;
-                    setTimeout(() => {
-                        void (async () => {
-                            await this.eval(this.code);
-                            this.proxy = this.proxyClass(this);
-                            this.proxy.connect();
-                            this.registerWidget();
-                        })();
-                    }, 1000);
-                }
-            });
-        }
-
-        registerWidget() {
-            logger.info('new widget registered:', this.name);
-            runtime.globals.set(this.id, this.proxy);
-        }
-
-        async eval(source: string): Promise<void> {
-            try {
-                const output = await runtime.run(source);
-                this.proxyClass = runtime.globals.get(this.klass);
-                if (output !== undefined) {
-                    logger.info('CustomWidget.eval: ', output);
-                }
-            } catch (err) {
-                logger.error('CustomWidget.eval: ', err);
-            }
-        }
-    }
-    const xPyWidget = customElements.define(name, CustomWidget);
-}
-
-export class PyWidget extends HTMLElement {
-    shadow: ShadowRoot;
-    name: string;
-    klass: string;
-    outputElement: HTMLElement;
-    errorElement: HTMLElement;
-    wrapper: HTMLElement;
-    theme: string;
-    source: string;
-    code: string;
-
-    constructor() {
-        super();
-
-        // attach shadow so we can preserve the element original innerHtml content
-        this.shadow = this.attachShadow({ mode: 'open' });
-
-        this.wrapper = document.createElement('slot');
-        this.shadow.appendChild(this.wrapper);
-
-        this.addAttributes('src','name','klass');
-    }
-
-    addAttributes(...attrs:string[]){
-        for (const each of attrs){
-            const property = each === "src" ? "source" : each;
-            if (this.hasAttribute(each)) {
-              this[property]=this.getAttribute(each);
-            }
-        }
-    }
-
-    async connectedCallback() {
-        if (this.id === undefined) {
-            throw new ReferenceError(
-                `No id specified for component. Components must have an explicit id. Please use id="" to specify your component id.`,
-            );
-        }
-
-        const mainDiv = document.createElement('div');
-        mainDiv.id = this.id + '-main';
-        this.appendChild(mainDiv);
-        logger.debug('PyWidget: reading source', this.source);
-        this.code = await this.getSourceFromFile(this.source);
-        createWidget(this.name, this.code, this.klass);
-    }
-
-    initOutErr(): void {
-        if (this.hasAttribute('output')) {
-            this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
-
-            // in this case, the default output-mode is append, if hasn't been specified
-            if (!this.hasAttribute('output-mode')) {
-                this.setAttribute('output-mode', 'append');
-            }
-        } else {
-            if (this.hasAttribute('std-out')) {
-                this.outputElement = document.getElementById(this.getAttribute('std-out'));
-            } else {
-                // In this case neither output or std-out have been provided so we need
-                // to create a new output div to output to
-                this.outputElement = document.createElement('div');
-                this.outputElement.classList.add('output');
-                this.outputElement.hidden = true;
-                this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
-            }
-
-            if (this.hasAttribute('std-err')) {
-                this.errorElement = document.getElementById(this.getAttribute('std-err'));
-            } else {
-                this.errorElement = this.outputElement;
-            }
-        }
-    }
-
-    async getSourceFromFile(s: string): Promise<string> {
-        const response = await fetch(s);
-        return await response.text();
-    }
-
-    async eval(source: string): Promise<void> {
-        try {
-            const output = await runtime.run(source);
-            if (output !== undefined) {
-                logger.info('PyWidget.eval: ', output);
-            }
-        } catch (err) {
-            logger.error('PyWidget.eval: ', err);
-        }
-    }
 }
