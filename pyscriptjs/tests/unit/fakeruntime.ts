@@ -14,7 +14,7 @@ export class FakeRuntime extends Runtime {
     }
 
     async run(code: string) {
-        /* don't to anything */
+        /* don't do anything */
     }
 
     async loadInterpreter() {
