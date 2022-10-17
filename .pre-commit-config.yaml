@@ -72,10 +72,10 @@ repos:
         files: pyscriptjs/src/.*\.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
         types: [file]
         additional_dependencies:
-        -   eslint
-        -   typescript
-        -   '@typescript-eslint/eslint-plugin'
-        -   '@typescript-eslint/parser'
+        -   eslint@8.25.0
+        -   typescript@4.8.4
+        -   '@typescript-eslint/eslint-plugin@5.39.0'
+        -   '@typescript-eslint/parser@5.39.0'
 
 # Commented out until mdformat-myst supports custom extensions
 # See https://github.com/executablebooks/mdformat-myst/pull/9
