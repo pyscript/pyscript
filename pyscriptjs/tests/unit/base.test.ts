@@ -1,7 +1,6 @@
 import { jest } from '@jest/globals';
 
 import { BaseEvalElement } from '../../src/components/base';
-import { runtimeLoaded } from '../../src/stores';
 
 customElements.define('py-base', BaseEvalElement);
 
@@ -14,31 +13,6 @@ describe('BaseEvalElement', () => {
 
     it('BaseEvalElement instantiates correctly', async () => {
         expect(instance).toBeInstanceOf(BaseEvalElement);
-    });
-
-    // TODO: This test is a bit silly, but the idea is to keep it here until we fix this
-    // issue
-    it("should fail with: Cannot use 'in' operator to search for 'runPythonAsync' in undefined", async () => {
-        let thrownError;
-        let expectedTypeError = new TypeError("Cannot use 'in' operator to search for 'run' in undefined");
-        try {
-            instance.runAfterRuntimeInitialized(async () => {
-                return;
-            });
-        } catch (error) {
-            thrownError = error;
-        }
-        expect(thrownError).toEqual(expectedTypeError);
-    });
-
-    it('runAfterRuntimeInitialized calls runtimeLoaded.subscribe', async () => {
-        const mockedStore = jest.fn();
-        // @ts-ignore: typescript causes the test to fail
-        const mockedruntimeLoaded = jest.spyOn(runtimeLoaded, 'subscribe').mockImplementation(mockedStore);
-
-        instance.runAfterRuntimeInitialized(async () => {});
-
-        expect(mockedruntimeLoaded).toHaveBeenCalled();
     });
 
     it('addToOutput sets outputElements property correctly', async () => {
