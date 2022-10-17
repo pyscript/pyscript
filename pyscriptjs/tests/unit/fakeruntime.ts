@@ -21,7 +21,6 @@ export class FakeRuntime extends Runtime {
         throw new Error("not implemented");
     }
 
-
     registerJsModule(name: string, module: object) {
         throw new Error("not implemented");
     }
