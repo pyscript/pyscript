@@ -111,45 +111,19 @@ export class BaseEvalElement extends HTMLElement {
         this.preEvaluate();
 
         let source: string;
-        let output: string;
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
-
             this._register_esm(runtime);
-            <string>await runtime.run(
-                `output_manager.change(out="${this.outputElement.id}", err="${this.errorElement.id}", append=${this.appendOutput ? 'True' : 'False'})`,
-            );
-            output = <string>await runtime.run(source);
 
-            if (output !== undefined) {
-                if (Element === undefined) {
-                    Element = <Element>runtime.globals.get('Element');
-                }
-                const out = Element(this.outputElement.id);
-                out.write.callKwargs(output, { append: this.appendOutput });
-
-                this.outputElement.hidden = false;
-                this.outputElement.style.display = 'block';
+            try {
+                <string>await runtime.run(`set_current_display_target(target_id="${this.id}")`);
+                <string>await runtime.run(source);
+            } finally {
+                <string>await runtime.run(`set_current_display_target(target_id=None)`);
             }
 
-            await runtime.run(`output_manager.revert()`);
-
-            // check if this REPL contains errors, delete them and remove error classes
-            const errorElements = document.querySelectorAll(`div[id^='${this.errorElement.id}'][error]`);
-            if (errorElements.length > 0) {
-                errorElements.forEach( errorElement =>
-                    {
-                        errorElement.classList.add('hidden');
-                        if (this.hasAttribute('std-err')) {
-                            this.errorElement.hidden = true;
-                            this.errorElement.style.removeProperty('display');
-                        }
-                    }
-                )
-            }
-            removeClasses(this.errorElement, ['bg-red-200', 'p-2']);
-
+            removeClasses(this.errorElement, ['py-error']);
             this.postEvaluate();
         } catch (err) {
             logger.error(err);
@@ -159,7 +133,7 @@ export class BaseEvalElement extends HTMLElement {
                 }
                 const out = Element(this.errorElement.id);
 
-                addClasses(this.errorElement, ['bg-red-200', 'p-2']);
+                addClasses(this.errorElement, ['py-error']);
                 out.write.callKwargs(err.toString(), { append: this.appendOutput });
                 if (this.errorElement.children.length === 0){
                     this.errorElement.setAttribute('error', '');

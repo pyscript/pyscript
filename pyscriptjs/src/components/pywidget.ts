@@ -89,34 +89,6 @@ export function make_PyWidget(runtime: Runtime) {
             createWidget(runtime, this.name, this.code, this.klass);
         }
 
-        initOutErr(): void {
-            if (this.hasAttribute('output')) {
-                this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
-
-                // in this case, the default output-mode is append, if hasn't been specified
-                if (!this.hasAttribute('output-mode')) {
-                    this.setAttribute('output-mode', 'append');
-                }
-            } else {
-                if (this.hasAttribute('std-out')) {
-                    this.outputElement = document.getElementById(this.getAttribute('std-out'));
-                } else {
-                    // In this case neither output or std-out have been provided so we need
-                    // to create a new output div to output to
-                    this.outputElement = document.createElement('div');
-                    this.outputElement.classList.add('output');
-                    this.outputElement.hidden = true;
-                    this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
-                }
-
-                if (this.hasAttribute('std-err')) {
-                    this.errorElement = document.getElementById(this.getAttribute('std-err'));
-                } else {
-                    this.errorElement = this.outputElement;
-                }
-            }
-        }
-
         async getSourceFromFile(s: string): Promise<string> {
             const response = await fetch(s);
             return await response.text();

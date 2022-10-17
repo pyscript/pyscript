@@ -39,8 +39,8 @@ class TestStyle(PyScriptTest):
             <py-config>
             name = "foo"
             </py-config>
-            <py-script>print("hello")</py-script>
-            <py-repl>print("hello")</py-repl>
+            <py-script>display("hello")</py-script>
+            <py-repl>display("hello")</py-repl>
             <py-title>hello</py-title>
             <py-inputbox label="my input">
                 import js

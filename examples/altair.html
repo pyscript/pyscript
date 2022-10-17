@@ -50,13 +50,13 @@ bar = alt.Chart(source).mark_bar().encode(
     height=200
 ).add_selection(pts)
 
-alt.vconcat(
+display(alt.vconcat(
     rect + circ,
     bar
 ).resolve_legend(
     color="independent",
     size="independent"
-)
+))
       </py-script>
     </body>
 </html>

@@ -258,20 +258,18 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "REPL"
         wait_for_render(self.page, "*", "<py-repl.*?>")
 
-        self.page.locator("py-repl").type("print('Hello, World!')")
+        self.page.locator("py-repl").type("display('Hello, World!')")
         self.page.locator("button").click()
 
-        assert self.page.locator("#my-repl-1").text_content() == "Hello, World!"
+        assert self.page.locator("#my-repl-2").text_content() == "Hello, World!"
 
         # Confirm that using the second repl still works properly
-        self.page.locator("#my-repl-2").type("2*2")
+        self.page.locator("#my-repl-2").type("display(2*2)")
         self.page.keyboard.press("Shift+Enter")
         # Make sure that the child of the second repl is attached properly
         # before looking into the text_content
-        second_repl_result = self.page.wait_for_selector(
-            "#my-repl-2-2", state="attached"
-        )
-        assert second_repl_result.text_content() == "4"
+        assert self.page.wait_for_selector("#my-repl-2-1", state="attached")
+        assert self.page.locator("#my-repl-2-1").text_content() == "4"
 
     def test_repl2(self):
         self.goto("examples/repl2.html")
@@ -279,7 +277,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Custom REPL Example"
         wait_for_render(self.page, "*", "<py-repl.*?>")
         # confirm we can import utils and run one command
-        self.page.locator("py-repl").type("import utils\nutils.now()")
+        self.page.locator("py-repl").type("import utils\ndisplay(utils.now())")
         self.page.locator("button").click()
         # Make sure the output is in the page
         self.page.wait_for_selector("#output")

@@ -1,7 +1,6 @@
 import asyncio
 import base64
 import io
-import sys
 import time
 from textwrap import dedent
 
@@ -122,6 +121,33 @@ class PyScript:
         Element(<id>).write instead."""
             )
         )
+
+
+def set_current_display_target(target_id):
+    get_current_display_target._id = target_id
+
+
+def get_current_display_target():
+    return get_current_display_target._id
+
+
+get_current_display_target._id = None
+
+
+def display(*values, target=None, append=True):
+    default_target = get_current_display_target()
+
+    if default_target is None and target is None:
+        raise Exception(
+            "Implicit target not allowed here. Please use display(..., target=...)"
+        )
+
+    if target is not None:
+        for v in values:
+            Element(target).write(v, append=append)
+    else:
+        for v in values:
+            Element(default_target).write(v, append=append)
 
 
 class Element:
@@ -365,59 +391,4 @@ class PyListTemplate:
         pass
 
 
-class OutputCtxManager:
-    def __init__(self, out=None, output_to_console=True, append=True):
-        self._out = out
-        self._prev = out
-        self.output_to_console = output_to_console
-        self._append = append
-
-    def change(self, out=None, output_to_console=True, append=True):
-        self._prev = self._out
-        self._out = out
-        self.output_to_console = output_to_console
-        self._append = append
-
-    def revert(self):
-        self._out = self._prev
-
-    def write(self, value):
-        if self._out:
-            Element(self._out).write(value, self._append)
-
-        if self.output_to_console:
-            console.info(value)
-
-
-class OutputManager:
-    def __init__(self, out=None, err=None, output_to_console=True, append=True):
-        sys.stdout = self._out_manager = OutputCtxManager(
-            out=out, output_to_console=output_to_console, append=append
-        )
-        sys.stderr = self._err_manager = OutputCtxManager(
-            out=err, output_to_console=output_to_console, append=append
-        )
-        self.output_to_console = output_to_console
-        self._append = append
-
-    def change(self, out=None, err=None, output_to_console=True, append=True):
-        self._out_manager.change(
-            out=out, output_to_console=output_to_console, append=append
-        )
-        sys.stdout = self._out_manager
-        self._err_manager.change(
-            out=err, output_to_console=output_to_console, append=append
-        )
-        sys.stderr = self._err_manager
-        self.output_to_console = output_to_console
-        self._append = append
-
-    def revert(self):
-        self._out_manager.revert()
-        self._err_manager.revert()
-        sys.stdout = self._out_manager
-        sys.stderr = self._err_manager
-
-
 pyscript = PyScript()
-output_manager = OutputManager()

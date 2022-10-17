@@ -95,7 +95,7 @@ class TestConfig(PyScriptTest):
                 import sys, js
                 pyodide_version = sys.modules["pyodide"].__version__
                 js.console.log("version", pyodide_version)
-                pyodide_version
+                display(pyodide_version)
             </py-script>
         """,
         )
