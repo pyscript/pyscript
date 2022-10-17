@@ -161,7 +161,7 @@ The `<py-config>` tag can be used as follows:
   lang = "python"
 </py-config>
 ```
-Note: `[[runtimes]]` is a TOML table, make sure this is last in a py-config as the properites defined after it go into the runtimes object.
+Note: `[[runtimes]]` is a TOML table, make sure this is last in a py-config as the properties defined after it go into the runtimes object.
 
 Alternatively, a JSON config can be passed using the `type` attribute.
 
