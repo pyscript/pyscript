@@ -1,46 +1,44 @@
-function addClasses(element: HTMLElement, classes: Array<string>) {
+export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
         element.classList.add(entry);
     }
 }
 
-function removeClasses(element: HTMLElement, classes: Array<string>) {
+export function removeClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
         element.classList.remove(entry);
     }
 }
 
-function getLastPath(str: string): string {
-    return str.split('\\').pop().split('/').pop();
+export function getLastPath(str: string): string | undefined {
+    return str.split('\\').pop()?.split('/').pop();
 }
 
-function escape(str: string): string {
+export function escape(str: string): string {
     return str.replace(/</g, "&lt;").replace(/>/g, "&gt;")
 }
 
-function htmlDecode(input: string): string {
+export function htmlDecode(input: string): string | null {
     const doc = new DOMParser().parseFromString(ltrim(escape(input)), 'text/html');
     return doc.documentElement.textContent;
 }
 
-function ltrim(code: string): string {
+export function ltrim(code: string): string {
     const lines = code.split('\n');
     if (lines.length == 0) return code;
 
     const lengths = lines
         .filter(line => line.trim().length != 0)
         .map(line => {
-            const [prefix] = line.match(/^\s*/);
-            return prefix.length;
+            return line.match(/^\s*/)?.pop()?.length;
         });
 
     const k = Math.min(...lengths);
 
-    return k != 0 ? lines.map(line => line.substring(k)).join('\n')
-                  : code;
+    return k != 0 ? lines.map(line => line.substring(k)).join('\n') : code;
 }
 
-function guidGenerator(): string {
+export function guidGenerator(): string {
     const S4 = function (): string {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     };
@@ -52,7 +50,7 @@ function guidGenerator(): string {
  *  PyScript or Pyodide during loading. Probably not be used for issues that occur within
  *  Python scripts, since stderr can be routed to somewhere in the DOM
  */
-function showError(msg: string): void {
+export function showError(msg: string): void {
     const warning = document.createElement('div');
     // XXX: the style should go to css instead of here probably
     warning.className = "py-error";
@@ -64,7 +62,7 @@ function showError(msg: string): void {
     document.body.prepend(warning);
 }
 
-function handleFetchError(e: Error, singleFile: string) {
+export function handleFetchError(e: Error, singleFile: string) {
     //Should we still export full error contents to console?
     console.warn(`Caught an error in loadPaths:\r\n ${e.toString()}`);
     let errorContent: string;
@@ -86,7 +84,7 @@ function handleFetchError(e: Error, singleFile: string) {
     showError(errorContent);
 }
 
-function readTextFromPath(path: string) {
+export function readTextFromPath(path: string) {
     const request = new XMLHttpRequest();
     request.open("GET", path, false);
     request.send();
@@ -95,11 +93,11 @@ function readTextFromPath(path: string) {
     return returnValue;
 }
 
-function inJest(): boolean {
+export function inJest(): boolean {
     return typeof process === 'object' && process.env.JEST_WORKER_ID !== undefined;
 }
 
-function globalExport(name: string, obj: any) {
+export function globalExport(name: string, obj: any) {
     // attach the given object to the global object, so that it is globally
     // visible everywhere. Should be used very sparingly!
 
@@ -108,6 +106,12 @@ function globalExport(name: string, obj: any) {
     _global[name] = obj;
 }
 
-
-
-export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, globalExport, };
+export function getAttribute(el:Element, attr:string ):string | null {
+    if( el.hasAttribute( attr ) ){
+        const value = el.getAttribute(attr);
+        if( value ){
+            return value;
+        }
+    }
+    return null;
+}

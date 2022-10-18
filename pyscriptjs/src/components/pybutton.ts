@@ -1,5 +1,5 @@
 import { BaseEvalElement } from './base';
-import { addClasses, htmlDecode } from '../utils';
+import { getAttribute, addClasses, htmlDecode } from '../utils';
 import { getLogger } from '../logger'
 import type { Runtime } from '../runtime';
 
@@ -7,23 +7,25 @@ const logger = getLogger('py-button');
 
 export function make_PyButton(runtime: Runtime) {
     class PyButton extends BaseEvalElement {
-        widths: Array<string>;
-        label: string;
-        class: Array<string>;
-        defaultClass: Array<string>;
-        mount_name: string;
+        widths: string[] = [];
+        label: string | undefined = undefined;
+        class: string[];
+        defaultClass: string[];
+        mount_name: string | undefined = undefined;
         constructor() {
             super();
 
             this.defaultClass = ['py-button'];
 
-            if (this.hasAttribute('label')) {
-                this.label = this.getAttribute('label');
+            const label = getAttribute(this, "label");
+            if (label) {
+                this.label = label;
             }
 
             // Styling does the same thing as class in normal HTML. Using the name "class" makes the style to malfunction
-            if (this.hasAttribute('styling')) {
-                const klass = this.getAttribute('styling').trim();
+            const styling = getAttribute(this, "styling");
+            if ( styling ) {
+                const klass = styling.trim();
                 if (klass === '') {
                     this.class = this.defaultClass;
                 } else {
@@ -40,7 +42,7 @@ export function make_PyButton(runtime: Runtime) {
 
         async connectedCallback() {
             this.checkId();
-            this.code = htmlDecode(this.innerHTML);
+            this.code = htmlDecode(this.innerHTML) || "";
             this.mount_name = this.id.split('-').join('_');
             this.innerHTML = '';
 

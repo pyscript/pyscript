@@ -1,4 +1,4 @@
-import { guidGenerator, addClasses, removeClasses } from '../utils';
+import { getAttribute, guidGenerator, addClasses, removeClasses } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 
@@ -34,8 +34,8 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     setOutputMode(defaultMode = "append") {
-        const mode = this.hasAttribute('output-mode') ? this.getAttribute('output-mode') : defaultMode;
-
+        const mode = getAttribute(this,'output-mode') || defaultMode;
+       
         switch (mode) {
             case "append":
                 this.appendOutput = true;
@@ -77,7 +77,7 @@ export class BaseEvalElement extends HTMLElement {
     protected async _register_esm(runtime: Runtime): Promise<void> {
         const imports: { [key: string]: unknown } = {};
         const nodes = document.querySelectorAll("script[type='importmap']");
-        const importmaps: Array<any> = [];
+        const importmaps: any[] = [];
         nodes.forEach( node =>
             {
                 let importmap;

@@ -1,4 +1,4 @@
-import { addClasses } from '../utils';
+import { getAttribute, addClasses } from '../utils';
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-box');
@@ -7,7 +7,7 @@ export class PyBox extends HTMLElement {
     shadow: ShadowRoot;
     wrapper: HTMLElement;
     theme: string;
-    widths: Array<string>;
+    widths: string[];
 
     constructor() {
         super();
@@ -47,10 +47,14 @@ export class PyBox extends HTMLElement {
         // now we need to set widths
         this.widths = [];
 
-        if (this.hasAttribute('widths')) {
-            for (const w of this.getAttribute('widths').split(';')) {
-                if (w.includes('/')) this.widths.push(w.split('/')[0])
-                else this.widths.push(w)
+        const widthsAttr = getAttribute( this, "widths" );
+        if (widthsAttr) {
+            for (const w of widthsAttr.split(';')) {
+                if (w.includes('/')){
+                    this.widths.push(w.split('/')[0])
+                }else{
+                    this.widths.push(w)
+                } 
             }
         } else {
             this.widths = Array<string>(mainDiv.children.length).fill('1 1 0');

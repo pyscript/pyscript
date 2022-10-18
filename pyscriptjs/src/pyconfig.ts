@@ -1,7 +1,7 @@
 import toml from '../src/toml'
 import { getLogger } from './logger';
 import { version } from './runtime';
-import { readTextFromPath, showError } from './utils'
+import { getAttribute, readTextFromPath, showError } from './utils'
 
 const logger = getLogger('py-config');
 
@@ -15,10 +15,10 @@ export interface AppConfig extends Record<string, any> {
     author_email?: string;
     license?: string;
     autoclose_loader?: boolean;
-    runtimes?: Array<RuntimeConfig>;
-    packages?: Array<string>;
-    paths?: Array<string>;
-    plugins?: Array<string>;
+    runtimes?: RuntimeConfig[];
+    packages?: string[];
+    paths?: string[];
+    plugins?: string[];
     pyscript?: PyScriptMetadata;
 }
 
@@ -63,7 +63,7 @@ export function loadConfigFromElement(el: Element): AppConfig {
         inlineConfig = {};
     }
     else {
-        const configType: string = el.hasAttribute("type") ? el.getAttribute("type") : "toml";
+        const configType = getAttribute(el, "type") || "toml";
         srcConfig = extractFromSrc(el, configType);
         inlineConfig = extractFromInline(el, configType);
     }
@@ -77,9 +77,8 @@ export function loadConfigFromElement(el: Element): AppConfig {
 }
 
 function extractFromSrc(el: Element, configType: string) {
-    if (el.hasAttribute('src'))
-    {
-        const src = el.getAttribute('src');
+    const src = getAttribute(el, "src")
+    if (src) {
         logger.info('loading ', src)
         return validateConfig(readTextFromPath(src), configType);
     }
