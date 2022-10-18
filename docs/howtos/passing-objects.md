@@ -71,7 +71,7 @@ Since [everything is an object](https://docs.python.org/3/reference/datamodel.ht
 
 ### Using JavaScript's eval()
 
-In situations where it isn't possible or ideal to use `PyScript.runtime.globals.get()` to retrieve a variable from the Pyodide global dictionary, you can create JavaScript proxies of Python objects more or less "manually" using [JavaScript's eval() function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval), which executes a string as code much like [Python's eval()](https://docs.python.org/3/library/functions.html#eval).  
+In situations where it isn't possible or ideal to use `PyScript.runtime.globals.get()` to retrieve a variable from the Pyodide global dictionary, you can create JavaScript proxies of Python objects more or less "manually" using [JavaScript's eval() function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval), which executes a string as code much like [Python's eval()](https://docs.python.org/3/library/functions.html#eval).
 
 First, we create a JS function `createObject` which takes an object and a string, then uses `eval()` to create a variable named after the string and bind it to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.
 

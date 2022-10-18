@@ -24,7 +24,7 @@ The URL from which the current runtime was fetched.
 
 ### PyScript.runtime.interpreter
 
-A reference to the Runtime warpper that PyScript uses to execute code. object itself. This allows other frameworks, modules etc to interact with the same [(Pyodide) runtime instance](https://pyodide.org/en/stable/usage/api/js-api.html) that PyScript uses. 
+A reference to the Runtime warpper that PyScript uses to execute code. object itself. This allows other frameworks, modules etc to interact with the same [(Pyodide) runtime instance](https://pyodide.org/en/stable/usage/api/js-api.html) that PyScript uses.
 
 For example, assuming we've loaded Pyodide, we can access the methods of the Pyodide runtime as follows:
 
