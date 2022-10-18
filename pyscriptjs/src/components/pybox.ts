@@ -54,7 +54,7 @@ export class PyBox extends HTMLElement {
                     this.widths.push(w.split('/')[0])
                 }else{
                     this.widths.push(w)
-                } 
+                }
             }
         } else {
             this.widths = Array<string>(mainDiv.children.length).fill('1 1 0');
