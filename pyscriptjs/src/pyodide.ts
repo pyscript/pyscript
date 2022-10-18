@@ -5,6 +5,7 @@ import type { loadPyodide as loadPyodideDeclaration, PyodideInterface } from 'py
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
+import type { AppConfig } from './pyconfig';
 
 declare const loadPyodide: typeof loadPyodideDeclaration;
 
@@ -18,7 +19,7 @@ export class PyodideRuntime extends Runtime {
     globals: any;
 
     constructor(
-        config,
+        config: AppConfig,
         src = 'https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js',
         name = 'pyodide-default',
         lang = 'python',
