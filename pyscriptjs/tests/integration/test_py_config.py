@@ -5,7 +5,7 @@ import tempfile
 import pytest
 import requests
 
-from .support import JsError, PyScriptTest
+from .support import PyScriptTest
 
 URL = "https://github.com/pyodide/pyodide/releases/download/0.20.0/pyodide-build-0.20.0.tar.bz2"
 TAR_NAME = "pyodide-build-0.20.0.tar.bz2"
@@ -105,29 +105,32 @@ class TestConfig(PyScriptTest):
         assert version == "0.20.0"
 
     def test_invalid_json_config(self):
-        with pytest.raises(JsError) as exc:
-            self.pyscript_run(
-                snippet="""
-                <py-config type="json">
-                    [[
-                </py-config>
-                """
-            )
-
-        msg = str(exc.value)
-        assert "SyntaxError" in msg
+        # we need wait_for_pyscript=False because we bail out very soon,
+        # before being abel to write 'PyScript page fully initialized'
+        self.pyscript_run(
+            """
+            <py-config type="json">
+                [[
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+        self.page.wait_for_selector(".py-error")
+        self.check_js_errors("Unexpected end of JSON input")
 
     def test_invalid_toml_config(self):
-        with pytest.raises(JsError) as exc:
-            self.pyscript_run(
-                snippet="""
-                <py-config>
-                    [[
-                </py-config>
-                """
-            )
-        msg = str(exc)
-        assert "<ExceptionInfo JsError" in msg
+        # we need wait_for_pyscript=False because we bail out very soon,
+        # before being abel to write 'PyScript page fully initialized'
+        self.pyscript_run(
+            """
+            <py-config>
+                [[
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+        self.page.wait_for_selector(".py-error")
+        self.check_js_errors("SyntaxError: Expected DoubleQuote")
 
     def test_multiple_py_config(self):
         self.pyscript_run(

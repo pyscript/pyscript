@@ -166,7 +166,15 @@ function parseConfig(configText: string, configType = "toml") {
         catch (err) {
             const errMessage: string = err.toString();
             showError(`<p>config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}</p>`);
-            throw err;
+            // we cannot easily just "throw err" here, because for some reason
+            // playwright gets confused by it and cannot print it
+            // correctly. It is just displayed as an empty error.
+            // If you print err in JS, you get something like this:
+            //     n {message: '...', offset: 19, line: 2, column: 19}
+            // I think that 'n' is the minified name?
+            // The workaround is to re-wrap the message into Error(), so that
+            // it's correctly handled by playwright.
+            throw Error(errMessage);
         }
     }
     else if (configType === "json") {
