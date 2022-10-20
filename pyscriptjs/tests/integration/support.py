@@ -120,26 +120,50 @@ class PyScriptTest:
         self.logger.log("JS exception", error.stack, color="red")
         self._js_errors.append(error)
 
-    def check_js_errors(self):
+    def check_js_errors(self, *expected_messages):
         """
         Check whether JS errors were reported.
 
-        If it finds a single JS error, raise JsError.
-        If it finds multiple JS errors, raise JsMultipleErrors.
+        expected_messages is a list of strings of errors that you expect they
+        were raised in the page.  They are checked using a simple 'in' check,
+        equivalent to this:
+            if expected_message in actual_error_message:
+                ...
+
+        If an error was expected but not found, it raises
+        DidNotRaiseJsError().
+
+        If there are MORE errors other than the expected ones, it raises an
+        exception:
+
+          - if it finds a single JS error, raise JsError
+          - if it finds multiple JS errors, raise JsMultipleErrors
 
         Upon return, all the errors are cleared, so a subsequent call to
         check_js_errors will not raise, unless NEW JS errors have been reported
         in the meantime.
         """
-        exc = None
-        if len(self._js_errors) == 1:
-            # if there is a single error, wrap it
-            exc = JsError(self._js_errors[0])
-        elif len(self._js_errors) >= 2:
-            exc = JsMultipleErrors(self._js_errors)
-        self._js_errors = []
-        if exc:
-            raise exc
+        ## expected_messages = list(expected_messages)
+        js_errors = self._js_errors[:]
+
+        ## for i, msg in enumerate(expected_messages):
+        ##     for j, error in enumerate(js_errors):
+        ##         if msg is not None and error is not None and msg in error.message:
+        ##             # we matched one expected message with an error, remove both
+        ##             expected_messages[i] = None
+        ##             js_errors[i] = None
+
+        ## # now expected_messages and js_errors should contain only Nones
+        ## expected_messages = [msg for msg in expected_messages if msg is not None]
+        ## js_errors = [err for err in js_errors if err is not None]
+
+        ## if expected_messages:
+        ##     # some of the expected messages were not found
+        ##     xxx
+
+        self.clear_js_errors()
+        if js_errors:
+            raise JsErrors(js_errors)
 
     def clear_js_errors(self):
         """
@@ -243,9 +267,9 @@ class PyScriptTest:
 # ============== Helpers and utility functions ==============
 
 
-class JsError(Exception):
+class JsErrors(Exception):
     """
-    Represent an exception which happened in JS.
+    Represent one or more exceptions which happened in JS.
 
     It's a thin wrapper around playwright.sync_api.Error, with two important
     differences:
@@ -257,9 +281,15 @@ class JsError(Exception):
        playwright.sync_api.Error
     """
 
-    def __init__(self, error):
-        super().__init__(self.format_playwright_error(error))
-        self.error = error
+    def __init__(self, errors):
+        n = len(errors)
+        assert n != 0
+        lines = [f"JS errors found: {n}"]
+        for err in errors:
+            lines.append(self.format_playwright_error(err))
+        msg = "\n".join(lines)
+        super().__init__(msg)
+        self.errors = errors
 
     @staticmethod
     def format_playwright_error(error):
@@ -270,17 +300,24 @@ class JsError(Exception):
         return error.stack or str(error)
 
 
-class JsMultipleErrors(Exception):
+class JsErrorsDidNotRaise(Exception):
     """
-    This is raised in case we get multiple JS errors in the page
+    Exception raised by check_js_errors when the expected JS error messages
+    are not found.
     """
 
-    def __init__(self, errors):
-        lines = ["Multiple JS errors found:"]
-        for err in errors:
-            lines.append(JsError.format_playwright_error(err))
+    def __init__(self, expected_messages, errors):
+        lines = ["The following JS errors were expected but could not be found:"]
+        for msg in expected_messages:
+            lines.append("    " + msg)
+        lines.append("---")
+        if errors:
+            lines.append("The following JS errors were raised but not expected:")
+            for err in errors:
+                lines.append(JsErrors.format_playwright_error(err))
         msg = "\n".join(lines)
         super().__init__(msg)
+        self.expected_messages = expected_messages
         self.errors = errors
 
 
@@ -290,7 +327,8 @@ class ConsoleMessageCollection:
 
     Usage:
 
-      console.log.messages: list of ConsoleMessage with type=='log'
+      console.log.messages: list of ConsoleMessage with type==
+    'log'
       console.log.lines:    list of strings
       console.log.text:     the whole text as single string
 

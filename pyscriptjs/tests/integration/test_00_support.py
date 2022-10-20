@@ -1,9 +1,10 @@
+import re
 import textwrap
 
 import pytest
 from playwright import sync_api
 
-from .support import JsError, JsMultipleErrors, PyScriptTest
+from .support import JsErrors, PyScriptTest
 
 
 class TestSupport(PyScriptTest):
@@ -75,7 +76,7 @@ class TestSupport(PyScriptTest):
         assert self.console.log.lines == ["my log 1", "my log 2"]
         assert self.console.debug.lines == ["my debug"]
 
-    def test_check_js_errors(self):
+    def test_check_js_errors_simple(self):
         doc = """
         <html>
           <body>
@@ -85,13 +86,19 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(JsError) as exc:
+        with pytest.raises(JsErrors) as exc:
             self.check_js_errors()
         # check that the exception message contains the error message and the
         # stack trace
         msg = str(exc.value)
-        assert "Error: this is an error" in msg
-        assert f"at {self.fake_server}/mytest.html" in msg
+        expected = textwrap.dedent(
+            """
+            JS errors found: 1
+            Error: this is an error
+                at http://fake_server/mytest.html:.*
+            """
+        ).strip()
+        assert re.search(expected, msg)
         #
         # after a call to check_js_errors, the errors are cleared
         self.check_js_errors()
@@ -107,10 +114,20 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(JsMultipleErrors) as exc:
+        with pytest.raises(JsErrors) as exc:
             self.check_js_errors()
-        assert "error 1" in str(exc.value)
-        assert "error 2" in str(exc.value)
+        #
+        msg = str(exc.value)
+        expected = textwrap.dedent(
+            """
+            JS errors found: 2
+            Error: error 1
+                at http://fake_server/mytest.html:.*
+            Error: error 2
+                at http://fake_server/mytest.html:.*
+            """
+        ).strip()
+        assert re.search(expected, msg)
         #
         # check that errors are cleared
         self.check_js_errors()
@@ -177,7 +194,7 @@ class TestSupport(PyScriptTest):
         self.writefile("mytest.html", doc)
         # "Page loaded!" will never appear, of course.
         self.goto("mytest.html")
-        with pytest.raises(JsError) as exc:
+        with pytest.raises(JsErrors) as exc:
             self.wait_for_console("Page loaded!", timeout=200)
         assert "this is an error" in str(exc.value)
         assert isinstance(exc.value.__context__, sync_api.TimeoutError)
@@ -187,7 +204,7 @@ class TestSupport(PyScriptTest):
         self.goto("mytest.html")
         with pytest.raises(sync_api.TimeoutError):
             self.wait_for_console("Page loaded!", timeout=200, check_js_errors=False)
-        # we still got a JsError, so we need to manually clear it, else the
+        # we still got a JsErrors, so we need to manually clear it, else the
         # test fails at teardown
         self.clear_js_errors()
 
@@ -210,7 +227,7 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(JsError) as exc:
+        with pytest.raises(JsErrors) as exc:
             self.wait_for_console("Page loaded!", timeout=200)
         assert "this is an error" in str(exc.value)
         #
