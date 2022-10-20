@@ -143,25 +143,24 @@ class PyScriptTest:
         check_js_errors will not raise, unless NEW JS errors have been reported
         in the meantime.
         """
-        ## expected_messages = list(expected_messages)
+        expected_messages = list(expected_messages)
         js_errors = self._js_errors[:]
 
         for i, msg in enumerate(expected_messages):
-            for _, error in enumerate(js_errors):
+            for j, error in enumerate(js_errors):
                 if msg is not None and error is not None and msg in error.message:
                     # we matched one expected message with an error, remove both
-                    # expected_messages[i] = None
-                    js_errors[i] = None
+                    expected_messages[i] = None
+                    js_errors[j] = None
 
-        ## # now expected_messages and js_errors should contain only Nones
-        ## expected_messages = [msg for msg in expected_messages if msg is not None]
+        # now expected_messages and js_errors should contain only Nones
+        expected_messages = [msg for msg in expected_messages if msg is not None]
         js_errors = [err for err in js_errors if err is not None]
-
-        ## if expected_messages:
-        ##     # some of the expected messages were not found
-        ##     xxx
-
         self.clear_js_errors()
+
+        if expected_messages:
+            raise JsErrorsDidNotRaise(expected_messages, [])
+
         if js_errors:
             raise JsErrors(js_errors)
 
@@ -309,12 +308,12 @@ class JsErrorsDidNotRaise(Exception):
     def __init__(self, expected_messages, errors):
         lines = ["The following JS errors were expected but could not be found:"]
         for msg in expected_messages:
-            lines.append("    " + msg)
-        lines.append("---")
-        if errors:
-            lines.append("The following JS errors were raised but not expected:")
-            for err in errors:
-                lines.append(JsErrors.format_playwright_error(err))
+            lines.append("    - " + msg)
+        ## if errors:
+        ##     lines.append("---")
+        ##     lines.append("The following JS errors were raised but not expected:")
+        ##     for err in errors:
+        ##         lines.append(JsErrors.format_playwright_error(err))
         msg = "\n".join(lines)
         super().__init__(msg)
         self.expected_messages = expected_messages

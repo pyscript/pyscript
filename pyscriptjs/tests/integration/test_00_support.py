@@ -4,7 +4,7 @@ import textwrap
 import pytest
 from playwright import sync_api
 
-from .support import JsErrors, PyScriptTest
+from .support import JsErrors, JsErrorsDidNotRaise, PyScriptTest
 
 
 class TestSupport(PyScriptTest):
@@ -114,6 +114,35 @@ class TestSupport(PyScriptTest):
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
         self.check_js_errors("this is an error")
+
+    def test_check_js_errors_expected_but_didnt_raise(self):
+        doc = """
+        <html>
+          <body>
+            <script>throw new Error('this is an error 2');</script>
+            <script>throw new Error('this is an error 4');</script>
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        self.goto("mytest.html")
+        with pytest.raises(JsErrorsDidNotRaise) as exc:
+            self.check_js_errors(
+                "this is an error 1",
+                "this is an error 2",
+                "this is an error 3",
+                "this is an error 4",
+            )
+        #
+        msg = str(exc.value)
+        expected = textwrap.dedent(
+            """
+            The following JS errors were expected but could not be found:
+                - this is an error 1
+                - this is an error 3
+            """
+        ).strip()
+        assert re.search(expected, msg)
 
     def test_check_js_errors_multiple(self):
         doc = """
