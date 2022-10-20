@@ -172,9 +172,9 @@ function parseConfig(configText: string, configType = "toml") {
             // If you print err in JS, you get something like this:
             //     n {message: '...', offset: 19, line: 2, column: 19}
             // I think that 'n' is the minified name?
-            // The workaround is to re-wrap the message into Error(), so that
+            // The workaround is to re-wrap the message into SyntaxError(), so that
             // it's correctly handled by playwright.
-            throw Error(errMessage);
+            throw SyntaxError(errMessage);
         }
     }
     else if (configType === "json") {
