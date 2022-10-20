@@ -159,7 +159,7 @@ class PyScriptTest:
         self.clear_js_errors()
 
         if expected_messages:
-            raise JsErrorsDidNotRaise(expected_messages, [])
+            raise JsErrorsDidNotRaise(expected_messages, js_errors)
 
         if js_errors:
             raise JsErrors(js_errors)
@@ -309,11 +309,11 @@ class JsErrorsDidNotRaise(Exception):
         lines = ["The following JS errors were expected but could not be found:"]
         for msg in expected_messages:
             lines.append("    - " + msg)
-        ## if errors:
-        ##     lines.append("---")
-        ##     lines.append("The following JS errors were raised but not expected:")
-        ##     for err in errors:
-        ##         lines.append(JsErrors.format_playwright_error(err))
+        if errors:
+            lines.append("---")
+            lines.append("The following JS errors were raised but not expected:")
+            for err in errors:
+                lines.append(JsErrors.format_playwright_error(err))
         msg = "\n".join(lines)
         super().__init__(msg)
         self.expected_messages = expected_messages

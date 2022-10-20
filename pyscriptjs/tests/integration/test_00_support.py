@@ -201,6 +201,35 @@ class TestSupport(PyScriptTest):
         ).strip()
         assert re.search(expected, msg)
 
+    def test_check_js_errors_expected_not_found_but_other_errors(self):
+        doc = """
+        <html>
+          <body>
+            <script>throw new Error('error 1');</script>
+            <script>throw new Error('error 2');</script>
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        self.goto("mytest.html")
+        with pytest.raises(JsErrorsDidNotRaise) as exc:
+            self.check_js_errors("this is not going to be found")
+        #
+        msg = str(exc.value)
+        expected = textwrap.dedent(
+            """
+            The following JS errors were expected but could not be found:
+                - this is not going to be found
+            ---
+            The following JS errors were raised but not expected:
+            Error: error 1
+                at http://fake_server/mytest.html:.*
+            Error: error 2
+                at http://fake_server/mytest.html:.*
+            """
+        ).strip()
+        assert re.search(expected, msg)
+
     def test_clear_js_errors(self):
         doc = """
         <html>
