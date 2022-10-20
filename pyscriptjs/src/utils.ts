@@ -104,7 +104,7 @@ function globalExport(name: string, obj: any) {
     // visible everywhere. Should be used very sparingly!
 
     // `window` in the browser, `global` in node
-    const _global = (window || global) as any;
+    const _global = (window || global);
     _global[name] = obj;
 }
 
