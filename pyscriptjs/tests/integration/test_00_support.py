@@ -103,6 +103,18 @@ class TestSupport(PyScriptTest):
         # after a call to check_js_errors, the errors are cleared
         self.check_js_errors()
 
+    def test_check_js_errors_expected(self):
+        doc = """
+        <html>
+          <body>
+            <script>throw new Error('this is an error');</script>
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        self.goto("mytest.html")
+        self.check_js_errors("this is an error")
+
     def test_check_js_errors_multiple(self):
         doc = """
         <html>

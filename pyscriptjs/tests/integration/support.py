@@ -146,16 +146,16 @@ class PyScriptTest:
         ## expected_messages = list(expected_messages)
         js_errors = self._js_errors[:]
 
-        ## for i, msg in enumerate(expected_messages):
-        ##     for j, error in enumerate(js_errors):
-        ##         if msg is not None and error is not None and msg in error.message:
-        ##             # we matched one expected message with an error, remove both
-        ##             expected_messages[i] = None
-        ##             js_errors[i] = None
+        for i, msg in enumerate(expected_messages):
+            for _, error in enumerate(js_errors):
+                if msg is not None and error is not None and msg in error.message:
+                    # we matched one expected message with an error, remove both
+                    # expected_messages[i] = None
+                    js_errors[i] = None
 
         ## # now expected_messages and js_errors should contain only Nones
         ## expected_messages = [msg for msg in expected_messages if msg is not None]
-        ## js_errors = [err for err in js_errors if err is not None]
+        js_errors = [err for err in js_errors if err is not None]
 
         ## if expected_messages:
         ##     # some of the expected messages were not found
