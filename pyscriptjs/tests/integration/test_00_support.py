@@ -173,6 +173,34 @@ class TestSupport(PyScriptTest):
         # check that errors are cleared
         self.check_js_errors()
 
+    def test_check_js_errors_some_expected_but_others_not(self):
+        doc = """
+        <html>
+          <body>
+            <script>throw new Error('expected 1');</script>
+            <script>throw new Error('NOT expected 2');</script>
+            <script>throw new Error('expected 3');</script>
+            <script>throw new Error('NOT expected 4');</script>
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        self.goto("mytest.html")
+        with pytest.raises(JsErrors) as exc:
+            self.check_js_errors("expected 1", "expected 3")
+        #
+        msg = str(exc.value)
+        expected = textwrap.dedent(
+            """
+            JS errors found: 2
+            Error: NOT expected 2
+                at http://fake_server/mytest.html:.*
+            Error: NOT expected 4
+                at http://fake_server/mytest.html:.*
+            """
+        ).strip()
+        assert re.search(expected, msg)
+
     def test_clear_js_errors(self):
         doc = """
         <html>
