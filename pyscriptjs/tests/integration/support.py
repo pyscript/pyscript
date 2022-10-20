@@ -28,9 +28,9 @@ class PyScriptTest:
       - self.console collects all the JS console.* messages. Look at the doc
         of ConsoleMessageCollection for more details.
 
-      - self.check_errors() checks that no JS errors have been thrown
+      - self.check_js_errors() checks that no JS errors have been thrown
 
-      - after each test, self.check_errors() is automatically run to ensure
+      - after each test, self.check_js_errors() is automatically run to ensure
         that no JS error passes uncaught.
 
       - self.wait_for_console waits until the specified message appears in the
@@ -105,22 +105,22 @@ class PyScriptTest:
         page.set_default_timeout(60000)
 
         self.console = ConsoleMessageCollection(self.logger)
-        self._page_errors = []
+        self._js_errors = []
         page.on("console", self.console.add_message)
         page.on("pageerror", self._on_pageerror)
 
     def teardown_method(self):
-        # we call check_errors on teardown: this means that if there are still
+        # we call check_js_errors on teardown: this means that if there are still
         # non-cleared errors, the test will fail. If you expect errors in your
         # page and they should not cause the test to fail, you should call
-        # self.check_errors() in the test itself.
-        self.check_errors()
+        # self.check_js_errors() in the test itself.
+        self.check_js_errors()
 
     def _on_pageerror(self, error):
         self.logger.log("JS exception", error.stack, color="red")
-        self._page_errors.append(error)
+        self._js_errors.append(error)
 
-    def check_errors(self):
+    def check_js_errors(self):
         """
         Check whether JS errors were reported.
 
@@ -128,24 +128,24 @@ class PyScriptTest:
         If it finds multiple JS errors, raise JsMultipleErrors.
 
         Upon return, all the errors are cleared, so a subsequent call to
-        check_errors will not raise, unless NEW JS errors have been reported
+        check_js_errors will not raise, unless NEW JS errors have been reported
         in the meantime.
         """
         exc = None
-        if len(self._page_errors) == 1:
+        if len(self._js_errors) == 1:
             # if there is a single error, wrap it
-            exc = JsError(self._page_errors[0])
-        elif len(self._page_errors) >= 2:
-            exc = JsMultipleErrors(self._page_errors)
-        self._page_errors = []
+            exc = JsError(self._js_errors[0])
+        elif len(self._js_errors) >= 2:
+            exc = JsMultipleErrors(self._js_errors)
+        self._js_errors = []
         if exc:
             raise exc
 
-    def clear_errors(self):
+    def clear_js_errors(self):
         """
         Clear all JS errors.
         """
-        self._page_errors = []
+        self._js_errors = []
 
     def writefile(self, filename, content):
         """
@@ -160,7 +160,7 @@ class PyScriptTest:
         url = f"{self.fake_server}/{path}"
         self.page.goto(url, timeout=0)
 
-    def wait_for_console(self, text, *, timeout=None, check_errors=True):
+    def wait_for_console(self, text, *, timeout=None, check_js_errors=True):
         """
         Wait until the given message appear in the console.
 
@@ -171,7 +171,7 @@ class PyScriptTest:
         timeout is expressed in milliseconds. If it's None, it will use
         playwright's own default value, which is 30 seconds).
 
-        If check_errors is True (the default), it also checks that no JS
+        If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
         pred = lambda msg: msg.text == text
@@ -184,24 +184,24 @@ class PyScriptTest:
             # the JsError will shadow the TimeoutError but this is correct,
             # because it's very likely that the console message never appeared
             # precisely because of the exception in JS.
-            if check_errors:
-                self.check_errors()
+            if check_js_errors:
+                self.check_js_errors()
 
-    def wait_for_pyscript(self, *, timeout=None, check_errors=True):
+    def wait_for_pyscript(self, *, timeout=None, check_js_errors=True):
         """
         Wait until pyscript has been fully loaded.
 
         Timeout is expressed in milliseconds. If it's None, it will use
         playwright's own default value, which is 30 seconds).
 
-        If check_errors is True (the default), it also checks that no JS
+        If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
         # this is printed by runtime.ts:Runtime.initialize
         self.wait_for_console(
             "[pyscript/main] PyScript page fully initialized",
             timeout=timeout,
-            check_errors=check_errors,
+            check_js_errors=check_js_errors,
         )
         # We still don't know why this wait is necessary, but without it
         # events aren't being triggered in the tests.

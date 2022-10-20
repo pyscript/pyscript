@@ -75,7 +75,7 @@ class TestSupport(PyScriptTest):
         assert self.console.log.lines == ["my log 1", "my log 2"]
         assert self.console.debug.lines == ["my debug"]
 
-    def test_check_errors(self):
+    def test_check_js_errors(self):
         doc = """
         <html>
           <body>
@@ -86,17 +86,17 @@ class TestSupport(PyScriptTest):
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
         with pytest.raises(JsError) as exc:
-            self.check_errors()
+            self.check_js_errors()
         # check that the exception message contains the error message and the
         # stack trace
         msg = str(exc.value)
         assert "Error: this is an error" in msg
         assert f"at {self.fake_server}/mytest.html" in msg
         #
-        # after a call to check_errors, the errors are cleared
-        self.check_errors()
+        # after a call to check_js_errors, the errors are cleared
+        self.check_js_errors()
 
-    def test_check_errors_multiple(self):
+    def test_check_js_errors_multiple(self):
         doc = """
         <html>
           <body>
@@ -108,14 +108,14 @@ class TestSupport(PyScriptTest):
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
         with pytest.raises(JsMultipleErrors) as exc:
-            self.check_errors()
+            self.check_js_errors()
         assert "error 1" in str(exc.value)
         assert "error 2" in str(exc.value)
         #
         # check that errors are cleared
-        self.check_errors()
+        self.check_js_errors()
 
-    def test_clear_errors(self):
+    def test_clear_js_errors(self):
         doc = """
         <html>
           <body>
@@ -125,10 +125,10 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        self.clear_errors()
-        # self.check_errors does not raise, because the errors have been
+        self.clear_js_errors()
+        # self.check_js_errors does not raise, because the errors have been
         # cleared
-        self.check_errors()
+        self.check_js_errors()
 
     def test_wait_for_console(self):
         """
@@ -182,14 +182,14 @@ class TestSupport(PyScriptTest):
         assert "this is an error" in str(exc.value)
         assert isinstance(exc.value.__context__, sync_api.TimeoutError)
         #
-        # if we use check_errors=False, the error are ignored, but we get the
+        # if we use check_js_errors=False, the error are ignored, but we get the
         # Timeout anyway
         self.goto("mytest.html")
         with pytest.raises(sync_api.TimeoutError):
-            self.wait_for_console("Page loaded!", timeout=200, check_errors=False)
+            self.wait_for_console("Page loaded!", timeout=200, check_js_errors=False)
         # we still got a JsError, so we need to manually clear it, else the
         # test fails at teardown
-        self.clear_errors()
+        self.clear_js_errors()
 
     def test_wait_for_console_exception_2(self):
         """
@@ -214,9 +214,9 @@ class TestSupport(PyScriptTest):
             self.wait_for_console("Page loaded!", timeout=200)
         assert "this is an error" in str(exc.value)
         #
-        # with check_errors=False, the Error is ignored and the
+        # with check_js_errors=False, the Error is ignored and the
         # wait_for_console succeeds
         self.goto("mytest.html")
-        self.wait_for_console("Page loaded!", timeout=200, check_errors=False)
+        self.wait_for_console("Page loaded!", timeout=200, check_js_errors=False)
         # clear the errors, else the test fails at teardown
-        self.clear_errors()
+        self.clear_js_errors()
