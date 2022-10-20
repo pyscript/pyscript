@@ -14,9 +14,9 @@ module.exports = {
     },
     verbose: true,
     testEnvironmentOptions: {
-        url: "http://localhost"
+        url: 'http://localhost',
     },
     moduleNameMapper: {
-      "^[./a-zA-Z0-9$_-]+\\.py$": "<rootDir>/__mocks__/fileMock.js",
-    }
-  };
+        '^[./a-zA-Z0-9$_-]+\\.py$': '<rootDir>/__mocks__/fileMock.js',
+    },
+};
