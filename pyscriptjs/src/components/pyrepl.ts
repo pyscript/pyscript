@@ -25,8 +25,9 @@ export function make_PyRepl(runtime: Runtime) {
 
     let initialTheme: string;
     function getEditorTheme(el: BaseEvalElement): string {
-        if( !initialTheme ){
-            initialTheme = el.getAttribute('theme') || "";
+        const theme = getAttribute(el, 'theme');
+        if( !initialTheme && theme){
+            initialTheme = theme;
         }
         return initialTheme;
     }
