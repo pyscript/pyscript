@@ -1,10 +1,13 @@
 import { Runtime } from './runtime';
 import { getLastPath } from './utils';
 import { getLogger } from './logger';
-import type { PyodideInterface } from 'pyodide';
+import type { loadPyodide as loadPyodideDeclaration, PyodideInterface } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
+import type { AppConfig } from './pyconfig';
+
+declare const loadPyodide: typeof loadPyodideDeclaration;
 
 const logger = getLogger('pyscript/pyodide');
 
@@ -16,7 +19,7 @@ export class PyodideRuntime extends Runtime {
     globals: any;
 
     constructor(
-        config,
+        config: AppConfig,
         src = 'https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js',
         name = 'pyodide-default',
         lang = 'python',
@@ -46,8 +49,6 @@ export class PyodideRuntime extends Runtime {
      */
     async loadInterpreter(): Promise<void> {
         logger.info('Loading pyodide');
-        // eslint-disable-next-line
-        // @ts-ignore
         this.interpreter = await loadPyodide({
             stdout: console.log,
             stderr: console.log,
@@ -60,7 +61,7 @@ export class PyodideRuntime extends Runtime {
         await this.loadPackage('micropip');
 
         logger.info('importing pyscript.py');
-        await this.run(pyscript);
+        await this.run(pyscript as string);
 
         logger.info('pyodide loaded and initialized');
     }
