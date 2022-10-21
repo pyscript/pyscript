@@ -1,6 +1,7 @@
 import { guidGenerator, addClasses, removeClasses } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
+import { pyExec } from '../pyexec';
 
 const logger = getLogger('pyscript/base');
 
@@ -82,12 +83,7 @@ export class BaseEvalElement extends HTMLElement {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
 
-            try {
-                <string>await runtime.run(`set_current_display_target(target_id="${this.id}")`);
-                <string>await runtime.run(source);
-            } finally {
-                <string>await runtime.run(`set_current_display_target(target_id=None)`);
-            }
+            await pyExec(runtime, source, this.id);
 
             removeClasses(this.errorElement, ['py-error']);
             this.postEvaluate();
