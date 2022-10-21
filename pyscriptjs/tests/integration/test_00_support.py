@@ -102,6 +102,9 @@ class TestSupport(PyScriptTest):
         #
         # after a call to check_js_errors, the errors are cleared
         self.check_js_errors()
+        #
+        # JS exceptions are also available in self.console.js_error
+        assert self.console.js_error.lines[0].startswith("Error: this is an error")
 
     def test_check_js_errors_expected(self):
         doc = """

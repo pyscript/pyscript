@@ -106,7 +106,7 @@ class PyScriptTest:
 
         self.console = ConsoleMessageCollection(self.logger)
         self._js_errors = []
-        page.on("console", self.console.add_message)
+        page.on("console", self._on_console)
         page.on("pageerror", self._on_pageerror)
 
     def teardown_method(self):
@@ -116,8 +116,11 @@ class PyScriptTest:
         # self.check_js_errors() in the test itself.
         self.check_js_errors()
 
+    def _on_console(self, msg):
+        self.console.add_message(msg.type, msg.text)
+
     def _on_pageerror(self, error):
-        self.logger.log("JS exception", error.stack, color="red")
+        self.console.add_message("js_error", error.stack)
         self._js_errors.append(error)
 
     def check_js_errors(self, *expected_messages):
@@ -336,8 +339,16 @@ class ConsoleMessageCollection:
       console.error.*
       console.warning.*
 
+      console.js_error.*    this is a special category which does not exist in the
+                            browser: it prints uncaught JS exceptions
+
       console.all.*         same as above, but considering all messages, no filters
     """
+
+    @dataclass
+    class Message:
+        type: str  # 'log', 'info', 'debug', etc.
+        text: str
 
     class View:
         """
@@ -366,8 +377,9 @@ class ConsoleMessageCollection:
             return "\n".join(self.lines)
 
     _COLORS = {
-        "error": "red",
         "warning": "brown",
+        "error": "darkred",
+        "js_error": "red",
     }
 
     def __init__(self, logger):
@@ -379,10 +391,12 @@ class ConsoleMessageCollection:
         self.info = self.View(self, "info")
         self.error = self.View(self, "error")
         self.warning = self.View(self, "warning")
+        self.js_error = self.View(self, "js_error")
 
-    def add_message(self, msg):
-        # log the message: pytest will capute the output and display the
+    def add_message(self, type, text):
+        # log the message: pytest will capture the output and display the
         # messages if the test fails.
+        msg = self.Message(type=type, text=text)
         category = f"console.{msg.type}"
         color = self._COLORS.get(msg.type)
         self.logger.log(category, msg.text, color=color)
@@ -418,7 +432,7 @@ class Logger:
     def log(self, category, text, *, color=None):
         delta = time.time() - self.start_time
         text = self.colorize_prefix(text, color="teal")
-        line = f"[{delta:6.2f} {category:15}] {text}"
+        line = f"[{delta:6.2f} {category:16}] {text}"
         if color:
             line = Color.set(color, line)
         print(line)
