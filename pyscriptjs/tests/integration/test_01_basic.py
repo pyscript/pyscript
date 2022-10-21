@@ -88,6 +88,14 @@ class TestBasic(PyScriptTest):
             "Caught an error in fetchPaths:\r\n TypeError: Failed to fetch"
         ]
 
+        errorContent = """PyScript: Access to local files
+        (using "Paths:" in &lt;py-config&gt;)
+        is not available when directly opening a HTML file;
+        you must use a webserver to serve the additional files."""
+
+        inner_html = self.page.locator(".py-error").inner_html()
+        assert errorContent in inner_html
+
     def test_packages(self):
         self.pyscript_run(
             """

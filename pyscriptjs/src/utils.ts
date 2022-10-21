@@ -68,7 +68,7 @@ function handleFetchError(e: Error, singleFile: string) {
     //Should we still export full error contents to console?
     console.warn(`Caught an error in fetchPaths:\r\n ${e.toString()}`);
     let errorContent: string;
-    if (e.message.includes('TypeError: Failed to fetch')) {
+    if (e.message.includes('Failed to fetch')) {
         errorContent = `<p>PyScript: Access to local files
         (using "Paths:" in &lt;py-config&gt;)
         is not available when directly opening a HTML file;
