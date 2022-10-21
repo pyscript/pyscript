@@ -33,16 +33,6 @@ export class PyScript extends BaseEvalElement {
             if (!this.hasAttribute('output-mode')) {
                 this.setAttribute('output-mode', 'append');
             }
-        } else {
-
-            // Let's check if we have an id first and create one if not
-            this.outputElement = document.createElement('div');
-            const exec_id = this.getAttribute('exec-id');
-            this.outputElement.id = this.id + (exec_id ? '-' + exec_id : '');
-
-            // add the output div id if there's not output pre-defined
-            mainDiv.appendChild(this.outputElement);
-            this.errorElement = this.outputElement;
         }
 
         this.appendChild(mainDiv);
