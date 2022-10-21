@@ -75,6 +75,19 @@ class TestBasic(PyScriptTest):
             "hello from B",
         ]
 
+    def test_paths_that_do_not_exist(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                paths = ["./f.py"]
+            </py-config>
+            """
+        )
+        assert self.console.error.lines == ["Failed to load resource: net::ERR_FAILED"]
+        assert self.console.warning.lines == [
+            "Caught an error in fetchPaths:\r\n TypeError: Failed to fetch"
+        ]
+
     def test_packages(self):
         self.pyscript_run(
             """
