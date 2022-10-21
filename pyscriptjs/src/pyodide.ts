@@ -92,7 +92,8 @@ export class PyodideRuntime extends Runtime {
     async loadFromFile(path: string): Promise<void> {
         const filename = getLastPath(path);
         try {
-            const buffer = await fetch(path).then(res => res.arrayBuffer());
+            const response = await fetch(path);
+            const buffer = await response.arrayBuffer();
             const data = new Uint8Array(buffer);
             const stream = this.interpreter.FS.open(filename, 'w');
             this.interpreter.FS.write(stream, data, 0, data.length, 0);
