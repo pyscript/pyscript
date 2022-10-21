@@ -334,8 +334,7 @@ class ConsoleMessageCollection:
 
     Usage:
 
-      console.log.messages: list of ConsoleMessage with type==
-    'log'
+      console.log.messages: list of ConsoleMessage with type=='log'
       console.log.lines:    list of strings
       console.log.text:     the whole text as single string
 
