@@ -1,5 +1,5 @@
 import { getAttribute, addClasses, htmlDecode, ensureUniqueId } from '../utils';
-import { getLogger } from '../logger'
+import { getLogger } from '../logger';
 import type { Runtime } from '../runtime';
 
 const logger = getLogger('py-button');
@@ -18,14 +18,14 @@ export function make_PyButton(runtime: Runtime) {
 
             this.defaultClass = ['py-button'];
 
-            const label = getAttribute(this, "label");
+            const label = getAttribute(this, 'label');
             if (label) {
                 this.label = label;
             }
 
             // Styling does the same thing as class in normal HTML. Using the name "class" makes the style to malfunction
-            const styling = getAttribute(this, "styling");
-            if ( styling ) {
+            const styling = getAttribute(this, 'styling');
+            if (styling) {
                 const klass = styling.trim();
                 if (klass === '') {
                     this.class = this.defaultClass;
@@ -43,7 +43,7 @@ export function make_PyButton(runtime: Runtime) {
 
         async connectedCallback() {
             ensureUniqueId(this);
-            this.code = htmlDecode(this.innerHTML) || "";
+            this.code = htmlDecode(this.innerHTML) || '';
             this.mount_name = this.id.split('-').join('_');
             this.innerHTML = '';
 

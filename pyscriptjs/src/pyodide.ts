@@ -80,9 +80,7 @@ export class PyodideRuntime extends Runtime {
 
     async loadPackage(names: string | string[]): Promise<void> {
         logger.info(`pyodide.loadPackage: ${names.toString()}`);
-        await this.interpreter.loadPackage(names,
-                                           logger.info.bind(logger),
-                                           logger.info.bind(logger));
+        await this.interpreter.loadPackage(names, logger.info.bind(logger), logger.info.bind(logger));
     }
 
     async installPackage(package_name: string | string[]): Promise<void> {
@@ -97,15 +95,13 @@ export class PyodideRuntime extends Runtime {
     async loadFromFile(path: string): Promise<void> {
         const pathArr = path.split('/');
         const filename = pathArr.pop();
-        for(let i=0; i<pathArr.length; i++)
-        {
-            const eachPath = pathArr.slice(0, i+1).join('/');
-            const {exists, parentExists} = this.interpreter.FS.analyzePath(eachPath);
+        for (let i = 0; i < pathArr.length; i++) {
+            const eachPath = pathArr.slice(0, i + 1).join('/');
+            const { exists, parentExists } = this.interpreter.FS.analyzePath(eachPath);
             if (!parentExists) {
-                throw new Error(`'INTERNAL ERROR! cannot create ${path}, this should never happen'`)
+                throw new Error(`'INTERNAL ERROR! cannot create ${path}, this should never happen'`);
             }
-            if (!exists)
-            {
+            if (!exists) {
                 this.interpreter.FS.mkdir(eachPath);
             }
         }

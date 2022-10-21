@@ -4,10 +4,8 @@ import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/runtime');
 
-export const version = "<<VERSION>>";
+export const version = '<<VERSION>>';
 export type RuntimeInterpreter = PyodideInterface | null;
-
-
 
 /*
 Runtime class is a super class that all different runtimes must respect
@@ -65,8 +63,8 @@ export abstract class Runtime extends Object {
      * */
     async runButDontRaise(code: string): Promise<unknown> {
         return this.run(code).catch(err => {
-            const error = err as Error
-            logger.error("Error:", error);
+            const error = err as Error;
+            logger.error('Error:', error);
         });
     }
 

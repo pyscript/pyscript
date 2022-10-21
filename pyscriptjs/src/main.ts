@@ -7,17 +7,15 @@ import { make_PyScript, initHandlers, mountElements } from './components/pyscrip
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
-import { handleFetchError, showError, globalExport } from './utils'
+import { handleFetchError, showError, globalExport } from './utils';
 import { createCustomElements } from './components/elements';
 
-type ImportType = { [key: string]: unknown }
+type ImportType = { [key: string]: unknown };
 type ImportMapType = {
-    imports: ImportType | null
-}
-
+    imports: ImportType | null;
+};
 
 const logger = getLogger('pyscript/main');
-
 
 /* High-level overview of the lifecycle of a PyScript App:
 
@@ -51,9 +49,7 @@ More concretely:
   - PyScriptApp.afterRuntimeLoad() implements all the points >= 5.
 */
 
-
 class PyScriptApp {
-
     config: AppConfig;
     loader: PyLoader;
     runtime: Runtime;
@@ -75,15 +71,16 @@ class PyScriptApp {
         logger.info('searching for <py-config>');
         const elements = document.getElementsByTagName('py-config');
         let el: Element | null = null;
-        if (elements.length > 0)
-            el = elements[0];
+        if (elements.length > 0) el = elements[0];
         if (elements.length >= 2) {
             // XXX: ideally, I would like to have a way to raise "fatal
             // errors" and stop the computation, but currently our life cycle
             // is too messy to implement it reliably. We might want to revisit
             // this once it's in a better shape.
-            showError("Multiple &lt;py-config&gt; tags detected. Only the first is " +
-                      "going to be parsed, all the others will be ignored");
+            showError(
+                'Multiple &lt;py-config&gt; tags detected. Only the first is ' +
+                    'going to be parsed, all the others will be ignored',
+            );
         }
         this.config = loadConfigFromElement(el);
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
@@ -102,17 +99,15 @@ class PyScriptApp {
     loadRuntime() {
         logger.info('Initializing runtime');
         if (this.config.runtimes.length == 0) {
-            showError("Fatal error: config.runtimes is empty");
+            showError('Fatal error: config.runtimes is empty');
             return;
         }
 
         if (this.config.runtimes.length > 1) {
-            showError("Multiple runtimes are not supported yet. " +
-                      "Only the first will be used");
+            showError('Multiple runtimes are not supported yet. ' + 'Only the first will be used');
         }
         const runtime_cfg = this.config.runtimes[0];
-        this.runtime = new PyodideRuntime(this.config, runtime_cfg.src,
-                                                    runtime_cfg.name, runtime_cfg.lang);
+        this.runtime = new PyodideRuntime(this.config, runtime_cfg.src, runtime_cfg.name, runtime_cfg.lang);
         this.loader.log(`Downloading ${runtime_cfg.name}...`);
         const script = document.createElement('script'); // create a script DOM node
         script.src = this.runtime.src;
@@ -160,13 +155,12 @@ class PyScriptApp {
         logger.info('PyScript page fully initialized');
     }
 
-
     // lifecycle (6)
     async setupVirtualEnv(runtime: Runtime): Promise<void> {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
-        logger.info("Packages to install: ", this.config.packages);
+        logger.info('Packages to install: ', this.config.packages);
         await runtime.installPackage(this.config.packages);
         await this.fetchPaths(runtime);
     }
@@ -178,7 +172,7 @@ class PyScriptApp {
         // initialized. But we could easily do it in JS in parallel with the
         // download/startup of pyodide.
         const paths = this.config.paths;
-        logger.info("Paths to fetch: ", paths)
+        logger.info('Paths to fetch: ', paths);
         for (const singleFile of paths) {
             logger.info(`  fetching path: ${singleFile}`);
             try {
@@ -188,7 +182,7 @@ class PyScriptApp {
                 handleFetchError(<Error>e, singleFile);
             }
         }
-        logger.info("All paths fetched");
+        logger.info('All paths fetched');
     }
 
     // lifecycle (7)
@@ -239,7 +233,6 @@ class PyScriptApp {
             }
         }
     }
-
 }
 
 function pyscript_get_config() {
@@ -251,4 +244,4 @@ globalExport('pyscript_get_config', pyscript_get_config);
 const globalApp = new PyScriptApp();
 globalApp.main();
 
-export const runtime = globalApp.runtime
+export const runtime = globalApp.runtime;

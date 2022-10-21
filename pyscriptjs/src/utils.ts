@@ -11,7 +11,7 @@ export function removeClasses(element: HTMLElement, classes: string[]) {
 }
 
 export function escape(str: string): string {
-    return str.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 export function htmlDecode(input: string): string | null {
@@ -36,8 +36,7 @@ export function ltrim(code: string): string {
 
 let _uniqueIdCounter = 0;
 export function ensureUniqueId(el: HTMLElement) {
-    if (el.id === "")
-        el.id = `py-internal-${_uniqueIdCounter++}`;
+    if (el.id === '') el.id = `py-internal-${_uniqueIdCounter++}`;
 }
 
 /*
@@ -48,7 +47,7 @@ export function ensureUniqueId(el: HTMLElement) {
 export function showError(msg: string): void {
     const warning = document.createElement('div');
     // XXX: the style should go to css instead of here probably
-    warning.className = "py-error";
+    warning.className = 'py-error';
     warning.style.backgroundColor = 'LightCoral';
     warning.style.alignContent = 'center';
     warning.style.margin = '4px';
@@ -83,7 +82,7 @@ export function handleFetchError(e: Error, singleFile: string) {
 
 export function readTextFromPath(path: string) {
     const request = new XMLHttpRequest();
-    request.open("GET", path, false);
+    request.open('GET', path, false);
     request.send();
     const returnValue = request.responseText;
 
@@ -99,14 +98,14 @@ export function globalExport(name: string, obj: object) {
     // visible everywhere. Should be used very sparingly!
 
     // `window` in the browser, `global` in node
-    const _global = (window || global);
+    const _global = window || global;
     _global[name] = obj;
 }
 
-export function getAttribute(el:Element, attr:string ):string | null {
-    if( el.hasAttribute( attr ) ){
+export function getAttribute(el: Element, attr: string): string | null {
+    if (el.hasAttribute(attr)) {
         const value = el.getAttribute(attr);
-        if( value ){
+        if (value) {
             return value;
         }
     }

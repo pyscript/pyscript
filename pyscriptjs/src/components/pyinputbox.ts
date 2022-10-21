@@ -1,5 +1,5 @@
 import { getAttribute, addClasses, htmlDecode, ensureUniqueId } from '../utils';
-import { getLogger } from '../logger'
+import { getLogger } from '../logger';
 import type { Runtime } from '../runtime';
 
 const logger = getLogger('py-inputbox');
@@ -14,7 +14,7 @@ export function make_PyInputBox(runtime: Runtime) {
         constructor() {
             super();
 
-            const label = getAttribute( this, "label");
+            const label = getAttribute(this, 'label');
             if (label) {
                 this.label = label;
             }

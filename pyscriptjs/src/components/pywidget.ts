@@ -1,9 +1,8 @@
 import type { Runtime } from '../runtime';
-import type {PyProxy} from "pyodide"
+import type { PyProxy } from 'pyodide';
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-register-widget');
-
 
 function createWidget(runtime: Runtime, name: string, code: string, klass: string) {
     class CustomWidget extends HTMLElement {
@@ -65,14 +64,14 @@ export function make_PyWidget(runtime: Runtime) {
             this.wrapper = document.createElement('slot');
             this.shadow.appendChild(this.wrapper);
 
-            this.addAttributes('src','name','klass');
+            this.addAttributes('src', 'name', 'klass');
         }
 
-        addAttributes(...attrs:string[]){
-            for (const each of attrs){
-                const property = each === "src" ? "source" : each;
+        addAttributes(...attrs: string[]) {
+            for (const each of attrs) {
+                const property = each === 'src' ? 'source' : each;
                 if (this.hasAttribute(each)) {
-                  this[property]=this.getAttribute(each);
+                    this[property] = this.getAttribute(each);
                 }
             }
         }
