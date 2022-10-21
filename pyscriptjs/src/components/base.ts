@@ -74,39 +74,6 @@ export class BaseEvalElement extends HTMLElement {
         return this.code;
     }
 
-    protected async _register_esm(runtime: Runtime): Promise<void> {
-        const imports: { [key: string]: unknown } = {};
-        const nodes = document.querySelectorAll("script[type='importmap']");
-        const importmaps: Array<any> = [];
-        nodes.forEach( node =>
-            {
-                let importmap;
-                try {
-                    importmap = JSON.parse(node.textContent);
-                    if (importmap?.imports == null) return;
-                    importmaps.push(importmap);
-                } catch {
-                    return;
-                }
-            }
-        )
-        for (const importmap of importmaps){
-            for (const [name, url] of Object.entries(importmap.imports)) {
-                if (typeof name != 'string' || typeof url != 'string') continue;
-
-                try {
-                    // XXX: pyodide doesn't like Module(), failing with
-                    // "can't read 'name' of undefined" at import time
-                    imports[name] = { ...(await import(url)) };
-                } catch {
-                    logger.error(`failed to fetch '${url}' for '${name}'`);
-                }
-            }
-        }
-
-        runtime.registerJsModule('esm', imports);
-    }
-
     async evaluate(runtime: Runtime): Promise<void> {
         this.preEvaluate();
 
@@ -114,7 +81,6 @@ export class BaseEvalElement extends HTMLElement {
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
-            this._register_esm(runtime);
 
             try {
                 <string>await runtime.run(`set_current_display_target(target_id="${this.id}")`);

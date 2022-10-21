@@ -64,36 +64,6 @@ export class PyScript extends BaseEvalElement {
         }
     }
 
-    protected async _register_esm(runtime: Runtime): Promise<void> {
-        for (const node of document.querySelectorAll("script[type='importmap']")) {
-            const importmap = (() => {
-                try {
-                    return JSON.parse(node.textContent);
-                } catch {
-                    return null;
-                }
-            })();
-
-            if (importmap?.imports == null) continue;
-
-            for (const [name, url] of Object.entries(importmap.imports)) {
-                if (typeof name != 'string' || typeof url != 'string') continue;
-
-                let exports: object;
-                try {
-                    // XXX: pyodide doesn't like Module(), failing with
-                    // "can't read 'name' of undefined" at import time
-                    exports = { ...(await import(url)) };
-                } catch {
-                    logger.warn(`failed to fetch '${url}' for '${name}'`);
-                    continue;
-                }
-
-                runtime.registerJsModule(name, exports);
-            }
-        }
-    }
-
     getSourceFromElement(): string {
         return htmlDecode(this.code);
     }

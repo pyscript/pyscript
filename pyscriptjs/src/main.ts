@@ -194,11 +194,55 @@ class PyScriptApp {
 
     // lifecycle (7)
     executeScripts(runtime: Runtime) {
+        this.register_importmap(runtime);
         for (const script of scriptsQueue_) {
             void script.evaluate(runtime);
         }
         scriptsQueue.set([]);
     }
+
+    async register_importmap(runtime: Runtime) {
+        // make importmap ES modules available from python using 'import'.
+        //
+        // XXX: this code can probably be improved as it hides too many
+        // errors. Moreover at the time of writing we don't really have a test
+        // for it and this functionality is used only by the d3 example. We
+        // might want to rethink the whole approach at some point. E.g., maybe
+        // we should move it to py-config?
+        //
+        // Moreover, it's also wrong because it's async and currently we don't
+        // await the module to be fully registered before executing the code
+        // inside py-script. It's also unclear whether we want to wait or not
+        // (or maybe only wait only if we do an actual 'import'?)
+        for (const node of document.querySelectorAll("script[type='importmap']")) {
+            const importmap = (() => {
+                try {
+                    return JSON.parse(node.textContent);
+                } catch {
+                    return null;
+                }
+            })();
+
+            if (importmap?.imports == null) continue;
+
+            for (const [name, url] of Object.entries(importmap.imports)) {
+                if (typeof name != 'string' || typeof url != 'string') continue;
+
+                let exports: object;
+                try {
+                    // XXX: pyodide doesn't like Module(), failing with
+                    // "can't read 'name' of undefined" at import time
+                    exports = { ...(await import(url)) };
+                } catch {
+                    logger.warn(`failed to fetch '${url}' for '${name}'`);
+                    continue;
+                }
+
+                runtime.registerJsModule(name, exports);
+            }
+        }
+    }
+
 }
 
 function pyscript_get_config() {
