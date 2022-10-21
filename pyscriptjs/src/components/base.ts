@@ -29,11 +29,6 @@ export class BaseEvalElement extends HTMLElement {
         this.setOutputMode("append");
     }
 
-    addToOutput(s: string) {
-        this.outputElement.innerHTML += '<div>' + s + '</div>';
-        this.outputElement.hidden = false;
-    }
-
     setOutputMode(defaultMode = "append") {
         const mode = this.hasAttribute('output-mode') ? this.getAttribute('output-mode') : defaultMode;
 

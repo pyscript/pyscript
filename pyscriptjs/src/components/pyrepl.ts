@@ -147,11 +147,6 @@ export function make_PyRepl(runtime: Runtime) {
             logger.debug(`element ${this.id} successfully connected`);
         }
 
-        addToOutput(s: string): void {
-            this.outputElement.innerHTML += '<div>' + s + '</div>';
-            this.outputElement.hidden = false;
-        }
-
         preEvaluate(): void {
             this.setOutputMode("replace");
             if(!this.appendOutput) {
