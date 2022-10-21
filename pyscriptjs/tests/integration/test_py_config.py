@@ -106,7 +106,7 @@ class TestConfig(PyScriptTest):
 
     def test_invalid_json_config(self):
         # we need wait_for_pyscript=False because we bail out very soon,
-        # before being abel to write 'PyScript page fully initialized'
+        # before being able to write 'PyScript page fully initialized'
         self.pyscript_run(
             """
             <py-config type="json">
@@ -120,7 +120,7 @@ class TestConfig(PyScriptTest):
 
     def test_invalid_toml_config(self):
         # we need wait_for_pyscript=False because we bail out very soon,
-        # before being abel to write 'PyScript page fully initialized'
+        # before being able to write 'PyScript page fully initialized'
         self.pyscript_run(
             """
             <py-config>
