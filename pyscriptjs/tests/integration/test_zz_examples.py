@@ -252,6 +252,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
+    @pytest.mark.xfail(reason="id values in test are fragile if 2 are found in dom")
     def test_repl(self):
         self.goto("examples/repl.html")
         self.wait_for_pyscript()
