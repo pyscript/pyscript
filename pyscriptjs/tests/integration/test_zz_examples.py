@@ -252,6 +252,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
 
+    @pytest.mark.skip("flaky test, see issue #864")
     def test_repl(self):
         self.goto("examples/repl.html")
         self.wait_for_pyscript()
