@@ -66,6 +66,8 @@ function showError(msg: string): void {
 
 function handleFetchError(e: Error, singleFile: string) {
     //Should we still export full error contents to console?
+    // XXX: What happens if I make a typo? i.e. a web server is being used but a file
+    // that doesn't exist is being accessed. We should cover this case as well.
     console.warn(`Caught an error in fetchPaths:\r\n ${e.toString()}`);
     let errorContent: string;
     if (e.message.includes('Failed to fetch')) {
