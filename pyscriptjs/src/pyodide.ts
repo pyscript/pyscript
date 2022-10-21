@@ -91,16 +91,11 @@ export class PyodideRuntime extends Runtime {
 
     async loadFromFile(path: string): Promise<void> {
         const filename = getLastPath(path);
-        try {
-            const response = await fetch(path);
-            const buffer = await response.arrayBuffer();
-            const data = new Uint8Array(buffer);
-            const stream = this.interpreter.FS.open(filename, 'w');
-            this.interpreter.FS.write(stream, data, 0, data.length, 0);
-            this.interpreter.FS.close(stream);
-        }
-        catch (err) {
-            console.warn("PyScript: Access to local files (using 'paths:' in py-config) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
-        }
+        const response = await fetch(path);
+        const buffer = await response.arrayBuffer();
+        const data = new Uint8Array(buffer);
+        const stream = this.interpreter.FS.open(filename, 'w');
+        this.interpreter.FS.write(stream, data, 0, data.length, 0);
+        this.interpreter.FS.close(stream);
     }
 }
