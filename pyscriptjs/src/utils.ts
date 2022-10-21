@@ -10,8 +10,8 @@ export function removeClasses(element: HTMLElement, classes: string[]) {
     }
 }
 
-export function getLastPath(str: string): string | undefined {
-    return str.split('\\').pop()?.split('/').pop();
+export function getLastPath(str: string): string {
+    return str.split('\\').pop().split('/').pop();
 }
 
 export function escape(str: string): string {
