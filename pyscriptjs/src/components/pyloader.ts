@@ -4,7 +4,7 @@ import { getLogger } from '../logger';
 const logger = getLogger('py-loader');
 
 export class PyLoader extends BaseEvalElement {
-    widths: Array<string>;
+    widths: string[];
     label: string;
     mount_name: string;
     details: HTMLElement;

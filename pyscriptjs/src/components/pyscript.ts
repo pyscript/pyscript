@@ -2,7 +2,7 @@ import {
     addToScriptsQueue,
 } from '../stores';
 
-import { addClasses, htmlDecode } from '../utils';
+import { getAttribute, addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
@@ -26,16 +26,25 @@ export class PyScript extends BaseEvalElement {
         addClasses(mainDiv, ['output']);
         // add Editor to main PyScript div
 
-        if (this.hasAttribute('output')) {
-            this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
+        const output = getAttribute( this, "output");
+        if (output) {
+            const el = document.getElementById(output);
+            if( el ){
+                this.errorElement = el;
+                this.outputElement = el;
+            }
 
             // in this case, the default output-mode is append, if hasn't been specified
             if (!this.hasAttribute('output-mode')) {
                 this.setAttribute('output-mode', 'append');
             }
         } else {
-            if (this.hasAttribute('std-out')) {
-                this.outputElement = document.getElementById(this.getAttribute('std-out'));
+            const stdOut = getAttribute( this, "std-out");
+            if (stdOut) {
+                const el = document.getElementById( stdOut );
+                if( el){
+                    this.outputElement = el
+                }
             } else {
                 // In this case neither output or std-out have been provided so we need
                 // to create a new output div to output to
@@ -49,8 +58,14 @@ export class PyScript extends BaseEvalElement {
                 mainDiv.appendChild(this.outputElement);
             }
 
-            if (this.hasAttribute('std-err')) {
-                this.errorElement = document.getElementById(this.getAttribute('std-err'));
+            const stdErr = getAttribute( this, "std-err");
+            if ( stdErr ) {
+                const el = document.getElementById( stdErr );
+                if( el ){
+                    this.errorElement = el;
+                }else{
+                    this.errorElement = this.outputElement;
+                }
             } else {
                 this.errorElement = this.outputElement;
             }
