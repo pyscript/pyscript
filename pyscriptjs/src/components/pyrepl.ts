@@ -137,9 +137,7 @@ export function make_PyRepl(runtime: Runtime) {
                     mainDiv.appendChild(this.outputElement);
                 }
 
-                this.errorElement = this.hasAttribute('std-err')
-                    ? document.getElementById(this.getAttribute('std-err'))
-                    : this.outputElement;
+                this.errorElement = this.outputElement;
             }
 
             this.appendChild(mainDiv);
@@ -185,7 +183,6 @@ export function make_PyRepl(runtime: Runtime) {
 
                 addReplAttribute('output');
                 addReplAttribute('std-out');
-                addReplAttribute('std-err');
 
                 newPyRepl.setAttribute('exec-id', nextExecId.toString());
                 this.parentElement.appendChild(newPyRepl);

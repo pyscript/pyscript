@@ -49,11 +49,7 @@ export class PyScript extends BaseEvalElement {
                 mainDiv.appendChild(this.outputElement);
             }
 
-            if (this.hasAttribute('std-err')) {
-                this.errorElement = document.getElementById(this.getAttribute('std-err'));
-            } else {
-                this.errorElement = this.outputElement;
-            }
+            this.errorElement = this.outputElement;
         }
 
         this.appendChild(mainDiv);

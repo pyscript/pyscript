@@ -43,16 +43,6 @@ describe('PyScript', () => {
     expect(instance.outputElement.getAttribute('id')).toBe("std-out")
   })
 
-  it('confirm that std-err id element sets errorElement', async () => {
-    expect(instance.outputElement).toBe(undefined);
-
-    instance.setAttribute('id', 'std-err')
-    instance.connectedCallback();
-
-    // We should have an errorElement
-    expect(instance.errorElement.getAttribute('id')).toBe("std-err")
-  })
-
   it('test output attribute path', async () => {
     expect(instance.outputElement).toBe(undefined);
     expect(instance.errorElement).toBe(undefined)
