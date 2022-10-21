@@ -156,15 +156,20 @@ class PyScriptTest:
                     expected_messages[i] = None
                     js_errors[j] = None
 
-        # now expected_messages and js_errors should contain only Nones
+        # if everything is find, now expected_messages and js_errors contains
+        # only Nones. If they contain non-None elements, it means that we
+        # either have messages which are expected-but-not-found or errors
+        # which are found-but-not-expected.
         expected_messages = [msg for msg in expected_messages if msg is not None]
         js_errors = [err for err in js_errors if err is not None]
         self.clear_js_errors()
 
         if expected_messages:
+            # expected-but-not-found
             raise JsErrorsDidNotRaise(expected_messages, js_errors)
 
         if js_errors:
+            # found-but-not-expected
             raise JsErrors(js_errors)
 
     def clear_js_errors(self):
