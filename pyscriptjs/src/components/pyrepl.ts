@@ -123,19 +123,14 @@ export function make_PyRepl(runtime: Runtime) {
             if (this.hasAttribute('output')) {
                 this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
             } else {
-                if (this.hasAttribute('std-out')) {
-                    this.outputElement = document.getElementById(this.getAttribute('std-out'));
-                } else {
-                    // In this case neither output or std-out have been provided so we need
-                    // to create a new output div to output to
-                    this.outputElement = document.createElement('div');
-                    this.outputElement.classList.add('output');
-                    this.outputElement.hidden = true;
-                    this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
+                // to create a new output div to output to
+                this.outputElement = document.createElement('div');
+                this.outputElement.classList.add('output');
+                this.outputElement.hidden = true;
+                this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
 
-                    // add the output div id if there's not output pre-defined
-                    mainDiv.appendChild(this.outputElement);
-                }
+                // add the output div id if there's not output pre-defined
+                mainDiv.appendChild(this.outputElement);
 
                 this.errorElement = this.outputElement;
             }
@@ -182,7 +177,6 @@ export function make_PyRepl(runtime: Runtime) {
                 };
 
                 addReplAttribute('output');
-                addReplAttribute('std-out');
 
                 newPyRepl.setAttribute('exec-id', nextExecId.toString());
                 this.parentElement.appendChild(newPyRepl);
