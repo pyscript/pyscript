@@ -20,26 +20,24 @@ export function make_PyScript(runtime: Runtime) {
 
         async connectedCallback() {
             ensureUniqueId(this);
-            const pySrc = this.getPySrc();
+            const pySrc = await this.getPySrc();
             this.innerHTML = '';
             await pyExec(runtime, pySrc, this);
         }
 
-        getPySrc(): string {
+        async getPySrc(): Promise<string> {
             if (this.hasAttribute('src')) {
-                throw new Error('implement me');
+                // XXX: what happens if the fetch() fails?
+                // We should handle the case correctly, but in my defense
+                // this case was broken also before the refactoring. FIXME!
+                const url = this.getAttribute('src');
+                const response = await fetch(url);
+                return await response.text();
             }
             else {
                 return htmlDecode(this.innerHTML);
             }
         }
-        /*
-        async getSourceFromFile(s: string): Promise<string> {
-            const response = await fetch(s);
-            this.code = await response.text();
-            return this.code;
-        }
-        */
     }
 
     return PyScript;

@@ -114,3 +114,15 @@ class TestBasic(PyScriptTest):
             self.PY_COMPLETE,
             "hello world",
         ]
+
+    def test_py_script_src_attribute(self):
+        self.writefile("foo.py", "print('hello from foo')")
+        self.pyscript_run(
+            """
+            <py-script src="foo.py"></py-script>
+            """
+        )
+        assert self.console.log.lines == [
+            self.PY_COMPLETE,
+            "hello from foo",
+        ]
