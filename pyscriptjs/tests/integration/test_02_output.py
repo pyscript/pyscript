@@ -62,6 +62,24 @@ class TestOutput(PyScriptTest):
         lines = tag.inner_text().splitlines()
         assert lines == ["hello", "world"]
 
+    def test_implicit_target_from_a_different_tag(self):
+        self.pyscript_run(
+            """
+                <py-script id="py1">
+                    def say_hello():
+                        display('hello')
+                </py-script>
+
+                <py-script id="py2">
+                    say_hello()
+                </py-script>
+            """
+        )
+        py1 = self.page.locator("#py1")
+        py2 = self.page.locator("#py2")
+        assert py1.inner_text() == ""
+        assert py2.inner_text() == "hello"
+
     def test_no_implicit_target(self):
         self.pyscript_run(
             """

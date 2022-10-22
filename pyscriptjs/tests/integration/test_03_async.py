@@ -1,5 +1,3 @@
-import re
-
 from .support import PyScriptTest
 
 
@@ -36,22 +34,6 @@ class TestAsync(PyScriptTest):
             "B 2",
             "async tadone",
         ]
-
-    def test_multiple_async_display(self):
-        self.pyscript_run(
-            """
-                <py-script id="py1">
-                def say_hello():
-                    display('hello')
-                </py-script>
-                <py-script id="py2">
-                    say_hello()
-                </py-script>
-            """
-        )
-        inner_html = self.page.content()
-        pattern = r'<div id="py2-2">hello</div>'
-        assert re.search(pattern, inner_html)
 
     def test_multiple_async_multiple_display(self):
         self.pyscript_run(
