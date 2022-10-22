@@ -1,7 +1,6 @@
-import { BaseEvalElement } from './base';
 import { addClasses, htmlDecode } from '../utils';
 
-export class PyTitle extends BaseEvalElement {
+export class PyTitle extends HTMLElement {
     widths: string[];
     label: string;
     mount_name: string;
