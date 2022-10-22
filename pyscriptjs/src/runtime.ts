@@ -35,7 +35,7 @@ export abstract class Runtime extends Object {
     /**
      * global symbols table for the underlying interpreter.
      * */
-    abstract globals: any;
+    abstract globals: Map<string, unknown>;
 
     constructor(config: AppConfig) {
         super();
