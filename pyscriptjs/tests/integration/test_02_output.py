@@ -3,7 +3,7 @@ import re
 from .support import PyScriptTest
 
 
-class TestOutuput(PyScriptTest):
+class TestOutput(PyScriptTest):
     def test_simple_display(self):
         self.pyscript_run(
             """
