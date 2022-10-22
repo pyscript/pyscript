@@ -19,6 +19,29 @@ def pytest_addoption(parser):
         action="store_true",
         help="Use a real HTTP server instead of http://fakeserver",
     )
+    parser.addoption(
+        "--dev",
+        action="store_true",
+        help="Automatically open a devtools panel. Implies --headed",
+    )
+
+
+@pytest.fixture(scope="session")
+def browser_type_launch_args(request):
+    """
+    Override the browser_type_launch_args defined by pytest-playwright to
+    support --devtools.
+
+    NOTE: this has been tested with pytest-playwright==0.3.0. It might break
+    with newer versions of it.
+    """
+    if request.config.option.dev:
+        request.config.option.headed = True
+    # this calls the "original" fixture defined by pytest_playwright.py
+    launch_options = request.getfixturevalue("browser_type_launch_args")
+    if request.config.option.dev:
+        launch_options["devtools"] = True
+    return launch_options
 
 
 class HTTPServer(SuperHTTPServer):
