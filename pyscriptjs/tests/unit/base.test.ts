@@ -15,17 +15,6 @@ describe('BaseEvalElement', () => {
         expect(instance).toBeInstanceOf(BaseEvalElement);
     });
 
-    it('addToOutput sets outputElements property correctly', async () => {
-        instance.outputElement = document.createElement('body');
-        instance.addToOutput('Hello, world!');
-
-        expect(instance.outputElement.innerHTML).toBe('<div>Hello, world!</div>');
-        expect(instance.outputElement.hidden).toBe(false);
-
-        instance.addToOutput('Have a good day!');
-        expect(instance.outputElement.innerHTML).toBe('<div>Hello, world!</div><div>Have a good day!</div>');
-    });
-
     it('setOutputMode updates appendOutput property correctly', async () => {
         // Confirm that the default mode is 'append'
         expect(instance.appendOutput).toBe(true);
