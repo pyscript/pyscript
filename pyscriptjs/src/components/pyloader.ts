@@ -1,9 +1,8 @@
-import { BaseEvalElement } from './base';
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-loader');
 
-export class PyLoader extends BaseEvalElement {
+export class PyLoader extends HTMLElement {
     widths: string[];
     label: string;
     mount_name: string;
