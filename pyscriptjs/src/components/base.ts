@@ -1,4 +1,4 @@
-import { ensureUniqueId, addClasses, removeClasses } from '../utils';
+import { ensureUniqueId, addClasses, removeClasses, getAttribute } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 import { pyExecDontHandleErrors } from '../pyexec';
@@ -30,7 +30,7 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     setOutputMode(defaultMode = "append") {
-        const mode = this.hasAttribute('output-mode') ? this.getAttribute('output-mode') : defaultMode;
+        const mode = getAttribute(this,'output-mode') || defaultMode;
 
         switch (mode) {
             case "append":

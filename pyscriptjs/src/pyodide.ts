@@ -1,10 +1,13 @@
 import { Runtime } from './runtime';
 import { getLastPath } from './utils';
 import { getLogger } from './logger';
-import type { PyodideInterface } from 'pyodide';
+import type { loadPyodide as loadPyodideDeclaration, PyodideInterface } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
+import type { AppConfig } from './pyconfig';
+
+declare const loadPyodide: typeof loadPyodideDeclaration;
 
 const logger = getLogger('pyscript/pyodide');
 
@@ -16,7 +19,7 @@ export class PyodideRuntime extends Runtime {
     globals: any;
 
     constructor(
-        config,
+        config: AppConfig,
         src = 'https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js',
         name = 'pyodide-default',
         lang = 'python',
@@ -46,8 +49,6 @@ export class PyodideRuntime extends Runtime {
      */
     async loadInterpreter(): Promise<void> {
         logger.info('Loading pyodide');
-        // eslint-disable-next-line
-        // @ts-ignore
         this.interpreter = await loadPyodide({
             stdout: console.log,
             stderr: console.log,
@@ -60,7 +61,7 @@ export class PyodideRuntime extends Runtime {
         await this.loadPackage('micropip');
 
         logger.info('importing pyscript.py');
-        await this.run(pyscript);
+        await this.run(pyscript as string);
 
         logger.info('pyodide loaded and initialized');
     }
@@ -91,20 +92,11 @@ export class PyodideRuntime extends Runtime {
 
     async loadFromFile(path: string): Promise<void> {
         const filename = getLastPath(path);
-        await this.run(
-            `
-                from pyodide.http import pyfetch
-                from js import console
-
-                try:
-                    response = await pyfetch("${path}")
-                except Exception as err:
-                    console.warn("PyScript: Access to local files (using 'paths:' in py-config) is not available when directly opening a HTML file; you must use a webserver to serve the additional files. See https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062 on starting a simple webserver with Python.")
-                    raise(err)
-                content = await response.bytes()
-                with open("${filename}", "wb") as f:
-                    f.write(content)
-            `,
-        );
+        const response = await fetch(path);
+        const buffer = await response.arrayBuffer();
+        const data = new Uint8Array(buffer);
+        const stream = this.interpreter.FS.open(filename, 'w');
+        this.interpreter.FS.write(stream, data, 0, data.length, 0);
+        this.interpreter.FS.close(stream);
     }
 }

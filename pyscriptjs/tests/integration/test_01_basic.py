@@ -96,6 +96,27 @@ class TestBasic(PyScriptTest):
             "hello from B",
         ]
 
+    def test_paths_that_do_not_exist(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                paths = ["./f.py"]
+            </py-config>
+            """
+        )
+        assert self.console.error.lines == ["Failed to load resource: net::ERR_FAILED"]
+        assert self.console.warning.lines == [
+            "Caught an error in fetchPaths:\r\n TypeError: Failed to fetch"
+        ]
+
+        errorContent = """PyScript: Access to local files
+        (using "Paths:" in &lt;py-config&gt;)
+        is not available when directly opening a HTML file;
+        you must use a webserver to serve the additional files."""
+
+        inner_html = self.page.locator(".py-error").inner_html()
+        assert errorContent in inner_html
+
     def test_packages(self):
         self.pyscript_run(
             """

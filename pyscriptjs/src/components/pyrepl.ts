@@ -5,7 +5,7 @@ import { Compartment, StateCommand } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
-import { addClasses, htmlDecode } from '../utils';
+import { getAttribute, addClasses, htmlDecode } from '../utils';
 import { BaseEvalElement } from './base';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
@@ -25,7 +25,11 @@ export function make_PyRepl(runtime: Runtime) {
 
     let initialTheme: string;
     function getEditorTheme(el: BaseEvalElement): string {
-        return initialTheme || (initialTheme = el.getAttribute('theme'));
+        const theme = getAttribute(el, 'theme');
+        if( !initialTheme && theme){
+            initialTheme = theme;
+        }
+        return initialTheme;
     }
 
     class PyRepl extends BaseEvalElement {
@@ -120,8 +124,13 @@ export function make_PyRepl(runtime: Runtime) {
                 this.setAttribute('root', this.id);
             }
 
-            if (this.hasAttribute('output')) {
-                this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
+            const output = getAttribute(this, "output")
+            if (output) {
+                const el = document.getElementById(output);
+                if(el){
+                    this.errorElement = el;
+                    this.outputElement = el
+                }
             } else {
                 // to create a new output div to output to
                 this.outputElement = document.createElement('div');
@@ -166,20 +175,24 @@ export function make_PyRepl(runtime: Runtime) {
                     this.removeAttribute('auto-generate');
                 }
 
-                if(this.hasAttribute('output-mode')) {
-                    newPyRepl.setAttribute('output-mode', this.getAttribute('output-mode'));
+                const outputMode = getAttribute( this, 'output-mode')
+                if(outputMode) {
+                    newPyRepl.setAttribute('output-mode', outputMode);
                 }
 
                 const addReplAttribute = (attribute: string) => {
-                    if (this.hasAttribute(attribute)) {
-                        newPyRepl.setAttribute(attribute, this.getAttribute(attribute));
+                    const attr = getAttribute( this, attribute)
+                    if(attr) {
+                        newPyRepl.setAttribute(attribute, attr);
                     }
                 };
 
                 addReplAttribute('output');
 
                 newPyRepl.setAttribute('exec-id', nextExecId.toString());
-                this.parentElement.appendChild(newPyRepl);
+                if( this.parentElement ){
+                    this.parentElement.appendChild(newPyRepl);
+                }
             }
         }
 
