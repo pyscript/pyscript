@@ -1,4 +1,4 @@
-import { guidGenerator, addClasses, removeClasses } from '../utils';
+import { ensureUniqueId, addClasses, removeClasses } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
@@ -57,7 +57,7 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     checkId() {
-        if (!this.id) this.id = 'py-' + guidGenerator();
+        ensureUniqueId(this);
     }
 
     getSourceFromElement(): string {

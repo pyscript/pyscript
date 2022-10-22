@@ -40,11 +40,10 @@ function ltrim(code: string): string {
                   : code;
 }
 
-function guidGenerator(): string {
-    const S4 = function (): string {
-        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-    };
-    return S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4();
+let _uniqueIdCounter = 0;
+function ensureUniqueId(el: HTMLElement) {
+    if (el.id === "")
+        el.id = "py-internal-" + _uniqueIdCounter++;
 }
 
 /*
@@ -110,4 +109,5 @@ function globalExport(name: string, obj: any) {
 
 
 
-export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, guidGenerator, showError, handleFetchError, readTextFromPath, inJest, globalExport, };
+export { addClasses, removeClasses, getLastPath, ltrim, htmlDecode, ensureUniqueId,
+         showError, handleFetchError, readTextFromPath, inJest, globalExport, };
