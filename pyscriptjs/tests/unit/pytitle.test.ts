@@ -25,16 +25,14 @@ describe("PyTitle", () => {
   })
 
   it("label renders correctly on the page and updates id", async () => {
-    instance.innerHTML = "Hello, world!"
-    // We need this to test mount_name works properly since connectedCallback
-    // doesn't automatically call checkId (should it?)
-    instance.checkId();
+    instance.innerHTML = "Hello, world!";
+    instance.id = "my-fancy-title";
 
     instance.connectedCallback();
 
     expect(instance.label).toBe("Hello, world!")
     // mount_name should be similar to: py_be025f4c_2150_7f2a_1a85_af92970c2a0e
-    expect(instance.mount_name).toMatch(/py_(\w+_){1,5}/);
+    expect(instance.mount_name).toMatch("my_fancy_title");
     expect(instance.innerHTML).toContain("<h1>Hello, world!</h1>")
   })
 })
