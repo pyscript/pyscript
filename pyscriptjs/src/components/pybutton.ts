@@ -1,17 +1,18 @@
-import { BaseEvalElement } from './base';
-import { getAttribute, addClasses, htmlDecode } from '../utils';
+import { getAttribute, addClasses, htmlDecode, ensureUniqueId } from '../utils';
 import { getLogger } from '../logger'
 import type { Runtime } from '../runtime';
 
 const logger = getLogger('py-button');
 
 export function make_PyButton(runtime: Runtime) {
-    class PyButton extends BaseEvalElement {
+    class PyButton extends HTMLElement {
         widths: string[] = [];
         label: string | undefined = undefined;
         class: string[];
         defaultClass: string[];
         mount_name: string | undefined = undefined;
+        code: string;
+
         constructor() {
             super();
 
@@ -41,7 +42,7 @@ export function make_PyButton(runtime: Runtime) {
         }
 
         async connectedCallback() {
-            this.checkId();
+            ensureUniqueId(this);
             this.code = htmlDecode(this.innerHTML) || "";
             this.mount_name = this.id.split('-').join('_');
             this.innerHTML = '';
