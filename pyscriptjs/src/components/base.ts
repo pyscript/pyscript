@@ -1,7 +1,7 @@
 import { ensureUniqueId, addClasses, removeClasses } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
-import { pyExec } from '../pyexec';
+import { pyExecDontHandleErrors } from '../pyexec';
 
 const logger = getLogger('pyscript/base');
 
@@ -78,7 +78,8 @@ export class BaseEvalElement extends HTMLElement {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
 
-            await pyExec(runtime, source, this);
+            // XXX we should use pyExec and let it display the errors
+            await pyExecDontHandleErrors(runtime, source, this);
 
             removeClasses(this.errorElement, ['py-error']);
             this.postEvaluate();

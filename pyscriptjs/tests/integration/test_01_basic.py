@@ -6,8 +6,7 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
-                import js
-                js.console.log('hello pyscript')
+                print('hello pyscript')
             </py-script>
             """
         )
@@ -15,6 +14,31 @@ class TestBasic(PyScriptTest):
             self.PY_COMPLETE,
             "hello pyscript",
         ]
+
+    def test_python_exception(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                print('hello pyscript')
+                raise Exception('this is an error')
+            </py-script>
+        """
+        )
+        assert self.console.log.lines == [self.PY_COMPLETE, "hello pyscript"]
+        # check that we sent the traceback to the console
+        tb_lines = self.console.error.lines[-1].splitlines()
+        assert tb_lines[0] == "[pyexec] Python exception:"
+        assert tb_lines[1] == "Traceback (most recent call last):"
+        assert tb_lines[-1] == "Exception: this is an error"
+        #
+        # check that we show the traceback in the page. Note that here we
+        # display the "raw" python traceback, without the "[pyexec] Python
+        # exception:" line (which is useful in the console, but not for the
+        # user)
+        pre = self.page.locator("py-script > pre")
+        tb_lines = pre.inner_text().splitlines()
+        assert tb_lines[0] == "Traceback (most recent call last):"
+        assert tb_lines[-1] == "Exception: this is an error"
 
     def test_execution_in_order(self):
         """
