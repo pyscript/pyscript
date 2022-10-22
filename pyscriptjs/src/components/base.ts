@@ -78,7 +78,7 @@ export class BaseEvalElement extends HTMLElement {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
 
-            await pyExec(runtime, source, this.id);
+            await pyExec(runtime, source, this);
 
             removeClasses(this.errorElement, ['py-error']);
             this.postEvaluate();
