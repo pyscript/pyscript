@@ -1,5 +1,7 @@
 import re
 
+import pytest
+
 from .support import PyScriptTest
 
 
@@ -16,26 +18,23 @@ class TestOutput(PyScriptTest):
         pattern = r'<div id="py-.*">hello world</div>'
         assert re.search(pattern, inner_html)
 
+    @pytest.mark.xfail(reason="issue #878")
     def test_consecutive_display(self):
         self.pyscript_run(
             """
             <py-script>
                 display('hello 1')
             </py-script>
+            <p>hello 2</p>
             <py-script>
-                display('hello 2')
+                display('hello 3')
             </py-script>
-        """
+            """
         )
-        # need to improve this to get the first/second input
-        # instead of just searching for it in the page
-        inner_html = self.page.content()
-        first_pattern = r'<div id="py-.*?-2">hello 1</div>'
-        assert re.search(first_pattern, inner_html)
-        second_pattern = r'<div id="py-.*?-3">hello 2</div>'
-        assert re.search(second_pattern, inner_html)
-
-        assert first_pattern is not second_pattern
+        inner_text = self.page.inner_text("body")
+        lines = inner_text.splitlines()
+        lines = [line for line in lines if line != ""]  # remove empty lines
+        assert lines == ["hello 1", "hello 2", "hello 3"]
 
     def test_multiple_display_calls_same_tag(self):
         self.pyscript_run(
