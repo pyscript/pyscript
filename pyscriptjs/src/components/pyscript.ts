@@ -8,15 +8,6 @@ const logger = getLogger('py-script');
 export function make_PyScript(runtime: Runtime) {
 
     class PyScript extends HTMLElement {
-        shadow: ShadowRoot;
-        wrapper: HTMLElement;
-
-        constructor() {
-            super();
-            this.shadow = this.attachShadow({ mode: 'open' });
-            this.wrapper = document.createElement('slot');
-            this.shadow.appendChild(this.wrapper);
-        }
 
         async connectedCallback() {
             ensureUniqueId(this);
