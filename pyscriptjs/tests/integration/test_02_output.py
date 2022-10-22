@@ -58,11 +58,9 @@ class TestOutput(PyScriptTest):
             </py-script>
         """
         )
-        inner_html = self.page.content()
-        pattern = r'<div id="py-.*?-2">hello</div>'
-        assert re.search(pattern, inner_html)
-        pattern = r'<div id="py-.*?-3">world</div>'
-        assert re.search(pattern, inner_html)
+        tag = self.page.locator("py-script")
+        lines = tag.inner_text().splitlines()
+        assert lines == ["hello", "world"]
 
     def test_no_implicit_target(self):
         self.pyscript_run(
@@ -101,10 +99,10 @@ class TestOutput(PyScriptTest):
             <py-script id="second-pyscript-tag">
                 display_hello()
             </py-script>
-        """
+            """
         )
-        text = self.page.locator("id=second-pyscript-tag-2").inner_text()
-        assert "hello" in text
+        text = self.page.locator("id=second-pyscript-tag").inner_text()
+        assert text == "hello"
 
     def test_explicit_target_on_button_tag(self):
         self.pyscript_run(

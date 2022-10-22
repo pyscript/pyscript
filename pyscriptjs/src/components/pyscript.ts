@@ -12,8 +12,6 @@ const logger = getLogger('py-script');
 export class PyScript extends BaseEvalElement {
     constructor() {
         super();
-
-        // add an extra div where we can attach the codemirror editor
         this.shadow.appendChild(this.wrapper);
     }
 
@@ -22,20 +20,6 @@ export class PyScript extends BaseEvalElement {
         this.code = htmlDecode(this.innerHTML);
         this.innerHTML = '';
 
-        const mainDiv = document.createElement('div');
-        addClasses(mainDiv, ['output']);
-        // add Editor to main PyScript div
-
-        if (this.hasAttribute('output')) {
-            this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
-
-            // in this case, the default output-mode is append, if hasn't been specified
-            if (!this.hasAttribute('output-mode')) {
-                this.setAttribute('output-mode', 'append');
-            }
-        }
-
-        this.appendChild(mainDiv);
         addToScriptsQueue(this);
 
         if (this.hasAttribute('src')) {
