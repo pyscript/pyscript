@@ -1,5 +1,3 @@
-import re
-
 from .support import PyScriptTest
 
 
@@ -8,16 +6,15 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
-                display('hello pyscript')
+                import js
+                js.console.log('hello pyscript')
             </py-script>
-        """
+            """
         )
-        # this is a very ugly way of checking the content of the DOM. If we
-        # find ourselves to write a lot of code in this style, we will
-        # probably want to write a nicer API for it.
-        inner_html = self.page.locator("py-script").inner_html()
-        pattern = r'<div id="py-.*">hello pyscript</div>'
-        assert re.search(pattern, inner_html)
+        assert self.console.log.lines == [
+            self.PY_COMPLETE,
+            "hello pyscript",
+        ]
 
     def test_execution_in_order(self):
         """
