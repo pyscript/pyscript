@@ -94,7 +94,7 @@ export function inJest(): boolean {
     return typeof process === 'object' && process.env.JEST_WORKER_ID !== undefined;
 }
 
-export function globalExport(name: string, obj: any) {
+export function globalExport(name: string, obj: object) {
     // attach the given object to the global object, so that it is globally
     // visible everywhere. Should be used very sparingly!
 

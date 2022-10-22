@@ -20,6 +20,7 @@
     "@rollup/plugin-legacy": "2.2.0",
     "@rollup/plugin-node-resolve": "14.1.0",
     "@rollup/plugin-typescript": "8.5.0",
+    "@types/codemirror": "^5.60.5",
     "@types/jest": "29.1.2",
     "@types/node": "18.8.3",
     "@typescript-eslint/eslint-plugin": "5.39.0",

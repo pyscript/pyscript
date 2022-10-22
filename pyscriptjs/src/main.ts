@@ -69,7 +69,7 @@ class PyScriptApp {
         // and show a big error. PRs welcome :)
         logger.info('searching for <py-config>');
         const elements = document.getElementsByTagName('py-config');
-        let el = null;
+        let el: Element | null = null;
         if (elements.length > 0)
             el = elements[0];
         if (elements.length >= 2) {

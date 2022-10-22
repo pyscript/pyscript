@@ -1,4 +1,5 @@
 import type { Runtime } from '../runtime';
+import type {PyProxy} from "pyodide"
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-register-widget');
@@ -12,7 +13,7 @@ function createWidget(runtime: Runtime, name: string, code: string, klass: strin
         name: string = name;
         klass: string = klass;
         code: string = code;
-        proxy: any;
+        proxy: PyProxy;
         proxyClass: any;
 
         constructor() {
