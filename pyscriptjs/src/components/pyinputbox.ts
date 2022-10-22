@@ -1,15 +1,16 @@
-import { BaseEvalElement } from './base';
-import { getAttribute, addClasses, htmlDecode } from '../utils';
+import { getAttribute, addClasses, htmlDecode, ensureUniqueId } from '../utils';
 import { getLogger } from '../logger'
 import type { Runtime } from '../runtime';
 
 const logger = getLogger('py-inputbox');
 
 export function make_PyInputBox(runtime: Runtime) {
-    class PyInputBox extends BaseEvalElement {
+    class PyInputBox extends HTMLElement {
         widths: string[] = [];
         label: string | undefined = undefined;
         mount_name: string | undefined = undefined;
+        code: string;
+
         constructor() {
             super();
 
@@ -20,7 +21,7 @@ export function make_PyInputBox(runtime: Runtime) {
         }
 
         async connectedCallback() {
-            this.checkId();
+            ensureUniqueId(this);
             this.code = htmlDecode(this.innerHTML);
             this.mount_name = this.id.split('-').join('_');
             this.innerHTML = '';
