@@ -2,21 +2,28 @@ import {
     addToScriptsQueue,
 } from '../stores';
 
-import { addClasses, htmlDecode } from '../utils';
-import { BaseEvalElement } from './base';
+import { htmlDecode, ensureUniqueId } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
+import { pyExec } from '../pyexec';
 
 const logger = getLogger('py-script');
 
-export class PyScript extends BaseEvalElement {
+export class PyScript extends HTMLElement {
+    shadow: ShadowRoot;
+    wrapper: HTMLElement;
+    code: string;
+    source: string;
+
     constructor() {
         super();
+        this.shadow = this.attachShadow({ mode: 'open' });
+        this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
     }
 
     connectedCallback() {
-        this.checkId();
+        ensureUniqueId(this);
         this.code = htmlDecode(this.innerHTML);
         this.innerHTML = '';
 
@@ -30,6 +37,20 @@ export class PyScript extends BaseEvalElement {
     getSourceFromElement(): string {
         return htmlDecode(this.code);
     }
+
+    async getSourceFromFile(s: string): Promise<string> {
+        const response = await fetch(s);
+        this.code = await response.text();
+        return this.code;
+    }
+
+    async evaluate(runtime: Runtime): Promise<void> {
+        const pySourceCode = this.source ? await this.getSourceFromFile(this.source)
+                                         : this.getSourceFromElement();
+
+        await pyExec(runtime, pySourceCode, this);
+    }
+
 }
 
 /** Defines all possible py-on* and their corresponding event types  */
