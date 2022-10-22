@@ -94,3 +94,23 @@ class TestBasic(PyScriptTest):
             "Loaded asciitree",  # printed by pyodide
             "hello asciitree",  # printed by us
         ]
+
+    def test_dynamically_add_py_script_tag(self):
+        self.pyscript_run(
+            """
+            <script>
+                function addPyScriptTag() {
+                    let tag = document.createElement('py-script');
+                    tag.innerHTML = "print('hello world')";
+                    document.body.appendChild(tag);
+                }
+            </script>
+            <button onclick="addPyScriptTag()">Click me</button>
+            """
+        )
+        self.page.locator("button").click()
+        self.page.locator("py-script")  # wait until <py-script> appears
+        assert self.console.log.lines == [
+            self.PY_COMPLETE,
+            "hello world",
+        ]

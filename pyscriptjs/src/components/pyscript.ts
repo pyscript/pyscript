@@ -1,7 +1,3 @@
-import {
-    addToScriptsQueue,
-} from '../stores';
-
 import { htmlDecode, ensureUniqueId } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
@@ -9,48 +5,44 @@ import { pyExec } from '../pyexec';
 
 const logger = getLogger('py-script');
 
-export class PyScript extends HTMLElement {
-    shadow: ShadowRoot;
-    wrapper: HTMLElement;
-    code: string;
-    source: string;
+export function make_PyScript(runtime: Runtime) {
 
-    constructor() {
-        super();
-        this.shadow = this.attachShadow({ mode: 'open' });
-        this.wrapper = document.createElement('slot');
-        this.shadow.appendChild(this.wrapper);
-    }
+    class PyScript extends HTMLElement {
+        shadow: ShadowRoot;
+        wrapper: HTMLElement;
 
-    connectedCallback() {
-        ensureUniqueId(this);
-        this.code = htmlDecode(this.innerHTML);
-        this.innerHTML = '';
-
-        addToScriptsQueue(this);
-
-        if (this.hasAttribute('src')) {
-            this.source = this.getAttribute('src');
+        constructor() {
+            super();
+            this.shadow = this.attachShadow({ mode: 'open' });
+            this.wrapper = document.createElement('slot');
+            this.shadow.appendChild(this.wrapper);
         }
+
+        async connectedCallback() {
+            ensureUniqueId(this);
+            const pySrc = this.getPySrc();
+            this.innerHTML = '';
+            await pyExec(runtime, pySrc, this);
+        }
+
+        getPySrc(): string {
+            if (this.hasAttribute('src')) {
+                throw new Error('implement me');
+            }
+            else {
+                return htmlDecode(this.innerHTML);
+            }
+        }
+        /*
+        async getSourceFromFile(s: string): Promise<string> {
+            const response = await fetch(s);
+            this.code = await response.text();
+            return this.code;
+        }
+        */
     }
 
-    getSourceFromElement(): string {
-        return htmlDecode(this.code);
-    }
-
-    async getSourceFromFile(s: string): Promise<string> {
-        const response = await fetch(s);
-        this.code = await response.text();
-        return this.code;
-    }
-
-    async evaluate(runtime: Runtime): Promise<void> {
-        const pySourceCode = this.source ? await this.getSourceFromFile(this.source)
-                                         : this.getSourceFromElement();
-
-        await pyExec(runtime, pySourceCode, this);
-    }
-
+    return PyScript;
 }
 
 /** Defines all possible py-on* and their corresponding event types  */

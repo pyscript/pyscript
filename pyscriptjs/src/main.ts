@@ -3,22 +3,15 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
-import { PyScript, initHandlers, mountElements } from './components/pyscript';
+import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
-import { scriptsQueue } from './stores';
 import { handleFetchError, showError, globalExport } from './utils'
 import { createCustomElements } from './components/elements';
 
 
 const logger = getLogger('pyscript/main');
-
-let scriptsQueue_: PyScript[];
-scriptsQueue.subscribe((value: PyScript[]) => {
-    scriptsQueue_ = value;
-});
-
 
 
 /* High-level overview of the lifecycle of a PyScript App:
@@ -37,7 +30,8 @@ scriptsQueue.subscribe((value: PyScript[]) => {
 
    6. setup the environment, install packages
 
-   7. run user scripts
+   7. connect the py-script web component. This causes the execution of all the
+      user scripts
 
    8. initialize the rest of web components such as py-button, py-repl, etc.
 
@@ -57,11 +51,11 @@ class PyScriptApp {
 
     config: AppConfig;
     loader: PyLoader;
+    PyScript: any; // XXX would be nice to have a more precise type for the class itself
 
     // lifecycle (1)
     main() {
         this.loadConfig();
-        customElements.define('py-script', PyScript);
         this.showLoader();
         this.loadRuntime();
     }
@@ -128,7 +122,6 @@ class PyScriptApp {
     //
     // Invariant: this.config and this.loader are set and available.
     async afterRuntimeLoad(runtime: Runtime): Promise<void> {
-        // XXX what is the JS/TS standard way of doing asserts?
         console.assert(this.config !== undefined);
         console.assert(this.loader !== undefined);
 
@@ -195,17 +188,15 @@ class PyScriptApp {
     // lifecycle (7)
     executeScripts(runtime: Runtime) {
         this.register_importmap(runtime);
-        for (const script of scriptsQueue_) {
-            void script.evaluate(runtime);
-        }
-        scriptsQueue.set([]);
+        this.PyScript = make_PyScript(runtime);
+        customElements.define('py-script', this.PyScript);
     }
 
     async register_importmap(runtime: Runtime) {
         // make importmap ES modules available from python using 'import'.
         //
-        // XXX: this code can probably be improved as it hides too many
-        // errors. Moreover at the time of writing we don't really have a test
+        // XXX: this code can probably be improved because errors are silently
+        // ignored. Moreover at the time of writing we don't really have a test
         // for it and this functionality is used only by the d3 example. We
         // might want to rethink the whole approach at some point. E.g., maybe
         // we should move it to py-config?
