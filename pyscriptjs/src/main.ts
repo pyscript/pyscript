@@ -51,6 +51,7 @@ class PyScriptApp {
 
     config: AppConfig;
     loader: PyLoader;
+    runtime: Runtime;
     PyScript: any; // XXX would be nice to have a more precise type for the class itself
 
     // lifecycle (1)
@@ -105,13 +106,13 @@ class PyScriptApp {
                       "Only the first will be used");
         }
         const runtime_cfg = this.config.runtimes[0];
-        const runtime: Runtime = new PyodideRuntime(this.config, runtime_cfg.src,
+        this.runtime = new PyodideRuntime(this.config, runtime_cfg.src,
                                                     runtime_cfg.name, runtime_cfg.lang);
         this.loader.log(`Downloading ${runtime_cfg.name}...`);
         const script = document.createElement('script'); // create a script DOM node
-        script.src = runtime.src;
+        script.src = this.runtime.src;
         script.addEventListener('load', () => {
-            void this.afterRuntimeLoad(runtime);
+            void this.afterRuntimeLoad(this.runtime);
         });
         document.head.appendChild(script);
     }
@@ -244,3 +245,5 @@ globalExport('pyscript_get_config', pyscript_get_config);
 // main entry point of execution
 const globalApp = new PyScriptApp();
 globalApp.main();
+
+export const runtime = globalApp.runtime
