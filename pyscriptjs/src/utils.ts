@@ -38,11 +38,10 @@ export function ltrim(code: string): string {
     return k != 0 ? lines.map(line => line.substring(k)).join('\n') : code;
 }
 
-export function guidGenerator(): string {
-    const S4 = function (): string {
-        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-    };
-    return S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4();
+let _uniqueIdCounter = 0;
+export function ensureUniqueId(el: HTMLElement) {
+    if (el.id === "")
+        el.id = "py-internal-" + _uniqueIdCounter++;
 }
 
 /*

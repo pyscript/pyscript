@@ -132,46 +132,21 @@ export function make_PyRepl(runtime: Runtime) {
                     this.outputElement = el
                 }
             } else {
-                const stdOut = getAttribute(this, "std-out");
-                if (stdOut) {
-                    const el = document.getElementById(stdOut);
-                    if(el){
-                        this.outputElement = el
-                    }
-                } else {
-                    // In this case neither output or std-out have been provided so we need
-                    // to create a new output div to output to
-                    this.outputElement = document.createElement('div');
-                    this.outputElement.classList.add('output');
-                    this.outputElement.hidden = true;
-                    const stdOut = getAttribute(this, "exec-id") || "";
-                    this.outputElement.id = this.id + '-' + stdOut;
+                // to create a new output div to output to
+                this.outputElement = document.createElement('div');
+                this.outputElement.classList.add('output');
+                this.outputElement.hidden = true;
+                this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
 
-                    // add the output div id if there's not output pre-defined
-                    mainDiv.appendChild(this.outputElement);
-                }
+                // add the output div id if there's not output pre-defined
+                mainDiv.appendChild(this.outputElement);
 
-                const stdErr = getAttribute(this, "std-err");
-                if( stdErr ){
-                    const el = document.getElementById(stdErr);
-                    if(el){
-                        this.errorElement = el;
-                    }else{
-                        this.errorElement = this.outputElement
-                    }
-                }else{
-                    this.errorElement = this.outputElement
-                }
+                this.errorElement = this.outputElement;
             }
 
             this.appendChild(mainDiv);
             this.editor.focus();
             logger.debug(`element ${this.id} successfully connected`);
-        }
-
-        addToOutput(s: string): void {
-            this.outputElement.innerHTML += '<div>' + s + '</div>';
-            this.outputElement.hidden = false;
         }
 
         preEvaluate(): void {
@@ -213,8 +188,6 @@ export function make_PyRepl(runtime: Runtime) {
                 };
 
                 addReplAttribute('output');
-                addReplAttribute('std-out');
-                addReplAttribute('std-err');
 
                 newPyRepl.setAttribute('exec-id', nextExecId.toString());
                 if( this.parentElement ){

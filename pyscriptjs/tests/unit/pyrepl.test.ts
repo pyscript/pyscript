@@ -52,17 +52,4 @@ describe('PyRepl', () => {
         // Confirm that our innerHTML is set as well
         expect(editorNode).toContain("Hello")
     })
-
-    it("confirm that addToOutput updates output element", async () => {
-        expect(instance.outputElement).toBe(undefined)
-
-        // This is just to avoid throwing the test since outputElement is undefined
-        instance.outputElement = document.createElement("div")
-
-        instance.addToOutput("Hello, World!")
-
-        expect(instance.outputElement.innerHTML).toBe("<div>Hello, World!</div>")
-        expect(instance.outputElement.hidden).toBe(false)
-    })
-
 });

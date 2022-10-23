@@ -1,9 +1,11 @@
 import re
 
+import pytest
+
 from .support import PyScriptTest
 
 
-class TestOutuput(PyScriptTest):
+class TestOutput(PyScriptTest):
     def test_simple_display(self):
         self.pyscript_run(
             """
@@ -16,26 +18,36 @@ class TestOutuput(PyScriptTest):
         pattern = r'<div id="py-.*">hello world</div>'
         assert re.search(pattern, inner_html)
 
+    @pytest.mark.xfail(reason="issue #878")
     def test_consecutive_display(self):
         self.pyscript_run(
             """
             <py-script>
                 display('hello 1')
             </py-script>
+            <p>hello 2</p>
             <py-script>
-                display('hello 2')
+                display('hello 3')
             </py-script>
-        """
+            """
         )
-        # need to improve this to get the first/second input
-        # instead of just searching for it in the page
-        inner_html = self.page.content()
-        first_pattern = r'<div id="py-.*?-2">hello 1</div>'
-        assert re.search(first_pattern, inner_html)
-        second_pattern = r'<div id="py-.*?-3">hello 2</div>'
-        assert re.search(second_pattern, inner_html)
+        inner_text = self.page.inner_text("body")
+        lines = inner_text.splitlines()
+        lines = [line for line in lines if line != ""]  # remove empty lines
+        assert lines == ["hello 1", "hello 2", "hello 3"]
 
-        assert first_pattern is not second_pattern
+    @pytest.mark.xfail(reason="fix me")
+    def test_output_attribute(self):
+        self.pyscript_run(
+            """
+            <py-script output="mydiv">
+                display('hello world')
+            </py-script>
+            <div id="mydiv"></div>
+            """
+        )
+        mydiv = self.page.locator("#mydiv")
+        assert mydiv.inner_text() == "hello world"
 
     def test_multiple_display_calls_same_tag(self):
         self.pyscript_run(
@@ -46,11 +58,27 @@ class TestOutuput(PyScriptTest):
             </py-script>
         """
         )
-        inner_html = self.page.content()
-        pattern = r'<div id="py-.*?-2">hello</div>'
-        assert re.search(pattern, inner_html)
-        pattern = r'<div id="py-.*?-3">world</div>'
-        assert re.search(pattern, inner_html)
+        tag = self.page.locator("py-script")
+        lines = tag.inner_text().splitlines()
+        assert lines == ["hello", "world"]
+
+    def test_implicit_target_from_a_different_tag(self):
+        self.pyscript_run(
+            """
+                <py-script id="py1">
+                    def say_hello():
+                        display('hello')
+                </py-script>
+
+                <py-script id="py2">
+                    say_hello()
+                </py-script>
+            """
+        )
+        py1 = self.page.locator("#py1")
+        py2 = self.page.locator("#py2")
+        assert py1.inner_text() == ""
+        assert py2.inner_text() == "hello"
 
     def test_no_implicit_target(self):
         self.pyscript_run(
@@ -89,10 +117,10 @@ class TestOutuput(PyScriptTest):
             <py-script id="second-pyscript-tag">
                 display_hello()
             </py-script>
-        """
+            """
         )
-        text = self.page.locator("id=second-pyscript-tag-2").inner_text()
-        assert "hello" in text
+        text = self.page.locator("id=second-pyscript-tag").inner_text()
+        assert text == "hello"
 
     def test_explicit_target_on_button_tag(self):
         self.pyscript_run(

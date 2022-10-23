@@ -1,6 +1,12 @@
-import { getAttribute, guidGenerator, addClasses, removeClasses } from '../utils';
+// XXX this should be eventually killed.
+// The only remaining class which inherit from BaseEvalElement is PyRepl: we
+// should merge the two classes together, do a refactoing of how PyRepl to use
+// the new pyExec and in general clean up the unnecessary code.
+
+import { ensureUniqueId, addClasses, removeClasses, getAttribute } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
+import { pyExecDontHandleErrors } from '../pyexec';
 
 const logger = getLogger('pyscript/base');
 
@@ -26,11 +32,6 @@ export class BaseEvalElement extends HTMLElement {
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
         this.setOutputMode("append");
-    }
-
-    addToOutput(s: string) {
-        this.outputElement.innerHTML += '<div>' + s + '</div>';
-        this.outputElement.hidden = false;
     }
 
     setOutputMode(defaultMode = "append") {
@@ -61,7 +62,7 @@ export class BaseEvalElement extends HTMLElement {
     }
 
     checkId() {
-        if (!this.id) this.id = 'py-' + guidGenerator();
+        ensureUniqueId(this);
     }
 
     getSourceFromElement(): string {
@@ -74,39 +75,6 @@ export class BaseEvalElement extends HTMLElement {
         return this.code;
     }
 
-    protected async _register_esm(runtime: Runtime): Promise<void> {
-        const imports: { [key: string]: unknown } = {};
-        const nodes = document.querySelectorAll("script[type='importmap']");
-        const importmaps: any[] = [];
-        nodes.forEach( node =>
-            {
-                let importmap;
-                try {
-                    importmap = JSON.parse(node.textContent);
-                    if (importmap?.imports == null) return;
-                    importmaps.push(importmap);
-                } catch {
-                    return;
-                }
-            }
-        )
-        for (const importmap of importmaps){
-            for (const [name, url] of Object.entries(importmap.imports)) {
-                if (typeof name != 'string' || typeof url != 'string') continue;
-
-                try {
-                    // XXX: pyodide doesn't like Module(), failing with
-                    // "can't read 'name' of undefined" at import time
-                    imports[name] = { ...(await import(url)) };
-                } catch {
-                    logger.error(`failed to fetch '${url}' for '${name}'`);
-                }
-            }
-        }
-
-        runtime.registerJsModule('esm', imports);
-    }
-
     async evaluate(runtime: Runtime): Promise<void> {
         this.preEvaluate();
 
@@ -114,14 +82,9 @@ export class BaseEvalElement extends HTMLElement {
         try {
             source = this.source ? await this.getSourceFromFile(this.source)
                                  : this.getSourceFromElement();
-            this._register_esm(runtime);
 
-            try {
-                <string>await runtime.run(`set_current_display_target(target_id="${this.id}")`);
-                <string>await runtime.run(source);
-            } finally {
-                <string>await runtime.run(`set_current_display_target(target_id=None)`);
-            }
+            // XXX we should use pyExec and let it display the errors
+            await pyExecDontHandleErrors(runtime, source, this);
 
             removeClasses(this.errorElement, ['py-error']);
             this.postEvaluate();

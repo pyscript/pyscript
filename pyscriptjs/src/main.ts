@@ -3,22 +3,15 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
-import { PyScript, initHandlers, mountElements } from './components/pyscript';
+import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
-import { scriptsQueue } from './stores';
 import { handleFetchError, showError, globalExport } from './utils'
 import { createCustomElements } from './components/elements';
 
 
 const logger = getLogger('pyscript/main');
-
-let scriptsQueue_: PyScript[];
-scriptsQueue.subscribe((value: PyScript[]) => {
-    scriptsQueue_ = value;
-});
-
 
 
 /* High-level overview of the lifecycle of a PyScript App:
@@ -37,7 +30,8 @@ scriptsQueue.subscribe((value: PyScript[]) => {
 
    6. setup the environment, install packages
 
-   7. run user scripts
+   7. connect the py-script web component. This causes the execution of all the
+      user scripts
 
    8. initialize the rest of web components such as py-button, py-repl, etc.
 
@@ -58,11 +52,11 @@ class PyScriptApp {
     config: AppConfig;
     loader: PyLoader;
     runtime: Runtime;
+    PyScript: any; // XXX would be nice to have a more precise type for the class itself
 
     // lifecycle (1)
     main() {
         this.loadConfig();
-        customElements.define('py-script', PyScript);
         this.showLoader();
         this.loadRuntime();
     }
@@ -129,7 +123,6 @@ class PyScriptApp {
     //
     // Invariant: this.config and this.loader are set and available.
     async afterRuntimeLoad(runtime: Runtime): Promise<void> {
-        // XXX what is the JS/TS standard way of doing asserts?
         console.assert(this.config !== undefined);
         console.assert(this.loader !== undefined);
 
@@ -195,11 +188,53 @@ class PyScriptApp {
 
     // lifecycle (7)
     executeScripts(runtime: Runtime) {
-        for (const script of scriptsQueue_) {
-            void script.evaluate(runtime);
-        }
-        scriptsQueue.set([]);
+        this.register_importmap(runtime);
+        this.PyScript = make_PyScript(runtime);
+        customElements.define('py-script', this.PyScript);
     }
+
+    async register_importmap(runtime: Runtime) {
+        // make importmap ES modules available from python using 'import'.
+        //
+        // XXX: this code can probably be improved because errors are silently
+        // ignored. Moreover at the time of writing we don't really have a test
+        // for it and this functionality is used only by the d3 example. We
+        // might want to rethink the whole approach at some point. E.g., maybe
+        // we should move it to py-config?
+        //
+        // Moreover, it's also wrong because it's async and currently we don't
+        // await the module to be fully registered before executing the code
+        // inside py-script. It's also unclear whether we want to wait or not
+        // (or maybe only wait only if we do an actual 'import'?)
+        for (const node of document.querySelectorAll("script[type='importmap']")) {
+            const importmap = (() => {
+                try {
+                    return JSON.parse(node.textContent);
+                } catch {
+                    return null;
+                }
+            })();
+
+            if (importmap?.imports == null) continue;
+
+            for (const [name, url] of Object.entries(importmap.imports)) {
+                if (typeof name != 'string' || typeof url != 'string') continue;
+
+                let exports: object;
+                try {
+                    // XXX: pyodide doesn't like Module(), failing with
+                    // "can't read 'name' of undefined" at import time
+                    exports = { ...(await import(url)) };
+                } catch {
+                    logger.warn(`failed to fetch '${url}' for '${name}'`);
+                    continue;
+                }
+
+                runtime.registerJsModule(name, exports);
+            }
+        }
+    }
+
 }
 
 function pyscript_get_config() {
