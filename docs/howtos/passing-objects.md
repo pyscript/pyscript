@@ -34,9 +34,46 @@ We can use the syntax `from js import ...` to import JavaScript objects directly
 
 ## PyScript to JavaScript
 
-Since [PyScript doesn't export its instance of Pyodide](https://github.com/pyscript/pyscript/issues/494) and only one instance of Pyodide can be running in a browser window at a time, there isn't currently a way for Javascript to access Objects defined inside PyScript tags "directly".
+### Using Pyodide's globals access
 
-We can work around this limitation using [JavaScript's eval() function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval), which executes a string as code much like [Python's eval()](https://docs.python.org/3/library/functions.html#eval). First, we create a JS function `createObject` which takes an object and a string, then uses `eval()` to create a variable named after the string and bind it to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.
+The [PyScript JavaScript module](../reference/pyscript-module.md)  exposes its underlying Pyodide runtime as `PyScript.runtime`, and maintains a reference to the [globals()](https://docs.python.org/3/library/functions.html#globals) dictionary of the Python namespace. Thus, any global variables in python are accessible in JavaScript at `PyScript.runtime.globals.get('my_variable_name')`
+
+```html
+<body>
+    <py-script>x = 42</py-script>
+
+    <button onclick="showX()">Click Me to Get 'x' from Python</button>
+    <script>
+        function showX(){
+            console.log(`In Python right now, x = ${PyScript.globals.get('x')}`)
+        }
+    </script>
+</body>
+```
+
+Since [everything is an object](https://docs.python.org/3/reference/datamodel.html) in Python, this applies not only to user created variables, but also to classes, functions, built-ins, etc. If we want, we can even apply Python functions to JavaScript data and variables:
+
+```html
+<body>
+    <!-- Click this button to log 'Apple', 'Banana', 'Candy', 'Donut' by sorting in Python-->
+    <button onclick="sortInPython(['Candy', 'Donut', 'Apple', 'Banana'])">Sort In Python And Log</button>
+    <script>
+        function sortInPython(data){
+            js_sorted = PyScript.runtime.globals.get('sorted') //grab python's 'sorted' function
+            const sorted_data = js_sorted(data) //apply the function to the 'data' argument
+            for (const item of sorted_data){
+                console.log(item)
+            }
+        }
+    </script>
+</body>
+```
+
+### Using JavaScript's eval()
+
+There may be some situations where it isn't possible or ideal to use `PyScript.runtime.globals.get()` to retrieve a variable from the Pyodide global dictionary. For example, some JavaScript frameworks may take a function/Callable as an html attribute in a context where code execution isn't allowed (i.e. `get()` fails). In these cases, you can create JavaScript proxies of Python objects more or less "manually" using [JavaScript's eval() function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval), which executes a string as code much like [Python's eval()](https://docs.python.org/3/library/functions.html#eval).
+
+First, we create a JS function `createObject` which takes an object and a string, then uses `eval()` to create a variable named after the string and bind it to that object. By calling this function from PyScript (where we have access to the Pyodide global namespace), we can bind JavaScript variables to Python objects without having direct access to that global namespace.
 
 Include the following script tag anywhere in your html document:
 
