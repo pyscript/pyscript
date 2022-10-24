@@ -50,7 +50,7 @@ export function make_PyRepl(runtime: Runtime) {
         }
 
         connectedCallback() {
-            this.checkId();
+            ensureUniqueId(this);
             this.code = htmlDecode(this.innerHTML);
             this.innerHTML = '';
             const languageConf = new Compartment();
@@ -158,8 +158,7 @@ export function make_PyRepl(runtime: Runtime) {
 
             let source: string;
             try {
-                source = this.source ? await this.getSourceFromFile(this.source)
-                                     : this.getSourceFromElement();
+                source = this.getSourceFromElement();
 
                 // XXX we should use pyExec and let it display the errors
                 await pyExecDontHandleErrors(runtime, source, this);

@@ -29,19 +29,4 @@ export class BaseEvalElement extends HTMLElement {
         this.shadow.appendChild(this.wrapper);
     }
 
-    checkId() {
-        ensureUniqueId(this);
-    }
-
-    getSourceFromElement(): string {
-        return '';
-    }
-
-    async getSourceFromFile(s: string): Promise<string> {
-        const response = await fetch(s);
-        this.code = await response.text();
-        return this.code;
-    }
-
-
 }
