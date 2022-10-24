@@ -136,11 +136,7 @@ class PyScriptTest:
         If an error was expected but not found, it raises
         DidNotRaiseJsError().
 
-        If there are MORE errors other than the expected ones, it raises an
-        exception:
-
-          - if it finds a single JS error, raise JsError
-          - if it finds multiple JS errors, raise JsMultipleErrors
+        If there are MORE errors other than the expected ones, it raises JsErrors.
 
         Upon return, all the errors are cleared, so a subsequent call to
         check_js_errors will not raise, unless NEW JS errors have been reported
