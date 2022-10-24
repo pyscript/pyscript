@@ -8,7 +8,7 @@ import { oneDarkTheme } from '@codemirror/theme-one-dark';
 import { getAttribute, addClasses, removeClasses,
          ensureUniqueId, htmlDecode } from '../utils';
 import type { Runtime } from '../runtime';
-import { pyExec } from '../pyexec';
+import { pyExec, pyDisplay } from '../pyexec';
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-repl');
@@ -150,7 +150,10 @@ export function make_PyRepl(runtime: Runtime) {
             const pySrc = this.getSourceFromElement();
             // clear the old output before executing the new code
             this.outputElement.innerHTML = '';
-            await pyExec(runtime, pySrc, this.outputElement);
+            const pyResult = await pyExec(runtime, pySrc, this.outputElement);
+            if (pyResult !== undefined) {
+                pyDisplay(runtime, pyResult, { target: this.outputElement.id });
+            }
         }
 
         autogenerateMaybe(): void {

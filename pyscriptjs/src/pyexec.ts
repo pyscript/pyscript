@@ -12,7 +12,7 @@ export async function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLEleme
     set_current_display_target(outElem.id);
     try {
         try {
-            await runtime.run(pysrc);
+            return await runtime.run(pysrc);
         }
         catch (err) {
             // XXX: currently we display exceptions in the same position as
@@ -27,6 +27,21 @@ export async function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLEleme
     }
 }
 
+/**
+ * Javascript API to call the python display() function
+ *
+ * Expected usage:
+ *     pyDisplay(runtime, obj);
+ *     pyDisplay(runtime, obj, { target: targetID });
+ */
+export function pyDisplay(runtime: Runtime, obj: any, kwargs: object) {
+    const display = runtime.globals.get('display');
+    if (kwargs === undefined)
+        display(obj);
+    else {
+        display.callKwargs(obj, kwargs);
+    }
+}
 
 function displayPyException(err: any, errElem: HTMLElement) {
     //addClasses(errElem, ['py-error'])
