@@ -79,6 +79,10 @@ class TestPyRepl(PyScriptTest):
         assert out_div.inner_text() == "hello world"
 
     def test_run_clears_previous_output(self):
+        """
+        Check that we clear the previous output of the cell before executing it
+        again
+        """
         self.pyscript_run(
             """
             <py-repl id="my-repl">
@@ -125,17 +129,27 @@ class TestPyRepl(PyScriptTest):
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
 
-    def test_repl_error_and_fail_moving_forward_ouput(self):
+    def test_python_exception_after_previous_output(self):
         self.pyscript_run(
             """
-            <py-repl id="my-repl" auto-generate="true"> </py-repl>
+            <py-repl>
+                display('hello world')
+            </py-repl>
             """
         )
-        self.page.locator("py-repl").type("this is an error")
-        self.page.locator("button").click()
-        expect(self.page.locator(".py-error")).to_be_visible()
+        py_repl = self.page.locator("py-repl")
         self.page.keyboard.press("Shift+Enter")
-        expect(self.page.locator(".py-error")).to_be_visible()
+        out_div = py_repl.locator("div.py-output")
+        assert out_div.inner_text() == "hello world"
+        #
+        # clear the editor, write new code, execute
+        self.page.keyboard.press("Control+A")
+        self.page.keyboard.press("Backspace")
+        self.page.keyboard.type("0/0")
+        self.page.keyboard.press("Shift+Enter")
+        out_div = py_repl.locator("div.py-output")
+        assert "hello world" not in out_div.inner_text()
+        assert "ZeroDivisionError" in out_div.inner_text()
 
     # this tests the fact that a new error div should be created once there's
     # an error but also that it should disappear automatically once the error
