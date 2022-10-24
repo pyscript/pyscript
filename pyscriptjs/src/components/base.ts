@@ -10,12 +10,8 @@ import { getLogger } from '../logger';
 const logger = getLogger('pyscript/base');
 
 export class BaseEvalElement extends HTMLElement {
-    code: string;
     source: string;
     btnConfig: HTMLElement;
-    btnRun: HTMLElement;
-    outputElement: HTMLElement;
-    errorElement: HTMLElement;
     theme: string;
 
     constructor() {

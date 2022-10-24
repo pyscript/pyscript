@@ -7,7 +7,6 @@ import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 import { getAttribute, addClasses, removeClasses,
          ensureUniqueId, htmlDecode } from '../utils';
-import { BaseEvalElement } from './base';
 import type { Runtime } from '../runtime';
 import { pyExecDontHandleErrors } from '../pyexec';
 import { getLogger } from '../logger';
@@ -28,7 +27,7 @@ export function make_PyRepl(runtime: Runtime) {
     }
 
     let initialTheme: string;
-    function getEditorTheme(el: BaseEvalElement): string {
+    function getEditorTheme(el: PyRepl): string {
         const theme = getAttribute(el, 'theme');
         if( !initialTheme && theme){
             initialTheme = theme;
@@ -36,9 +35,13 @@ export function make_PyRepl(runtime: Runtime) {
         return initialTheme;
     }
 
-    class PyRepl extends BaseEvalElement {
+    class PyRepl extends HTMLElement {
         shadow: ShadowRoot;
         wrapper: HTMLElement;
+        code: string;
+        outputElement: HTMLElement;
+        errorElement: HTMLElement;
+        btnRun: HTMLElement;
         editor: EditorView;
         editorNode: HTMLElement;
 
