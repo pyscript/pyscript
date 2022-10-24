@@ -78,6 +78,27 @@ class TestPyRepl(PyScriptTest):
         out_div = py_repl.locator("div.py-output")
         assert out_div.inner_text() == "hello world"
 
+    def test_run_clears_previous_output(self):
+        self.pyscript_run(
+            """
+            <py-repl id="my-repl">
+                display('hello world')
+            </py-repl>
+            """
+        )
+        py_repl = self.page.locator("py-repl")
+        self.page.keyboard.press("Shift+Enter")
+        out_div = py_repl.locator("div.py-output")
+        assert out_div.inner_text() == "hello world"
+        #
+        # clear the editor, write new code, execute
+        self.page.keyboard.press("Control+A")
+        self.page.keyboard.press("Backspace")
+        self.page.keyboard.type("display('another output')")
+        self.page.keyboard.press("Shift+Enter")
+        out_div = py_repl.locator("div.py-output")
+        assert out_div.inner_text() == "another output"
+
     def test_python_exception(self):
         """
         See also test01_basic::test_python_exception, since it's very similar

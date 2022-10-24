@@ -148,7 +148,8 @@ export function make_PyRepl(runtime: Runtime) {
 
         async evaluate(runtime: Runtime): Promise<void> {
             const pySrc = this.getSourceFromElement();
-            // //this.outputElement.innerHTML = ''; // XXX write a test for this
+            // clear the old output before executing the new code
+            this.outputElement.innerHTML = '';
             await pyExec(runtime, pySrc, this.outputElement);
         }
 
