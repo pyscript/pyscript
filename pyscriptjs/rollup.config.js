@@ -27,7 +27,7 @@ export default {
     sourcemap: true,
     format: "iife",
     inlineDynamicImports: true,
-    name: "app",
+    name: "pyscript",
     file: "build/pyscript.js",
     },
     {

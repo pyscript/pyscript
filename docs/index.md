@@ -34,6 +34,8 @@ You already know the basics and want to learn specifics!
 
 [Frequently asked questions](reference/faq.md)
 
+[The PyScript JS Module](reference/pyscript-module.md)
+
 :::{toctree}
 :maxdepth: 1
 

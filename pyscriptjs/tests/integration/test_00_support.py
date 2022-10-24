@@ -92,10 +92,10 @@ class TestSupport(PyScriptTest):
         # stack trace
         msg = str(exc.value)
         expected = textwrap.dedent(
-            """
+            f"""
             JS errors found: 1
             Error: this is an error
-                at http://fake_server/mytest.html:.*
+                at {self.http_server}/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)

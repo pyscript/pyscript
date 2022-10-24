@@ -9,3 +9,4 @@ maxdepth: 1
 glob:
 ---
 faq
+pyscript-module

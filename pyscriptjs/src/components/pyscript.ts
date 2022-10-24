@@ -1,102 +1,37 @@
-import {
-    addToScriptsQueue,
-} from '../stores';
-
-import { addClasses, htmlDecode } from '../utils';
-import { BaseEvalElement } from './base';
+import { htmlDecode, ensureUniqueId } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
+import { pyExec } from '../pyexec';
 
 const logger = getLogger('py-script');
 
-export class PyScript extends BaseEvalElement {
-    constructor() {
-        super();
+export function make_PyScript(runtime: Runtime) {
 
-        // add an extra div where we can attach the codemirror editor
-        this.shadow.appendChild(this.wrapper);
-    }
+    class PyScript extends HTMLElement {
 
-    connectedCallback() {
-        this.checkId();
-        this.code = htmlDecode(this.innerHTML);
-        this.innerHTML = '';
-
-        const mainDiv = document.createElement('div');
-        addClasses(mainDiv, ['output']);
-        // add Editor to main PyScript div
-
-        if (this.hasAttribute('output')) {
-            this.errorElement = this.outputElement = document.getElementById(this.getAttribute('output'));
-
-            // in this case, the default output-mode is append, if hasn't been specified
-            if (!this.hasAttribute('output-mode')) {
-                this.setAttribute('output-mode', 'append');
-            }
-        } else {
-            if (this.hasAttribute('std-out')) {
-                this.outputElement = document.getElementById(this.getAttribute('std-out'));
-            } else {
-                // In this case neither output or std-out have been provided so we need
-                // to create a new output div to output to
-
-                // Let's check if we have an id first and create one if not
-                this.outputElement = document.createElement('div');
-                const exec_id = this.getAttribute('exec-id');
-                this.outputElement.id = this.id + (exec_id ? '-' + exec_id : '');
-
-                // add the output div id if there's not output pre-defined
-                mainDiv.appendChild(this.outputElement);
-            }
-
-            if (this.hasAttribute('std-err')) {
-                this.errorElement = document.getElementById(this.getAttribute('std-err'));
-            } else {
-                this.errorElement = this.outputElement;
-            }
+        async connectedCallback() {
+            ensureUniqueId(this);
+            const pySrc = await this.getPySrc();
+            this.innerHTML = '';
+            await pyExec(runtime, pySrc, this);
         }
 
-        this.appendChild(mainDiv);
-        addToScriptsQueue(this);
-
-        if (this.hasAttribute('src')) {
-            this.source = this.getAttribute('src');
-        }
-    }
-
-    protected async _register_esm(runtime: Runtime): Promise<void> {
-        for (const node of document.querySelectorAll("script[type='importmap']")) {
-            const importmap = (() => {
-                try {
-                    return JSON.parse(node.textContent);
-                } catch {
-                    return null;
-                }
-            })();
-
-            if (importmap?.imports == null) continue;
-
-            for (const [name, url] of Object.entries(importmap.imports)) {
-                if (typeof name != 'string' || typeof url != 'string') continue;
-
-                let exports: object;
-                try {
-                    // XXX: pyodide doesn't like Module(), failing with
-                    // "can't read 'name' of undefined" at import time
-                    exports = { ...(await import(url)) };
-                } catch {
-                    logger.warn(`failed to fetch '${url}' for '${name}'`);
-                    continue;
-                }
-
-                runtime.registerJsModule(name, exports);
+        async getPySrc(): Promise<string> {
+            if (this.hasAttribute('src')) {
+                // XXX: what happens if the fetch() fails?
+                // We should handle the case correctly, but in my defense
+                // this case was broken also before the refactoring. FIXME!
+                const url = this.getAttribute('src');
+                const response = await fetch(url);
+                return await response.text();
+            }
+            else {
+                return htmlDecode(this.innerHTML);
             }
         }
     }
 
-    getSourceFromElement(): string {
-        return htmlDecode(this.code);
-    }
+    return PyScript;
 }
 
 /** Defines all possible py-on* and their corresponding event types  */

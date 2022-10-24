@@ -70,11 +70,19 @@ class PyScriptTest:
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
         self.logger = logger
-        self.fake_server = "http://fake_server"
-        self.router = SmartRouter(
-            "fake_server", logger=logger, usepdb=request.config.option.usepdb
-        )
-        self.router.install(page)
+
+        if request.config.option.no_fake_server:
+            # use a real HTTP server. Note that as soon as we request the
+            # fixture, the server automatically starts in its own thread.
+            self.http_server = request.getfixturevalue("http_server")
+        else:
+            # use the internal playwright routing
+            self.http_server = "http://fake_server"
+            self.router = SmartRouter(
+                "fake_server", logger=logger, usepdb=request.config.option.usepdb
+            )
+            self.router.install(page)
+        #
         self.init_page(page)
         #
         # this extra print is useful when using pytest -s, else we start printing
@@ -184,7 +192,7 @@ class PyScriptTest:
     def goto(self, path):
         self.logger.reset()
         self.logger.log("page.goto", path, color="yellow")
-        url = f"{self.fake_server}/{path}"
+        url = f"{self.http_server}/{path}"
         self.page.goto(url, timeout=0)
 
     def wait_for_console(self, text, *, timeout=None, check_js_errors=True):
@@ -251,8 +259,8 @@ class PyScriptTest:
         doc = f"""
         <html>
           <head>
-              <link rel="stylesheet" href="{self.fake_server}/build/pyscript.css" />
-              <script defer src="{self.fake_server}/build/pyscript.js"></script>
+              <link rel="stylesheet" href="{self.http_server}/build/pyscript.css" />
+              <script defer src="{self.http_server}/build/pyscript.js"></script>
               {extra_head}
           </head>
           <body>
