@@ -89,9 +89,8 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
-        err_div = py_repl.locator("div.py-error")
-        assert err_div.is_visible()
-        tb_lines = err_div.inner_text().splitlines()
+        err_pre = py_repl.locator("div.py-output > pre.py-error")
+        tb_lines = err_pre.inner_text().splitlines()
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
 

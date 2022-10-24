@@ -8,7 +8,7 @@ import { oneDarkTheme } from '@codemirror/theme-one-dark';
 import { getAttribute, addClasses, removeClasses,
          ensureUniqueId, htmlDecode } from '../utils';
 import type { Runtime } from '../runtime';
-import { pyExecDontHandleErrors } from '../pyexec';
+import { pyExec } from '../pyexec';
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-repl');
@@ -135,7 +135,6 @@ export function make_PyRepl(runtime: Runtime) {
                 // to create a new output div to output to
                 this.outputElement = document.createElement('div');
                 this.outputElement.classList.add('py-output');
-                this.outputElement.hidden = true;
                 this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
 
                 // add the output div id if there's not output pre-defined
@@ -148,44 +147,10 @@ export function make_PyRepl(runtime: Runtime) {
         }
 
         async evaluate(runtime: Runtime): Promise<void> {
-            this.outputElement.innerHTML = '';
-
-            let source: string;
-            try {
-                source = this.getSourceFromElement();
-
-                // XXX we should use pyExec and let it display the errors
-                await pyExecDontHandleErrors(runtime, source, this.outputElement);
-
-                removeClasses(this.outputElement, ['py-error']);
-                this.outputElement.hidden = false;
-                this.outputElement.style.display = 'block';
-                this.autogenerateMaybe();
-            } catch (err) {
-                logger.error(err);
-                try{
-                    if (Element === undefined) {
-                        Element = <Element>runtime.globals.get('Element');
-                    }
-                    const out = Element(this.outputElement.id);
-
-                    addClasses(this.outputElement, ['py-error']);
-                    out.write.callKwargs(err.toString(), { append: false });
-                    if (this.outputElement.children.length === 0){
-                        this.outputElement.setAttribute('error', '');
-                    }else{
-                        this.outputElement.children[this.outputElement.children.length - 1].setAttribute('error', '');
-                    }
-
-                    this.outputElement.hidden = false;
-                    this.outputElement.style.display = 'block';
-                    this.outputElement.style.visibility = 'visible';
-                } catch (internalErr){
-                    logger.error("Unnable to write error to error element in page.")
-                }
-
-            }
-        } // end evaluate
+            const pySrc = this.getSourceFromElement();
+            // //this.outputElement.innerHTML = ''; // XXX write a test for this
+            await pyExec(runtime, pySrc, this.outputElement);
+        }
 
         autogenerateMaybe(): void {
             if (this.hasAttribute('auto-generate')) {
