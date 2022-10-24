@@ -154,10 +154,7 @@ export function make_PyRepl(runtime: Runtime) {
         }
 
         async evaluate(runtime: Runtime): Promise<void> {
-            this.setOutputMode("replace");
-            if(!this.appendOutput) {
-                this.outputElement.innerHTML = '';
-            }
+            this.outputElement.innerHTML = '';
 
             let source: string;
             try {
@@ -180,7 +177,7 @@ export function make_PyRepl(runtime: Runtime) {
                     const out = Element(this.errorElement.id);
 
                     addClasses(this.errorElement, ['py-error']);
-                    out.write.callKwargs(err.toString(), { append: this.appendOutput });
+                    out.write.callKwargs(err.toString(), { append: false });
                     if (this.errorElement.children.length === 0){
                         this.errorElement.setAttribute('error', '');
                     }else{

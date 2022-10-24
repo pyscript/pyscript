@@ -19,7 +19,6 @@ export class BaseEvalElement extends HTMLElement {
     outputElement: HTMLElement;
     errorElement: HTMLElement;
     theme: string;
-    appendOutput: boolean;
 
     constructor() {
         super();
@@ -28,22 +27,6 @@ export class BaseEvalElement extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open' });
         this.wrapper = document.createElement('slot');
         this.shadow.appendChild(this.wrapper);
-        this.setOutputMode("append");
-    }
-
-    setOutputMode(defaultMode = "append") {
-        const mode = getAttribute(this,'output-mode') || defaultMode;
-
-        switch (mode) {
-            case "append":
-                this.appendOutput = true;
-                break;
-            case "replace":
-                this.appendOutput = false;
-                break;
-            default:
-                logger.warn(`${this.id}: custom output-modes are currently not implemented`);
-        }
     }
 
     checkId() {
