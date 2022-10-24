@@ -342,7 +342,8 @@ class ConsoleMessageCollection:
       console.js_error.*    this is a special category which does not exist in the
                             browser: it prints uncaught JS exceptions
 
-      console.all.*         same as above, but considering all messages, no filters
+      console.all.*         same as the individual categories but considering
+                            all messages which were sent to the console
     """
 
     @dataclass
