@@ -10,8 +10,6 @@ import { getLogger } from '../logger';
 const logger = getLogger('pyscript/base');
 
 export class BaseEvalElement extends HTMLElement {
-    shadow: ShadowRoot;
-    wrapper: HTMLElement;
     code: string;
     source: string;
     btnConfig: HTMLElement;
@@ -22,11 +20,6 @@ export class BaseEvalElement extends HTMLElement {
 
     constructor() {
         super();
-
-        // attach shadow so we can preserve the element original innerHtml content
-        this.shadow = this.attachShadow({ mode: 'open' });
-        this.wrapper = document.createElement('slot');
-        this.shadow.appendChild(this.wrapper);
     }
 
 }

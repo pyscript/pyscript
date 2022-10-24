@@ -37,11 +37,16 @@ export function make_PyRepl(runtime: Runtime) {
     }
 
     class PyRepl extends BaseEvalElement {
+        shadow: ShadowRoot;
+        wrapper: HTMLElement;
         editor: EditorView;
         editorNode: HTMLElement;
 
         constructor() {
             super();
+            this.shadow = this.attachShadow({ mode: 'open' });
+            this.wrapper = document.createElement('slot');
+            this.shadow.appendChild(this.wrapper);
 
             // add an extra div where we can attach the codemirror editor
             this.editorNode = document.createElement('div');
