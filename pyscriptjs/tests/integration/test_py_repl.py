@@ -99,14 +99,13 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        self.page.keyboard.press("Shift+Enter")
         out_div = py_repl.locator("div.py-output")
+        self.page.keyboard.press("Shift+Enter")
         assert out_div.inner_text() == "hello world"
         #
         # clear the editor, write new code, execute
         self._replace(py_repl, "display('another output')")
         self.page.keyboard.press("Shift+Enter")
-        out_div = py_repl.locator("div.py-output")
         assert out_div.inner_text() == "another output"
 
     def test_python_exception(self):
@@ -144,14 +143,13 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        self.page.keyboard.press("Shift+Enter")
         out_div = py_repl.locator("div.py-output")
+        self.page.keyboard.press("Shift+Enter")
         assert out_div.inner_text() == "hello world"
         #
         # clear the editor, write new code, execute
         self._replace(py_repl, "0/0")
         self.page.keyboard.press("Shift+Enter")
-        out_div = py_repl.locator("div.py-output")
         assert "hello world" not in out_div.inner_text()
         assert "ZeroDivisionError" in out_div.inner_text()
 
