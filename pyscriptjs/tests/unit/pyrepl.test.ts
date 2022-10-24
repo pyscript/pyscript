@@ -29,12 +29,7 @@ describe('PyRepl', () => {
         instance.connectedCallback()
 
         const instanceId = instance.id;
-        // id should be similar to py-4850c8c3-d70d-d9e0-03c1-3cfeb0bcec0d
-        expect(instanceId).toMatch(/py-(\w+-){1,4}\w+/);
-
-        // calling checkId directly should return the same id
-        instance.checkId();
-        expect(instance.id).toEqual(instanceId);
+        expect(instanceId).toMatch(/py-internal-\d+/);
     })
 
     it('confirm that calling connectedCallback renders the expected elements', async () => {
