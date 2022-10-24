@@ -79,15 +79,21 @@ class TestPyRepl(PyScriptTest):
         out_div = py_repl.locator("div.py-output")
         assert out_div.inner_text() == "hello world"
 
-    def test_error_ouput(self):
+    def test_exception(self):
         self.pyscript_run(
             """
-            <py-repl id="my-repl" auto-generate="true"> </py-repl>
+            <py-repl>
+                raise Exception('this is an error')
+            </py-repl>
             """
         )
-        self.page.locator("py-repl").type("this is an error")
-        self.page.locator("button").click()
-        expect(self.page.locator(".py-error")).to_be_visible()
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+        err_div = py_repl.locator("div.py-error")
+        assert err_div.is_visible()
+        tb_lines = err_div.inner_text().splitlines()
+        assert tb_lines[0] == "Traceback (most recent call last):"
+        assert tb_lines[-1] == "Exception: this is an error"
 
     # console errors are observable on the headed instance
     # but is just not possible to access them using the self object
