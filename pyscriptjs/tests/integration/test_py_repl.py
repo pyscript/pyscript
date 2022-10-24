@@ -8,61 +8,78 @@ class TestPyRepl(PyScriptTest):
     def test_repl_loads(self):
         self.pyscript_run(
             """
-            <py-repl id="my-repl" auto-generate="true"> </py-repl>
+            <py-repl></py-repl>
             """
         )
-
         py_repl = self.page.query_selector("py-repl")
         assert py_repl
         assert "Python" in py_repl.inner_text()
 
-    def test_repl_runs_on_button_press(self):
+    def test_execute_preloaded_source(self):
+        """
+        Unfortunately it tests two things at once, but it's impossible to write a
+        smaller test. I think this is the most basic test that we can write.
+
+        We test that:
+            1. the source code that we put in the tag is loaded inside the editor
+            2. clicking the button executes it
+        """
         self.pyscript_run(
             """
-            <py-repl id="my-repl" auto-generate="true"> </py-repl>
+            <py-repl>
+                print('hello from py-repl')
+            </py-repl>
             """
         )
+        py_repl = self.page.locator("py-repl")
+        src = py_repl.inner_text()
+        assert "print('hello from py-repl')" in src
+        py_repl.locator("button").click()
+        assert self.console.log.lines[-1] == "hello from py-repl"
 
-        self.page.locator("py-repl").type('display("hello")')
-
-        # We only have one button in the page
-        self.page.locator("button").click()
-
-        # The result gets the id of the repl + n
-        repl_result = self.page.wait_for_selector("#my-repl-2", state="attached")
-
-        assert repl_result.inner_text() == "hello"
-
-    def test_repl_runs_with_shift_enter(self):
+    def test_execute_code_typed_by_the_user(self):
         self.pyscript_run(
             """
-            <py-repl id="my-repl" auto-generate="true"> </py-repl>
+            <py-repl></py-repl>
             """
         )
-        self.page.locator("py-repl").type('display("hello")')
+        py_repl = self.page.locator("py-repl")
+        py_repl.type('print("hello")')
+        py_repl.locator("button").click()
+        assert self.console.log.lines[-1] == "hello"
 
-        # Confirm that we get a result by using the keys shortcut
+    def test_execute_on_shift_enter(self):
+        self.pyscript_run(
+            """
+            <py-repl>
+                print("hello")
+            </py-repl>
+            """
+        )
         self.page.keyboard.press("Shift+Enter")
-        py_repl = self.page.query_selector("#my-repl-2")
-        assert "hello" in py_repl.inner_text()
+        # wait_for_timeout(0) is basically the equivalent of an "await", it
+        # lets the playwright engine to do its things and the console message
+        # to be captured by out machinery. I don't really understand why with
+        # keyboard.press() we need it, but with button.click() we don't. I
+        # guess that button.click() does something equivalent internally, but
+        # I didn't investigate further.
+        self.page.wait_for_timeout(0)
+        assert self.console.log.lines[-1] == "hello"
 
-    def test_repl_console_ouput(self):
+    def test_display(self):
         self.pyscript_run(
             """
-            <py-repl id="my-repl" auto-generate="true"> </py-repl>
+            <py-repl id="my-repl">
+                display('hello world')
+            </py-repl>
             """
         )
-        self.page.locator("py-repl").type("print('apple')")
-        self.page.keyboard.press("Enter")
-        self.page.locator("py-repl").type("console.log('banana')")
-        self.page.locator("button").click()
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+        repl_result = self.page.wait_for_selector("#my-repl-2", state="attached")
+        assert repl_result.inner_text() == "hello world"
 
-        # The result gets the id of the repl + n
-        repl_result = self.page.wait_for_selector("#my-repl-1", state="attached")
-
-        assert repl_result.inner_text() == ""
-
-    def test_repl_error_ouput(self):
+    def test_error_ouput(self):
         self.pyscript_run(
             """
             <py-repl id="my-repl" auto-generate="true"> </py-repl>
