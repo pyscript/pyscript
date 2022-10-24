@@ -28,9 +28,9 @@ class PyScriptTest:
       - self.console collects all the JS console.* messages. Look at the doc
         of ConsoleMessageCollection for more details.
 
-      - self.check_errors() checks that no JS errors have been thrown
+      - self.check_js_errors() checks that no JS errors have been thrown
 
-      - after each test, self.check_errors() is automatically run to ensure
+      - after each test, self.check_js_errors() is automatically run to ensure
         that no JS error passes uncaught.
 
       - self.wait_for_console waits until the specified message appears in the
@@ -113,47 +113,74 @@ class PyScriptTest:
         page.set_default_timeout(60000)
 
         self.console = ConsoleMessageCollection(self.logger)
-        self._page_errors = []
-        page.on("console", self.console.add_message)
+        self._js_errors = []
+        page.on("console", self._on_console)
         page.on("pageerror", self._on_pageerror)
 
     def teardown_method(self):
-        # we call check_errors on teardown: this means that if there are still
+        # we call check_js_errors on teardown: this means that if there are still
         # non-cleared errors, the test will fail. If you expect errors in your
         # page and they should not cause the test to fail, you should call
-        # self.check_errors() in the test itself.
-        self.check_errors()
+        # self.check_js_errors() in the test itself.
+        self.check_js_errors()
+
+    def _on_console(self, msg):
+        self.console.add_message(msg.type, msg.text)
 
     def _on_pageerror(self, error):
-        self.logger.log("JS exception", error.stack, color="red")
-        self._page_errors.append(error)
+        self.console.add_message("js_error", error.stack)
+        self._js_errors.append(error)
 
-    def check_errors(self):
+    def check_js_errors(self, *expected_messages):
         """
         Check whether JS errors were reported.
 
-        If it finds a single JS error, raise JsError.
-        If it finds multiple JS errors, raise JsMultipleErrors.
+        expected_messages is a list of strings of errors that you expect they
+        were raised in the page.  They are checked using a simple 'in' check,
+        equivalent to this:
+            if expected_message in actual_error_message:
+                ...
+
+        If an error was expected but not found, it raises
+        DidNotRaiseJsError().
+
+        If there are MORE errors other than the expected ones, it raises JsErrors.
 
         Upon return, all the errors are cleared, so a subsequent call to
-        check_errors will not raise, unless NEW JS errors have been reported
+        check_js_errors will not raise, unless NEW JS errors have been reported
         in the meantime.
         """
-        exc = None
-        if len(self._page_errors) == 1:
-            # if there is a single error, wrap it
-            exc = JsError(self._page_errors[0])
-        elif len(self._page_errors) >= 2:
-            exc = JsMultipleErrors(self._page_errors)
-        self._page_errors = []
-        if exc:
-            raise exc
+        expected_messages = list(expected_messages)
+        js_errors = self._js_errors[:]
 
-    def clear_errors(self):
+        for i, msg in enumerate(expected_messages):
+            for j, error in enumerate(js_errors):
+                if msg is not None and error is not None and msg in error.message:
+                    # we matched one expected message with an error, remove both
+                    expected_messages[i] = None
+                    js_errors[j] = None
+
+        # if everything is find, now expected_messages and js_errors contains
+        # only Nones. If they contain non-None elements, it means that we
+        # either have messages which are expected-but-not-found or errors
+        # which are found-but-not-expected.
+        expected_messages = [msg for msg in expected_messages if msg is not None]
+        js_errors = [err for err in js_errors if err is not None]
+        self.clear_js_errors()
+
+        if expected_messages:
+            # expected-but-not-found
+            raise JsErrorsDidNotRaise(expected_messages, js_errors)
+
+        if js_errors:
+            # found-but-not-expected
+            raise JsErrors(js_errors)
+
+    def clear_js_errors(self):
         """
         Clear all JS errors.
         """
-        self._page_errors = []
+        self._js_errors = []
 
     def writefile(self, filename, content):
         """
@@ -168,7 +195,7 @@ class PyScriptTest:
         url = f"{self.http_server}/{path}"
         self.page.goto(url, timeout=0)
 
-    def wait_for_console(self, text, *, timeout=None, check_errors=True):
+    def wait_for_console(self, text, *, timeout=None, check_js_errors=True):
         """
         Wait until the given message appear in the console.
 
@@ -179,7 +206,7 @@ class PyScriptTest:
         timeout is expressed in milliseconds. If it's None, it will use
         playwright's own default value, which is 30 seconds).
 
-        If check_errors is True (the default), it also checks that no JS
+        If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
         pred = lambda msg: msg.text == text
@@ -192,24 +219,24 @@ class PyScriptTest:
             # the JsError will shadow the TimeoutError but this is correct,
             # because it's very likely that the console message never appeared
             # precisely because of the exception in JS.
-            if check_errors:
-                self.check_errors()
+            if check_js_errors:
+                self.check_js_errors()
 
-    def wait_for_pyscript(self, *, timeout=None, check_errors=True):
+    def wait_for_pyscript(self, *, timeout=None, check_js_errors=True):
         """
         Wait until pyscript has been fully loaded.
 
         Timeout is expressed in milliseconds. If it's None, it will use
         playwright's own default value, which is 30 seconds).
 
-        If check_errors is True (the default), it also checks that no JS
+        If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
         # this is printed by runtime.ts:Runtime.initialize
         self.wait_for_console(
             "[pyscript/main] PyScript page fully initialized",
             timeout=timeout,
-            check_errors=check_errors,
+            check_js_errors=check_js_errors,
         )
         # We still don't know why this wait is necessary, but without it
         # events aren't being triggered in the tests.
@@ -251,9 +278,9 @@ class PyScriptTest:
 # ============== Helpers and utility functions ==============
 
 
-class JsError(Exception):
+class JsErrors(Exception):
     """
-    Represent an exception which happened in JS.
+    Represent one or more exceptions which happened in JS.
 
     It's a thin wrapper around playwright.sync_api.Error, with two important
     differences:
@@ -265,9 +292,15 @@ class JsError(Exception):
        playwright.sync_api.Error
     """
 
-    def __init__(self, error):
-        super().__init__(self.format_playwright_error(error))
-        self.error = error
+    def __init__(self, errors):
+        n = len(errors)
+        assert n != 0
+        lines = [f"JS errors found: {n}"]
+        for err in errors:
+            lines.append(self.format_playwright_error(err))
+        msg = "\n".join(lines)
+        super().__init__(msg)
+        self.errors = errors
 
     @staticmethod
     def format_playwright_error(error):
@@ -278,17 +311,24 @@ class JsError(Exception):
         return error.stack or str(error)
 
 
-class JsMultipleErrors(Exception):
+class JsErrorsDidNotRaise(Exception):
     """
-    This is raised in case we get multiple JS errors in the page
+    Exception raised by check_js_errors when the expected JS error messages
+    are not found.
     """
 
-    def __init__(self, errors):
-        lines = ["Multiple JS errors found:"]
-        for err in errors:
-            lines.append(JsError.format_playwright_error(err))
+    def __init__(self, expected_messages, errors):
+        lines = ["The following JS errors were expected but could not be found:"]
+        for msg in expected_messages:
+            lines.append("    - " + msg)
+        if errors:
+            lines.append("---")
+            lines.append("The following JS errors were raised but not expected:")
+            for err in errors:
+                lines.append(JsErrors.format_playwright_error(err))
         msg = "\n".join(lines)
         super().__init__(msg)
+        self.expected_messages = expected_messages
         self.errors = errors
 
 
@@ -307,8 +347,17 @@ class ConsoleMessageCollection:
       console.error.*
       console.warning.*
 
-      console.all.*         same as above, but considering all messages, no filters
+      console.js_error.*    this is a special category which does not exist in the
+                            browser: it prints uncaught JS exceptions
+
+      console.all.*         same as the individual categories but considering
+                            all messages which were sent to the console
     """
+
+    @dataclass
+    class Message:
+        type: str  # 'log', 'info', 'debug', etc.
+        text: str
 
     class View:
         """
@@ -337,8 +386,9 @@ class ConsoleMessageCollection:
             return "\n".join(self.lines)
 
     _COLORS = {
-        "error": "red",
         "warning": "brown",
+        "error": "darkred",
+        "js_error": "red",
     }
 
     def __init__(self, logger):
@@ -350,10 +400,12 @@ class ConsoleMessageCollection:
         self.info = self.View(self, "info")
         self.error = self.View(self, "error")
         self.warning = self.View(self, "warning")
+        self.js_error = self.View(self, "js_error")
 
-    def add_message(self, msg):
-        # log the message: pytest will capute the output and display the
+    def add_message(self, type, text):
+        # log the message: pytest will capture the output and display the
         # messages if the test fails.
+        msg = self.Message(type=type, text=text)
         category = f"console.{msg.type}"
         color = self._COLORS.get(msg.type)
         self.logger.log(category, msg.text, color=color)
@@ -389,7 +441,7 @@ class Logger:
     def log(self, category, text, *, color=None):
         delta = time.time() - self.start_time
         text = self.colorize_prefix(text, color="teal")
-        line = f"[{delta:6.2f} {category:15}] {text}"
+        line = f"[{delta:6.2f} {category:16}] {text}"
         if color:
             line = Color.set(color, line)
         print(line)

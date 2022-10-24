@@ -95,17 +95,9 @@ class TestOutput(PyScriptTest):
         self.page.locator("text=Click me").click()
         text = self.page.text_content("body")
         assert "hello" not in text
-
-        # currently the test infrastructure doesn't allow to easily assert that
-        # js exceptions were raised this is a workaround but we need a better fix.
-        # Antonio promised to write it
-        assert len(self._page_errors) == 1
-        console_text = self._page_errors
-        assert (
+        self.check_js_errors(
             "Implicit target not allowed here. Please use display(..., target=...)"
-            in console_text[0].message
         )
-        self._page_errors = []
 
     def test_explicit_target_pyscript_tag(self):
         self.pyscript_run(
