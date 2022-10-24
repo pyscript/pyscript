@@ -26,15 +26,6 @@ export function make_PyRepl(runtime: Runtime) {
         };
     }
 
-    let initialTheme: string;
-    function getEditorTheme(el: PyRepl): string {
-        const theme = getAttribute(el, 'theme');
-        if( !initialTheme && theme){
-            initialTheme = theme;
-        }
-        return initialTheme;
-    }
-
     class PyRepl extends HTMLElement {
         shadow: ShadowRoot;
         wrapper: HTMLElement;
@@ -57,6 +48,11 @@ export function make_PyRepl(runtime: Runtime) {
             this.shadow.appendChild(this.wrapper);
         }
 
+        getEditorTheme(): string {
+            return getAttribute(this, 'theme');
+        }
+
+
         connectedCallback() {
             ensureUniqueId(this);
             this.code = htmlDecode(this.innerHTML);
@@ -74,7 +70,7 @@ export function make_PyRepl(runtime: Runtime) {
                 ]),
             ];
 
-            if (getEditorTheme(this) === 'dark') {
+            if (this.getEditorTheme() === 'dark') {
                 extensions.push(oneDarkTheme);
             }
 
