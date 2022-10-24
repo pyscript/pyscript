@@ -1,9 +1,17 @@
-from playwright.sync_api import expect
-
 from .support import PyScriptTest
 
 
 class TestPyRepl(PyScriptTest):
+    def _replace(self, py_repl, newcode):
+        """
+        Clear the editor and write new code in it.
+        WARNING: this assumes that the textbox has already the focus
+        """
+        # clear the editor, write new code
+        self.page.keyboard.press("Control+A")
+        self.page.keyboard.press("Backspace")
+        self.page.keyboard.type(newcode)
+
     def test_repl_loads(self):
         self.pyscript_run(
             """
@@ -96,9 +104,7 @@ class TestPyRepl(PyScriptTest):
         assert out_div.inner_text() == "hello world"
         #
         # clear the editor, write new code, execute
-        self.page.keyboard.press("Control+A")
-        self.page.keyboard.press("Backspace")
-        self.page.keyboard.type("display('another output')")
+        self._replace(py_repl, "display('another output')")
         self.page.keyboard.press("Shift+Enter")
         out_div = py_repl.locator("div.py-output")
         assert out_div.inner_text() == "another output"
@@ -143,28 +149,30 @@ class TestPyRepl(PyScriptTest):
         assert out_div.inner_text() == "hello world"
         #
         # clear the editor, write new code, execute
-        self.page.keyboard.press("Control+A")
-        self.page.keyboard.press("Backspace")
-        self.page.keyboard.type("0/0")
+        self._replace(py_repl, "0/0")
         self.page.keyboard.press("Shift+Enter")
         out_div = py_repl.locator("div.py-output")
         assert "hello world" not in out_div.inner_text()
         assert "ZeroDivisionError" in out_div.inner_text()
 
-    # this tests the fact that a new error div should be created once there's
-    # an error but also that it should disappear automatically once the error
-    # is fixed
-    def test_repl_show_error_fix_error_check_for_ouput(self):
+    def test_hide_previous_error_after_successful_run(self):
+        """
+        this tests the fact that a new error div should be created once there's an
+        error but also that it should disappear automatically once the error
+        is fixed
+        """
         self.pyscript_run(
             """
-            <py-repl id="my-repl" auto-generate="true"> </py-repl>
+            <py-repl>
+                raise Exception('this is an error')
+            </py-repl>
             """
         )
-        self.page.locator("py-repl").type("d")
+        py_repl = self.page.locator("py-repl")
+        out_div = py_repl.locator("div.py-output")
         self.page.keyboard.press("Shift+Enter")
-        expect(self.page.locator(".py-error")).to_be_visible()
-        self.page.keyboard.press("Backspace")
-        self.page.locator("py-repl").type("display('ok')")
+        assert "this is an error" in out_div.inner_text()
+        #
+        self._replace(py_repl, "display('hello')")
         self.page.keyboard.press("Shift+Enter")
-        repl_result = self.page.wait_for_selector("#my-repl-2", state="attached")
-        assert repl_result.inner_text() == "ok"
+        assert out_div.inner_text() == "hello"
