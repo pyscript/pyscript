@@ -134,7 +134,7 @@ export function make_PyRepl(runtime: Runtime) {
             } else {
                 // to create a new output div to output to
                 this.outputElement = document.createElement('div');
-                this.outputElement.classList.add('output');
+                this.outputElement.classList.add('py-output');
                 this.outputElement.hidden = true;
                 this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
 
@@ -155,7 +155,7 @@ export function make_PyRepl(runtime: Runtime) {
                 source = this.getSourceFromElement();
 
                 // XXX we should use pyExec and let it display the errors
-                await pyExecDontHandleErrors(runtime, source, this);
+                await pyExecDontHandleErrors(runtime, source, this.outputElement);
 
                 removeClasses(this.outputElement, ['py-error']);
                 this.outputElement.hidden = false;

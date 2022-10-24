@@ -76,8 +76,8 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
-        repl_result = self.page.wait_for_selector("#my-repl-2", state="attached")
-        assert repl_result.inner_text() == "hello world"
+        out_div = py_repl.locator("div.py-output")
+        assert out_div.inner_text() == "hello world"
 
     def test_error_ouput(self):
         self.pyscript_run(
