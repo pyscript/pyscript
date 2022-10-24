@@ -46,18 +46,6 @@ export class BaseEvalElement extends HTMLElement {
         }
     }
 
-    // subclasses should overwrite this method to define custom logic
-    // before code gets evaluated
-    preEvaluate(): void {
-        return null;
-    }
-
-    // subclasses should overwrite this method to define custom logic
-    // after code has been evaluated
-    postEvaluate(): void {
-        return null;
-    }
-
     checkId() {
         ensureUniqueId(this);
     }

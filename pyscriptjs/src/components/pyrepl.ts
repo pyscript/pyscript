@@ -154,7 +154,10 @@ export function make_PyRepl(runtime: Runtime) {
         }
 
         async evaluate(runtime: Runtime): Promise<void> {
-            this.preEvaluate();
+            this.setOutputMode("replace");
+            if(!this.appendOutput) {
+                this.outputElement.innerHTML = '';
+            }
 
             let source: string;
             try {
@@ -165,7 +168,9 @@ export function make_PyRepl(runtime: Runtime) {
                 await pyExecDontHandleErrors(runtime, source, this);
 
                 removeClasses(this.errorElement, ['py-error']);
-                this.postEvaluate();
+                this.outputElement.hidden = false;
+                this.outputElement.style.display = 'block';
+                this.autogenerateMaybe();
             } catch (err) {
                 logger.error(err);
                 try{
@@ -192,17 +197,7 @@ export function make_PyRepl(runtime: Runtime) {
             }
         } // end evaluate
 
-        preEvaluate(): void {
-            this.setOutputMode("replace");
-            if(!this.appendOutput) {
-                this.outputElement.innerHTML = '';
-            }
-        }
-
-        postEvaluate(): void {
-            this.outputElement.hidden = false;
-            this.outputElement.style.display = 'block';
-
+        autogenerateMaybe(): void {
             if (this.hasAttribute('auto-generate')) {
                 const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
                 const lastRepl = allPyRepls[allPyRepls.length - 1];
