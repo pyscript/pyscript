@@ -31,7 +31,6 @@ export function make_PyRepl(runtime: Runtime) {
         wrapper: HTMLElement;
         code: string;
         outputElement: HTMLElement;
-        errorElement: HTMLElement;
         btnRun: HTMLElement;
         editor: EditorView;
         editorNode: HTMLElement;
@@ -136,7 +135,6 @@ export function make_PyRepl(runtime: Runtime) {
             if (output) {
                 const el = document.getElementById(output);
                 if(el){
-                    this.errorElement = el;
                     this.outputElement = el
                 }
             } else {
@@ -148,8 +146,6 @@ export function make_PyRepl(runtime: Runtime) {
 
                 // add the output div id if there's not output pre-defined
                 mainDiv.appendChild(this.outputElement);
-
-                this.errorElement = this.outputElement;
             }
 
             this.appendChild(mainDiv);
@@ -167,7 +163,7 @@ export function make_PyRepl(runtime: Runtime) {
                 // XXX we should use pyExec and let it display the errors
                 await pyExecDontHandleErrors(runtime, source, this);
 
-                removeClasses(this.errorElement, ['py-error']);
+                removeClasses(this.outputElement, ['py-error']);
                 this.outputElement.hidden = false;
                 this.outputElement.style.display = 'block';
                 this.autogenerateMaybe();
@@ -177,19 +173,19 @@ export function make_PyRepl(runtime: Runtime) {
                     if (Element === undefined) {
                         Element = <Element>runtime.globals.get('Element');
                     }
-                    const out = Element(this.errorElement.id);
+                    const out = Element(this.outputElement.id);
 
-                    addClasses(this.errorElement, ['py-error']);
+                    addClasses(this.outputElement, ['py-error']);
                     out.write.callKwargs(err.toString(), { append: false });
-                    if (this.errorElement.children.length === 0){
-                        this.errorElement.setAttribute('error', '');
+                    if (this.outputElement.children.length === 0){
+                        this.outputElement.setAttribute('error', '');
                     }else{
-                        this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
+                        this.outputElement.children[this.outputElement.children.length - 1].setAttribute('error', '');
                     }
 
-                    this.errorElement.hidden = false;
-                    this.errorElement.style.display = 'block';
-                    this.errorElement.style.visibility = 'visible';
+                    this.outputElement.hidden = false;
+                    this.outputElement.style.display = 'block';
+                    this.outputElement.style.visibility = 'visible';
                 } catch (internalErr){
                     logger.error("Unnable to write error to error element in page.")
                 }
