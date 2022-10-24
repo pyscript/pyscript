@@ -109,6 +109,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*?class=\\"bk\\".*?>')
 
+    @pytest.mark.skip("flaky, see issue 759")
     def test_d3(self):
         self.goto("examples/d3.html")
         self.wait_for_pyscript()
