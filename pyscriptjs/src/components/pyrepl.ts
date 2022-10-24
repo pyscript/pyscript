@@ -117,12 +117,6 @@ export function make_PyRepl(runtime: Runtime) {
                 void this.evaluate(runtime);
             });
 
-            if (!this.id) {
-                logger.warn(
-                    "WARNING: <py-repl> defined without an id. <py-repl> should always have an id, otherwise multiple <py-repl> in the same page will not work!"
-                );
-            }
-
             if (!this.hasAttribute('exec-id')) {
                 this.setAttribute('exec-id', '1');
             }
