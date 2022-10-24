@@ -66,7 +66,7 @@ repos:
         -   --py310-plus
 
 -   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.25.0
+    rev: v8.26.0
     hooks:
     -   id: eslint
         files: pyscriptjs/src/.*\.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
