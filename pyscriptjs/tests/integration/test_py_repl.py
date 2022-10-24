@@ -1,4 +1,3 @@
-import pytest
 from playwright.sync_api import expect
 
 from .support import PyScriptTest
@@ -79,7 +78,10 @@ class TestPyRepl(PyScriptTest):
         out_div = py_repl.locator("div.py-output")
         assert out_div.inner_text() == "hello world"
 
-    def test_exception(self):
+    def test_python_exception(self):
+        """
+        See also test01_basic::test_python_exception, since it's very similar
+        """
         self.pyscript_run(
             """
             <py-repl>
@@ -89,22 +91,18 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
+        #
+        # check that we sent the traceback to the console
+        tb_lines = self.console.error.lines[-1].splitlines()
+        assert tb_lines[0] == "[pyexec] Python exception:"
+        assert tb_lines[1] == "Traceback (most recent call last):"
+        assert tb_lines[-1] == "Exception: this is an error"
+        #
+        # check that we show the traceback in the page
         err_pre = py_repl.locator("div.py-output > pre.py-error")
         tb_lines = err_pre.inner_text().splitlines()
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
-
-    # console errors are observable on the headed instance
-    # but is just not possible to access them using the self object
-    @pytest.mark.xfail(reason="Cannot access console errors")
-    def test_repl_error_ouput_console(self):
-        self.pyscript_run(
-            """
-            <py-repl id="my-repl" auto-generate="true"> </py-repl>
-            """
-        )
-        self.page.locator("py-repl").type("this is an error")
-        self.page.locator("button").click()
 
     def test_repl_error_and_fail_moving_forward_ouput(self):
         self.pyscript_run(
