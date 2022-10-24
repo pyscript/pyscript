@@ -6,11 +6,8 @@
 import { ensureUniqueId, addClasses, removeClasses, getAttribute } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
-import { pyExecDontHandleErrors } from '../pyexec';
 
 const logger = getLogger('pyscript/base');
-
-let Element;
 
 export class BaseEvalElement extends HTMLElement {
     shadow: ShadowRoot;
@@ -75,42 +72,5 @@ export class BaseEvalElement extends HTMLElement {
         return this.code;
     }
 
-    async evaluate(runtime: Runtime): Promise<void> {
-        this.preEvaluate();
 
-        let source: string;
-        try {
-            source = this.source ? await this.getSourceFromFile(this.source)
-                                 : this.getSourceFromElement();
-
-            // XXX we should use pyExec and let it display the errors
-            await pyExecDontHandleErrors(runtime, source, this);
-
-            removeClasses(this.errorElement, ['py-error']);
-            this.postEvaluate();
-        } catch (err) {
-            logger.error(err);
-            try{
-                if (Element === undefined) {
-                    Element = <Element>runtime.globals.get('Element');
-                }
-                const out = Element(this.errorElement.id);
-
-                addClasses(this.errorElement, ['py-error']);
-                out.write.callKwargs(err.toString(), { append: this.appendOutput });
-                if (this.errorElement.children.length === 0){
-                    this.errorElement.setAttribute('error', '');
-                }else{
-                    this.errorElement.children[this.errorElement.children.length - 1].setAttribute('error', '');
-                }
-
-                this.errorElement.hidden = false;
-                this.errorElement.style.display = 'block';
-                this.errorElement.style.visibility = 'visible';
-            } catch (internalErr){
-                logger.error("Unnable to write error to error element in page.")
-            }
-
-        }
-    } // end evaluate
 }
