@@ -1,12 +1,27 @@
 # Reference
 
-This reference section will have manually documented or fully
-automated code documentation. **Coming soon!**
+```{toctree}
+---
+maxdepth: 1
+glob:
+caption: Elements
+---
+elements/*
+```
 
 ```{toctree}
 ---
 maxdepth: 1
 glob:
+caption: Modules
+---
+modules/*
+```
+
+```{toctree}
+---
+maxdepth: 1
+caption: Miscellaneous
 ---
 faq
-pyscript-module
+```
