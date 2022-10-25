@@ -21,7 +21,7 @@ export function make_PyRepl(runtime: Runtime) {
         // Creates a codemirror cmd handler that calls the el.evaluate when an event
         // triggers that specific cmd
         return () => {
-            void el.evaluate(runtime);
+            void el.do_run();
             return true;
         };
     }
@@ -148,7 +148,7 @@ export function make_PyRepl(runtime: Runtime) {
             runButton.innerHTML =
                 '<svg id="" style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>';
             runButton.addEventListener('click', () => {
-                void this.evaluate(runtime);
+                void this.do_run();
             });
             return runButton;
         }
@@ -162,7 +162,7 @@ export function make_PyRepl(runtime: Runtime) {
 
         //  ********************* execution logic *********************
 
-        async evaluate(runtime: Runtime): Promise<void> {
+        async do_run(): Promise<void> {
             const pySrc = this.getPySrc();
 
             // determine the output element
