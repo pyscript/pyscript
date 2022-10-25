@@ -52,6 +52,30 @@ export function make_PyRepl(runtime: Runtime) {
             this.shadow.appendChild(this.wrapper);
         }
 
+        connectedCallback() {
+            ensureUniqueId(this);
+            this.code = htmlDecode(this.innerHTML);
+            this.innerHTML = '';
+            this.editorDiv = this.makeEditorDiv();
+
+            const boxDiv = this.makeBoxDiv();
+
+            if (!this.hasAttribute('exec-id')) {
+                this.setAttribute('exec-id', '1');
+            }
+
+            if (!this.hasAttribute('root')) {
+                this.setAttribute('root', this.id);
+            }
+
+            this.outDiv = this.makeOutDiv();
+            boxDiv.appendChild(this.outDiv);
+
+            this.appendChild(boxDiv);
+            this.editor.focus();
+            logger.debug(`element ${this.id} successfully connected`);
+        }
+
         /** Create and configure the codemirror editor
          */
         makeEditor(parent: HTMLElement): EditorView {
@@ -133,30 +157,6 @@ export function make_PyRepl(runtime: Runtime) {
             outDiv.className = 'py-repl-output';
             outDiv.id = this.id + '-' + this.getAttribute('exec-id');
             return outDiv;
-        }
-
-        connectedCallback() {
-            ensureUniqueId(this);
-            this.code = htmlDecode(this.innerHTML);
-            this.innerHTML = '';
-            this.editorDiv = this.makeEditorDiv();
-
-            const boxDiv = this.makeBoxDiv();
-
-            if (!this.hasAttribute('exec-id')) {
-                this.setAttribute('exec-id', '1');
-            }
-
-            if (!this.hasAttribute('root')) {
-                this.setAttribute('root', this.id);
-            }
-
-            this.outDiv = this.makeOutDiv();
-            boxDiv.appendChild(this.outDiv);
-
-            this.appendChild(boxDiv);
-            this.editor.focus();
-            logger.debug(`element ${this.id} successfully connected`);
         }
 
         async evaluate(runtime: Runtime): Promise<void> {
