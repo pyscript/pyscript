@@ -100,6 +100,10 @@ The keys supplied through `inline` override the values present in config supplie
 One can also declare dependencies so as to get access to many 3rd party OSS packages that are supported by PyScript.
 You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/examples/toga/freedom.html).
 
+Package dependencies in the `<py-config>` can be declared by using the direct link to the package URL (whl or any other format supported by the chosen runtime) or by just providing the package name [and version]. If only the name [and version] are provided, packages will be installed directly from what's provided by your runtime or from PyPI.
+
+NOTICE that only pure python packages from PyPI will work and packages with C dependencies will not. These need to be built specifically for WASM (please, consult the Pyodide project for more information about what's supported and on how to build packages with C dependencies)
+
 ```
 <py-config>
   packages = ["./static/wheels/travertino-0.1.3-py3-none-any.whl"]
