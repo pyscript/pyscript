@@ -29,7 +29,7 @@ export function make_PyRepl(runtime: Runtime) {
     /* High level structore of py-repl DOM, and their JS names
            this             <py-repl>
              .shadow          #shadow-root
-             .mainDiv           <div class='py-repl-box'>
+             .boxDiv            <div class='py-repl-box'>
                                   <label>...</label>
              .editorDiv           <div class="editor-box"></div>
              .outDiv              <div class="py-output"></div>
@@ -88,8 +88,8 @@ export function make_PyRepl(runtime: Runtime) {
                 parent: this.editorDiv,
             });
 
-            const mainDiv = document.createElement('div');
-            addClasses(mainDiv, ['py-repl-box']);
+            const boxDiv = document.createElement('div');
+            addClasses(boxDiv, ['py-repl-box']);
 
             // Styles that we use to hide the labels whilst also keeping it accessible for screen readers
             const labelStyle = 'overflow:hidden; display:block; width:1px; height:1px';
@@ -101,10 +101,10 @@ export function make_PyRepl(runtime: Runtime) {
             editorLabel.setAttribute('style', labelStyle);
             editorLabel.htmlFor = 'code-editor';
 
-            mainDiv.append(editorLabel);
+            boxDiv.append(editorLabel);
 
             // add Editor to main PyScript div
-            mainDiv.appendChild(this.editorDiv);
+            boxDiv.appendChild(this.editorDiv);
 
             // Play Button
             this.btnRun = document.createElement('button');
@@ -137,9 +137,9 @@ export function make_PyRepl(runtime: Runtime) {
             this.outDiv = document.createElement('div');
             this.outDiv.classList.add('py-output');
             this.outDiv.id = this.id + '-' + this.getAttribute('exec-id');
-            mainDiv.appendChild(this.outDiv);
+            boxDiv.appendChild(this.outDiv);
 
-            this.appendChild(mainDiv);
+            this.appendChild(boxDiv);
             this.editor.focus();
             logger.debug(`element ${this.id} successfully connected`);
         }
