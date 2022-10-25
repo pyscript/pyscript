@@ -36,7 +36,7 @@ We can use the syntax `from js import ...` to import JavaScript objects directly
 
 ### Using Pyodide's globals access
 
-The [PyScript JavaScript module](../reference/pyscript-module.md)  exposes its underlying Pyodide runtime as `PyScript.runtime`, and maintains a reference to the [globals()](https://docs.python.org/3/library/functions.html#globals) dictionary of the Python namespace. Thus, any global variables in python are accessible in JavaScript at `PyScript.runtime.globals.get('my_variable_name')`
+The [PyScript JavaScript module](../reference/modules/pyscript.md)  exposes its underlying Pyodide runtime as `PyScript.runtime`, and maintains a reference to the [globals()](https://docs.python.org/3/library/functions.html#globals) dictionary of the Python namespace. Thus, any global variables in python are accessible in JavaScript at `PyScript.runtime.globals.get('my_variable_name')`
 
 ```html
 <body>

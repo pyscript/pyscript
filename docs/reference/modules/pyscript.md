@@ -1,4 +1,4 @@
-# The PyScript Module
+# pyscript
 
 The code underlying PyScript is a TypeScript/JavaScript module, which is loaded and executed by the browser. This is what loads when you include, for example, `<script defer src="https://pyscript.net/latest/pyscript.js">` in your HTML.
 

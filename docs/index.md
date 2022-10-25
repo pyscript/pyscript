@@ -17,12 +17,12 @@ Just getting started with PyScript?
 
 Check out our [getting started guide](tutorials/getting-started.md)!
 :::
-:::{grid-item-card} [How-to guides](howtos/index.md)
+:::{grid-item-card} [Guides](guides/index.md)
 
 You already know the basics and want to learn specifics!
 
-[Passing Objects between JavaScript and Python](howtos/passing-objects.md)
-[Making async HTTP requests in pure Python](howtos/http-requests.md)
+[Passing Objects between JavaScript and Python](guides/passing-objects.md)
+[Making async HTTP requests in pure Python](guides/http-requests.md)
 
 :::
 :::{grid-item-card} [Concepts](concepts/index.md)
@@ -34,7 +34,7 @@ You already know the basics and want to learn specifics!
 
 [Frequently asked questions](reference/faq.md)
 
-[The PyScript JS Module](reference/pyscript-module.md)
+[The PyScript JS Module](reference/modules/pyscript.md)
 
 :::{toctree}
 :maxdepth: 1
@@ -48,7 +48,7 @@ maxdepth: 1
 hidden:
 ---
 tutorials/index
-howtos/index
+guides/index
 concepts/index
 reference/index
 ```
