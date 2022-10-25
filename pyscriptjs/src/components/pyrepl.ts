@@ -64,8 +64,6 @@ export function make_PyRepl(runtime: Runtime) {
 
             this.editor = this.makeEditor();
             const boxDiv = this.makeBoxDiv();
-            this.outDiv = this.makeOutDiv();
-            boxDiv.appendChild(this.outDiv);
 
             this.appendChild(boxDiv);
             this.editor.focus();
@@ -108,8 +106,11 @@ export function make_PyRepl(runtime: Runtime) {
 
             const editorDiv = this.makeEditorDiv();
             const editorLabel = this.makeLabel('Python Script Area', editorDiv);
+            this.outDiv = this.makeOutDiv();
+
             boxDiv.append(editorLabel);
             boxDiv.appendChild(editorDiv);
+            boxDiv.appendChild(this.outDiv);
 
             return boxDiv;
         }
