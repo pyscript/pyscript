@@ -1,7 +1,23 @@
 # &lt;py-repl&gt;
 
-The code underlying PyScript is a TypeScript/JavaScript module, which is loaded and executed by the browser. This is what loads when you include, for example, `<script defer src="https://pyscript.net/latest/pyscript.js">` in your HTML.
+The `<py-repl>` element provides a REPL(Read Eval Print Loop) to evaluate multi-line Python and display output.
 
-The module is exported to the browser as `pyscript`. The exports from this module are:
+## Attributes
 
+<<<<<<< HEAD
+| attribute | type | default | description |
+|----|----|----|----|
+| **auto-generate** | boolean |    | Auto-generates REPL after evaluation. |
+| **exec-id** | string |    | The id for logging execution output |
+| **root** | string |    | Denotes the root element of the REPL |
+| **output** | string |    |The element to write output into |
+
+## Examples
+
+- `<py-repl>` element set to auto-generate
+```html
+<py-repl auto-generate="true"> </py-repl>
+```
+=======
 ## pyscript.runtime
+>>>>>>> origin/reference-docs
