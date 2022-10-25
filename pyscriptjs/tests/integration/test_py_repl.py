@@ -191,3 +191,43 @@ class TestPyRepl(PyScriptTest):
         self._replace(py_repl, "display('hello')")
         self.page.keyboard.press("Shift+Enter")
         assert out_div.inner_text() == "hello"
+
+    def test_output_attribute(self):
+        self.pyscript_run(
+            """
+            <py-repl output="mydiv">
+                display('hello world')
+            </py-repl>
+            <hr>
+            <div id="mydiv"></div>
+            """
+        )
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+        #
+        # check that we did NOT write to py-output
+        out_div = py_repl.locator("div.py-output")
+        assert out_div.inner_text() == ""
+        # check that we are using mydiv instead
+        mydiv = self.page.locator("#mydiv")
+        assert mydiv.inner_text() == "hello world"
+
+    def test_output_attribute_does_not_exist(self):
+        """
+        If we try to use an attribute which doesn't exist, we display an error
+        instead
+        """
+        self.pyscript_run(
+            """
+            <py-repl output="I-dont-exist">
+                print('I will not be executed')
+            </py-repl>
+            """
+        )
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+        #
+        out_div = py_repl.locator("div.py-output")
+        msg = "py-repl ERROR: cannot find the output element #I-dont-exist in the DOM"
+        assert out_div.inner_text() == msg
+        assert "I will not be executed" not in self.console.log.text

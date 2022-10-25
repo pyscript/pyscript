@@ -30,7 +30,7 @@ export function make_PyRepl(runtime: Runtime) {
         shadow: ShadowRoot;
         wrapper: HTMLElement;
         code: string;
-        outputElement: HTMLElement;
+        defaultOutputElement: HTMLElement;
         btnRun: HTMLElement;
         editor: EditorView;
         editorNode: HTMLElement;
@@ -125,21 +125,10 @@ export function make_PyRepl(runtime: Runtime) {
                 this.setAttribute('root', this.id);
             }
 
-            const output = getAttribute(this, "output")
-            if (output) {
-                const el = document.getElementById(output);
-                if(el){
-                    this.outputElement = el
-                }
-            } else {
-                // to create a new output div to output to
-                this.outputElement = document.createElement('div');
-                this.outputElement.classList.add('py-output');
-                this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
-
-                // add the output div id if there's not output pre-defined
-                mainDiv.appendChild(this.outputElement);
-            }
+            this.defaultOutputElement = document.createElement('div');
+            this.defaultOutputElement.classList.add('py-output');
+            this.defaultOutputElement.id = this.id + '-' + this.getAttribute('exec-id');
+            mainDiv.appendChild(this.defaultOutputElement);
 
             this.appendChild(mainDiv);
             this.editor.focus();
@@ -148,13 +137,44 @@ export function make_PyRepl(runtime: Runtime) {
 
         async evaluate(runtime: Runtime): Promise<void> {
             const pySrc = this.getSourceFromElement();
+
+            // determine the output element
+            const outEl = this.getOutputElement();
+            if (outEl === undefined) {
+                // this happens if we specified output="..." but we couldn't
+                // find the ID. We already displayed an error message inside
+                // getOutputElement, stop the execution.
+                return;
+            }
+
             // clear the old output before executing the new code
-            this.outputElement.innerHTML = '';
-            const pyResult = await pyExec(runtime, pySrc, this.outputElement);
+            outEl.innerHTML = '';
+
+            // execute the python code
+            const pyResult = await pyExec(runtime, pySrc, outEl);
+
+            // display the value of the last evaluated expression (REPL-style)
             if (pyResult !== undefined) {
-                pyDisplay(runtime, pyResult, { target: this.outputElement.id });
+                pyDisplay(runtime, pyResult, { target: outEl.id });
             }
         }
+
+        getOutputElement(): HTMLElement {
+            const outputID = getAttribute(this, "output");
+            if (outputID !== null) {
+                const el = document.getElementById(outputID);
+                if (el === null) {
+                    const err = `py-repl ERROR: cannot find the output element #${outputID} in the DOM`
+                    this.defaultOutputElement.innerText = err;
+                    return undefined;
+                }
+                return el;
+            }
+            else {
+                return this.defaultOutputElement;
+            }
+        }
+
 
         autogenerateMaybe(): void {
             if (this.hasAttribute('auto-generate')) {
