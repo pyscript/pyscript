@@ -131,7 +131,7 @@ color: #0f172a;
     flex-direction: column;
 }
 
-.editor-box {
+.py-repl-editor {
     --tw-border-opacity: 1;
     border-color: rgba(209, 213, 219, var(--tw-border-opacity));
     border-width: 1px;

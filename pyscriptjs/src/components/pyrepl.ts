@@ -31,8 +31,8 @@ export function make_PyRepl(runtime: Runtime) {
              .shadow          #shadow-root
              .boxDiv            <div class='py-repl-box'>
                                   <label>...</label>
-             .editorDiv           <div class="editor-box"></div>
-             .outDiv              <div class="py-output"></div>
+             .editorDiv           <div class="py-repl-editor"></div>
+             .outDiv              <div class="py-repl-output"></div>
                                 </div>
                             </py-repl>
     */
@@ -53,7 +53,7 @@ export function make_PyRepl(runtime: Runtime) {
 
             // add an extra div where we can attach the codemirror editor
             this.editorDiv = document.createElement('div');
-            addClasses(this.editorDiv, ['editor-box']);
+            addClasses(this.editorDiv, ['py-repl-editor']);
         }
 
         getEditorTheme(): string {
@@ -135,7 +135,7 @@ export function make_PyRepl(runtime: Runtime) {
             }
 
             this.outDiv = document.createElement('div');
-            this.outDiv.classList.add('py-output');
+            this.outDiv.classList.add('py-repl-output');
             this.outDiv.id = this.id + '-' + this.getAttribute('exec-id');
             boxDiv.appendChild(this.outDiv);
 

@@ -83,7 +83,7 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
-        out_div = py_repl.locator("div.py-output")
+        out_div = py_repl.locator("div.py-repl-output")
         assert out_div.inner_text() == "hello world"
 
     def test_show_last_expression(self):
@@ -100,7 +100,7 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
-        out_div = py_repl.locator("div.py-output")
+        out_div = py_repl.locator("div.py-repl-output")
         assert out_div.inner_text() == "42"
 
     def test_run_clears_previous_output(self):
@@ -116,7 +116,7 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        out_div = py_repl.locator("div.py-output")
+        out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
         assert out_div.inner_text() == "hello world"
         #
@@ -146,7 +146,7 @@ class TestPyRepl(PyScriptTest):
         assert tb_lines[-1] == "Exception: this is an error"
         #
         # check that we show the traceback in the page
-        err_pre = py_repl.locator("div.py-output > pre.py-error")
+        err_pre = py_repl.locator("div.py-repl-output > pre.py-error")
         tb_lines = err_pre.inner_text().splitlines()
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
@@ -160,7 +160,7 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        out_div = py_repl.locator("div.py-output")
+        out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
         assert out_div.inner_text() == "hello world"
         #
@@ -184,7 +184,7 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        out_div = py_repl.locator("div.py-output")
+        out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
         assert "this is an error" in out_div.inner_text()
         #
@@ -205,8 +205,8 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
         #
-        # check that we did NOT write to py-output
-        out_div = py_repl.locator("div.py-output")
+        # check that we did NOT write to py-repl-output
+        out_div = py_repl.locator("div.py-repl-output")
         assert out_div.inner_text() == ""
         # check that we are using mydiv instead
         mydiv = self.page.locator("#mydiv")
@@ -227,7 +227,7 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
         #
-        out_div = py_repl.locator("div.py-output")
+        out_div = py_repl.locator("div.py-repl-output")
         msg = "py-repl ERROR: cannot find the output element #I-dont-exist in the DOM"
         assert out_div.inner_text() == msg
         assert "I will not be executed" not in self.console.log.text
