@@ -40,7 +40,6 @@ export function make_PyRepl(runtime: Runtime) {
     */
     class PyRepl extends HTMLElement {
         shadow: ShadowRoot;
-        code: string;
         outDiv: HTMLElement;
         editor: EditorView;
 
@@ -54,9 +53,6 @@ export function make_PyRepl(runtime: Runtime) {
             const slot = document.createElement('slot');
             this.shadow.appendChild(slot);
 
-            this.code = htmlDecode(this.innerHTML);
-            this.innerHTML = '';
-
             if (!this.hasAttribute('exec-id')) {
                 this.setAttribute('exec-id', '1');
             }
@@ -64,9 +60,10 @@ export function make_PyRepl(runtime: Runtime) {
                 this.setAttribute('root', this.id);
             }
 
-            this.editor = this.makeEditor();
+            const pySrc = htmlDecode(this.innerHTML).trim();
+            this.innerHTML = '';
+            this.editor = this.makeEditor(pySrc);
             const boxDiv = this.makeBoxDiv();
-
             this.appendChild(boxDiv);
             this.editor.focus();
             logger.debug(`element ${this.id} successfully connected`);
@@ -74,7 +71,7 @@ export function make_PyRepl(runtime: Runtime) {
 
         /** Create and configure the codemirror editor
          */
-        makeEditor(): EditorView {
+        makeEditor(pySrc: string): EditorView {
             const languageConf = new Compartment();
             const extensions = [
                 indentUnit.of("    "),
@@ -92,7 +89,7 @@ export function make_PyRepl(runtime: Runtime) {
             }
 
             return new EditorView({
-                doc: this.code.trim(),
+                doc: pySrc,
                 extensions,
             });
         }
