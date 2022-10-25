@@ -41,7 +41,6 @@ export function make_PyRepl(runtime: Runtime) {
         wrapper: HTMLElement;
         code: string;
         outDiv: HTMLElement;
-        runButton: HTMLElement;
         editor: EditorView;
 
         constructor() {
@@ -63,6 +62,7 @@ export function make_PyRepl(runtime: Runtime) {
                 this.setAttribute('root', this.id);
             }
 
+            this.editor = this.makeEditor();
             const editorDiv = this.makeEditorDiv();
             const boxDiv = this.makeBoxDiv();
             this.outDiv = this.makeOutDiv();
@@ -75,7 +75,7 @@ export function make_PyRepl(runtime: Runtime) {
 
         /** Create and configure the codemirror editor
          */
-        makeEditor(parent: HTMLElement): EditorView {
+        makeEditor(): EditorView {
             const languageConf = new Compartment();
             const extensions = [
                 indentUnit.of("    "),
@@ -95,7 +95,6 @@ export function make_PyRepl(runtime: Runtime) {
             return new EditorView({
                 doc: this.code.trim(),
                 extensions,
-                parent: parent,
             });
         }
 
@@ -103,7 +102,7 @@ export function make_PyRepl(runtime: Runtime) {
             const editorDiv = document.createElement('div');
             editorDiv.id = 'code-editor';
             editorDiv.className = 'py-repl-editor';
-            this.editor = this.makeEditor(editorDiv);
+            editorDiv.appendChild(this.editor.dom);
             return editorDiv;
         }
 
@@ -141,11 +140,11 @@ export function make_PyRepl(runtime: Runtime) {
             boxDiv.append(editorLabel);
             boxDiv.appendChild(editorDiv);
 
-            this.runButton = this.makeRunButton();
-            const btnLabel = this.makeLabel('Python Script Run Button', this.runButton);
+            const runButton = this.makeRunButton();
+            const runLabel = this.makeLabel('Python Script Run Button', runButton);
 
-            editorDiv.appendChild(btnLabel);
-            editorDiv.appendChild(this.runButton);
+            editorDiv.appendChild(runLabel);
+            editorDiv.appendChild(runButton);
             return boxDiv;
         }
 
