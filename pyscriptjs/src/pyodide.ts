@@ -20,7 +20,7 @@ export class PyodideRuntime extends Runtime {
 
     constructor(
         config: AppConfig,
-        src = 'https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js',
+        src = 'https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js',
         name = 'pyodide-default',
         lang = 'python',
     ) {

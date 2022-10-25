@@ -66,7 +66,7 @@ class TestConfig(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "config name: app with external config"
 
-    # The default pyodide version is 0.21.2 as of writing
+    # The default pyodide version is 0.21.3 as of writing
     # this test which is newer than the one we are loading below
     # (after downloading locally) -- which is 0.20.0
 
@@ -175,8 +175,8 @@ class TestConfig(PyScriptTest):
             {
                 "runtimes": [
                     {
-                        "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
-                        "name": "pyodide-0.21.2",
+                        "src": "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js",
+                        "name": "pyodide-0.21.3",
                         "lang": "python"
                     },
                     {
