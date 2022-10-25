@@ -13,18 +13,7 @@ import { getLogger } from '../logger';
 
 const logger = getLogger('py-repl');
 
-let Element;
-
 export function make_PyRepl(runtime: Runtime) {
-
-    function createCmdHandler(el: PyRepl): StateCommand {
-        // Creates a codemirror cmd handler that calls the el.evaluate when an event
-        // triggers that specific cmd
-        return () => {
-            void el.do_run();
-            return true;
-        };
-    }
 
     /* High level structore of py-repl DOM, and the corresponding JS names.
 
@@ -79,8 +68,8 @@ export function make_PyRepl(runtime: Runtime) {
                 languageConf.of(python()),
                 keymap.of([
                     ...defaultKeymap,
-                    { key: 'Ctrl-Enter', run: createCmdHandler(this) },
-                    { key: 'Shift-Enter', run: createCmdHandler(this) },
+                    { key: 'Ctrl-Enter',  run: this.execute.bind(this) },
+                    { key: 'Shift-Enter', run: this.execute.bind(this) },
                 ]),
             ];
 
@@ -147,9 +136,7 @@ export function make_PyRepl(runtime: Runtime) {
             // XXX I'm sure there is a better way to embed svn into typescript
             runButton.innerHTML =
                 '<svg id="" style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>';
-            runButton.addEventListener('click', () => {
-                void this.do_run();
-            });
+            runButton.addEventListener('click', this.execute.bind(this));
             return runButton;
         }
 
@@ -162,7 +149,10 @@ export function make_PyRepl(runtime: Runtime) {
 
         //  ********************* execution logic *********************
 
-        async do_run(): Promise<void> {
+        /** Execute the python code written in the editor, and automatically
+         *  display() the last evaluated expression
+         */
+        async execute(): Promise<void> {
             const pySrc = this.getPySrc();
 
             // determine the output element
