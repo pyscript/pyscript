@@ -128,6 +128,13 @@ export function make_PyRepl(runtime: Runtime) {
             return boxDiv;
         }
 
+        makeOutDiv(): HTMLElement {
+            const outDiv = document.createElement('div');
+            outDiv.className = 'py-repl-output';
+            outDiv.id = this.id + '-' + this.getAttribute('exec-id');
+            return outDiv;
+        }
+
         connectedCallback() {
             ensureUniqueId(this);
             this.code = htmlDecode(this.innerHTML);
@@ -135,7 +142,6 @@ export function make_PyRepl(runtime: Runtime) {
             this.editorDiv = this.makeEditorDiv();
 
             const boxDiv = this.makeBoxDiv();
-
 
             if (!this.hasAttribute('exec-id')) {
                 this.setAttribute('exec-id', '1');
@@ -145,9 +151,7 @@ export function make_PyRepl(runtime: Runtime) {
                 this.setAttribute('root', this.id);
             }
 
-            this.outDiv = document.createElement('div');
-            this.outDiv.classList.add('py-repl-output');
-            this.outDiv.id = this.id + '-' + this.getAttribute('exec-id');
+            this.outDiv = this.makeOutDiv();
             boxDiv.appendChild(this.outDiv);
 
             this.appendChild(boxDiv);
