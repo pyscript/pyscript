@@ -161,8 +161,10 @@ export function make_PyRepl(runtime: Runtime) {
             return outDiv;
         }
 
+        // **************** execution logic *************************
+
         async evaluate(runtime: Runtime): Promise<void> {
-            const pySrc = this.getSourceFromElement();
+            const pySrc = this.getPySrc();
 
             // determine the output element
             const outEl = this.getOutputElement();
@@ -183,6 +185,10 @@ export function make_PyRepl(runtime: Runtime) {
             if (pyResult !== undefined) {
                 pyDisplay(runtime, pyResult, { target: outEl.id });
             }
+        }
+
+        getPySrc(): string {
+            return this.editor.state.doc.toString();
         }
 
         getOutputElement(): HTMLElement {
@@ -239,9 +245,6 @@ export function make_PyRepl(runtime: Runtime) {
             }
         }
 
-        getSourceFromElement(): string {
-            return this.editor.state.doc.toString();
-        }
     }
 
     return PyRepl
