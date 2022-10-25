@@ -63,7 +63,6 @@ export function make_PyRepl(runtime: Runtime) {
             }
 
             this.editor = this.makeEditor();
-            const editorDiv = this.makeEditorDiv();
             const boxDiv = this.makeBoxDiv();
             this.outDiv = this.makeOutDiv();
             boxDiv.appendChild(this.outDiv);
