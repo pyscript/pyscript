@@ -47,7 +47,6 @@ export default {
     legacy({ 'src/toml.js': 'toml' }),
     resolve({
       browser: true,
-      dedupe: ["svelte"],
     }),
     commonjs(),
     typescript({
