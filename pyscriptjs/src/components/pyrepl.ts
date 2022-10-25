@@ -26,11 +26,21 @@ export function make_PyRepl(runtime: Runtime) {
         };
     }
 
+    /* High level structore of py-repl DOM, and their JS names
+           this             <py-repl>
+             .shadow          #shadow-root
+             .mainDiv           <div class='py-repl-box'>
+                                  <label>...</label>
+             .editorNode          <div class="editor-box"></div>
+             .outDiv              <div class="py-output"></div>
+                                </div>
+                            </py-repl>
+    */
     class PyRepl extends HTMLElement {
         shadow: ShadowRoot;
         wrapper: HTMLElement;
         code: string;
-        defaultOutputElement: HTMLElement;
+        outDiv: HTMLElement;
         btnRun: HTMLElement;
         editor: EditorView;
         editorNode: HTMLElement;
@@ -124,10 +134,10 @@ export function make_PyRepl(runtime: Runtime) {
                 this.setAttribute('root', this.id);
             }
 
-            this.defaultOutputElement = document.createElement('div');
-            this.defaultOutputElement.classList.add('py-output');
-            this.defaultOutputElement.id = this.id + '-' + this.getAttribute('exec-id');
-            mainDiv.appendChild(this.defaultOutputElement);
+            this.outDiv = document.createElement('div');
+            this.outDiv.classList.add('py-output');
+            this.outDiv.id = this.id + '-' + this.getAttribute('exec-id');
+            mainDiv.appendChild(this.outDiv);
 
             this.appendChild(mainDiv);
             this.editor.focus();
@@ -164,13 +174,13 @@ export function make_PyRepl(runtime: Runtime) {
                 const el = document.getElementById(outputID);
                 if (el === null) {
                     const err = `py-repl ERROR: cannot find the output element #${outputID} in the DOM`
-                    this.defaultOutputElement.innerText = err;
+                    this.outDiv.innerText = err;
                     return undefined;
                 }
                 return el;
             }
             else {
-                return this.defaultOutputElement;
+                return this.outDiv;
             }
         }
 
