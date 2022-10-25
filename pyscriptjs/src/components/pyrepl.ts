@@ -26,32 +26,34 @@ export function make_PyRepl(runtime: Runtime) {
         };
     }
 
-    /* High level structore of py-repl DOM, and their JS names
+    /* High level structore of py-repl DOM, and the corresponding JS names.
+
            this             <py-repl>
-             .shadow          #shadow-root
-             .boxDiv            <div class='py-repl-box'>
-                                  <label>...</label>
-             .editorDiv           <div class="py-repl-editor"></div>
-             .outDiv              <div class="py-repl-output"></div>
+           shadow               #shadow-root
+                                    <slot></slot>
+           boxDiv               <div class='py-repl-box'>
+           editorLabel              <label>...</label>
+           editorDiv                <div class="py-repl-editor"></div>
+           outDiv                   <div class="py-repl-output"></div>
                                 </div>
                             </py-repl>
     */
     class PyRepl extends HTMLElement {
         shadow: ShadowRoot;
-        wrapper: HTMLElement;
         code: string;
         outDiv: HTMLElement;
         editor: EditorView;
 
         constructor() {
             super();
-            this.shadow = this.attachShadow({ mode: 'open' });
-            this.wrapper = document.createElement('slot');
-            this.shadow.appendChild(this.wrapper);
         }
 
         connectedCallback() {
             ensureUniqueId(this);
+            this.shadow = this.attachShadow({ mode: 'open' });
+            const slot = document.createElement('slot');
+            this.shadow.appendChild(slot);
+
             this.code = htmlDecode(this.innerHTML);
             this.innerHTML = '';
 
@@ -161,7 +163,7 @@ export function make_PyRepl(runtime: Runtime) {
             return outDiv;
         }
 
-        // **************** execution logic *************************
+        //  ********************* execution logic *********************
 
         async evaluate(runtime: Runtime): Promise<void> {
             const pySrc = this.getPySrc();
