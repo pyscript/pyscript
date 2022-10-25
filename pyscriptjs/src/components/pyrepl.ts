@@ -5,8 +5,8 @@ import { Compartment, StateCommand } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
-import { getAttribute, addClasses, removeClasses,
-         ensureUniqueId, htmlDecode } from '../utils';
+
+import { getAttribute,  ensureUniqueId, htmlDecode } from '../utils';
 import type { Runtime } from '../runtime';
 import { pyExec, pyDisplay } from '../pyexec';
 import { getLogger } from '../logger';
