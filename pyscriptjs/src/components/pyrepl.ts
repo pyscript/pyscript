@@ -108,21 +108,13 @@ export function make_PyRepl(runtime: Runtime) {
             return lbl;
         }
 
-        connectedCallback() {
-            ensureUniqueId(this);
-            this.code = htmlDecode(this.innerHTML);
-            this.innerHTML = '';
-            this.editorDiv = this.makeEditorDiv();
-
-
+        makeBoxDiv(): HTMLElement {
             const boxDiv = document.createElement('div');
-            addClasses(boxDiv, ['py-repl-box']);
+            boxDiv.className = 'py-repl-box';
+
             const editorLabel = this.makeLabel('Python Script Area', this.editorDiv);
-
-
             boxDiv.append(editorLabel);
 
-            // add Editor to main PyScript div
             boxDiv.appendChild(this.editorDiv);
 
             this.runButton = this.makeRunButton();
@@ -130,6 +122,17 @@ export function make_PyRepl(runtime: Runtime) {
 
             this.editorDiv.appendChild(btnLabel);
             this.editorDiv.appendChild(this.runButton);
+            return boxDiv;
+        }
+
+        connectedCallback() {
+            ensureUniqueId(this);
+            this.code = htmlDecode(this.innerHTML);
+            this.innerHTML = '';
+            this.editorDiv = this.makeEditorDiv();
+
+            const boxDiv = this.makeBoxDiv();
+
 
             this.runButton.addEventListener('click', () => {
                 void this.evaluate(runtime);
