@@ -31,7 +31,7 @@ export function make_PyRepl(runtime: Runtime) {
              .shadow          #shadow-root
              .mainDiv           <div class='py-repl-box'>
                                   <label>...</label>
-             .editorNode          <div class="editor-box"></div>
+             .editorDiv           <div class="editor-box"></div>
              .outDiv              <div class="py-output"></div>
                                 </div>
                             </py-repl>
@@ -43,7 +43,7 @@ export function make_PyRepl(runtime: Runtime) {
         outDiv: HTMLElement;
         btnRun: HTMLElement;
         editor: EditorView;
-        editorNode: HTMLElement;
+        editorDiv: HTMLElement;
 
         constructor() {
             super();
@@ -52,8 +52,8 @@ export function make_PyRepl(runtime: Runtime) {
             this.shadow.appendChild(this.wrapper);
 
             // add an extra div where we can attach the codemirror editor
-            this.editorNode = document.createElement('div');
-            addClasses(this.editorNode, ['editor-box']);
+            this.editorDiv = document.createElement('div');
+            addClasses(this.editorDiv, ['editor-box']);
         }
 
         getEditorTheme(): string {
@@ -85,7 +85,7 @@ export function make_PyRepl(runtime: Runtime) {
             this.editor = new EditorView({
                 doc: this.code.trim(),
                 extensions,
-                parent: this.editorNode,
+                parent: this.editorDiv,
             });
 
             const mainDiv = document.createElement('div');
@@ -95,7 +95,7 @@ export function make_PyRepl(runtime: Runtime) {
             const labelStyle = 'overflow:hidden; display:block; width:1px; height:1px';
 
             // Code editor Label
-            this.editorNode.id = 'code-editor';
+            this.editorDiv.id = 'code-editor';
             const editorLabel = document.createElement('label');
             editorLabel.innerHTML = 'Python Script Area';
             editorLabel.setAttribute('style', labelStyle);
@@ -104,7 +104,7 @@ export function make_PyRepl(runtime: Runtime) {
             mainDiv.append(editorLabel);
 
             // add Editor to main PyScript div
-            mainDiv.appendChild(this.editorNode);
+            mainDiv.appendChild(this.editorDiv);
 
             // Play Button
             this.btnRun = document.createElement('button');
@@ -119,8 +119,8 @@ export function make_PyRepl(runtime: Runtime) {
             btnLabel.setAttribute('style', labelStyle);
             btnLabel.htmlFor = 'btnRun';
 
-            this.editorNode.appendChild(btnLabel);
-            this.editorNode.appendChild(this.btnRun);
+            this.editorDiv.appendChild(btnLabel);
+            this.editorDiv.appendChild(this.btnRun);
 
             this.btnRun.addEventListener('click', () => {
                 void this.evaluate(runtime);
