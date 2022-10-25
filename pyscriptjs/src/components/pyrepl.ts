@@ -52,21 +52,17 @@ export function make_PyRepl(runtime: Runtime) {
             this.shadow.appendChild(this.wrapper);
 
             // add an extra div where we can attach the codemirror editor
-            this.editorDiv = document.createElement('div');
-            addClasses(this.editorDiv, ['py-repl-editor']);
         }
 
         getEditorTheme(): string {
             return getAttribute(this, 'theme');
         }
 
+        makeEditorDiv(): HTMLElement {
+            const editorDiv = document.createElement('div');
+            editorDiv.className = 'py-repl-editor';
 
-        connectedCallback() {
-            ensureUniqueId(this);
-            this.code = htmlDecode(this.innerHTML);
-            this.innerHTML = '';
             const languageConf = new Compartment();
-
             const extensions = [
                 indentUnit.of("    "),
                 basicSetup,
@@ -85,8 +81,18 @@ export function make_PyRepl(runtime: Runtime) {
             this.editor = new EditorView({
                 doc: this.code.trim(),
                 extensions,
-                parent: this.editorDiv,
+                parent: editorDiv,
             });
+
+            return editorDiv;
+        }
+
+        connectedCallback() {
+            ensureUniqueId(this);
+            this.code = htmlDecode(this.innerHTML);
+            this.innerHTML = '';
+            this.editorDiv = this.makeEditorDiv();
+
 
             const boxDiv = document.createElement('div');
             addClasses(boxDiv, ['py-repl-box']);
