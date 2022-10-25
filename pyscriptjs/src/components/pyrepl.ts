@@ -44,7 +44,6 @@ export function make_PyRepl(runtime: Runtime) {
             // add an extra div where we can attach the codemirror editor
             this.editorNode = document.createElement('div');
             addClasses(this.editorNode, ['editor-box']);
-            this.shadow.appendChild(this.wrapper);
         }
 
         getEditorTheme(): string {
