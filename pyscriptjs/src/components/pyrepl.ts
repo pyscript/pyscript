@@ -56,18 +56,16 @@ export function make_PyRepl(runtime: Runtime) {
             ensureUniqueId(this);
             this.code = htmlDecode(this.innerHTML);
             this.innerHTML = '';
-            this.editorDiv = this.makeEditorDiv();
-
-            const boxDiv = this.makeBoxDiv();
 
             if (!this.hasAttribute('exec-id')) {
                 this.setAttribute('exec-id', '1');
             }
-
             if (!this.hasAttribute('root')) {
                 this.setAttribute('root', this.id);
             }
 
+            this.editorDiv = this.makeEditorDiv();
+            const boxDiv = this.makeBoxDiv();
             this.outDiv = this.makeOutDiv();
             boxDiv.appendChild(this.outDiv);
 
