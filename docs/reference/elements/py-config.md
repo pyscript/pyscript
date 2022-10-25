@@ -1,6 +1,6 @@
 # &lt;py-config&gt;
 
-Use the `<py-config>` tag to set and configure general metadata along with declaring dependencies for your PyScript application. The configuration has to be set in either [TOML](https://toml.io/) or [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON) format. 
+Use the `<py-config>` tag to set and configure general metadata along with declaring dependencies for your PyScript application. The configuration has to be set in either [TOML](https://toml.io/) or [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON) format.
 
 The `<py-config>` element should be placed within the `<body>` element.
 
@@ -240,4 +240,3 @@ OR in JSON like
 ```
 
 If this `"magic"` key is present in config supplied via `src` and also present in config supplied via `inline`, then the value in the inline config is given priority i.e. the overriding process also works for custom keys.
-
