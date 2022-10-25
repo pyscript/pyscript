@@ -1,6 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Svelte",
   "_version": "3.0.0",
 
   "include": ["src/**/*"],
@@ -9,19 +8,7 @@
     "moduleResolution": "node",
     "target": "ES2020",
     "module": "ES2020",
-    /**
-      Svelte Preprocess cannot figure out whether you have a value or a type, so tell TypeScript
-      to enforce using `import type` instead of `import` for Types.
-     */
-    "importsNotUsedAsValues": "error",
-    "isolatedModules": true,
-    /**
-      To have warnings/errors of the Svelte compiler at the correct position,
-      enable source maps by default.
-     */
-    "sourceMap": true,
-    /** Requests the runtime types from the svelte modules by default. Needed for TS files or else you get errors. */
-    "types": ["svelte", "jest", "node"],
+    "types": ["jest", "node"],
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
