@@ -50,19 +50,11 @@ export function make_PyRepl(runtime: Runtime) {
             this.shadow = this.attachShadow({ mode: 'open' });
             this.wrapper = document.createElement('slot');
             this.shadow.appendChild(this.wrapper);
-
-            // add an extra div where we can attach the codemirror editor
         }
 
-        getEditorTheme(): string {
-            return getAttribute(this, 'theme');
-        }
-
-        makeEditorDiv(): HTMLElement {
-            const editorDiv = document.createElement('div');
-            editorDiv.id = 'code-editor';
-            editorDiv.className = 'py-repl-editor';
-
+        /** Create and configure the codemirror editor
+         */
+        makeEditor(parent: HTMLElement): EditorView {
             const languageConf = new Compartment();
             const extensions = [
                 indentUnit.of("    "),
@@ -75,16 +67,22 @@ export function make_PyRepl(runtime: Runtime) {
                 ]),
             ];
 
-            if (this.getEditorTheme() === 'dark') {
+            if (getAttribute(this, 'theme') === 'dark') {
                 extensions.push(oneDarkTheme);
             }
 
-            this.editor = new EditorView({
+            return new EditorView({
                 doc: this.code.trim(),
                 extensions,
-                parent: editorDiv,
+                parent: parent,
             });
+        }
 
+        makeEditorDiv(): HTMLElement {
+            const editorDiv = document.createElement('div');
+            editorDiv.id = 'code-editor';
+            editorDiv.className = 'py-repl-editor';
+            this.editor = this.makeEditor(editorDiv);
             return editorDiv;
         }
 
