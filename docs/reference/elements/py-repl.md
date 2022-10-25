@@ -4,8 +4,6 @@ The `<py-repl>` element provides a REPL(Read Eval Print Loop) to evaluate multi-
 
 ## Attributes
 
-<<<<<<< HEAD
-| attribute | type | default | description |
 |----|----|----|----|
 | **auto-generate** | boolean |    | Auto-generates REPL after evaluation. |
 | **exec-id** | string |    | The id for logging execution output |
@@ -18,6 +16,3 @@ The `<py-repl>` element provides a REPL(Read Eval Print Loop) to evaluate multi-
 ```html
 <py-repl auto-generate="true"> </py-repl>
 ```
-=======
-## pyscript.runtime
->>>>>>> origin/reference-docs
