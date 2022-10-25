@@ -43,7 +43,6 @@ export function make_PyRepl(runtime: Runtime) {
         outDiv: HTMLElement;
         runButton: HTMLElement;
         editor: EditorView;
-        editorDiv: HTMLElement;
 
         constructor() {
             super();
@@ -64,7 +63,7 @@ export function make_PyRepl(runtime: Runtime) {
                 this.setAttribute('root', this.id);
             }
 
-            this.editorDiv = this.makeEditorDiv();
+            const editorDiv = this.makeEditorDiv();
             const boxDiv = this.makeBoxDiv();
             this.outDiv = this.makeOutDiv();
             boxDiv.appendChild(this.outDiv);
@@ -137,16 +136,16 @@ export function make_PyRepl(runtime: Runtime) {
             const boxDiv = document.createElement('div');
             boxDiv.className = 'py-repl-box';
 
-            const editorLabel = this.makeLabel('Python Script Area', this.editorDiv);
+            const editorDiv = this.makeEditorDiv();
+            const editorLabel = this.makeLabel('Python Script Area', editorDiv);
             boxDiv.append(editorLabel);
-
-            boxDiv.appendChild(this.editorDiv);
+            boxDiv.appendChild(editorDiv);
 
             this.runButton = this.makeRunButton();
             const btnLabel = this.makeLabel('Python Script Run Button', this.runButton);
 
-            this.editorDiv.appendChild(btnLabel);
-            this.editorDiv.appendChild(this.runButton);
+            editorDiv.appendChild(btnLabel);
+            editorDiv.appendChild(this.runButton);
             return boxDiv;
         }
 
