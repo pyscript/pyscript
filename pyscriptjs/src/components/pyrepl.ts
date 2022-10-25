@@ -197,6 +197,8 @@ export function make_PyRepl(runtime: Runtime) {
         }
 
 
+        // XXX the autogenerate logic is very messy. We should redo it, and it
+        // should be the default.
         autogenerateMaybe(): void {
             if (this.hasAttribute('auto-generate')) {
                 const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
