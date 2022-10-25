@@ -41,7 +41,7 @@ export function make_PyRepl(runtime: Runtime) {
         wrapper: HTMLElement;
         code: string;
         outDiv: HTMLElement;
-        btnRun: HTMLElement;
+        playButton: HTMLElement;
         editor: EditorView;
         editorDiv: HTMLElement;
 
@@ -118,18 +118,18 @@ export function make_PyRepl(runtime: Runtime) {
             boxDiv.appendChild(this.editorDiv);
 
             // Play Button
-            this.btnRun = document.createElement('button');
-            this.btnRun.id = 'btnRun';
-            this.btnRun.innerHTML =
+            this.playButton = document.createElement('button');
+            this.playButton.id = 'playButton';
+            this.playButton.innerHTML =
                 '<svg id="" style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>';
-            addClasses(this.btnRun, ['absolute', 'repl-play-button']);
+            addClasses(this.playButton, ['absolute', 'repl-play-button']);
 
-            const btnLabel = this.makeLabel('Python Script Run Button', this.btnRun);
+            const btnLabel = this.makeLabel('Python Script Run Button', this.playButton);
 
             this.editorDiv.appendChild(btnLabel);
-            this.editorDiv.appendChild(this.btnRun);
+            this.editorDiv.appendChild(this.playButton);
 
-            this.btnRun.addEventListener('click', () => {
+            this.playButton.addEventListener('click', () => {
                 void this.evaluate(runtime);
             });
 
