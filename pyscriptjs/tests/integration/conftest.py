@@ -1,4 +1,3 @@
-"""All data required for testing examples"""
 import threading
 from http.server import HTTPServer as SuperHTTPServer
 from http.server import SimpleHTTPRequestHandler
@@ -6,6 +5,40 @@ from http.server import SimpleHTTPRequestHandler
 import pytest
 
 from .support import Logger
+
+
+def pytest_configure(config):
+    """
+    THIS IS A WORKAROUND FOR A pytest QUIRK!
+
+    At the moment of writing this conftest defines two new options, --dev and
+    --no-fake-server, but because of how pytest works, they are available only
+    if this is the "root conftest" for the test session.
+
+    This means that if you are in the pyscriptjs directory:
+
+    $ py.test                       # does NOT work
+    $ py.test tests/integration/    # works
+
+    This happens because there is also test py-unit directory, so in the first
+    case the "root conftest" would be tests/conftest.py (which doesn't exist)
+    instead of this.
+
+    There are various workarounds, but for now we can just detect it and
+    inform the user.
+
+    Related StackOverflow answer: https://stackoverflow.com/a/51733980
+    """
+    if not hasattr(config.option, "dev"):
+        msg = """
+        Running a bare "pytest" command from the pyscriptjs directory
+        is not supported. Please use one of the following commands:
+            - pytest tests/integration
+            - pytest tests/py-unit
+            - pytest tests/*
+            - cd tests/integration; pytest
+        """
+        pytest.fail(msg)
 
 
 @pytest.fixture(scope="session")
