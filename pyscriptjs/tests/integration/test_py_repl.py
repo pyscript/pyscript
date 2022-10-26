@@ -59,19 +59,17 @@ class TestPyRepl(PyScriptTest):
         self.pyscript_run(
             """
             <py-repl>
-                print("hello")
+                print("hello world")
             </py-repl>
             """
         )
         self.page.keyboard.press("Shift+Enter")
-        # wait_for_timeout(0) is basically the equivalent of an "await", it
-        # lets the playwright engine to do its things and the console message
-        # to be captured by out machinery. I don't really understand why with
-        # keyboard.press() we need it, but with button.click() we don't. I
-        # guess that button.click() does something equivalent internally, but
-        # I didn't investigate further.
-        self.page.wait_for_timeout(0)
-        assert self.console.log.lines[-1] == "hello"
+
+        # when we use locator('button').click() the message appears
+        # immediately, with keyboard.press we need to wait for it. I don't
+        # really know why it has a different behavior, I didn't investigate
+        # further.
+        self.wait_for_console("hello world")
 
     def test_display(self):
         self.pyscript_run(
