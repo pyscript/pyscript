@@ -97,7 +97,7 @@ export class PyodideRuntime extends Runtime {
             const eachPath = pathArr.slice(0, i+1).join('/');
             const {exists, parentExists} = this.interpreter.FS.analyzePath(eachPath);
             if (!parentExists) {
-                throw Error(`parent path for ${eachPath} doesn't exist, cannot create it.`)
+                throw new Error(`'INTERNAL ERROR! cannot create ${path}, this should never happen'`)
             }
             if (!exists)
             {
