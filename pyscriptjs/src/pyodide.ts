@@ -1,5 +1,4 @@
 import { Runtime } from './runtime';
-import { getLastPath } from './utils';
 import { getLogger } from './logger';
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface } from 'pyodide';
 // eslint-disable-next-line
@@ -91,11 +90,25 @@ export class PyodideRuntime extends Runtime {
     }
 
     async loadFromFile(path: string): Promise<void> {
-        const filename = getLastPath(path);
+        const pathArr = path.split('/');
+        const filename = pathArr.pop();
+        for(let i=0; i<pathArr.length; i++)
+        {
+            const eachPath = pathArr.slice(0, i+1).join('/');
+            const {exists, parentExists} = this.interpreter.FS.analyzePath(eachPath);
+            if (!parentExists) {
+                throw new Error(`'INTERNAL ERROR! cannot create ${path}, this should never happen'`)
+            }
+            if (!exists)
+            {
+                this.interpreter.FS.mkdir(eachPath);
+            }
+        }
         const response = await fetch(path);
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
-        const stream = this.interpreter.FS.open(filename, 'w');
+        pathArr.push(filename);
+        const stream = this.interpreter.FS.open(pathArr.join('/'), 'w');
         this.interpreter.FS.write(stream, data, 0, data.length, 0);
         this.interpreter.FS.close(stream);
     }

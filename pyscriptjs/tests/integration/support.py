@@ -187,6 +187,7 @@ class PyScriptTest:
         Very thin helper to write a file in the tmpdir
         """
         f = self.tmpdir.join(filename)
+        f.dirpath().ensure(dir=True)
         f.write(content)
 
     def goto(self, path):
