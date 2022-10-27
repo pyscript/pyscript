@@ -39,6 +39,10 @@ def pytest_configure(config):
             - cd tests/integration; pytest
         """
         pytest.fail(msg)
+    else:
+        if config.option.dev:
+            config.option.headed = True
+            config.option.no_fake_server = True
 
 
 @pytest.fixture(scope="session")
@@ -57,12 +61,6 @@ def pytest_addoption(parser):
         action="store_true",
         help="Automatically open a devtools panel. Implies --headed and --no-fake-server",
     )
-
-
-def pytest_configure(config):
-    if config.option.dev:
-        config.option.headed = True
-        config.option.no_fake_server = True
 
 
 @pytest.fixture(scope="session")
