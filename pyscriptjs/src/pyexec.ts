@@ -12,7 +12,7 @@ export async function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLEleme
     set_current_display_target(outElem.id);
     try {
         try {
-            await runtime.run(pysrc);
+            return await runtime.run(pysrc);
         }
         catch (err) {
             // XXX: currently we display exceptions in the same position as
@@ -27,6 +27,21 @@ export async function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLEleme
     }
 }
 
+/**
+ * Javascript API to call the python display() function
+ *
+ * Expected usage:
+ *     pyDisplay(runtime, obj);
+ *     pyDisplay(runtime, obj, { target: targetID });
+ */
+export function pyDisplay(runtime: Runtime, obj: any, kwargs: object) {
+    const display = runtime.globals.get('display');
+    if (kwargs === undefined)
+        display(obj);
+    else {
+        display.callKwargs(obj, kwargs);
+    }
+}
 
 function displayPyException(err: any, errElem: HTMLElement) {
     //addClasses(errElem, ['py-error'])
@@ -46,20 +61,4 @@ function displayPyException(err: any, errElem: HTMLElement) {
         pre.innerText = err;
     }
     errElem.appendChild(pre);
-}
-
-
-// XXX this is used by base.ts but should be removed once we complete the refactoring
-export async function pyExecDontHandleErrors(runtime: Runtime, pysrc: string, out: HTMLElement)
-{
-    // this is the python function defined in pyscript.py
-    const set_current_display_target = runtime.globals.get('set_current_display_target');
-    ensureUniqueId(out);
-    set_current_display_target(out.id);
-    try {
-        await runtime.run(pysrc);
-    }
-    finally {
-        set_current_display_target(undefined);
-    }
 }

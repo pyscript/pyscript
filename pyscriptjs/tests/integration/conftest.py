@@ -55,8 +55,14 @@ def pytest_addoption(parser):
     parser.addoption(
         "--dev",
         action="store_true",
-        help="Automatically open a devtools panel. Implies --headed",
+        help="Automatically open a devtools panel. Implies --headed and --no-fake-server",
     )
+
+
+def pytest_configure(config):
+    if config.option.dev:
+        config.option.headed = True
+        config.option.no_fake_server = True
 
 
 @pytest.fixture(scope="session")
@@ -68,8 +74,6 @@ def browser_type_launch_args(request):
     NOTE: this has been tested with pytest-playwright==0.3.0. It might break
     with newer versions of it.
     """
-    if request.config.option.dev:
-        request.config.option.headed = True
     # this calls the "original" fixture defined by pytest_playwright.py
     launch_options = request.getfixturevalue("browser_type_launch_args")
     if request.config.option.dev:

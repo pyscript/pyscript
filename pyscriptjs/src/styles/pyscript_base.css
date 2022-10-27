@@ -131,7 +131,7 @@ color: #0f172a;
     flex-direction: column;
 }
 
-.editor-box {
+.py-repl-editor {
     --tw-border-opacity: 1;
     border-color: rgba(209, 213, 219, var(--tw-border-opacity));
     border-width: 1px;
@@ -158,7 +158,7 @@ color: #0f172a;
     opacity: 1;
 }
 
-.repl-play-button {
+.py-repl-run-button {
     opacity: 0;
     bottom: 0.25rem;
     right: 0.25rem;
@@ -192,7 +192,7 @@ color: #0f172a;
     border: 0;
 }
 
-.repl-play-button:hover {
+.py-repl-run-button:hover {
     opacity: 1;
 }
 

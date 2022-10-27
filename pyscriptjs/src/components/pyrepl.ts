@@ -5,161 +5,201 @@ import { Compartment, StateCommand } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
-import { getAttribute, addClasses, htmlDecode } from '../utils';
-import { BaseEvalElement } from './base';
+
+import { getAttribute,  ensureUniqueId, htmlDecode } from '../utils';
 import type { Runtime } from '../runtime';
+import { pyExec, pyDisplay } from '../pyexec';
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-repl');
 
 export function make_PyRepl(runtime: Runtime) {
 
-    function createCmdHandler(el: PyRepl): StateCommand {
-        // Creates a codemirror cmd handler that calls the el.evaluate when an event
-        // triggers that specific cmd
-        return () => {
-            void el.evaluate(runtime);
-            return true;
-        };
-    }
+    /* High level structure of py-repl DOM, and the corresponding JS names.
 
-    let initialTheme: string;
-    function getEditorTheme(el: BaseEvalElement): string {
-        const theme = getAttribute(el, 'theme');
-        if( !initialTheme && theme){
-            initialTheme = theme;
-        }
-        return initialTheme;
-    }
-
-    class PyRepl extends BaseEvalElement {
+           this             <py-repl>
+           shadow               #shadow-root
+                                    <slot></slot>
+           boxDiv               <div class='py-repl-box'>
+           editorLabel              <label>...</label>
+           editorDiv                <div class="py-repl-editor"></div>
+           outDiv                   <div class="py-repl-output"></div>
+                                </div>
+                            </py-repl>
+    */
+    class PyRepl extends HTMLElement {
+        shadow: ShadowRoot;
+        outDiv: HTMLElement;
         editor: EditorView;
-        editorNode: HTMLElement;
 
         constructor() {
             super();
-
-            // add an extra div where we can attach the codemirror editor
-            this.editorNode = document.createElement('div');
-            addClasses(this.editorNode, ['editor-box']);
-            this.shadow.appendChild(this.wrapper);
         }
 
         connectedCallback() {
-            this.checkId();
-            this.code = htmlDecode(this.innerHTML);
-            this.innerHTML = '';
-            const languageConf = new Compartment();
+            ensureUniqueId(this);
+            this.shadow = this.attachShadow({ mode: 'open' });
+            const slot = document.createElement('slot');
+            this.shadow.appendChild(slot);
 
+            if (!this.hasAttribute('exec-id')) {
+                this.setAttribute('exec-id', '1');
+            }
+            if (!this.hasAttribute('root')) {
+                this.setAttribute('root', this.id);
+            }
+
+            const pySrc = htmlDecode(this.innerHTML).trim();
+            this.innerHTML = '';
+            this.editor = this.makeEditor(pySrc);
+            const boxDiv = this.makeBoxDiv();
+            this.appendChild(boxDiv);
+            this.editor.focus();
+            logger.debug(`element ${this.id} successfully connected`);
+        }
+
+        /** Create and configure the codemirror editor
+         */
+        makeEditor(pySrc: string): EditorView {
+            const languageConf = new Compartment();
             const extensions = [
                 indentUnit.of("    "),
                 basicSetup,
                 languageConf.of(python()),
                 keymap.of([
                     ...defaultKeymap,
-                    { key: 'Ctrl-Enter', run: createCmdHandler(this) },
-                    { key: 'Shift-Enter', run: createCmdHandler(this) },
+                    { key: 'Ctrl-Enter',  run: this.execute.bind(this) },
+                    { key: 'Shift-Enter', run: this.execute.bind(this) },
                 ]),
             ];
 
-            if (getEditorTheme(this) === 'dark') {
+            if (getAttribute(this, 'theme') === 'dark') {
                 extensions.push(oneDarkTheme);
             }
 
-            this.editor = new EditorView({
-                doc: this.code.trim(),
+            return new EditorView({
+                doc: pySrc,
                 extensions,
-                parent: this.editorNode,
             });
+        }
 
-            const mainDiv = document.createElement('div');
-            addClasses(mainDiv, ['py-repl-box']);
+        // ******** main entry point for py-repl DOM building **********
+        //
+        // The following functions are written in a top-down, depth-first
+        // order (so that the order of code roughly matches the order of
+        // execution)
+        makeBoxDiv(): HTMLElement {
+            const boxDiv = document.createElement('div');
+            boxDiv.className = 'py-repl-box';
 
+            const editorDiv = this.makeEditorDiv();
+            const editorLabel = this.makeLabel('Python Script Area', editorDiv);
+            this.outDiv = this.makeOutDiv();
+
+            boxDiv.append(editorLabel);
+            boxDiv.appendChild(editorDiv);
+            boxDiv.appendChild(this.outDiv);
+
+            return boxDiv;
+        }
+
+        makeEditorDiv(): HTMLElement {
+            const editorDiv = document.createElement('div');
+            editorDiv.id = 'code-editor';
+            editorDiv.className = 'py-repl-editor';
+            editorDiv.appendChild(this.editor.dom);
+
+            const runButton = this.makeRunButton();
+            const runLabel = this.makeLabel('Python Script Run Button', runButton);
+            editorDiv.appendChild(runLabel);
+            editorDiv.appendChild(runButton);
+
+            return editorDiv;
+        }
+
+        makeLabel(text: string, elementFor: HTMLElement): HTMLElement {
+            ensureUniqueId(elementFor);
+            const lbl = document.createElement('label');
+            lbl.innerHTML = text;
+            lbl.htmlFor = elementFor.id;
+            // XXX this should be a CSS class
             // Styles that we use to hide the labels whilst also keeping it accessible for screen readers
             const labelStyle = 'overflow:hidden; display:block; width:1px; height:1px';
+            lbl.setAttribute('style', labelStyle);
+            return lbl;
+        }
 
-            // Code editor Label
-            this.editorNode.id = 'code-editor';
-            const editorLabel = document.createElement('label');
-            editorLabel.innerHTML = 'Python Script Area';
-            editorLabel.setAttribute('style', labelStyle);
-            editorLabel.htmlFor = 'code-editor';
-
-            mainDiv.append(editorLabel);
-
-            // add Editor to main PyScript div
-            mainDiv.appendChild(this.editorNode);
-
-            // Play Button
-            this.btnRun = document.createElement('button');
-            this.btnRun.id = 'btnRun';
-            this.btnRun.innerHTML =
+        makeRunButton(): HTMLElement {
+            const runButton = document.createElement('button');
+            runButton.id = 'runButton';
+            runButton.className = 'absolute py-repl-run-button';
+            // XXX I'm sure there is a better way to embed svn into typescript
+            runButton.innerHTML =
                 '<svg id="" style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>';
-            addClasses(this.btnRun, ['absolute', 'repl-play-button']);
+            runButton.addEventListener('click', this.execute.bind(this));
+            return runButton;
+        }
 
-            // Play Button Label
-            const btnLabel = document.createElement('label');
-            btnLabel.innerHTML = 'Python Script Run Button';
-            btnLabel.setAttribute('style', labelStyle);
-            btnLabel.htmlFor = 'btnRun';
+        makeOutDiv(): HTMLElement {
+            const outDiv = document.createElement('div');
+            outDiv.className = 'py-repl-output';
+            outDiv.id = this.id + '-' + this.getAttribute('exec-id');
+            return outDiv;
+        }
 
-            this.editorNode.appendChild(btnLabel);
-            this.editorNode.appendChild(this.btnRun);
+        //  ********************* execution logic *********************
 
-            this.btnRun.addEventListener('click', () => {
-                void this.evaluate(runtime);
-            });
+        /** Execute the python code written in the editor, and automatically
+         *  display() the last evaluated expression
+         */
+        async execute(): Promise<void> {
+            const pySrc = this.getPySrc();
 
-            if (!this.id) {
-                logger.warn(
-                    "WARNING: <py-repl> defined without an id. <py-repl> should always have an id, otherwise multiple <py-repl> in the same page will not work!"
-                );
+            // determine the output element
+            const outEl = this.getOutputElement();
+            if (outEl === undefined) {
+                // this happens if we specified output="..." but we couldn't
+                // find the ID. We already displayed an error message inside
+                // getOutputElement, stop the execution.
+                return;
             }
 
-            if (!this.hasAttribute('exec-id')) {
-                this.setAttribute('exec-id', '1');
-            }
+            // clear the old output before executing the new code
+            outEl.innerHTML = '';
 
-            if (!this.hasAttribute('root')) {
-                this.setAttribute('root', this.id);
-            }
+            // execute the python code
+            const pyResult = await pyExec(runtime, pySrc, outEl);
 
-            const output = getAttribute(this, "output")
-            if (output) {
-                const el = document.getElementById(output);
-                if(el){
-                    this.errorElement = el;
-                    this.outputElement = el
+            // display the value of the last evaluated expression (REPL-style)
+            if (pyResult !== undefined) {
+                pyDisplay(runtime, pyResult, { target: outEl.id });
+            }
+        }
+
+        getPySrc(): string {
+            return this.editor.state.doc.toString();
+        }
+
+        getOutputElement(): HTMLElement {
+            const outputID = getAttribute(this, "output");
+            if (outputID !== null) {
+                const el = document.getElementById(outputID);
+                if (el === null) {
+                    const err = `py-repl ERROR: cannot find the output element #${outputID} in the DOM`
+                    this.outDiv.innerText = err;
+                    return undefined;
                 }
-            } else {
-                // to create a new output div to output to
-                this.outputElement = document.createElement('div');
-                this.outputElement.classList.add('output');
-                this.outputElement.hidden = true;
-                this.outputElement.id = this.id + '-' + this.getAttribute('exec-id');
-
-                // add the output div id if there's not output pre-defined
-                mainDiv.appendChild(this.outputElement);
-
-                this.errorElement = this.outputElement;
+                return el;
             }
-
-            this.appendChild(mainDiv);
-            this.editor.focus();
-            logger.debug(`element ${this.id} successfully connected`);
-        }
-
-        preEvaluate(): void {
-            this.setOutputMode("replace");
-            if(!this.appendOutput) {
-                this.outputElement.innerHTML = '';
+            else {
+                return this.outDiv;
             }
         }
 
-        postEvaluate(): void {
-            this.outputElement.hidden = false;
-            this.outputElement.style.display = 'block';
 
+        // XXX the autogenerate logic is very messy. We should redo it, and it
+        // should be the default.
+        autogenerateMaybe(): void {
             if (this.hasAttribute('auto-generate')) {
                 const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
                 const lastRepl = allPyRepls[allPyRepls.length - 1];
@@ -196,9 +236,6 @@ export function make_PyRepl(runtime: Runtime) {
             }
         }
 
-        getSourceFromElement(): string {
-            return this.editor.state.doc.toString();
-        }
     }
 
     return PyRepl
