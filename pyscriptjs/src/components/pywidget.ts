@@ -1,4 +1,5 @@
 import type { Runtime } from '../runtime';
+import type {PyProxy} from "pyodide"
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-register-widget');
@@ -12,7 +13,7 @@ function createWidget(runtime: Runtime, name: string, code: string, klass: strin
         name: string = name;
         klass: string = klass;
         code: string = code;
-        proxy: any;
+        proxy: PyProxy;
         proxyClass: any;
 
         constructor() {
@@ -38,7 +39,9 @@ function createWidget(runtime: Runtime, name: string, code: string, klass: strin
             runtime.globals.set(this.id, this.proxy);
         }
     }
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     const xPyWidget = customElements.define(name, CustomWidget);
+    /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
 export function make_PyWidget(runtime: Runtime) {

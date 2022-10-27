@@ -1,6 +1,6 @@
 import { Runtime } from './runtime';
 import { getLogger } from './logger';
-import type { loadPyodide as loadPyodideDeclaration, PyodideInterface } from 'pyodide';
+import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
@@ -10,12 +10,17 @@ declare const loadPyodide: typeof loadPyodideDeclaration;
 
 const logger = getLogger('pyscript/pyodide');
 
+interface Micropip {
+    install: (packageName: string | string[]) => Promise<void>;
+    destroy: () => void;
+}
+
 export class PyodideRuntime extends Runtime {
     src: string;
     name?: string;
     lang?: string;
     interpreter: PyodideInterface;
-    globals: any;
+    globals: PyProxy;
 
     constructor(
         config: AppConfig,
@@ -83,7 +88,7 @@ export class PyodideRuntime extends Runtime {
     async installPackage(package_name: string | string[]): Promise<void> {
         if (package_name.length > 0) {
             logger.info(`micropip install ${package_name.toString()}`);
-            const micropip = this.globals.get('micropip');
+            const micropip = this.globals.get('micropip') as Micropip;
             await micropip.install(package_name);
             micropip.destroy();
         }

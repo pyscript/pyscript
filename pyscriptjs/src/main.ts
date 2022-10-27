@@ -10,6 +10,11 @@ import { getLogger } from './logger';
 import { handleFetchError, showError, globalExport } from './utils'
 import { createCustomElements } from './components/elements';
 
+type ImportType = { [key: string]: unknown }
+type ImportMapType = {
+    imports: ImportType | null
+}
+
 
 const logger = getLogger('pyscript/main');
 
@@ -69,7 +74,7 @@ class PyScriptApp {
         // and show a big error. PRs welcome :)
         logger.info('searching for <py-config>');
         const elements = document.getElementsByTagName('py-config');
-        let el = null;
+        let el: Element | null = null;
         if (elements.length > 0)
             el = elements[0];
         if (elements.length >= 2) {
@@ -188,7 +193,7 @@ class PyScriptApp {
 
     // lifecycle (7)
     executeScripts(runtime: Runtime) {
-        this.register_importmap(runtime);
+        void this.register_importmap(runtime);
         this.PyScript = make_PyScript(runtime);
         customElements.define('py-script', this.PyScript);
     }
@@ -207,9 +212,9 @@ class PyScriptApp {
         // inside py-script. It's also unclear whether we want to wait or not
         // (or maybe only wait only if we do an actual 'import'?)
         for (const node of document.querySelectorAll("script[type='importmap']")) {
-            const importmap = (() => {
+            const importmap: ImportMapType = (() => {
                 try {
-                    return JSON.parse(node.textContent);
+                    return JSON.parse(node.textContent) as ImportMapType;
                 } catch {
                     return null;
                 }
@@ -224,7 +229,7 @@ class PyScriptApp {
                 try {
                     // XXX: pyodide doesn't like Module(), failing with
                     // "can't read 'name' of undefined" at import time
-                    exports = { ...(await import(url)) };
+                    exports = { ...(await import(url)) } as object;
                 } catch {
                     logger.warn(`failed to fetch '${url}' for '${name}'`);
                     continue;

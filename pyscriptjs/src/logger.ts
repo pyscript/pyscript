@@ -24,10 +24,10 @@
 */
 
 interface Logger {
-    debug(message: string, ...args: any[]): void;
-    info(message: string, ...args: any[]): void;
-    warn(message: string, ...args: any[]): void;
-    error(message: string, ...args: any[]): void;
+    debug(message: string, ...args: unknown[]): void;
+    info(message: string, ...args: unknown[]): void;
+    warn(message: string, ...args: unknown[]): void;
+    error(message: string, ...args: unknown[]): void;
 }
 
 const _cache = new Map<string, Logger>();
@@ -46,7 +46,7 @@ function _makeLogger(prefix: string): Logger {
 
     function make(level: string) {
         const out_fn = console[level].bind(console);
-        function fn(fmt: string, ...args: any[]) {
+        function fn(fmt: string, ...args: unknown[]) {
             out_fn(prefix + fmt, ...args);
         }
         return fn

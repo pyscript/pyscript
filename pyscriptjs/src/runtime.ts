@@ -1,5 +1,5 @@
 import type { AppConfig } from './pyconfig';
-import type { PyodideInterface } from 'pyodide';
+import type { PyodideInterface, PyProxy } from 'pyodide';
 import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/runtime');
@@ -35,7 +35,7 @@ export abstract class Runtime extends Object {
     /**
      * global symbols table for the underlying interpreter.
      * */
-    abstract globals: any;
+    abstract globals: PyProxy;
 
     constructor(config: AppConfig) {
         super();
@@ -54,7 +54,7 @@ export abstract class Runtime extends Object {
      * (asynchronously) which can call its own API behind the scenes.
      * Python exceptions are turned into JS exceptions.
      * */
-    abstract run(code: string): Promise<any>;
+    abstract run(code: string): Promise<unknown>;
 
     /**
      * Same as run, but Python exceptions are not propagated: instead, they
@@ -63,9 +63,10 @@ export abstract class Runtime extends Object {
      * This is a bad API and should be killed/refactored/changed eventually,
      * but for now we have code which relies on it.
      * */
-    async runButDontRaise(code: string): Promise<any> {
+    async runButDontRaise(code: string): Promise<unknown> {
         return this.run(code).catch(err => {
-            logger.error(err);
+            const error = err as Error
+            logger.error("Error:", error);
         });
     }
 

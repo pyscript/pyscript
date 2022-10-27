@@ -1,5 +1,5 @@
 import { getLogger } from './logger';
-import { ensureUniqueId, addClasses } from './utils';
+import { ensureUniqueId } from './utils';
 import type { Runtime } from './runtime';
 
 const logger = getLogger('pyexec');
