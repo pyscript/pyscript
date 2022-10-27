@@ -156,8 +156,8 @@ The `<py-config>` tag can be used as follows:
   autoclose_loader = true
 
   [[runtimes]]
-  src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
-  name = "pyodide-0.21.2"
+  src = "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"
+  name = "pyodide-0.21.3"
   lang = "python"
 </py-config>
 ```
@@ -170,8 +170,8 @@ Alternatively, a JSON config can be passed using the `type` attribute.
   {
     "autoclose_loader": true,
     "runtimes": [{
-      "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
-      "name": "pyodide-0.21.2",
+      "src": "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js",
+      "name": "pyodide-0.21.3",
       "lang": "python"
     }]
   }
@@ -189,8 +189,8 @@ where `custom.toml` contains
 ```
 autoclose_loader = true
 [[runtimes]]
-src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
-name = "pyodide-0.21.2"
+src = "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"
+name = "pyodide-0.21.3"
 lang = "python"
 ```
 
@@ -206,8 +206,8 @@ where `custom.json` contains
 {
   "autoclose_loader": true,
   "runtimes": [{
-    "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
-    "name": "pyodide-0.21.2",
+    "src": "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js",
+    "name": "pyodide-0.21.3",
     "lang": "python"
   }]
 }

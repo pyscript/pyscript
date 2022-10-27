@@ -45,8 +45,8 @@ export const defaultConfig: AppConfig = {
     "type": "app",
     "autoclose_loader": true,
     "runtimes": [{
-        "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
-        "name": "pyodide-0.21.2",
+        "src": "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js",
+        "name": "pyodide-0.21.3",
         "lang": "python"
     }],
     "packages":[],
