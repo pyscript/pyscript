@@ -56,8 +56,8 @@ export const defaultConfig: AppConfig = {
 
 
 export function loadConfigFromElement(el: Element): AppConfig {
-    let srcConfig;
-    let inlineConfig;
+    let srcConfig: AppConfig;
+    let inlineConfig: AppConfig;
     if (el === null) {
         srcConfig = {};
         inlineConfig = {};
@@ -127,7 +127,7 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
 
         for (const keyType in allKeys)
         {
-            const keys = allKeys[keyType];
+            const keys: string[] = allKeys[keyType];
             keys.forEach(function(item: string){
                 if (keyType === "boolean")
                 {
@@ -199,14 +199,14 @@ function validateConfig(configText: string, configType = "toml") {
 
     for (const keyType in allKeys)
     {
-        const keys = allKeys[keyType];
+        const keys: string[] = allKeys[keyType];
         keys.forEach(function(item: string){
             if (validateParamInConfig(item, keyType, config))
             {
                 if (item === "runtimes")
                 {
                     finalConfig[item] = [];
-                    const runtimes = config[item];
+                    const runtimes = config[item] as object[];
                     runtimes.forEach(function(eachRuntime: object){
                         const runtimeConfig: object = {};
                         for (const eachRuntimeParam in eachRuntime)

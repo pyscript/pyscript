@@ -39,7 +39,9 @@ function createWidget(runtime: Runtime, name: string, code: string, klass: strin
             runtime.globals.set(this.id, this.proxy);
         }
     }
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     const xPyWidget = customElements.define(name, CustomWidget);
+    /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
 export function make_PyWidget(runtime: Runtime) {

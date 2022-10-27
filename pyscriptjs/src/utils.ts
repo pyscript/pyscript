@@ -37,7 +37,7 @@ export function ltrim(code: string): string {
 let _uniqueIdCounter = 0;
 export function ensureUniqueId(el: HTMLElement) {
     if (el.id === "")
-        el.id = "py-internal-" + _uniqueIdCounter++;
+        el.id = `py-internal-${_uniqueIdCounter++}`;
 }
 
 /*

@@ -1,7 +1,7 @@
 import { basicSetup, EditorView } from 'codemirror';
 import { python } from '@codemirror/lang-python';
 import { indentUnit } from '@codemirror/language'
-import { Compartment, StateCommand } from '@codemirror/state';
+import { Compartment } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
