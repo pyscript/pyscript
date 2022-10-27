@@ -15,7 +15,7 @@ const logger = getLogger('py-repl');
 
 export function make_PyRepl(runtime: Runtime) {
 
-    /* High level structore of py-repl DOM, and the corresponding JS names.
+    /* High level structure of py-repl DOM, and the corresponding JS names.
 
            this             <py-repl>
            shadow               #shadow-root
