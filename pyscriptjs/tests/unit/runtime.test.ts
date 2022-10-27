@@ -23,12 +23,12 @@ describe('PyodideRuntime', () => {
          * following lines - so as to dynamically import
          * and make it available in the global namespace
          * - are used.
-         * 
+         *
          * Pyodide uses a "really hacky" method to get the
          * URL/Path where packages/package data are stored;
          * it throws an error, catches it, and parses it. In
-         * Jest, this calculated path is different than in 
-         * the browser/Node, so files cannot be found and the 
+         * Jest, this calculated path is different than in
+         * the browser/Node, so files cannot be found and the
          * test fails. We set indexURL below the correct location
          * to fix this.
          * See https://github.com/pyodide/pyodide/blob/7dfee03a82c19069f714a09da386547aeefef242/src/js/pyodide.ts#L161-L179
