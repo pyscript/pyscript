@@ -117,6 +117,27 @@ class TestBasic(PyScriptTest):
         inner_html = self.page.locator(".py-error").inner_html()
         assert errorContent in inner_html
 
+    def test_paths_from_packages(self):
+        self.writefile("utils/__init__.py", "")
+        self.writefile("utils/a.py", "x = 'hello from A'")
+        self.pyscript_run(
+            """
+            <py-config>
+                paths = ["./utils/__init__.py", "./utils/a.py"]
+            </py-config>
+
+            <py-script>
+                import js
+                from utils.a import x
+                js.console.log(x)
+            </py-script>
+            """
+        )
+        assert self.console.log.lines == [
+            self.PY_COMPLETE,
+            "hello from A",
+        ]
+
     def test_packages(self):
         self.pyscript_run(
             """
