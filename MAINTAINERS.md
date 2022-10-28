@@ -15,6 +15,7 @@ This document lists the Maintainers of the Project. Maintainers may be added onc
 | Ted Patrick          | Anaconda, Inc    |
 | Jeff Glass           | ---              |
 | Paul Everitt         | ---              |
+| Fabio Rosado         | ---              |
 
 ______________________________________________________________________
 
