@@ -42,14 +42,14 @@ function getLogger(prefix: string): Logger {
 }
 
 function _makeLogger(prefix: string): Logger {
-    prefix = "[" + prefix + "] ";
+    prefix = '[' + prefix + '] ';
 
     function make(level: string) {
         const out_fn = console[level].bind(console);
         function fn(fmt: string, ...args: unknown[]) {
             out_fn(prefix + fmt, ...args);
         }
-        return fn
+        return fn;
     }
 
     // 'log' is intentionally omitted
@@ -58,7 +58,7 @@ function _makeLogger(prefix: string): Logger {
     const warn = make('warn');
     const error = make('error');
 
-    return {debug, info, warn, error};
+    return { debug, info, warn, error };
 }
 
 export { getLogger };

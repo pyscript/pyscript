@@ -47,13 +47,13 @@ export class PyBox extends HTMLElement {
         // now we need to set widths
         this.widths = [];
 
-        const widthsAttr = getAttribute( this, "widths" );
+        const widthsAttr = getAttribute(this, 'widths');
         if (widthsAttr) {
             for (const w of widthsAttr.split(';')) {
-                if (w.includes('/')){
-                    this.widths.push(w.split('/')[0])
-                }else{
-                    this.widths.push(w)
+                if (w.includes('/')) {
+                    this.widths.push(w.split('/')[0]);
+                } else {
+                    this.widths.push(w);
                 }
             }
         } else {
@@ -63,7 +63,7 @@ export class PyBox extends HTMLElement {
         this.widths.forEach((width, index) => {
             const node: ChildNode = mainDiv.childNodes[index];
             (<HTMLElement>node).style.flex = width;
-            addClasses((<HTMLElement>node), ['py-box-child']);
+            addClasses(<HTMLElement>node, ['py-box-child']);
         });
 
         this.appendChild(mainDiv);

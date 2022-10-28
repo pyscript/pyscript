@@ -1,12 +1,12 @@
 import { basicSetup, EditorView } from 'codemirror';
 import { python } from '@codemirror/lang-python';
-import { indentUnit } from '@codemirror/language'
+import { indentUnit } from '@codemirror/language';
 import { Compartment } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 
-import { getAttribute,  ensureUniqueId, htmlDecode } from '../utils';
+import { getAttribute, ensureUniqueId, htmlDecode } from '../utils';
 import type { Runtime } from '../runtime';
 import { pyExec, pyDisplay } from '../pyexec';
 import { getLogger } from '../logger';
@@ -14,7 +14,6 @@ import { getLogger } from '../logger';
 const logger = getLogger('py-repl');
 
 export function make_PyRepl(runtime: Runtime) {
-
     /* High level structure of py-repl DOM, and the corresponding JS names.
 
            this             <py-repl>
@@ -63,12 +62,12 @@ export function make_PyRepl(runtime: Runtime) {
         makeEditor(pySrc: string): EditorView {
             const languageConf = new Compartment();
             const extensions = [
-                indentUnit.of("    "),
+                indentUnit.of('    '),
                 basicSetup,
                 languageConf.of(python()),
                 keymap.of([
                     ...defaultKeymap,
-                    { key: 'Ctrl-Enter',  run: this.execute.bind(this) },
+                    { key: 'Ctrl-Enter', run: this.execute.bind(this) },
                     { key: 'Shift-Enter', run: this.execute.bind(this) },
                 ]),
             ];
@@ -181,21 +180,19 @@ export function make_PyRepl(runtime: Runtime) {
         }
 
         getOutputElement(): HTMLElement {
-            const outputID = getAttribute(this, "output");
+            const outputID = getAttribute(this, 'output');
             if (outputID !== null) {
                 const el = document.getElementById(outputID);
                 if (el === null) {
-                    const err = `py-repl ERROR: cannot find the output element #${outputID} in the DOM`
+                    const err = `py-repl ERROR: cannot find the output element #${outputID} in the DOM`;
                     this.outDiv.innerText = err;
                     return undefined;
                 }
                 return el;
-            }
-            else {
+            } else {
                 return this.outDiv;
             }
         }
-
 
         // XXX the autogenerate logic is very messy. We should redo it, and it
         // should be the default.
@@ -210,19 +207,19 @@ export function make_PyRepl(runtime: Runtime) {
                 newPyRepl.setAttribute('root', this.getAttribute('root'));
                 newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
 
-                if(this.hasAttribute('auto-generate')) {
+                if (this.hasAttribute('auto-generate')) {
                     newPyRepl.setAttribute('auto-generate', '');
                     this.removeAttribute('auto-generate');
                 }
 
-                const outputMode = getAttribute( this, 'output-mode')
-                if(outputMode) {
+                const outputMode = getAttribute(this, 'output-mode');
+                if (outputMode) {
                     newPyRepl.setAttribute('output-mode', outputMode);
                 }
 
                 const addReplAttribute = (attribute: string) => {
-                    const attr = getAttribute( this, attribute)
-                    if(attr) {
+                    const attr = getAttribute(this, attribute);
+                    if (attr) {
                         newPyRepl.setAttribute(attribute, attr);
                     }
                 };
@@ -230,13 +227,12 @@ export function make_PyRepl(runtime: Runtime) {
                 addReplAttribute('output');
 
                 newPyRepl.setAttribute('exec-id', nextExecId.toString());
-                if( this.parentElement ){
+                if (this.parentElement) {
                     this.parentElement.appendChild(newPyRepl);
                 }
             }
         }
-
     }
 
-    return PyRepl
+    return PyRepl;
 }
