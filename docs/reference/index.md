@@ -17,6 +17,14 @@ caption: Modules
 ---
 modules/*
 ```
+```{toctree}
+---
+maxdepth: 1
+glob:
+caption: API
+---
+API/*
+```
 
 ```{toctree}
 ---
