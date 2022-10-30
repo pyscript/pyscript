@@ -79,7 +79,7 @@ class PyScriptApp {
             // is too messy to implement it reliably. We might want to revisit
             // this once it's in a better shape.
             showError(
-                'Multiple &lt;py-config&gt; tags detected. Only the first is ' +
+                'Multiple <py-config> tags detected. Only the first is ' +
                     'going to be parsed, all the others will be ignored',
             );
         }
