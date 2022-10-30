@@ -97,9 +97,7 @@ export function globalExport(name: string, obj: object) {
     // attach the given object to the global object, so that it is globally
     // visible everywhere. Should be used very sparingly!
 
-    // `window` in the browser, `global` in node
-    const _global = window || global;
-    _global[name] = obj;
+    globalThis[name] = obj;
 }
 
 export function getAttribute(el: Element, attr: string): string | null {
