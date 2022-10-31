@@ -8,7 +8,7 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
-                display('hello pyscript')
+                print('hello pyscript')
             </py-script>
             """
         )
