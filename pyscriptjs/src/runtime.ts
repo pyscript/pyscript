@@ -4,7 +4,9 @@ import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/runtime');
 
+//If you change the format of the version string, you must also update tools/update_version.py
 export const version:JSON = <JSON><unknown>{"year": 2022, "month": 9, "patch": 1, "releaselevel": "dev"};
+
 export type RuntimeInterpreter = PyodideInterface | null;
 
 /*

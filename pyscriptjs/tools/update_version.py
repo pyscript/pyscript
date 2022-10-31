@@ -4,6 +4,7 @@ import re
 from collections.abc import Callable
 from pathlib import Path
 
+# This regex matches the definition of version in runtime.ts
 version_pattern = "(export const version:JSON = <JSON><unknown>)({.+})"
 
 
@@ -32,7 +33,8 @@ def get_current_version(runtime_path) -> dict:
 
 def set_version(**kwargs) -> None:
     """
-    Set the version information in runtime.ts for the arguments provided
+    Set the version information in runtime.ts for the arguments provided.
+    Only keys already present in the version object will be accepted
     """
     print(f"Setting version with {kwargs}")
 
@@ -78,6 +80,11 @@ def set_dotted_version(dotted_version: str, **kwargs) -> None:
 
 
 def int_with_length(length: int) -> Callable[[str], int]:
+    """
+    Creates a validator function to ensure that the arg parameter is 'length'
+    characters long. The validatro returns the argument cast to an int.
+    """
+
     def validator(arg: str) -> int:
         if len(arg) != length:
             raise argparse.ArgumentError(f"Argument must be of length {length}")
@@ -87,6 +94,9 @@ def int_with_length(length: int) -> Callable[[str], int]:
 
 
 def init_argparse() -> argparse.ArgumentParser:
+    """
+    Initialize the command line argument parser.
+    """
     parser = argparse.ArgumentParser(description="Set or update the PyScript version")
 
     parser.add_argument(
