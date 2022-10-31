@@ -46,6 +46,18 @@ def set_version(**kwargs) -> None:
     with open(runtime_path, 'w') as fp:
         fp.write(updated_runtime)
 
+def set_dotted_version(dotted_version: str, **kwargs) -> None:
+    """
+    Set the full version info using 'dotted notation' [YYYY].[MM].[(patch)].releaselevel
+    """
+    year, month, patch, releaselevel = dotted_version.split(".")
+
+    year = int_with_length(4)(year)
+    month = int_with_length(2)(month)
+    patch = int(patch)
+
+    set_version(year=year, month=month, patch=patch, releaselevel=releaselevel)
+
 def int_with_length(length: int) -> Callable[[str], int]:
     def validator(arg: str) -> int:
         if len(arg) != length:
@@ -62,32 +74,44 @@ def init_argparse() -> argparse.ArgumentParser:
     parser.add_argument(
         "-y", "--year",
         type=int_with_length(4),
-        help="The year field of the verson [YYYY].[MM].[(patch)].releaselevel"
+        help="The year field of the verson [YYYY].[MM].[(patch)].releaselevel. Must be 4 digits."
     )
 
     parser.add_argument(
         "-m", "--month",
         type=int,
-        help="The month field of the verson [YYYY].[MM].[(patch)].releaselevel"
+        help="The month field of the verson [YYYY].[MM].[(patch)].releaselevel. Must be 2 digits."
     )
 
     parser.add_argument(
         "-p", "--patch",
         type=int,
-        help="The year field of the verson [YYYY].[MM].[(patch)].releaselevel"
+        help="The patch field of the verson [YYYY].[MM].[(patch)].releaselevel"
     )
 
     parser.add_argument(
         "--releaselevel",
         type=str,
-        help="The year field of the verson [YYYY].[MM].[(patch)].releaselevel"
+        help="The releaselevel field of the verson [YYYY].[MM].[(patch)].releaselevel"
     )
+    
+    parser.add_argument(
+        "--dotted",
+        type=str,
+        help="The version in [YYYY].[MM].[(patch)].releaselevel format"
+    )
+
+
     return parser
 
 
 if __name__ == "__main__":
     parser = init_argparse()
     args = vars(parser.parse_args())
+
+    #Don't allowed dotted notation and individual keys
+    if args['dotted'] is not None and [key for key in args if args[key] is not None]:
+        raise ValueError(f"Dotted notation cannot be combined with individual parameters\nArguments f{args}")
 
     usable_args = {a:args[a] for a in args if (args[a] is not None)}
     print(usable_args)
