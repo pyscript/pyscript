@@ -42,20 +42,13 @@ export function make_PyRepl(runtime: Runtime) {
             const slot = document.createElement('slot');
             this.shadow.appendChild(slot);
 
-            if (!this.hasAttribute('exec-id')) {
-                this.setAttribute('exec-id', '1');
-            }
-            if (!this.hasAttribute('root')) {
-                this.setAttribute('root', this.id);
-            }
-
             const pySrc = htmlDecode(this.innerHTML).trim();
             this.innerHTML = '';
             this.editor = this.makeEditor(pySrc);
             const boxDiv = this.makeBoxDiv();
             this.appendChild(boxDiv);
             this.editor.focus();
-            logger.debug(`element ${this.id} successfully connected`);
+            logger.debug(`element ${this} successfully connected`);
         }
 
         /** Create and configure the codemirror editor
@@ -141,7 +134,6 @@ export function make_PyRepl(runtime: Runtime) {
         makeOutDiv(): HTMLElement {
             const outDiv = document.createElement('div');
             outDiv.className = 'py-repl-output';
-            outDiv.id = this.id + '-' + this.getAttribute('exec-id');
             return outDiv;
         }
 
@@ -199,14 +191,10 @@ export function make_PyRepl(runtime: Runtime) {
         // should be the default.
         autogenerateMaybe(): void {
             if (this.hasAttribute('auto-generate')) {
-                const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
+                const allPyRepls = document.querySelectorAll(`py-repl`);
                 const lastRepl = allPyRepls[allPyRepls.length - 1];
-                const lastExecId = lastRepl.getAttribute('exec-id');
-                const nextExecId = parseInt(lastExecId) + 1;
 
                 const newPyRepl = document.createElement('py-repl');
-                newPyRepl.setAttribute('root', this.getAttribute('root'));
-                newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
 
                 if (this.hasAttribute('auto-generate')) {
                     newPyRepl.setAttribute('auto-generate', '');
@@ -227,7 +215,6 @@ export function make_PyRepl(runtime: Runtime) {
 
                 addReplAttribute('output');
 
-                newPyRepl.setAttribute('exec-id', nextExecId.toString());
                 if (this.parentElement) {
                     this.parentElement.appendChild(newPyRepl);
                 }
