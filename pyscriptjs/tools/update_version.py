@@ -1,11 +1,11 @@
 import argparse
-import re
 import json
-import os
+import re
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
-version_pattern = '(export const version:JSON = <JSON><unknown>)({.+})'
+version_pattern = "(export const version:JSON = <JSON><unknown>)({.+})"
+
 
 def get_runtimets_path() -> Path:
     """
@@ -16,25 +16,27 @@ def get_runtimets_path() -> Path:
     for "pyscript/pyscriptjs" and work up from there.
     """
 
-    currentPath = Path(os.path.abspath(__file__)).resolve()
+    currentPath = Path(__file__).resolve()
     pycsriptjs_path = [p for p in currentPath.parents if p.stem == "pyscriptjs"][0]
-    runtime_path = pycsriptjs_path / 'src' / 'runtime.ts'
+    runtime_path = pycsriptjs_path / "src" / "runtime.ts"
     return runtime_path
+
 
 def get_current_version(runtime_path) -> dict:
     """
     Get the current version as specified in runtime.ts
     """
-    with open(runtime_path, 'r') as fp:
+    with open(runtime_path) as fp:
         return json.loads(re.search(version_pattern, fp.read()).group(2))
-        
+
+
 def set_version(**kwargs) -> None:
     """
-    Set the version information in runtime.ts for the arguemnts provided
+    Set the version information in runtime.ts for the arguments provided
     """
     print(f"Setting version with {kwargs}")
 
-    if 'releaselevel' in kwargs:
+    if "releaselevel" in kwargs:
         print("WARNING - releaselevel is meant to be updated only by GitHub Workflows.")
 
     runtime_path = get_runtimets_path()
@@ -45,15 +47,22 @@ def set_version(**kwargs) -> None:
         if key in version_info:
             version_info[key] = value
         else:
-            raise KeyError(f"set_version() only accepts the following keys: {*version_info.keys(),}")
+            raise KeyError(
+                f"set_version() only accepts the following keys: {*version_info.keys(),}"
+            )
 
-    with open(runtime_path, 'r') as fp:
-        updated_runtime = re.sub(version_pattern, lambda m: m.group(1) + str(version_info).replace("'", '"') , fp.read())
+    with open(runtime_path) as fp:
+        updated_runtime = re.sub(
+            version_pattern,
+            lambda m: m.group(1) + str(version_info).replace("'", '"'),
+            fp.read(),
+        )
 
-    with open(runtime_path, 'w') as fp:
+    with open(runtime_path, "w") as fp:
         fp.write(updated_runtime)
 
     print(f"Updated version text to {get_current_version(runtime_path)}")
+
 
 def set_dotted_version(dotted_version: str, **kwargs) -> None:
     """
@@ -67,47 +76,51 @@ def set_dotted_version(dotted_version: str, **kwargs) -> None:
 
     set_version(year=year, month=month, patch=patch, releaselevel=releaselevel)
 
+
 def int_with_length(length: int) -> Callable[[str], int]:
     def validator(arg: str) -> int:
         if len(arg) != length:
             raise argparse.ArgumentError(f"Argument must be of length {length}")
         return int(arg)
+
     return validator
 
 
 def init_argparse() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description = "Set or update the PyScript version"
-    )
+    parser = argparse.ArgumentParser(description="Set or update the PyScript version")
 
     parser.add_argument(
-        "-y", "--year",
+        "-y",
+        "--year",
         type=int_with_length(4),
-        help="The year field of the verson [YYYY].[MM].[(patch)].releaselevel. Must be 4 digits."
+        help="The year field of the version [YYYY].[MM].[(patch)].releaselevel. Must be 4 digits.",
     )
 
     parser.add_argument(
-        "-m", "--month",
+        "-m",
+        "--month",
         type=int,
-        help="The month field of the verson [YYYY].[MM].[(patch)].releaselevel. Must be 2 digits."
+        help="The month field of the version [YYYY].[MM].[(patch)].releaselevel. Must be 2 digits.",
     )
 
     parser.add_argument(
-        "-p", "--patch",
+        "-p",
+        "--patch",
         type=int,
-        help="The patch field of the verson [YYYY].[MM].[(patch)].releaselevel"
+        help="The patch field of the version [YYYY].[MM].[(patch)].releaselevel",
     )
 
     parser.add_argument(
         "--releaselevel",
         type=str,
-        help="The releaselevel field of the verson [YYYY].[MM].[(patch)].releaselevel"
+        help="The releaselevel field of the version [YYYY].[MM].[(patch)].releaselevel",
     )
-    
+
     parser.add_argument(
         "--dotted",
         type=str,
-        help="The version in [YYYY].[MM].[(patch)].releaselevel format. Cannot be combined with any other argument."
+        help="The version in [YYYY].[MM].[(patch)].releaselevel format."
+        " Cannot be combined with any other argument.",
     )
 
     return parser
@@ -117,14 +130,17 @@ if __name__ == "__main__":
     parser = init_argparse()
     args = vars(parser.parse_args())
 
-    #Don't allowed dotted notation and individual keys
-    if args['dotted'] is not None:
+    # Don't allowed dotted notation and individual keys
+    if args["dotted"] is not None:
         if len([key for key in args if args[key]]) > 1:
-            raise ValueError(f"Dotted notation cannot be combined with individual parameters\nArguments provided were: {[(k, v) for k, v in args.items() if v is not None]}")
+            raise ValueError(
+                "Dotted notation cannot be combined with individual parameters.\n"
+                f"Arguments provided were: {[(k, v) for k, v in args.items() if v is not None]}"
+            )
         else:
-            set_dotted_version(args['dotted'])
+            set_dotted_version(args["dotted"])
     else:
-        discrete_args = {a:args[a] for a in args if (args[a] is not None)}
+        discrete_args = {a: args[a] for a in args if (args[a] is not None)}
         if discrete_args:
             set_version(**discrete_args)
         else:

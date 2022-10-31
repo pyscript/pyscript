@@ -2,8 +2,6 @@ import asyncio
 import base64
 import html
 import io
-import json
-import sys
 import time
 from collections import namedtuple
 from textwrap import dedent
