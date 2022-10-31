@@ -23,13 +23,20 @@ def get_runtimets_path() -> Path:
 
 def get_current_version(runtime_path) -> dict:
     """
-    Get the 
+    Get the current version as specified in runtime.ts
     """
     with open(runtime_path, 'r') as fp:
         return json.loads(re.search(version_pattern, fp.read()).group(2))
         
 def set_version(**kwargs) -> None:
+    """
+    Set the version information in runtime.ts for the arguemnts provided
+    """
     print(f"Setting version with {kwargs}")
+
+    if 'releaselevel' in kwargs:
+        print("WARNING - releaselevel is meant to be updated only by GitHub Workflows.")
+
     runtime_path = get_runtimets_path()
 
     version_info = get_current_version(runtime_path)
@@ -45,6 +52,8 @@ def set_version(**kwargs) -> None:
 
     with open(runtime_path, 'w') as fp:
         fp.write(updated_runtime)
+
+    print(f"Updated version text to {get_current_version(runtime_path)}")
 
 def set_dotted_version(dotted_version: str, **kwargs) -> None:
     """
@@ -98,9 +107,8 @@ def init_argparse() -> argparse.ArgumentParser:
     parser.add_argument(
         "--dotted",
         type=str,
-        help="The version in [YYYY].[MM].[(patch)].releaselevel format"
+        help="The version in [YYYY].[MM].[(patch)].releaselevel format. Cannot be combined with any other argument."
     )
-
 
     return parser
 
@@ -110,11 +118,14 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
 
     #Don't allowed dotted notation and individual keys
-    if args['dotted'] is not None and [key for key in args if args[key] is not None]:
-        raise ValueError(f"Dotted notation cannot be combined with individual parameters\nArguments f{args}")
-
-    usable_args = {a:args[a] for a in args if (args[a] is not None)}
-    print(usable_args)
-    
-    if usable_args: set_version(**usable_args)
-    else: raise ValueError("No arguments were passed to update_version.py")
+    if args['dotted'] is not None:
+        if len([key for key in args if args[key]]) > 1:
+            raise ValueError(f"Dotted notation cannot be combined with individual parameters\nArguments provided were: {[(k, v) for k, v in args.items() if v is not None]}")
+        else:
+            set_dotted_version(args['dotted'])
+    else:
+        discrete_args = {a:args[a] for a in args if (args[a] is not None)}
+        if discrete_args:
+            set_version(**discrete_args)
+        else:
+            raise ValueError("No arguments were passed to update_version.py")
