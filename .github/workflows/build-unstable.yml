@@ -54,6 +54,9 @@ jobs:
         -   name: Setup Environment
             run: make setup
 
+        -   name: Update Version
+            run: conda run -p ./env python ./tools/update_version.py --releaselevel unstable
+
         -   name: Build
             run: make build
 

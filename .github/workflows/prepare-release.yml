@@ -3,7 +3,7 @@ name: '[CI] Prepare Release'
 on:
     push:
         tags:
-        -   '[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9]+'  # YYYY.MM.MICRO
+        -   '[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9]+'  #YYYY.MM.MICRO.releaselevel
 
 env:
     MINICONDA_PYTHON_VERSION: py38
@@ -44,6 +44,14 @@ jobs:
 
         -   name: Setup Environment
             run: make setup
+
+        -   name: Get Version from Tag
+            run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+        -   name: Update Version
+            run: |
+                echo Release version from tags: ${{env.RELEASE_VERSION}}
+                conda run -p ./env python ./tools/update_version.py --dotted ${{env.RELEASE_VERSION}}.final
 
         -   name: Build and Test
             run: make test
