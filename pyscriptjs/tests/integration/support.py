@@ -278,7 +278,7 @@ class PyScriptTest:
     def iter_locator(self, loc):
         """
         Helper method to iterate over all the elements which are matched by a
-        locator, siny playwright does not seem to support it natively.
+        locator, since playwright does not seem to support it natively.
         """
         n = loc.count()
         elems = [loc.nth(i) for i in range(n)]
