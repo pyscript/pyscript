@@ -229,3 +229,30 @@ class TestPyRepl(PyScriptTest):
         msg = "py-repl ERROR: cannot find the output element #I-dont-exist in the DOM"
         assert out_div.inner_text() == msg
         assert "I will not be executed" not in self.console.log.text
+
+    def test_auto_generate(self):
+        self.pyscript_run(
+            """
+            <py-repl auto-generate="true">
+            </py-repl>
+            """
+        )
+        py_repls = self.page.locator("py-repl")
+        outputs = py_repls.locator("div.py-repl-output")
+        assert py_repls.count() == 1
+        assert outputs.count() == 1
+        #
+        # evaluate the py-repl and generate another one
+        self.page.keyboard.type("'hello'")
+        self.page.keyboard.press("Shift+Enter")
+        assert py_repls.count() == 2
+        assert outputs.count() == 2
+        # now we type something else: the new py-repl should have the focus
+        self.page.keyboard.type("'world'")
+        self.page.keyboard.press("Shift+Enter")
+        assert py_repls.count() == 3
+        assert outputs.count() == 3
+        #
+        # check that the code and the outputs are in order
+        out_texts = [el.inner_text() for el in self.iter_locator(outputs)]
+        assert out_texts == ["hello", "world", ""]

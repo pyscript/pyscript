@@ -173,6 +173,8 @@ export function make_PyRepl(runtime: Runtime) {
             if (pyResult !== undefined) {
                 pyDisplay(runtime, pyResult, { target: outEl.id });
             }
+
+            this.autogenerateMaybe();
         }
 
         getPySrc(): string {
