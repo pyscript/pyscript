@@ -34,7 +34,7 @@ def get_current_version(runtime_path) -> dict:
 def set_version(**kwargs) -> None:
     """
     Set the version information in runtime.ts for the arguments provided.
-    Only keys already present in the version object will be accepted
+    Only keys already present in the version JSON will be accepted
     """
     print(f"Setting version with {kwargs}")
 
