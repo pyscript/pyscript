@@ -153,7 +153,6 @@ class PyScript:
                 f"{version_from_appconfig['month']:02}",
                 f"{version_from_appconfig['patch']:02}",
                 f"{version_from_appconfig['releaselevel']}",
-                f"{version_from_appconfig['commit']}",
             ]
         )
 

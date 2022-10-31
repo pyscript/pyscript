@@ -4,7 +4,7 @@ import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/runtime');
 
-export const version:JSON = <JSON><unknown>{"year": 2022, "month": 9, "patch": 1, "releaselevel": "dev", "commit": "dev"};
+export const version:JSON = <JSON><unknown>{"year": 2022, "month": 9, "patch": 1, "releaselevel": "dev"};
 export type RuntimeInterpreter = PyodideInterface | null;
 
 /*
