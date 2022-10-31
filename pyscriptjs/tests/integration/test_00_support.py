@@ -338,3 +338,20 @@ class TestSupport(PyScriptTest):
         self.wait_for_console("Page loaded!", timeout=200, check_js_errors=False)
         # clear the errors, else the test fails at teardown
         self.clear_js_errors()
+
+    def test_iter_locator(self):
+        doc = """
+        <html>
+          <body>
+              <div>foo</div>
+              <div>bar</div>
+              <div>baz</div>
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        self.goto("mytest.html")
+        divs = self.page.locator("div")
+        assert divs.count() == 3
+        texts = [el.inner_text() for el in self.iter_locator(divs)]
+        assert texts == ["foo", "bar", "baz"]
