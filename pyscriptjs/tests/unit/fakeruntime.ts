@@ -1,5 +1,6 @@
 import { Runtime } from "../../src/runtime"
 import type { PyodideInterface } from 'pyodide';
+import type { AppConfig } from '../../src/pyconfig';
 
 export class FakeRuntime extends Runtime {
 
@@ -19,6 +20,10 @@ export class FakeRuntime extends Runtime {
 
     async loadInterpreter() {
         throw new Error("not implemented");
+    }
+
+    importAppConfig(config: AppConfig): any{
+
     }
 
     registerJsModule(name: string, module: object) {

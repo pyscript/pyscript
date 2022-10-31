@@ -51,7 +51,7 @@ export abstract class Runtime extends Object {
      * imports the information from the AppConfig object into the runtime.
      * what (if anything) the runtime does with this data is runtime-specific
      */
-     abstract importAppConfig(config: AppConfig): Promise<any>;
+    abstract importAppConfig(config: AppConfig): any;
 
 
     /**
@@ -72,19 +72,6 @@ export abstract class Runtime extends Object {
         return this.run(code).catch(err => {
             const error = err as Error;
             logger.error('Error:', error);
-        });
-    }
-
-    /**
-     * Same as run, but Python exceptions are not propagated: instead, they
-     * are logged to the console.
-     *
-     * This is a bad API and should be killed/refactored/changed eventually,
-     * but for now we have code which relies on it.
-     * */
-    async runButDontRaise(code: string): Promise<any> {
-        return this.run(code).catch(err => {
-            logger.error(err);
         });
     }
 
