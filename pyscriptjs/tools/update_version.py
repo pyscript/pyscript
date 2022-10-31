@@ -117,4 +117,4 @@ if __name__ == "__main__":
     print(usable_args)
     
     if usable_args: set_version(**usable_args)
-    else: print("No arguments were passed to update_version.py")
+    else: raise ValueError("No arguments were passed to update_version.py")
