@@ -41,12 +41,12 @@ Note: `[[runtimes]]` is a TOML table. Make sure this is the last item within a p
 ```
 
 - Use of the `src` attribute:
-```
+```html
 <py-config src="./custom.toml"></py-config>
 ```
 where `custom.toml` contains
 
-```
+```toml
 autoclose_loader = true
 [[runtimes]]
 src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
@@ -55,12 +55,12 @@ lang = "python"
 ```
 
 - JSON using the `type` attribute.
-```
+```html
 <py-config type="json" src="./custom.json"></py-config>
 ```
 where `custom.json` contains
 
-```
+```json
 {
   "autoclose_loader": true,
   "runtimes": [{
@@ -73,7 +73,7 @@ where `custom.json` contains
 
 One can also use both i.e pass the config from `src` attribute as well as specify it as `inline`. So the following snippet is also valid:
 
-```
+```html
 <py-config src="./custom.toml">
   paths = ["./utils.py"]
 </py-config>
@@ -81,7 +81,7 @@ One can also use both i.e pass the config from `src` attribute as well as specif
 
 This can also be done via JSON using the `type` attribute.
 
-```
+```html
 <py-config type="json" src="./custom.json">
   {
     "paths": ["./utils.py"]
@@ -104,7 +104,7 @@ Package dependencies in the `<py-config>` can be declared by using the direct li
 
 NOTICE that only pure python packages from PyPI will work and packages with C dependencies will not. These need to be built specifically for WASM (please, consult the Pyodide project for more information about what's supported and on how to build packages with C dependencies)
 
-```
+```html
 <py-config>
   packages = ["./static/wheels/travertino-0.1.3-py3-none-any.whl"]
 </py-config>
@@ -112,7 +112,7 @@ NOTICE that only pure python packages from PyPI will work and packages with C de
 
 OR in JSON like
 
-```
+```html
 <py-config type="json">
   {
     "packages": ["./static/wheels/travertino-0.1.3-py3-none-any.whl"]
@@ -227,7 +227,7 @@ Besides the above schema, a user can also supply any extra keys and values that 
 
 For example, a valid config could also be with the snippet below:
 
-```
+```html
 <py-config type="toml">
   magic = "unicorn"
 </py-config>
@@ -235,7 +235,7 @@ For example, a valid config could also be with the snippet below:
 
 OR in JSON like
 
-```
+```html
 <py-config type="json">
   {
     "magic": "unicorn"
