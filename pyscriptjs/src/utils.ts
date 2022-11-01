@@ -1,3 +1,5 @@
+import { CLOSEBUTTON } from "./consts"
+
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
         element.classList.add(entry);
@@ -45,7 +47,8 @@ export function ensureUniqueId(el: HTMLElement) {
  *  Python scripts, since stderr can be routed to somewhere in the DOM
  */
 export function showError(msg: string): void {
-    createAlertBanner(msg)
+    _createAlertBanner(msg)
+    _createAlertBanner(msg, "warning")
 }
 
 export function handleFetchError(e: Error, singleFile: string) {
@@ -110,7 +113,7 @@ export function joinPaths(parts: string[], separator = '/') {
     }
     return res;
 
-export function createAlertBanner(message: string, level: "error" | "warning" = "error", logMessage = true) {
+export function _createAlertBanner(message: string, level: "error" | "warning" = "error", logMessage = true) {
 
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     switch(`log-${level}-${logMessage}`) {
@@ -126,11 +129,17 @@ export function createAlertBanner(message: string, level: "error" | "warning" = 
     banner.className = `alert-banner py-${level}`
     banner.textContent = message
 
-    const closeButton = document.createElement("button")
-    closeButton.id = "alert-close-button"
-    closeButton.addEventListener("click", () => banner.remove() )
-    closeButton.innerHTML = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill="currentColor" width="12px"><path d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/></svg>`
+    if (level === "warning") {
+        const closeButton = document.createElement("button")
 
-    banner.appendChild(closeButton)
+        closeButton.id = "alert-close-button"
+        closeButton.addEventListener("click", () => {
+            banner.remove()
+        })
+        closeButton.innerHTML = CLOSEBUTTON
+
+        banner.appendChild(closeButton)
+    }
+
     document.body.prepend(banner)
 }

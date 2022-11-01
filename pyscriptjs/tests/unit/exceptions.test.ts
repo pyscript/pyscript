@@ -1,3 +1,3 @@
 import { jest } from "@jest/globals"
-import { UserError, createAlertBanner } from "../../src/exceptions"
+import { UserError } from "../../src/exceptions"
 import { getLogger } from "../../src/logger"

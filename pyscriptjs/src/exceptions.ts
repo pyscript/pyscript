@@ -1,4 +1,4 @@
-import { createAlertBanner} from "./utils"
+import { _createAlertBanner } from "./utils"
 
 
 export class UserError extends Error {
@@ -6,7 +6,7 @@ export class UserError extends Error {
     super(message)
     this.name = "UserError"
     if (showBanner) {
-      createAlertBanner(message, "error")
+      _createAlertBanner(message, "error")
     }
   }
 }
