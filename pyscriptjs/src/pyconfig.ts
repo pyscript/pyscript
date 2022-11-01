@@ -17,10 +17,16 @@ export interface AppConfig extends Record<string, any> {
     autoclose_loader?: boolean;
     runtimes?: RuntimeConfig[];
     packages?: string[];
-    paths?: string[];
+    fetch?: FetchConfig[];
     plugins?: string[];
     pyscript?: PyScriptMetadata;
 }
+
+export type FetchConfig = {
+    url?: string;
+    folder?: string;
+    files?: string[];
+};
 
 export type RuntimeConfig = {
     src?: string;
@@ -37,7 +43,7 @@ const allKeys = {
     string: ['name', 'description', 'version', 'type', 'author_name', 'author_email', 'license'],
     number: ['schema_version'],
     boolean: ['autoclose_loader'],
-    array: ['runtimes', 'packages', 'paths', 'plugins'],
+    array: ['runtimes', 'packages', 'fetch', 'plugins'],
 };
 
 export const defaultConfig: AppConfig = {
@@ -52,7 +58,7 @@ export const defaultConfig: AppConfig = {
         },
     ],
     packages: [],
-    paths: [],
+    fetch: [],
     plugins: [],
 };
 
@@ -183,9 +189,9 @@ function validateConfig(configText: string, configType = 'toml') {
             if (validateParamInConfig(item, keyType, config)) {
                 if (item === 'runtimes') {
                     finalConfig[item] = [];
-                    const runtimes = config[item] as object[];
-                    runtimes.forEach(function (eachRuntime: object) {
-                        const runtimeConfig: object = {};
+                    const runtimes = config[item] as RuntimeConfig[];
+                    runtimes.forEach(function (eachRuntime: RuntimeConfig) {
+                        const runtimeConfig: RuntimeConfig = {};
                         for (const eachRuntimeParam in eachRuntime) {
                             if (validateParamInConfig(eachRuntimeParam, 'string', eachRuntime)) {
                                 runtimeConfig[eachRuntimeParam] = eachRuntime[eachRuntimeParam];
@@ -193,7 +199,22 @@ function validateConfig(configText: string, configType = 'toml') {
                         }
                         finalConfig[item].push(runtimeConfig);
                     });
-                } else {
+                }
+                else if (item === 'fetch') {
+                    finalConfig[item] = [];
+                    const fetchList = config[item] as FetchConfig[];
+                    fetchList.forEach(function (eachFetch: FetchConfig) {
+                        const eachFetchConfig: FetchConfig = {};
+                        for (const eachFetchConfigParam in eachFetch) {
+                            const targetType = eachFetchConfigParam === 'files' ? 'array' : 'string';
+                            if (validateParamInConfig(eachFetchConfigParam, targetType, eachFetch)) {
+                                eachFetchConfig[eachFetchConfigParam] = eachFetch[eachFetchConfigParam];
+                            }
+                        }
+                        finalConfig[item].push(eachFetchConfig);
+                    });
+                }
+                else {
                     finalConfig[item] = config[item];
                 }
             }

@@ -17,9 +17,8 @@
     <div id="outputDiv2" class="font-mono"></div>
     <div id="outputDiv3" class="font-mono"></div>
     <py-config>
-      paths = [
-          "./utils.py"
-      ]
+      [[fetch]]
+      files = ["./utils.py"]
     </py-config>
     <py-script output="outputDiv">
 # demonstrates how use the global PyScript pyscript_loader

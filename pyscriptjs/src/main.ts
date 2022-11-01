@@ -1,6 +1,6 @@
 import './styles/pyscript_base.css';
 
-import { loadConfigFromElement } from './pyconfig';
+import { FetchConfig, loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
@@ -171,15 +171,29 @@ class PyScriptApp {
         // it in Python, which means we need to have the runtime
         // initialized. But we could easily do it in JS in parallel with the
         // download/startup of pyodide.
-        const paths = this.config.paths;
-        logger.info('Paths to fetch: ', paths);
-        for (const singleFile of paths) {
-            logger.info(`  fetching path: ${singleFile}`);
+        const fetch_cfg = this.config.fetch;
+        const fetchPaths: string[] = [];
+        const paths: string[] = [];
+        fetch_cfg.forEach(function (each_fetch_cfg: FetchConfig) {
+            const url = each_fetch_cfg.url;
+            const folder = each_fetch_cfg.folder;
+            const files = each_fetch_cfg.files;
+            for (const each_f of files)
+            {
+                const each_fetch_path = [url, folder, each_f].filter(item => item !== undefined).join('/');
+                fetchPaths.push(each_fetch_path);
+                const each_path = [folder, each_f].filter(item => item !== undefined).join('/');
+                paths.push(each_path);
+            }
+        });
+        logger.info('Paths to fetch: ', fetchPaths);
+        for (let i=0; i<paths.length; i++) {
+            logger.info(`  fetching path: ${fetchPaths[i]}`);
             try {
-                await runtime.loadFromFile(singleFile);
+                await runtime.loadFromFile(paths[i], fetchPaths[i]);
             } catch (e) {
                 //Should we still export full error contents to console?
-                handleFetchError(<Error>e, singleFile);
+                handleFetchError(<Error>e, fetchPaths[i]);
             }
         }
         logger.info('All paths fetched');

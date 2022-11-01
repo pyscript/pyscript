@@ -79,7 +79,8 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-config>
-                paths = ["./a.py", "./b.py"]
+                [[fetch]]
+                files = ["./a.py", "./b.py"]
             </py-config>
 
             <py-script>
@@ -100,7 +101,8 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-config>
-                paths = ["./f.py"]
+                [[fetch]]
+                files = ["./f.py"]
             </py-config>
             """
         )
@@ -123,7 +125,9 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-config>
-                paths = ["./utils/__init__.py", "./utils/a.py"]
+                [[fetch]]
+                folder = "utils"
+                files = ["__init__.py", "a.py"]
             </py-config>
 
             <py-script>
