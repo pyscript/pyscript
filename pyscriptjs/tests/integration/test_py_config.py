@@ -137,8 +137,9 @@ class TestConfig(PyScriptTest):
         banner = self.page.wait_for_selector(".py-error")
         assert "SyntaxError: Expected DoubleQuote" in self.console.error.text
         expected = (
-            "The config supplied: [[ is an invalid JSON and cannot be "
-            "parsed: SyntaxError: Unexpected end of JSON input"
+            "The config supplied: [[ is an invalid TOML and cannot be parsed: "
+            "SyntaxError: Expected DoubleQuote, Whitespace, or [a-z], [A-Z], "
+            '[0-9], "-", "_" but "\\n" found.'
         )
         assert banner.inner_text() == expected
 
