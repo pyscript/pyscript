@@ -42,16 +42,6 @@ export function ensureUniqueId(el: HTMLElement) {
     if (el.id === '') el.id = `py-internal-${_uniqueIdCounter++}`;
 }
 
-/*
- *  Display a page-wide error message to show that something has gone wrong with
- *  PyScript or Pyodide during loading. Probably not be used for issues that occur within
- *  Python scripts, since stderr can be routed to somewhere in the DOM
- */
-export function showError(msg: string): void {
-    _createAlertBanner(msg)
-    _createAlertBanner(msg, "warning")
-}
-
 export function showWarning(msg: string): void {
     _createAlertBanner(msg, "warning")
 }
@@ -156,6 +146,11 @@ export function withUserErrorHandler(fn) {
     } catch(error: unknown) {
         if (error instanceof UserError){
             if (error.showBanner) {
+            /*
+            *  Display a page-wide error message to show that something has gone wrong with
+            *  PyScript or Pyodide during loading. Probably not be used for issues that occur within
+            *  Python scripts, since stderr can be routed to somewhere in the DOM
+            */
                 _createAlertBanner(error.message)
             }
         }

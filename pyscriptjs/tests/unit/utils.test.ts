@@ -115,7 +115,6 @@ describe("Test _createAlertBanner", () => {
     expect(banner.length).toBe(1)
 
     const closeButton = document.getElementById("alert-close-button")
-
     closeButton.click()
 
     // Confirm that clicking the close button, removes the element
@@ -136,6 +135,7 @@ describe("Test _createAlertBanner", () => {
     expect(warnLogSpy).not.toHaveBeenCalledWith("Test warning")
   })
 })
+
 
 describe("Test withUserErrorHandler", () => {
   document.body.innerHTML = `<div>Hell o World</div>`

@@ -1,7 +1,7 @@
 import toml from '../src/toml';
 import { getLogger } from './logger';
 import { version } from './runtime';
-import { getAttribute, readTextFromPath, showError } from './utils';
+import { getAttribute, readTextFromPath } from './utils';
 import { UserError } from "./exceptions"
 
 const logger = getLogger('py-config');

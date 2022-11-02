@@ -116,7 +116,7 @@ class TestConfig(PyScriptTest):
             wait_for_pyscript=False,
         )
         banner = self.page.wait_for_selector(".py-error")
-        assert ("SyntaxError: Unexpected end of JSON input") in self.console.error.text
+        assert "SyntaxError: Unexpected end of JSON input" in self.console.error.text
         expected = (
             "The config supplied: [[ is an invalid JSON and cannot be "
             "parsed: SyntaxError: Unexpected end of JSON input"
