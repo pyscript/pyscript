@@ -2,11 +2,10 @@ import { _createAlertBanner } from "./utils"
 
 
 export class UserError extends Error {
-  constructor(message: string, showBanner =false) {
+  showBanner: boolean
+  constructor(message: string, showBanner = true) {
     super(message)
     this.name = "UserError"
-    if (showBanner) {
-      _createAlertBanner(message, "error")
-    }
+    this.showBanner = showBanner
   }
 }

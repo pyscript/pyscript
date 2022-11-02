@@ -7,9 +7,10 @@ import { make_PyScript, initHandlers, mountElements } from './components/pyscrip
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
-import { handleFetchError, showError, globalExport } from './utils';
+import { handleFetchError, showWarning, globalExport, withUserErrorHandler } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
+import { UserError } from "./exceptions"
 
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {
@@ -78,8 +79,8 @@ class PyScriptApp {
             // errors" and stop the computation, but currently our life cycle
             // is too messy to implement it reliably. We might want to revisit
             // this once it's in a better shape.
-            showError(
-                'Multiple <py-config> tags detected. Only the first is ' +
+            showWarning(
+                'Multiple &lt;py-config&gt; tags detected. Only the first is ' +
                     'going to be parsed, all the others will be ignored',
             );
         }
@@ -100,12 +101,11 @@ class PyScriptApp {
     loadRuntime() {
         logger.info('Initializing runtime');
         if (this.config.runtimes.length == 0) {
-            showError('Fatal error: config.runtimes is empty');
-            return;
+            throw new UserError('Fatal error: config.runtimes is empty');
         }
 
         if (this.config.runtimes.length > 1) {
-            showError('Multiple runtimes are not supported yet. ' + 'Only the first will be used');
+            showWarning('Multiple runtimes are not supported yet. Only the first will be used');
         }
         const runtime_cfg = this.config.runtimes[0];
         this.runtime = new PyodideRuntime(this.config, runtime_cfg.src, runtime_cfg.name, runtime_cfg.lang);
@@ -243,6 +243,7 @@ globalExport('pyscript_get_config', pyscript_get_config);
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
-globalApp.main();
+// globalApp.main();
+withUserErrorHandler(globalApp.main.bind(globalApp));
 
 export const runtime = globalApp.runtime;

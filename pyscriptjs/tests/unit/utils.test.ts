@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-import { ensureUniqueId, joinPaths } from '../../src/utils';
-import { expect } from "@jest/globals";
-=======
-import { jest } from "@jest/globals"
-import { ensureUniqueId, _createAlertBanner } from "../../src/utils"
->>>>>>> f90a48a... Add tests for alertBanner
+import { jest, expect } from "@jest/globals"
+import { ensureUniqueId, joinPaths, _createAlertBanner, withUserErrorHandler } from "../../src/utils"
+import { UserError } from "../../src/exceptions"
 
 describe("Utils", () => {
 
@@ -38,7 +34,6 @@ describe("Utils", () => {
   })
 })
 
-<<<<<<< HEAD
 describe("JoinPaths", () => {
   it("should remove trailing slashes from the beginning and the end", () => {
     const paths: string[] = ['///abc/d/e///'];
@@ -56,11 +51,14 @@ describe("JoinPaths", () => {
     const paths: string[] = ['', '///hhh/ll/pp///', '', 'kkk'];
     const joinedPath = joinPaths(paths);
     expect(joinedPath).toStrictEqual('hhh/ll/pp/kkk');
-=======
+  })
+})
+
 describe("Test _createAlertBanner", () => {
   document.body.innerHTML = `<div>Hello World</div>`
 
   beforeEach(() => {
+    // Run banner cleanup
     const banners = document.getElementsByClassName("alert-banner")
     for (let banner of banners) {
       banner.remove()
@@ -125,15 +123,70 @@ describe("Test _createAlertBanner", () => {
     expect(banner.length).toBe(0)
   })
 
-  it("toggling logging off shouldn't log to console", async () => {
+  it("toggling logging off on error alert shouldn't log to console", async () => {
     const errorLogSpy = jest.spyOn(console, "error")
-    const warnLogSpy = jest.spyOn(console, "warn")
 
     _createAlertBanner("Test error", "error", false)
     expect(errorLogSpy).not.toHaveBeenCalledWith("Test error")
+  })
 
+  it("toggling logging off on warning alert shouldn't log to console", async() => {
+    const warnLogSpy = jest.spyOn(console, "warn")
     _createAlertBanner("Test warning", "warning", false)
     expect(warnLogSpy).not.toHaveBeenCalledWith("Test warning")
->>>>>>> f90a48a... Add tests for alertBanner
+  })
+})
+
+describe("Test withUserErrorHandler", () => {
+  document.body.innerHTML = `<div>Hell o World</div>`
+
+  beforeEach(() => {
+    // run banner cleanup
+    const banners = document.getElementsByClassName("alert-banner")
+    for (let banner of banners) {
+      console.error(banners)
+      banner.remove()
+    }
+  })
+
+  it("userError doesn't stop execution", async () => {
+    function exception() {
+      throw new UserError("Computer says no")
+    }
+
+    function func() {
+      withUserErrorHandler(exception)
+      return "Hello, world"
+    }
+
+    const returnValue = func()
+    const banners = document.getElementsByClassName("alert-banner")
+    expect(banners.length).toBe(1)
+    expect(banners[0].innerHTML).toBe("Computer says no")
+    expect(returnValue).toBe("Hello, world")
+  })
+
+  it("any other exception should stop execution and raise", async () => {
+    function exception() {
+      throw new Error("Explosions!")
+    }
+
+    expect(() => withUserErrorHandler(exception)).toThrow(new Error("Explosions!"))
+  })
+
+  it("don't create banner if needed", async () => {
+    function exception() {
+      throw new UserError("Computer says no", false)
+    }
+
+    function func() {
+      withUserErrorHandler(exception)
+      return "Hello, world"
+    }
+
+    const returnValue = func()
+    const banners = document.getElementsByClassName("alert-banner")
+    expect(banners.length).toBe(0)
+    expect(returnValue).toBe("Hello, world")
   })
 })

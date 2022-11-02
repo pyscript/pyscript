@@ -1,4 +1,5 @@
 import { CLOSEBUTTON } from "./consts"
+import { UserError } from "./exceptions"
 
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
@@ -51,6 +52,10 @@ export function showError(msg: string): void {
     _createAlertBanner(msg, "warning")
 }
 
+export function showWarning(msg: string): void {
+    _createAlertBanner(msg, "warning")
+}
+
 export function handleFetchError(e: Error, singleFile: string) {
     //Should we still export full error contents to console?
     // XXX: What happens if I make a typo? i.e. a web server is being used but a file
@@ -70,9 +75,9 @@ export function handleFetchError(e: Error, singleFile: string) {
             singleFile +
             `</u> failed with error 404 (File not Found). Are your filename and path are correct?</p>`;
     } else {
-        errorContent = '<p>PyScript encountered an error while loading from file: ' + e.message + '</p>';
+        errorContent = `<p>PyScript encountered an error while loading from file: ${e.message} </p>`;
     }
-    showError(errorContent);
+    showWarning(errorContent);
 }
 
 export function readTextFromPath(path: string) {
@@ -112,6 +117,7 @@ export function joinPaths(parts: string[], separator = '/') {
         return '/'+res;
     }
     return res;
+}
 
 export function _createAlertBanner(message: string, level: "error" | "warning" = "error", logMessage = true) {
 
@@ -127,7 +133,7 @@ export function _createAlertBanner(message: string, level: "error" | "warning" =
 
     const banner = document.createElement("div")
     banner.className = `alert-banner py-${level}`
-    banner.textContent = message
+    banner.innerHTML = message
 
     if (level === "warning") {
         const closeButton = document.createElement("button")
@@ -142,4 +148,19 @@ export function _createAlertBanner(message: string, level: "error" | "warning" =
     }
 
     document.body.prepend(banner)
+}
+
+export function withUserErrorHandler(fn) {
+    try {
+        return fn();
+    } catch(error: unknown) {
+        if (error instanceof UserError){
+            if (error.showBanner) {
+                _createAlertBanner(error.message)
+            }
+        }
+        else {
+            throw error
+        }
+    }
 }

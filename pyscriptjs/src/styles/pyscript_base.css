@@ -116,6 +116,10 @@ color: #0f172a;
     margin: 5px 0;
 }
 
+.alert-banner p {
+    margin: 0;
+}
+
 .py-error{
     background-color: #FFE9E8;
     border: solid;

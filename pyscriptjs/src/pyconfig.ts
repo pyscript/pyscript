@@ -2,6 +2,7 @@ import toml from '../src/toml';
 import { getLogger } from './logger';
 import { version } from './runtime';
 import { getAttribute, readTextFromPath, showError } from './utils';
+import { UserError } from "./exceptions"
 
 const logger = getLogger('py-config');
 
@@ -147,14 +148,12 @@ function parseConfig(configText: string, configType = 'toml') {
         try {
             // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
             if (configText.trim()[0] === '{') {
-                const errMessage = `config supplied: ${configText} is an invalid TOML and cannot be parsed`;
-                showError(`<p>${errMessage}</p>`);
-                throw Error(errMessage);
+                const errMessage = `The config supplied: ${configText} is an invalid TOML and cannot be parsed`;
+                throw new UserError(errMessage);
             }
             config = toml.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            showError(`<p>config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}</p>`);
             // we cannot easily just "throw err" here, because for some reason
             // playwright gets confused by it and cannot print it
             // correctly. It is just displayed as an empty error.
@@ -163,18 +162,17 @@ function parseConfig(configText: string, configType = 'toml') {
             // I think that 'n' is the minified name?
             // The workaround is to re-wrap the message into SyntaxError(), so that
             // it's correctly handled by playwright.
-            throw SyntaxError(errMessage);
+            throw new UserError(`The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`);
         }
     } else if (configType === 'json') {
         try {
             config = JSON.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            showError(`<p>config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}</p>`);
-            throw err;
+            throw new UserError(`The config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}`);
         }
     } else {
-        showError(`<p>type of config supplied is: ${configType}, supported values are ["toml", "json"].</p>`);
+        throw new UserError(`<p>The type of config supplied'${configType}' is not supported, supported values are ["toml", "json"].</p>`);
     }
     return config;
 }
