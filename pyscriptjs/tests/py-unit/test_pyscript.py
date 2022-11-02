@@ -41,3 +41,10 @@ def test_format_mime_repr_escaping():
     out, mime = pyscript.format_mime(sys)
     assert out == "&lt;module 'sys' (built-in)&gt;"
     assert mime == "text/plain"
+
+
+def test_format_mime_HTML():
+    obj = pyscript.HTML("<p>hello</p>")
+    out, mime = pyscript.format_mime(obj)
+    assert out == "<p>hello</p>"
+    assert mime == "text/html"
