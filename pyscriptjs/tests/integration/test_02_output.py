@@ -201,6 +201,20 @@ class TestOutput(PyScriptTest):
             == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
         )
 
+    def test_display_should_escape(self):
+        import html
+
+        self.pyscript_run(
+            """
+            <py-script>
+                display("<p>hello world</p>")
+            </py-script>
+            """
+        )
+        out = self.page.locator("py-script > div")
+        assert out.inner_html() == html.escape("<p>hello world</p>")
+        assert out.inner_text() == "<p>hello world</p>"
+
     def test_image_display(self):
         self.pyscript_run(
             """
