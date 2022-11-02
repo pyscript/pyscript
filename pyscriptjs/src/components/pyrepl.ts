@@ -165,7 +165,12 @@ export function make_PyRepl(runtime: Runtime) {
                 pyDisplay(runtime, pyResult, { target: outEl.id });
             }
 
-            this.autogenerateMaybe();
+            if (this.getAttribute('auto-generate') == 'false') {
+                return;
+            }
+            else {
+                this.autogenerate();
+            }
         }
 
         getPySrc(): string {
@@ -187,37 +192,27 @@ export function make_PyRepl(runtime: Runtime) {
             }
         }
 
-        // XXX the autogenerate logic is very messy. We should redo it, and it
-        // should be the default.
-        autogenerateMaybe(): void {
-            if (this.hasAttribute('auto-generate')) {
-                const allPyRepls = document.querySelectorAll(`py-repl`);
-                const lastRepl = allPyRepls[allPyRepls.length - 1];
+        autogenerate(): void {
+            const newPyRepl = document.createElement('py-repl');
+ 
+            newPyRepl.setAttribute('auto-generate', 'true');
 
-                const newPyRepl = document.createElement('py-repl');
+            const outputMode = getAttribute(this, 'output-mode');
+            if (outputMode) {
+                newPyRepl.setAttribute('output-mode', outputMode);
+            }
 
-                if (this.hasAttribute('auto-generate')) {
-                    newPyRepl.setAttribute('auto-generate', '');
-                    this.removeAttribute('auto-generate');
+            const addReplAttribute = (attribute: string) => {
+                const attr = getAttribute(this, attribute);
+                if (attr) {
+                    newPyRepl.setAttribute(attribute, attr);
                 }
+            };
 
-                const outputMode = getAttribute(this, 'output-mode');
-                if (outputMode) {
-                    newPyRepl.setAttribute('output-mode', outputMode);
-                }
+            addReplAttribute('output');
 
-                const addReplAttribute = (attribute: string) => {
-                    const attr = getAttribute(this, attribute);
-                    if (attr) {
-                        newPyRepl.setAttribute(attribute, attr);
-                    }
-                };
-
-                addReplAttribute('output');
-
-                if (this.parentElement) {
-                    this.parentElement.appendChild(newPyRepl);
-                }
+            if (this.parentElement) {
+                this.parentElement.appendChild(newPyRepl);
             }
         }
     }

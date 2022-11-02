@@ -236,7 +236,10 @@ class Element:
             child = document.createElement("div")
             self.element.appendChild(child)
 
-        out_element = self.element
+        if self.element.children:
+            out_element = self.element.children[-1]
+        else:
+            out_element = self.element
 
         if mime_type in ("application/javascript", "text/html"):
             script_element = document.createRange().createContextualFragment(html)
