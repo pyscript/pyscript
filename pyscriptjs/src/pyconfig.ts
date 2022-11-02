@@ -148,20 +148,11 @@ function parseConfig(configText: string, configType = 'toml') {
         try {
             // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
             if (configText.trim()[0] === '{') {
-                const errMessage = `The config supplied: ${configText} is an invalid TOML and cannot be parsed`;
-                throw new UserError(errMessage);
+                throw new UserError(`The config supplied: ${configText} is an invalid TOML and cannot be parsed`);
             }
             config = toml.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            // we cannot easily just "throw err" here, because for some reason
-            // playwright gets confused by it and cannot print it
-            // correctly. It is just displayed as an empty error.
-            // If you print err in JS, you get something like this:
-            //     n {message: '...', offset: 19, line: 2, column: 19}
-            // I think that 'n' is the minified name?
-            // The workaround is to re-wrap the message into SyntaxError(), so that
-            // it's correctly handled by playwright.
             throw new UserError(`The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`);
         }
     } else if (configType === 'json') {

@@ -243,7 +243,6 @@ globalExport('pyscript_get_config', pyscript_get_config);
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
-// globalApp.main();
 withUserErrorHandler(globalApp.main.bind(globalApp));
 
 export const runtime = globalApp.runtime;
