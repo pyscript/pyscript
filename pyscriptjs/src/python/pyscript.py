@@ -1,5 +1,6 @@
 import asyncio
 import base64
+import html
 import io
 import time
 from textwrap import dedent
@@ -35,7 +36,7 @@ def identity(value, meta):
 
 
 MIME_RENDERERS = {
-    "text/plain": identity,
+    "text/plain": html.escape,
     "text/html": identity,
     "image/png": lambda value, meta: render_image("image/png", value, meta),
     "image/jpeg": lambda value, meta: render_image("image/jpeg", value, meta),
@@ -43,6 +44,18 @@ MIME_RENDERERS = {
     "application/json": identity,
     "application/javascript": lambda value, meta: f"<script>{value}</script>",
 }
+
+
+class HTML:
+    """
+    Wrap a string so that display() can render it as plain HTML
+    """
+
+    def __init__(self, html):
+        self._html = html
+
+    def _repr_html_(self):
+        return self._html
 
 
 def eval_formatter(obj, print_method):
@@ -68,7 +81,7 @@ def format_mime(obj):
     Formats object using _repr_x_ methods.
     """
     if isinstance(obj, str):
-        return obj, "text/plain"
+        return html.escape(obj), "text/plain"
 
     mimebundle = eval_formatter(obj, "_repr_mimebundle_")
     if isinstance(mimebundle, tuple):
