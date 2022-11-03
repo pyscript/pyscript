@@ -5,6 +5,7 @@ import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy }
 // @ts-ignore
 import pyscript from './python/pyscript.py';
 import type { AppConfig } from './pyconfig';
+import type { Stdio } from './stdio';
 
 declare const loadPyodide: typeof loadPyodideDeclaration;
 
@@ -17,6 +18,7 @@ interface Micropip {
 
 export class PyodideRuntime extends Runtime {
     src: string;
+    stdio: Stdio;
     name?: string;
     lang?: string;
     interpreter: PyodideInterface;
@@ -24,12 +26,14 @@ export class PyodideRuntime extends Runtime {
 
     constructor(
         config: AppConfig,
+        stdio: Stdio,
         src = 'https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js',
         name = 'pyodide-default',
         lang = 'python',
     ) {
         logger.info('Runtime config:', { name, lang, src });
         super(config);
+        this.stdio = stdio;
         this.src = src;
         this.name = name;
         this.lang = lang;
@@ -54,8 +58,8 @@ export class PyodideRuntime extends Runtime {
     async loadInterpreter(): Promise<void> {
         logger.info('Loading pyodide');
         this.interpreter = await loadPyodide({
-            stdout: console.log,
-            stderr: console.log,
+            stdout: (msg) => { this.stdio.stdout(msg); },
+            stderr: (msg) => { this.stdio.stderr(msg); },
             fullStdLib: false,
         });
 

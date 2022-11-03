@@ -9,6 +9,8 @@ import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
 import { handleFetchError, showError, globalExport } from './utils';
 import { createCustomElements } from './components/elements';
+import { type Stdio, DEFAULT_STDIO } from './stdio';
+
 
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {
@@ -107,7 +109,11 @@ class PyScriptApp {
             showError('Multiple runtimes are not supported yet. ' + 'Only the first will be used');
         }
         const runtime_cfg = this.config.runtimes[0];
-        this.runtime = new PyodideRuntime(this.config, runtime_cfg.src, runtime_cfg.name, runtime_cfg.lang);
+        this.runtime = new PyodideRuntime(this.config,
+                                          DEFAULT_STDIO,
+                                          runtime_cfg.src,
+                                          runtime_cfg.name,
+                                          runtime_cfg.lang);
         this.loader.log(`Downloading ${runtime_cfg.name}...`);
         const script = document.createElement('script'); // create a script DOM node
         script.src = this.runtime.src;
