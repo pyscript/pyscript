@@ -9,8 +9,8 @@ import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
 import { handleFetchError, showError, globalExport } from './utils';
 import { createCustomElements } from './components/elements';
-import { type Stdio, DEFAULT_STDIO } from './stdio';
-
+import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
+import { PyTerminalPlugin } from './plugins/pyterminal';
 
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {
@@ -35,6 +35,8 @@ const logger = getLogger('pyscript/main');
 
    6. setup the environment, install packages
 
+   6.5: call the Plugin.setupComplete() hook
+
    7. connect the py-script web component. This causes the execution of all the
       user scripts
 
@@ -51,16 +53,29 @@ More concretely:
   - PyScriptApp.afterRuntimeLoad() implements all the points >= 5.
 */
 
-class PyScriptApp {
+
+
+export class PyScriptApp {
     config: AppConfig;
     loader: PyLoader;
     runtime: Runtime;
     PyScript: any; // XXX would be nice to have a more precise type for the class itself
+    _stdioMultiplexer: StdioMultiplexer;
+    _pyterminal: PyTerminalPlugin; // XXX temporary
+
+    constructor() {
+        this._stdioMultiplexer = new StdioMultiplexer();
+        this._stdioMultiplexer.addListener(DEFAULT_STDIO);
+    }
 
     // lifecycle (1)
     main() {
         this.loadConfig();
-        this.showLoader();
+
+        // this is basically "instantiate all plugins"
+        this._pyterminal = new PyTerminalPlugin(this);
+        this.showLoader(); // this should be a plugin
+
         this.loadRuntime();
     }
 
@@ -110,7 +125,7 @@ class PyScriptApp {
         }
         const runtime_cfg = this.config.runtimes[0];
         this.runtime = new PyodideRuntime(this.config,
-                                          DEFAULT_STDIO,
+                                          this._stdioMultiplexer,
                                           runtime_cfg.src,
                                           runtime_cfg.name,
                                           runtime_cfg.lang);
@@ -142,6 +157,9 @@ class PyScriptApp {
         this.loader.log('Setting up virtual environment...');
         await this.setupVirtualEnv(runtime);
         await mountElements(runtime);
+
+        // lifecycle (6.5)
+        this._pyterminal.setupComplete();
 
         this.loader.log('Executing <py-script> tags...');
         this.executeScripts(runtime);
@@ -196,6 +214,12 @@ class PyScriptApp {
         void this.register_importmap(runtime);
         this.PyScript = make_PyScript(runtime);
         customElements.define('py-script', this.PyScript);
+    }
+
+    // ================= registraton API ====================
+
+    registerStdioListener(stdio: Stdio) {
+        this._stdioMultiplexer.addListener(stdio);
     }
 
     async register_importmap(runtime: Runtime) {
