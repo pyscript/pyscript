@@ -290,6 +290,7 @@ textarea {
    bundled together at build time (by rollup?) */
 
 .py-terminal {
+    min-height: 10em;
     background-color: black;
     color: white;
 }
