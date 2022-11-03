@@ -35,3 +35,27 @@ export class CaptureStdio implements Stdio {
         this.captured_stderr += msg + "\n";
     }
 }
+
+/** Redirect stdio streams to multiple listeners
+ */
+export class StdioMultiplexer implements Stdio {
+    _listeners: Stdio[];
+
+    constructor() {
+        this._listeners = [];
+    }
+
+    addListener(obj: Stdio) {
+        this._listeners.push(obj);
+    }
+
+    stdout(msg: string) {
+        for(const obj of this._listeners)
+            obj.stdout(msg);
+    }
+
+    stderr(msg: string) {
+        for(const obj of this._listeners)
+            obj.stderr(msg);
+    }
+}
