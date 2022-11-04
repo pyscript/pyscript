@@ -36,3 +36,32 @@ class TestPyTerminal(PyScriptTest):
             "this goes to stderr",
             "this goes to stdout",
         ]
+
+    def test_two_terminals(self):
+        """
+        Multiple <py-terminal>s can cohexist.
+        A <py-terminal> receives only output from the moment it is added to
+        the DOM.
+        """
+        self.pyscript_run(
+            """
+            <py-terminal id="term1"></py-terminal>
+
+            <py-script>
+                import js
+                print('one')
+                term2 = js.document.createElement('py-terminal')
+                term2.id = 'term2'
+                js.document.body.append(term2)
+
+                print('two')
+                print('three')
+            </py-script>
+            """
+        )
+        term1 = self.page.locator("#term1")
+        term2 = self.page.locator("#term2")
+        term1_lines = term1.inner_text().splitlines()
+        term2_lines = term2.inner_text().splitlines()
+        assert term1_lines == ["one", "two", "three"]
+        assert term2_lines == ["two", "three"]
