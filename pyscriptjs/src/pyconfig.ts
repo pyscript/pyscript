@@ -25,6 +25,7 @@ export interface AppConfig extends Record<string, any> {
 export type FetchConfig = {
     from?: string;
     to_folder?: string;
+    to_file?: string;
     files?: string[];
 };
 

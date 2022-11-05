@@ -226,7 +226,10 @@ A fetch configuration consists of the following:
 | ----- | ---- | ----------- |
 | `from` | string | Base URL for the resource to be fetched. |
 | `to_folder` | string | Name of the folder to create in the filesystem. |
+| `to_file` | string | Name of the target to create in the filesystem. |
 | `files` | List of string | List of files to be downloaded. |
+
+The parameters `to_file` and `files` shouldn't be supplied together.
 
 A runtime configuration consists of the following:
 | Value | Type | Description |
