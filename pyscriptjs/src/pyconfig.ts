@@ -23,8 +23,8 @@ export interface AppConfig extends Record<string, any> {
 }
 
 export type FetchConfig = {
-    url?: string;
-    folder?: string;
+    from?: string;
+    to_folder?: string;
     files?: string[];
 };
 

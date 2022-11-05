@@ -1,13 +1,13 @@
 import './styles/pyscript_base.css';
 
-import { FetchConfig, loadConfigFromElement } from './pyconfig';
+import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
-import { handleFetchError, showError, globalExport } from './utils';
+import { handleFetchError, showError, globalExport, calculatePaths } from './utils';
 import { createCustomElements } from './components/elements';
 
 type ImportType = { [key: string]: unknown };
@@ -171,21 +171,7 @@ class PyScriptApp {
         // it in Python, which means we need to have the runtime
         // initialized. But we could easily do it in JS in parallel with the
         // download/startup of pyodide.
-        const fetch_cfg = this.config.fetch;
-        const fetchPaths: string[] = [];
-        const paths: string[] = [];
-        fetch_cfg.forEach(function (each_fetch_cfg: FetchConfig) {
-            const url = each_fetch_cfg.url;
-            const folder = each_fetch_cfg.folder;
-            const files = each_fetch_cfg.files;
-            for (const each_f of files)
-            {
-                const each_fetch_path = [url, folder, each_f].filter(item => item !== undefined).join('/');
-                fetchPaths.push(each_fetch_path);
-                const each_path = [folder, each_f].filter(item => item !== undefined).join('/');
-                paths.push(each_path);
-            }
-        });
+        const [paths, fetchPaths] = calculatePaths(this.config.fetch);
         logger.info('Paths to fetch: ', fetchPaths);
         for (let i=0; i<paths.length; i++) {
             logger.info(`  fetching path: ${fetchPaths[i]}`);

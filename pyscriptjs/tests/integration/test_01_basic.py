@@ -126,13 +126,14 @@ class TestBasic(PyScriptTest):
             """
             <py-config>
                 [[fetch]]
-                folder = "utils"
+                from = "utils"
+                to_folder = "pkg"
                 files = ["__init__.py", "a.py"]
             </py-config>
 
             <py-script>
                 import js
-                from utils.a import x
+                from pkg.a import x
                 js.console.log(x)
             </py-script>
             """

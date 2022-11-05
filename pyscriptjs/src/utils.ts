@@ -1,3 +1,5 @@
+import { FetchConfig } from "./pyconfig";
+
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
         element.classList.add(entry);
@@ -108,4 +110,36 @@ export function getAttribute(el: Element, attr: string): string | null {
         }
     }
     return null;
+}
+
+export function calculatePaths(fetch_cfg: FetchConfig[]) {
+    const fetchPaths: string[] = [];
+    const paths: string[] = [];
+    fetch_cfg.forEach(function (each_fetch_cfg: FetchConfig) {
+        const from = each_fetch_cfg.from || "";
+        const to_folder = each_fetch_cfg.to_folder || ".";
+        const files = each_fetch_cfg.files;
+        if (files !== undefined)
+        {
+            for (const each_f of files)
+            {
+                const each_fetch_path = [from.endsWith('/') ? from.slice(0, -1) : from, each_f].filter(it => it!== "").join('/');
+                fetchPaths.push(each_fetch_path);
+                const each_path = [to_folder.endsWith('/') ? to_folder.slice(0, -1) : to_folder, each_f].join('/');
+                paths.push(each_path);
+            }
+        }
+        else
+        {
+            fetchPaths.push(from);
+            const filename = from.split('/').pop();
+            if (filename === '') {
+                throw Error(`Couldn't determine the filename from the path ${from}`);
+            }
+            else {
+                paths.push([to_folder.endsWith('/') ? to_folder.slice(0, -1) : to_folder, filename].join('/'));
+            }
+        }
+    });
+    return [paths, fetchPaths];
 }
