@@ -95,7 +95,6 @@ test-py:
 	$(PYTEST_EXE) -vv $(ARGS) tests/py-unit/ --log-cli-level=warning
 
 test-ts:
-	@echo "Tests are coming :( this is a placeholder and it's meant to fail!"
 	npm run test
 
 fmt: fmt-py fmt-ts
