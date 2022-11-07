@@ -43,6 +43,7 @@ function make_PyTerminal(app: PyScriptApp) {
      */
     class PyTerminal extends HTMLElement implements Stdio {
         outElem: HTMLElement;
+        autoShowOnNextLine: boolean;
 
         connectedCallback() {
             // should we use a shadowRoot instead? It looks unnecessarily
@@ -51,13 +52,30 @@ function make_PyTerminal(app: PyScriptApp) {
             this.outElem = document.createElement('pre');
             this.outElem.className = 'py-terminal';
             this.appendChild(this.outElem);
+
+            if (this.isAuto()) {
+                this.classList.add('py-terminal-hidden');
+                this.autoShowOnNextLine = true;
+            }
+            else {
+                this.autoShowOnNextLine = false;
+            }
+
             logger.info('Registering stdio listener');
             app.registerStdioListener(this);
+        }
+
+        isAuto() {
+            return this.hasAttribute("auto");
         }
 
         // implementation of the Stdio interface
         stdout_writeline(msg: string) {
             this.outElem.innerText += msg + "\n";
+            if (this.autoShowOnNextLine) {
+                this.classList.remove('py-terminal-hidden');
+                this.autoShowOnNextLine = false;
+            }
         }
 
         stderr_writeline(msg: string) {

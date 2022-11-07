@@ -1,3 +1,5 @@
+from playwright.sync_api import expect
+
 from .support import PyScriptTest
 
 
@@ -65,3 +67,17 @@ class TestPyTerminal(PyScriptTest):
         term2_lines = term2.inner_text().splitlines()
         assert term1_lines == ["one", "two", "three"]
         assert term2_lines == ["two", "three"]
+
+    def test_auto(self):
+        self.pyscript_run(
+            """
+            <py-terminal auto></py-terminal>
+
+            <button id="my-button" py-onClick="print('hello world')">Click me</button>
+            """
+        )
+        term = self.page.locator("py-terminal")
+        expect(term).to_be_hidden()
+        self.page.locator("button").click()
+        expect(term).to_be_visible()
+        assert term.inner_text() == "hello world\n"

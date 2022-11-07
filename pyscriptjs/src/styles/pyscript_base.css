@@ -294,3 +294,7 @@ textarea {
     background-color: black;
     color: white;
 }
+
+.py-terminal-hidden {
+    display: none;
+}
