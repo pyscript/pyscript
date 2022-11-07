@@ -115,7 +115,7 @@ class TestBasic(PyScriptTest):
         is not available when directly opening a HTML file;
         you must use a webserver to serve the additional files."""
 
-        inner_html = self.page.locator(".py-error").inner_html()
+        inner_html = self.page.locator(".py-warning").inner_html()
         assert errorContent in inner_html
 
     def test_paths_from_packages(self):

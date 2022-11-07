@@ -1,5 +1,4 @@
-import { CLOSEBUTTON } from "./consts"
-import { UserError, _createAlertBanner } from "./exceptions"
+import { _createAlertBanner } from "./exceptions"
 
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
@@ -67,7 +66,7 @@ export function handleFetchError(e: Error, singleFile: string) {
     } else {
         errorContent = `<p>PyScript encountered an error while loading from file: ${e.message} </p>`;
     }
-    throw new UserError(errorContent);
+    showWarning(errorContent);
 }
 
 export function readTextFromPath(path: string) {
@@ -107,55 +106,4 @@ export function joinPaths(parts: string[], separator = '/') {
         return '/'+res;
     }
     return res;
-}
-
-export function _createAlertBanner(message: string, level: "error" | "warning" = "error", logMessage = true) {
-
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    switch(`log-${level}-${logMessage}`) {
-        case "log-error-true":
-        console.error(message);
-        break;
-        case "log-warning-true":
-        console.warn(message)
-        break;
-    }
-
-    const banner = document.createElement("div")
-    banner.className = `alert-banner py-${level}`
-    banner.innerHTML = message
-
-    if (level === "warning") {
-        const closeButton = document.createElement("button")
-
-        closeButton.id = "alert-close-button"
-        closeButton.addEventListener("click", () => {
-            banner.remove()
-        })
-        closeButton.innerHTML = CLOSEBUTTON
-
-        banner.appendChild(closeButton)
-    }
-
-    document.body.prepend(banner)
-}
-
-export function withUserErrorHandler(fn) {
-    try {
-        return fn();
-    } catch(error: unknown) {
-        if (error instanceof UserError){
-            if (error.showBanner) {
-            /*
-            *  Display a page-wide error message to show that something has gone wrong with
-            *  PyScript or Pyodide during loading. Probably not be used for issues that occur within
-            *  Python scripts, since stderr can be routed to somewhere in the DOM
-            */
-                _createAlertBanner(error.message)
-            }
-        }
-        else {
-            throw error
-        }
-    }
 }
