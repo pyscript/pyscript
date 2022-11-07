@@ -1,14 +1,16 @@
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
+import { Plugin } from '../plugin';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 
 const logger = getLogger('py-terminal');
 
-export class PyTerminalPlugin {
+export class PyTerminalPlugin extends Plugin {
     app: PyScriptApp;
 
     constructor(app: PyScriptApp) {
+        super();
         this.app = app;
     }
 

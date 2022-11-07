@@ -3,6 +3,7 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
+import { type Plugin, PluginManager } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
@@ -35,7 +36,7 @@ const logger = getLogger('pyscript/main');
 
    6. setup the environment, install packages
 
-   6.5: call the Plugin.setupComplete() hook
+   6.5: call the Plugin.afterSetup() hook
 
    7. connect the py-script web component. This causes the execution of all the
       user scripts
@@ -60,10 +61,14 @@ export class PyScriptApp {
     loader: PyLoader;
     runtime: Runtime;
     PyScript: any; // XXX would be nice to have a more precise type for the class itself
+    plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
-    _pyterminal: PyTerminalPlugin; // XXX temporary
 
     constructor() {
+        // initialize the builtin plugins
+        this.plugins = new PluginManager();
+        this.plugins.add(new PyTerminalPlugin(this));
+
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
     }
@@ -71,14 +76,10 @@ export class PyScriptApp {
     // lifecycle (1)
     main() {
         this.loadConfig();
-
-        // this is basically "instantiate all plugins"
-        this._pyterminal = new PyTerminalPlugin(this);
-
-        this._pyterminal.configure(this.config);
+        this.plugins.configure(this.config);
 
         this.showLoader(); // this should be a plugin
-        this._pyterminal.beforeLaunch(this.config);
+        this.plugins.beforeLaunch(this.config);
 
         this.loadRuntime();
     }
@@ -163,7 +164,7 @@ export class PyScriptApp {
         await mountElements(runtime);
 
         // lifecycle (6.5)
-        this._pyterminal.afterSetup();
+        this.plugins.afterSetup(runtime);
 
         this.loader.log('Executing <py-script> tags...');
         this.executeScripts(runtime);
