@@ -1,4 +1,5 @@
 import type { PyScriptApp } from '../main';
+import type { AppConfig } from '../pyconfig';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 
@@ -9,6 +10,16 @@ export class PyTerminalPlugin {
 
     constructor(app: PyScriptApp) {
         this.app = app;
+    }
+
+    configurationComplete(config: AppConfig) {
+        if (config.terminal === "yes") {
+            if (document.querySelector('py-terminal') === null) {
+                // no py-terminal found, add one!
+                const termEl = document.createElement('py-terminal');
+                document.body.appendChild(termEl);
+            }
+        }
     }
 
     setupComplete() {

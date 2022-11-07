@@ -68,7 +68,7 @@ class TestPyTerminal(PyScriptTest):
         assert term1_lines == ["one", "two", "three"]
         assert term2_lines == ["two", "three"]
 
-    def test_auto(self):
+    def test_auto_attribute(self):
         self.pyscript_run(
             """
             <py-terminal auto></py-terminal>
@@ -79,5 +79,24 @@ class TestPyTerminal(PyScriptTest):
         term = self.page.locator("py-terminal")
         expect(term).to_be_hidden()
         self.page.locator("button").click()
+        expect(term).to_be_visible()
+        assert term.inner_text() == "hello world\n"
+
+    def test_config_yes(self):
+        """
+        If we set config.terminal == "yes", a <py-terminal> is automatically added
+        """
+        self.pyscript_run(
+            """
+            <py-config>
+                terminal = "yes"
+            </py-config>
+
+            <py-script>
+                print('hello world')
+            </py-script>
+            """
+        )
+        term = self.page.locator("py-terminal")
         expect(term).to_be_visible()
         assert term.inner_text() == "hello world\n"

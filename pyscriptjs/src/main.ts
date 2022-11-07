@@ -75,6 +75,7 @@ export class PyScriptApp {
         // this is basically "instantiate all plugins"
         this._pyterminal = new PyTerminalPlugin(this);
         this.showLoader(); // this should be a plugin
+        this._pyterminal.configurationComplete(this.config);
 
         this.loadRuntime();
     }
