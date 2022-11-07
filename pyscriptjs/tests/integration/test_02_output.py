@@ -264,19 +264,21 @@ class TestOutput(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
-                display('0')
+                display('this goes to the DOM')
                 print('print from python')
                 console.log('print from js')
                 console.error('error from js');
             </py-script>
         """
         )
-        inner_text = self.page.inner_text("html")
-        assert "0" == inner_text
-        console_text = self.console.all.lines
-        assert "print from python" in console_text
-        assert "print from js" in console_text
-        assert "error from js" in console_text
+        inner_text = self.page.inner_text("py-script")
+        assert inner_text == "this goes to the DOM"
+        assert self.console.log.lines == [
+            self.PY_COMPLETE,
+            "print from python",
+            "print from js",
+        ]
+        assert self.console.error.lines[-1] == "error from js"
 
     def test_console_line_break(self):
         self.pyscript_run(
