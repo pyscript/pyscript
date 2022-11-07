@@ -12,17 +12,39 @@ export class PyTerminalPlugin {
         this.app = app;
     }
 
-    configurationComplete(config: AppConfig) {
-        if (config.terminal === "yes") {
+    configure(config: AppConfig) {
+        // validate the terminal config and handle default values
+        const t = config.terminal;
+        if (t !== undefined &&
+            t !== true &&
+            t !== false &&
+            t !== "auto") {
+            // XXX this should be a UserError as soon as we have it
+            const got = JSON.stringify(t);
+            throw new Error('Invalid value for config.terminal: the only accepted'  +
+                            `values are true, false and "auto", got "${got}".`);
+        }
+        if (t === undefined) {
+            config.terminal = "auto"; // default value
+        }
+    }
+
+    beforeLaunch(config: AppConfig) {
+        // if config.terminal is "yes" or "auto", let's add a <py-terminal> to
+        // the document, unless it's already present.
+        const t = config.terminal;
+        if (t === true || t === "auto") {
             if (document.querySelector('py-terminal') === null) {
-                // no py-terminal found, add one!
-                const termEl = document.createElement('py-terminal');
-                document.body.appendChild(termEl);
+                logger.info("No <py-terminal> found, adding one");
+                const termElem = document.createElement('py-terminal');
+                if (t === "auto")
+                    termElem.setAttribute("auto", "");
+                document.body.appendChild(termElem);
             }
         }
     }
 
-    setupComplete() {
+    afterSetup() {
         // the Python interpreter has been initialized and we are ready to
         // execute user code:
         //

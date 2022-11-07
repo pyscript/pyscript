@@ -82,14 +82,32 @@ class TestPyTerminal(PyScriptTest):
         expect(term).to_be_visible()
         assert term.inner_text() == "hello world\n"
 
-    def test_config_yes(self):
+    def test_config_auto(self):
         """
-        If we set config.terminal == "yes", a <py-terminal> is automatically added
+        config.terminal == "auto" is the default: a <py-terminal auto> is
+        automatically added to the page
+        """
+        self.pyscript_run(
+            """
+            <button id="my-button" py-onClick="print('hello world')">Click me</button>
+            """
+        )
+        term = self.page.locator("py-terminal")
+        expect(term).to_be_hidden()
+        assert "No <py-terminal> found, adding one" in self.console.info.text
+        #
+        self.page.locator("button").click()
+        expect(term).to_be_visible()
+        assert term.inner_text() == "hello world\n"
+
+    def test_config_true(self):
+        """
+        If we set config.terminal == true, a <py-terminal> is automatically added
         """
         self.pyscript_run(
             """
             <py-config>
-                terminal = "yes"
+                terminal = true
             </py-config>
 
             <py-script>
@@ -100,3 +118,17 @@ class TestPyTerminal(PyScriptTest):
         term = self.page.locator("py-terminal")
         expect(term).to_be_visible()
         assert term.inner_text() == "hello world\n"
+
+    def test_config_false(self):
+        """
+        If we set config.terminal == false, no <py-terminal> is added
+        """
+        self.pyscript_run(
+            """
+            <py-config>
+                terminal = false
+            </py-config>
+            """
+        )
+        term = self.page.locator("py-terminal")
+        assert term.count() == 0

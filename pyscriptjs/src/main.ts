@@ -74,8 +74,11 @@ export class PyScriptApp {
 
         // this is basically "instantiate all plugins"
         this._pyterminal = new PyTerminalPlugin(this);
+
+        this._pyterminal.configure(this.config);
+
         this.showLoader(); // this should be a plugin
-        this._pyterminal.configurationComplete(this.config);
+        this._pyterminal.beforeLaunch(this.config);
 
         this.loadRuntime();
     }
@@ -160,7 +163,7 @@ export class PyScriptApp {
         await mountElements(runtime);
 
         // lifecycle (6.5)
-        this._pyterminal.setupComplete();
+        this._pyterminal.afterSetup();
 
         this.loader.log('Executing <py-script> tags...');
         this.executeScripts(runtime);
