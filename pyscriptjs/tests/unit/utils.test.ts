@@ -1,5 +1,4 @@
-import { ensureUniqueId, calculatePaths } from "../../src/utils"
-import { FetchConfig } from "../../src/pyconfig";
+import { ensureUniqueId, joinPaths } from '../../src/utils';
 import { expect } from "@jest/globals";
 
 describe("Utils", () => {
@@ -34,49 +33,22 @@ describe("Utils", () => {
   })
 })
 
-describe("CalculateFetchPaths", () => {
-  it("should calculate paths when only from is provided", () => {
-    const fetch_cfg: FetchConfig[] = [{from: "http://a.com/data.csv" }];
-    const [paths, fetchPaths] = calculatePaths(fetch_cfg);
-    expect(paths).toStrictEqual(["./data.csv"]);
-    expect(fetchPaths).toStrictEqual(["http://a.com/data.csv"]);
+describe("JoinPaths", () => {
+  it("should remove trailing slashes from the beginning and the end", () => {
+    const paths: string[] = ['///abc/d/e///'];
+    const joinedPath = joinPaths(paths);
+    expect(joinedPath).toStrictEqual('abc/d/e');
   })
 
-  it("should calculate paths when only files is provided", () => {
-    const fetch_cfg: FetchConfig[] = [{files: ["foo/__init__.py", "foo/mod.py"] }];
-    const [paths, fetchPaths] = calculatePaths(fetch_cfg);
-    expect(paths).toStrictEqual(["./foo/__init__.py", "./foo/mod.py"]);
-    expect(fetchPaths).toStrictEqual(["foo/__init__.py", "foo/mod.py"]);
+  it("should not remove slashes from the middle to preserve protocols such as http", () => {
+    const paths: string[] = ['///http://google.com', '///data.txt'];
+    const joinedPath = joinPaths(paths);
+    expect(joinedPath).toStrictEqual('http://google.com/data.txt');
   })
 
-  it("should calculate paths when files and to_folder is provided", () => {
-    const fetch_cfg: FetchConfig[] = [{files: ["foo/__init__.py", "foo/mod.py"], to_folder: "/my/lib/"}];
-    const [paths, fetchPaths] = calculatePaths(fetch_cfg);
-    expect(paths).toStrictEqual(["/my/lib/foo/__init__.py", "/my/lib/foo/mod.py"]);
-    expect(fetchPaths).toStrictEqual(["foo/__init__.py", "foo/mod.py"]);
-  })
-
-  it("should calculate paths when from and files and to_folder is provided", () => {
-    const fetch_cfg: FetchConfig[] = [{from: "http://a.com/download/", files: ["foo/__init__.py", "foo/mod.py"], to_folder: "/my/lib/"}];
-    const [paths, fetchPaths] = calculatePaths(fetch_cfg);
-    expect(paths).toStrictEqual(["/my/lib/foo/__init__.py", "/my/lib/foo/mod.py"]);
-    expect(fetchPaths).toStrictEqual(["http://a.com/download/foo/__init__.py", "http://a.com/download/foo/mod.py"]);
-  })
-
-  it("should error out while calculating paths when filename cannot be determined from 'from'", () => {
-    const fetch_cfg: FetchConfig[] = [{from: "http://google.com/", to_folder: "/tmp"}];
-    expect(()=>calculatePaths(fetch_cfg)).toThrowError("Couldn't determine the filename from the path http://google.com/");
-  })
-
-  it("should calculate paths when to_file is explicitly supplied", () => {
-    const fetch_cfg: FetchConfig[] = [{from: "http://a.com/data.csv?version=1", to_file: "pkg/tmp/data.csv"}];
-    const [paths, fetchPaths] = calculatePaths(fetch_cfg);
-    expect(paths).toStrictEqual(["./pkg/tmp/data.csv"]);
-    expect(fetchPaths).toStrictEqual(["http://a.com/data.csv?version=1"]);
-  })
-
-  it("should error out when both to_file and files parameters are provided", () => {
-    const fetch_cfg: FetchConfig[] = [{from: "http://a.com/data.csv?version=1", to_file: "pkg/tmp/data.csv", files: ["a.py", "b.py"]}];
-    expect(()=>calculatePaths(fetch_cfg)).toThrowError("Cannot use 'to_file' and 'files' parameters together!");
+  it("should not join paths when they are empty strings", () => {
+    const paths: string[] = ['', '///hhh/ll/pp///', '', 'kkk'];
+    const joinedPath = joinPaths(paths);
+    expect(joinedPath).toStrictEqual('hhh/ll/pp/kkk');
   })
 })

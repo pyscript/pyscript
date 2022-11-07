@@ -7,7 +7,8 @@ import { make_PyScript, initHandlers, mountElements } from './components/pyscrip
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
-import { handleFetchError, showError, globalExport, calculatePaths } from './utils';
+import { handleFetchError, showError, globalExport } from './utils';
+import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
 
 type ImportType = { [key: string]: unknown };

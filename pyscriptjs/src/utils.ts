@@ -1,5 +1,3 @@
-import { FetchConfig } from "./pyconfig";
-
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
         element.classList.add(entry);
@@ -112,39 +110,6 @@ export function getAttribute(el: Element, attr: string): string | null {
     return null;
 }
 
-export function calculatePaths(fetch_cfg: FetchConfig[]) {
-    const fetchPaths: string[] = [];
-    const paths: string[] = [];
-    fetch_cfg.forEach(function (each_fetch_cfg: FetchConfig) {
-        const from = each_fetch_cfg.from || "";
-        const to_folder = each_fetch_cfg.to_folder || ".";
-        const to_file = each_fetch_cfg.to_file;
-        const files = each_fetch_cfg.files;
-        if (files !== undefined)
-        {
-            if (to_file !== undefined)
-            {
-                throw Error(`Cannot use 'to_file' and 'files' parameters together!`);
-            }
-            for (const each_f of files)
-            {
-                const each_fetch_path = [from.endsWith('/') ? from.slice(0, -1) : from, each_f].filter(it => it!== "").join('/');
-                fetchPaths.push(each_fetch_path);
-                const each_path = [to_folder.endsWith('/') ? to_folder.slice(0, -1) : to_folder, each_f].join('/');
-                paths.push(each_path);
-            }
-        }
-        else
-        {
-            fetchPaths.push(from);
-            const filename = to_file || from.split('/').pop();
-            if (filename === '') {
-                throw Error(`Couldn't determine the filename from the path ${from}, supply ${to_file} parameter!`);
-            }
-            else {
-                paths.push([to_folder.endsWith('/') ? to_folder.slice(0, -1) : to_folder, filename].join('/'));
-            }
-        }
-    });
-    return [paths, fetchPaths];
+export function joinPaths(parts: string[], separator = '/') {
+    return parts.map(function(part) { return part.trim().replace(/(^[/]*|[/]*$)/g, ''); }).filter(p => p!== "").join(separator || '/');
 }

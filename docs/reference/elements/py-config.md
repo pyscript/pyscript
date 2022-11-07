@@ -76,7 +76,7 @@ One can also use both i.e pass the config from `src` attribute as well as specif
 ```html
 <py-config src="./custom.toml">
   [[fetch]]
-  files = ["./utils.py"]
+  packages = ["numpy"]
 </py-config>
 ```
 
@@ -86,7 +86,7 @@ This can also be done via JSON using the `type` attribute.
 <py-config type="json" src="./custom.json">
   {
     "fetch": [{
-      "files": ["./utils.py"]
+      "packages": ["numpy"]
     }]
   }
 </py-config>
