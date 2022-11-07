@@ -58,8 +58,8 @@ export class PyodideRuntime extends Runtime {
     async loadInterpreter(): Promise<void> {
         logger.info('Loading pyodide');
         this.interpreter = await loadPyodide({
-            stdout: (msg) => { this.stdio.stdout(msg); },
-            stderr: (msg) => { this.stdio.stderr(msg); },
+            stdout: (msg) => { this.stdio.stdout_writeline(msg); },
+            stderr: (msg) => { this.stdio.stderr_writeline(msg); },
             fullStdLib: false,
         });
 

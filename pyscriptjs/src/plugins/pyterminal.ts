@@ -44,12 +44,12 @@ class ElementStdio implements Stdio {
         this.el = el;
     }
 
-    stdout(msg: string) {
+    stdout_writeline(msg: string) {
         this.el.innerText += msg + "\n";
     }
 
-    stderr(msg: string) {
-        this.stdout(msg);
+    stderr_writeline(msg: string) {
+        this.stdout_writeline(msg);
     }
 
 }

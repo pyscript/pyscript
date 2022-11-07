@@ -1,14 +1,14 @@
 export interface Stdio {
-    stdout: (msg: string) => void;
-    stderr: (msg: string) => void;
+    stdout_writeline: (msg: string) => void;
+    stderr_writeline: (msg: string) => void;
 }
 
 /** Default implementation of Stdio: stdout and stderr are both sent to the
  *  console
  */
 export const DEFAULT_STDIO: Stdio = {
-    stdout: console.log,
-    stderr: console.log
+    stdout_writeline: console.log,
+    stderr_writeline: console.log
 }
 
 /** Stdio provider which captures and store the messages.
@@ -27,11 +27,11 @@ export class CaptureStdio implements Stdio {
         this.captured_stderr = "";
     }
 
-    stdout(msg: string) {
+    stdout_writeline(msg: string) {
         this.captured_stdout += msg + "\n";
     }
 
-    stderr(msg: string) {
+    stderr_writeline(msg: string) {
         this.captured_stderr += msg + "\n";
     }
 }
@@ -49,13 +49,13 @@ export class StdioMultiplexer implements Stdio {
         this._listeners.push(obj);
     }
 
-    stdout(msg: string) {
+    stdout_writeline(msg: string) {
         for(const obj of this._listeners)
-            obj.stdout(msg);
+            obj.stdout_writeline(msg);
     }
 
-    stderr(msg: string) {
+    stderr_writeline(msg: string) {
         for(const obj of this._listeners)
-            obj.stderr(msg);
+            obj.stderr_writeline(msg);
     }
 }
