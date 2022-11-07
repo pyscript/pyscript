@@ -1,4 +1,4 @@
-import { _createAlertBanner } from "./exceptions"
+import { _createAlertBanner, UserError } from "./exceptions"
 
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
@@ -66,7 +66,7 @@ export function handleFetchError(e: Error, singleFile: string) {
     } else {
         errorContent = `<p>PyScript encountered an error while loading from file: ${e.message} </p>`;
     }
-    showWarning(errorContent);
+    throw new UserError(errorContent)
 }
 
 export function readTextFromPath(path: string) {
