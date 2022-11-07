@@ -7,10 +7,10 @@ import { make_PyScript, initHandlers, mountElements } from './components/pyscrip
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
-import { handleFetchError, showWarning, globalExport, withUserErrorHandler } from './utils';
+import { handleFetchError, showWarning, globalExport } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
-import { UserError } from "./exceptions"
+import { UserError, withUserErrorHandler } from "./exceptions"
 
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {
@@ -81,7 +81,7 @@ class PyScriptApp {
             // this once it's in a better shape.
             showWarning(
                 'Multiple &lt;py-config&gt; tags detected. Only the first is ' +
-                    'going to be parsed, all the others will be ignored',
+                'going to be parsed, all the others will be ignored',
             );
         }
         this.config = loadConfigFromElement(el);
@@ -105,7 +105,7 @@ class PyScriptApp {
         }
 
         if (this.config.runtimes.length > 1) {
-            showWarning('Multiple runtimes are not supported yet. Only the first will be used');
+            showWarning('Multiple runtimes are not supported yet.<br />Only the first will be used');
         }
         const runtime_cfg = this.config.runtimes[0];
         this.runtime = new PyodideRuntime(this.config, runtime_cfg.src, runtime_cfg.name, runtime_cfg.lang);

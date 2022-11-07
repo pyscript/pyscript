@@ -1,5 +1,5 @@
 import { CLOSEBUTTON } from "./consts"
-import { UserError } from "./exceptions"
+import { UserError, _createAlertBanner } from "./exceptions"
 
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
@@ -67,7 +67,7 @@ export function handleFetchError(e: Error, singleFile: string) {
     } else {
         errorContent = `<p>PyScript encountered an error while loading from file: ${e.message} </p>`;
     }
-    showWarning(errorContent);
+    throw new UserError(errorContent);
 }
 
 export function readTextFromPath(path: string) {

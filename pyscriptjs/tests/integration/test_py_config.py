@@ -206,9 +206,7 @@ class TestConfig(PyScriptTest):
         """
         self.pyscript_run(snippet)
         banner = self.page.wait_for_selector(".py-warning")
-        expected = (
-            "Multiple runtimes are not supported yet. Only the first will be used"
-        )
+        expected = "Multiple runtimes are not supported yet.Only the first will be used"
         assert banner.text_content() == expected
         assert self.console.log.lines[-1] == "hello world"
 
