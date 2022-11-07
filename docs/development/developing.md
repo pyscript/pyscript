@@ -49,34 +49,6 @@ make tests
 
 ## Rebasing changes
 
-Sometimes you might be asked to rebase main into your branch. You can do such by:
-
-* Checkout into your main branch and pull the upstream changes
-
-```
-git checkout main
-git pull upstream main
-```
-
-* Checkout your branch and rebase on main
-
-```
-git rebase -i main
-```
-
-If you have conflicts, you must fix them by comparing yours and incoming changes. Your editor can probably help you with this, but do ask for help if you need it!
-
-* Once all conflicts have been fixed
-
-```
-git rebase --continue
-```
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: You may see more conflicts that you need to address until all are resolved.
-
-* Force push the fixed conflicts
-
-```
-git push -f origin <your branch name>
-```
+Sometimes you might be asked to rebase main into your branch. Please refer to this [section on git rebase from GitHub docs](https://docs.github.com/en/get-started/using-git/about-git-rebase).
 
 If you need help with anything, feel free to reach out and ask for help!
