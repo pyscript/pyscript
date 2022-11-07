@@ -4,19 +4,20 @@
 
 `*values` - the objects to be displayed. String objects are output as-written. For non-string objects, the default content to display is the the object's `repr()`. Objects may implement the following methods to indicate that they should be displayed as a different MIME type. MIME types with a * indicate that the content will be wrapped in the appropriate html tags and attributes before output:
 
-    | Method              | Inferred MIME type     |
-    |---------------------|------------------------|
-    | `__repr__`          | text/plain             |
-    | `_repr_html_`       | text/html              |
-    | `_repr_markdown_`   | text/markdown          |
-    | `_repr_svg_`        | image/svg+xml          |
-    | `_repr_png_`        | image/png*              |
-    | `_repr_pdf_`        | application/pdf        |
-    | `_repr_jpeg_`       | image/jpeg*             |
-    | `_repr_latex__`       | text/latex             |
-    | `_repr_json_`       | application/json       |
-    | `_repr_javascript_` | application/javascript* |
-    | `savefig`           | image/png              |
+| Method              | Inferred MIME type     |
+|---------------------|------------------------|
+| `__repr__`          | text/plain             |
+| `_repr_html_`       | text/html              |
+| `_repr_markdown_`   | text/markdown          |
+| `_repr_svg_`        | image/svg+xml          |
+| `_repr_png_`        | image/png*             |
+| `_repr_pdf_`        | application/pdf        |
+| `_repr_jpeg_`       | image/jpeg*            |
+| `_repr_latex__`     | text/latex             |
+| `_repr_json_`       | application/json       |
+| `_repr_javascript_` | application/javascript*|
+| `savefig`           | image/png              |
+|                     |                        |
 
 `target` - Element's ID. The default value for `target` is the current `py-script` tag ID, it's possible to specify different IDs for this parameter
 
