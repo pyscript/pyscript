@@ -35,43 +35,35 @@ export class PyTerminalPlugin {
     }
 }
 
-/** A Stdio provider which appends messages to an HTMLElement
- */
-class ElementStdio implements Stdio {
-    el: HTMLElement;
-
-    constructor(el: HTMLElement) {
-        this.el = el;
-    }
-
-    stdout_writeline(msg: string) {
-        this.el.innerText += msg + "\n";
-    }
-
-    stderr_writeline(msg: string) {
-        this.stdout_writeline(msg);
-    }
-
-}
 
 function make_PyTerminal(app: PyScriptApp) {
 
     /** The <py-terminal> custom element, which automatically register a stdio
      *  listener to capture and display stdout/stderr
      */
-    class PyTerminal extends HTMLElement {
-        constructor() {
-            super();
-        }
+    class PyTerminal extends HTMLElement implements Stdio {
+        outElem: HTMLElement;
 
         connectedCallback() {
-            const outElem = document.createElement('pre');
-            outElem.className = 'py-terminal';
-            this.appendChild(outElem);
-            const stdio = new ElementStdio(outElem);
+            // should we use a shadowRoot instead? It looks unnecessarily
+            // complicated to me, but I'm not really sure about the
+            // implications
+            this.outElem = document.createElement('pre');
+            this.outElem.className = 'py-terminal';
+            this.appendChild(this.outElem);
             logger.info('Registering stdio listener');
-            app.registerStdioListener(stdio);
+            app.registerStdioListener(this);
         }
+
+        // implementation of the Stdio interface
+        stdout_writeline(msg: string) {
+            this.outElem.innerText += msg + "\n";
+        }
+
+        stderr_writeline(msg: string) {
+            this.stdout_writeline(msg);
+        }
+        // end of the Stdio interface
     }
 
     return PyTerminal;
