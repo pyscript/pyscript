@@ -66,6 +66,10 @@ export function handleFetchError(e: Error, singleFile: string) {
     } else {
         errorContent = `<p>PyScript encountered an error while loading from file: ${e.message} </p>`;
     }
+    // We need to create the banner because `handleFetchError` is called before we
+    // use withUserErrorHandler in main.js we are also disabling the log message
+    // because it will be logged by the uncaught exception in promise.
+    _createAlertBanner(errorContent, "error", false)
     throw new UserError(errorContent)
 }
 

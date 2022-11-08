@@ -1,4 +1,5 @@
-from .support import PyScriptTest
+import pytest
+from .support import PyScriptTest, JsErrors
 
 
 class TestBasic(PyScriptTest):
@@ -102,13 +103,10 @@ class TestBasic(PyScriptTest):
             <py-config>
                 paths = ["./f.py"]
             </py-config>
-            """
+            """,
+            wait_for_pyscript=False,
         )
-        assert "Failed to load resource: net::ERR_FAILED" in self.console.error.lines
-        assert (
-            "Caught an error in fetchPaths:\r\n TypeError: Failed to fetch"
-            in self.console.warning.lines
-        )
+
 
         errorContent = """PyScript: Access to local files
         (using "Paths:" in &lt;py-config&gt;)
@@ -117,6 +115,13 @@ class TestBasic(PyScriptTest):
 
         inner_html = self.page.locator(".py-error").inner_html()
         assert errorContent in inner_html
+        assert "Failed to load resource: net::ERR_FAILED" in self.console.error.lines
+        assert (
+            "Caught an error in fetchPaths:\r\n TypeError: Failed to fetch"
+            in self.console.warning.lines
+        )
+        with pytest.raises(JsErrors) as exc:
+            self.check_js_errors()
 
     def test_paths_from_packages(self):
         self.writefile("utils/__init__.py", "")

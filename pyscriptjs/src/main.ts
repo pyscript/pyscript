@@ -179,6 +179,8 @@ class PyScriptApp {
             try {
                 await runtime.loadFromFile(paths[i], fetchPaths[i]);
             } catch (e) {
+                // Remove the loader so users can see the banner better
+                this.loader.remove()
                 //Should we still export full error contents to console?
                 handleFetchError(<Error>e, fetchPaths[i]);
             }
