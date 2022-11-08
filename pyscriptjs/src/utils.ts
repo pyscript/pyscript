@@ -111,5 +111,10 @@ export function getAttribute(el: Element, attr: string): string | null {
 }
 
 export function joinPaths(parts: string[], separator = '/') {
-    return parts.map(function(part) { return part.trim().replace(/(^[/]*|[/]*$)/g, ''); }).filter(p => p!== "").join(separator || '/');
+    const res = parts.map(function(part) { return part.trim().replace(/(^[/]*|[/]*$)/g, ''); }).filter(p => p!== "").join(separator || '/');
+    if (parts[0].startsWith('/'))
+    {
+        return '/'+res;
+    }
+    return res;
 }

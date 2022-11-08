@@ -19,14 +19,14 @@ describe("CalculateFetchPaths", () => {
     it("should calculate paths when files and to_folder is provided", () => {
       const fetch_cfg: FetchConfig[] = [{files: ["foo/__init__.py", "foo/mod.py"], to_folder: "/my/lib/"}];
       const [paths, fetchPaths] = calculatePaths(fetch_cfg);
-      expect(paths).toStrictEqual(["my/lib/foo/__init__.py", "my/lib/foo/mod.py"]);
+      expect(paths).toStrictEqual(["/my/lib/foo/__init__.py", "/my/lib/foo/mod.py"]);
       expect(fetchPaths).toStrictEqual(["foo/__init__.py", "foo/mod.py"]);
     })
 
     it("should calculate paths when from and files and to_folder is provided", () => {
       const fetch_cfg: FetchConfig[] = [{from: "http://a.com/download/", files: ["foo/__init__.py", "foo/mod.py"], to_folder: "/my/lib/"}];
       const [paths, fetchPaths] = calculatePaths(fetch_cfg);
-      expect(paths).toStrictEqual(["my/lib/foo/__init__.py", "my/lib/foo/mod.py"]);
+      expect(paths).toStrictEqual(["/my/lib/foo/__init__.py", "/my/lib/foo/mod.py"]);
       expect(fetchPaths).toStrictEqual(["http://a.com/download/foo/__init__.py", "http://a.com/download/foo/mod.py"]);
     })
 

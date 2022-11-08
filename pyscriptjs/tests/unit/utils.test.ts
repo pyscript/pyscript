@@ -37,11 +37,11 @@ describe("JoinPaths", () => {
   it("should remove trailing slashes from the beginning and the end", () => {
     const paths: string[] = ['///abc/d/e///'];
     const joinedPath = joinPaths(paths);
-    expect(joinedPath).toStrictEqual('abc/d/e');
+    expect(joinedPath).toStrictEqual('/abc/d/e');
   })
 
   it("should not remove slashes from the middle to preserve protocols such as http", () => {
-    const paths: string[] = ['///http://google.com', '///data.txt'];
+    const paths: string[] = ['http://google.com', '///data.txt'];
     const joinedPath = joinPaths(paths);
     expect(joinedPath).toStrictEqual('http://google.com/data.txt');
   })
