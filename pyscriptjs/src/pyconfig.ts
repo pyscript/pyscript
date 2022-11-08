@@ -1,7 +1,7 @@
 import toml from '../src/toml';
 import { getLogger } from './logger';
 import { version } from './runtime';
-import { getAttribute, readTextFromPath } from './utils';
+import { getAttribute, readTextFromPath, htmlDecode } from './utils';
 import { UserError } from "./exceptions"
 
 const logger = getLogger('py-config');
@@ -96,7 +96,7 @@ function extractFromSrc(el: Element, configType: string) {
 function extractFromInline(el: Element, configType: string) {
     if (el.innerHTML !== '') {
         logger.info('loading <py-config> content');
-        return validateConfig(el.innerHTML, configType);
+        return validateConfig(htmlDecode(el.innerHTML), configType);
     }
     return {};
 }
