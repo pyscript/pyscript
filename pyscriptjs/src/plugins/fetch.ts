@@ -1,5 +1,6 @@
 import { joinPaths } from '../utils';
 import { FetchConfig } from "../pyconfig";
+import { UserError } from '../exceptions';
 
 export function calculatePaths(fetch_cfg: FetchConfig[]) {
     const fetchPaths: string[] = [];
@@ -13,7 +14,7 @@ export function calculatePaths(fetch_cfg: FetchConfig[]) {
         {
             if (to_file !== undefined)
             {
-                throw Error(`Cannot use 'to_file' and 'files' parameters together!`);
+                throw new UserError(`Cannot use 'to_file' and 'files' parameters together!`);
             }
             for (const each_f of files)
             {
@@ -28,7 +29,7 @@ export function calculatePaths(fetch_cfg: FetchConfig[]) {
             fetchPaths.push(from);
             const filename = to_file || from.split('/').pop();
             if (filename === '') {
-                throw Error(`Couldn't determine the filename from the path ${from}, supply ${to_file} parameter!`);
+                throw new UserError(`Couldn't determine the filename from the path ${from}, supply ${to_file} parameter!`);
             }
             else {
                 paths.push(joinPaths([to_folder, filename]));
