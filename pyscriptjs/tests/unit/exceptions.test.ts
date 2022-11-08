@@ -14,7 +14,6 @@ describe("Test _createAlertBanner", () => {
 
     const banner = document.getElementsByClassName("alert-banner")
     const closeButton = document.getElementById("alert-close-button")
-    console.log(banner)
     expect(banner.length).toBe(1)
     expect(banner[0].innerHTML).toBe("Something went wrong!")
     expect(closeButton).toBeNull()
@@ -25,7 +24,6 @@ describe("Test _createAlertBanner", () => {
 
     const banner = document.getElementsByClassName("alert-banner")
     const closeButton = document.getElementById("alert-close-button")
-    console.log(banner)
     expect(banner.length).toBe(1)
     expect(banner[0].innerHTML).toContain("This is a warning")
     expect(closeButton).not.toBeNull()
@@ -59,11 +57,15 @@ describe("Test _createAlertBanner", () => {
     expect(banner.length).toBe(1)
 
     const closeButton = document.getElementById("alert-close-button")
-    closeButton.click()
+    if(closeButton) {
+      closeButton.click()
+      // Confirm that clicking the close button, removes the element
+      banner = document.getElementsByClassName("alert-banner")
+      expect(banner.length).toBe(0)
+    } else {
+      fail("Unable to find close button on the page, but should exist")
+    }
 
-    // Confirm that clicking the close button, removes the element
-    banner = document.getElementsByClassName("alert-banner")
-    expect(banner.length).toBe(0)
   })
 
   it("toggling logging off on error alert shouldn't log to console", async () => {
