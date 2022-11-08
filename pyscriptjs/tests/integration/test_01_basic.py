@@ -1,5 +1,4 @@
-import pytest
-from .support import PyScriptTest, JsErrors
+from .support import PyScriptTest
 
 
 class TestBasic(PyScriptTest):
@@ -74,76 +73,6 @@ class TestBasic(PyScriptTest):
         )
         assert self.console.log.lines == [self.PY_COMPLETE, "true false", "<div></div>"]
 
-    def test_paths(self):
-        self.writefile("a.py", "x = 'hello from A'")
-        self.writefile("b.py", "x = 'hello from B'")
-        self.pyscript_run(
-            """
-            <py-config>
-                paths = ["./a.py", "./b.py"]
-            </py-config>
-
-            <py-script>
-                import js
-                import a, b
-                js.console.log(a.x)
-                js.console.log(b.x)
-            </py-script>
-            """
-        )
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
-            "hello from A",
-            "hello from B",
-        ]
-
-    def test_paths_that_do_not_exist(self):
-        self.pyscript_run(
-            """
-            <py-config>
-                paths = ["./f.py"]
-            </py-config>
-            """,
-            wait_for_pyscript=False,
-        )
-
-
-        errorContent = """PyScript: Access to local files
-        (using "Paths:" in &lt;py-config&gt;)
-        is not available when directly opening a HTML file;
-        you must use a webserver to serve the additional files."""
-
-        inner_html = self.page.locator(".py-error").inner_html()
-        assert errorContent in inner_html
-        assert "Failed to load resource: net::ERR_FAILED" in self.console.error.lines
-        assert (
-            "Caught an error in fetchPaths:\r\n TypeError: Failed to fetch"
-            in self.console.warning.lines
-        )
-        with pytest.raises(JsErrors) as exc:
-            self.check_js_errors()
-
-    def test_paths_from_packages(self):
-        self.writefile("utils/__init__.py", "")
-        self.writefile("utils/a.py", "x = 'hello from A'")
-        self.pyscript_run(
-            """
-            <py-config>
-                paths = ["./utils/__init__.py", "./utils/a.py"]
-            </py-config>
-
-            <py-script>
-                import js
-                from utils.a import x
-                js.console.log(x)
-            </py-script>
-            """
-        )
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
-            "hello from A",
-        ]
-
     def test_packages(self):
         self.pyscript_run(
             """
@@ -152,7 +81,6 @@ class TestBasic(PyScriptTest):
                 # which are built and distributed with pyodide
                 packages = ["asciitree"]
             </py-config>
-
             <py-script>
                 import js
                 import asciitree
