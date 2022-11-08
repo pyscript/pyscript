@@ -1,5 +1,4 @@
 import { jest } from '@jest/globals';
-import type { AppConfig, RuntimeConfig } from '../../src/pyconfig';
 import { loadConfigFromElement, defaultConfig } from '../../src/pyconfig';
 import { version } from '../../src/runtime';
 

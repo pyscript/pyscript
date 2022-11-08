@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals';
 import type { Runtime } from "../../src/runtime"
 import { FakeRuntime } from "./fakeruntime"
 import { make_PyButton } from '../../src/components/pybutton';

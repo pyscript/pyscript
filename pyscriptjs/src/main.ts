@@ -8,6 +8,7 @@ import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
 import { handleFetchError, showError, globalExport } from './utils';
+import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
 
 type ImportType = { [key: string]: unknown };
@@ -171,15 +172,15 @@ class PyScriptApp {
         // it in Python, which means we need to have the runtime
         // initialized. But we could easily do it in JS in parallel with the
         // download/startup of pyodide.
-        const paths = this.config.paths;
-        logger.info('Paths to fetch: ', paths);
-        for (const singleFile of paths) {
-            logger.info(`  fetching path: ${singleFile}`);
+        const [paths, fetchPaths] = calculatePaths(this.config.fetch);
+        logger.info('Paths to fetch: ', fetchPaths);
+        for (let i=0; i<paths.length; i++) {
+            logger.info(`  fetching path: ${fetchPaths[i]}`);
             try {
-                await runtime.loadFromFile(singleFile);
+                await runtime.loadFromFile(paths[i], fetchPaths[i]);
             } catch (e) {
                 //Should we still export full error contents to console?
-                handleFetchError(<Error>e, singleFile);
+                handleFetchError(<Error>e, fetchPaths[i]);
             }
         }
         logger.info('All paths fetched');
