@@ -1,5 +1,6 @@
-import { ensureUniqueId, joinPaths } from '../../src/utils';
-import { expect } from "@jest/globals";
+import { expect } from "@jest/globals"
+import { ensureUniqueId, joinPaths } from "../../src/utils"
+
 
 describe("Utils", () => {
 

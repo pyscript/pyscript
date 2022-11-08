@@ -81,7 +81,6 @@ class TestBasic(PyScriptTest):
                 # which are built and distributed with pyodide
                 packages = ["asciitree"]
             </py-config>
-
             <py-script>
                 import js
                 import asciitree

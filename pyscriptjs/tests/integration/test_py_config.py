@@ -5,7 +5,7 @@ import tempfile
 import pytest
 import requests
 
-from .support import PyScriptTest
+from .support import JsErrors, PyScriptTest
 
 URL = "https://github.com/pyodide/pyodide/releases/download/0.20.0/pyodide-build-0.20.0.tar.bz2"
 TAR_NAME = "pyodide-build-0.20.0.tar.bz2"
@@ -115,8 +115,13 @@ class TestConfig(PyScriptTest):
             """,
             wait_for_pyscript=False,
         )
-        self.page.wait_for_selector(".py-error")
-        self.check_js_errors("Unexpected end of JSON input")
+        banner = self.page.wait_for_selector(".py-error")
+        assert "SyntaxError: Unexpected end of JSON input" in self.console.error.text
+        expected = (
+            "The config supplied: [[ is an invalid JSON and cannot be "
+            "parsed: SyntaxError: Unexpected end of JSON input"
+        )
+        assert banner.inner_text() == expected
 
     def test_invalid_toml_config(self):
         # we need wait_for_pyscript=False because we bail out very soon,
@@ -129,8 +134,14 @@ class TestConfig(PyScriptTest):
             """,
             wait_for_pyscript=False,
         )
-        self.page.wait_for_selector(".py-error")
-        self.check_js_errors("SyntaxError: Expected DoubleQuote")
+        banner = self.page.wait_for_selector(".py-error")
+        assert "SyntaxError: Expected DoubleQuote" in self.console.error.text
+        expected = (
+            "The config supplied: [[ is an invalid TOML and cannot be parsed: "
+            "SyntaxError: Expected DoubleQuote, Whitespace, or [a-z], [A-Z], "
+            '[0-9], "-", "_" but "\\n" found.'
+        )
+        assert banner.inner_text() == expected
 
     def test_multiple_py_config(self):
         self.pyscript_run(
@@ -150,12 +161,12 @@ class TestConfig(PyScriptTest):
             </py-script>
             """
         )
-        div = self.page.wait_for_selector(".py-error")
+        banner = self.page.wait_for_selector(".py-warning")
         expected = (
             "Multiple <py-config> tags detected. Only the first "
             "is going to be parsed, all the others will be ignored"
         )
-        assert div.text_content() == expected
+        assert banner.text_content() == expected
 
     def test_no_runtimes(self):
         snippet = """
@@ -194,11 +205,9 @@ class TestConfig(PyScriptTest):
             </py-script>
         """
         self.pyscript_run(snippet)
-        div = self.page.wait_for_selector(".py-error")
-        expected = (
-            "Multiple runtimes are not supported yet. Only the first will be used"
-        )
-        assert div.text_content() == expected
+        banner = self.page.wait_for_selector(".py-warning")
+        expected = "Multiple runtimes are not supported yet.Only the first will be used"
+        assert banner.text_content() == expected
         assert self.console.log.lines[-1] == "hello world"
 
     def test_paths(self):
@@ -232,13 +241,9 @@ class TestConfig(PyScriptTest):
                 [[fetch]]
                 files = ["./f.py"]
             </py-config>
-            """
+            """,
+            wait_for_pyscript=False,
         )
-        assert self.console.error.lines == ["Failed to load resource: net::ERR_FAILED"]
-        assert self.console.warning.lines == [
-            "Caught an error in fetchPaths:\r\n TypeError: Failed to fetch"
-        ]
-
         errorContent = """PyScript: Access to local files
         (using "Paths:" in &lt;py-config&gt;)
         is not available when directly opening a HTML file;
@@ -246,6 +251,15 @@ class TestConfig(PyScriptTest):
 
         inner_html = self.page.locator(".py-error").inner_html()
         assert errorContent in inner_html
+        assert "Failed to load resource: net::ERR_FAILED" in self.console.error.lines
+        assert (
+            "Caught an error in fetchPaths:\r\n TypeError: Failed to fetch"
+            in self.console.warning.lines
+        )
+        with pytest.raises(JsErrors) as exc:
+            self.check_js_errors()
+
+        assert errorContent in str(exc.value)
 
     def test_paths_from_packages(self):
         self.writefile("utils/__init__.py", "")

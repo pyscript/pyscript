@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
 import { loadConfigFromElement, defaultConfig } from '../../src/pyconfig';
 import { version } from '../../src/runtime';
+import { UserError } from '../../src/exceptions'
 
 // inspired by trump typos
 const covfefeConfig = {
@@ -128,7 +129,7 @@ describe('loadConfigFromElement', () => {
     it('should NOT be able to load an inline config in TOML format with type as JSON', () => {
         const el = make_config_element({ type: 'json' });
         el.innerHTML = covfefeConfigToml;
-        expect(()=>loadConfigFromElement(el)).toThrow(SyntaxError);
+        expect(()=>loadConfigFromElement(el)).toThrow(UserError);
     });
 
     it('should NOT be able to load an inline TOML config with a JSON config from src with type as toml', () => {
@@ -140,19 +141,19 @@ describe('loadConfigFromElement', () => {
     it('should NOT be able to load an inline TOML config with a JSON config from src with type as json', () => {
         const el = make_config_element({ type: 'json', src: '/covfefe.json' });
         el.innerHTML = covfefeConfigToml;
-        expect(()=>loadConfigFromElement(el)).toThrow(SyntaxError);
+        expect(()=>loadConfigFromElement(el)).toThrow(UserError);
     });
 
     it('should error out when passing an invalid JSON', () => {
         const el = make_config_element({ type: 'json' });
         el.innerHTML = '[[';
-        expect(()=>loadConfigFromElement(el)).toThrow(SyntaxError);
+        expect(()=>loadConfigFromElement(el)).toThrow(UserError);
     });
 
     it('should error out when passing an invalid TOML', () => {
         const el = make_config_element({});
         el.innerHTML = '[[';
-        expect(()=>loadConfigFromElement(el)).toThrow(SyntaxError);
+        expect(()=>loadConfigFromElement(el)).toThrow(UserError);
     });
 
 });
