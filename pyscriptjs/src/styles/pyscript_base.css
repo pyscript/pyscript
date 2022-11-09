@@ -111,8 +111,7 @@ color: #0f172a;
 /* Pop-up second layer end */
 .alert-banner {
     position: relative;
-    width: 99%;
-    padding: .5rem;
+    padding: .5rem 1.5rem .5rem .5rem;
     margin: 5px 0;
 }
 
