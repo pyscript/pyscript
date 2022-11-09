@@ -31,7 +31,7 @@ class TestPyButton(PyScriptTest):
         banner_content = banner.inner_text()
         expected = (
             "The element <py-button> is deprecated, create a function with your "
-            'inline code and use <button py-click="function()"> instead.'
+            'inline code and use <button py-click="function()" class="py-button"> instead.'
         )
 
         assert banner_content == expected
