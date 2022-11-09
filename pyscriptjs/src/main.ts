@@ -14,6 +14,7 @@ import { createCustomElements } from './components/elements';
 import { UserError, withUserErrorHandler } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
+import { PySplashscreenPlugin } from './plugins/pysplashscreen';
 
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {
@@ -69,7 +70,10 @@ export class PyScriptApp {
     constructor() {
         // initialize the builtin plugins
         this.plugins = new PluginManager();
-        this.plugins.add(new PyTerminalPlugin(this));
+        this.plugins.add(
+            new PySplashscreenPlugin(this),
+            new PyTerminalPlugin(this),
+        );
 
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
@@ -79,10 +83,7 @@ export class PyScriptApp {
     main() {
         this.loadConfig();
         this.plugins.configure(this.config);
-
-        this.showLoader(); // this should be a plugin
         this.plugins.beforeLaunch(this.config);
-
         this.loadRuntime();
     }
 
@@ -112,11 +113,6 @@ export class PyScriptApp {
 
     // lifecycle (3)
     showLoader() {
-        // add loader to the page body
-        logger.info('add py-loader');
-        customElements.define('py-loader', PyLoader);
-        this.loader = <PyLoader>document.createElement('py-loader');
-        document.body.append(this.loader);
     }
 
     // lifecycle (4)

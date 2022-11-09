@@ -49,8 +49,9 @@ export class PluginManager {
         this._plugins = [];
     }
 
-    add(p: Plugin) {
-        this._plugins.push(p);
+    add(...plugins: Plugin[]) {
+        for (const p of plugins)
+            this._plugins.push(p);
     }
 
     configure(config: AppConfig) {
