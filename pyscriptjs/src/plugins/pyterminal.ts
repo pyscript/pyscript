@@ -1,6 +1,7 @@
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
 import { Plugin } from '../plugin';
+import { UserError } from "../exceptions"
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 
@@ -21,10 +22,9 @@ export class PyTerminalPlugin extends Plugin {
             t !== true &&
             t !== false &&
             t !== "auto") {
-            // XXX this should be a UserError as soon as we have it
             const got = JSON.stringify(t);
-            throw new Error('Invalid value for config.terminal: the only accepted'  +
-                            `values are true, false and "auto", got "${got}".`);
+            throw new UserError('Invalid value for config.terminal: the only accepted'  +
+                                `values are true, false and "auto", got "${got}".`);
         }
         if (t === undefined) {
             config.terminal = "auto"; // default value
