@@ -158,36 +158,38 @@ uSpeed = 0.1
 time = 0.0003;
 camera.lookAt(scene.position)
 
-while True:
-  time = performance.now() * 0.0003;
-  i = 0
-  while i < particularGroup.children.length:
-    newObject = particularGroup.children[i];
-    newObject.rotation.x += newObject.speedValue/10;
-    newObject.rotation.y += newObject.speedValue/10;
-    newObject.rotation.z += newObject.speedValue/10;
-    i += 1
+async def main():
+  while True:
+    time = performance.now() * 0.0003;
+    i = 0
+    while i < particularGroup.children.length:
+      newObject = particularGroup.children[i];
+      newObject.rotation.x += newObject.speedValue/10;
+      newObject.rotation.y += newObject.speedValue/10;
+      newObject.rotation.z += newObject.speedValue/10;
+      i += 1
 
-  i = 0
-  while i < modularGroup.children.length:
-    newCubes = modularGroup.children[i];
-    newCubes.rotation.x += 0.008;
-    newCubes.rotation.y += 0.005;
-    newCubes.rotation.z += 0.003;
+    i = 0
+    while i < modularGroup.children.length:
+      newCubes = modularGroup.children[i];
+      newCubes.rotation.x += 0.008;
+      newCubes.rotation.y += 0.005;
+      newCubes.rotation.z += 0.003;
 
-    newCubes.position.x = Math.sin(time * newCubes.positionZ) * newCubes.positionY;
-    newCubes.position.y = Math.cos(time * newCubes.positionX) * newCubes.positionZ;
-    newCubes.position.z = Math.sin(time * newCubes.positionY) * newCubes.positionX;
-    i += 1
+      newCubes.position.x = Math.sin(time * newCubes.positionZ) * newCubes.positionY;
+      newCubes.position.y = Math.cos(time * newCubes.positionX) * newCubes.positionZ;
+      newCubes.position.z = Math.sin(time * newCubes.positionY) * newCubes.positionX;
+      i += 1
 
-  particularGroup.rotation.y += 0.005;
+    particularGroup.rotation.y += 0.005;
 
-  modularGroup.rotation.y -= ((mouse.x * 4) + modularGroup.rotation.y) * uSpeed;
-  modularGroup.rotation.x -= ((-mouse.y * 4) + modularGroup.rotation.x) * uSpeed;
+    modularGroup.rotation.y -= ((mouse.x * 4) + modularGroup.rotation.y) * uSpeed;
+    modularGroup.rotation.x -= ((-mouse.y * 4) + modularGroup.rotation.x) * uSpeed;
 
-  renderer.render( scene, camera )
-  await asyncio.sleep(0.02)
+    renderer.render( scene, camera )
+    await asyncio.sleep(0.02)
 
+    asyncio.ensure_future(main())
 
 </py-script>
 </body>
