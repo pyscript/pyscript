@@ -22,6 +22,11 @@ export class PySplashscreenPlugin extends Plugin {
         customElements.define('py-loader', PyLoader);
         this.app.loader = <PyLoader>document.createElement('py-loader');
         document.body.append(this.app.loader);
+
+        document.addEventListener("py-status-message", (e: CustomEvent) => {
+            const msg = e.detail;
+            this.app.loader.log(msg);
+        });
     }
 
     afterSetup() {

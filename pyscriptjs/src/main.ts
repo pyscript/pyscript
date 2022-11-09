@@ -130,7 +130,7 @@ export class PyScriptApp {
                                           runtime_cfg.src,
                                           runtime_cfg.name,
                                           runtime_cfg.lang);
-        this.loader.log(`Downloading ${runtime_cfg.name}...`);
+        this.logStatus(`Downloading ${runtime_cfg.name}...`);
         const script = document.createElement('script'); // create a script DOM node
         script.src = this.runtime.src;
         script.addEventListener('load', () => {
@@ -148,24 +148,24 @@ export class PyScriptApp {
         console.assert(this.config !== undefined);
         console.assert(this.loader !== undefined);
 
-        this.loader.log('Python startup...');
+        this.logStatus('Python startup...');
         await runtime.loadInterpreter();
-        this.loader.log('Python ready!');
+        this.logStatus('Python ready!');
 
         // eslint-disable-next-line
         runtime.globals.set('pyscript_loader', this.loader);
 
-        this.loader.log('Setting up virtual environment...');
+        this.logStatus('Setting up virtual environment...');
         await this.setupVirtualEnv(runtime);
         await mountElements(runtime);
 
         // lifecycle (6.5)
         this.plugins.afterSetup(runtime);
 
-        this.loader.log('Executing <py-script> tags...');
+        this.logStatus('Executing <py-script> tags...');
         this.executeScripts(runtime);
 
-        this.loader.log('Initializing web components...');
+        this.logStatus('Initializing web components...');
         // lifecycle (8)
         createCustomElements(runtime);
 
@@ -225,6 +225,11 @@ export class PyScriptApp {
     }
 
     // ================= registraton API ====================
+
+    logStatus(msg: string) {
+        const ev = new CustomEvent("py-status-message", { detail: msg });
+        document.dispatchEvent(ev);
+    }
 
     registerStdioListener(stdio: Stdio) {
         this._stdioMultiplexer.addListener(stdio);
