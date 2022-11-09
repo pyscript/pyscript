@@ -1,3 +1,5 @@
+import { _createAlertBanner, UserError } from "./exceptions"
+
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
         element.classList.add(entry);
@@ -39,21 +41,8 @@ export function ensureUniqueId(el: HTMLElement) {
     if (el.id === '') el.id = `py-internal-${_uniqueIdCounter++}`;
 }
 
-/*
- *  Display a page-wide error message to show that something has gone wrong with
- *  PyScript or Pyodide during loading. Probably not be used for issues that occur within
- *  Python scripts, since stderr can be routed to somewhere in the DOM
- */
-export function showError(msg: string): void {
-    const warning = document.createElement('div');
-    // XXX: the style should go to css instead of here probably
-    warning.className = 'py-error';
-    warning.style.backgroundColor = 'LightCoral';
-    warning.style.alignContent = 'center';
-    warning.style.margin = '4px';
-    warning.style.padding = '4px';
-    warning.innerHTML = msg;
-    document.body.prepend(warning);
+export function showWarning(msg: string): void {
+    _createAlertBanner(msg, "warning")
 }
 
 export function handleFetchError(e: Error, singleFile: string) {
@@ -75,9 +64,13 @@ export function handleFetchError(e: Error, singleFile: string) {
             singleFile +
             `</u> failed with error 404 (File not Found). Are your filename and path are correct?</p>`;
     } else {
-        errorContent = '<p>PyScript encountered an error while loading from file: ' + e.message + '</p>';
+        errorContent = `<p>PyScript encountered an error while loading from file: ${e.message} </p>`;
     }
-    showError(errorContent);
+    // We need to create the banner because `handleFetchError` is called before we
+    // use withUserErrorHandler in main.js we are also disabling the log message
+    // because it will be logged by the uncaught exception in promise.
+    _createAlertBanner(errorContent, "error", false)
+    throw new UserError(errorContent)
 }
 
 export function readTextFromPath(path: string) {
@@ -108,4 +101,13 @@ export function getAttribute(el: Element, attr: string): string | null {
         }
     }
     return null;
+}
+
+export function joinPaths(parts: string[], separator = '/') {
+    const res = parts.map(function(part) { return part.trim().replace(/(^[/]*|[/]*$)/g, ''); }).filter(p => p!== "").join(separator || '/');
+    if (parts[0].startsWith('/'))
+    {
+        return '/'+res;
+    }
+    return res;
 }

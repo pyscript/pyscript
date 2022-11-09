@@ -217,7 +217,8 @@ One can also use both i.e pass the config from `src` attribute as well as specif
 
 ```
 <py-config src="./custom.toml">
-  paths = ["./utils.py"]
+  [[fetch]]
+  files = ["./utils.py"]
 </py-config>
 ```
 
@@ -226,7 +227,9 @@ This can also be done via JSON using the `type` attribute.
 ```
 <py-config type="json" src="./custom.json">
   {
-    "paths": ["./utils.py"]
+    "fetch": [{
+      "files": ["./utils.py"]
+    }]
   }
 </py-config>
 ```
@@ -309,7 +312,7 @@ def make_x_and_y(n):
 ```
 
 In the HTML tag `<py-config>`, paths to local modules are provided in the
-`paths:` key.
+`files` key within the `fetch` section.
 
 ```html
 <html>
@@ -323,7 +326,9 @@ In the HTML tag `<py-config>`, paths to local modules are provided in the
     <div id="plot"></div>
     <py-config type="toml">
         packages = ["numpy", "matplotlib"]
-        paths = ["./data.py"]
+
+        [[fetch]]
+        files = ["./data.py"]
     </py-config>
     <py-script output="plot">
       import matplotlib.pyplot as plt
@@ -350,9 +355,19 @@ The following optional values are supported by `<py-config>`:
 | `license` | string | License to be used for the user application. |
 | `autoclose_loader` | boolean | If false, PyScript will not close the loading splash screen when the startup operations finish. |
 | `packages` | List of Packages | Dependencies on 3rd party OSS packages are specified here. The default value is an empty list. |
-| `paths` | List of Paths | Local Python modules are to be specified here. The default value is an empty list. |
+| `fetch` | List of Stuff to fetch | Local Python modules OR resources from the internet are to be specified here using a Fetch Configuration, described below. The default value is an empty list. |
 | `plugins` | List of Plugins | List of Plugins are to be specified here. The default value is an empty list. |
 | `runtimes` | List of Runtimes | List of runtime configurations, described below. The default value contains a single Pyodide based runtime. |
+
+A fetch configuration consists of the following:
+| Value | Type | Description |
+| ----- | ---- | ----------- |
+| `from` | string | Base URL for the resource to be fetched. |
+| `to_folder` | string | Name of the folder to create in the filesystem. |
+| `to_file` | string | Name of the target to create in the filesystem. |
+| `files` | List of string | List of files to be downloaded. |
+
+The parameters `to_file` and `files` shouldn't be supplied together.
 
 A runtime configuration consists of the following:
 | Value | Type | Description |

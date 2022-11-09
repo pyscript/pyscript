@@ -93,5 +93,5 @@ export abstract class Runtime extends Object {
      * delegates the loading of files to the
      * underlying interpreter.
      * */
-    abstract loadFromFile(path: string): Promise<void>;
+    abstract loadFromFile(path: string, fetch_path: string): Promise<void>;
 }

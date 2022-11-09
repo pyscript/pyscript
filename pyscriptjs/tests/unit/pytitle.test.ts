@@ -1,5 +1,3 @@
-import { jest } from "@jest/globals";
-
 import { PyTitle } from "../../src/components/pytitle"
 
 

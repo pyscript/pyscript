@@ -96,7 +96,7 @@ export class PyodideRuntime extends Runtime {
         }
     }
 
-    async loadFromFile(path: string): Promise<void> {
+    async loadFromFile(path: string, fetch_path: string): Promise<void> {
         const pathArr = path.split('/');
         const filename = pathArr.pop();
         for (let i = 0; i < pathArr.length; i++) {
@@ -109,7 +109,7 @@ export class PyodideRuntime extends Runtime {
                 this.interpreter.FS.mkdir(eachPath);
             }
         }
-        const response = await fetch(path);
+        const response = await fetch(fetch_path);
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
         pathArr.push(filename);

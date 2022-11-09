@@ -8,8 +8,10 @@ import { make_PyScript, initHandlers, mountElements } from './components/pyscrip
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
-import { handleFetchError, showError, globalExport } from './utils';
+import { handleFetchError, showWarning, globalExport } from './utils';
+import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
+import { UserError, withUserErrorHandler } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 
@@ -99,9 +101,9 @@ export class PyScriptApp {
             // errors" and stop the computation, but currently our life cycle
             // is too messy to implement it reliably. We might want to revisit
             // this once it's in a better shape.
-            showError(
+            showWarning(
                 'Multiple &lt;py-config&gt; tags detected. Only the first is ' +
-                    'going to be parsed, all the others will be ignored',
+                'going to be parsed, all the others will be ignored',
             );
         }
         this.config = loadConfigFromElement(el);
@@ -121,12 +123,11 @@ export class PyScriptApp {
     loadRuntime() {
         logger.info('Initializing runtime');
         if (this.config.runtimes.length == 0) {
-            showError('Fatal error: config.runtimes is empty');
-            return;
+            throw new UserError('Fatal error: config.runtimes is empty');
         }
 
         if (this.config.runtimes.length > 1) {
-            showError('Multiple runtimes are not supported yet. ' + 'Only the first will be used');
+            showWarning('Multiple runtimes are not supported yet.<br />Only the first will be used');
         }
         const runtime_cfg = this.config.runtimes[0];
         this.runtime = new PyodideRuntime(this.config,
@@ -200,15 +201,17 @@ export class PyScriptApp {
         // it in Python, which means we need to have the runtime
         // initialized. But we could easily do it in JS in parallel with the
         // download/startup of pyodide.
-        const paths = this.config.paths;
-        logger.info('Paths to fetch: ', paths);
-        for (const singleFile of paths) {
-            logger.info(`  fetching path: ${singleFile}`);
+        const [paths, fetchPaths] = calculatePaths(this.config.fetch);
+        logger.info('Paths to fetch: ', fetchPaths);
+        for (let i=0; i<paths.length; i++) {
+            logger.info(`  fetching path: ${fetchPaths[i]}`);
             try {
-                await runtime.loadFromFile(singleFile);
+                await runtime.loadFromFile(paths[i], fetchPaths[i]);
             } catch (e) {
+                // Remove the loader so users can see the banner better
+                this.loader.remove()
                 //Should we still export full error contents to console?
-                handleFetchError(<Error>e, singleFile);
+                handleFetchError(<Error>e, fetchPaths[i]);
             }
         }
         logger.info('All paths fetched');
@@ -277,6 +280,6 @@ globalExport('pyscript_get_config', pyscript_get_config);
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
-globalApp.main();
+withUserErrorHandler(globalApp.main.bind(globalApp));
 
 export const runtime = globalApp.runtime;

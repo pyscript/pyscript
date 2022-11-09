@@ -1,5 +1,3 @@
-import { jest } from "@jest/globals"
-
 import { PyBox } from "../../src/components/pybox"
 
 customElements.define('py-box', PyBox)

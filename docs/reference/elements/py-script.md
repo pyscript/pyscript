@@ -41,9 +41,8 @@ The `<py-script>` element lets you execute multi-line Python scripts both inline
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <py-config>
-    paths =[
-        "compute_pi.py"
-    ]
+    [[fetch]]
+    files =["compute_pi.py"]
     </py-config>
   </head>
   <body>

@@ -1,7 +1,8 @@
 import toml from '../src/toml';
 import { getLogger } from './logger';
 import { version } from './runtime';
-import { getAttribute, readTextFromPath, showError } from './utils';
+import { getAttribute, readTextFromPath, htmlDecode } from './utils';
+import { UserError } from "./exceptions"
 
 const logger = getLogger('py-config');
 
@@ -17,10 +18,17 @@ export interface AppConfig extends Record<string, any> {
     autoclose_loader?: boolean;
     runtimes?: RuntimeConfig[];
     packages?: string[];
-    paths?: string[];
+    fetch?: FetchConfig[];
     plugins?: string[];
     pyscript?: PyScriptMetadata;
 }
+
+export type FetchConfig = {
+    from?: string;
+    to_folder?: string;
+    to_file?: string;
+    files?: string[];
+};
 
 export type RuntimeConfig = {
     src?: string;
@@ -37,7 +45,7 @@ const allKeys = {
     string: ['name', 'description', 'version', 'type', 'author_name', 'author_email', 'license'],
     number: ['schema_version'],
     boolean: ['autoclose_loader'],
-    array: ['runtimes', 'packages', 'paths', 'plugins'],
+    array: ['runtimes', 'packages', 'fetch', 'plugins'],
 };
 
 export const defaultConfig: AppConfig = {
@@ -52,7 +60,7 @@ export const defaultConfig: AppConfig = {
         },
     ],
     packages: [],
-    paths: [],
+    fetch: [],
     plugins: [],
 };
 
@@ -88,7 +96,7 @@ function extractFromSrc(el: Element, configType: string) {
 function extractFromInline(el: Element, configType: string) {
     if (el.innerHTML !== '') {
         logger.info('loading <py-config> content');
-        return validateConfig(el.innerHTML, configType);
+        return validateConfig(htmlDecode(el.innerHTML), configType);
     }
     return {};
 }
@@ -140,34 +148,22 @@ function parseConfig(configText: string, configType = 'toml') {
         try {
             // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
             if (configText.trim()[0] === '{') {
-                const errMessage = `config supplied: ${configText} is an invalid TOML and cannot be parsed`;
-                showError(`<p>${errMessage}</p>`);
-                throw Error(errMessage);
+                throw new UserError(`The config supplied: ${configText} is an invalid TOML and cannot be parsed`);
             }
             config = toml.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            showError(`<p>config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}</p>`);
-            // we cannot easily just "throw err" here, because for some reason
-            // playwright gets confused by it and cannot print it
-            // correctly. It is just displayed as an empty error.
-            // If you print err in JS, you get something like this:
-            //     n {message: '...', offset: 19, line: 2, column: 19}
-            // I think that 'n' is the minified name?
-            // The workaround is to re-wrap the message into SyntaxError(), so that
-            // it's correctly handled by playwright.
-            throw SyntaxError(errMessage);
+            throw new UserError(`The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`);
         }
     } else if (configType === 'json') {
         try {
             config = JSON.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            showError(`<p>config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}</p>`);
-            throw err;
+            throw new UserError(`The config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}`);
         }
     } else {
-        showError(`<p>type of config supplied is: ${configType}, supported values are ["toml", "json"].</p>`);
+        throw new UserError(`<p>The type of config supplied'${configType}' is not supported, supported values are ["toml", "json"].</p>`);
     }
     return config;
 }
@@ -183,9 +179,9 @@ function validateConfig(configText: string, configType = 'toml') {
             if (validateParamInConfig(item, keyType, config)) {
                 if (item === 'runtimes') {
                     finalConfig[item] = [];
-                    const runtimes = config[item] as object[];
-                    runtimes.forEach(function (eachRuntime: object) {
-                        const runtimeConfig: object = {};
+                    const runtimes = config[item] as RuntimeConfig[];
+                    runtimes.forEach(function (eachRuntime: RuntimeConfig) {
+                        const runtimeConfig: RuntimeConfig = {};
                         for (const eachRuntimeParam in eachRuntime) {
                             if (validateParamInConfig(eachRuntimeParam, 'string', eachRuntime)) {
                                 runtimeConfig[eachRuntimeParam] = eachRuntime[eachRuntimeParam];
@@ -193,7 +189,22 @@ function validateConfig(configText: string, configType = 'toml') {
                         }
                         finalConfig[item].push(runtimeConfig);
                     });
-                } else {
+                }
+                else if (item === 'fetch') {
+                    finalConfig[item] = [];
+                    const fetchList = config[item] as FetchConfig[];
+                    fetchList.forEach(function (eachFetch: FetchConfig) {
+                        const eachFetchConfig: FetchConfig = {};
+                        for (const eachFetchConfigParam in eachFetch) {
+                            const targetType = eachFetchConfigParam === 'files' ? 'array' : 'string';
+                            if (validateParamInConfig(eachFetchConfigParam, targetType, eachFetch)) {
+                                eachFetchConfig[eachFetchConfigParam] = eachFetch[eachFetchConfigParam];
+                            }
+                        }
+                        finalConfig[item].push(eachFetchConfig);
+                    });
+                }
+                else {
                     finalConfig[item] = config[item];
                 }
             }
