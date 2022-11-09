@@ -12,7 +12,7 @@ export function make_PyScript(runtime: Runtime) {
             ensureUniqueId(this);
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
-            await pyExec(runtime, pySrc, this);
+            pyExec(runtime, pySrc, this);
         }
 
         async getPySrc(): Promise<string> {

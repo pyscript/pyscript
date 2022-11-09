@@ -166,7 +166,7 @@ export function make_PyRepl(runtime: Runtime) {
             outEl.innerHTML = '';
 
             // execute the python code
-            const pyResult = await pyExec(runtime, pySrc, outEl);
+            const pyResult = pyExec(runtime, pySrc, outEl);
 
             // display the value of the last evaluated expression (REPL-style)
             if (pyResult !== undefined) {
