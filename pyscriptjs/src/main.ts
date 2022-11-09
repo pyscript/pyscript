@@ -227,6 +227,7 @@ export class PyScriptApp {
     // ================= registraton API ====================
 
     logStatus(msg: string) {
+        logger.info(msg);
         const ev = new CustomEvent("py-status-message", { detail: msg });
         document.dispatchEvent(ev);
     }

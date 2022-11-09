@@ -26,6 +26,7 @@ class TestSplashscreen(PyScriptTest):
         div = self.page.locator("py-loader > div")
         expect(div).to_be_visible()
         expect(div).to_contain_text("Python startup...")
+        assert "Python startup..." in self.console.info.text
         #
         # now we wait for the startup to complete
         self.wait_for_pyscript()

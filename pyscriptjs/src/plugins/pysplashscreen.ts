@@ -59,8 +59,6 @@ export class PyLoader extends HTMLElement {
     }
 
     log(msg: string) {
-        // loader messages are showed both in the HTML and in the console
-        logger.info(msg);
         const newLog = document.createElement('p');
         newLog.innerText = msg;
         this.details.appendChild(newLog);
