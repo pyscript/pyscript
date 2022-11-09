@@ -318,3 +318,17 @@ textarea {
 .line-through {
     text-decoration: line-through;
 }
+
+/* ===== py-terminal plugin ===== */
+/* XXX: it would be nice if these rules were stored in e.g. pyterminal.css and
+   bundled together at build time (by rollup?) */
+
+.py-terminal {
+    min-height: 10em;
+    background-color: black;
+    color: white;
+}
+
+.py-terminal-hidden {
+    display: none;
+}

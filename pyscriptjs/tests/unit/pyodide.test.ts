@@ -1,6 +1,7 @@
 import type { AppConfig } from '../../src/pyconfig';
 import { Runtime } from '../../src/runtime';
 import { PyodideRuntime } from '../../src/pyodide';
+import { CaptureStdio } from '../../src/stdio';
 
 import { TextEncoder, TextDecoder } from 'util'
 global.TextEncoder = TextEncoder
@@ -8,9 +9,11 @@ global.TextDecoder = TextDecoder
 
 describe('PyodideRuntime', () => {
     let runtime: PyodideRuntime;
+    let stdio: CaptureStdio = new CaptureStdio();
     beforeAll(async () => {
         const config: AppConfig = {};
-        runtime = new PyodideRuntime(config);
+        runtime = new PyodideRuntime(config, stdio);
+
         /**
          * Since import { loadPyodide } from 'pyodide';
          * is not used inside `src/pyodide.ts`, the function
@@ -48,6 +51,12 @@ describe('PyodideRuntime', () => {
 
     it('should check if runtime can run python code asynchronously', async () => {
         expect(await runtime.run("2+3")).toBe(5);
+    });
+
+    it('should capture stdout', async () => {
+        stdio.reset();
+        await runtime.run("print('hello')");
+        expect(stdio.captured_stdout).toBe("hello\n");
     });
 
     it('should check if runtime is able to load a package', async () => {
