@@ -156,4 +156,10 @@ describe('loadConfigFromElement', () => {
         expect(()=>loadConfigFromElement(el)).toThrow(UserError);
     });
 
+    it('should not escape characters like &', () => {
+        const el = make_config_element({ type: 'json'});
+        el.innerHTML = JSON.stringify({ fetch: [{from: 'https://datausa.io/api/data?drilldowns=Nation&measures=Population'}]});
+        const config = loadConfigFromElement(el);
+        expect(config.fetch[0].from).toBe('https://datausa.io/api/data?drilldowns=Nation&measures=Population');
+    });
 });
