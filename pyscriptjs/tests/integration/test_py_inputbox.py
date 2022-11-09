@@ -35,8 +35,8 @@ class TestPyInputBox(PyScriptTest):
         banner = self.page.locator(".py-warning")
         banner_content = banner.inner_text()
         expected = (
-            "The element <py-input> is deprecated, create a function with your "
-            'inline code and use <input py-input="function()"> instead.'
+            "The element <py-input> is deprecated, "
+            'use <input class="py-input"> instead.'
         )
 
         assert banner_content == expected
