@@ -5,7 +5,6 @@ import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
 import { type Plugin, PluginManager } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
-import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
 import { handleFetchError, showWarning, globalExport } from './utils';
@@ -14,7 +13,7 @@ import { createCustomElements } from './components/elements';
 import { UserError, withUserErrorHandler } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
-import { PySplashscreenPlugin } from './plugins/pysplashscreen';
+import { PySplashscreenPlugin, PyLoader } from './plugins/pysplashscreen';
 
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {
