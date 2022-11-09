@@ -17,6 +17,16 @@ caption: Modules
 ---
 modules/*
 ```
+
+```{toctree}
+---
+maxdepth: 1
+glob:
+caption: Plugins
+---
+plugins/*
+```
+
 ```{toctree}
 ---
 maxdepth: 1
