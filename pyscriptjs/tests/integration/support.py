@@ -1,3 +1,4 @@
+import dataclasses
 import pdb
 import re
 import sys
@@ -75,11 +76,15 @@ class PyScriptTest:
             # use a real HTTP server. Note that as soon as we request the
             # fixture, the server automatically starts in its own thread.
             self.http_server = request.getfixturevalue("http_server")
+            self.router = None
         else:
             # use the internal playwright routing
             self.http_server = "http://fake_server"
             self.router = SmartRouter(
-                "fake_server", logger=logger, usepdb=request.config.option.usepdb
+                "fake_server",
+                cache=request.config.cache,
+                logger=logger,
+                usepdb=request.config.option.usepdb,
             )
             self.router.install(page)
         #
@@ -520,19 +525,23 @@ class SmartRouter:
         headers: dict
         body: str
 
-    # NOTE: this is a class attribute, which means that the cache is
-    # automatically shared between all instances of Fake_Server (and thus all
-    # tests of the pytest session)
-    _cache = {}
+        def asdict(self):
+            return dataclasses.asdict(self)
 
-    def __init__(self, fake_server, *, logger, usepdb=False):
+        @classmethod
+        def fromdict(cls, d):
+            return cls(**d)
+
+    def __init__(self, fake_server, *, cache, logger, usepdb=False):
         """
         fake_server: the domain name of the fake server
         """
         self.fake_server = fake_server
+        self.cache = cache  # this is pytest-cache, it survives across sessions
         self.logger = logger
         self.usepdb = usepdb
         self.page = None
+        self.requests = []  # (status, kind, url)
 
     def install(self, page):
         """
@@ -569,6 +578,7 @@ class SmartRouter:
             route.abort()
 
     def log_request(self, status, kind, url):
+        self.requests.append((status, kind, url))
         color = "blue" if status == 200 else "red"
         self.logger.log("request", f"{status} - {kind} - {url}", color=color)
 
@@ -587,16 +597,37 @@ class SmartRouter:
             return
 
         # network requests might be cached
-        if full_url in self._cache:
+        resp = self.fetch_from_cache(full_url)
+        if resp is not None:
             kind = "CACHED"
-            resp = self._cache[full_url]
         else:
             kind = "NETWORK"
             resp = self.fetch_from_network(route.request)
-            self._cache[full_url] = resp
+            self.save_resp_to_cache(full_url, resp)
 
         self.log_request(resp.status, kind, full_url)
         route.fulfill(status=resp.status, headers=resp.headers, body=resp.body)
+
+    def clear_cache(self, url):
+        key = "pyscript/" + url
+        self.cache.set(key, None)
+
+    def save_resp_to_cache(self, url, resp):
+        key = "pyscript/" + url
+        data = resp.asdict()
+        # cache.set encodes it as JSON, and "bytes" are not supported: let's
+        # encode them as latin-1
+        data["body"] = data["body"].decode("latin-1")
+        self.cache.set(key, data)
+
+    def fetch_from_cache(self, url):
+        key = "pyscript/" + url
+        data = self.cache.get(key, None)
+        if data is None:
+            return None
+        # see the corresponding comment in save_resp_to_cache
+        data["body"] = data["body"].encode("latin-1")
+        return self.CachedResponse(**data)
 
     def fetch_from_network(self, request):
         # sometimes the network is flaky and if the first request doesn't

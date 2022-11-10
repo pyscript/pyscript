@@ -355,3 +355,37 @@ class TestSupport(PyScriptTest):
         assert divs.count() == 3
         texts = [el.inner_text() for el in self.iter_locator(divs)]
         assert texts == ["foo", "bar", "baz"]
+
+    def test_smartrouter_cache(self):
+        if self.router is None:
+            pytest.skip("Cannot test SmartRouter with --dev")
+
+        # this is not an image but who cares, I just want the browser to make
+        # an HTTP request
+        URL = "https://raw.githubusercontent.com/pyscript/pyscript/main/README.md"
+        doc = f"""
+        <html>
+          <body>
+              <img src="{URL}">
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        #
+        self.router.clear_cache(URL)
+        self.goto("mytest.html")
+        assert self.router.requests == [
+            (200, "fake_server", "http://fake_server/mytest.html"),
+            (200, "NETWORK", URL),
+        ]
+        #
+        # let's visit the page again, now it should be cached
+        self.goto("mytest.html")
+        assert self.router.requests == [
+            # 1st visit
+            (200, "fake_server", "http://fake_server/mytest.html"),
+            (200, "NETWORK", URL),
+            # 2nd visit
+            (200, "fake_server", "http://fake_server/mytest.html"),
+            (200, "CACHED", URL),
+        ]
