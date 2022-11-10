@@ -1,6 +1,6 @@
 # &lt;py-terminal&gt;
 
-This is one of the core plugins in PyScript, which is active by default. With it, you can receive `stdout` and `stderr` from your python code, which will be displayed on the page in `<py-terminal>`.
+This is one of the core plugins in PyScript, which is active by default. With it, you can print to `stdout` and `stderr` from your python code, and the output will be displayed on the page in `<py-terminal>`.
 
 ## Configuration
 
@@ -8,9 +8,9 @@ You can control how `<py-terminal>` behaves by setting the value of the  `termin
 
 | value | description |
 |-------|-------------|
-| `false` | Deactivate the plugin, no `<py-terminal>` will be added to the page |
-| `true` | Adds a `<py-terminal>` to the page even if nothing is shown in the terminal yet. |
-| `"auto"` | This is the default value for the `<py-terminal>`, the element will be shown on the page once there is something to show |
+| `false` | Don't add `<py-terminal>` to the page |
+| `true` | Automatically add a `<py-terminal>` to the page |
+| `"auto"` | This is the default. Automatically add a `<py-terminal auto>`, to the page. The terminal is initially hidden and automacially shown as soon as something writes to `stdout` and/or `stderr` |
 
 ### Examples
 
@@ -25,3 +25,17 @@ You can control how `<py-terminal>` behaves by setting the value of the  `termin
 ```
 
 This example will create a new `<py-terminal>`, the value "Hello, world!" that was printed will show in it.
+
+You can also add one (or more) `<py-terminal>` to the page manually.
+
+```html
+<py-config>
+    terminal = true
+</py-config>
+
+<py-script>
+    print("Hello, world!")
+</py-script>
+
+<py-terminal></py-terminal>
+```
