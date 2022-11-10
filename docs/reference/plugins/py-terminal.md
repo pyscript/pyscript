@@ -29,13 +29,13 @@ This example will create a new `<py-terminal>`, the value "Hello, world!" that w
 You can also add one (or more) `<py-terminal>` to the page manually.
 
 ```html
-<py-config>
-    terminal = true
-</py-config>
-
 <py-script>
     print("Hello, world!")
 </py-script>
 
 <py-terminal></py-terminal>
+```
+
+```{note}
+If you include a `<py-terminal>` in the page, you can skip `terminal` from your `<py-config>`.
 ```
