@@ -20,7 +20,7 @@ export function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLElement) {
                 '"async with" is deprecated.' +
                 '\nPlease write a coroutine containing ' +
                 'your code and schedule it using asyncio.ensure_future() or similar.' +
-                '\nSee https://docs.pyscript.net/ for more information.'
+                '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.'
                 )
        }
        return runtime.run(pysrc);
