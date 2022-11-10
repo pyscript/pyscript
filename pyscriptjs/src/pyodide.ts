@@ -1,5 +1,6 @@
 import { Runtime } from './runtime';
 import { getLogger } from './logger';
+import { FetchError } from './exceptions'
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
@@ -111,7 +112,7 @@ export class PyodideRuntime extends Runtime {
         }
         const response = await fetch(fetch_path);
         if (response.status !== 200) {
-            throw new Error(`Unable to fetch  ${fetch_path}, reason: ${response.status} - ${response.statusText}`);
+            throw new FetchError(`Unable to fetch  ${fetch_path}, reason: ${response.status} - ${response.statusText}`);
         }
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);

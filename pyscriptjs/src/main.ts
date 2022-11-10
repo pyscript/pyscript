@@ -210,8 +210,11 @@ export class PyScriptApp {
             } catch (e) {
                 // Remove the loader so users can see the banner better
                 this.loader.remove()
-                //Should we still export full error contents to console?
-                handleFetchError(<Error>e, fetchPaths[i]);
+                if (e.name === "FetchError") {
+                    handleFetchError(<Error>e, fetchPaths[i]);
+                } else {
+                    throw e
+                }
             }
         }
         logger.info('All paths fetched');
