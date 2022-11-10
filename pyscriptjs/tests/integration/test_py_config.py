@@ -244,22 +244,31 @@ class TestConfig(PyScriptTest):
             """,
             wait_for_pyscript=False,
         )
-        errorContent = """PyScript: Access to local files
+
+        # This is expected if running pytest with --dev flag
+        localErrorContent = """PyScript: Access to local files
         (using "Paths:" in &lt;py-config&gt;)
         is not available when directly opening a HTML file;
         you must use a webserver to serve the additional files."""
 
-        inner_html = self.page.locator(".py-error").inner_html()
-        assert errorContent in inner_html
-        assert "Failed to load resource: net::ERR_FAILED" in self.console.error.lines
-        assert (
-            "Caught an error in fetchPaths:\r\n TypeError: Failed to fetch"
-            in self.console.warning.lines
+        # This is expected if running a live server
+        serverErrorContent = (
+            "Loading from file <u>./f.py</u> failed with error 404 (File not Found). "
+            "Are your filename and path are correct?"
         )
+
+        inner_html = self.page.locator(".py-error").inner_html()
+        assert localErrorContent in inner_html or serverErrorContent in inner_html
+        assert "Failed to load resource" in self.console.error.lines[0]
+        assert "Caught an error in fetchPaths" in self.console.warning.lines[0]
         with pytest.raises(JsErrors) as exc:
             self.check_js_errors()
 
-        assert errorContent in str(exc.value)
+        received_error_msg = str(exc.value)
+        assert (
+            localErrorContent in received_error_msg
+            or serverErrorContent in received_error_msg
+        )
 
     def test_paths_from_packages(self):
         self.writefile("utils/__init__.py", "")

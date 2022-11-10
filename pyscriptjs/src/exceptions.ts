@@ -6,6 +6,13 @@ export class UserError extends Error {
   }
 }
 
+export class FetchError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = "FetchError"
+  }
+}
+
 export function _createAlertBanner(message: string, level: "error" | "warning" = "error", logMessage = true) {
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   switch (`log-${level}-${logMessage}`) {
