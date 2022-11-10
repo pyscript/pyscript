@@ -210,7 +210,9 @@ export class PyScriptApp {
             } catch (e) {
                 // Remove the loader so users can see the banner better
                 this.loader.remove()
-                if (e.name === "FetchError") {
+                // The 'TypeError' here happens when running pytest
+                // I'm not particularly happy with this solution.
+                if (e.name === "FetchError" || e.name === "TypeError") {
                     handleFetchError(<Error>e, fetchPaths[i]);
                 } else {
                     throw e
