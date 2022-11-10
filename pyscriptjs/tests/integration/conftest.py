@@ -1,3 +1,4 @@
+import shutil
 import threading
 from http.server import HTTPServer as SuperHTTPServer
 from http.server import SimpleHTTPRequestHandler
@@ -5,6 +6,44 @@ from http.server import SimpleHTTPRequestHandler
 import pytest
 
 from .support import Logger
+
+
+def pytest_cmdline_main(config):
+    """
+    If we pass --clear-http-cache, we don't enter the main pytest logic, but
+    use our custom main instead
+    """
+
+    def mymain(config, session):
+        print()
+        print("-" * 20, "SmartRouter HTTP cache", "-" * 20)
+        # unfortunately pytest-cache doesn't offer a public API to selectively
+        # clear the cache, so we need to peek its internal. The good news is
+        # that pytest-cache is very old, stable and robust, so it's likely
+        # that this won't break anytime soon.
+        cache = config.cache
+        base = cache._cachedir.joinpath(cache._CACHE_PREFIX_VALUES, "pyscript")
+        if not base.exists():
+            print("No cache found, nothing to do")
+            return 0
+        #
+        print("Requests found in the cache:")
+        for f in base.rglob("*"):
+            if f.is_file():
+                # requests are saved in dirs named pyscript/http:/foo/bar, let's turn
+                # them into a proper url
+                url = str(f.relative_to(base))
+                url = url.replace(":/", "://")
+                print("    ", url)
+        shutil.rmtree(base)
+        print("Cache cleared")
+        return 0
+
+    if config.option.clear_http_cache:
+        from _pytest.main import wrap_session
+
+        return wrap_session(config, mymain)
+    return None
 
 
 def pytest_configure(config):
@@ -60,6 +99,11 @@ def pytest_addoption(parser):
         "--dev",
         action="store_true",
         help="Automatically open a devtools panel. Implies --headed and --no-fake-server",
+    )
+    parser.addoption(
+        "--clear-http-cache",
+        action="store_true",
+        help="Clear the cache of HTTP requests for SmartRouter",
     )
 
 
