@@ -1,6 +1,7 @@
 import { Runtime } from './runtime';
 import { getLogger } from './logger';
-import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
+import type { loadPyodide as loadPyodideDeclaration, PyodideInterface } from 'pyodide';
+import type { PyProxy } from "./types"
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';

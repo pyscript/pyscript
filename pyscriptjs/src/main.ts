@@ -3,7 +3,8 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
-import { type Plugin, PluginManager } from './plugin';
+import type { PyScript } from "./types"
+import { PluginManager } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
@@ -62,7 +63,7 @@ export class PyScriptApp {
     config: AppConfig;
     loader: PyLoader;
     runtime: Runtime;
-    PyScript: any; // XXX would be nice to have a more precise type for the class itself
+    PyScript: PyScript;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
 

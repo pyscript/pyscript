@@ -6,3 +6,8 @@ export declare type PyProxy = PyProxy & {
   get(value: string): PyProxyClass;
   set(id: string, proxy: PyProxyClass): void;
 }
+
+
+export declare interface PyScript extends HTMLElement {
+  getPySrc(): Promise<strin>
+}

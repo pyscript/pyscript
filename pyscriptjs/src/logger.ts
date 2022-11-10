@@ -45,11 +45,13 @@ function _makeLogger(prefix: string): Logger {
     prefix = '[' + prefix + '] ';
 
     function make(level: string) {
+        /* eslint-disable */
         const out_fn = console[level].bind(console);
         function fn(fmt: string, ...args: unknown[]) {
             out_fn(prefix + fmt, ...args);
         }
         return fn;
+        /* eslint-enable */
     }
 
     // 'log' is intentionally omitted
