@@ -100,7 +100,7 @@ class TestConfig(PyScriptTest):
         """,
         )
 
-        assert self.console.log.lines == [self.PY_COMPLETE, "version 0.20.0"]
+        assert self.console.log.lines[-1] == "version 0.20.0"
         version = self.page.locator("py-script").inner_text()
         assert version == "0.20.0"
 
