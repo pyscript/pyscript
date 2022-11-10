@@ -6,7 +6,7 @@ import { UserError } from "./exceptions"
 
 const logger = getLogger('py-config');
 
-export interface AppConfig extends Record<string, any> {
+export interface AppConfig extends Record<string, any> { // eslint-disable-line @typescript-eslint/no-explicit-any
     name?: string;
     description?: string;
     version?: string;
@@ -21,6 +21,7 @@ export interface AppConfig extends Record<string, any> {
     fetch?: FetchConfig[];
     plugins?: string[];
     pyscript?: PyScriptMetadata;
+    terminal?: string | boolean;
 }
 
 export type FetchConfig = {

@@ -1,12 +1,13 @@
 import { getLogger } from './logger';
 import { ensureUniqueId } from './utils';
 import type { Runtime } from './runtime';
+import type { Display, CurrentDisplayTarget } from "./types"
 
 const logger = getLogger('pyexec');
 
 export async function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLElement) {
     // this is the python function defined in pyscript.py
-    const set_current_display_target = runtime.globals.get('set_current_display_target');
+    const set_current_display_target = runtime.globals.get('set_current_display_target') as CurrentDisplayTarget;
     ensureUniqueId(outElem);
     set_current_display_target(outElem.id);
     try {
@@ -17,7 +18,7 @@ export async function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLEleme
             // the output. But we probably need a better way to do that,
             // e.g. allowing plugins to intercept exceptions and display them
             // in a configurable way.
-            displayPyException(err, outElem);
+            displayPyException(err as Error, outElem);
         }
     } finally {
         set_current_display_target(undefined);
@@ -31,29 +32,29 @@ export async function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLEleme
  *     pyDisplay(runtime, obj);
  *     pyDisplay(runtime, obj, { target: targetID });
  */
-export function pyDisplay(runtime: Runtime, obj: any, kwargs: object) {
-    const display = runtime.globals.get('display');
+export function pyDisplay(runtime: Runtime, obj: any, kwargs: object) { // eslint-disable-line  @typescript-eslint/no-explicit-any
+    const display = runtime.globals.get('display') as Display;
     if (kwargs === undefined) display(obj);
     else {
         display.callKwargs(obj, kwargs);
     }
 }
 
-function displayPyException(err: any, errElem: HTMLElement) {
-    //addClasses(errElem, ['py-error'])
+function displayPyException(err: Error, errElem: HTMLElement) {
     const pre = document.createElement('pre');
     pre.className = 'py-error';
 
     if (err.name === 'PythonError') {
         // err.message contains the python-level traceback (i.e. a string
         // starting with: "Traceback (most recent call last) ..."
-        logger.error('Python exception:\n' + err.message);
+        logger.error(`Python exception:\n ${err.message}`);
         pre.innerText = err.message;
     } else {
         // this is very likely a normal JS exception. The best we can do is to
         // display it as is.
-        logger.error('Non-python exception:\n' + err);
-        pre.innerText = err;
+        const errorString = err.toString()
+        logger.error(`Non-python exception:\n ${errorString}`);
+        pre.innerText = errorString;
     }
     errElem.appendChild(pre);
 }

@@ -1,7 +1,7 @@
-import type { PyScriptApp } from './main';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
 
+/* eslint-disable */
 export class Plugin {
 
     /** Validate the configuration of the plugin and handle default values.
@@ -40,7 +40,7 @@ export class Plugin {
     afterSetup(runtime: Runtime) {
     }
 }
-
+/* eslint-disable */
 
 export class PluginManager {
     _plugins: Plugin[];
