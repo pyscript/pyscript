@@ -423,5 +423,5 @@ The following tags can be used to add visual attributes to your HTML page.
 | `<py-title>`    | (Deprecated) Adds a static text title component that styles the text inside the tag as a page title. |
 
 ```{note}
-All the elements above are experimental and not implemented at their full functionality. Use them with the understanding that the APIs or full support might change or be removed until the visual components are more mature.
+These elements have been deprecated, we suggest that you use native elements and attach the respective `py-` attribute. For example for `<py-button>` you can write `<button py-click="function()">`
 ```
