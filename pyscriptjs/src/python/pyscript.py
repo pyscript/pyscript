@@ -9,7 +9,7 @@ from textwrap import dedent
 import micropip  # noqa: F401
 from js import console, document
 
-loop = asyncio.get_event_loop()
+loop = asyncio.get_running_loop()
 
 MIME_METHODS = {
     "__repr__": "text/plain",
