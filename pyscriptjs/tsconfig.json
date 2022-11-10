@@ -13,6 +13,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "strictBindCallApply": true,
     "lib": [
       "es2017",
       "dom",

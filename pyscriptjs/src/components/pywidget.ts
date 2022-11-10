@@ -1,5 +1,5 @@
 import type { Runtime } from '../runtime';
-import type { PyProxy } from 'pyodide';
+import type { PyProxy } from '../types';
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-register-widget');
@@ -13,7 +13,7 @@ function createWidget(runtime: Runtime, name: string, code: string, klass: strin
         klass: string = klass;
         code: string = code;
         proxy: PyProxy;
-        proxyClass: any;
+        proxyClass: PyProxy;
 
         constructor() {
             super();
@@ -27,8 +27,10 @@ function createWidget(runtime: Runtime, name: string, code: string, klass: strin
 
         async connectedCallback() {
             await runtime.runButDontRaise(this.code);
+            /* eslint-disable @typescript-eslint/no-unsafe-assignment */
             this.proxyClass = runtime.globals.get(this.klass);
             this.proxy = this.proxyClass(this);
+            /* eslint-enable @typescript-eslint/no-unsafe-assignment */
             this.proxy.connect();
             this.registerWidget();
         }

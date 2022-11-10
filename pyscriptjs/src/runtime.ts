@@ -1,5 +1,6 @@
 import type { AppConfig } from './pyconfig';
-import type { PyodideInterface, PyProxy } from 'pyodide';
+import type { PyodideInterface } from 'pyodide';
+import type { PyProxy } from "./types"
 import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/runtime');

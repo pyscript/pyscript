@@ -42,7 +42,7 @@ export function _createAlertBanner(message: string, level: "error" | "warning" =
 * the user what went wrong. Note that the error will still stop execution,
 * any other errors we will simply throw them and no banner will be shown.
 */
-export function withUserErrorHandler(fn) {
+export function withUserErrorHandler(fn: () => void) {
   try {
     return fn();
   } catch (error: unknown) {
