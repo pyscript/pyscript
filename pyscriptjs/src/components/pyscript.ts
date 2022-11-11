@@ -158,7 +158,7 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
         } else {
             el.addEventListener(event, (): void => {
                 (async () => {
-                    await runtime.run(handlerCode);
+                    await runtime.run(handlerCode as string);
                 });
             });
         }

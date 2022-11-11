@@ -23,17 +23,17 @@ export function htmlDecode(input: string): string | null {
 
 export function ltrim(code: string): string {
     const lines = code.split('\n');
-    if (lines.length == 0) return code;
+    if (lines.length === 0) return code;
 
     const lengths = lines
         .filter(line => line.trim().length != 0)
         .map(line => {
             return line.match(/^\s*/)?.pop()?.length;
-        });
+        }) as number[];
 
     const k = Math.min(...lengths);
 
-    return k != 0 ? lines.map(line => line.substring(k)).join('\n') : code;
+    return k !== 0 ? lines.map(line => line.substring(k)).join('\n') : code;
 }
 
 let _uniqueIdCounter = 0;

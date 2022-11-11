@@ -29,5 +29,6 @@ module.exports = {
         '@typescript-eslint/no-floating-promises': 'warn',
         '@typescript-eslint/restrict-plus-operands': 'warn',
         '@typescript-eslint/no-empty-function': 'warn',
+        '@typescript-eslint/no-unnecessary-type-assertion': "off"
     },
 };

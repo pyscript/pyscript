@@ -43,12 +43,14 @@ export function make_PyButton(runtime: Runtime) {
 
         async connectedCallback() {
             ensureUniqueId(this);
-            this.code = htmlDecode(this.innerHTML) || '';
+            this.code = htmlDecode(this.innerHTML);
             this.mount_name = this.id.split('-').join('_');
             this.innerHTML = '';
 
             const mainDiv = document.createElement('button');
-            mainDiv.innerHTML = this.label;
+            if (this.label) {
+                mainDiv.innerHTML = this.label;
+            }
             addClasses(mainDiv, this.class);
 
             mainDiv.id = this.id;

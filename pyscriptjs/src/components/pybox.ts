@@ -27,7 +27,7 @@ export class PyBox extends HTMLElement {
         // meaning that we end up with 2 editors, if there's a <py-repl> inside the <py-box>
         // so, if we have more than 2 children with the cm-editor class, we remove one of them
         while (this.childNodes.length > 0) {
-            if (this.firstChild.nodeName == 'PY-REPL') {
+            if (this.firstChild && this.firstChild?.nodeName == 'PY-REPL') {
                 // in this case we need to remove the child and create a new one from scratch
                 const replDiv = document.createElement('div');
                 // we need to put the new repl inside a div so that if the repl has auto-generate true
@@ -36,10 +36,10 @@ export class PyBox extends HTMLElement {
                 mainDiv.appendChild(replDiv);
                 this.firstChild.remove();
             } else {
-                if (this.firstChild.nodeName != '#text') {
-                    mainDiv.appendChild(this.firstChild);
+                if (this.firstChild?.nodeName != '#text') {
+                    mainDiv.appendChild(this.firstChild as Node);
                 } else {
-                    this.firstChild.remove();
+                    this.firstChild?.remove();
                 }
             }
         }

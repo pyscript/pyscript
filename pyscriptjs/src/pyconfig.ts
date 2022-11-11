@@ -95,9 +95,12 @@ function extractFromSrc(el: Element, configType: string) {
 }
 
 function extractFromInline(el: Element, configType: string) {
-    if (el.innerHTML !== '') {
+    if (el.innerHTML && el.innerHTML !== '') {
         logger.info('loading <py-config> content');
-        return validateConfig(htmlDecode(el.innerHTML), configType);
+        const decodedInnerHTML = htmlDecode(el.innerHTML)
+        if (decodedInnerHTML) {
+            return validateConfig(decodedInnerHTML, configType);
+        }
     }
     return {};
 }
@@ -153,14 +156,14 @@ function parseConfig(configText: string, configType = 'toml') {
             }
             config = toml.parse(configText);
         } catch (err) {
-            const errMessage: string = err.toString();
+            const errMessage: string = (err as Error).toString();
             throw new UserError(`The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`);
         }
     } else if (configType === 'json') {
         try {
             config = JSON.parse(configText);
         } catch (err) {
-            const errMessage: string = err.toString();
+            const errMessage: string = (err as Error).toString();
             throw new UserError(`The config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}`);
         }
     } else {
@@ -195,7 +198,7 @@ function validateConfig(configText: string, configType = 'toml') {
                     finalConfig[item] = [];
                     const fetchList = config[item] as FetchConfig[];
                     fetchList.forEach(function (eachFetch: FetchConfig) {
-                        const eachFetchConfig: FetchConfig = {};
+                        const eachFetchConfig = {} as FetchConfig;
                         for (const eachFetchConfigParam in eachFetch) {
                             const targetType = eachFetchConfigParam === 'files' ? 'array' : 'string';
                             if (validateParamInConfig(eachFetchConfigParam, targetType, eachFetch)) {

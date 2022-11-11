@@ -113,9 +113,13 @@ export class PyodideRuntime extends Runtime {
         const response = await fetch(fetch_path);
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
-        pathArr.push(filename);
-        const stream = this.interpreter.FS.open(pathArr.join('/'), 'w');
-        this.interpreter.FS.write(stream, data, 0, data.length, 0);
-        this.interpreter.FS.close(stream);
+        if (filename) {
+            pathArr.push(filename);
+            const stream = this.interpreter.FS.open(pathArr.join('/'), 'w');
+            this.interpreter.FS.write(stream, data, 0, data.length, 0);
+            this.interpreter.FS.close(stream);
+        } else {
+            throw new Error(`Filename is undefined but shouldn't be. Path passed: ${path}`)
+        }
     }
 }

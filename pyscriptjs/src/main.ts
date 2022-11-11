@@ -106,7 +106,7 @@ export class PyScriptApp {
                 'going to be parsed, all the others will be ignored',
             );
         }
-        this.config = loadConfigFromElement(el);
+        this.config = loadConfigFromElement(el as Element);
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
     }
 
@@ -122,7 +122,7 @@ export class PyScriptApp {
     // lifecycle (4)
     loadRuntime() {
         logger.info('Initializing runtime');
-        if (this.config.runtimes.length == 0) {
+        if (this.config.runtimes?.length === 0 || !this.config.runtimes) {
             throw new UserError('Fatal error: config.runtimes is empty');
         }
 
@@ -244,12 +244,15 @@ export class PyScriptApp {
         // inside py-script. It's also unclear whether we want to wait or not
         // (or maybe only wait only if we do an actual 'import'?)
         for (const node of document.querySelectorAll("script[type='importmap']")) {
-            const importmap: ImportMapType = (() => {
-                try {
-                    return JSON.parse(node.textContent) as ImportMapType;
-                } catch {
-                    return null;
+            const importmap: ImportMapType | null = (() => {
+                if (node.textContent) {
+                    try {
+                        return JSON.parse(node.textContent) as ImportMapType;
+                    } catch {
+                        return null;
+                    }
                 }
+                return null;
             })();
 
             if (importmap?.imports == null) continue;

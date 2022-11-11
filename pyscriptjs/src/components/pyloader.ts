@@ -23,8 +23,8 @@ export class PyLoader extends HTMLElement {
         </div>
       </div>`;
         this.mount_name = this.id.split('-').join('_');
-        this.operation = document.getElementById('pyscript-operation');
-        this.details = document.getElementById('pyscript-operation-details');
+        this.operation = document.getElementById('pyscript-operation') as HTMLElement;
+        this.details = document.getElementById('pyscript-operation-details') as HTMLElement;
     }
 
     log(msg: string) {

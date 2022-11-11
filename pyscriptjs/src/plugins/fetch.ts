@@ -28,7 +28,7 @@ export function calculatePaths(fetch_cfg: FetchConfig[]) {
         {
             fetchPaths.push(from);
             const filename = to_file || from.split('/').pop();
-            if (filename === '') {
+            if (!filename || filename === '') {
                 throw new UserError(`Couldn't determine the filename from the path ${from}, supply ${to_file} parameter!`);
             }
             else {

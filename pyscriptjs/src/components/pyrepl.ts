@@ -47,8 +47,9 @@ export function make_PyRepl(runtime: Runtime) {
             if (!this.hasAttribute('root')) {
                 this.setAttribute('root', this.id);
             }
-
-            const pySrc = htmlDecode(this.innerHTML).trim();
+            // eslint-disable-line  @typescript-eslint/no-unnecessary-type-assertion
+            const decodedInnerHTML = htmlDecode(this.innerHTML) as string
+            const pySrc = decodedInnerHTML.trim();
             this.innerHTML = '';
             this.editor = this.makeEditor(pySrc);
             const boxDiv = this.makeBoxDiv();
@@ -186,7 +187,7 @@ export function make_PyRepl(runtime: Runtime) {
             return this.editor.state.doc.toString();
         }
 
-        getOutputElement(): HTMLElement {
+        getOutputElement(): HTMLElement | undefined {
             const outputID = getAttribute(this, 'output');
             if (outputID !== null) {
                 const el = document.getElementById(outputID);

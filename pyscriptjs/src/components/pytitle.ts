@@ -9,7 +9,7 @@ export class PyTitle extends HTMLElement {
     }
 
     connectedCallback() {
-        this.label = htmlDecode(this.innerHTML);
+        this.label = htmlDecode(this.innerHTML) || "";
         this.mount_name = this.id.split('-').join('_');
         this.innerHTML = '';
 

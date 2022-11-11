@@ -15,7 +15,7 @@ export declare type Display = {
 }
 
 export declare type CurrentDisplayTarget = {
-  (targetId: string): void;
+  (targetId?: string): void;
 }
 
 type Path = {
