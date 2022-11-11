@@ -24,7 +24,8 @@ export function make_PyScript(runtime: Runtime) {
                         `Failed to fetch '${url}' - Reason: ` +
                         `${response.status} ${response.statusText}`
                     );
-                    _createAlertBanner(errorMessage)
+                    _createAlertBanner(errorMessage);
+                    this.innerHTML = '';
                     throw new FetchError(errorMessage);
                 }
                 return await response.text();
