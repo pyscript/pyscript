@@ -1,7 +1,7 @@
 import { Runtime } from './runtime';
 import { getLogger } from './logger';
-import type { loadPyodide as loadPyodideDeclaration, PyodideInterface } from 'pyodide';
-import type { PyProxy } from "./types"
+import type { loadPyodide as loadPyodideDeclaration } from 'pyodide';
+import type { PyProxy, PyodideInterface } from "./types"
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
@@ -64,7 +64,7 @@ export class PyodideRuntime extends Runtime {
             fullStdLib: false,
         });
 
-        this.globals = this.interpreter.globals;
+        this.globals = this.interpreter.globals as PyProxy;
 
         // XXX: ideally, we should load micropip only if we actually need it
         await this.loadPackage('micropip');
