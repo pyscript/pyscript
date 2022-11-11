@@ -2,7 +2,7 @@ import { htmlDecode, ensureUniqueId } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
-import { UserError, _createAlertBanner } from '../exceptions';
+import { FetchError, _createAlertBanner } from '../exceptions';
 
 const logger = getLogger('py-script');
 
@@ -25,7 +25,7 @@ export function make_PyScript(runtime: Runtime) {
                         `${response.status} ${response.statusText}`
                     );
                     _createAlertBanner(errorMessage)
-                    throw new UserError(errorMessage);
+                    throw new FetchError(errorMessage);
                 }
                 return await response.text();
             } else {
