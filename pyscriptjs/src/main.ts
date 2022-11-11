@@ -200,14 +200,12 @@ export class PyScriptApp {
         // lifecycle (8)
         createCustomElements(runtime);
 
-        if (runtime.config.autoclose_loader) {
-            this.loader.close();
-        }
         await initHandlers(runtime);
 
         // NOTE: runtime message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
         // change it also in tests/integration/support.py
+        this.plugins.afterStartup(runtime);
         logger.info('PyScript page fully initialized');
     }
 

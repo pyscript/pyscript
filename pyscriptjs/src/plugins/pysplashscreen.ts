@@ -1,6 +1,7 @@
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
 import type { UserError } from '../exceptions';
+import type { Runtime } from '../runtime';
 import { Plugin } from '../plugin';
 import { getLogger } from '../logger';
 
@@ -30,7 +31,10 @@ export class PySplashscreenPlugin extends Plugin {
         });
     }
 
-    afterSetup() {
+    afterStartup(runtime: Runtime) {
+        if (runtime.config.autoclose_loader) {
+            this.app.loader.close();
+        }
     }
 
     onUserError(error: UserError) {

@@ -41,6 +41,14 @@ export class Plugin {
     afterSetup(runtime: Runtime) {
     }
 
+
+    /** Startup complete. The interpreter is initialized and ready, user
+     * scripts have been executed: the main initialization logic ends here and
+     * the page is ready to accept user interactions.
+     */
+    afterStartup(runtime: Runtime) {
+    }
+
     /** Called when an UserError is raised
      */
     onUserError(error: UserError) {
@@ -73,6 +81,11 @@ export class PluginManager {
     afterSetup(runtime: Runtime) {
         for (const p of this._plugins)
             p.afterSetup(runtime);
+    }
+
+    afterStartup(runtime: Runtime) {
+        for (const p of this._plugins)
+            p.afterStartup(runtime);
     }
 
     onUserError(error: UserError) {

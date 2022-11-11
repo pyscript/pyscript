@@ -1,5 +1,6 @@
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
+import type { Runtime } from '../runtime';
 import { Plugin } from '../plugin';
 import { UserError } from "../exceptions"
 import { getLogger } from '../logger';
@@ -46,7 +47,7 @@ export class PyTerminalPlugin extends Plugin {
         }
     }
 
-    afterSetup() {
+    afterSetup(runtime: Runtime) {
         // the Python interpreter has been initialized and we are ready to
         // execute user code:
         //
