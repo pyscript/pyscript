@@ -7,7 +7,7 @@ import { getLogger } from '../logger';
 
 const logger = getLogger('py-splashscreen');
 
-export class PySplashscreenPlugin extends Plugin {
+export class SplashscreenPlugin extends Plugin {
     app: PyScriptApp;
 
     constructor(app: PyScriptApp) {
@@ -21,8 +21,8 @@ export class PySplashscreenPlugin extends Plugin {
     beforeLaunch(config: AppConfig) {
         // add loader to the page body
         logger.info('add py-loader');
-        customElements.define('py-loader', PyLoader);
-        this.app.loader = <PyLoader>document.createElement('py-loader');
+        customElements.define('py-splashscreen', PySplashscreen);
+        this.app.loader = <PyLoader>document.createElement('py-splashscreen');
         document.body.append(this.app.loader);
 
         document.addEventListener("py-status-message", (e: CustomEvent) => {
@@ -43,7 +43,7 @@ export class PySplashscreenPlugin extends Plugin {
     }
 }
 
-export class PyLoader extends HTMLElement {
+export class PySplashscreen extends HTMLElement {
     widths: string[];
     label: string;
     mount_name: string;

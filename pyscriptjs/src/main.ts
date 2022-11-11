@@ -13,7 +13,7 @@ import { createCustomElements } from './components/elements';
 import { UserError, _createAlertBanner } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
-import { PySplashscreenPlugin, PyLoader } from './plugins/pysplashscreen';
+import { SplashscreenPlugin, PyLoader } from './plugins/splashscreen';
 
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {
@@ -70,7 +70,7 @@ export class PyScriptApp {
         // initialize the builtin plugins
         this.plugins = new PluginManager();
         this.plugins.add(
-            new PySplashscreenPlugin(this),
+            new SplashscreenPlugin(this),
             new PyTerminalPlugin(this),
         );
 
