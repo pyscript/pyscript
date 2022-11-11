@@ -8,38 +8,33 @@ import { getLogger } from '../logger';
 const logger = getLogger('py-splashscreen');
 
 export class SplashscreenPlugin extends Plugin {
-    app: PyScriptApp;
-
-    constructor(app: PyScriptApp) {
-        super();
-        this.app = app;
-    }
+    elem: PySplashscreen;
 
     configure(config: AppConfig) {
     }
 
     beforeLaunch(config: AppConfig) {
-        // add loader to the page body
-        logger.info('add py-loader');
+        // add the splashscreen to the DOM
+        logger.info('add py-splashscreen');
         customElements.define('py-splashscreen', PySplashscreen);
-        this.app.loader = <PyLoader>document.createElement('py-splashscreen');
-        document.body.append(this.app.loader);
+        this.elem = <PySplashscreen>document.createElement('py-splashscreen');
+        document.body.append(this.elem);
 
         document.addEventListener("py-status-message", (e: CustomEvent) => {
             const msg = e.detail;
-            this.app.loader.log(msg);
+            this.elem.log(msg);
         });
     }
 
     afterStartup(runtime: Runtime) {
         if (runtime.config.autoclose_loader) {
-            this.app.loader.close();
+            this.elem.close();
         }
     }
 
     onUserError(error: UserError) {
         // Remove the splashscreen so users can see the banner better
-        this.app.loader.close();
+        this.elem.close();
     }
 }
 

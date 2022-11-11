@@ -13,7 +13,7 @@ import { createCustomElements } from './components/elements';
 import { UserError, _createAlertBanner } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
-import { SplashscreenPlugin, PyLoader } from './plugins/splashscreen';
+import { SplashscreenPlugin } from './plugins/splashscreen';
 
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {
@@ -28,7 +28,7 @@ const logger = getLogger('pyscript/main');
 
    2. loadConfig(): search for py-config and compute the config for the app
 
-   3. show the loader/splashscreen
+   3. (it used to be "show the splashscreen", but now it's a plugin)
 
    4. loadRuntime(): start downloading the actual runtime (e.g. pyodide.js)
 
@@ -60,7 +60,6 @@ More concretely:
 
 export class PyScriptApp {
     config: AppConfig;
-    loader: PyLoader;
     runtime: Runtime;
     PyScript: any; // XXX would be nice to have a more precise type for the class itself
     plugins: PluginManager;
@@ -70,7 +69,7 @@ export class PyScriptApp {
         // initialize the builtin plugins
         this.plugins = new PluginManager();
         this.plugins.add(
-            new SplashscreenPlugin(this),
+            new SplashscreenPlugin(),
             new PyTerminalPlugin(this),
         );
 
@@ -132,10 +131,6 @@ export class PyScriptApp {
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
     }
 
-    // lifecycle (3)
-    showLoader() {
-    }
-
     // lifecycle (4)
     loadRuntime() {
         logger.info('Initializing runtime');
@@ -174,17 +169,13 @@ export class PyScriptApp {
     // See the overview comment above for an explanation of how we jump from
     // point (4) to point (5).
     //
-    // Invariant: this.config and this.loader are set and available.
+    // Invariant: this.config is set and available.
     async afterRuntimeLoad(runtime: Runtime): Promise<void> {
         console.assert(this.config !== undefined);
-        console.assert(this.loader !== undefined);
 
         this.logStatus('Python startup...');
         await runtime.loadInterpreter();
         this.logStatus('Python ready!');
-
-        // eslint-disable-next-line
-        runtime.globals.set('pyscript_loader', this.loader);
 
         this.logStatus('Setting up virtual environment...');
         await this.setupVirtualEnv(runtime);
