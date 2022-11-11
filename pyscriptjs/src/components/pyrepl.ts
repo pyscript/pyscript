@@ -150,7 +150,7 @@ export function make_PyRepl(runtime: Runtime) {
         /** Execute the python code written in the editor, and automatically
          *  display() the last evaluated expression
          */
-        async execute(): Promise<void> {
+        execute(): null {
             const pySrc = this.getPySrc();
 
             // determine the output element
