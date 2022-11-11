@@ -66,9 +66,14 @@ export function make_PyRepl(runtime: Runtime) {
                 basicSetup,
                 languageConf.of(python()),
                 keymap.of([
+                    /* eslint-disable @typescript-eslint/ban-ts-comment */
+                    // @ts-ignore: spread-operator makes ts unhappy
                     ...defaultKeymap,
+                    // @ts-ignore: run expects Command type
                     { key: 'Ctrl-Enter', run: this.execute.bind(this) },
+                    // @ts-ignore: run expects Command type
                     { key: 'Shift-Enter', run: this.execute.bind(this) },
+                    /* eslint-enable @typescript-eslint/ban-ts-comment */
                 ]),
             ];
 

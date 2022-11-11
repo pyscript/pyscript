@@ -3,7 +3,6 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
-import type { PyScript } from "./types"
 import { PluginManager } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyLoader } from './components/pyloader';
@@ -63,7 +62,7 @@ export class PyScriptApp {
     config: AppConfig;
     loader: PyLoader;
     runtime: Runtime;
-    PyScript: PyScript;
+    PyScript: any;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
 
@@ -222,7 +221,7 @@ export class PyScriptApp {
     executeScripts(runtime: Runtime) {
         void this.register_importmap(runtime);
         this.PyScript = make_PyScript(runtime);
-        customElements.define('py-script', this.PyScript);
+        customElements.define('py-script', this.PyScript as CustomElementConstructor);
     }
 
     // ================= registraton API ====================

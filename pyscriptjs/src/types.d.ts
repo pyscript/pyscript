@@ -9,11 +9,6 @@ export declare interface PyProxy extends PyProxy  {
   set(id: string, proxy: PyProxyClass): void;
 }
 
-
-export declare interface PyScript extends HTMLElement {
-  getPySrc(): Promise<string>
-}
-
 export declare type Display = {
   (obj: any): void;
   callKwargs(obj: any, kwargs: object): void;
