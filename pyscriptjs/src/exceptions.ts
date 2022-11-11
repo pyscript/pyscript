@@ -43,26 +43,14 @@ export function _createAlertBanner(message: string, level: "error" | "warning" =
   document.body.prepend(banner)
 }
 
-/*
-* This function is used to handle UserError, if we see an error of this
-* type, we will automatically create a banner on the page that will tell
-* the user what went wrong. Note that the error will still stop execution,
-* any other errors we will simply throw them and no banner will be shown.
-*/
-export function withUserErrorHandler(fn) {
-  try {
-    return fn();
-  } catch (error: unknown) {
+/** If error is an UserError, display a banner on the page and return cleanly.
+ *  Else, rethrow it.
+ */
+export function handleUserErrorMaybe(error) {
     if (error instanceof UserError) {
-      /*
-      *  Display a page-wide error message to show that something has gone wrong with
-      *  PyScript or Pyodide during loading. Probably not be used for issues that occur within
-      *  Python scripts, since stderr can be routed to somewhere in the DOM
-      */
-      _createAlertBanner(error.message)
+        _createAlertBanner(error.message);
     }
     else {
-      throw error
+        throw error;
     }
-  }
 }

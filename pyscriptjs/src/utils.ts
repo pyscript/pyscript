@@ -46,10 +46,8 @@ export function showWarning(msg: string): void {
 }
 
 export function handleFetchError(e: Error, singleFile: string) {
-    //Should we still export full error contents to console?
-    // XXX: What happens if I make a typo? i.e. a web server is being used but a file
-    // that doesn't exist is being accessed. We should cover this case as well.
-    console.warn(`Caught an error in fetchPaths:\r\n ${e.toString()}`);
+    // XXX: inspecting the error message to understand what happened is very
+    // fragile. We need a better solution.
     let errorContent: string;
     if (e.message.includes('Failed to fetch')) {
         errorContent = `<p>PyScript: Access to local files
@@ -66,10 +64,6 @@ export function handleFetchError(e: Error, singleFile: string) {
     } else {
         errorContent = `<p>PyScript encountered an error while loading from file: ${e.message} </p>`;
     }
-    // We need to create the banner because `handleFetchError` is called before we
-    // use withUserErrorHandler in main.js we are also disabling the log message
-    // because it will be logged by the uncaught exception in promise.
-    _createAlertBanner(errorContent, "error", false)
     throw new UserError(errorContent)
 }
 

@@ -10,7 +10,7 @@ import { getLogger } from './logger';
 import { handleFetchError, showWarning, globalExport } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
-import { UserError, withUserErrorHandler } from "./exceptions"
+import { UserError, handleUserErrorMaybe } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { PySplashscreenPlugin, PyLoader } from './plugins/pysplashscreen';
@@ -78,8 +78,24 @@ export class PyScriptApp {
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
     }
 
-    // lifecycle (1)
+    // Error handling logic: if during the execution we encounter an error
+    // which is ultimate responsibility of the user (e.g.: syntax error in the
+    // config, file not found in fetch, etc.), we can throw UserError(). It is
+    // responsibility of main() to catch it and show it to the user in a
+    // proper way (e.g. by using a banner at the top of the page).
     main() {
+        try {
+            this._realMain();
+        }
+        catch(error) {
+            handleUserErrorMaybe(error);
+        }
+    }
+
+    // ============ lifecycle ============
+
+    // lifecycle (1)
+    _realMain() {
         this.loadConfig();
         this.plugins.configure(this.config);
         this.plugins.beforeLaunch(this.config);
@@ -97,10 +113,6 @@ export class PyScriptApp {
         let el: Element | null = null;
         if (elements.length > 0) el = elements[0];
         if (elements.length >= 2) {
-            // XXX: ideally, I would like to have a way to raise "fatal
-            // errors" and stop the computation, but currently our life cycle
-            // is too messy to implement it reliably. We might want to revisit
-            // this once it's in a better shape.
             showWarning(
                 'Multiple &lt;py-config&gt; tags detected. Only the first is ' +
                 'going to be parsed, all the others will be ignored',
@@ -131,10 +143,19 @@ export class PyScriptApp {
                                           runtime_cfg.name,
                                           runtime_cfg.lang);
         this.logStatus(`Downloading ${runtime_cfg.name}...`);
+
+        // download pyodide by using a <script> tag. Once it's ready, the
+        // "load" event will be fired and the exeuction logic will continue.
+        // Note that the load event is fired asynchronously and thus any
+        // exception which is throw inside the event handler is *NOT* caught
+        // by the try/catch inside main(): that's why we need to .catch() it
+        // explicitly and call handleUserErrorMaybe also there.
         const script = document.createElement('script'); // create a script DOM node
         script.src = this.runtime.src;
         script.addEventListener('load', () => {
-            void this.afterRuntimeLoad(this.runtime);
+            this.afterRuntimeLoad(this.runtime).catch((error) => {
+                handleUserErrorMaybe(error);
+            });
         });
         document.head.appendChild(script);
     }
@@ -286,6 +307,6 @@ globalExport('pyscript_get_config', pyscript_get_config);
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
-withUserErrorHandler(globalApp.main.bind(globalApp));
+globalApp.main();
 
 export const runtime = globalApp.runtime;
