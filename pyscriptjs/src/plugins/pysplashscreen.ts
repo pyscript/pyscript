@@ -1,5 +1,6 @@
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
+import type { UserError } from '../exceptions';
 import { Plugin } from '../plugin';
 import { getLogger } from '../logger';
 
@@ -30,6 +31,11 @@ export class PySplashscreenPlugin extends Plugin {
     }
 
     afterSetup() {
+    }
+
+    onUserError(error: UserError) {
+        // Remove the splashscreen so users can see the banner better
+        this.app.loader.close();
     }
 }
 

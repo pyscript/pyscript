@@ -1,6 +1,7 @@
 import type { PyScriptApp } from './main';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
+import type { UserError } from './exceptions';
 
 export class Plugin {
 
@@ -39,6 +40,11 @@ export class Plugin {
       */
     afterSetup(runtime: Runtime) {
     }
+
+    /** Called when an UserError is raised
+     */
+    onUserError(error: UserError) {
+    }
 }
 
 
@@ -67,5 +73,10 @@ export class PluginManager {
     afterSetup(runtime: Runtime) {
         for (const p of this._plugins)
             p.afterSetup(runtime);
+    }
+
+    onUserError(error: UserError) {
+        for (const p of this._plugins)
+            p.onUserError(error);
     }
 }

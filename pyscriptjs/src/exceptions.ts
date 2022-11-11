@@ -42,15 +42,3 @@ export function _createAlertBanner(message: string, level: "error" | "warning" =
 
   document.body.prepend(banner)
 }
-
-/** If error is an UserError, display a banner on the page and return cleanly.
- *  Else, rethrow it.
- */
-export function handleUserErrorMaybe(error) {
-    if (error instanceof UserError) {
-        _createAlertBanner(error.message);
-    }
-    else {
-        throw error;
-    }
-}

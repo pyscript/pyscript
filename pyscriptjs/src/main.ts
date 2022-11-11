@@ -10,7 +10,7 @@ import { getLogger } from './logger';
 import { handleFetchError, showWarning, globalExport } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
-import { UserError, handleUserErrorMaybe } from "./exceptions"
+import { UserError, _createAlertBanner } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { PySplashscreenPlugin, PyLoader } from './plugins/pysplashscreen';
@@ -88,7 +88,17 @@ export class PyScriptApp {
             this._realMain();
         }
         catch(error) {
-            handleUserErrorMaybe(error);
+            this._handleUserErrorMaybe(error);
+        }
+    }
+
+    _handleUserErrorMaybe(error) {
+        if (error instanceof UserError) {
+            _createAlertBanner(error.message);
+            this.plugins.onUserError(error);
+        }
+        else {
+            throw error;
         }
     }
 
@@ -149,12 +159,12 @@ export class PyScriptApp {
         // Note that the load event is fired asynchronously and thus any
         // exception which is throw inside the event handler is *NOT* caught
         // by the try/catch inside main(): that's why we need to .catch() it
-        // explicitly and call handleUserErrorMaybe also there.
+        // explicitly and call _handleUserErrorMaybe also there.
         const script = document.createElement('script'); // create a script DOM node
         script.src = this.runtime.src;
         script.addEventListener('load', () => {
             this.afterRuntimeLoad(this.runtime).catch((error) => {
-                handleUserErrorMaybe(error);
+                this._handleUserErrorMaybe(error);
             });
         });
         document.head.appendChild(script);
@@ -224,8 +234,6 @@ export class PyScriptApp {
             try {
                 await runtime.loadFromFile(paths[i], fetchPaths[i]);
             } catch (e) {
-                // Remove the loader so users can see the banner better
-                this.loader.remove()
                 // The 'TypeError' here happens when running pytest
                 // I'm not particularly happy with this solution.
                 if (e.name === "FetchError" || e.name === "TypeError") {
