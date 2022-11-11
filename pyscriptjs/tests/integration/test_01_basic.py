@@ -1,5 +1,6 @@
 import pytest
-from .support import PyScriptTest, JsErrors
+
+from .support import JsErrors, PyScriptTest
 
 
 class TestBasic(PyScriptTest):
@@ -127,7 +128,7 @@ class TestBasic(PyScriptTest):
             self.PY_COMPLETE,
             "hello from foo",
         ]
-    
+
     def test_py_script_src_not_found(self):
         self.pyscript_run(
             """
@@ -140,7 +141,6 @@ class TestBasic(PyScriptTest):
         assert "Failed to load resource" in self.console.error.lines[0]
         with pytest.raises(JsErrors) as exc:
             self.check_js_errors()
-        
+
         error_msg = str(exc.value)
         assert "Failed to fetch" in error_msg
-
