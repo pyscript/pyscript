@@ -144,3 +144,6 @@ class TestBasic(PyScriptTest):
 
         error_msg = str(exc.value)
         assert "Failed to fetch" in error_msg
+
+        pyscript_tag = self.page.locator("py-script")
+        assert pyscript_tag.inner_html() == ""
