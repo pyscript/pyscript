@@ -282,7 +282,7 @@ class TestExamples(PyScriptTest):
         self.page.locator("py-repl").type("import utils\ndisplay(utils.now())")
         self.page.locator("button").click()
         # Make sure the output is in the page
-        self.page.wait_for_selector("#output")
+        self.page.wait_for_selector("#my-repl-1-1")
         # utils.now returns current date time
         content = self.page.content()
         pattern = "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+"  # e.g. 08/09/2022 15:57:32

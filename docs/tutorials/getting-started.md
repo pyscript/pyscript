@@ -417,11 +417,11 @@ The following tags can be used to add visual attributes to your HTML page.
 
 | Tag             | Description |
 | ---             | ----------- |
-| `<py-inputbox>` | Adds an input box that can be used to prompt users to enter input values. |
-| `<py-box>`      | Creates a container object that can be used to host one or more visual components that define how elements of `<py-box>` should align and show on the page. |
-| `<py-button>`   | Adds a button to which authors can add labels and event handlers for actions on the button, such as `on_focus` or `on_click`. |
-| `<py-title>`    | Adds a static text title component that styles the text inside the tag as a page title. |
+| `<py-inputbox>` | (Deprecated) Adds an input box that can be used to prompt users to enter input values. |
+| `<py-box>`      | (Deprecated) Creates a container object that can be used to host one or more visual components that define how elements of `<py-box>` should align and show on the page. |
+| `<py-button>`   | (Deprecated) Adds a button to which authors can add labels and event handlers for actions on the button, such as `on_focus` or `on_click`. |
+| `<py-title>`    | (Deprecated) Adds a static text title component that styles the text inside the tag as a page title. |
 
 ```{note}
-All the elements above are experimental and not implemented at their full functionality. Use them with the understanding that the APIs or full support might change or be removed until the visual components are more mature.
+These elements have been deprecated, we suggest that you use native elements and attach the respective `py-` attribute. For example for `<py-button>` you can write `<button py-click="function()">`
 ```

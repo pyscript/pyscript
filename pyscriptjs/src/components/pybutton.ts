@@ -1,4 +1,4 @@
-import { getAttribute, addClasses, htmlDecode, ensureUniqueId } from '../utils';
+import { getAttribute, addClasses, htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import { getLogger } from '../logger';
 import type { Runtime } from '../runtime';
 
@@ -42,6 +42,12 @@ export function make_PyButton(runtime: Runtime) {
         }
 
         async connectedCallback() {
+            const deprecationMessage = (
+                '<p>The element &lt;py-button&gt; is deprecated, create a function with your ' +
+                'inline code and use &lt;button py-click="function()" class="py-button"&gt; instead.</p>'
+            )
+            createDeprecationWarning(deprecationMessage, "py-button")
+
             ensureUniqueId(this);
             this.code = htmlDecode(this.innerHTML) || '';
             this.mount_name = this.id.split('-').join('_');

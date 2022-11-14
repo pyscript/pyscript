@@ -16,3 +16,19 @@ class TestPyButton(PyScriptTest):
 
         assert len(pybox_element) == 2
         assert pybox_element[1].get_attribute("class") == "py-box-child"
+
+    def test_deprecated_element(self):
+        self.pyscript_run(
+            """
+            <py-box>
+            </py-box>
+        """
+        )
+        banner = self.page.locator(".py-warning")
+        banner_content = banner.inner_text()
+        expected = (
+            "The element <py-box> is deprecated, you should create a div "
+            'with "py-box" class name instead. For example: <div class="py-box">'
+        )
+
+        assert banner_content == expected
