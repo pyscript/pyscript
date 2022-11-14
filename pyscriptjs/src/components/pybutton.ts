@@ -43,8 +43,8 @@ export function make_PyButton(runtime: Runtime) {
 
         async connectedCallback() {
             const deprecationMessage = (
-                '<p>The element &lt;py-button&gt; is deprecated, create a function with your ' +
-                'inline code and use &lt;button py-click="function()" class="py-button"&gt; instead.</p>'
+                'The element <py-button> is deprecated, create a function with your ' +
+                'inline code and use <button py-click="function()" class="py-button"> instead.'
             )
             createDeprecationWarning(deprecationMessage, "py-button")
 

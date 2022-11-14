@@ -21,8 +21,8 @@ export class PyBox extends HTMLElement {
 
     connectedCallback() {
         const deprecationMessage = (
-            '<p>The element &lt;py-box&gt; is deprecated, you should create a ' +
-            'div with "py-box" class name instead. For example: &lt;div class="py-box"&gt; '
+            'The element <py-box> is deprecated, you should create a ' +
+            'div with "py-box" class name instead. For example: <div class="py-box">'
         )
         createDeprecationWarning(deprecationMessage, "py-box")
         const mainDiv = document.createElement('div');
