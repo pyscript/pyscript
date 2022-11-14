@@ -30,6 +30,7 @@ def test_format_mime_str():
     assert out == obj
     assert mime == "text/plain"
 
+
 def test_format_mime_str_escaping():
     obj = "<p>hello</p>"
     out, mime = pyscript.format_mime(obj)
