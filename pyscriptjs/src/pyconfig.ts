@@ -15,7 +15,6 @@ export interface AppConfig extends Record<string, any> {
     author_name?: string;
     author_email?: string;
     license?: string;
-    autoclose_loader?: boolean;
     runtimes?: RuntimeConfig[];
     packages?: string[];
     fetch?: FetchConfig[];
@@ -44,14 +43,12 @@ export type PyScriptMetadata = {
 const allKeys = {
     string: ['name', 'description', 'version', 'type', 'author_name', 'author_email', 'license'],
     number: ['schema_version'],
-    boolean: ['autoclose_loader'],
     array: ['runtimes', 'packages', 'fetch', 'plugins'],
 };
 
 export const defaultConfig: AppConfig = {
     schema_version: 1,
     type: 'app',
-    autoclose_loader: true,
     runtimes: [
         {
             src: 'https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js',

@@ -40,7 +40,28 @@ class TestSplashscreen(PyScriptTest):
             "hello pyscript",
         ]
 
-    def test_no_autoclose(self):
+    def test_autoclose_false(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                [splashscreen]
+                autoclose = false
+            </py-config>
+            <py-script>
+                print('hello pyscript')
+            </py-script>
+            """,
+        )
+        div = self.page.locator("py-splashscreen > div")
+        expect(div).to_be_visible()
+        expect(div).to_contain_text("Python startup...")
+        expect(div).to_contain_text("Startup complete")
+        assert self.console.log.lines == [
+            self.PY_COMPLETE,
+            "hello pyscript",
+        ]
+
+    def test_autoclose_loader_deprecated(self):
         self.pyscript_run(
             """
             <py-config>
@@ -51,6 +72,10 @@ class TestSplashscreen(PyScriptTest):
             </py-script>
             """,
         )
+        warning = self.page.locator(".py-warning")
+        inner_text = warning.inner_text()
+        assert "The setting autoclose_loader is deprecated" in inner_text
+        #
         div = self.page.locator("py-splashscreen > div")
         expect(div).to_be_visible()
         expect(div).to_contain_text("Python startup...")

@@ -2,15 +2,40 @@ import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
 import type { UserError } from '../exceptions';
 import type { Runtime } from '../runtime';
+import { showWarning } from '../utils';
 import { Plugin } from '../plugin';
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-splashscreen');
 
+const AUTOCLOSE_LOADER_DEPRECATED = `
+The setting autoclose_loader is deprecated. Please use the
+following instead:<br>
+<pre>
+&lt;py-config&gt;
+[splashscreen]
+autoclose = false
+&lt;/py-config&gt;
+</pre>`;
+
 export class SplashscreenPlugin extends Plugin {
     elem: PySplashscreen;
+    autoclose: boolean;
 
     configure(config: AppConfig) {
+        // the officially supported setting is config.splashscreen.autoclose,
+        // but we still also support the old config.autoclose_loader (with a
+        // deprecation warning)
+        this.autoclose = true;
+
+        if ("autoclose_loader" in config) {
+            this.autoclose = config.autoclose_loader;
+            showWarning(AUTOCLOSE_LOADER_DEPRECATED);
+        }
+
+        if (config.splashscreen) {
+            this.autoclose = config.splashscreen.autoclose ?? true;
+        }
     }
 
     beforeLaunch(config: AppConfig) {
@@ -27,7 +52,7 @@ export class SplashscreenPlugin extends Plugin {
     }
 
     afterStartup(runtime: Runtime) {
-        if (runtime.config.autoclose_loader) {
+        if (this.autoclose) {
             this.elem.close();
         }
     }
