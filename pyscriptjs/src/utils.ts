@@ -69,8 +69,8 @@ export function handleFetchError(e: Error, singleFile: string) {
     // We need to create the banner because `handleFetchError` is called before we
     // use withUserErrorHandler in main.js we are also disabling the log message
     // because it will be logged by the uncaught exception in promise.
-    _createAlertBanner(errorContent, "error", "html", false)
-    throw new UserError(errorContent)
+    _createAlertBanner(errorContent, "error", "html", false);
+    throw new UserError(errorContent);
 }
 
 export function readTextFromPath(path: string) {
