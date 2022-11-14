@@ -17,6 +17,9 @@
     </py-config>
 
     <py-script>
+      from js import document
+      from pyodide.ffi.wrappers import add_event_listener
+
       def add_task(*ags, **kws):
         # create a new dictionary representing the new task
         new_task_content = Element("new-task-content")
@@ -31,6 +34,16 @@
 
       def on_click(evt):
         add_task()
+
+      def handle_keypress(evt):
+        if evt.key == "Enter":
+          add_task()
+
+      add_event_listener(
+        document.getElementById("new-task-content"),
+        "keypress",
+        handle_keypress
+      )
 
     </py-script>
   </head>
