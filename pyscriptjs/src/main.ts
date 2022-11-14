@@ -1,7 +1,7 @@
 import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
-import type { AppConfig } from './pyconfig';
+import type { AppConfig, version } from './pyconfig';
 import type { Runtime } from './runtime';
 import { PluginManager } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
@@ -14,9 +14,6 @@ import { createCustomElements } from './components/elements';
 import { UserError, withUserErrorHandler } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
-
-//If you change the format of the version string, you must also update tools/update_version.py
-const version:JSON = <JSON><unknown>{"year": 2022, "month": 9, "patch": 1, "releaselevel": "dev"};
 
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {
@@ -292,5 +289,6 @@ const globalApp = new PyScriptApp();
 withUserErrorHandler(globalApp.main.bind(globalApp));
 
 const runtime = globalApp.runtime
+const export_version = globalApp.config.version
 
-export {runtime, version}
+export {runtime, export_version}

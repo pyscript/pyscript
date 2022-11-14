@@ -8,7 +8,7 @@ from pathlib import Path
 version_pattern = "(const version:JSON = <JSON><unknown>)({.+})"
 
 
-def get_maints_path() -> Path:
+def get_pyconfig_path() -> Path:
     """
     Get the absolute path of 'main.ts'
 
@@ -19,15 +19,15 @@ def get_maints_path() -> Path:
 
     currentPath = Path(__file__).resolve()
     pycsriptjs_path = [p for p in currentPath.parents if p.stem == "pyscriptjs"][0]
-    runtime_path = pycsriptjs_path / "src" / "main.ts"
+    runtime_path = pycsriptjs_path / "src" / "pyconfig.ts"
     return runtime_path
 
 
-def get_current_version(maints_path) -> dict:
+def get_current_version(pyconfig_path) -> dict:
     """
     Get the current version as specified in main.ts
     """
-    with open(maints_path) as fp:
+    with open(pyconfig_path) as fp:
         return json.loads(re.search(version_pattern, fp.read()).group(2))
 
 
@@ -41,7 +41,7 @@ def set_version(**kwargs) -> None:
     if "releaselevel" in kwargs:
         print("WARNING - releaselevel is meant to be updated only by GitHub Workflows.")
 
-    runtime_path = get_maints_path()
+    runtime_path = get_pyconfig_path()
 
     version_info = get_current_version(runtime_path)
 

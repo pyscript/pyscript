@@ -1,10 +1,12 @@
 import toml from '../src/toml';
 import { getLogger } from './logger';
-import { version } from './runtime';
 import { getAttribute, readTextFromPath, htmlDecode } from './utils';
 import { UserError } from "./exceptions"
 
 const logger = getLogger('py-config');
+
+//If you change the format of the version string, you must also update tools/update_version.py
+export const version:JSON = <JSON><unknown>{"year": 2022, "month": 9, "patch": 1, "releaselevel": "dev"};
 
 export interface AppConfig extends Record<string, any> {
     name?: string;
