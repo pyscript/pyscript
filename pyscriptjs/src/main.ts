@@ -14,6 +14,7 @@ import { createCustomElements } from './components/elements';
 import { UserError, withUserErrorHandler } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
+import { version } from './runtime';
 
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {
@@ -288,4 +289,6 @@ globalExport('pyscript_get_config', pyscript_get_config);
 const globalApp = new PyScriptApp();
 withUserErrorHandler(globalApp.main.bind(globalApp));
 
-export const runtime = globalApp.runtime;
+const runtime = globalApp.runtime
+
+export {runtime, version}
