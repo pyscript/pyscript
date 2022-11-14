@@ -14,7 +14,9 @@ import { createCustomElements } from './components/elements';
 import { UserError, withUserErrorHandler } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
-import { version } from './runtime';
+
+//If you change the format of the version string, you must also update tools/update_version.py
+const version:JSON = <JSON><unknown>{"year": 2022, "month": 9, "patch": 1, "releaselevel": "dev"};
 
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {

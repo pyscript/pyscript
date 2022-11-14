@@ -4,13 +4,13 @@ import re
 from collections.abc import Callable
 from pathlib import Path
 
-# This regex matches the definition of version in runtime.ts
+# This regex matches the definition of version in main.ts
 version_pattern = "(export const version:JSON = <JSON><unknown>)({.+})"
 
 
 def get_runtimets_path() -> Path:
     """
-    Get the absolute path of 'runtime.ts'
+    Get the absolute path of 'main.ts'
 
     Since we don't always know what the current working directory
     will be (in tests/builds/workflows etc), search the file path
@@ -19,13 +19,13 @@ def get_runtimets_path() -> Path:
 
     currentPath = Path(__file__).resolve()
     pycsriptjs_path = [p for p in currentPath.parents if p.stem == "pyscriptjs"][0]
-    runtime_path = pycsriptjs_path / "src" / "runtime.ts"
+    runtime_path = pycsriptjs_path / "src" / "main.ts"
     return runtime_path
 
 
 def get_current_version(runtime_path) -> dict:
     """
-    Get the current version as specified in runtime.ts
+    Get the current version as specified in main.ts
     """
     with open(runtime_path) as fp:
         return json.loads(re.search(version_pattern, fp.read()).group(2))
@@ -33,7 +33,7 @@ def get_current_version(runtime_path) -> dict:
 
 def set_version(**kwargs) -> None:
     """
-    Set the version information in runtime.ts for the arguments provided.
+    Set the version information in main.ts for the arguments provided.
     Only keys already present in the version JSON will be accepted
     """
     print(f"Setting version with {kwargs}")
