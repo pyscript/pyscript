@@ -45,11 +45,8 @@ jobs:
         -   name: Setup Environment
             run: make setup
 
-        -   name: Test
+        -   name: Build and Test
             run: make test
-
-        -   name: Build
-            run: make build
 
         -   name: Zip build folder
             run: zip -r -q ./build.zip ./build
