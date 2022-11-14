@@ -5,10 +5,10 @@ from collections.abc import Callable
 from pathlib import Path
 
 # This regex matches the definition of version in main.ts
-version_pattern = "(export const version:JSON = <JSON><unknown>)({.+})"
+version_pattern = "(const version:JSON = <JSON><unknown>)({.+})"
 
 
-def get_runtimets_path() -> Path:
+def get_maints_path() -> Path:
     """
     Get the absolute path of 'main.ts'
 
@@ -23,11 +23,11 @@ def get_runtimets_path() -> Path:
     return runtime_path
 
 
-def get_current_version(runtime_path) -> dict:
+def get_current_version(maints_path) -> dict:
     """
     Get the current version as specified in main.ts
     """
-    with open(runtime_path) as fp:
+    with open(maints_path) as fp:
         return json.loads(re.search(version_pattern, fp.read()).group(2))
 
 
@@ -41,7 +41,7 @@ def set_version(**kwargs) -> None:
     if "releaselevel" in kwargs:
         print("WARNING - releaselevel is meant to be updated only by GitHub Workflows.")
 
-    runtime_path = get_runtimets_path()
+    runtime_path = get_maints_path()
 
     version_info = get_current_version(runtime_path)
 
