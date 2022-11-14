@@ -45,8 +45,14 @@ jobs:
         -   name: Setup Environment
             run: make setup
 
-        -   name: Build and Test
+        -   name: Test
             run: make test
+
+        -   name: Build
+            run: make build
+
+        -   name: Zip build folder
+            run: zip -r -q ./build.zip ./build
 
         -   name: Prepare Release
             uses: softprops/action-gh-release@v1
@@ -54,3 +60,4 @@ jobs:
                 draft: true
                 prerelease: true
                 generate_release_notes: true
+                files: ./build.zip
