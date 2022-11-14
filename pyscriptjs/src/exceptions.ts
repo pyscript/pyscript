@@ -13,7 +13,11 @@ export class FetchError extends Error {
   }
 }
 
-export function _createAlertBanner(message: string, level: "error" | "warning" = "error", logMessage = true) {
+export function _createAlertBanner(
+  message: string,
+  level: "error" | "warning" = "error",
+  messageType: "text" | "html" = "text",
+  logMessage = true) {
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   switch (`log-${level}-${logMessage}`) {
     case "log-error-true":
@@ -26,21 +30,27 @@ export function _createAlertBanner(message: string, level: "error" | "warning" =
 
   const banner = document.createElement("div")
   banner.className = `alert-banner py-${level}`
-  banner.innerHTML = message
+
+  if (messageType === "html") {
+    banner.innerHTML = message;
+  }
+  else {
+    banner.textContent = message;
+  }
 
   if (level === "warning") {
-    const closeButton = document.createElement("button")
+    const closeButton = document.createElement("button");
 
     closeButton.id = "alert-close-button"
     closeButton.addEventListener("click", () => {
-      banner.remove()
+      banner.remove();
     })
-    closeButton.innerHTML = CLOSEBUTTON
+    closeButton.innerHTML = CLOSEBUTTON;
 
-    banner.appendChild(closeButton)
+    banner.appendChild(closeButton);
   }
 
-  document.body.prepend(banner)
+  document.body.prepend(banner);
 }
 
 /*
@@ -59,10 +69,10 @@ export function withUserErrorHandler(fn) {
       *  PyScript or Pyodide during loading. Probably not be used for issues that occur within
       *  Python scripts, since stderr can be routed to somewhere in the DOM
       */
-      _createAlertBanner(error.message)
+      _createAlertBanner(error.message);
     }
     else {
-      throw error
+      throw error;
     }
   }
 }

@@ -102,7 +102,7 @@ export class PyScriptApp {
             // is too messy to implement it reliably. We might want to revisit
             // this once it's in a better shape.
             showWarning(
-                'Multiple &lt;py-config&gt; tags detected. Only the first is ' +
+                'Multiple <py-config> tags detected. Only the first is ' +
                 'going to be parsed, all the others will be ignored',
             );
         }
@@ -127,7 +127,7 @@ export class PyScriptApp {
         }
 
         if (this.config.runtimes.length > 1) {
-            showWarning('Multiple runtimes are not supported yet.<br />Only the first will be used');
+            showWarning('Multiple runtimes are not supported yet.<br />Only the first will be used', "html");
         }
         const runtime_cfg = this.config.runtimes[0];
         this.runtime = new PyodideRuntime(this.config,

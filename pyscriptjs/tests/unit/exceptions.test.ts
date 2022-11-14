@@ -1,4 +1,4 @@
-import { jest } from "@jest/globals"
+import { expect, it, jest } from "@jest/globals"
 import { _createAlertBanner, withUserErrorHandler, UserError } from "../../src/exceptions"
 
 describe("Test _createAlertBanner", () => {
@@ -71,13 +71,13 @@ describe("Test _createAlertBanner", () => {
   it("toggling logging off on error alert shouldn't log to console", async () => {
     const errorLogSpy = jest.spyOn(console, "error")
 
-    _createAlertBanner("Test error", "error", false)
+    _createAlertBanner("Test error", "error", "text", false)
     expect(errorLogSpy).not.toHaveBeenCalledWith("Test error")
   })
 
   it("toggling logging off on warning alert shouldn't log to console", async () => {
     const warnLogSpy = jest.spyOn(console, "warn")
-    _createAlertBanner("Test warning", "warning", false)
+    _createAlertBanner("Test warning", "warning", "text", false)
     expect(warnLogSpy).not.toHaveBeenCalledWith("Test warning")
   })
 })
@@ -113,5 +113,31 @@ describe("Test withUserErrorHandler", () => {
     }
 
     expect(() => withUserErrorHandler(exception)).toThrow(new Error("Explosions!"))
+  })
+
+  it('_createAlertbanner messageType text writes message to content', async () => {
+    let banner = document.getElementsByClassName("alert-banner")
+    expect(banner.length).toBe(0)
+
+    const message = '<p>Test message</p>'
+    _createAlertBanner(message, 'error', 'text')
+    banner = document.getElementsByClassName("alert-banner")
+
+    expect(banner.length).toBe(1)
+    expect(banner[0].innerHTML).toBe("&lt;p&gt;Test message&lt;/p&gt;")
+    expect(banner[0].textContent).toBe(message)
+  })
+
+  it('_createAlertbanner messageType html writes message to innerHTML', async () => {
+    let banner = document.getElementsByClassName("alert-banner")
+    expect(banner.length).toBe(0)
+
+    const message = '<p>Test message</p>'
+    _createAlertBanner(message, 'error', 'html')
+    banner = document.getElementsByClassName("alert-banner")
+
+    expect(banner.length).toBe(1)
+    expect(banner[0].innerHTML).toBe(message)
+    expect(banner[0].textContent).toBe("Test message")
   })
 })
