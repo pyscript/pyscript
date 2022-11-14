@@ -1,4 +1,4 @@
-import { getAttribute, addClasses, showWarning } from '../utils';
+import { getAttribute, addClasses, createDeprecationWarning } from '../utils';
 import { getLogger } from '../logger';
 
 const logger = getLogger('py-box');
@@ -24,7 +24,7 @@ export class PyBox extends HTMLElement {
             '<p>The element &lt;py-box&gt; is deprecated, you should create a ' +
             'div with "py-box" class name instead. For example: &lt;div class="py-box"&gt; '
         )
-        showWarning(deprecationMessage)
+        createDeprecationWarning(deprecationMessage, "py-box")
         const mainDiv = document.createElement('div');
         addClasses(mainDiv, ['py-box']);
 

@@ -11,6 +11,11 @@ describe('PyButton', () => {
     let instance;
     beforeEach(() => {
         instance = new PyButton();
+        // Remove all the alert banners created when calling `connectedCallback`
+        const banners = document.getElementsByClassName("alert-banner")
+        for (const banner of banners) {
+            banner.remove()
+        }
     });
 
     it('should get the Button to just instantiate', async () => {
@@ -65,4 +70,19 @@ describe('PyButton', () => {
         expect(instanceId).toMatch(/py-(\w+-){1,5}container/);
         expect(instance.mount_name).toBe(instanceId.replace('-container', '').split('-').join('_'));
     });
+
+    it('should create a single deprecation banner', async () => {
+        document.body.innerHTML = ""
+        let alertBanners = document.getElementsByClassName('alert-banner');
+        expect(alertBanners.length).toBe(0);
+
+        instance.connectedCallback();
+        expect(alertBanners.length).toBe(1);
+        expect(alertBanners[0].innerHTML).toContain("&lt;py-button&gt; is deprecated");
+
+        // Calling `connectedCallback` again should not create a new banner
+        instance.connectedCallback();
+        alertBanners = document.getElementsByClassName('alert-banner');
+        expect(alertBanners.length).toBe(1);
+    })
 });

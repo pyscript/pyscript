@@ -111,3 +111,16 @@ export function joinPaths(parts: string[], separator = '/') {
     }
     return res;
 }
+
+export function createDeprecationWarning(msg: string, elementName: string): void {
+    const banners = document.getElementsByClassName('alert-banner py-warning');
+    let bannerCount = 0;
+    for (const banner of banners) {
+        if (banner.innerHTML.includes(elementName)) {
+            bannerCount++;
+        }
+    }
+    if (bannerCount == 0) {
+        _createAlertBanner(msg, "warning");
+    }
+}

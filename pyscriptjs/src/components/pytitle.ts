@@ -1,4 +1,4 @@
-import { addClasses, htmlDecode, showWarning } from '../utils';
+import { addClasses, htmlDecode, createDeprecationWarning } from '../utils';
 
 export class PyTitle extends HTMLElement {
     widths: string[];
@@ -12,7 +12,7 @@ export class PyTitle extends HTMLElement {
         const deprecationMessage = (
             '<p>The element &lt;py-title&gt; is deprecated, please use an  &lt;h1&gt; tag instead.</p>'
         )
-        showWarning(deprecationMessage)
+        createDeprecationWarning(deprecationMessage, "py-title")
         this.label = htmlDecode(this.innerHTML);
         this.mount_name = this.id.split('-').join('_');
         this.innerHTML = '';
