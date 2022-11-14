@@ -22,8 +22,8 @@ export function make_PyInputBox(runtime: Runtime) {
 
         async connectedCallback() {
             const deprecationMessage = (
-                '<p>The element &lt;py-input&gt; is deprecated, ' +
-                'use &lt;input class="py-input"&gt; instead.</p>'
+                'The element <py-input> is deprecated, ' +
+                'use <input class="py-input"> instead.'
             )
             createDeprecationWarning(deprecationMessage, "py-input")
             ensureUniqueId(this);
