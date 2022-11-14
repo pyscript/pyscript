@@ -196,6 +196,7 @@ export class PyScriptApp {
         // NOTE: runtime message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
         // change it also in tests/integration/support.py
+        this.logStatus("Startup complete");
         this.plugins.afterStartup(runtime);
         logger.info('PyScript page fully initialized');
     }

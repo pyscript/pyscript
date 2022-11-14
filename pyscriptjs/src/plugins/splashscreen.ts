@@ -33,8 +33,10 @@ export class SplashscreenPlugin extends Plugin {
     }
 
     onUserError(error: UserError) {
-        // Remove the splashscreen so users can see the banner better
-        this.elem.close();
+        if (this.elem !== undefined) {
+            // Remove the splashscreen so users can see the banner better
+            this.elem.close();
+        }
     }
 }
 

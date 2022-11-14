@@ -39,3 +39,23 @@ class TestSplashscreen(PyScriptTest):
             self.PY_COMPLETE,
             "hello pyscript",
         ]
+
+    def test_no_autoclose(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                autoclose_loader = false
+            </py-config>
+            <py-script>
+                print('hello pyscript')
+            </py-script>
+            """,
+        )
+        div = self.page.locator("py-splashscreen > div")
+        expect(div).to_be_visible()
+        expect(div).to_contain_text("Python startup...")
+        expect(div).to_contain_text("Startup complete")
+        assert self.console.log.lines == [
+            self.PY_COMPLETE,
+            "hello pyscript",
+        ]
