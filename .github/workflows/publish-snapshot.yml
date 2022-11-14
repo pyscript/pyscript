@@ -51,6 +51,7 @@ jobs:
             run: |
                 echo ${{inputs.snapshot_version}}
                 conda run -p ./env python ./tools/update_version.py --dotted ${{inputs.snapshot_version}}
+                npm version ${{inputs.snapshot_version}}
 
         -   name: Build
             run: make build

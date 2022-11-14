@@ -52,6 +52,7 @@ jobs:
             run: |
                 echo Release version from tags: ${{env.RELEASE_VERSION}}
                 conda run -p ./env python ./tools/update_version.py --dotted ${{env.RELEASE_VERSION}}.final
+                npm version ${{env.RELEASE_VERSION}}
 
         -   name: Build and Test
             run: make test
