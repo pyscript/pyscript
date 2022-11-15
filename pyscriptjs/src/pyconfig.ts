@@ -1,8 +1,10 @@
 import toml from '../src/toml';
 import { getLogger } from './logger';
-import { version } from './main';
 import { getAttribute, readTextFromPath, htmlDecode } from './utils';
 import { UserError } from "./exceptions"
+import {version as packageVersion } from '../package.json'
+
+export const version :string = <string>packageVersion;
 
 const logger = getLogger('py-config');
 
