@@ -4,7 +4,6 @@ import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/runtime');
 
-export const version = '<<VERSION>>';
 export type RuntimeInterpreter = PyodideInterface | null;
 
 /*

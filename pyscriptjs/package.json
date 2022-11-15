@@ -1,6 +1,6 @@
 {
   "name": "pyscript",
-  "version": "0.0.1",
+  "version": "2022.11.1.dev",
   "scripts": {
     "build-min": "NODE_ENV=production rollup -c",
     "build": "rollup -c",

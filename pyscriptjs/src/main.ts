@@ -14,11 +14,13 @@ import { createCustomElements } from './components/elements';
 import { UserError, withUserErrorHandler } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
-
+import * as pack from '../package.json'
 type ImportType = { [key: string]: unknown };
 type ImportMapType = {
     imports: ImportType | null;
 };
+
+export const version :string = <string>pack.version;
 
 const logger = getLogger('pyscript/main');
 
