@@ -28,7 +28,6 @@ export default {
       format: "iife",
       name:"pyscript.js",
       inlineDynamicImports: true,
-      name: "pyscript",
       file: "build/pyscript.js",
     },
     {

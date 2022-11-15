@@ -3,6 +3,8 @@ import { getLogger } from './logger';
 import { getAttribute, readTextFromPath, htmlDecode } from './utils';
 import { UserError } from "./exceptions"
 
+// VERSION NUMBER
+// All version numbers in pyscript are related to this value.
 export const version = "2022.11.1.dev";
 
 const logger = getLogger('py-config');
