@@ -90,8 +90,7 @@ export class PyScriptApp {
 
     _handleUserErrorMaybe(error) {
         if (error instanceof UserError) {
-            // XXX html?
-            _createAlertBanner(error.message);
+            _createAlertBanner(error.message, "error", error.messageType);
             this.plugins.onUserError(error);
         }
         else {

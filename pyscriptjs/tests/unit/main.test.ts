@@ -34,6 +34,30 @@ describe("Test withUserErrorHandler", () => {
         expect(banners[0].innerHTML).toBe("Computer says no");
     });
 
+    it("userError escapes by default", () => {
+        function myRealMain() {
+            throw new UserError("hello <br>");
+        }
+
+        const app = new MyApp(myRealMain);
+        app.main();
+        const banners = document.getElementsByClassName("alert-banner");
+        expect(banners.length).toBe(1);
+        expect(banners[0].innerHTML).toBe("hello &lt;br&gt;");
+    });
+
+    it("userError messageType=html don't escape", () => {
+        function myRealMain() {
+            throw new UserError("hello <br>", "html");
+        }
+
+        const app = new MyApp(myRealMain);
+        app.main();
+        const banners = document.getElementsByClassName("alert-banner");
+        expect(banners.length).toBe(1);
+        expect(banners[0].innerHTML).toBe("hello <br>");
+    });
+
     it("any other exception should stop execution and raise", () => {
         function myRealMain() {
             throw new Error("Explosions!");
