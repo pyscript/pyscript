@@ -81,37 +81,3 @@ describe("Test _createAlertBanner", () => {
     expect(warnLogSpy).not.toHaveBeenCalledWith("Test warning")
   })
 })
-
-
-describe("Test withUserErrorHandler", () => {
-
-  afterEach(() => {
-    // Ensure we always have a clean body
-    document.body.innerHTML = `<div>Hello World</div>`
-  })
-
-  it("userError doesn't stop execution", async () => {
-    function exception() {
-      throw new UserError("Computer says no")
-    }
-
-    function func() {
-      withUserErrorHandler(exception)
-      return "Hello, world"
-    }
-
-    const returnValue = func()
-    const banners = document.getElementsByClassName("alert-banner")
-    expect(banners.length).toBe(1)
-    expect(banners[0].innerHTML).toBe("Computer says no")
-    expect(returnValue).toBe("Hello, world")
-  })
-
-  it("any other exception should stop execution and raise", async () => {
-    function exception() {
-      throw new Error("Explosions!")
-    }
-
-    expect(() => withUserErrorHandler(exception)).toThrow(new Error("Explosions!"))
-  })
-})

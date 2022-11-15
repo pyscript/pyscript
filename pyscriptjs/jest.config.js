@@ -18,5 +18,6 @@ module.exports = {
     },
     moduleNameMapper: {
         '^[./a-zA-Z0-9$_-]+\\.py$': '<rootDir>/__mocks__/fileMock.js',
+        '\\.(css)$': '<rootDir>/__mocks__/cssMock.js',
     },
 };
