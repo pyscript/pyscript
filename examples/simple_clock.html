@@ -21,8 +21,6 @@
       files = ["./utils.py"]
     </py-config>
     <py-script output="outputDiv">
-# demonstrates how use the global PyScript pyscript_loader
-# to send operation log messages to it
 import utils
 display(utils.now())
     </py-script>
@@ -43,8 +41,6 @@ async def foo():
     else:
       out3.clear()
 
-# close the global PyScript pyscript_loader
-pyscript_loader.close()
 pyscript.run_until_complete(foo())
     </py-script>
   </body>
