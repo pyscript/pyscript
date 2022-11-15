@@ -10,7 +10,7 @@ You can control how `<py-terminal>` behaves by setting the value of the  `termin
 |-------|-------------|
 | `false` | Don't add `<py-terminal>` to the page |
 | `true` | Automatically add a `<py-terminal>` to the page |
-| `"auto"` | This is the default. Automatically add a `<py-terminal auto>`, to the page. The terminal is initially hidden and automacially shown as soon as something writes to `stdout` and/or `stderr` |
+| `"auto"` | This is the default. Automatically add a `<py-terminal auto>`, to the page. The terminal is initially hidden and automatically shown as soon as something writes to `stdout` and/or `stderr` |
 
 ### Examples
 
