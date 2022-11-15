@@ -51,6 +51,7 @@ export default {
     }),
     commonjs(),
     typescript({
+      sourceMap: true,
       inlineSources: !production,
     }),
     // This will make sure that examples will always get the latest build folder
