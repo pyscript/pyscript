@@ -2,9 +2,8 @@ import toml from '../src/toml';
 import { getLogger } from './logger';
 import { getAttribute, readTextFromPath, htmlDecode } from './utils';
 import { UserError } from "./exceptions"
-import {version as packageVersion } from '../package.json'
 
-export const version :string = <string>packageVersion;
+export const version = "2022.11.1.dev";
 
 const logger = getLogger('py-config');
 

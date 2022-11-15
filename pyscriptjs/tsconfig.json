@@ -13,7 +13,6 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "lib": [
       "es2017",
