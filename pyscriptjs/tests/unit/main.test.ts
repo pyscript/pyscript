@@ -42,4 +42,4 @@ describe("Test withUserErrorHandler", () => {
         const app = new MyApp(myRealMain);
         expect(() => app.main()).toThrow(new Error("Explosions!"))
     });
-})
+});

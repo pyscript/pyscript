@@ -1,4 +1,4 @@
-import { getAttribute, addClasses, htmlDecode, ensureUniqueId } from '../utils';
+import { getAttribute, addClasses, htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import { getLogger } from '../logger';
 import type { Runtime } from '../runtime';
 
@@ -21,6 +21,11 @@ export function make_PyInputBox(runtime: Runtime) {
         }
 
         async connectedCallback() {
+            const deprecationMessage = (
+                'The element <py-input> is deprecated, ' +
+                'use <input class="py-input"> instead.'
+            )
+            createDeprecationWarning(deprecationMessage, "py-input")
             ensureUniqueId(this);
             this.code = htmlDecode(this.innerHTML);
             this.mount_name = this.id.split('-').join('_');

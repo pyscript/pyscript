@@ -2,6 +2,7 @@ import { htmlDecode, ensureUniqueId } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
+import { FetchError, _createAlertBanner } from '../exceptions';
 
 const logger = getLogger('py-script');
 
@@ -16,11 +17,17 @@ export function make_PyScript(runtime: Runtime) {
 
         async getPySrc(): Promise<string> {
             if (this.hasAttribute('src')) {
-                // XXX: what happens if the fetch() fails?
-                // We should handle the case correctly, but in my defense
-                // this case was broken also before the refactoring. FIXME!
                 const url = this.getAttribute('src');
                 const response = await fetch(url);
+                if (response.status !== 200) {
+                    const errorMessage = (
+                        `Failed to fetch '${url}' - Reason: ` +
+                        `${response.status} ${response.statusText}`
+                    );
+                    _createAlertBanner(errorMessage);
+                    this.innerHTML = '';
+                    throw new FetchError(errorMessage);
+                }
                 return await response.text();
             } else {
                 return htmlDecode(this.innerHTML);

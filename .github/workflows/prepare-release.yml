@@ -48,9 +48,13 @@ jobs:
         -   name: Build and Test
             run: make test
 
+        -   name: Zip build folder
+            run: zip -r -q ./build.zip ./build
+
         -   name: Prepare Release
             uses: softprops/action-gh-release@v1
             with:
                 draft: true
                 prerelease: true
                 generate_release_notes: true
+                files: ./build.zip

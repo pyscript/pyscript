@@ -41,8 +41,8 @@ export function ensureUniqueId(el: HTMLElement) {
     if (el.id === '') el.id = `py-internal-${_uniqueIdCounter++}`;
 }
 
-export function showWarning(msg: string): void {
-    _createAlertBanner(msg, "warning")
+export function showWarning(msg: string, messageType: "text" | "html" = "text"): void {
+    _createAlertBanner(msg, "warning", messageType);
 }
 
 export function handleFetchError(e: Error, singleFile: string) {
@@ -64,7 +64,7 @@ export function handleFetchError(e: Error, singleFile: string) {
     } else {
         errorContent = `<p>PyScript encountered an error while loading from file: ${e.message} </p>`;
     }
-    throw new UserError(errorContent)
+    throw new UserError(errorContent);
 }
 
 export function readTextFromPath(path: string) {
@@ -104,4 +104,17 @@ export function joinPaths(parts: string[], separator = '/') {
         return '/'+res;
     }
     return res;
+}
+
+export function createDeprecationWarning(msg: string, elementName: string): void {
+    const banners = document.getElementsByClassName('alert-banner py-warning');
+    let bannerCount = 0;
+    for (const banner of banners) {
+        if (banner.innerHTML.includes(elementName)) {
+            bannerCount++;
+        }
+    }
+    if (bannerCount == 0) {
+        _createAlertBanner(msg, "warning");
+    }
 }

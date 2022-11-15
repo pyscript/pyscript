@@ -293,6 +293,7 @@ input {
     border-color: rgba(37, 99, 235, var(--tw-border-opacity));
     border-width: 1px;
     border-radius: 0.25rem;
+    cursor: pointer;
 }
 
 .py-li-element p {

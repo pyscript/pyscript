@@ -3,7 +3,7 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
-import { type Plugin, PluginManager } from './plugin';
+import { PluginManager } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
@@ -90,6 +90,7 @@ export class PyScriptApp {
 
     _handleUserErrorMaybe(error) {
         if (error instanceof UserError) {
+            // XXX html?
             _createAlertBanner(error.message);
             this.plugins.onUserError(error);
         }
@@ -120,7 +121,7 @@ export class PyScriptApp {
         if (elements.length > 0) el = elements[0];
         if (elements.length >= 2) {
             showWarning(
-                'Multiple &lt;py-config&gt; tags detected. Only the first is ' +
+                'Multiple <py-config> tags detected. Only the first is ' +
                 'going to be parsed, all the others will be ignored',
             );
         }
@@ -136,7 +137,7 @@ export class PyScriptApp {
         }
 
         if (this.config.runtimes.length > 1) {
-            showWarning('Multiple runtimes are not supported yet.<br />Only the first will be used');
+            showWarning('Multiple runtimes are not supported yet.<br />Only the first will be used', "html");
         }
         const runtime_cfg = this.config.runtimes[0];
         this.runtime = new PyodideRuntime(this.config,

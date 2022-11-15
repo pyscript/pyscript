@@ -1,4 +1,3 @@
-import type { PyScriptApp } from './main';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
 import type { UserError } from './exceptions';
