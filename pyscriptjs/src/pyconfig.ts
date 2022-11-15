@@ -160,7 +160,7 @@ function parseConfig(configText: string, configType = 'toml') {
             throw new UserError(`The config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}`);
         }
     } else {
-        throw new UserError(`<p>The type of config supplied'${configType}' is not supported, supported values are ["toml", "json"].</p>`);
+        throw new UserError(`The type of config supplied'${configType}' is not supported, supported values are ["toml", "json"]`);
     }
     return config;
 }
