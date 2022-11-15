@@ -14,11 +14,7 @@ import { UserError, _createAlertBanner } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
-
-type ImportType = { [key: string]: unknown };
-type ImportMapType = {
-    imports: ImportType | null;
-};
+import { ImportmapPlugin } from './plugins/importmap';
 
 const logger = getLogger('pyscript/main');
 
@@ -71,6 +67,7 @@ export class PyScriptApp {
         this.plugins.add(
             new SplashscreenPlugin(),
             new PyTerminalPlugin(this),
+            new ImportmapPlugin(),
         );
 
         this._stdioMultiplexer = new StdioMultiplexer();
@@ -238,7 +235,6 @@ export class PyScriptApp {
 
     // lifecycle (7)
     executeScripts(runtime: Runtime) {
-        void this.register_importmap(runtime);
         this.PyScript = make_PyScript(runtime);
         customElements.define('py-script', this.PyScript);
     }
@@ -253,48 +249,6 @@ export class PyScriptApp {
 
     registerStdioListener(stdio: Stdio) {
         this._stdioMultiplexer.addListener(stdio);
-    }
-
-    async register_importmap(runtime: Runtime) {
-        // make importmap ES modules available from python using 'import'.
-        //
-        // XXX: this code can probably be improved because errors are silently
-        // ignored. Moreover at the time of writing we don't really have a test
-        // for it and this functionality is used only by the d3 example. We
-        // might want to rethink the whole approach at some point. E.g., maybe
-        // we should move it to py-config?
-        //
-        // Moreover, it's also wrong because it's async and currently we don't
-        // await the module to be fully registered before executing the code
-        // inside py-script. It's also unclear whether we want to wait or not
-        // (or maybe only wait only if we do an actual 'import'?)
-        for (const node of document.querySelectorAll("script[type='importmap']")) {
-            const importmap: ImportMapType = (() => {
-                try {
-                    return JSON.parse(node.textContent) as ImportMapType;
-                } catch {
-                    return null;
-                }
-            })();
-
-            if (importmap?.imports == null) continue;
-
-            for (const [name, url] of Object.entries(importmap.imports)) {
-                if (typeof name != 'string' || typeof url != 'string') continue;
-
-                let exports: object;
-                try {
-                    // XXX: pyodide doesn't like Module(), failing with
-                    // "can't read 'name' of undefined" at import time
-                    exports = { ...(await import(url)) } as object;
-                } catch {
-                    logger.warn(`failed to fetch '${url}' for '${name}'`);
-                    continue;
-                }
-
-                runtime.registerJsModule(name, exports);
-            }
-        }
     }
 }
 
