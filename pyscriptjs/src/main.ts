@@ -20,7 +20,6 @@ type ImportMapType = {
     imports: ImportType | null;
 };
 
-
 const logger = getLogger('pyscript/main');
 
 /* High-level overview of the lifecycle of a PyScript App:
