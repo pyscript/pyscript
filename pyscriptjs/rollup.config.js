@@ -25,15 +25,17 @@ export default {
   input: "src/main.ts",
   output:[
     {
-    sourcemap: true,
-    format: "iife",
-    inlineDynamicImports: true,
-    name: "pyscript",
-    file: "build/pyscript.js",
+      sourcemap: true,
+      format: "iife",
+      name:"pyscript.js",
+      inlineDynamicImports: true,
+      name: "pyscript",
+      file: "build/pyscript.js",
     },
     {
       file: "build/pyscript.min.js",
       format: "iife",
+      name:"pyscript.min.js",
       sourcemap: true,
       inlineDynamicImports: true,
       plugins: [terser()],
@@ -52,7 +54,6 @@ export default {
     json(),
     commonjs(),
     typescript({
-      sourceMap: !production,
       inlineSources: !production,
     }),
     // This will make sure that examples will always get the latest build folder

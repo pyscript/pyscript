@@ -11,6 +11,7 @@
     "types": ["jest", "node"],
     "strict": false,
     "esModuleInterop": true,
+    "sourceMap": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
