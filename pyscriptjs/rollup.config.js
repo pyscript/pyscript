@@ -7,6 +7,7 @@ import css from "rollup-plugin-css-only";
 import serve from "rollup-plugin-serve";
 import { string } from "rollup-plugin-string";
 import copy from 'rollup-plugin-copy'
+import json from '@rollup/plugin-json';
 
 const production = !process.env.ROLLUP_WATCH || (process.env.NODE_ENV === "production");
 
@@ -48,6 +49,7 @@ export default {
     resolve({
       browser: true,
     }),
+    json(),
     commonjs(),
     typescript({
       sourceMap: !production,
