@@ -1,6 +1,3 @@
-import type { PyScriptApp } from '../main';
-import type { AppConfig } from '../pyconfig';
-import type { UserError } from '../exceptions';
 import type { Runtime } from '../runtime';
 import { showWarning } from '../utils';
 import { Plugin } from '../plugin';
@@ -29,8 +26,9 @@ export class ImportmapPlugin extends Plugin {
             const importmap: ImportMapType = (() => {
                 try {
                     return JSON.parse(node.textContent) as ImportMapType;
-                } catch {
-                    return null;
+                }
+                catch(error) {
+                    showWarning("Failed to parse import map: " + error.message);
                 }
             })();
 
