@@ -167,7 +167,7 @@ class TestBasic(PyScriptTest):
         assert (
             re.match(
                 r"version_info\(year=\d{4}, month=\d{2}, "
-                r"patch=\d+, releaselevel='[a-zA-Z0-9]+'\)",
+                r"minor=\d+, releaselevel='[a-zA-Z0-9]+'\)",
                 self.console.log.lines[-1],
             )
             is not None

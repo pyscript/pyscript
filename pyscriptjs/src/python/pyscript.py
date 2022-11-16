@@ -138,30 +138,30 @@ class PyScript:
         )
 
     @classmethod
-    def set_version_info(cls, version_from_appconfig: str):
+    def set_version_info(cls, version_from_runtime: str):
         """Sets the __version__ and version_info properties from provided JSON data
         Args:
-            version_from_appconfig (str): A JSON-formatted string containing the version information
-                required keys are: year (number), month (number), patch (number),
-                releaselevel (string), commit (string)
+            version_from_runtime (str): A "dotted" representation of the version:
+                YYYY.MM.m(m).releaselevel
+                Year, Month, and Minor should be integers; releaselevel can be any string
         """
 
         # __version__ is the same string from runtime.ts
-        cls.__version__ = version_from_appconfig
+        cls.__version__ = version_from_runtime
 
-        # version_info is namedtuple: (year, month, patch, releaselevel)
-        version_parts = version_from_appconfig.split(".")
+        # version_info is namedtuple: (year, month, minor, releaselevel)
+        version_parts = version_from_runtime.split(".")
         version_dict = {
             "year": int(version_parts[0]),
             "month": int(version_parts[1]),
-            "patch": int(version_parts[2]),
+            "minor": int(version_parts[2]),
         }
 
-        # If the version only has three parts (e.g. 2022.09.1), assume the version is final
+        # If the version only has three parts (e.g. 2022.09.1), let the releaselevel be ""
         try:
             version_dict["releaselevel"] = version_parts[3]
         except IndexError:
-            version_dict["releaselevel"] = "final"
+            version_dict["releaselevel"] = ""
 
         # Format mimics sys.version_info
         _VersionInfo = namedtuple("version_info", version_dict.keys())
