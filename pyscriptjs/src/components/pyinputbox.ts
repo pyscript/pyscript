@@ -20,7 +20,7 @@ export function make_PyInputBox(runtime: Runtime) {
             }
         }
 
-        async connectedCallback() {
+        connectedCallback() {
             const deprecationMessage = (
                 'The element <py-input> is deprecated, ' +
                 'use <input class="py-input"> instead.'
@@ -50,8 +50,8 @@ export function make_PyInputBox(runtime: Runtime) {
                 registrationCode += `\n${this.mount_name}.element.addEventListener('keypress', create_proxy(on_keypress_${this.mount_name}))`;
             }
 
-            await runtime.runButDontRaise(this.code);
-            await runtime.runButDontRaise(registrationCode);
+            runtime.runButDontRaise(this.code);
+            runtime.runButDontRaise(registrationCode);
             logger.debug('py-inputbox connected');
         }
     }

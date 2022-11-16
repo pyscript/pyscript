@@ -70,7 +70,7 @@ export class PyodideRuntime extends Runtime {
         await this.loadPackage('micropip');
 
         logger.info('importing pyscript.py');
-        await this.run(pyscript as string);
+        this.run(pyscript as string);
 
         logger.info('pyodide loaded and initialized');
     }

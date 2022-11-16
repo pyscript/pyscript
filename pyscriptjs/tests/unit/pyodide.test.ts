@@ -50,19 +50,19 @@ describe('PyodideRuntime', () => {
     });
 
     it('should check if runtime can run python code asynchronously', async () => {
-        expect(await runtime.run("2+3")).toBe(5);
+        expect(runtime.run("2+3")).toBe(5);
     });
 
     it('should capture stdout', async () => {
         stdio.reset();
-        await runtime.run("print('hello')");
+        runtime.run("print('hello')");
         expect(stdio.captured_stdout).toBe("hello\n");
     });
 
     it('should check if runtime is able to load a package', async () => {
         await runtime.loadPackage("numpy");
-        await runtime.run("import numpy as np");
-        await runtime.run("x = np.ones((10,))");
+        runtime.run("import numpy as np");
+        runtime.run("x = np.ones((10,))");
         expect(runtime.globals.get('x').toJs()).toBeInstanceOf(Float64Array);
     });
 

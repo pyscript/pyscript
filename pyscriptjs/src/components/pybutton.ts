@@ -41,7 +41,7 @@ export function make_PyButton(runtime: Runtime) {
             }
         }
 
-        async connectedCallback() {
+        connectedCallback() {
             const deprecationMessage = (
                 'The element <py-button> is deprecated, create a function with your ' +
                 'inline code and use <button py-click="function()" class="py-button"> instead.'
@@ -76,8 +76,8 @@ export function make_PyButton(runtime: Runtime) {
 
             // now that we appended and the element is attached, lets connect with the event handlers
             // defined for this widget
-            await runtime.runButDontRaise(this.code);
-            await runtime.runButDontRaise(registrationCode);
+            runtime.runButDontRaise(this.code);
+            runtime.runButDontRaise(registrationCode);
             logger.debug('py-button connected');
         }
     }
