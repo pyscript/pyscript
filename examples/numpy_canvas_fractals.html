@@ -316,11 +316,14 @@ canvas.addEventListener("mousemove", create_proxy(mousemove))
 
 import asyncio
 
-_ = await asyncio.gather(
-  draw_mandelbrot(),
-  draw_julia(),
-  draw_newton(),
-)
+async def main():
+  _ = await asyncio.gather(
+    draw_mandelbrot(),
+    draw_julia(),
+    draw_newton(),
+  )
+
+asyncio.ensure_future(main())
 </py-script>
 
 </body>

@@ -1,6 +1,9 @@
+import pytest
+
 from .support import PyScriptTest
 
 
+@pytest.mark.xfail(reason="See PR #938")
 class TestImportmap(PyScriptTest):
     def test_importmap(self):
         src = """

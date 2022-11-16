@@ -93,7 +93,7 @@ async def show(plot, target):
     jsdoc = views[0].model.document
     _link_docs(pydoc, jsdoc)
 
-await show(row, 'myplot')
+asyncio.ensure_future(show(row, 'myplot'))
     </py-script>
 
 </body>

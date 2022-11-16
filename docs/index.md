@@ -22,7 +22,10 @@ Check out our [getting started guide](tutorials/getting-started.md)!
 You already know the basics and want to learn specifics!
 
 [Passing Objects between JavaScript and Python](guides/passing-objects.md)
+
 [Making async HTTP requests in pure Python](guides/http-requests.md)
+
+[Async/Await and Asyncio](guides/asyncio.md)
 
 :::
 :::{grid-item-card} [Concepts](concepts/index.md)

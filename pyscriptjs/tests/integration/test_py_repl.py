@@ -63,13 +63,9 @@ class TestPyRepl(PyScriptTest):
             </py-repl>
             """
         )
+        self.page.wait_for_selector("#runButton")
         self.page.keyboard.press("Shift+Enter")
-
-        # when we use locator('button').click() the message appears
-        # immediately, with keyboard.press we need to wait for it. I don't
-        # really know why it has a different behavior, I didn't investigate
-        # further.
-        self.wait_for_console("hello world")
+        assert self.console.log.lines == [self.PY_COMPLETE, "hello world"]
 
     def test_display(self):
         self.pyscript_run(

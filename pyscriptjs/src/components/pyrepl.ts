@@ -150,7 +150,7 @@ export function make_PyRepl(runtime: Runtime) {
         /** Execute the python code written in the editor, and automatically
          *  display() the last evaluated expression
          */
-        async execute(): Promise<void> {
+        execute(): void {
             const pySrc = this.getPySrc();
 
             // determine the output element
@@ -166,7 +166,7 @@ export function make_PyRepl(runtime: Runtime) {
             outEl.innerHTML = '';
 
             // execute the python code
-            const pyResult = await pyExec(runtime, pySrc, outEl);
+            const pyResult = pyExec(runtime, pySrc, outEl);
 
             // display the value of the last evaluated expression (REPL-style)
             if (pyResult !== undefined) {

@@ -75,8 +75,8 @@ export class PyodideRuntime extends Runtime {
         logger.info('pyodide loaded and initialized');
     }
 
-    async run(code: string): Promise<any> {
-        return await this.interpreter.runPythonAsync(code);
+    run(code: string) {
+        return this.interpreter.runPython(code);
     }
 
     registerJsModule(name: string, module: object): void {

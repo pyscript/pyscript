@@ -1,4 +1,5 @@
 import sys
+import textwrap
 from unittest.mock import Mock
 
 import pyscript
@@ -48,3 +49,71 @@ def test_format_mime_HTML():
     out, mime = pyscript.format_mime(obj)
     assert out == "<p>hello</p>"
     assert mime == "text/html"
+
+
+def test_uses_top_level_await():
+    # Basic Case
+    src = "x = 1"
+    assert pyscript.uses_top_level_await(src) is False
+
+    # Comments are not top-level await
+    src = textwrap.dedent(
+        """
+        #await async for async with asyncio
+        """
+    )
+
+    assert pyscript.uses_top_level_await(src) is False
+
+    # Top-level-await cases
+    src = textwrap.dedent(
+        """
+        async def foo():
+            pass
+        await foo
+        """
+    )
+    assert pyscript.uses_top_level_await(src) is True
+
+    src = textwrap.dedent(
+        """
+        async with object():
+            pass
+        """
+    )
+    assert pyscript.uses_top_level_await(src) is True
+
+    src = textwrap.dedent(
+        """
+        async for _ in range(10):
+            pass
+        """
+    )
+    assert pyscript.uses_top_level_await(src) is True
+
+    # Acceptable await/async for/async with cases
+    src = textwrap.dedent(
+        """
+        async def foo():
+            await foo()
+        """
+    )
+    assert pyscript.uses_top_level_await(src) is False
+
+    src = textwrap.dedent(
+        """
+        async def foo():
+            async with object():
+                pass
+        """
+    )
+    assert pyscript.uses_top_level_await(src) is False
+
+    src = textwrap.dedent(
+        """
+        async def foo():
+            async for _ in range(10):
+                pass
+        """
+    )
+    assert pyscript.uses_top_level_await(src) is False
