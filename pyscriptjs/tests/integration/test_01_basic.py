@@ -1,3 +1,5 @@
+import re
+
 import pytest
 
 from .support import JsErrors, PyScriptTest
@@ -147,3 +149,26 @@ class TestBasic(PyScriptTest):
 
         pyscript_tag = self.page.locator("py-script")
         assert pyscript_tag.inner_html() == ""
+
+    def test_python_version(self):
+        self.pyscript_run(
+            """
+        <py-script>
+            import js
+            js.console.log(PyScript.__version__)
+            js.console.log(PyScript.version_info)
+        </py-script>
+        """
+        )
+        assert (
+            re.match(r"\d{4}\.\d{2}\.\d+\.[a-zA-Z0-9]+", self.console.log.lines[-2])
+            is not None
+        )
+        assert (
+            re.match(
+                r"version_info\(year='\d{4}', month='\d{2}',"
+                r"patch='\d+', releaselevel='[a-zA-Z0-9]+'\)",
+                self.console.log.lines[-1],
+            )
+            is not None
+        )

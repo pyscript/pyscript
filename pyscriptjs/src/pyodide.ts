@@ -5,6 +5,7 @@ import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy }
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
+import { version } from './runtime';
 import type { AppConfig } from './pyconfig';
 import type { Stdio } from './stdio';
 
@@ -71,6 +72,7 @@ export class PyodideRuntime extends Runtime {
 
         logger.info('importing pyscript.py');
         this.run(pyscript as string);
+        this.run(`PyScript.set_version_info('${version}')`)
 
         logger.info('pyodide loaded and initialized');
     }
