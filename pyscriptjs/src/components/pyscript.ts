@@ -134,15 +134,15 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
 ]);
 
 /** Initialize all elements with py-* handlers attributes  */
-export async function initHandlers(runtime: Runtime) {
+export function initHandlers(runtime: Runtime) {
     logger.debug('Initializing py-* event handlers...');
     for (const pyAttribute of pyAttributeToEvent.keys()) {
-        await createElementsWithEventListeners(runtime, pyAttribute);
+        createElementsWithEventListeners(runtime, pyAttribute);
     }
 }
 
 /** Initializes an element with the given py-on* attribute and its handler */
-async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: string): Promise<void> {
+function createElementsWithEventListeners(runtime: Runtime, pyAttribute: string) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
     for (const el of matches) {
         if (el.id.length === 0) {
@@ -161,12 +161,10 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
             from pyodide.ffi import create_proxy
             Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
             `;
-            await runtime.run(source);
+            runtime.run(source);
         } else {
             el.addEventListener(event, () => {
-                (async () => {
-                    await runtime.run(handlerCode);
-                })();
+                runtime.run(handlerCode);
             });
         }
         // TODO: Should we actually map handlers in JS instead of Python?
@@ -186,7 +184,7 @@ async function createElementsWithEventListeners(runtime: Runtime, pyAttribute: s
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
-export async function mountElements(runtime: Runtime) {
+export function mountElements(runtime: Runtime) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
     logger.info(`py-mount: found ${matches.length} elements`);
 
@@ -195,5 +193,5 @@ export async function mountElements(runtime: Runtime) {
         const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
         source += `\n${mountName} = Element("${el.id}")`;
     }
-    await runtime.run(source);
+    runtime.run(source);
 }

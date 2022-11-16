@@ -176,7 +176,7 @@ export class PyScriptApp {
 
         this.logStatus('Setting up virtual environment...');
         await this.setupVirtualEnv(runtime);
-        await mountElements(runtime);
+        mountElements(runtime);
 
         // lifecycle (6.5)
         this.plugins.afterSetup(runtime);
@@ -188,7 +188,7 @@ export class PyScriptApp {
         // lifecycle (8)
         createCustomElements(runtime);
 
-        await initHandlers(runtime);
+        initHandlers(runtime);
 
         // NOTE: runtime message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
