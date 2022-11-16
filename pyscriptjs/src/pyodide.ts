@@ -75,7 +75,7 @@ export class PyodideRuntime extends Runtime {
         logger.info('pyodide loaded and initialized');
     }
 
-    run(code: string): Promise<any> {
+    run(code: string) {
         return this.interpreter.runPython(code);
     }
 
