@@ -1,5 +1,6 @@
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
+import type { UserError } from './exceptions';
 
 export class Plugin {
 
@@ -38,6 +39,19 @@ export class Plugin {
       */
     afterSetup(runtime: Runtime) {
     }
+
+
+    /** Startup complete. The interpreter is initialized and ready, user
+     * scripts have been executed: the main initialization logic ends here and
+     * the page is ready to accept user interactions.
+     */
+    afterStartup(runtime: Runtime) {
+    }
+
+    /** Called when an UserError is raised
+     */
+    onUserError(error: UserError) {
+    }
 }
 
 
@@ -48,8 +62,9 @@ export class PluginManager {
         this._plugins = [];
     }
 
-    add(p: Plugin) {
-        this._plugins.push(p);
+    add(...plugins: Plugin[]) {
+        for (const p of plugins)
+            this._plugins.push(p);
     }
 
     configure(config: AppConfig) {
@@ -65,5 +80,15 @@ export class PluginManager {
     afterSetup(runtime: Runtime) {
         for (const p of this._plugins)
             p.afterSetup(runtime);
+    }
+
+    afterStartup(runtime: Runtime) {
+        for (const p of this._plugins)
+            p.afterStartup(runtime);
+    }
+
+    onUserError(error: UserError) {
+        for (const p of this._plugins)
+            p.onUserError(error);
     }
 }

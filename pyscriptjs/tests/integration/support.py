@@ -77,6 +77,7 @@ class PyScriptTest:
             # fixture, the server automatically starts in its own thread.
             self.http_server = request.getfixturevalue("http_server")
             self.router = None
+            self.is_fake_server = False
         else:
             # use the internal playwright routing
             self.http_server = "http://fake_server"
@@ -87,6 +88,7 @@ class PyScriptTest:
                 usepdb=request.config.option.usepdb,
             )
             self.router.install(page)
+            self.is_fake_server = True
         #
         self.init_page(page)
         #

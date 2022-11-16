@@ -1,5 +1,5 @@
 import { expect, it, jest } from "@jest/globals"
-import { _createAlertBanner, withUserErrorHandler, UserError } from "../../src/exceptions"
+import { _createAlertBanner, UserError } from "../../src/exceptions"
 
 describe("Test _createAlertBanner", () => {
 
@@ -80,40 +80,7 @@ describe("Test _createAlertBanner", () => {
     _createAlertBanner("Test warning", "warning", "text", false);
     expect(warnLogSpy).not.toHaveBeenCalledWith("Test warning");
   })
-})
 
-
-describe("Test withUserErrorHandler", () => {
-
-  afterEach(() => {
-    // Ensure we always have a clean body
-    document.body.innerHTML = `<div>Hello World</div>`;
-  })
-
-  it("userError doesn't stop execution", async () => {
-    function exception() {
-      throw new UserError("Computer says no");
-    }
-
-    function func() {
-      withUserErrorHandler(exception);
-      return "Hello, world";
-    }
-
-    const returnValue = func();
-    const banners = document.getElementsByClassName("alert-banner");
-    expect(banners.length).toBe(1);
-    expect(banners[0].innerHTML).toBe("Computer says no");
-    expect(returnValue).toBe("Hello, world");
-  })
-
-  it("any other exception should stop execution and raise", async () => {
-    function exception() {
-      throw new Error("Explosions!");
-    }
-
-    expect(() => withUserErrorHandler(exception)).toThrow(new Error("Explosions!"))
-  })
 
   it('_createAlertbanner messageType text writes message to content', async () => {
     let banner = document.getElementsByClassName("alert-banner");

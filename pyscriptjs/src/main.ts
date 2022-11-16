@@ -5,20 +5,16 @@ import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
 import { PluginManager } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
-import { PyLoader } from './components/pyloader';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
 import { handleFetchError, showWarning, globalExport } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
-import { UserError, withUserErrorHandler } from "./exceptions"
+import { UserError, _createAlertBanner } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
-
-type ImportType = { [key: string]: unknown };
-type ImportMapType = {
-    imports: ImportType | null;
-};
+import { SplashscreenPlugin } from './plugins/splashscreen';
+import { ImportmapPlugin } from './plugins/importmap';
 
 const logger = getLogger('pyscript/main');
 
@@ -28,7 +24,7 @@ const logger = getLogger('pyscript/main');
 
    2. loadConfig(): search for py-config and compute the config for the app
 
-   3. show the loader/splashscreen
+   3. (it used to be "show the splashscreen", but now it's a plugin)
 
    4. loadRuntime(): start downloading the actual runtime (e.g. pyodide.js)
 
@@ -60,7 +56,6 @@ More concretely:
 
 export class PyScriptApp {
     config: AppConfig;
-    loader: PyLoader;
     runtime: Runtime;
     PyScript: any; // XXX would be nice to have a more precise type for the class itself
     plugins: PluginManager;
@@ -69,20 +64,47 @@ export class PyScriptApp {
     constructor() {
         // initialize the builtin plugins
         this.plugins = new PluginManager();
-        this.plugins.add(new PyTerminalPlugin(this));
+        this.plugins.add(
+            new SplashscreenPlugin(),
+            new PyTerminalPlugin(this),
+            new ImportmapPlugin(),
+        );
 
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
     }
 
-    // lifecycle (1)
+    // Error handling logic: if during the execution we encounter an error
+    // which is ultimate responsibility of the user (e.g.: syntax error in the
+    // config, file not found in fetch, etc.), we can throw UserError(). It is
+    // responsibility of main() to catch it and show it to the user in a
+    // proper way (e.g. by using a banner at the top of the page).
     main() {
+        try {
+            this._realMain();
+        }
+        catch(error) {
+            this._handleUserErrorMaybe(error);
+        }
+    }
+
+    _handleUserErrorMaybe(error) {
+        if (error instanceof UserError) {
+            _createAlertBanner(error.message, "error", error.messageType);
+            this.plugins.onUserError(error);
+        }
+        else {
+            throw error;
+        }
+    }
+
+    // ============ lifecycle ============
+
+    // lifecycle (1)
+    _realMain() {
         this.loadConfig();
         this.plugins.configure(this.config);
-
-        this.showLoader(); // this should be a plugin
         this.plugins.beforeLaunch(this.config);
-
         this.loadRuntime();
     }
 
@@ -97,10 +119,6 @@ export class PyScriptApp {
         let el: Element | null = null;
         if (elements.length > 0) el = elements[0];
         if (elements.length >= 2) {
-            // XXX: ideally, I would like to have a way to raise "fatal
-            // errors" and stop the computation, but currently our life cycle
-            // is too messy to implement it reliably. We might want to revisit
-            // this once it's in a better shape.
             showWarning(
                 'Multiple <py-config> tags detected. Only the first is ' +
                 'going to be parsed, all the others will be ignored',
@@ -108,15 +126,6 @@ export class PyScriptApp {
         }
         this.config = loadConfigFromElement(el);
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
-    }
-
-    // lifecycle (3)
-    showLoader() {
-        // add loader to the page body
-        logger.info('add py-loader');
-        customElements.define('py-loader', PyLoader);
-        this.loader = <PyLoader>document.createElement('py-loader');
-        document.body.append(this.loader);
     }
 
     // lifecycle (4)
@@ -135,11 +144,20 @@ export class PyScriptApp {
                                           runtime_cfg.src,
                                           runtime_cfg.name,
                                           runtime_cfg.lang);
-        this.loader.log(`Downloading ${runtime_cfg.name}...`);
+        this.logStatus(`Downloading ${runtime_cfg.name}...`);
+
+        // download pyodide by using a <script> tag. Once it's ready, the
+        // "load" event will be fired and the exeuction logic will continue.
+        // Note that the load event is fired asynchronously and thus any
+        // exception which is throw inside the event handler is *NOT* caught
+        // by the try/catch inside main(): that's why we need to .catch() it
+        // explicitly and call _handleUserErrorMaybe also there.
         const script = document.createElement('script'); // create a script DOM node
         script.src = this.runtime.src;
         script.addEventListener('load', () => {
-            void this.afterRuntimeLoad(this.runtime);
+            this.afterRuntimeLoad(this.runtime).catch((error) => {
+                this._handleUserErrorMaybe(error);
+            });
         });
         document.head.appendChild(script);
     }
@@ -148,40 +166,35 @@ export class PyScriptApp {
     // See the overview comment above for an explanation of how we jump from
     // point (4) to point (5).
     //
-    // Invariant: this.config and this.loader are set and available.
+    // Invariant: this.config is set and available.
     async afterRuntimeLoad(runtime: Runtime): Promise<void> {
         console.assert(this.config !== undefined);
-        console.assert(this.loader !== undefined);
 
-        this.loader.log('Python startup...');
+        this.logStatus('Python startup...');
         await runtime.loadInterpreter();
-        this.loader.log('Python ready!');
+        this.logStatus('Python ready!');
 
-        // eslint-disable-next-line
-        runtime.globals.set('pyscript_loader', this.loader);
-
-        this.loader.log('Setting up virtual environment...');
+        this.logStatus('Setting up virtual environment...');
         await this.setupVirtualEnv(runtime);
         await mountElements(runtime);
 
         // lifecycle (6.5)
         this.plugins.afterSetup(runtime);
 
-        this.loader.log('Executing <py-script> tags...');
+        this.logStatus('Executing <py-script> tags...');
         this.executeScripts(runtime);
 
-        this.loader.log('Initializing web components...');
+        this.logStatus('Initializing web components...');
         // lifecycle (8)
         createCustomElements(runtime);
 
-        if (runtime.config.autoclose_loader) {
-            this.loader.close();
-        }
         await initHandlers(runtime);
 
         // NOTE: runtime message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
         // change it also in tests/integration/support.py
+        this.logStatus("Startup complete");
+        this.plugins.afterStartup(runtime);
         logger.info('PyScript page fully initialized');
     }
 
@@ -208,8 +221,6 @@ export class PyScriptApp {
             try {
                 await runtime.loadFromFile(paths[i], fetchPaths[i]);
             } catch (e) {
-                // Remove the loader so users can see the banner better
-                this.loader.remove()
                 // The 'TypeError' here happens when running pytest
                 // I'm not particularly happy with this solution.
                 if (e.name === "FetchError" || e.name === "TypeError") {
@@ -224,57 +235,20 @@ export class PyScriptApp {
 
     // lifecycle (7)
     executeScripts(runtime: Runtime) {
-        void this.register_importmap(runtime);
         this.PyScript = make_PyScript(runtime);
         customElements.define('py-script', this.PyScript);
     }
 
     // ================= registraton API ====================
 
-    registerStdioListener(stdio: Stdio) {
-        this._stdioMultiplexer.addListener(stdio);
+    logStatus(msg: string) {
+        logger.info(msg);
+        const ev = new CustomEvent("py-status-message", { detail: msg });
+        document.dispatchEvent(ev);
     }
 
-    async register_importmap(runtime: Runtime) {
-        // make importmap ES modules available from python using 'import'.
-        //
-        // XXX: this code can probably be improved because errors are silently
-        // ignored. Moreover at the time of writing we don't really have a test
-        // for it and this functionality is used only by the d3 example. We
-        // might want to rethink the whole approach at some point. E.g., maybe
-        // we should move it to py-config?
-        //
-        // Moreover, it's also wrong because it's async and currently we don't
-        // await the module to be fully registered before executing the code
-        // inside py-script. It's also unclear whether we want to wait or not
-        // (or maybe only wait only if we do an actual 'import'?)
-        for (const node of document.querySelectorAll("script[type='importmap']")) {
-            const importmap: ImportMapType = (() => {
-                try {
-                    return JSON.parse(node.textContent) as ImportMapType;
-                } catch {
-                    return null;
-                }
-            })();
-
-            if (importmap?.imports == null) continue;
-
-            for (const [name, url] of Object.entries(importmap.imports)) {
-                if (typeof name != 'string' || typeof url != 'string') continue;
-
-                let exports: object;
-                try {
-                    // XXX: pyodide doesn't like Module(), failing with
-                    // "can't read 'name' of undefined" at import time
-                    exports = { ...(await import(url)) } as object;
-                } catch {
-                    logger.warn(`failed to fetch '${url}' for '${name}'`);
-                    continue;
-                }
-
-                runtime.registerJsModule(name, exports);
-            }
-        }
+    registerStdioListener(stdio: Stdio) {
+        this._stdioMultiplexer.addListener(stdio);
     }
 }
 
@@ -285,6 +259,6 @@ globalExport('pyscript_get_config', pyscript_get_config);
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
-withUserErrorHandler(globalApp.main.bind(globalApp));
+globalApp.main();
 
 export const runtime = globalApp.runtime;
