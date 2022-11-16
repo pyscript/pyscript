@@ -156,7 +156,7 @@ class TestBasic(PyScriptTest):
         <py-script>
             import js
             js.console.log(PyScript.__version__)
-            js.console.log(PyScript.version_info)
+            js.console.log(str(PyScript.version_info))
         </py-script>
         """
         )
@@ -166,8 +166,7 @@ class TestBasic(PyScriptTest):
         )
         assert (
             re.match(
-                r"version_info\(year='\d{4}', month='\d{2}',"
-                r"patch='\d+', releaselevel='[a-zA-Z0-9]+'\)",
+                r"version_info\(year='\d{4}', month='\d{2}', patch='\d+', releaselevel='[a-zA-Z0-9]+'\)",
                 self.console.log.lines[-1],
             )
             is not None
