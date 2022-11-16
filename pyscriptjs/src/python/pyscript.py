@@ -152,9 +152,9 @@ class PyScript:
         # version_info is namedtuple: (year, month, patch, releaselevel)
         version_parts = version_from_appconfig.split(".")
         version_dict = {
-            "year": version_parts[0],
-            "month": version_parts[1],
-            "patch": version_parts[2],
+            "year": int(version_parts[0]),
+            "month": int(version_parts[1]),
+            "patch": int(version_parts[2]),
         }
 
         # If the version only has three parts (e.g. 2022.09.1), assume the version is final
