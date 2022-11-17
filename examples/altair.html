@@ -15,7 +15,7 @@
           "vega_datasets"
         ]
       </py-config>
-      <py-script output="altair">
+      <py-script>
 import altair as alt
 from vega_datasets import data
 
@@ -56,7 +56,7 @@ display(alt.vconcat(
 ).resolve_legend(
     color="independent",
     size="independent"
-))
+), target="altair")
       </py-script>
     </body>
 </html>
