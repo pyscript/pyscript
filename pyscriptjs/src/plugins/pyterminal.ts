@@ -24,8 +24,11 @@ export class PyTerminalPlugin extends Plugin {
             t !== false &&
             t !== "auto") {
             const got = JSON.stringify(t);
-            throw new UserError('Invalid value for config.terminal: the only accepted'  +
-                                `values are true, false and "auto", got "${got}".`, UserError.ErrorCode.BAD_CONFIG);
+            throw new UserError(
+                UserError.ErrorCode.BAD_CONFIG,
+                'Invalid value for config.terminal: the only accepted'  +
+                `values are true, false and "auto", got "${got}".`
+            );
         }
         if (t === undefined) {
             config.terminal = "auto"; // default value

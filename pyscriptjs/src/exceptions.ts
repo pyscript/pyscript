@@ -27,7 +27,7 @@ export class UserError extends Error {
   messageType: MessageType;
   errorCode: ErrorCode;
 
-  constructor(message: string, errorCode: ErrorCode, t: MessageType = "text") {
+  constructor(errorCode: ErrorCode, message: string, t: MessageType = "text") {
     super(message);
     this.errorCode = errorCode;
     this.name = "UserError";
@@ -36,9 +36,10 @@ export class UserError extends Error {
   }
 }
 
+
 export class FetchError extends Error {
   errorCode: string;
-  constructor(message: string, errorCode: string) {
+  constructor(errorCode: string, message: string) {
     super(message)
     this.name = "FetchError";
     this.errorCode = errorCode;

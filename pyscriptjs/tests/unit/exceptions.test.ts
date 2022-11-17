@@ -111,15 +111,15 @@ describe("Test _createAlertBanner", () => {
   it('UserError contains errorCode and shows in message', async() => {
     const errorCode = ErrorCode.BAD_CONFIG;
     const message = 'Test error';
-    const userError = new UserError(message, UserError.ErrorCode.BAD_CONFIG);
+    const userError = new UserError(UserError.ErrorCode.BAD_CONFIG, message);
     expect(userError.errorCode).toBe(errorCode);
     expect(userError.message).toBe(`(${errorCode}): ${message}`);
   })
 
   it('FetchError contains errorCode and shows in message', async() => {
-    const errorCode = 'PY404';
+    const errorCode = 'PY2404';
     const message = 'Test error';
-    const fetchError = new FetchError(message, errorCode);
+    const fetchError = new FetchError(errorCode, message);
     expect(fetchError.errorCode).toBe(errorCode);
     expect(fetchError.message).toBe(`(${errorCode}): ${message}`);
   })

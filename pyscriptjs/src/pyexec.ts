@@ -16,12 +16,12 @@ export function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLElement) {
         try {
             if (usesTopLevelAwait(pysrc)){
                 throw new UserError(
-                'The use of top-level "await", "async for", and ' +
-                '"async with" is deprecated.' +
-                '\nPlease write a coroutine containing ' +
-                'your code and schedule it using asyncio.ensure_future() or similar.' +
-                '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.',
-                UserError.ErrorCode.DEPRECATED
+                    UserError.ErrorCode.DEPRECATED,
+                    'The use of top-level "await", "async for", and ' +
+                    '"async with" is deprecated.' +
+                    '\nPlease write a coroutine containing ' +
+                    'your code and schedule it using asyncio.ensure_future() or similar.' +
+                    '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.',
                 )
        }
        return runtime.run(pysrc);

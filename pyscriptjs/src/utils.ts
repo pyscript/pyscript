@@ -64,7 +64,7 @@ export function handleFetchError(e: Error, singleFile: string) {
     } else {
         errorContent = `PyScript encountered an error while loading from file: ${e.message}`;
     }
-    throw new UserError(errorContent, UserError.ErrorCode.FETCH_ERROR, "html");
+    throw new UserError(UserError.ErrorCode.FETCH_ERROR, errorContent, "html");
 }
 
 export function readTextFromPath(path: string) {
