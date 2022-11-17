@@ -3,7 +3,7 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
-import { PluginManager, create_plugin } from './plugin';
+import { PluginManager, create_custom_element } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
@@ -212,7 +212,7 @@ export class PyScriptApp {
         // add `register_py_custom_element` to the Python namespace
         logger.info('Adding create_py_custom_element to global namespace');
         // load it to the globals Python namespace
-        runtime.globals.set('create_py_custom_element', create_plugin);
+        runtime.globals.set('create_custom_element', create_custom_element);
 
         // inject it into the PyScript module scope
         // TODO: Currently running this for backwards compatibility, we should only
@@ -220,12 +220,15 @@ export class PyScriptApp {
         await runtime.run(`
         import pyscript
         pyscript.create_custom_element = create_custom_element
-        from pyscript import micropip, Element, console, document, output_manager, OutputManager
+        from pyscript import micropip, Element, console, document
         `);
 
         logger.info('Packages to install: ', this.config.packages);
         await runtime.installPackage(this.config.packages);
         await this.fetchPaths(runtime);
+
+        // Finally load plugins
+        await this.fetchPythonPlugins(runtime);
     }
 
     async fetchPaths(runtime: Runtime) {
@@ -251,6 +254,41 @@ export class PyScriptApp {
             }
         }
         logger.info('All paths fetched');
+    }
+
+    async fetchPythonPlugins(runtime: Runtime) {
+        //
+        //
+        // Also, as mentioned in the above fetchPaths function above..
+        //
+        // XXX this can be VASTLY improved: for each path we need to fetch a
+        // URL and write to the virtual filesystem: pyodide.loadFromFile does
+        // it in Python, which means we need to have the runtime
+        // initialized. But we could easily do it in JS in parallel with the
+        // download/startup of pyodide.
+        const plugins = this.config.plugins;
+        logger.info("Python plugins to fetch: ", plugins)
+        for (const singleFile of plugins) {
+            logger.info(`  fetching plugins: ${singleFile}`);
+            try {
+                // await runtime.loadFromFile(paths[i], fetchPaths[i]);
+                const pathArr = singleFile.split('/');
+                const filename = pathArr.pop();
+                // TODO: Would be probably be better to store plugins somewhere like /plugins/python/
+                //       or similar
+                const destPath = `./${filename}`
+                await runtime.loadFromFile(destPath, singleFile);
+                const modulename = singleFile.replace(/^.*[\\/]/, '').replace('.py', '');
+
+                console.log(`importing ${modulename}`);
+                await runtime.run(`import ${modulename}`);
+
+            } catch (e) {
+                //Should we still export full error contents to console?
+                handleFetchError(<Error>e, singleFile);
+            }
+        }
+        logger.info("All plugins fetched");
     }
 
     // lifecycle (7)
