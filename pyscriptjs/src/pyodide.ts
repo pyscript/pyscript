@@ -4,7 +4,6 @@ import { FetchError } from './exceptions'
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
-import pyscript from './python/pyscript.py';
 import type { AppConfig } from './pyconfig';
 import type { Stdio } from './stdio';
 

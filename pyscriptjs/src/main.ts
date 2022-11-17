@@ -3,7 +3,7 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
-import { PluginManager } from './plugin';
+import { PluginManager, create_plugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
@@ -15,6 +15,9 @@ import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
+// eslint-disable-next-line
+// @ts-ignore
+import pyscript from './python/pyscript.py';
 
 const logger = getLogger('pyscript/main');
 
@@ -203,6 +206,23 @@ export class PyScriptApp {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
+        logger.info('importing pyscript');
+        // Save and load pyscript from FS
+        runtime.interpreter.FS.writeFile("pyscript.py", pyscript, { encoding: "utf8" });
+        // add `register_py_custom_element` to the Python namespace
+        logger.info('Adding create_py_custom_element to global namespace');
+        // load it to the globals Python namespace
+        runtime.globals.set('create_py_custom_element', create_plugin);
+
+        // inject it into the PyScript module scope
+        // TODO: Currently running this for backwards compatibility, we should only
+        //       keep display and remove everything else...
+        await runtime.run(`
+        import pyscript
+        pyscript.create_py_custom_element = create_py_custom_element
+        from pyscript import micropip, Element, console, document, output_manager, OutputManager
+        `);
+
         logger.info('Packages to install: ', this.config.packages);
         await runtime.installPackage(this.config.packages);
         await this.fetchPaths(runtime);

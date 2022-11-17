@@ -1,6 +1,9 @@
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
 import type { UserError } from './exceptions';
+import { getLogger } from './logger';
+
+const logger = getLogger('pyscript/main');
 
 export class Plugin {
 
@@ -91,4 +94,34 @@ export class PluginManager {
         for (const p of this._plugins)
             p.onUserError(error);
     }
+}
+
+
+export function create_plugin(name: string, pyObject: any) {
+    logger.info(`creating plugin: ${name}`)
+    class CustomElementWrapper extends HTMLElement {
+        shadow: ShadowRoot;
+        wrapper: HTMLElement;
+        pyObject: any;
+        source: string;
+
+        constructor() {
+            logger.debug(`creating ${name} plugin instance`)
+            super();
+
+            this.shadow = this.attachShadow({ mode: 'open' });
+            this.wrapper = document.createElement('slot');
+            this.shadow.appendChild(this.wrapper);
+            this.source = this.innerHTML;
+            this.pyObject = pyObject(this);
+        }
+
+        connectedCallback() {
+            const elementHtml = this.pyObject.connect();
+            if (elementHtml !== undefined){
+                this.innerHTML = elementHtml;
+            }
+        }
+    }
+    customElements.define(name, CustomElementWrapper);
 }
