@@ -4,5 +4,5 @@
 
 ```shell
 >>> pyscript.__version__
-'2023.02.1.final'
+'2023.02.1.dev'
 ```
