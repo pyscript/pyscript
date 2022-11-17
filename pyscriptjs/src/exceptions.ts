@@ -3,9 +3,9 @@ const CLOSEBUTTON = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'
 type MessageType = "text" | "html";
 
 export enum ErrorCode {
-  GENERIC = "PY0000", // Use this only for dev then change to a more specific error code
-  BAD_CONFIG = "PY1000",
+  GENERIC = "PY0000", // Use this only for development then change to a more specific error code
   DEPRECATED = "PY0001",
+  BAD_CONFIG = "PY1000",
   FETCH_ERROR = "PY2000",
   FETCH_PARAMETER_ERROR = "PY2001",
   FETCH_NAME_ERROR = "PY2002",
