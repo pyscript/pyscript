@@ -4,18 +4,24 @@ type MessageType = "text" | "html";
 
 export class UserError extends Error {
   messageType: MessageType;
+  errorCode: string;
 
-  constructor(message: string, t: MessageType = "text") {
+  constructor(message: string, errorCode: string, t: MessageType = "text") {
     super(message);
+    this.errorCode = errorCode;
     this.name = "UserError";
     this.messageType = t;
+    this.message = `(${errorCode}): ${message}`;
   }
 }
 
 export class FetchError extends Error {
-  constructor(message: string) {
+  errorCode: string;
+  constructor(message: string, errorCode: string) {
     super(message)
-    this.name = "FetchError"
+    this.name = "FetchError";
+    this.errorCode = errorCode;
+    this.message = `(${errorCode}): ${message}`;
   }
 }
 

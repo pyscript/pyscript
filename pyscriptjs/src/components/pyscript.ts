@@ -26,7 +26,7 @@ export function make_PyScript(runtime: Runtime) {
                     );
                     _createAlertBanner(errorMessage);
                     this.innerHTML = '';
-                    throw new FetchError(errorMessage);
+                    throw new FetchError(errorMessage, `PY${response.status}`);
                 }
                 return await response.text();
             } else {

@@ -1,5 +1,5 @@
 import { expect, it, jest } from "@jest/globals"
-import { _createAlertBanner, UserError } from "../../src/exceptions"
+import { _createAlertBanner, UserError, FetchError } from "../../src/exceptions"
 
 describe("Test _createAlertBanner", () => {
 
@@ -106,5 +106,21 @@ describe("Test _createAlertBanner", () => {
     expect(banner.length).toBe(1);
     expect(banner[0].innerHTML).toBe(message);
     expect(banner[0].textContent).toBe("Test message");
+  })
+
+  it('UserError contains errorCode and shows in message', async() => {
+    const errorCode = 'PY0000';
+    const message = 'Test error';
+    const userError = new UserError(message, errorCode);
+    expect(userError.errorCode).toBe(errorCode);
+    expect(userError.message).toBe(`(${errorCode}): ${message}`);
+  })
+
+  it('FetchError contains errorCode and shows in message', async() => {
+    const errorCode = 'PY404';
+    const message = 'Test error';
+    const fetchError = new FetchError(message, errorCode);
+    expect(fetchError.errorCode).toBe(errorCode);
+    expect(fetchError.message).toBe(`(${errorCode}): ${message}`);
   })
 })

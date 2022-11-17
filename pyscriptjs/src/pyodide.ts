@@ -114,7 +114,7 @@ export class PyodideRuntime extends Runtime {
         }
         const response = await fetch(fetch_path);
         if (response.status !== 200) {
-            throw new FetchError(`Unable to fetch  ${fetch_path}, reason: ${response.status} - ${response.statusText}`);
+            throw new FetchError(`Unable to fetch  ${fetch_path}, reason: ${response.status} - ${response.statusText}`, `PY${response.status}`);
         }
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
