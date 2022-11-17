@@ -219,7 +219,7 @@ export class PyScriptApp {
         //       keep display and remove everything else...
         await runtime.run(`
         import pyscript
-        pyscript.create_py_custom_element = create_py_custom_element
+        pyscript.create_custom_element = create_custom_element
         from pyscript import micropip, Element, console, document, output_manager, OutputManager
         `);
 
