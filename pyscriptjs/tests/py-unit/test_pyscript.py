@@ -117,6 +117,8 @@ def test_uses_top_level_await():
         """
     )
     assert pyscript.uses_top_level_await(src) is False
+
+
 def test_set_version_info():
     version_string = "1234.56.78.ABCD"
     pyscript.PyScript.set_version_info(version_string)
