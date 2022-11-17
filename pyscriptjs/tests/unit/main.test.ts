@@ -24,38 +24,38 @@ describe("Test withUserErrorHandler", () => {
 
     it("userError doesn't stop execution", () => {
         function myRealMain() {
-            throw new UserError("Computer says no");
+            throw new UserError("Computer says no", UserError.ErrorCode.GENERIC);
         }
 
         const app = new MyApp(myRealMain);
         app.main();
         const banners = document.getElementsByClassName("alert-banner");
         expect(banners.length).toBe(1);
-        expect(banners[0].innerHTML).toBe("Computer says no");
+        expect(banners[0].innerHTML).toBe("(PY0000): Computer says no");
     });
 
     it("userError escapes by default", () => {
         function myRealMain() {
-            throw new UserError("hello <br>");
+            throw new UserError("hello <br>", UserError.ErrorCode.GENERIC);
         }
 
         const app = new MyApp(myRealMain);
         app.main();
         const banners = document.getElementsByClassName("alert-banner");
         expect(banners.length).toBe(1);
-        expect(banners[0].innerHTML).toBe("hello &lt;br&gt;");
+        expect(banners[0].innerHTML).toBe("(PY0000): hello &lt;br&gt;");
     });
 
     it("userError messageType=html don't escape", () => {
         function myRealMain() {
-            throw new UserError("hello <br>", "html");
+            throw new UserError("hello <br>", UserError.ErrorCode.GENERIC, "html");
         }
 
         const app = new MyApp(myRealMain);
         app.main();
         const banners = document.getElementsByClassName("alert-banner");
         expect(banners.length).toBe(1);
-        expect(banners[0].innerHTML).toBe("hello <br>");
+        expect(banners[0].innerHTML).toBe("(PY0000): hello <br>");
     });
 
     it("any other exception should stop execution and raise", () => {

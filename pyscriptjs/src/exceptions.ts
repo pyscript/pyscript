@@ -2,11 +2,32 @@ const CLOSEBUTTON = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'
 
 type MessageType = "text" | "html";
 
-export class UserError extends Error {
-  messageType: MessageType;
-  errorCode: string;
+export enum ErrorCode {
+  GENERIC = "PY0000", // Use this only for dev then change to a more specific error code
+  BAD_CONFIG = "PY1000",
+  DEPRECATED = "PY0001",
+  FETCH_ERROR = "PY2000",
+  FETCH_PARAMETER_ERROR = "PY2001",
+  FETCH_NAME_ERROR = "PY2002",
+  // Currently these are created depending on error code received from fetching
+  FETCH_MOVED_ERROR = "PY2301",
+  FETCH_NOT_FOUND_ERROR = "PY2404",
+  FETCH_UNAUTHORIZED_ERROR = "PY2401",
+  FETCH_FORBIDDEN_ERROR = "PY2403",
+  FETCH_SERVER_ERROR = "PY2500",
+  FETCH_INVALID_RESPONSE = "PY2502",
+  FETCH_TIMEOUT_ERROR = "PY2503",
+  FETCH_CONNECTION_ERROR = "PY2504",
+}
 
-  constructor(message: string, errorCode: string, t: MessageType = "text") {
+export class UserError extends Error {
+  static readonly ErrorCode = ErrorCode;
+  readonly ErrorCode = UserError.ErrorCode;
+
+  messageType: MessageType;
+  errorCode: ErrorCode;
+
+  constructor(message: string, errorCode: ErrorCode, t: MessageType = "text") {
     super(message);
     this.errorCode = errorCode;
     this.name = "UserError";

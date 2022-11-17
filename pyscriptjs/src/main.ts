@@ -133,7 +133,7 @@ export class PyScriptApp {
     loadRuntime() {
         logger.info('Initializing runtime');
         if (this.config.runtimes.length == 0) {
-            throw new UserError('Fatal error: config.runtimes is empty');
+            throw new UserError('Fatal error: config.runtimes is empty', UserError.ErrorCode.BAD_CONFIG);
         }
 
         if (this.config.runtimes.length > 1) {

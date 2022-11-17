@@ -14,7 +14,7 @@ export function calculatePaths(fetch_cfg: FetchConfig[]) {
         {
             if (to_file !== undefined)
             {
-                throw new UserError(`Cannot use 'to_file' and 'files' parameters together!`);
+                throw new UserError(`Cannot use 'to_file' and 'files' parameters together!`, UserError.ErrorCode.FETCH_PARAMETER_ERROR);
             }
             for (const each_f of files)
             {
@@ -29,7 +29,7 @@ export function calculatePaths(fetch_cfg: FetchConfig[]) {
             fetchPaths.push(from);
             const filename = to_file || from.split('/').pop();
             if (filename === '') {
-                throw new UserError(`Couldn't determine the filename from the path ${from}, supply ${to_file} parameter!`);
+                throw new UserError(`Couldn't determine the filename from the path ${from}, supply ${to_file} parameter!`, UserError.ErrorCode.FETCH_NAME_ERROR);
             }
             else {
                 paths.push(joinPaths([to_folder, filename]));
