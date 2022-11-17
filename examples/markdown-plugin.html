@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>PyMarkdown</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="../build/pyscript.css" />
+
+    <script defer src="../build/pyscript.js"></script>
+
+    <py-config>
+      packages = [
+        "markdown"
+      ]
+      plugins = [
+        "../build/plugins/py_markdown.py"
+      ]
+    </py-config>
+  </head>
+
+  <body>
+      <py-md>#Hello world!</py-md>
+  </body>
+</html>
