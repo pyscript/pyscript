@@ -11,12 +11,12 @@ console.log("py_upper Plugin loaded")
 
 @plugin.register_custom_element('py-up')
 class Upper:
-    def __init__(self, source):
-        self.source = source
+    def __init__(self, element):
+        self.element = element
 
     def connect(self):
         console.log("Upper plugin connected")
-        return self.source.upper()
+        return self.element.source.upper()
 """
 
 
