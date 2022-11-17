@@ -257,21 +257,11 @@ export class PyScriptApp {
     }
 
     async fetchPythonPlugins(runtime: Runtime) {
-        //
-        //
-        // Also, as mentioned in the above fetchPaths function above..
-        //
-        // XXX this can be VASTLY improved: for each path we need to fetch a
-        // URL and write to the virtual filesystem: pyodide.loadFromFile does
-        // it in Python, which means we need to have the runtime
-        // initialized. But we could easily do it in JS in parallel with the
-        // download/startup of pyodide.
         const plugins = this.config.plugins;
         logger.info("Python plugins to fetch: ", plugins)
         for (const singleFile of plugins) {
             logger.info(`  fetching plugins: ${singleFile}`);
             try {
-                // await runtime.loadFromFile(paths[i], fetchPaths[i]);
                 const pathArr = singleFile.split('/');
                 const filename = pathArr.pop();
                 // TODO: Would be probably be better to store plugins somewhere like /plugins/python/
