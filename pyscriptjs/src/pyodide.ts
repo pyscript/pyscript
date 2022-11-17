@@ -68,10 +68,6 @@ export class PyodideRuntime extends Runtime {
 
         // XXX: ideally, we should load micropip only if we actually need it
         await this.loadPackage('micropip');
-
-        logger.info('importing pyscript.py');
-        this.run(pyscript as string);
-
         logger.info('pyodide loaded and initialized');
     }
 
