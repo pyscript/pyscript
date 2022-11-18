@@ -3,7 +3,7 @@
 }
 
 .example h2{
-    color: #000000;
+    /* color: #000000; */
     font-family: "Inconsolata", monospace;
     font-size: 2.25rem;
     margin-bottom: 1rem;
@@ -11,10 +11,9 @@
 
 .card {
     height: 15rem;
-    background-color: #FFFFFF;
+    background-color: var(--color-secondary);
     padding: 1rem;
-    -webkit-box-shadow: var(--card-shadow);
-    box-shadow: var(--card-shadow);
+    border-radius: 10px;
 }
 
 .card a h2 {
@@ -29,6 +28,10 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+.card-content a, .card-content a:visited {
+    color: var(--color-primary);
 }
 
 .container-card {
