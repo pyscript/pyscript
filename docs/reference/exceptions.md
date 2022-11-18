@@ -22,11 +22,8 @@ These error codes are related to any exception raised when trying to fetch a res
 | PY2000     | Generic fetch error, failed to fetch page from the server    |
 | PY2001     | Parameter supplied to fetch is invalid                       |
 | PY2002     | Name supplied when trying to fetch resource is invalid       |
-| PY2301     | The page was moved permanently                               |
 | PY2401     | You are not authorized to access this resource.              |
 | PY2403     | You are not allowed to access this resource.                 |
 | PY2404     | The page you are trying to fetch does not exist.             |
 | PY2500     | The server encountered an internal error.                    |
-| PY2502     | The server encountered an invalid response.                  |
 | PY2503     | The server is currently unavailable.                         |
-| PY2504     | The server did not respond in time.                          |
