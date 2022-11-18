@@ -4,6 +4,7 @@ import base64
 import html
 import io
 import time
+from collections import namedtuple
 from textwrap import dedent
 
 import micropip  # noqa: F401
@@ -135,6 +136,39 @@ class PyScript:
         Element(<id>).write instead."""
             )
         )
+
+    @classmethod
+    def set_version_info(cls, version_from_runtime: str):
+        """Sets the __version__ and version_info properties from provided JSON data
+        Args:
+            version_from_runtime (str): A "dotted" representation of the version:
+                YYYY.MM.m(m).releaselevel
+                Year, Month, and Minor should be integers; releaselevel can be any string
+        """
+
+        # __version__ is the same string from runtime.ts
+        cls.__version__ = version_from_runtime
+
+        # version_info is namedtuple: (year, month, minor, releaselevel)
+        version_parts = version_from_runtime.split(".")
+        version_dict = {
+            "year": int(version_parts[0]),
+            "month": int(version_parts[1]),
+            "minor": int(version_parts[2]),
+        }
+
+        # If the version only has three parts (e.g. 2022.09.1), let the releaselevel be ""
+        try:
+            version_dict["releaselevel"] = version_parts[3]
+        except IndexError:
+            version_dict["releaselevel"] = ""
+
+        # Format mimics sys.version_info
+        _VersionInfo = namedtuple("version_info", version_dict.keys())
+        cls.version_info = _VersionInfo(**version_dict)
+
+        # tidy up class namespace
+        del cls.set_version_info
 
 
 def set_current_display_target(target_id):
