@@ -10,5 +10,5 @@
  * passed to a function which only accepts a string.
  */
 
-const fs = require('fs')
+const fs = require('fs');
 module.exports = fs.readFileSync('./src/python/pyscript.py', 'utf8');
