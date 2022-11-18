@@ -213,6 +213,7 @@ export class PyScriptApp {
         logger.info('Adding create_py_custom_element to global namespace');
         // load it to the globals Python namespace
         runtime.globals.set('create_custom_element', create_custom_element);
+        runtime.globals.set('_pyscript_app', this);
 
         // inject it into the PyScript module scope
         // TODO: Currently running this for backwards compatibility, we should only
@@ -220,6 +221,7 @@ export class PyScriptApp {
         await runtime.run(`
         import pyscript
         pyscript.create_custom_element = create_custom_element
+        pyscript._pyscript_app = _pyscript_app
         from pyscript import micropip, Element, console, document
         `);
 
