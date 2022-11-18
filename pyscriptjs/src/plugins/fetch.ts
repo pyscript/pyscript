@@ -34,7 +34,7 @@ export function calculatePaths(fetch_cfg: FetchConfig[]) {
             if (filename === '') {
                 throw new UserError(
                     UserError.ErrorCode.FETCH_PARAMETER_ERROR,
-                    `Couldn't determine the filename from the path ${from}, supply ${to_file} parameter!`
+                    `Couldn't determine the filename from the path ${from}, please supply 'to_file' parameter.`
                 );
             }
             else {
