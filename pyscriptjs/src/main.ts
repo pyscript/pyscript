@@ -224,7 +224,7 @@ export class PyScriptApp {
         pyscript._pyscript_app = _pyscript_app
         pyscript.PyScript.set_version_info('${version}')
         from pyscript import micropip, Element, console, document
-        
+
         `);
 
         logger.info('Packages to install: ', this.config.packages);
