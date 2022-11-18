@@ -2,7 +2,7 @@ import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
-import type { Runtime } from './runtime';
+import type { Runtime, version } from './runtime';
 import { PluginManager, create_custom_element } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideRuntime } from './pyodide';
@@ -222,7 +222,9 @@ export class PyScriptApp {
         import pyscript
         pyscript.create_custom_element = create_custom_element
         pyscript._pyscript_app = _pyscript_app
+        pyscript.PyScript.set_version_info('${version}')
         from pyscript import micropip, Element, console, document
+        
         `);
 
         logger.info('Packages to install: ', this.config.packages);
