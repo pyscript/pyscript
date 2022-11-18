@@ -8,10 +8,10 @@ from pyscript import Plugin, console
 
 class MyPlugin(Plugin):
     def configure(self, config):
-        console.log(f"GOT CONFIG!! {config}")
+        console.log(f"configuration received: {config}")
 
     def afterStartup(self, runtime):
-        console.log(f"GOT RUNTIME!! {runtime}")
+        console.log(f"runtime received: {runtime}")
 
 plugin = MyPlugin("py-markdown")
 
