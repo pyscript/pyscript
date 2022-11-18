@@ -1,4 +1,4 @@
-import { htmlDecode, ensureUniqueId } from '../utils';
+import { htmlDecode, ensureUniqueId, fetchIt } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
@@ -18,17 +18,14 @@ export function make_PyScript(runtime: Runtime) {
         async getPySrc(): Promise<string> {
             if (this.hasAttribute('src')) {
                 const url = this.getAttribute('src');
-                const response = await fetch(url);
-                if (response.status !== 200) {
-                    const errorMessage = (
-                        `Failed to fetch '${url}' - Reason: ` +
-                        `${response.status} ${response.statusText}`
-                    );
-                    _createAlertBanner(errorMessage);
+                try {
+                    const response = await fetchIt(url);
+                    return await response.text();
+                } catch(e) {
+                    _createAlertBanner(e.message);
                     this.innerHTML = '';
-                    throw new FetchError(`PY2${response.status}`, errorMessage);
+                    throw e
                 }
-                return await response.text();
             } else {
                 return htmlDecode(this.innerHTML);
             }

@@ -2,7 +2,6 @@ import { expect, it, jest } from "@jest/globals"
 import { _createAlertBanner, UserError, FetchError, ErrorCode } from "../../src/exceptions"
 
 describe("Test _createAlertBanner", () => {
-
   afterEach(() => {
     // Ensure we always have a clean body
     document.body.innerHTML = `<div>Hello World</div>`;
@@ -107,7 +106,9 @@ describe("Test _createAlertBanner", () => {
     expect(banner[0].innerHTML).toBe(message);
     expect(banner[0].textContent).toBe("Test message");
   })
+})
 
+describe("Test Exceptions", () => {
   it('UserError contains errorCode and shows in message', async() => {
     const errorCode = ErrorCode.BAD_CONFIG;
     const message = 'Test error';
@@ -117,7 +118,7 @@ describe("Test _createAlertBanner", () => {
   })
 
   it('FetchError contains errorCode and shows in message', async() => {
-    const errorCode = 'PY2404';
+    const errorCode = FetchError.ErrorCode.FETCH_NOT_FOUND_ERROR;
     const message = 'Test error';
     const fetchError = new FetchError(errorCode, message);
     expect(fetchError.errorCode).toBe(errorCode);

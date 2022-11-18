@@ -24,7 +24,7 @@ describe("Test withUserErrorHandler", () => {
 
     it("userError doesn't stop execution", () => {
         function myRealMain() {
-            throw new UserError("Computer says no", UserError.ErrorCode.GENERIC);
+            throw new UserError(UserError.ErrorCode.GENERIC, "Computer says no");
         }
 
         const app = new MyApp(myRealMain);
@@ -36,7 +36,7 @@ describe("Test withUserErrorHandler", () => {
 
     it("userError escapes by default", () => {
         function myRealMain() {
-            throw new UserError("hello <br>", UserError.ErrorCode.GENERIC);
+            throw new UserError(UserError.ErrorCode.GENERIC, "hello <br>");
         }
 
         const app = new MyApp(myRealMain);
@@ -48,7 +48,7 @@ describe("Test withUserErrorHandler", () => {
 
     it("userError messageType=html don't escape", () => {
         function myRealMain() {
-            throw new UserError("hello <br>", UserError.ErrorCode.GENERIC, "html");
+            throw new UserError(UserError.ErrorCode.GENERIC, "hello <br>", "html");
         }
 
         const app = new MyApp(myRealMain);

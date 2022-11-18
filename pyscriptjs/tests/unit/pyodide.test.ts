@@ -2,6 +2,7 @@ import type { AppConfig } from '../../src/pyconfig';
 import { Runtime } from '../../src/runtime';
 import { PyodideRuntime } from '../../src/pyodide';
 import { CaptureStdio } from '../../src/stdio';
+import { make_PyScript } from '../../src/components/pyscript';
 
 import { TextEncoder, TextDecoder } from 'util'
 global.TextEncoder = TextEncoder

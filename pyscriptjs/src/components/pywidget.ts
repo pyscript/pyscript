@@ -1,6 +1,7 @@
 import type { Runtime } from '../runtime';
 import type { PyProxy } from 'pyodide';
 import { getLogger } from '../logger';
+import { fetchIt } from '../utils'
 
 const logger = getLogger('py-register-widget');
 
@@ -92,7 +93,7 @@ export function make_PyWidget(runtime: Runtime) {
         }
 
         async getSourceFromFile(s: string): Promise<string> {
-            const response = await fetch(s);
+            const response = await fetchIt(s);
             return await response.text();
         }
     }

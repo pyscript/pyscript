@@ -10,14 +10,11 @@ export enum ErrorCode {
   FETCH_PARAMETER_ERROR = "PY2001",
   FETCH_NAME_ERROR = "PY2002",
   // Currently these are created depending on error code received from fetching
-  FETCH_MOVED_ERROR = "PY2301",
   FETCH_NOT_FOUND_ERROR = "PY2404",
   FETCH_UNAUTHORIZED_ERROR = "PY2401",
   FETCH_FORBIDDEN_ERROR = "PY2403",
   FETCH_SERVER_ERROR = "PY2500",
-  FETCH_INVALID_RESPONSE = "PY2502",
-  FETCH_TIMEOUT_ERROR = "PY2503",
-  FETCH_CONNECTION_ERROR = "PY2504",
+  FETCH_UNAVAILABLE_ERROR = "PY2503",
 }
 
 export class UserError extends Error {
@@ -38,8 +35,11 @@ export class UserError extends Error {
 
 
 export class FetchError extends Error {
-  errorCode: string;
-  constructor(errorCode: string, message: string) {
+  static readonly ErrorCode = ErrorCode;
+  readonly ErrorCode = FetchError.ErrorCode;
+
+  errorCode: ErrorCode;
+  constructor(errorCode: ErrorCode, message: string) {
     super(message)
     this.name = "FetchError";
     this.errorCode = errorCode;
