@@ -4,6 +4,17 @@ The code underlying PyScript is a TypeScript/JavaScript module, which is loaded 
 
 The module is exported to the browser as `pyscript`. The exports from this module are:
 
+## pyscript.version
+
+Once `pyscript.js` has loaded, the version of PyScript that is currently running can be accessed via `pyscript.version`.
+```html
+<script defer onload="console.log(`${pyscript.version})" src="https://pyscript.net/latest/pyscript.js"></script>
+```
+```js
+//example result
+Object { year: 2022, month: 11, patch: 1, releaselevel: "dev" }
+```
+
 ## pyscript.runtime
 
 The RunTime object which is responsible for executing Python code in the Browser. Currently, all runtimes are assumed to be Pyodide runtimes, but there is flexibility to expand this to other web-based Python runtimes in future versions.
