@@ -8,7 +8,7 @@ The module is exported to the browser as `pyscript`. The exports from this modul
 
 Once `pyscript.js` has loaded, the version of PyScript that is currently running can be accessed via `pyscript.version`.
 ```html
-<script defer onload="console.log(`${pyscript.version})" src="https://pyscript.net/latest/pyscript.js"></script>
+<script defer onload="console.log(`${pyscript.version}`)" src="https://pyscript.net/latest/pyscript.js"></script>
 ```
 ```js
 //example result
