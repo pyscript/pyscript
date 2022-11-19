@@ -3,6 +3,7 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
+import { version } from './runtime';
 import { PluginManager } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideRuntime } from './pyodide';
@@ -261,4 +262,5 @@ globalExport('pyscript_get_config', pyscript_get_config);
 const globalApp = new PyScriptApp();
 globalApp.main();
 
+export { version }
 export const runtime = globalApp.runtime;
