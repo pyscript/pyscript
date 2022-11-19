@@ -157,11 +157,12 @@ class TestBasic(PyScriptTest):
             </py-script>
             """
         )
-        self.page.add_script_tag(
-            content= "console.log(pyscript.version)"
-        )
+        self.page.add_script_tag(content="console.log(pyscript.version)")
 
-        assert re.match(r"\d{4}\.\d{2}\.\d+(\.[a-zA-Z0-9]+)?", self.console.log.lines[-1]) is not None
+        assert (
+            re.match(r"\d{4}\.\d{2}\.\d+(\.[a-zA-Z0-9]+)?", self.console.log.lines[-1])
+            is not None
+        )
 
     def test_python_version(self):
         self.pyscript_run(
