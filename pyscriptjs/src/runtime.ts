@@ -55,7 +55,7 @@ export abstract class Runtime extends Object {
      * (asynchronously) which can call its own API behind the scenes.
      * Python exceptions are turned into JS exceptions.
      * */
-    abstract run(code: string);
+    abstract run(code: string): unknown;
 
     /**
      * Same as run, but Python exceptions are not propagated: instead, they
@@ -64,16 +64,14 @@ export abstract class Runtime extends Object {
      * This is a bad API and should be killed/refactored/changed eventually,
      * but for now we have code which relies on it.
      * */
-    runButDontRaise(code: string) {
-        let result
-        try{
-            result = this.run(code)
+    runButDontRaise(code: string): unknown {
+        let result: unknown;
+        try {
+            result = this.run(code);
+        } catch (error: unknown) {
+            logger.error('Error:', error);
         }
-        catch (err){
-            const error = err as Error
-            logger.error('Error:', error)
-        }
-        return result
+        return result;
     }
 
     /**
