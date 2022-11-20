@@ -13,7 +13,7 @@ The RunTime object has the following attributes
 | attribute           | type                | description                                                                 |
 |---------------------|---------------------|-----------------------------------------------------------------------------|
 | **src**             | string              | The URL from which the current runtime was fetched                          |
-| **interpreter**     | RuntimeInterpretter | A reference to the runtime object itself                                    |
+| **interpreter**     | RuntimeInterpreter  | A reference to the runtime object itself                                    |
 | **globals**         | any                 | The globals dictionary of the runtime, if applicable/accessible             |
 | **name (optional)** | string              | A user-designated name for the runtime                                      |
 | **lang (optional)** | string              | A user-designation for the language the runtime runs ('Python', 'C++', etc) |
