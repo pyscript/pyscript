@@ -273,7 +273,6 @@ input {
     text-align: start;
     appearance: auto;
     -webkit-rtl-ordering: logical;
-    cursor: text;
     background-color: -internal-light-dark(rgb(255, 255, 255), rgb(59, 59, 59));
     margin: 0em;
     padding: 1px 2px;
