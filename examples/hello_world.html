@@ -13,12 +13,28 @@
   </head>
 
   <body>
-    Hello world! <br>
-    This is the current date and time, as computed by Python:
-    <py-script>
-from datetime import datetime
-now = datetime.now()
-display(now.strftime("%m/%d/%Y, %H:%M:%S"))
-    </py-script>
+    <section class="pyscript">
+
+      Hello world! <br>
+      This is the current date and time, as computed by Python:
+      <py-script>
+        from datetime import datetime
+        now = datetime.now()
+        display(now.strftime("%m/%d/%Y, %H:%M:%S"))
+      </py-script>
+    </section>
+    <section class="code">
+      <pre>
+        <code>
+          &lt;py-script&gt;
+            from datetime import datetime
+            now = datetime.now()
+            display(now.strftime("%m/%d/%Y, %H:%M:%S"))
+          &lt;/py-script&gt;
+        </code>
+      </pre>
+    </section>
+
+
   </body>
 </html>
