@@ -10,6 +10,8 @@ body {
     display: flex;
     position: absolute;
     right: 0px;
+    z-index: 9998;
+    top: 7rem;
 }
 
 .code-section-hidden {
@@ -18,9 +20,8 @@ body {
 }
 
 .code-section-visible {
-    display: block;
-    width: 100%;
-    display: block;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     background-color: rgb(45 46 53 / 90%);
     padding: 1rem;
@@ -53,6 +54,7 @@ nav {
     width: 100%;
     top: 0;
     left: 0;
+    z-index: 9999;
 }
 
 .logo {

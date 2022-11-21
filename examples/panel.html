@@ -9,9 +9,20 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@holoviz/panel@0.13.1/dist/panel.min.js"></script>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <link rel="stylesheet" href="./assets/css/examples.css" />
+    <link rel="stylesheet" href="./assets/prism/prism.css" />
+    <script defer src="./assets/prism/prism.js"></script>
   </head>
   <body>
-    <h1>Panel Example</h1>
+   <nav class="navbar" style="background-color: #000000;">
+      <div class="app-header">
+        <a href="/">
+          <img src="./logo.png" class="logo">
+        </a>
+        <a class="title" href="" style="color: #f0ab3c;">Panel Example</a>
+      </div>
+    </nav>
+    <section class="pyscript">
     <div id="simple_app"></div>
 
     <py-config>
@@ -32,5 +43,52 @@
 
       pn.Row(slider, pn.bind(callback, slider)).servable(target='simple_app');
     </py-script>
-</body>
+ </section>
+    <section class="code">
+      <div id="view-code-button" role="button" aria-pressed="false" tabindex="0">View Code</div>
+      <div id="code-section" class="code-section-hidden">
+        <p>index.html</p>
+        <pre class="prism-code language-html">
+          <code class="language-html">
+            &lt;py-config&gt;
+              packages = [
+                "bokeh",
+                "numpy",
+                "panel==0.13.1"
+              ]
+            &lt;/py-config&gt;
+            &lt;py-script&gt;
+                import panel as pn
+
+                slider = pn.widgets.FloatSlider(start=0, end=10, name='Amplitude')
+
+                def callback(new):
+                    return f'Amplitude is: {new}'
+
+                pn.Row(slider, pn.bind(callback, slider)).servable(target='simple_app');
+            &lt;/py-script&gt;
+          </code>
+        </pre>
+      </div>
+    </section>
+  </body>
+  <script>
+    const viewCodeButton = document.getElementById("view-code-button");
+    const codeSection = document.getElementById("code-section");
+    const handleClick = () => {
+      if (codeSection.classList.contains("code-section-hidden")) {
+        codeSection.classList.remove("code-section-hidden");
+        codeSection.classList.add("code-section-visible");
+      } else {
+        codeSection.classList.remove("code-section-visible");
+        codeSection.classList.add("code-section-hidden");
+      }
+    }
+    viewCodeButton.addEventListener("click", handleClick)
+    viewCodeButton.addEventListener("keydown", (e) => {
+      if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") {
+        handleClick();
+      }
+    })
+  </script>
 </html>
