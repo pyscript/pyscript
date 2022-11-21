@@ -342,6 +342,8 @@ In the HTML tag `<py-config>`, paths to local modules are provided in the
 </html>
 ```
 
+### Supported configuration values
+
 The following optional values are supported by `<py-config>`:
 | Value | Type | Description |
 | ------ | ---- | ----------- |
@@ -359,6 +361,8 @@ The following optional values are supported by `<py-config>`:
 | `plugins` | List of Plugins | List of Plugins are to be specified here. The default value is an empty list. |
 | `runtimes` | List of Runtimes | List of runtime configurations, described below. The default value contains a single Pyodide based runtime. |
 
+#### Fetch
+
 A fetch configuration consists of the following:
 | Value | Type | Description |
 | ----- | ---- | ----------- |
@@ -368,6 +372,8 @@ A fetch configuration consists of the following:
 | `files` | List of string | List of files to be downloaded. |
 
 The parameters `to_file` and `files` shouldn't be supplied together.
+
+#### Runtime
 
 A runtime configuration consists of the following:
 | Value | Type | Description |

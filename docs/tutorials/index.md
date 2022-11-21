@@ -7,6 +7,6 @@ This is the tutorials section for beginners.
 maxdepth: 2
 ---
 getting-started
-deployment
-setup
+py-config-fetch
+py-config-runtime
 ```
