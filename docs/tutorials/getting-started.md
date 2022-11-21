@@ -296,6 +296,28 @@ as a shortcut, which takes the expression on the last line of the script and run
 </html>
 ```
 
+Besides the above format, a user can also supply any extra keys and values that are relevant as metadata information or perhaps are being used within the application.
+
+For example, a valid config could also be with the snippet below:
+
+```
+<py-config type="toml">
+  magic = "unicorn"
+</py-config>
+```
+
+OR in JSON like
+
+```
+<py-config type="json">
+  {
+    "magic": "unicorn"
+  }
+</py-config>
+```
+
+If this `"magic"` key is present in config supplied via `src` and also present in config supplied via `inline`, then the value in the inline config is given priority i.e. the overriding process also works for custom keys.
+
 ### Local modules
 
 In addition to packages, you can declare local Python modules that will
@@ -364,6 +386,7 @@ The following optional values are supported by `<py-config>`:
 #### Fetch
 
 A fetch configuration consists of the following:
+
 | Value | Type | Description |
 | ----- | ---- | ----------- |
 | `from` | string | Base URL for the resource to be fetched. |
@@ -371,7 +394,11 @@ A fetch configuration consists of the following:
 | `to_file` | string | Name of the target to create in the filesystem. |
 | `files` | List of string | List of files to be downloaded. |
 
+```{note}
 The parameters `to_file` and `files` shouldn't be supplied together.
+```
+
+You may be interested in reading the [tutorial on fetching resources](./py-config-fetch.md) to learn more about this feature.
 
 #### Runtime
 
@@ -382,27 +409,7 @@ A runtime configuration consists of the following:
 | `name` | string | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
 | `lang` | string | Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
 
-Besides the above format, a user can also supply any extra keys and values that are relevant as metadata information or perhaps are being used within the application.
-
-For example, a valid config could also be with the snippet below:
-
-```
-<py-config type="toml">
-  magic = "unicorn"
-</py-config>
-```
-
-OR in JSON like
-
-```
-<py-config type="json">
-  {
-    "magic": "unicorn"
-  }
-</py-config>
-```
-
-If this `"magic"` key is present in config supplied via `src` and also present in config supplied via `inline`, then the value in the inline config is given priority i.e. the overriding process also works for custom keys.
+You may be interested in reading the [tutorial on setting a runtime](./py-config-runtime.md) to learn more about this feature.
 
 ## The py-repl tag
 
