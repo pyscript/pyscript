@@ -14,6 +14,14 @@ body {
     top: 7rem;
 }
 
+@media (max-width: 1300px) {
+    .code:has(> .code-section-visible) {
+        width: 90%;
+        /* Absolute position is messing up the layout on small screens */
+        right: 70px;
+    }
+}
+
 .code-section-hidden {
     width: 0px;
     display: none;
@@ -46,7 +54,7 @@ body {
     padding: 0.5rem;
     border-radius: 5px;
     cursor: pointer;
-    height: 80px;
+    height: 81px;
 }
 
 nav {
