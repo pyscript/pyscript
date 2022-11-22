@@ -1,10 +1,10 @@
 from textwrap import dedent
 
 from markdown import markdown
-
 from pyscript import Plugin, console
 
 # plugin = Plugin("py-markdown")  # priority is optional, of course
+
 
 class MyPlugin(Plugin):
     def configure(self, config):
@@ -13,7 +13,9 @@ class MyPlugin(Plugin):
     def afterStartup(self, runtime):
         console.log(f"runtime received: {runtime}")
 
+
 plugin = MyPlugin("py-markdown")
+
 
 @plugin.register_custom_element("py-md")
 class PyMarkdown:
