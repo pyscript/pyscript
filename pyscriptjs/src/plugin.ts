@@ -82,9 +82,7 @@ export class PluginManager {
             p.configure(config);
 
         for (const p of this._pythonPlugins)
-            if (typeof p.configure !== 'undefined') {
-                p.configure(config);
-            }
+            p.configure?.(config);
     }
 
     beforeLaunch(config: AppConfig) {

@@ -226,7 +226,6 @@ export class PyScriptApp {
         pyscript._pyscript_app = _pyscript_app
         pyscript.PyScript.set_version_info('${version}')
         from pyscript import micropip, Element, console, document
-
         `);
 
         logger.info('Packages to install: ', this.config.packages);
@@ -276,8 +275,7 @@ export class PyScriptApp {
             try {
                 const pathArr = singleFile.split('/');
                 const filename = pathArr.pop();
-                // TODO: Would be probably be better to store plugins somewhere like /plugins/python/
-                //       or similar
+                // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
                 const destPath = `./${filename}`
                 await runtime.loadFromFile(destPath, singleFile);
                 const modulename = singleFile.replace(/^.*[\\/]/, '').replace('.py', '');
