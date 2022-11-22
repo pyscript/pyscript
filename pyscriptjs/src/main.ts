@@ -265,7 +265,7 @@ export class PyScriptApp {
     /**
      * Fetches all the python plugins specified in this.config, saves them on the FS and import
      * them as modules, executing any plugin define the module scope
-     * 
+     *
      * @param runtime - runtime that will execute the plugins
      */
     async fetchPythonPlugins(runtime: Runtime) {
