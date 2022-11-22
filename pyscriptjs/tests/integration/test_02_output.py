@@ -1,8 +1,6 @@
 import html
 import re
 
-import pytest
-
 from .support import PyScriptTest
 
 
