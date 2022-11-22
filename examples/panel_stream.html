@@ -32,22 +32,21 @@
 
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <link rel="stylesheet" href="./assets/css/examples.css" />
+    <link rel="stylesheet" href="./assets/prism/prism.css" />
+    <script defer src="./assets/prism/prism.js"></script>
   </head>
 
   <body>
-    <div class="container-fluid d-flex flex-column vh-100 overflow-hidden" id="container">
-      <nav class="navbar navbar-expand-md navbar-dark sticky-top shadow" id="header" style="background-color: #000000;">
-        <button type="button" class="navbar-toggle collapsed" id="sidebarCollapse">
-	  <span class="navbar-toggler-icon"></span>
-	</button>
-	<div class="app-header">
-	  <a class="navbar-brand app-logo" href="/">
-	    <img src="./logo.png" class="app-logo">
-	  </a>
-	  <a class="title" href="" style="color: #f0ab3c;">Panel Streaming Demo</a>
-	</div>
-      </nav>
-
+  <nav class="navbar" style="background-color: #000000;">
+      <div class="app-header">
+        <a href="/">
+          <img src="./logo.png" class="logo">
+        </a>
+        <a class="title" href="" style="color: #f0ab3c;">Panel Streaming Demo</a>
+      </div>
+    </nav>
+    <section class="pyscript">
       <div class="row overflow-hidden" id="content">
         <div class="col mh-100 float-left" id="main">
           <div class="bk-root" id="controls"></div>
@@ -115,5 +114,90 @@
       pn.pane.Bokeh(p).servable(target='plot')
       pn.Row(cb.param.period, rollover, follow, width=400).servable(target='controls')
     </py-script>
+   </section>
+    <section class="code">
+      <div id="view-code-button" role="button" aria-pressed="false" tabindex="0" style="height: 95px;">View Code</div>
+      <div id="code-section" class="code-section-hidden">
+        <p>index.html</p>
+        <pre class="prism-code language-html">
+          <code class="language-html">
+            &lt;py-config&gt;
+              packages = [
+                "bokeh",
+                "numpy",
+                "pandas",
+                "panel==0.13.1"
+              ]
+            &lt;/py-config&gt;
+            &lt;py-script&gt;
+              import panel as pn
+              import numpy as np
+              import pandas as pd
+
+              from bokeh.models import ColumnDataSource
+              from bokeh.plotting import figure
+
+              df = pd.DataFrame(np.random.randn(10, 4), columns=list('ABCD')).cumsum()
+
+              rollover = pn.widgets.IntInput(name='Rollover', value=15)
+              follow = pn.widgets.Checkbox(name='Follow', value=True, align='end')
+
+              tabulator = pn.widgets.Tabulator(df, height=450, width=400).servable(target='table')
+
+              def color_negative_red(val):
+                  """
+                  Takes a scalar and returns a string with
+                  the css property `'color: red'` for negative
+                  strings, black otherwise.
+                  """
+                  color = 'red' if val < 0 else 'green'
+                  return 'color: %s' % color
+
+              tabulator.style.applymap(color_negative_red)
+
+              p = figure(height=450, width=600)
+
+              cds = ColumnDataSource(data=ColumnDataSource.from_df(df))
+
+              p.line('index', 'A', source=cds, line_color='red')
+              p.line('index', 'B', source=cds, line_color='green')
+              p.line('index', 'C', source=cds, line_color='blue')
+              p.line('index', 'D', source=cds, line_color='purple')
+
+              def stream():
+                  data = df.iloc[-1] + np.random.randn(4)
+                  tabulator.stream(data, rollover=rollover.value, follow=follow.value)
+                  value = {k: [v] for k, v in tabulator.value.iloc[-1].to_dict().items()}
+                  value['index'] = [tabulator.value.index[-1]]
+                  cds.stream(value)
+
+              cb = pn.state.add_periodic_callback(stream, 200)
+
+              pn.pane.Bokeh(p).servable(target='plot')
+              pn.Row(cb.param.period, rollover, follow, width=400).servable(target='controls')
+            &lt;/py-script&gt;
+          </code>
+        </pre>
+      </div>
+    </section>
   </body>
+  <script>
+    const viewCodeButton = document.getElementById("view-code-button");
+    const codeSection = document.getElementById("code-section");
+    const handleClick = () => {
+      if (codeSection.classList.contains("code-section-hidden")) {
+        codeSection.classList.remove("code-section-hidden");
+        codeSection.classList.add("code-section-visible");
+      } else {
+        codeSection.classList.remove("code-section-visible");
+        codeSection.classList.add("code-section-hidden");
+      }
+    }
+    viewCodeButton.addEventListener("click", handleClick)
+    viewCodeButton.addEventListener("keydown", (e) => {
+      if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") {
+        handleClick();
+      }
+    })
+  </script>
 </html>

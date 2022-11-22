@@ -5,9 +5,21 @@
     <link rel="icon" type="image/x-icon" href="./favicon.png">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <link rel="stylesheet" href="./assets/css/examples.css" />
+    <link rel="stylesheet" href="./assets/prism/prism.css" />
+    <script defer src="./assets/prism/prism.js"></script>
     </head>
     <body>
-      <div id="folium" style="width: 100%; height: 100%"></div>
+    <nav class="navbar" style="background-color: #000000;">
+      <div class="app-header">
+        <a href="/">
+          <img src="./logo.png" class="logo">
+        </a>
+        <a class="title" href="" style="color: #f0ab3c;">Folium</a>
+      </div>
+    </nav>
+    <section class="pyscript">
+      <div id="folium"></div>
 
       <py-config>
         packages = [
@@ -49,5 +61,76 @@ folium.LayerControl().add_to(m)
 
 display(m, target="folium")
       </py-script>
-    </body>
+   </section>
+    <section class="code">
+      <div id="view-code-button" role="button" aria-pressed="false" tabindex="0">View Code</div>
+      <div id="code-section" class="code-section-hidden">
+        <p>index.html</p>
+        <pre class="prism-code language-html">
+          <code class="language-html">
+
+            &lt;div id="folium"&gt;&lt;/div&gt;
+            &lt;py-config&gt;
+            packages = [
+              "folium",
+              "pandas"
+            ]
+            &lt;/py-config&gt;
+            &lt;py-script&gt;
+              import folium
+              import json
+              import pandas as pd
+
+              from pyodide.http import open_url
+
+              url = (
+                  "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data"
+              )
+              state_geo = f"{url}/us-states.json"
+              state_unemployment = f"{url}/US_Unemployment_Oct2012.csv"
+              state_data = pd.read_csv(open_url(state_unemployment))
+              geo_json = json.loads(open_url(state_geo).read())
+
+              m = folium.Map(location=[48, -102], zoom_start=3)
+
+              folium.Choropleth(
+                  geo_data=geo_json,
+                  name="choropleth",
+                  data=state_data,
+                  columns=["State", "Unemployment"],
+                  key_on="feature.id",
+                  fill_color="YlGn",
+                  fill_opacity=0.7,
+                  line_opacity=0.2,
+                  legend_name="Unemployment Rate (%)",
+              ).add_to(m)
+
+              folium.LayerControl().add_to(m)
+
+              display(m, target="folium")
+            &lt;/py-script&gt;
+          </code>
+        </pre>
+      </div>
+    </section>
+  </body>
+  <script>
+    const viewCodeButton = document.getElementById("view-code-button");
+    const codeSection = document.getElementById("code-section");
+    const handleClick = () => {
+      if (codeSection.classList.contains("code-section-hidden")) {
+        codeSection.classList.remove("code-section-hidden");
+        codeSection.classList.add("code-section-visible");
+      } else {
+        codeSection.classList.remove("code-section-visible");
+        codeSection.classList.add("code-section-hidden");
+      }
+    }
+    viewCodeButton.addEventListener("click", handleClick)
+    viewCodeButton.addEventListener("keydown", (e) => {
+      if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") {
+        handleClick();
+      }
+    })
+  </script>
 </html>
