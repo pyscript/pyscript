@@ -262,6 +262,12 @@ export class PyScriptApp {
         logger.info('All paths fetched');
     }
 
+    /**
+     * Fetches all the python plugins specified in this.config, saves them on the FS and import
+     * them as modules, executing any plugin define the module scope
+     * 
+     * @param runtime - runtime that will execute the plugins
+     */
     async fetchPythonPlugins(runtime: Runtime) {
         const plugins = this.config.plugins;
         logger.info("Python plugins to fetch: ", plugins)
