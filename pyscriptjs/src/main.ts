@@ -2,7 +2,8 @@ import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
-import type { Runtime, version } from './runtime';
+import type { Runtime } from './runtime';
+import { version } from './runtime';
 import { PluginManager, create_custom_element } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideRuntime } from './pyodide';
@@ -207,17 +208,18 @@ export class PyScriptApp {
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
         logger.info('importing pyscript');
-        // Save and load pyscript from FS
+
+        // Save and load pyscript.py from FS
         runtime.interpreter.FS.writeFile("pyscript.py", pyscript, { encoding: "utf8" });
-        // add `register_py_custom_element` to the Python namespace
-        logger.info('Adding create_py_custom_element to global namespace');
-        // load it to the globals Python namespace
+
+        // add `create_custom_element` and the current `PyScriptApp` to the Python namespace
+        // in the pyscript module scope
         runtime.globals.set('create_custom_element', create_custom_element);
         runtime.globals.set('_pyscript_app', this);
 
         // inject it into the PyScript module scope
-        // TODO: Currently running this for backwards compatibility, we should only
-        //       keep display and remove everything else...
+        // TODO: Currently adding the imports for backwards compatibility, we should
+        //       probably remove it
         await runtime.run(`
         import pyscript
         pyscript.create_custom_element = create_custom_element
