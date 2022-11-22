@@ -19,7 +19,6 @@ class TestOutput(PyScriptTest):
         pattern = r'<div id="py-.*">hello world</div>'
         assert re.search(pattern, inner_html)
 
-    @pytest.mark.xfail(reason="issue #878")
     def test_consecutive_display(self):
         self.pyscript_run(
             """
@@ -37,18 +36,37 @@ class TestOutput(PyScriptTest):
         lines = [line for line in lines if line != ""]  # remove empty lines
         assert lines == ["hello 1", "hello 2", "hello 3"]
 
-    @pytest.mark.xfail(reason="fix me")
-    def test_output_attribute(self):
+    def test_target_attribute(self):
         self.pyscript_run(
             """
-            <py-script output="mydiv">
-                display('hello world')
+            <py-script>
+                display('hello world', target="mydiv")
             </py-script>
             <div id="mydiv"></div>
             """
         )
         mydiv = self.page.locator("#mydiv")
         assert mydiv.inner_text() == "hello world"
+
+    def test_consecutive_display_target(self):
+        self.pyscript_run(
+            """
+            <py-script id="first">
+                display('hello 1')
+            </py-script>
+                <p>hello in between 1 and 2</p>
+            <py-script id="second">
+                display('hello 2', target="second")
+            </py-script>
+            <py-script id="third">
+                display('hello 3')
+            </py-script>
+            """
+        )
+        inner_text = self.page.inner_text("body")
+        lines = inner_text.splitlines()
+        lines = [line for line in lines if line != ""]  # remove empty lines
+        assert lines == ["hello 1", "hello in between 1 and 2", "hello 2", "hello 3"]
 
     def test_multiple_display_calls_same_tag(self):
         self.pyscript_run(
