@@ -70,7 +70,7 @@ export class PyodideRuntime extends Runtime {
         logger.info('pyodide loaded and initialized');
     }
 
-    run(code: string) {
+    run(code: string): unknown {
         return this.interpreter.runPython(code);
     }
 

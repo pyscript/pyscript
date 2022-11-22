@@ -150,6 +150,20 @@ class TestBasic(PyScriptTest):
         pyscript_tag = self.page.locator("py-script")
         assert pyscript_tag.inner_html() == ""
 
+    def test_js_version(self):
+        self.pyscript_run(
+            """
+            <py-script>
+            </py-script>
+            """
+        )
+        self.page.add_script_tag(content="console.log(pyscript.version)")
+
+        assert (
+            re.match(r"\d{4}\.\d{2}\.\d+(\.[a-zA-Z0-9]+)?", self.console.log.lines[-1])
+            is not None
+        )
+
     def test_python_version(self):
         self.pyscript_run(
             """

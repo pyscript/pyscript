@@ -315,4 +315,5 @@ globalExport('pyscript_get_config', pyscript_get_config);
 const globalApp = new PyScriptApp();
 globalApp.main();
 
+export { version }
 export const runtime = globalApp.runtime;
