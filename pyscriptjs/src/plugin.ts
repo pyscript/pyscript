@@ -73,7 +73,7 @@ export class PluginManager {
             this._plugins.push(p);
     }
 
-    _addPythonPlugin(plugin: any){
+    addPythonPlugin(plugin: any){
         this._pythonPlugins.push(plugin);
     }
 
