@@ -285,9 +285,15 @@ export class PyScriptApp {
                 //       when we add support for other interpreters we will need to move this to the 
                 //       runtime (interpreter) API level and allow each one to implement it in its own way
                 let module = runtime.interpreter.pyimport(modulename);
-                const py_plugin = module.plugin
-                py_plugin.init(this);
-                this.plugins.addPythonPlugin(py_plugin);
+                if (typeof module.plugin !== 'undefined'){
+                    const py_plugin = module.plugin
+                    py_plugin.init(this);
+                    this.plugins.addPythonPlugin(py_plugin);
+                }else{
+                    logger.error(`Cannot find plugin on Python module ${modulename}! Python plugins
+                    modules must contain a "plugin" attribute. For more information check the
+                    plugins documentation.`);
+                }
             } catch (e) {
                 //Should we still export full error contents to console?
                 handleFetchError(<Error>e, singleFile);
