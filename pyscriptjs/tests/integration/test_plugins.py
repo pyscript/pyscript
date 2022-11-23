@@ -49,6 +49,7 @@ class TestLogger(Plugin):
     pass
 """
 
+
 class TestPlugin(PyScriptTest):
     def test_py_plugin_inline(self):
         self.writefile("py_upper.py", CE_PLUGIN_CODE)
@@ -74,8 +75,8 @@ class TestPlugin(PyScriptTest):
         assert rendered_text == "HELLO WORLD"
 
     def test_execution_hooks(self):
-        hooks_available = ['afterSetup', 'afterStartup']
-        hooks_unavailable = ['configure', 'beforeLaunch']
+        hooks_available = ["afterSetup", "afterStartup"]
+        hooks_unavailable = ["configure", "beforeLaunch"]
 
         self.writefile("hooks_logger.py", HOOKS_PLUGIN_CODE)
         self.pyscript_run(
@@ -105,7 +106,9 @@ class TestPlugin(PyScriptTest):
         </py-config>
         """
         )
-        error_msg = '[pyscript/main] Cannot find plugin on Python module no_plugin! Python plugins ' \
-                    'modules must contain a "plugin" attribute. For more information check the ' \
-                    'plugins documentation.'
+        error_msg = (
+            "[pyscript/main] Cannot find plugin on Python module no_plugin! Python plugins "
+            'modules must contain a "plugin" attribute. For more information check the '
+            "plugins documentation."
+        )
         assert error_msg in self.console.error.lines
