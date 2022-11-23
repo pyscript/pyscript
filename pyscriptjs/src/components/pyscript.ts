@@ -1,8 +1,9 @@
-import { htmlDecode, ensureUniqueId, fetchIt } from '../utils';
+import { htmlDecode, ensureUniqueId } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
-import { FetchError, _createAlertBanner } from '../exceptions';
+import { _createAlertBanner } from '../exceptions';
+import { robustFetch } from '../fetch';
 
 const logger = getLogger('py-script');
 
@@ -19,7 +20,7 @@ export function make_PyScript(runtime: Runtime) {
             if (this.hasAttribute('src')) {
                 const url = this.getAttribute('src');
                 try {
-                    const response = await fetchIt(url);
+                    const response = await robustFetch(url);
                     return await response.text();
                 } catch(e) {
                     _createAlertBanner(e.message);

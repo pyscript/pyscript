@@ -1,6 +1,6 @@
 import { joinPaths } from '../utils';
 import { FetchConfig } from "../pyconfig";
-import { UserError } from '../exceptions';
+import { UserError, ErrorCode } from '../exceptions';
 
 export function calculatePaths(fetch_cfg: FetchConfig[]) {
     const fetchPaths: string[] = [];
@@ -15,7 +15,7 @@ export function calculatePaths(fetch_cfg: FetchConfig[]) {
             if (to_file !== undefined)
             {
                 throw new UserError(
-                    UserError.ErrorCode.FETCH_PARAMETER_ERROR,
+                    ErrorCode.BAD_CONFIG,
                     `Cannot use 'to_file' and 'files' parameters together!`
                 );
             }
@@ -33,7 +33,7 @@ export function calculatePaths(fetch_cfg: FetchConfig[]) {
             const filename = to_file || from.split('/').pop();
             if (filename === '') {
                 throw new UserError(
-                    UserError.ErrorCode.FETCH_PARAMETER_ERROR,
+                    ErrorCode.BAD_CONFIG,
                     `Couldn't determine the filename from the path ${from}, please supply 'to_file' parameter.`
                 );
             }

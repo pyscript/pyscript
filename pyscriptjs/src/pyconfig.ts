@@ -2,7 +2,7 @@ import toml from '../src/toml';
 import { getLogger } from './logger';
 import { version } from './runtime';
 import { getAttribute, readTextFromPath, htmlDecode } from './utils';
-import { UserError } from "./exceptions"
+import { UserError, ErrorCode } from "./exceptions"
 
 const logger = getLogger('py-config');
 
@@ -146,7 +146,7 @@ function parseConfig(configText: string, configType = 'toml') {
             // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
             if (configText.trim()[0] === '{') {
                 throw new UserError(
-                    UserError.ErrorCode.BAD_CONFIG,
+                    ErrorCode.BAD_CONFIG,
                     `The config supplied: ${configText} is an invalid TOML and cannot be parsed`
                 );
             }
@@ -154,7 +154,7 @@ function parseConfig(configText: string, configType = 'toml') {
         } catch (err) {
             const errMessage: string = err.toString();
             throw new UserError(
-                UserError.ErrorCode.BAD_CONFIG,
+                ErrorCode.BAD_CONFIG,
                 `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`
             );
         }
@@ -164,13 +164,13 @@ function parseConfig(configText: string, configType = 'toml') {
         } catch (err) {
             const errMessage: string = err.toString();
             throw new UserError(
-                UserError.ErrorCode.BAD_CONFIG,
+                ErrorCode.BAD_CONFIG,
                 `The config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}`,
             );
         }
     } else {
         throw new UserError(
-            UserError.ErrorCode.BAD_CONFIG,
+            ErrorCode.BAD_CONFIG,
             `The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`
         );
     }

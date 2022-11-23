@@ -1,4 +1,4 @@
-import { _createAlertBanner, UserError, FetchError } from "./exceptions"
+import { _createAlertBanner, UserError, FetchError, ErrorCode } from "./exceptions"
 
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
@@ -64,7 +64,7 @@ export function handleFetchError(e: Error, singleFile: string) {
     } else {
         errorContent = `PyScript encountered an error while loading from file: ${e.message}`;
     }
-    throw new UserError(UserError.ErrorCode.FETCH_ERROR, errorContent, "html");
+    throw new UserError(ErrorCode.FETCH_ERROR, errorContent, "html");
 }
 
 export function readTextFromPath(path: string) {
@@ -117,44 +117,4 @@ export function createDeprecationWarning(msg: string, elementName: string): void
     if (bannerCount == 0) {
         _createAlertBanner(msg, "warning");
     }
-}
-
-export async function fetchIt(url: string, options?: RequestInit): Promise<Response> {
-    const response = await fetch(url, options);
-    if (response.status !== 200) {
-        const errorMsg = `Fetching from URL ${url} failed with error ${response.status} (${response.statusText}).`;
-        switch(response.status) {
-            case 404:
-                throw new FetchError(
-                    FetchError.ErrorCode.FETCH_NOT_FOUND_ERROR,
-                    errorMsg
-                );
-            case 401:
-                throw new FetchError(
-                    FetchError.ErrorCode.FETCH_UNAUTHORIZED_ERROR,
-                    errorMsg
-                );
-            case 403:
-                throw new FetchError(
-                    FetchError.ErrorCode.FETCH_FORBIDDEN_ERROR,
-                    errorMsg
-                );
-            case 500:
-                throw new FetchError(
-                    FetchError.ErrorCode.FETCH_SERVER_ERROR,
-                    errorMsg
-                );
-            case 503:
-                throw new FetchError(
-                    FetchError.ErrorCode.FETCH_UNAVAILABLE_ERROR,
-                    errorMsg
-                );
-            default:
-                throw new FetchError(
-                    FetchError.ErrorCode.FETCH_ERROR,
-                    errorMsg
-                );
-        }
-    }
-    return response
 }

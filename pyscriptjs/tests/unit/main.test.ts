@@ -1,5 +1,5 @@
-import { jest } from "@jest/globals"
-import { UserError } from "../../src/exceptions"
+import { describe, it, beforeEach, expect } from "@jest/globals"
+import { UserError, ErrorCode } from "../../src/exceptions"
 import { PyScriptApp } from "../../src/main"
 
 describe("Test withUserErrorHandler", () => {
@@ -24,7 +24,7 @@ describe("Test withUserErrorHandler", () => {
 
     it("userError doesn't stop execution", () => {
         function myRealMain() {
-            throw new UserError(UserError.ErrorCode.GENERIC, "Computer says no");
+            throw new UserError(ErrorCode.GENERIC, "Computer says no");
         }
 
         const app = new MyApp(myRealMain);
@@ -36,7 +36,7 @@ describe("Test withUserErrorHandler", () => {
 
     it("userError escapes by default", () => {
         function myRealMain() {
-            throw new UserError(UserError.ErrorCode.GENERIC, "hello <br>");
+            throw new UserError(ErrorCode.GENERIC, "hello <br>");
         }
 
         const app = new MyApp(myRealMain);
@@ -48,7 +48,7 @@ describe("Test withUserErrorHandler", () => {
 
     it("userError messageType=html don't escape", () => {
         function myRealMain() {
-            throw new UserError(UserError.ErrorCode.GENERIC, "hello <br>", "html");
+            throw new UserError(ErrorCode.GENERIC, "hello <br>", "html");
         }
 
         const app = new MyApp(myRealMain);

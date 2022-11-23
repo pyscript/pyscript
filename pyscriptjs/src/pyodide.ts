@@ -4,7 +4,7 @@ import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy }
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
-import { fetchIt } from './utils';
+import { robustFetch } from './fetch';
 import type { AppConfig } from './pyconfig';
 import type { Stdio } from './stdio';
 
@@ -111,7 +111,7 @@ export class PyodideRuntime extends Runtime {
                 this.interpreter.FS.mkdir(eachPath);
             }
         }
-        const response = await fetchIt(fetch_path);
+        const response = await robustFetch(fetch_path);
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
         pathArr.push(filename);

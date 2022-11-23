@@ -2,25 +2,29 @@ const CLOSEBUTTON = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'
 
 type MessageType = "text" | "html";
 
+/*
+These error codes are used to identify the type of error that occurred.
+The convention is:
+* PY0 - errors that occur when fetching
+* PY1 - errors that occur in config
+* PY9 - Deprecation errors
+*/
+
 export enum ErrorCode {
   GENERIC = "PY0000", // Use this only for development then change to a more specific error code
-  DEPRECATED = "PY0001",
-  BAD_CONFIG = "PY1000",
-  FETCH_ERROR = "PY2000",
-  FETCH_PARAMETER_ERROR = "PY2001",
+  FETCH_ERROR = "PY0001",
   FETCH_NAME_ERROR = "PY2002",
   // Currently these are created depending on error code received from fetching
-  FETCH_NOT_FOUND_ERROR = "PY2404",
-  FETCH_UNAUTHORIZED_ERROR = "PY2401",
-  FETCH_FORBIDDEN_ERROR = "PY2403",
-  FETCH_SERVER_ERROR = "PY2500",
-  FETCH_UNAVAILABLE_ERROR = "PY2503",
+  FETCH_UNAUTHORIZED_ERROR = "PY0401",
+  FETCH_FORBIDDEN_ERROR = "PY0403",
+  FETCH_NOT_FOUND_ERROR = "PY0404",
+  FETCH_SERVER_ERROR = "PY0500",
+  FETCH_UNAVAILABLE_ERROR = "PY0503",
+  BAD_CONFIG = "PY1000",
+  TOP_LEVEL_AWAIT = "PY9000"
 }
 
 export class UserError extends Error {
-  static readonly ErrorCode = ErrorCode;
-  readonly ErrorCode = UserError.ErrorCode;
-
   messageType: MessageType;
   errorCode: ErrorCode;
 
@@ -35,9 +39,6 @@ export class UserError extends Error {
 
 
 export class FetchError extends Error {
-  static readonly ErrorCode = ErrorCode;
-  readonly ErrorCode = FetchError.ErrorCode;
-
   errorCode: ErrorCode;
   constructor(errorCode: ErrorCode, message: string) {
     super(message)

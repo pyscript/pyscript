@@ -11,7 +11,7 @@ import { getLogger } from './logger';
 import { handleFetchError, showWarning, globalExport } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
-import { UserError, _createAlertBanner } from "./exceptions"
+import { UserError, ErrorCode, _createAlertBanner } from "./exceptions"
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
@@ -133,7 +133,7 @@ export class PyScriptApp {
     loadRuntime() {
         logger.info('Initializing runtime');
         if (this.config.runtimes.length == 0) {
-            throw new UserError(UserError.ErrorCode.BAD_CONFIG, 'Fatal error: config.runtimes is empty');
+            throw new UserError(ErrorCode.BAD_CONFIG, 'Fatal error: config.runtimes is empty');
         }
 
         if (this.config.runtimes.length > 1) {
