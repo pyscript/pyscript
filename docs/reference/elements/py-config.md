@@ -1,6 +1,6 @@
 # &lt;py-config&gt;
 
-Use the `<py-config>` tag to set and configure general metadata along with declaring dependencies for your PyScript application. The configuration has to be set in either [TOML](https://toml.io/) or [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON) format.
+Use the `<py-config>` tag to set and configure general metadata along with declaring dependencies for your PyScript application. The configuration has to be set in either [TOML](https://toml.io/)(default) or [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON) format.
 
 The `<py-config>` element should be placed within the `<body>` element.
 
@@ -14,6 +14,11 @@ The `<py-config>` element should be placed within the `<body>` element.
 ## Examples
 
 - `<py-config>` using TOML (default)
+
+```{note}
+Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[runtimes]]` and `[[fetch]]` must come after individual keys (like `paths = ...` and `packages=...`)
+```
+
 ```html
 <py-config>
   autoclose_loader = true
@@ -23,10 +28,6 @@ The `<py-config>` element should be placed within the `<body>` element.
   name = "pyodide-0.21.2"
   lang = "python"
 </py-config>
-```
-
-```{note}
-`[[runtimes]]` is a TOML table. Make sure this is the last item within a py-config, as the properties created after it go into the runtimes object.
 ```
 
 - JSON config using the `type` attribute.

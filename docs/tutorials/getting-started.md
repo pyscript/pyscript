@@ -149,7 +149,11 @@ Use the `<py-config>` tag to set and configure general metadata along with decla
 
 The ideal place to use `<py-config>` in between the `<body>...</body>` tags.
 
-The `<py-config>` tag can be used as follows:
+By default the `py-config` tag is set to TOML and can be used as follows:
+
+```{note}
+Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[runtimes]]` and `[[fetch]]` must come after individual keys (like `paths=...` and `packages=...`)
+```
 
 ```html
 <py-config>
@@ -161,7 +165,6 @@ The `<py-config>` tag can be used as follows:
   lang = "python"
 </py-config>
 ```
-Note: `[[runtimes]]` is a TOML table. Make sure this is the last item within a py-config, as the properties created after it go into the runtimes object.
 
 Alternatively, a JSON config can be passed using the `type` attribute.
 
