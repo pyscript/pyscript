@@ -290,9 +290,8 @@ export class PyScriptApp {
                     py_plugin.init(this);
                     this.plugins.addPythonPlugin(py_plugin);
                 }else{
-                    logger.error(`Cannot find plugin on Python module ${modulename}! Python plugins
-                    modules must contain a "plugin" attribute. For more information check the
-                    plugins documentation.`);
+                    logger.error(`Cannot find plugin on Python module ${modulename}! Python plugins \
+modules must contain a "plugin" attribute. For more information check the plugins documentation.`);
                 }
             } catch (e) {
                 //Should we still export full error contents to console?

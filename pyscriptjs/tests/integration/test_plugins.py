@@ -22,7 +22,6 @@ class Upper:
 HOOKS_PLUGIN_CODE = """
 from pyscript import Plugin, console
 
-
 class TestLogger(Plugin):
     def configure(self, config):
         console.log('configure called')
@@ -43,6 +42,12 @@ class TestLogger(Plugin):
 plugin = TestLogger()
 """
 
+NO_PLUGIN_CODE = """
+from pyscript import Plugin, console
+
+class TestLogger(Plugin):
+    pass
+"""
 
 class TestPlugin(PyScriptTest):
     def test_py_plugin_inline(self):
@@ -80,10 +85,6 @@ class TestPlugin(PyScriptTest):
                 "./hooks_logger.py"
             ]
         </py-config>
-
-        <py-up>
-            Hello World
-        </py-up>
         """
         )
         log_lines = self.console.log.lines
@@ -92,3 +93,19 @@ class TestPlugin(PyScriptTest):
 
         for method in hooks_unavailable:
             assert f"{method} called" not in log_lines
+
+    def test_no_plugin_attribute_error(self):
+        self.writefile("no_plugin.py", NO_PLUGIN_CODE)
+        self.pyscript_run(
+            """
+        <py-config>
+            plugins = [
+                "./no_plugin.py"
+            ]
+        </py-config>
+        """
+        )
+        error_msg = '[pyscript/main] Cannot find plugin on Python module no_plugin! Python plugins ' \
+                    'modules must contain a "plugin" attribute. For more information check the ' \
+                    'plugins documentation.'
+        assert error_msg in self.console.error.lines
