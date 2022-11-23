@@ -93,20 +93,25 @@ export class PluginManager {
     afterSetup(runtime: Runtime) {
         for (const p of this._plugins)
             p.afterSetup(runtime);
+
+        for (const p of this._pythonPlugins)
+            p.afterSetup?.(runtime);
     }
 
     afterStartup(runtime: Runtime) {
         for (const p of this._plugins)
             p.afterStartup(runtime);
+
         for (const p of this._pythonPlugins)
-            if (typeof p.afterStartup !== 'undefined') {
-                p.afterStartup(runtime);
-            }
+            p.afterStartup?.(runtime);
     }
 
     onUserError(error: UserError) {
         for (const p of this._plugins)
             p.onUserError(error);
+
+        for (const p of this._pythonPlugins)
+            p.onUserError?.(error);
     }
 }
 
