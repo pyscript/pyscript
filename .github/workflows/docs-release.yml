@@ -55,3 +55,12 @@ jobs:
 
         -   name: Sync to S3
             run: aws s3 sync --quiet ./docs/_build/html/ s3://docs.pyscript.net/${{ github.ref_name }}/
+
+        # Make sure to remove the latest folder so we sync the full docs upon release
+        -   name: Delete latest directory
+            run: aws s3 rm --recursive s3://docs.pyscript.net/latest/
+
+        # Note that the files are the same as above, but we want to have folders with
+        # /<tag name>/ AND /latest/ which latest will always point to the latest release
+        -   name: Sync to /latest
+            run: aws s3 sync --quiet ./docs/_build/html/ s3://docs.pyscript.net/latest/
