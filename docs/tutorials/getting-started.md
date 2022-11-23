@@ -107,9 +107,10 @@ print back onto the page. For example, we can compute π.
 ### Writing into labeled elements
 
 In the example above, we had a single `<py-script>` tag printing
-one or more lines onto the page in order. Within the `<py-script>`, you
-have access to the `pyscript` module, which provides a `.write()` method
-to send strings into labeled elements on the page.
+one or more lines onto the page in order. Within the `<py-script>`, you can
+use the `Element` class to create a python object for interacting with
+page elements. Objects created from the `Element` class provide the `.write()` method
+which enables you to send strings into the page elements referenced by those objects.
 
 For example, we'll add some style elements and provide placeholders for
 the `<py-script>` tag to write to.
@@ -128,7 +129,7 @@ the `<py-script>` tag to write to.
     <div id="pi" class="alert alert-primary"></div>
     <py-script>
       import datetime as dt
-      pyscript.write('today', dt.date.today().strftime('%A %B %d, %Y'))
+      Element('today').write(dt.date.today().strftime('%A %B %d, %Y'))
 
       def compute_pi(n):
           pi = 2
@@ -137,7 +138,7 @@ the `<py-script>` tag to write to.
           return pi
 
       pi = compute_pi(100000)
-      pyscript.write('pi', f'π is approximately {pi:.3f}')
+      Element('pi').write(f'π is approximately {pi:.3f}')
     </py-script>
   </body>
 </html>
