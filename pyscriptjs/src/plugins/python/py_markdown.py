@@ -3,9 +3,6 @@ from textwrap import dedent
 from markdown import markdown
 from pyscript import Plugin, console
 
-# plugin = Plugin("py-markdown")  # priority is optional, of course
-
-
 class MyPlugin(Plugin):
     def configure(self, config):
         console.log(f"configuration received: {config}")

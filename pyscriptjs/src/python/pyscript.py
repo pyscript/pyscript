@@ -473,6 +473,9 @@ class Plugin:
         self.app = _pyscript_app
         self.app.plugins.addPythonPlugin(create_proxy(self))
 
+    def init(self, app):
+        self.app = app
+
     def register_custom_element(self, tag):
         console.log(f"Registering {tag}")
 

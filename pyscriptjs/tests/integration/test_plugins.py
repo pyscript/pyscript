@@ -77,7 +77,7 @@ class TestPlugin(PyScriptTest):
             """
         <py-config>
             plugins = [
-                "./py_upper.py"
+                "./hooks_logger.py"
             ]
         </py-config>
 
