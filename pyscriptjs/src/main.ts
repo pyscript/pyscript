@@ -218,15 +218,21 @@ export class PyScriptApp {
         runtime.globals.set('_pyscript_app', this);
 
         // inject it into the PyScript module scope
+        let pyscript_module = runtime.interpreter.pyimport("pyscript");
+        pyscript_module.create_custom_element = create_custom_element;
+        pyscript_module.PyScript.set_version_info(version);
+        pyscript_module.destroy();
+
         // TODO: Currently adding the imports for backwards compatibility, we should
-        //       probably remove it
+        //       remove it
         await runtime.run(`
-        import pyscript
-        pyscript.create_custom_element = create_custom_element
-        pyscript._pyscript_app = _pyscript_app
-        pyscript.PyScript.set_version_info('${version}')
-        from pyscript import micropip, Element, console, document
+        from pyscript import *
         `);
+        logger.warn(`DEPRECATION WARNING: 'micropip', 'Element', 'console', 'document' and several other \
+objects form the pyscript module (with the exception of 'display') will be \
+be removed from the Python global namespace in the following release. \
+To avoid errors in future releases use import from pyscript instead. For instance: \
+from pyscript import micropip, Element, console, document`)
 
         logger.info('Packages to install: ', this.config.packages);
         await runtime.installPackage(this.config.packages);
