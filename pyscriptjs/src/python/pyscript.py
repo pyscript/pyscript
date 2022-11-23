@@ -465,7 +465,10 @@ def uses_top_level_await(source: str) -> bool:
 
 
 class Plugin:
-    def __init__(self, name):
+    def __init__(self, name=None):
+        if not name:
+            name = self.__class__.__name__
+
         self.name = name
         self.app = _pyscript_app
         self.app.plugins.addPythonPlugin(create_proxy(self))
