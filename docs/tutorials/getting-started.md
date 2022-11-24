@@ -266,8 +266,7 @@ If your `.whl` is not a pure Python wheel, then open a PR or issue with [pyodide
 
 If there's enough popular demand, the pyodide team will likely work on supporting your package. Regardless, things will likely move faster if you make the PR and consult with the team to get unblocked.
 
-For example, NumPy and Matplotlib are available. Notice here we're using `<py-script output="plot">`
-as a shortcut, which takes the expression on the last line of the script and runs `pyscript.write('plot', fig)`.
+For example, NumPy and Matplotlib are available. Notice here we're using `display(fig, target="plot")`, which takes the graph and displays it in the element with the id `plot`.
 
 ```html
 <html>
@@ -284,14 +283,14 @@ as a shortcut, which takes the expression on the last line of the script and run
           "packages": ["numpy", "matplotlib"]
         }
     </py-config>
-    <py-script output="plot">
+    <py-script>
       import matplotlib.pyplot as plt
       import numpy as np
       x = np.random.randn(1000)
       y = np.random.randn(1000)
       fig, ax = plt.subplots()
       ax.scatter(x, y)
-      fig
+      display(fig, target="plot")
     </py-script>
   </body>
 </html>
@@ -331,13 +330,13 @@ In the HTML tag `<py-config>`, paths to local modules are provided in the
         [[fetch]]
         files = ["./data.py"]
     </py-config>
-    <py-script output="plot">
+    <py-script>
       import matplotlib.pyplot as plt
       from data import make_x_and_y
       x, y = make_x_and_y(n=1000)
       fig, ax = plt.subplots()
       ax.scatter(x, y)
-      fig
+      display(fig, target="plot")
     </py-script>
   </body>
 </html>
