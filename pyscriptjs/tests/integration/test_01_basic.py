@@ -188,6 +188,7 @@ class TestBasic(PyScriptTest):
         )
 
     def test_python_modules_deprecated(self):
+        # GIVEN a py-script tag
         self.pyscript_run(
             """
             <py-script>
@@ -196,9 +197,9 @@ class TestBasic(PyScriptTest):
             </py-script>
         """
         )
-        # TODO: Adding a quick check that the deprecation warning is logged. Not spending to much time to make it
-        #       perfect since we'll remove this right after the release. (Anyone wanting to improve it, please
-        #       feel free to)
+        # TODO: Adding a quick check that the deprecation warning is logged. Not spending
+        #       to much time to make it perfect since we'll remove this right after the
+        #       release. (Anyone wanting to improve it, please feel free to)
         warning_msg = (
             "[pyscript/main] DEPRECATION WARNING: 'micropip', 'Element', 'console', 'document' "
             "and several other objects form the pyscript module (with the exception of 'display') "
@@ -207,4 +208,6 @@ class TestBasic(PyScriptTest):
             "instead. For instance: from pyscript import micropip, Element, "
             "console, document"
         )
+        # we EXPECTED to find a deprecation warning about what will be removed from the Python
+        # global namespace in the next releases
         assert warning_msg in self.console.warning.lines

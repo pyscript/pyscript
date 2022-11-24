@@ -147,6 +147,7 @@ export function define_custom_element(tag: string, pyPluginClass: any) : any {
         }
 
         connectedCallback() {
+            console.log("delegating connect")
             const innerHTML = this.pyPluginInstance.connect();
             if (typeof innerHTML === 'string')
                 this.innerHTML = innerHTML;
