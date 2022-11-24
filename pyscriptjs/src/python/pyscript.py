@@ -483,7 +483,7 @@ class Plugin:
             console.log(f"Inside dec {tag}")
             # TODO: this is very pyodide specific but will have to do
             #       until we have JS interface that works across interpreters
-            create_custom_element(tag, create_proxy(class_))  # noqa: F821
+            define_custom_element(tag, create_proxy(class_))  # noqa: F821
 
         console.log(f"returning Proxy {tag}")
         return create_proxy(wrapper)

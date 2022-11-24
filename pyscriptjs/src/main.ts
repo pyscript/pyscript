@@ -4,7 +4,7 @@ import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
 import { version } from './runtime';
-import { PluginManager, create_custom_element } from './plugin';
+import { PluginManager, define_custom_element } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
@@ -212,9 +212,9 @@ export class PyScriptApp {
         // Save and load pyscript.py from FS
         runtime.interpreter.FS.writeFile("pyscript.py", pyscript, { encoding: "utf8" });
 
-        // inject `create_custom_element` it into the PyScript module scope
+        // inject `define_custom_element` it into the PyScript module scope
         let pyscript_module = runtime.interpreter.pyimport("pyscript");
-        pyscript_module.create_custom_element = create_custom_element;
+        pyscript_module.define_custom_element = define_custom_element;
         pyscript_module.PyScript.set_version_info(version);
         pyscript_module.destroy();
 

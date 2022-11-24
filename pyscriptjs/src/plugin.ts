@@ -116,7 +116,7 @@ export class PluginManager {
 }
 
 
-export function create_custom_element(name: string, pyObject: any, callback?: Function) : any {
+export function define_custom_element(name: string, pyObject: any, callback?: Function) : any {
     logger.info(`creating plugin: ${name}`)
     class CustomElementWrapper extends HTMLElement {
         shadow: ShadowRoot;
