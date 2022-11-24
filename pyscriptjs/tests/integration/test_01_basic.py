@@ -199,10 +199,12 @@ class TestBasic(PyScriptTest):
         # TODO: Adding a quick check that the deprecation warning is logged. Not spending to much time to make it
         #       perfect since we'll remove this right after the release. (Anyone wanting to improve it, please
         #       feel free to)
-        warning_msg = "[pyscript/main] DEPRECATION WARNING: 'micropip', 'Element', 'console', 'document' "\
-                      "and several other objects form the pyscript module (with the exception of 'display') "\
-                      "will be be removed from the Python global namespace in the following release. "\
-                      "To avoid errors in future releases use import from pyscript "\
-                      "instead. For instance: from pyscript import micropip, Element, "\
-                      "console, document"
+        warning_msg = (
+            "[pyscript/main] DEPRECATION WARNING: 'micropip', 'Element', 'console', 'document' "
+            "and several other objects form the pyscript module (with the exception of 'display') "
+            "will be be removed from the Python global namespace in the following release. "
+            "To avoid errors in future releases use import from pyscript "
+            "instead. For instance: from pyscript import micropip, Element, "
+            "console, document"
+        )
         assert warning_msg in self.console.warning.lines
