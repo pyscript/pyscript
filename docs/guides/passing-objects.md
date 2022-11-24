@@ -45,7 +45,7 @@ The [PyScript JavaScript module](../reference/modules/pyscript.md)  exposes its 
     <button onclick="showX()">Click Me to Get 'x' from Python</button>
     <script>
         function showX(){
-            console.log(`In Python right now, x = ${PyScript.globals.get('x')}`)
+            console.log(`In Python right now, x = ${pyscript.runtime.globals.get('x')}`)
         }
     </script>
 </body>
@@ -59,7 +59,7 @@ Since [everything is an object](https://docs.python.org/3/reference/datamodel.ht
     <button onclick="sortInPython(['Candy', 'Donut', 'Apple', 'Banana'])">Sort In Python And Log</button>
     <script>
         function sortInPython(data){
-            js_sorted = PyScript.runtime.globals.get('sorted') //grab python's 'sorted' function
+            js_sorted = pyscript.runtime.globals.get('sorted') //grab python's 'sorted' function
             const sorted_data = js_sorted(data) //apply the function to the 'data' argument
             for (const item of sorted_data){
                 console.log(item)
@@ -119,7 +119,7 @@ This will make all Python global variables available in JavaScript with `pyodide
             self.radius = radius
 
         @property
-        def area:
+        def area(self):
             return symbols['pi'] * self.radius**2
 </py-script>
 ```
@@ -129,11 +129,70 @@ This will make all Python global variables available in JavaScript with `pyodide
 <script>
     document.getElementById("do-math").addEventListener("click", () => {
         const exp = pyodideGlobals.get('rough_exponential');
-        console.log("e squared is about ${exp(2)}");
+        console.log(`e squared is about ${exp(2)}`);
         const c = pyodideGlobals.get('Circle')(4);
-        console.log("The area of c is ${c.area}");
+        console.log(`The area of c is ${c.area}`);
     });
 </script>
+```
+
+#### Full example
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Exporting all Global Python Objects</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  </head>
+
+  <body>
+    <input type="button" value="Log Python Variables" id="do-math">
+    <py-script>
+        from js import createObject
+        from pyodide.ffi import create_proxy
+
+        createObject(create_proxy(globals()), "pyodideGlobals")
+
+        # create some Python objects:
+        symbols = {'pi': 3.1415926, 'e': 2.7182818}
+
+        def rough_exponential(x):
+            return symbols['e']**x
+
+        class Circle():
+            def __init__(self, radius):
+                self.radius = radius
+
+            @property
+            def area(self):
+                return symbols['pi'] * self.radius**2
+    </py-script>
+    <script>
+        function createObject(object, variableName){
+            //Bind a variable whose name is the string variableName
+            // to the object called 'object'
+            let execString = variableName + " = object"
+            console.log("Running '" + execString + "'");
+            eval(execString)
+        }
+
+        document.getElementById("do-math").addEventListener("click", () => {
+            const exp = pyodideGlobals.get('rough_exponential');
+            console.log(`e squared is about ${exp(2)}`);
+            const c = pyodideGlobals.get('Circle')(4);
+            console.log(`The area of c is ${c.area}`);
+        });
+    </script>
+  </body>
+</html>
 ```
 
 
@@ -174,4 +233,63 @@ We can also export individual Python objects to the JavaScript global scope if w
     console.log(`2 times 3 times 4 is ${multiply(2,3,4)}`);
   });
 </script>
+```
+
+#### Full example
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Exporting Individual Python Objects</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  </head>
+
+  <body>
+    <py-script>
+        import js
+        from pyodide.ffi import create_proxy
+
+        # Create 3 python objects
+        language = "Python 3"
+        animals = ['dog', 'cat', 'bird']
+        multiply3 = lambda a, b, c: a * b * c
+
+        # js object can be named the same as Python objects...
+        js.createObject(language, "language")
+
+        # ...but don't have to be
+        js.createObject(create_proxy(animals), "animals_from_py")
+
+        # functions are objects too, in both Python and Javascript
+        js.createObject(create_proxy(multiply3), "multiply")
+    </py-script>
+
+    <input type="button" value="Log Python Variables" id="log-python-variables">
+    <script>
+        function createObject(object, variableName){
+            //Bind a variable whose name is the string variableName
+            // to the object called 'object'
+            let execString = variableName + " = object"
+            console.log("Running '" + execString + "'");
+            eval(execString)
+        }
+
+        document.getElementById("log-python-variables").addEventListener("click", () => {
+          console.log(`Nice job using ${language}`);
+          for (const animal of animals_from_py){
+            console.log(`Do you like ${animal}s? `);
+          }
+          console.log(`2 times 3 times 4 is ${multiply(2,3,4)}`);
+        });
+    </script>
+  </body>
+</html>
 ```

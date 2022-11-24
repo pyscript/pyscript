@@ -326,6 +326,8 @@ textarea {
     min-height: 10em;
     background-color: black;
     color: white;
+    padding: 0.5rem;
+    overflow: auto;
 }
 
 .py-terminal-hidden {
