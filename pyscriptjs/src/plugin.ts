@@ -147,10 +147,9 @@ export function define_custom_element(tag: string, pyPluginClass: any) : any {
         }
 
         connectedCallback() {
-            const elementHtml = this.pyPluginInstance.connect();
-            if (elementHtml !== undefined){
-                this.innerHTML = elementHtml;
-            }
+            const innerHTML = this.pyPluginInstance.connect();
+            if (typeof innerHTML === 'string')
+                this.innerHTML = innerHTML;
         }
     }
     customElements.define(tag, ProxyCustomElement);
