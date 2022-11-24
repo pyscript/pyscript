@@ -4,9 +4,10 @@ from markdown import markdown
 from pyscript import Plugin, console
 
 console.warning(
-    'WARNING: This plugin is still in a very experimental phase and will likely change'\
-    ' and potentially break in the future releases. Use it with caution.'
-    )
+    "WARNING: This plugin is still in a very experimental phase and will likely change"
+    " and potentially break in the future releases. Use it with caution."
+)
+
 
 class MyPlugin(Plugin):
     def configure(self, config):
