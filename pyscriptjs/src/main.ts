@@ -59,7 +59,7 @@ More concretely:
 export class PyScriptApp {
     config: AppConfig;
     runtime: Runtime;
-    PyScript: any; // XXX would be nice to have a more precise type for the class itself
+    PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
 

@@ -107,9 +107,10 @@ print back onto the page. For example, we can compute π.
 ### Writing into labeled elements
 
 In the example above, we had a single `<py-script>` tag printing
-one or more lines onto the page in order. Within the `<py-script>`, you
-have access to the `pyscript` module, which provides a `.write()` method
-to send strings into labeled elements on the page.
+one or more lines onto the page in order. Within the `<py-script>`, you can
+use the `Element` class to create a python object for interacting with
+page elements. Objects created from the `Element` class provide the `.write()` method
+which enables you to send strings into the page elements referenced by those objects.
 
 For example, we'll add some style elements and provide placeholders for
 the `<py-script>` tag to write to.
@@ -128,7 +129,7 @@ the `<py-script>` tag to write to.
     <div id="pi" class="alert alert-primary"></div>
     <py-script>
       import datetime as dt
-      pyscript.write('today', dt.date.today().strftime('%A %B %d, %Y'))
+      Element('today').write(dt.date.today().strftime('%A %B %d, %Y'))
 
       def compute_pi(n):
           pi = 2
@@ -137,7 +138,7 @@ the `<py-script>` tag to write to.
           return pi
 
       pi = compute_pi(100000)
-      pyscript.write('pi', f'π is approximately {pi:.3f}')
+      Element('pi').write(f'π is approximately {pi:.3f}')
     </py-script>
   </body>
 </html>
@@ -149,7 +150,11 @@ Use the `<py-config>` tag to set and configure general metadata along with decla
 
 The ideal place to use `<py-config>` in between the `<body>...</body>` tags.
 
-The `<py-config>` tag can be used as follows:
+By default the `py-config` tag is set to TOML and can be used as follows:
+
+```{note}
+Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[runtimes]]` and `[[fetch]]` must come after individual keys (like `paths=...` and `packages=...`)
+```
 
 ```html
 <py-config>
@@ -161,7 +166,6 @@ The `<py-config>` tag can be used as follows:
   lang = "python"
 </py-config>
 ```
-Note: `[[runtimes]]` is a TOML table. Make sure this is the last item within a py-config, as the properties created after it go into the runtimes object.
 
 Alternatively, a JSON config can be passed using the `type` attribute.
 
@@ -296,6 +300,28 @@ as a shortcut, which takes the expression on the last line of the script and run
 </html>
 ```
 
+Besides the above format, a user can also supply any extra keys and values that are relevant as metadata information or perhaps are being used within the application.
+
+For example, a valid config could also be with the snippet below:
+
+```
+<py-config type="toml">
+  magic = "unicorn"
+</py-config>
+```
+
+OR in JSON like
+
+```
+<py-config type="json">
+  {
+    "magic": "unicorn"
+  }
+</py-config>
+```
+
+If this `"magic"` key is present in config supplied via `src` and also present in config supplied via `inline`, then the value in the inline config is given priority i.e. the overriding process also works for custom keys.
+
 ### Local modules
 
 In addition to packages, you can declare local Python modules that will
@@ -342,6 +368,8 @@ In the HTML tag `<py-config>`, paths to local modules are provided in the
 </html>
 ```
 
+### Supported configuration values
+
 The following optional values are supported by `<py-config>`:
 | Value | Type | Description |
 | ------ | ---- | ----------- |
@@ -359,7 +387,10 @@ The following optional values are supported by `<py-config>`:
 | `plugins` | List of Plugins | List of Plugins are to be specified here. The default value is an empty list. |
 | `runtimes` | List of Runtimes | List of runtime configurations, described below. The default value contains a single Pyodide based runtime. |
 
+#### Fetch
+
 A fetch configuration consists of the following:
+
 | Value | Type | Description |
 | ----- | ---- | ----------- |
 | `from` | string | Base URL for the resource to be fetched. |
@@ -367,7 +398,13 @@ A fetch configuration consists of the following:
 | `to_file` | string | Name of the target to create in the filesystem. |
 | `files` | List of string | List of files to be downloaded. |
 
+```{note}
 The parameters `to_file` and `files` shouldn't be supplied together.
+```
+
+You may be interested in reading the [tutorial on fetching resources](./py-config-fetch.md) to learn more about this feature.
+
+#### Runtime
 
 A runtime configuration consists of the following:
 | Value | Type | Description |
@@ -376,27 +413,7 @@ A runtime configuration consists of the following:
 | `name` | string | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
 | `lang` | string | Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
 
-Besides the above format, a user can also supply any extra keys and values that are relevant as metadata information or perhaps are being used within the application.
-
-For example, a valid config could also be with the snippet below:
-
-```
-<py-config type="toml">
-  magic = "unicorn"
-</py-config>
-```
-
-OR in JSON like
-
-```
-<py-config type="json">
-  {
-    "magic": "unicorn"
-  }
-</py-config>
-```
-
-If this `"magic"` key is present in config supplied via `src` and also present in config supplied via `inline`, then the value in the inline config is given priority i.e. the overriding process also works for custom keys.
+You may be interested in reading the [tutorial on setting a runtime](./py-config-runtime.md) to learn more about this feature.
 
 ## The py-repl tag
 
