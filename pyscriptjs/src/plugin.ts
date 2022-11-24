@@ -116,34 +116,42 @@ export class PluginManager {
 }
 
 
-export function define_custom_element(name: string, pyObject: any, callback?: Function) : any {
-    logger.info(`creating plugin: ${name}`)
-    class CustomElementWrapper extends HTMLElement {
+/**
+ * Defines a new CustomElement (via customElement.defines) with `tag`,
+ * where the new CustomElement is a proxy that delegates the logic to
+ * pyPluginClass.
+ *
+ * @param tag - tag that will be used to define the new CustomElement (i.e: "py-script")
+ * @param pyPluginClass - class that will be used to create instance to be
+ *                        used as CustomElement logic handler. Any DOM event
+ *                        received by the newly created CustomElement will be
+ *                        delegated to that instance.
+ */
+export function define_custom_element(tag: string, pyPluginClass: any) : any {
+    logger.info(`creating plugin: ${tag}`)
+    class ProxyCustomElement extends HTMLElement {
         shadow: ShadowRoot;
         wrapper: HTMLElement;
-        pyObject: any;
-        source: string;
+        pyPluginInstance: any;
+        originalInnerHTML: string;
 
         constructor() {
-            logger.debug(`creating ${name} plugin instance`)
+            logger.debug(`creating ${tag} plugin instance`)
             super();
 
             this.shadow = this.attachShadow({ mode: 'open' });
             this.wrapper = document.createElement('slot');
             this.shadow.appendChild(this.wrapper);
-            this.source = this.innerHTML;
-            this.pyObject = pyObject(this);
-            if (typeof callback !== 'undefined') {
-                callback(this);
-            }
+            this.originalInnerHTML = this.innerHTML;
+            this.pyPluginInstance = pyPluginClass(this);
         }
 
         connectedCallback() {
-            const elementHtml = this.pyObject.connect();
+            const elementHtml = this.pyPluginInstance.connect();
             if (elementHtml !== undefined){
                 this.innerHTML = elementHtml;
             }
         }
     }
-    customElements.define(name, CustomElementWrapper);
+    customElements.define(tag, ProxyCustomElement);
 }
