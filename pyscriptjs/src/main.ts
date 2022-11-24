@@ -215,7 +215,6 @@ export class PyScriptApp {
         // add `create_custom_element` and the current `PyScriptApp` to the Python namespace
         // in the pyscript module scope
         runtime.globals.set('create_custom_element', create_custom_element);
-        runtime.globals.set('_pyscript_app', this);
 
         // inject it into the PyScript module scope
         let pyscript_module = runtime.interpreter.pyimport("pyscript");
