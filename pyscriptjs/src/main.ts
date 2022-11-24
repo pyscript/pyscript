@@ -212,11 +212,7 @@ export class PyScriptApp {
         // Save and load pyscript.py from FS
         runtime.interpreter.FS.writeFile("pyscript.py", pyscript, { encoding: "utf8" });
 
-        // add `create_custom_element` and the current `PyScriptApp` to the Python namespace
-        // in the pyscript module scope
-        runtime.globals.set('create_custom_element', create_custom_element);
-
-        // inject it into the PyScript module scope
+        // inject `create_custom_element` it into the PyScript module scope
         let pyscript_module = runtime.interpreter.pyimport("pyscript");
         pyscript_module.create_custom_element = create_custom_element;
         pyscript_module.PyScript.set_version_info(version);
