@@ -152,11 +152,14 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Matplotlib"
         wait_for_render(self.page, "*", "<img src=['\"]data:image")
         # The image is being rended using base64, lets fetch its source
-        # and replace everything but the actual base64 string.\
-        img_src = (
-            self.page.wait_for_selector("img")
-            .get_attribute("src")
-            .replace("data:image/png;charset=utf-8;base64,", "")
+        # and replace everything but the actual base64 string.
+        # Note: The first image on the page is the logo, so we are lookin
+        # at the mpl-1 div which is rendered once the image is in the page
+        # if this test fails, confirm that the div has the right id using
+        # the --dev flag when running the tests
+        test = self.page.wait_for_selector("#mpl-1 >> img")
+        img_src = test.get_attribute("src").replace(
+            "data:image/png;charset=utf-8;base64,", ""
         )
         # Finally, let's  get the np array from the previous data
         img_data = np.asarray(Image.open(io.BytesIO(base64.b64decode(img_src))))
@@ -261,7 +264,7 @@ class TestExamples(PyScriptTest):
         wait_for_render(self.page, "*", "<py-repl.*?>")
 
         self.page.locator("py-repl").type("display('Hello, World!')")
-        self.page.locator("button").click()
+        self.page.locator("#runButton").click()
 
         assert self.page.locator("#my-repl-2").text_content() == "Hello, World!"
 
@@ -280,7 +283,7 @@ class TestExamples(PyScriptTest):
         wait_for_render(self.page, "*", "<py-repl.*?>")
         # confirm we can import utils and run one command
         self.page.locator("py-repl").type("import utils\ndisplay(utils.now())")
-        self.page.locator("button").click()
+        self.page.wait_for_selector("#runButton").click()
         # Make sure the output is in the page
         self.page.wait_for_selector("#my-repl-1-1")
         # utils.now returns current date time

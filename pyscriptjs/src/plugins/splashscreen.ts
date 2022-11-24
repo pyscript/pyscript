@@ -1,4 +1,3 @@
-import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
 import type { UserError } from '../exceptions';
 import type { Runtime } from '../runtime';
@@ -44,7 +43,6 @@ export class SplashscreenPlugin extends Plugin {
         customElements.define('py-splashscreen', PySplashscreen);
         this.elem = <PySplashscreen>document.createElement('py-splashscreen');
         document.body.append(this.elem);
-
         document.addEventListener("py-status-message", (e: CustomEvent) => {
             const msg = e.detail;
             this.elem.log(msg);
