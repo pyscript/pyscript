@@ -1,0 +1,65 @@
+name: '[CI] Run tests on examples change'
+
+on:
+    push:
+        branches:
+        -   main
+        paths:
+        -   examples/**
+
+    pull_request:
+        branches:
+        -   main
+        paths:
+        -   examples/**
+        -   .github/workflows/examples-test-only.yml # Test workflow
+    workflow_dispatch:
+
+jobs:
+    BuildAndTest:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: pyscriptjs
+        env:
+            MINICONDA_PYTHON_VERSION: py38
+            MINICONDA_VERSION: 4.11.0
+        steps:
+
+        -   name: Checkout
+            uses: actions/checkout@v3
+
+        -   name: Install node
+            uses: actions/setup-node@v3
+            with:
+                node-version: 18.x
+
+        -   name: Cache node modules
+            uses: actions/cache@v3
+            env:
+                cache-name: cache-node-modules
+            with:
+                path: ~/.npm
+                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                restore-keys: |
+                    ${{ runner.os }}-build-${{ env.cache-name }}-
+                    ${{ runner.os }}-build-
+                    ${{ runner.os }}-
+
+        -   name: setup Miniconda
+            uses: conda-incubator/setup-miniconda@v2
+
+        -   name: Setup Environment
+            run: make setup
+
+        -   name: Build
+            run: make build
+
+        -   name: Typescript Tests
+            run: make test-ts
+
+        -   name: Python Tests
+            run: make test-py
+
+        -   name: Integration Tests
+            run: make test-integration-parallel
