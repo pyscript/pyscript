@@ -3,6 +3,7 @@ from textwrap import dedent
 from markdown import markdown
 from pyscript import Plugin, console
 
+
 class MyPlugin(Plugin):
     def configure(self, config):
         console.log(f"configuration received: {config}")

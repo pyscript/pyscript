@@ -288,7 +288,7 @@ from pyscript import micropip, Element, console, document`)
 
                 console.log(`importing ${modulename}`);
                 // TODO: This is very specific to Pyodide API and will not work for other interpreters,
-                //       when we add support for other interpreters we will need to move this to the 
+                //       when we add support for other interpreters we will need to move this to the
                 //       runtime (interpreter) API level and allow each one to implement it in its own way
                 let module = runtime.interpreter.pyimport(modulename);
                 if (typeof module.plugin !== 'undefined'){
