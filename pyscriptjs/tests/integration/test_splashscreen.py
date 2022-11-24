@@ -73,7 +73,7 @@ class TestSplashscreen(PyScriptTest):
             """,
         )
         warning = self.page.locator(".py-warning")
-        inner_text = warning.inner_text()
+        inner_text = warning.inner_html()
         assert "The setting autoclose_loader is deprecated" in inner_text
         #
         div = self.page.locator("py-splashscreen > div")

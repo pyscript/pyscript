@@ -6,17 +6,19 @@ The `<py-config>` element should be placed within the `<body>` element.
 
 ## Attributes
 
-| attribute | type | default | description |
-|----|----|----|----|
-| **type** | string | "toml" | Syntax type of the `<py-config>`. Value can be `json` or `toml`. Default: "toml" if type is unspecifed. |
-| **src** | url |    | Source url to an external configuration file. |
+| attribute | type   | default | description                                                                                             |
+|-----------|--------|---------|---------------------------------------------------------------------------------------------------------|
+| **type**  | string | "toml"  | Syntax type of the `<py-config>`. Value can be `json` or `toml`. Default: "toml" if type is unspecifed. |
+| **src**   | url    |         | Source url to an external configuration file.                                                           |
 
 ## Examples
 
-- `<py-config>` using TOML (default)
+### `<py-config>` using TOML (default)
+
 ```html
 <py-config>
-  autoclose_loader = true
+  [splashscreen]
+  autoclose = true
 
   [[runtimes]]
   src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
@@ -26,11 +28,13 @@ The `<py-config>` element should be placed within the `<body>` element.
 ```
 Note: `[[runtimes]]` is a TOML table. Make sure this is the last item within a py-config, as the properties created after it go into the runtimes object.
 
-- JSON config using the `type` attribute.
+### JSON config using the `type` attribute.
 ```html
 <py-config type="json">
   {
-    "autoclose_loader": true,
+    "splashscreen": {
+      "autoclose": false
+    },
     "runtimes": [{
       "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
       "name": "pyodide-0.21.2",
@@ -47,7 +51,9 @@ Note: `[[runtimes]]` is a TOML table. Make sure this is the last item within a p
 where `custom.toml` contains
 
 ```toml
-autoclose_loader = true
+[splashscreen]
+  autoclose = true
+
 [[runtimes]]
 src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
 name = "pyodide-0.21.2"
@@ -62,7 +68,9 @@ where `custom.json` contains
 
 ```json
 {
-  "autoclose_loader": true,
+  "splashscreen": {
+      "autoclose": true
+    },
   "runtimes": [{
     "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
     "name": "pyodide-0.21.2",
@@ -222,21 +230,22 @@ The following optional values are supported by `<py-config>`:
 | `runtimes` | List of Runtimes | List of runtime configurations, described below. The default value contains a single Pyodide based runtime. |
 
 A fetch configuration consists of the following:
-| Value | Type | Description |
-| ----- | ---- | ----------- |
-| `from` | string | Base URL for the resource to be fetched. |
-| `to_folder` | string | Name of the folder to create in the filesystem. |
-| `to_file` | string | Name of the target to create in the filesystem. |
-| `files` | List of string | List of files to be downloaded. |
+
+| Value        | Type           | Description                                     |
+|--------------|----------------|-------------------------------------------------|
+| `from`       | string         | Base URL for the resource to be fetched.        |
+| `to_folder`  | string         | Name of the folder to create in the filesystem. |
+| `to_file`    | string         | Name of the target to create in the filesystem. |
+| `files`      | List of string | List of files to be downloaded.                 |
 
 The parameters `to_file` and `files` shouldn't be supplied together.
 
 A runtime configuration consists of the following:
-| Value | Type | Description |
-| ----- | ---- | ----------- |
-| `src` | string (Required) | URL to the runtime source. |
-| `name` | string | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
-| `lang` | string | Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
+| Value  | Type              | Description |
+|--------|-------------------|-------------|
+| `src`  | string (Required) | URL to the runtime source. |
+| `name` | string            | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
+| `lang` | string            | Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
 
 Besides the above schema, a user can also supply any extra keys and values that are relevant as metadata information or perhaps are being used within the application.
 
