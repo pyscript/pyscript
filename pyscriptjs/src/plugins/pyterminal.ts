@@ -2,7 +2,7 @@ import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
 import type { Runtime } from '../runtime';
 import { Plugin } from '../plugin';
-import { UserError } from "../exceptions"
+import { UserError } from '../exceptions';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 
@@ -19,16 +19,15 @@ export class PyTerminalPlugin extends Plugin {
     configure(config: AppConfig) {
         // validate the terminal config and handle default values
         const t = config.terminal;
-        if (t !== undefined &&
-            t !== true &&
-            t !== false &&
-            t !== "auto") {
+        if (t !== undefined && t !== true && t !== false && t !== 'auto') {
             const got = JSON.stringify(t);
-            throw new UserError('Invalid value for config.terminal: the only accepted'  +
-                                `values are true, false and "auto", got "${got}".`);
+            throw new UserError(
+                'Invalid value for config.terminal: the only accepted' +
+                    `values are true, false and "auto", got "${got}".`,
+            );
         }
         if (t === undefined) {
-            config.terminal = "auto"; // default value
+            config.terminal = 'auto'; // default value
         }
     }
 
@@ -36,12 +35,11 @@ export class PyTerminalPlugin extends Plugin {
         // if config.terminal is "yes" or "auto", let's add a <py-terminal> to
         // the document, unless it's already present.
         const t = config.terminal;
-        if (t === true || t === "auto") {
+        if (t === true || t === 'auto') {
             if (document.querySelector('py-terminal') === null) {
-                logger.info("No <py-terminal> found, adding one");
+                logger.info('No <py-terminal> found, adding one');
                 const termElem = document.createElement('py-terminal');
-                if (t === "auto")
-                    termElem.setAttribute("auto", "");
+                if (t === 'auto') termElem.setAttribute('auto', '');
                 document.body.appendChild(termElem);
             }
         }
@@ -71,9 +69,7 @@ export class PyTerminalPlugin extends Plugin {
     }
 }
 
-
 function make_PyTerminal(app: PyScriptApp) {
-
     /** The <py-terminal> custom element, which automatically register a stdio
      *  listener to capture and display stdout/stderr
      */
@@ -92,8 +88,7 @@ function make_PyTerminal(app: PyScriptApp) {
             if (this.isAuto()) {
                 this.classList.add('py-terminal-hidden');
                 this.autoShowOnNextLine = true;
-            }
-            else {
+            } else {
                 this.autoShowOnNextLine = false;
             }
 
@@ -102,12 +97,12 @@ function make_PyTerminal(app: PyScriptApp) {
         }
 
         isAuto() {
-            return this.hasAttribute("auto");
+            return this.hasAttribute('auto');
         }
 
         // implementation of the Stdio interface
         stdout_writeline(msg: string) {
-            this.outElem.innerText += msg + "\n";
+            this.outElem.innerText += msg + '\n';
             if (this.autoShowOnNextLine) {
                 this.classList.remove('py-terminal-hidden');
                 this.autoShowOnNextLine = false;

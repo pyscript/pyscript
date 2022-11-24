@@ -11,7 +11,7 @@ import { getLogger } from './logger';
 import { handleFetchError, showWarning, globalExport } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
-import { UserError, _createAlertBanner } from "./exceptions"
+import { UserError, _createAlertBanner } from './exceptions';
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
@@ -56,8 +56,6 @@ More concretely:
   - PyScriptApp.afterRuntimeLoad() implements all the points >= 5.
 */
 
-
-
 export class PyScriptApp {
     config: AppConfig;
     runtime: Runtime;
@@ -68,11 +66,7 @@ export class PyScriptApp {
     constructor() {
         // initialize the builtin plugins
         this.plugins = new PluginManager();
-        this.plugins.add(
-            new SplashscreenPlugin(),
-            new PyTerminalPlugin(this),
-            new ImportmapPlugin(),
-        );
+        this.plugins.add(new SplashscreenPlugin(), new PyTerminalPlugin(this), new ImportmapPlugin());
 
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
@@ -86,18 +80,16 @@ export class PyScriptApp {
     main() {
         try {
             this._realMain();
-        }
-        catch(error) {
+        } catch (error) {
             this._handleUserErrorMaybe(error);
         }
     }
 
     _handleUserErrorMaybe(error) {
         if (error instanceof UserError) {
-            _createAlertBanner(error.message, "error", error.messageType);
+            _createAlertBanner(error.message, 'error', error.messageType);
             this.plugins.onUserError(error);
-        }
-        else {
+        } else {
             throw error;
         }
     }
@@ -125,7 +117,7 @@ export class PyScriptApp {
         if (elements.length >= 2) {
             showWarning(
                 'Multiple <py-config> tags detected. Only the first is ' +
-                'going to be parsed, all the others will be ignored',
+                    'going to be parsed, all the others will be ignored',
             );
         }
         this.config = loadConfigFromElement(el);
@@ -140,14 +132,16 @@ export class PyScriptApp {
         }
 
         if (this.config.runtimes.length > 1) {
-            showWarning('Multiple runtimes are not supported yet.<br />Only the first will be used', "html");
+            showWarning('Multiple runtimes are not supported yet.<br />Only the first will be used', 'html');
         }
         const runtime_cfg = this.config.runtimes[0];
-        this.runtime = new PyodideRuntime(this.config,
-                                          this._stdioMultiplexer,
-                                          runtime_cfg.src,
-                                          runtime_cfg.name,
-                                          runtime_cfg.lang);
+        this.runtime = new PyodideRuntime(
+            this.config,
+            this._stdioMultiplexer,
+            runtime_cfg.src,
+            runtime_cfg.name,
+            runtime_cfg.lang,
+        );
         this.logStatus(`Downloading ${runtime_cfg.name}...`);
 
         // download pyodide by using a <script> tag. Once it's ready, the
@@ -159,7 +153,7 @@ export class PyScriptApp {
         const script = document.createElement('script'); // create a script DOM node
         script.src = this.runtime.src;
         script.addEventListener('load', () => {
-            this.afterRuntimeLoad(this.runtime).catch((error) => {
+            this.afterRuntimeLoad(this.runtime).catch(error => {
                 this._handleUserErrorMaybe(error);
             });
         });
@@ -197,7 +191,7 @@ export class PyScriptApp {
         // NOTE: runtime message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
         // change it also in tests/integration/support.py
-        this.logStatus("Startup complete");
+        this.logStatus('Startup complete');
         this.plugins.afterStartup(runtime);
         logger.info('PyScript page fully initialized');
     }
@@ -210,10 +204,10 @@ export class PyScriptApp {
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS
-        runtime.interpreter.FS.writeFile("pyscript.py", pyscript, { encoding: "utf8" });
+        runtime.interpreter.FS.writeFile('pyscript.py', pyscript, { encoding: 'utf8' });
 
         // inject `define_custom_element` it into the PyScript module scope
-        let pyscript_module = runtime.interpreter.pyimport("pyscript");
+        const pyscript_module = runtime.interpreter.pyimport('pyscript');
         pyscript_module.define_custom_element = define_custom_element;
         pyscript_module.PyScript.set_version_info(version);
         pyscript_module.destroy();
@@ -227,7 +221,7 @@ export class PyScriptApp {
 objects form the pyscript module (with the exception of 'display') will be \
 be removed from the Python global namespace in the following release. \
 To avoid errors in future releases use import from pyscript instead. For instance: \
-from pyscript import micropip, Element, console, document`)
+from pyscript import micropip, Element, console, document`);
 
         logger.info('Packages to install: ', this.config.packages);
         await runtime.installPackage(this.config.packages);
@@ -245,17 +239,17 @@ from pyscript import micropip, Element, console, document`)
         // download/startup of pyodide.
         const [paths, fetchPaths] = calculatePaths(this.config.fetch);
         logger.info('Paths to fetch: ', fetchPaths);
-        for (let i=0; i<paths.length; i++) {
+        for (let i = 0; i < paths.length; i++) {
             logger.info(`  fetching path: ${fetchPaths[i]}`);
             try {
                 await runtime.loadFromFile(paths[i], fetchPaths[i]);
             } catch (e) {
                 // The 'TypeError' here happens when running pytest
                 // I'm not particularly happy with this solution.
-                if (e.name === "FetchError" || e.name === "TypeError") {
+                if (e.name === 'FetchError' || e.name === 'TypeError') {
                     handleFetchError(<Error>e, fetchPaths[i]);
                 } else {
-                    throw e
+                    throw e;
                 }
             }
         }
@@ -270,14 +264,14 @@ from pyscript import micropip, Element, console, document`)
      */
     async fetchPythonPlugins(runtime: Runtime) {
         const plugins = this.config.plugins;
-        logger.info("Python plugins to fetch: ", plugins)
+        logger.info('Python plugins to fetch: ', plugins);
         for (const singleFile of plugins) {
             logger.info(`  fetching plugins: ${singleFile}`);
             try {
                 const pathArr = singleFile.split('/');
                 const filename = pathArr.pop();
                 // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
-                const destPath = `./${filename}`
+                const destPath = `./${filename}`;
                 await runtime.loadFromFile(destPath, singleFile);
                 const modulename = singleFile.replace(/^.*[\\/]/, '').replace('.py', '');
 
@@ -285,12 +279,12 @@ from pyscript import micropip, Element, console, document`)
                 // TODO: This is very specific to Pyodide API and will not work for other interpreters,
                 //       when we add support for other interpreters we will need to move this to the
                 //       runtime (interpreter) API level and allow each one to implement it in its own way
-                let module = runtime.interpreter.pyimport(modulename);
-                if (typeof module.plugin !== 'undefined'){
-                    const py_plugin = module.plugin
+                const module = runtime.interpreter.pyimport(modulename);
+                if (typeof module.plugin !== 'undefined') {
+                    const py_plugin = module.plugin;
                     py_plugin.init(this);
                     this.plugins.addPythonPlugin(py_plugin);
-                }else{
+                } else {
                     logger.error(`Cannot find plugin on Python module ${modulename}! Python plugins \
 modules must contain a "plugin" attribute. For more information check the plugins documentation.`);
                 }
@@ -299,7 +293,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
                 handleFetchError(<Error>e, singleFile);
             }
         }
-        logger.info("All plugins fetched");
+        logger.info('All plugins fetched');
     }
 
     // lifecycle (7)
@@ -312,7 +306,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
 
     logStatus(msg: string) {
         logger.info(msg);
-        const ev = new CustomEvent("py-status-message", { detail: msg });
+        const ev = new CustomEvent('py-status-message', { detail: msg });
         document.dispatchEvent(ev);
     }
 
@@ -330,5 +324,5 @@ globalExport('pyscript_get_config', pyscript_get_config);
 const globalApp = new PyScriptApp();
 globalApp.main();
 
-export { version }
+export { version };
 export const runtime = globalApp.runtime;

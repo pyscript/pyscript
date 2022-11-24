@@ -20,10 +20,8 @@ export function make_PyScript(runtime: Runtime) {
                 const url = this.getAttribute('src');
                 const response = await fetch(url);
                 if (response.status !== 200) {
-                    const errorMessage = (
-                        `Failed to fetch '${url}' - Reason: ` +
-                        `${response.status} ${response.statusText}`
-                    );
+                    const errorMessage =
+                        `Failed to fetch '${url}' - Reason: ` + `${response.status} ${response.statusText}`;
                     _createAlertBanner(errorMessage);
                     this.innerHTML = '';
                     throw new FetchError(errorMessage);

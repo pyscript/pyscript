@@ -28,7 +28,7 @@ export class SplashscreenPlugin extends Plugin {
         // deprecation warning)
         this.autoclose = true;
 
-        if ("autoclose_loader" in config) {
+        if ('autoclose_loader' in config) {
             this.autoclose = config.autoclose_loader;
             showWarning(AUTOCLOSE_LOADER_DEPRECATED);
         }
@@ -45,7 +45,7 @@ export class SplashscreenPlugin extends Plugin {
         this.elem = <PySplashscreen>document.createElement('py-splashscreen');
         document.body.append(this.elem);
 
-        document.addEventListener("py-status-message", (e: CustomEvent) => {
+        document.addEventListener('py-status-message', (e: CustomEvent) => {
             const msg = e.detail;
             this.elem.log(msg);
         });

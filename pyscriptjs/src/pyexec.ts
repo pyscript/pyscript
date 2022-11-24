@@ -11,20 +11,20 @@ export function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLElement) {
     ensureUniqueId(outElem);
     set_current_display_target(outElem.id);
     //This is the python function defined in pyscript.py
-    const usesTopLevelAwait = runtime.globals.get('uses_top_level_await')
+    const usesTopLevelAwait = runtime.globals.get('uses_top_level_await');
     try {
         try {
-            if (usesTopLevelAwait(pysrc)){
+            if (usesTopLevelAwait(pysrc)) {
                 throw new UserError(
-                'The use of top-level "await", "async for", and ' +
-                '"async with" is deprecated.' +
-                '\nPlease write a coroutine containing ' +
-                'your code and schedule it using asyncio.ensure_future() or similar.' +
-                '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.'
-                )
-       }
-       return runtime.run(pysrc);
-   } catch (err) {
+                    'The use of top-level "await", "async for", and ' +
+                        '"async with" is deprecated.' +
+                        '\nPlease write a coroutine containing ' +
+                        'your code and schedule it using asyncio.ensure_future() or similar.' +
+                        '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.',
+                );
+            }
+            return runtime.run(pysrc);
+        } catch (err) {
             // XXX: currently we display exceptions in the same position as
             // the output. But we probably need a better way to do that,
             // e.g. allowing plugins to intercept exceptions and display them

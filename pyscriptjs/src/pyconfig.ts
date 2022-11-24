@@ -2,7 +2,7 @@ import toml from '../src/toml';
 import { getLogger } from './logger';
 import { version } from './runtime';
 import { getAttribute, readTextFromPath, htmlDecode } from './utils';
-import { UserError } from "./exceptions"
+import { UserError } from './exceptions';
 
 const logger = getLogger('py-config');
 
@@ -150,17 +150,23 @@ function parseConfig(configText: string, configType = 'toml') {
             config = toml.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            throw new UserError(`The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`);
+            throw new UserError(
+                `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`,
+            );
         }
     } else if (configType === 'json') {
         try {
             config = JSON.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            throw new UserError(`The config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}`);
+            throw new UserError(
+                `The config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}`,
+            );
         }
     } else {
-        throw new UserError(`The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`);
+        throw new UserError(
+            `The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`,
+        );
     }
     return config;
 }
@@ -186,8 +192,7 @@ function validateConfig(configText: string, configType = 'toml') {
                         }
                         finalConfig[item].push(runtimeConfig);
                     });
-                }
-                else if (item === 'fetch') {
+                } else if (item === 'fetch') {
                     finalConfig[item] = [];
                     const fetchList = config[item] as FetchConfig[];
                     fetchList.forEach(function (eachFetch: FetchConfig) {
@@ -200,8 +205,7 @@ function validateConfig(configText: string, configType = 'toml') {
                         }
                         finalConfig[item].push(eachFetchConfig);
                     });
-                }
-                else {
+                } else {
                     finalConfig[item] = config[item];
                 }
             }
