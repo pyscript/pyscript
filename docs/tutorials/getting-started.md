@@ -68,7 +68,7 @@ In this first step, we have created the index file, imported `pyscript.css` and 
 
 ### Importing the needed libraries
 
-For this example, we will need to import `pandas` and `matplotlib`. We can import libraries using the `<py-config>` tag. Please refer to the [`<py-config>`](../reference/elements/py-config.md) documentation for more information.
+For this example, we will need to install `pandas` and `matplotlib`. We can install libraries using the `<py-config>` tag so we can import them later. Please refer to the [`<py-config>`](../reference/elements/py-config.md) documentation for more information.
 
 ```html
 <html>
@@ -90,7 +90,7 @@ For this example, we will need to import `pandas` and `matplotlib`. We can impor
 
 ### Importing the data and exploring
 
-Now that we have imported the needed libraries, we can import and explore the data. In this step, we need to create a `<py-script>` tag to read the data with pandas and then use `py-repl` to explore the data.
+Now that we have installed the needed libraries, we can import and explore the data. In this step, we need to create a `<py-script>` tag to import our dependencies, read the data with pandas and then use `py-repl` to explore the data.
 
 You may want to read the [`<py-script>`](../reference/elements/py-script.md) and [`<py-repl>`](../reference/elements/py-repl.md) documentation for more information about these elements.
 
@@ -127,7 +127,7 @@ You may want to read the [`<py-script>`](../reference/elements/py-script.md) and
 </html>
 ```
 
-Note that we are adding `ice_data` to `py-repl` to populate the REPL with this variable.
+Note that we are adding `ice_data` to `py-repl` to pre-populate the REPL with this variable, so you don't have to type it yourself.
 
 ### Creating the plot
 
@@ -164,7 +164,7 @@ Now that we have the data, we can create the plot. We will use the `matplotlib` 
         bars = ax.barh(data["name"], data["rating"], height=0.7)
         ax.bar_label(bars)
         plt.title("Rating of ice cream flavours of your choice")
-        display(fig, target="viz", append=False)
+        display(fig, target="graph-area", append=False)
 
       plot(ice_data)
     </py-script>
@@ -173,7 +173,7 @@ Now that we have the data, we can create the plot. We will use the `matplotlib` 
       ice_data
     </py-repl>
 
-    <div id="viz"></div>
+    <div id="graph-area"></div>
   </body>
 </html>
 ```
@@ -217,7 +217,7 @@ Now that we have a way to explore the data using `py-repl` and a way to create t
           bars = ax.barh(data["name"], data["rating"], height=0.7)
           ax.bar_label(bars)
           plt.title("Rating of ice cream flavours of your choice")
-          display(fig, target="viz", append=False)
+          display(fig, target="graph-area", append=False)
 
       def select_flavour(event):
           for ele in flavour_elements:
@@ -262,7 +262,7 @@ Now that we have a way to explore the data using `py-repl` and a way to create t
       ice_data
     </py-repl>
 
-    <div id="viz"></div>
+    <div id="graph-area"></div>
   </body>
 </html>
 ```

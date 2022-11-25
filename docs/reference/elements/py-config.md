@@ -2,7 +2,7 @@
 
 Use the `<py-config>` tag to set and configure general metadata along with declaring dependencies for your PyScript application. The configuration has to be set in either [TOML](https://toml.io/)(default) or [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON) format.
 
-If you are unfamiliar with JSON, consider reading [freecodecamp's JSON for beginners](https://www.freecodecamp.org/news/what-is-json-a-json-file-example/) guide for more information. And for TOML, consider reading about it [here](https://learnxinyminutes.com/docs/toml/).
+If you are unfamiliar with TOML, consider [reading about it](https://learnxinyminutes.com/docs/toml/) or if you are unfamiliar with JSON, consider reading [freecodecamp's JSON for beginners](https://www.freecodecamp.org/news/what-is-json-a-json-file-example/) guide for more information.
 
 The `<py-config>` element should be placed within the `<body>` element.
 
