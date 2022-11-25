@@ -1,4 +1,4 @@
-import { htmlDecode, ensureUniqueId } from '../utils';
+import { htmlDecode, ensureUniqueId, showWarning } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
@@ -10,6 +10,14 @@ const logger = getLogger('py-script');
 export function make_PyScript(runtime: Runtime) {
     class PyScript extends HTMLElement {
         async connectedCallback() {
+            if (this.hasAttribute('output')) {
+                const deprecationMessage = (
+                    "The 'output' attribute is deprecated and ignored. You should use " +
+                    "'display()' to output the content to a specific element. " +
+                    'For example display(myElement, target="divID").'
+                )
+                showWarning(deprecationMessage)
+            }
             ensureUniqueId(this);
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
