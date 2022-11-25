@@ -3,7 +3,7 @@ import type { Runtime } from './runtime';
 import type { UserError } from './exceptions';
 import { getLogger } from './logger';
 
-const logger = getLogger('pyscript/main');
+const logger = getLogger('plugin');
 
 export class Plugin {
     /** Validate the configuration of the plugin and handle default values.
