@@ -5,45 +5,11 @@ This page will guide you through getting started with PyScript.
 ## Development setup
 
 PyScript does not require any development environment other
-than a web browser (we recommend using [Chrome](https://www.google.com/chrome/)) and a text editor, even though using your [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment) of choice might be convenient.
+then a web browser (we recommend using [Chrome](https://www.google.com/chrome/)) and a text editor, even though using your [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment) of choice might be convenient.
 
 If you're using [VSCode](https://code.visualstudio.com/), the
 [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
 can be used to reload the page as you edit the HTML file.
-
-## Trying before installing
-
-If you're new to programming and know nothing about HTML or just want to try some of PyScript features, we recommend using the [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) element in the [PyScript REPL example](https://pyscript.net/examples/repl.html) instead so you can have a programming experience in a REPL that doesn't require any setup. This REPL can be used to have an interactive experience using Python directly.
-
- Alternatively, you can also use an online editor like W3School's [TryIt Editor](https://www.w3schools.com/html/tryit.asp?filename=tryhtml_default_default) and just plug the code below into it, as shown in the [example](https://docs.pyscript.net/latest/concepts/what-is-pyscript.html#example) page and click the run button.
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-    <title>REPL</title>
-
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-  </head>
-
-  <body>
-    Hello world! <br>
-    This is the current date and time, as computed by Python:
-    <py-script>
-from datetime import datetime
-now = datetime.now()
-now.strftime("%m/%d/%Y, %H:%M:%S")
-    </py-script>
-  </body>
-</html>
-```
-
-You could try changing the code above to explore and play with pyscript yourself.
 
 ## Installation
 
@@ -68,377 +34,235 @@ open an HTML by double-clicking it in your file explorer.
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
-  <body> <py-script> print('Hello, World!') </py-script> </body>
-</html>
-```
-
-Notice the use of the `<py-script>` tag in the HTML body. This
-is where you'll write your Python code. In the following sections, we'll
-introduce the eight tags provided by PyScript.
-
-## The py-script tag
-
-The `<py-script>` tag lets you execute multi-line Python scripts and
-print back onto the page. For example, we can compute π.
-
-```html
-<html>
-  <head>
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-  </head>
   <body>
-      <py-script>
-        print("Let's compute π:")
-        def compute_pi(n):
-            pi = 2
-            for i in range(1,n):
-                pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
-            return pi
-
-        pi = compute_pi(100000)
-        s = f"π is approximately {pi:.3f}"
-        print(s)
-      </py-script>
-  </body>
-</html>
-```
-
-### Writing into labeled elements
-
-In the example above, we had a single `<py-script>` tag printing
-one or more lines onto the page in order. Within the `<py-script>`, you can
-use the `Element` class to create a python object for interacting with
-page elements. Objects created from the `Element` class provide the `.write()` method
-which enables you to send strings into the page elements referenced by those objects.
-
-For example, we'll add some style elements and provide placeholders for
-the `<py-script>` tag to write to.
-
-```html
-<html>
-    <head>
-      <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-      <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    </head>
-
-  <body>
-    <b><p>Today is <u><label id='today'></label></u></p></b>
-    <br>
-    <div id="pi" class="alert alert-primary"></div>
     <py-script>
-      import datetime as dt
-      Element('today').write(dt.date.today().strftime('%A %B %d, %Y'))
-
-      def compute_pi(n):
-          pi = 2
-          for i in range(1,n):
-              pi *= 4 * i ** 2 / (4 * i ** 2 - 1)
-          return pi
-
-      pi = compute_pi(100000)
-      Element('pi').write(f'π is approximately {pi:.3f}')
+        print('Hello, World!')
     </py-script>
   </body>
 </html>
 ```
 
-## The py-config tag
+## A more complex example
 
-Use the `<py-config>` tag to set and configure general metadata along with declaring dependencies for your PyScript application. The configuration has to be set in either TOML or JSON format. If you are unfamiliar with JSON, consider reading [freecodecamp's JSON for beginners](https://www.freecodecamp.org/news/what-is-json-a-json-file-example/) guide for more information. And for TOML, consider reading about it [here](https://learnxinyminutes.com/docs/toml/).
+Now that we know how you can create a simple 'Hello, World!' example, let's see a more complex example. This example will use the Demo created by [Cheukting](https://github.com/Cheukting). In this example, we will use more features from PyScript.
 
-The ideal place to use `<py-config>` in between the `<body>...</body>` tags.
+### Setting up the base index file
 
-By default the `py-config` tag is set to TOML and can be used as follows:
+Let's create a new file called `index.html` and add the following content:
 
-```{note}
-Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[runtimes]]` and `[[fetch]]` must come after individual keys (like `paths=...` and `packages=...`)
-```
-
-```html
-<py-config>
-  autoclose_loader = true
-
-  [[runtimes]]
-  src = "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"
-  name = "pyodide-0.21.3"
-  lang = "python"
-</py-config>
-```
-
-Alternatively, a JSON config can be passed using the `type` attribute.
-
-```html
-<py-config type="json">
-  {
-    "autoclose_loader": true,
-    "runtimes": [{
-      "src": "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js",
-      "name": "pyodide-0.21.3",
-      "lang": "python"
-    }]
-  }
-</py-config>
-```
-
-Besides passing the config as inline (as shown above), one can also pass it with the `src` attribute. This is demonstrated below:
-
-```
-<py-config src="./custom.toml"></py-config>
-```
-
-where `custom.toml` contains
-
-```
-autoclose_loader = true
-[[runtimes]]
-src = "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"
-name = "pyodide-0.21.3"
-lang = "python"
-```
-
-This can also be done via JSON using the `type` attribute. By default, `type` is set to `"toml"` if not supplied.
-
-```
-<py-config type="json" src="./custom.json"></py-config>
-```
-
-where `custom.json` contains
-
-```
-{
-  "autoclose_loader": true,
-  "runtimes": [{
-    "src": "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js",
-    "name": "pyodide-0.21.3",
-    "lang": "python"
-  }]
-}
-```
-
-One can also use both i.e pass the config from `src` attribute as well as specify it as `inline`. So the following snippet is also valid:
-
-```
-<py-config src="./custom.toml">
-  [[fetch]]
-  files = ["./utils.py"]
-</py-config>
-```
-
-This can also be done via JSON using the `type` attribute.
-
-```
-<py-config type="json" src="./custom.json">
-  {
-    "fetch": [{
-      "files": ["./utils.py"]
-    }]
-  }
-</py-config>
-```
-
-Note: While the `<py-config>` tag supports both TOML and JSON, one cannot mix the type of config passed from 2 different sources i.e. the case when inline config is in TOML format while config from src is in JSON format is NOT allowed. Similarly for the opposite case.
-
----
-
-This is helpful in cases where a number of applications share a common configuration (which can be supplied via `src`), but their specific keys need to be customised and overridden.
-
-The keys supplied through `inline` override the values present in config supplied via `src`.
-
-One can also declare dependencies so as to get access to many 3rd party OSS packages that are supported by PyScript.
-You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/examples/toga/freedom.html).
-
-```
-<py-config>
-  packages = ["./static/wheels/travertino-0.1.3-py3-none-any.whl"]
-</py-config>
-```
-
-OR in JSON like
-
-```
-<py-config type="json">
-  {
-    "packages": ["./static/wheels/travertino-0.1.3-py3-none-any.whl"]
-  }
-</py-config>
-```
-
-If your `.whl` is not a pure Python wheel, then open a PR or issue with [pyodide](https://github.com/pyodide/pyodide) to get it added [here](https://github.com/pyodide/pyodide/tree/main/packages).
-
-If there's enough popular demand, the pyodide team will likely work on supporting your package. Regardless, things will likely move faster if you make the PR and consult with the team to get unblocked.
-
-For example, NumPy and Matplotlib are available. Notice here we're using `<py-script output="plot">`
-as a shortcut, which takes the expression on the last line of the script and runs `pyscript.write('plot', fig)`.
-
-```html
-<html>
-    <head>
-      <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-      <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    </head>
-
-  <body>
-    <h1>Let's plot random numbers</h1>
-    <div id="plot"></div>
-    <py-config type="json">
-        {
-          "packages": ["numpy", "matplotlib"]
-        }
-    </py-config>
-    <py-script output="plot">
-      import matplotlib.pyplot as plt
-      import numpy as np
-      x = np.random.randn(1000)
-      y = np.random.randn(1000)
-      fig, ax = plt.subplots()
-      ax.scatter(x, y)
-      fig
-    </py-script>
-  </body>
-</html>
-```
-
-Besides the above format, a user can also supply any extra keys and values that are relevant as metadata information or perhaps are being used within the application.
-
-For example, a valid config could also be with the snippet below:
-
-```
-<py-config type="toml">
-  magic = "unicorn"
-</py-config>
-```
-
-OR in JSON like
-
-```
-<py-config type="json">
-  {
-    "magic": "unicorn"
-  }
-</py-config>
-```
-
-If this `"magic"` key is present in config supplied via `src` and also present in config supplied via `inline`, then the value in the inline config is given priority i.e. the overriding process also works for custom keys.
-
-### Local modules
-
-In addition to packages, you can declare local Python modules that will
-be imported in the `<py-script>` tag. For example, we can place the random
-number generation steps in a function in the file `data.py`.
-
-```python
-# data.py
-import numpy as np
-def make_x_and_y(n):
-    x = np.random.randn(n)
-    y = np.random.randn(n)
-    return x, y
-```
-
-In the HTML tag `<py-config>`, paths to local modules are provided in the
-`files` key within the `fetch` section.
-
-```html
-<html>
-    <head>
-      <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-      <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    </head>
-
-  <body>
-    <h1>Let's plot random numbers</h1>
-    <div id="plot"></div>
-    <py-config type="toml">
-        packages = ["numpy", "matplotlib"]
-
-        [[fetch]]
-        files = ["./data.py"]
-    </py-config>
-    <py-script output="plot">
-      import matplotlib.pyplot as plt
-      from data import make_x_and_y
-      x, y = make_x_and_y(n=1000)
-      fig, ax = plt.subplots()
-      ax.scatter(x, y)
-      fig
-    </py-script>
-  </body>
-</html>
-```
-
-### Supported configuration values
-
-The following optional values are supported by `<py-config>`:
-| Value | Type | Description |
-| ------ | ---- | ----------- |
-| `name` | string | Name of the user application. This field can be any string and is to be used by the application author for their own customization purposes. |
-| `description` | string | Description of the user application. This field can be any string and is to be used by the application author for their own customization purposes. |
-| `version` | string | Version of the user application. This field can be any string and is to be used by the application author for their own customization purposes. It is not related to the PyScript version. |
-| `schema_version` | number | The version of the config schema which determines what all keys are supported. This can be supplied by the user so PyScript knows what to expect in the config. If not supplied, the latest version for the schema is automatically used. |
-| `type` | string | Type of the project. The default is an "app" i.e. a user application |
-| `author_name` | string | Name of the author. |
-| `author_email` | string | Email of the author. |
-| `license` | string | License to be used for the user application. |
-| `autoclose_loader` | boolean | If false, PyScript will not close the loading splash screen when the startup operations finish. |
-| `packages` | List of Packages | Dependencies on 3rd party OSS packages are specified here. The default value is an empty list. |
-| `fetch` | List of Stuff to fetch | Local Python modules OR resources from the internet are to be specified here using a Fetch Configuration, described below. The default value is an empty list. |
-| `plugins` | List of Plugins | List of Plugins are to be specified here. The default value is an empty list. |
-| `runtimes` | List of Runtimes | List of runtime configurations, described below. The default value contains a single Pyodide based runtime. |
-
-#### Fetch
-
-A fetch configuration consists of the following:
-
-| Value | Type | Description |
-| ----- | ---- | ----------- |
-| `from` | string | Base URL for the resource to be fetched. |
-| `to_folder` | string | Name of the folder to create in the filesystem. |
-| `to_file` | string | Name of the target to create in the filesystem. |
-| `files` | List of string | List of files to be downloaded. |
-
-```{note}
-The parameters `to_file` and `files` shouldn't be supplied together.
-```
-
-You may be interested in reading the [tutorial on fetching resources](./py-config-fetch.md) to learn more about this feature.
-
-#### Runtime
-
-A runtime configuration consists of the following:
-| Value | Type | Description |
-| ----- | ---- | ----------- |
-| `src` | string (Required) | URL to the runtime source. |
-| `name` | string | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
-| `lang` | string | Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
-
-You may be interested in reading the [tutorial on setting a runtime](./py-config-runtime.md) to learn more about this feature.
-
-## The py-repl tag
-
-The `<py-repl>` tag creates a REPL component that is rendered to the page as a code editor, allowing you to write executable code inline.
 ```html
 <html>
   <head>
+    <title>Ice Cream Picker</title>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
-  <py-repl></py-repl>
+  <body>
+
+  </body>
 </html>
 ```
 
-## Visual component tags
+In this first step, we have created the index file, imported `pyscript.css` and `pyscript.js`. We are ready to start adding the elements we need for our application.
 
-The following tags can be used to add visual attributes to your HTML page.
+### Importing the needed libraries
 
-| Tag             | Description |
-| ---             | ----------- |
-| `<py-inputbox>` | (Deprecated) Adds an input box that can be used to prompt users to enter input values. |
-| `<py-box>`      | (Deprecated) Creates a container object that can be used to host one or more visual components that define how elements of `<py-box>` should align and show on the page. |
-| `<py-button>`   | (Deprecated) Adds a button to which authors can add labels and event handlers for actions on the button, such as `on_focus` or `on_click`. |
-| `<py-title>`    | (Deprecated) Adds a static text title component that styles the text inside the tag as a page title. |
+For this example, we will need to import `pandas` and `matplotlib`. We can import libraries using the `<py-config>` tag. Please refer to the [`<py-config>`](../reference/elements/py-config.md) documentation for more information.
 
-```{note}
-These elements have been deprecated, we suggest that you use native elements and attach the respective `py-` attribute. For example for `<py-button>` you can write `<button py-click="function()">`
+```html
+<html>
+  <head>
+    <title>Ice Cream Picker</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  </head>
+  <body>
+
+    <py-config>
+      packages = ["matplotlib", "pandas"]
+    </py-config>
+
+  </body>
+</html>
+```
+
+### Importing the data and exploring
+
+Now that we have imported the needed libraries, we can import and explore the data. In this step, we need to create a `<py-script>` tag to read the data with pandas and then use `py-repl` to explore the data.
+
+You may want to read the [`<py-script>`](../reference/elements/py-script.md) and [`<py-repl>`](../reference/elements/py-repl.md) documentation for more information about these elements.
+
+
+```html
+<html>
+  <head>
+    <title>Ice Cream Picker</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  </head>
+  <body>
+
+    <py-config>
+      packages = ["matplotlib", "pandas"]
+    </py-config>
+
+    <py-script>
+      import pandas as pd
+
+      from pyodide.http import open_url
+
+      url = (
+          "https://raw.githubusercontent.com/Cheukting/pyscript-ice-cream/main/bj-products.csv"
+      )
+      ice_data = pd.read_csv(open_url(url))
+    </py-script>
+
+    <py-repl>
+      ice_data
+    </py-repl>
+  </body>
+</html>
+```
+
+Note that we are adding `ice_data` to `py-repl` to populate the REPL with this variable.
+
+### Creating the plot
+
+Now that we have the data, we can create the plot. We will use the `matplotlib` library to make the plot. We will use the `display` API to display the plot on the page. You may want to read the [`display`](../reference/API/display.md) documentation for more information.
+
+```html
+<html>
+  <head>
+    <title>Ice Cream Picker</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  </head>
+  <body>
+
+    <py-config>
+      packages = ["matplotlib", "pandas"]
+    </py-config>
+
+    <py-script>
+      import pandas as pd
+      import matplotlib.pyplot as plt
+
+      from pyodide.http import open_url
+
+      url = (
+          "https://raw.githubusercontent.com/Cheukting/pyscript-ice-cream/main/bj-products.csv"
+      )
+      ice_data = pd.read_csv(open_url(url))
+
+      def plot(data):
+        plt.rcParams["figure.figsize"] = (22,20)
+        fig, ax = plt.subplots()
+        bars = ax.barh(data["name"], data["rating"], height=0.7)
+        ax.bar_label(bars)
+        plt.title("Rating of ice cream flavours of your choice")
+        display(fig, target="viz", append=False)
+
+      plot(ice_data)
+    </py-script>
+
+    <py-repl>
+      ice_data
+    </py-repl>
+
+    <div id="viz"></div>
+  </body>
+</html>
+```
+
+### Select specific flavours
+
+Now that we have a way to explore the data using `py-repl` and a way to create the plot using all of the data, it's time for us to add a way to select specific flavours.
+
+```html
+<html>
+  <head>
+    <title>Ice Cream Picker</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  </head>
+  <body>
+
+    <py-config>
+      packages = ["matplotlib", "pandas"]
+    </py-config>
+
+    <py-script>
+      import pandas as pd
+      import matplotlib.pyplot as plt
+
+      from pyodide.http import open_url
+      from pyodide.ffi import create_proxy
+
+      url = (
+          "https://raw.githubusercontent.com/Cheukting/pyscript-ice-cream/main/bj-products.csv"
+      )
+      ice_data = pd.read_csv(open_url(url))
+
+      current_selected = []
+      flavour_elements = document.getElementsByName("flavour")
+
+      def plot(data):
+          plt.rcParams["figure.figsize"] = (22,20)
+          fig, ax = plt.subplots()
+          bars = ax.barh(data["name"], data["rating"], height=0.7)
+          ax.bar_label(bars)
+          plt.title("Rating of ice cream flavours of your choice")
+          display(fig, target="viz", append=False)
+
+      def select_flavour(event):
+          for ele in flavour_elements:
+              if ele.checked:
+                  current_selected = ele.value
+                  break
+          if current_selected == "ALL":
+              plot(ice_data)
+          else:
+              filter = ice_data.apply(lambda x: ele.value in x["ingredients"], axis=1)
+              plot(ice_data[filter])
+
+      ele_proxy = create_proxy(select_flavour)
+
+      for ele in flavour_elements:
+          if ele.value == "ALL":
+            ele.checked = True
+            current_selected = ele.value
+          ele.addEventListener("change", ele_proxy)
+
+      plot(ice_data)
+
+    </py-script>
+
+    <div id="input" style="margin: 20px;">
+      Select your 🍨 flavour: <br/>
+      <input type="radio" id="all" name="flavour" value="ALL">
+      <label for="all"> All 🍧</label>
+      <input type="radio" id="chocolate" name="flavour" value="COCOA">
+      <label for="chocolate"> Chocolate 🍫</label>
+      <input type="radio" id="cherrie" name="flavour" value="CHERRIES">
+      <label for="cherrie"> Cherries 🍒</label>
+      <input type="radio" id="berries" name="flavour" value="BERRY">
+      <label for="berries"> Berries 🍓</label>
+      <input type="radio" id="cheese" name="flavour" value="CHEESE">
+      <label for="cheese"> Cheese 🧀</label>
+      <input type="radio" id="peanut" name="flavour" value="PEANUT">
+      <label for="peanut"> Peanut 🥜</label>
+    </div>
+
+    <py-repl>
+      ice_data
+    </py-repl>
+
+    <div id="viz"></div>
+  </body>
+</html>
 ```
