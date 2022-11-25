@@ -38,6 +38,15 @@ API/*
 
 ```{toctree}
 ---
+maxdepth: 2
+glob:
+caption: Exceptions
+---
+exceptions
+```
+
+```{toctree}
+---
 maxdepth: 1
 caption: Miscellaneous
 ---

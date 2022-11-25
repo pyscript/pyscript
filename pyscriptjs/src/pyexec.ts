@@ -1,6 +1,6 @@
 import { getLogger } from './logger';
-import { ensureUniqueId, ltrim } from './utils';
-import { UserError } from './exceptions';
+import { ensureUniqueId } from './utils';
+import { UserError, ErrorCode } from './exceptions';
 import type { Runtime } from './runtime';
 
 const logger = getLogger('pyexec');
@@ -16,11 +16,12 @@ export function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLElement) {
         try {
             if (usesTopLevelAwait(pysrc)){
                 throw new UserError(
-                'The use of top-level "await", "async for", and ' +
-                '"async with" is deprecated.' +
-                '\nPlease write a coroutine containing ' +
-                'your code and schedule it using asyncio.ensure_future() or similar.' +
-                '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.'
+                    ErrorCode.TOP_LEVEL_AWAIT,
+                    'The use of top-level "await", "async for", and ' +
+                    '"async with" is deprecated.' +
+                    '\nPlease write a coroutine containing ' +
+                    'your code and schedule it using asyncio.ensure_future() or similar.' +
+                    '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.',
                 )
        }
        return runtime.run(pysrc);
