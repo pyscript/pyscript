@@ -44,7 +44,7 @@ open an HTML by double-clicking it in your file explorer.
 
 ## A more complex example
 
-Now that we know how you can create a simple 'Hello, World!' example, let's see a more complex example. This example will use the Demo created by [Cheukting](https://github.com/Cheukting). In this example, we will use more features from PyScript.
+Now that we know how you can create a simple 'Hello, World!' example, let's see a more complex example. This example will use the Demo created by [Cheuk Ting Ho](https://github.com/Cheukting). In this example, we will use more features from PyScript.
 
 ### Setting up the base index file
 
