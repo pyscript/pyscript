@@ -118,7 +118,7 @@ class TestConfig(PyScriptTest):
         banner = self.page.wait_for_selector(".py-error")
         assert "SyntaxError: Unexpected end of JSON input" in self.console.error.text
         expected = (
-            "The config supplied: [[ is an invalid JSON and cannot be "
+            "(PY1000): The config supplied: [[ is an invalid JSON and cannot be "
             "parsed: SyntaxError: Unexpected end of JSON input"
         )
         assert banner.inner_text() == expected
@@ -137,7 +137,7 @@ class TestConfig(PyScriptTest):
         banner = self.page.wait_for_selector(".py-error")
         assert "SyntaxError: Expected DoubleQuote" in self.console.error.text
         expected = (
-            "The config supplied: [[ is an invalid TOML and cannot be parsed: "
+            "(PY1000): The config supplied: [[ is an invalid TOML and cannot be parsed: "
             "SyntaxError: Expected DoubleQuote, Whitespace, or [a-z], [A-Z], "
             '[0-9], "-", "_" but "\\n" found.'
         )
@@ -178,7 +178,7 @@ class TestConfig(PyScriptTest):
         """
         self.pyscript_run(snippet, wait_for_pyscript=False)
         div = self.page.wait_for_selector(".py-error")
-        assert div.text_content() == "Fatal error: config.runtimes is empty"
+        assert div.text_content() == "(PY1000): Fatal error: config.runtimes is empty"
 
     def test_multiple_runtimes(self):
         snippet = """

@@ -1,8 +1,7 @@
-import { expect, it, jest } from "@jest/globals"
-import { _createAlertBanner, UserError } from "../../src/exceptions"
+import { expect, it, jest, describe, afterEach } from "@jest/globals"
+import { _createAlertBanner, UserError, FetchError, ErrorCode } from "../../src/exceptions"
 
 describe("Test _createAlertBanner", () => {
-
   afterEach(() => {
     // Ensure we always have a clean body
     document.body.innerHTML = `<div>Hello World</div>`;
@@ -106,5 +105,23 @@ describe("Test _createAlertBanner", () => {
     expect(banner.length).toBe(1);
     expect(banner[0].innerHTML).toBe(message);
     expect(banner[0].textContent).toBe("Test message");
+  })
+})
+
+describe("Test Exceptions", () => {
+  it('UserError contains errorCode and shows in message', async() => {
+    const errorCode = ErrorCode.BAD_CONFIG;
+    const message = 'Test error';
+    const userError = new UserError(ErrorCode.BAD_CONFIG, message);
+    expect(userError.errorCode).toBe(errorCode);
+    expect(userError.message).toBe(`(${errorCode}): ${message}`);
+  })
+
+  it('FetchError contains errorCode and shows in message', async() => {
+    const errorCode = ErrorCode.FETCH_NOT_FOUND_ERROR;
+    const message = 'Test error';
+    const fetchError = new FetchError(errorCode, message);
+    expect(fetchError.errorCode).toBe(errorCode);
+    expect(fetchError.message).toBe(`(${errorCode}): ${message}`);
   })
 })

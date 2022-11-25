@@ -145,7 +145,13 @@ class TestBasic(PyScriptTest):
             self.check_js_errors()
 
         error_msg = str(exc.value)
-        assert "Failed to fetch" in error_msg
+        if self.is_fake_server:
+            assert "Failed to fetch" in error_msg
+        else:
+            assert (
+                "Fetching from URL foo.py failed with error 404 (File not found)"
+                in error_msg
+            )
 
         pyscript_tag = self.page.locator("py-script")
         assert pyscript_tag.inner_html() == ""
