@@ -11,8 +11,8 @@ export function make_PyScript(runtime: Runtime) {
         async connectedCallback() {
             if (this.hasAttribute('output')) {
                 const deprecationMessage = (
-                    "The 'output' attribute is deprecated. You should use the " +
-                    "'display' API to output the content to a specific element. " +
+                    "The 'output' attribute is deprecated and ignored. You should use " +
+                    "'display()' to output the content to a specific element. " +
                     'For example display(myElement, target="divID").'
                 )
                 showWarning(deprecationMessage)
