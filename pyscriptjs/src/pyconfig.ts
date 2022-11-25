@@ -2,7 +2,7 @@ import toml from '../src/toml';
 import { getLogger } from './logger';
 import { version } from './runtime';
 import { getAttribute, readTextFromPath, htmlDecode } from './utils';
-import { UserError } from "./exceptions"
+import { UserError, ErrorCode } from "./exceptions"
 
 const logger = getLogger('py-config');
 
@@ -145,22 +145,34 @@ function parseConfig(configText: string, configType = 'toml') {
         try {
             // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
             if (configText.trim()[0] === '{') {
-                throw new UserError(`The config supplied: ${configText} is an invalid TOML and cannot be parsed`);
+                throw new UserError(
+                    ErrorCode.BAD_CONFIG,
+                    `The config supplied: ${configText} is an invalid TOML and cannot be parsed`
+                );
             }
             config = toml.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            throw new UserError(`The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`);
+            throw new UserError(
+                ErrorCode.BAD_CONFIG,
+                `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`
+            );
         }
     } else if (configType === 'json') {
         try {
             config = JSON.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            throw new UserError(`The config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}`);
+            throw new UserError(
+                ErrorCode.BAD_CONFIG,
+                `The config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}`,
+            );
         }
     } else {
-        throw new UserError(`The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`);
+        throw new UserError(
+            ErrorCode.BAD_CONFIG,
+            `The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`
+        );
     }
     return config;
 }
