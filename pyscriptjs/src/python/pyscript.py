@@ -9,7 +9,10 @@ from textwrap import dedent
 
 import micropip  # noqa: F401
 from js import console, document
-from pyodide.ffi import create_proxy
+try:
+    from pyodide import create_proxy
+except ImportError:
+    from pyodide.ffi import create_proxy
 
 loop = asyncio.get_event_loop()
 
