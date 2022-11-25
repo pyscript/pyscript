@@ -1,4 +1,4 @@
-import { _createAlertBanner, UserError } from "./exceptions"
+import { _createAlertBanner, UserError, FetchError, ErrorCode } from "./exceptions"
 
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
@@ -50,21 +50,21 @@ export function handleFetchError(e: Error, singleFile: string) {
     // fragile. We need a better solution.
     let errorContent: string;
     if (e.message.includes('Failed to fetch')) {
-        errorContent = `<p>PyScript: Access to local files
+        errorContent = `PyScript: Access to local files
         (using "Paths:" in &lt;py-config&gt;)
         is not available when directly opening a HTML file;
         you must use a webserver to serve the additional files.
         See <a style="text-decoration: underline;" href="https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062">this reference</a>
-        on starting a simple webserver with Python.</p>`;
+        on starting a simple webserver with Python.`;
     } else if (e.message.includes('404')) {
         errorContent =
-            `<p>PyScript: Loading from file <u>` +
+            `PyScript: Loading from file <u>` +
             singleFile +
-            `</u> failed with error 404 (File not Found). Are your filename and path are correct?</p>`;
+            `</u> failed with error 404 (File not Found). Are your filename and path are correct?`;
     } else {
-        errorContent = `<p>PyScript encountered an error while loading from file: ${e.message} </p>`;
+        errorContent = `PyScript encountered an error while loading from file: ${e.message}`;
     }
-    throw new UserError(errorContent, "html");
+    throw new UserError(ErrorCode.FETCH_ERROR, errorContent, "html");
 }
 
 export function readTextFromPath(path: string) {

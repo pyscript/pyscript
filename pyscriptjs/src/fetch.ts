@@ -1,0 +1,47 @@
+import { FetchError, ErrorCode } from "./exceptions";
+
+
+/*
+    This is a fetch wrapper that handles any non 200 response and throws a FetchError
+    with the right ErrorCode.
+    TODO: Should we only throw on 4xx and 5xx responses?
+*/
+export async function robustFetch(url: string, options?: RequestInit): Promise<Response> {
+    const response = await fetch(url, options);
+    if (response.status !== 200) {
+        const errorMsg = `Fetching from URL ${url} failed with error ${response.status} (${response.statusText}).`;
+        switch(response.status) {
+            case 404:
+                throw new FetchError(
+                    ErrorCode.FETCH_NOT_FOUND_ERROR,
+                    errorMsg
+                );
+            case 401:
+                throw new FetchError(
+                    ErrorCode.FETCH_UNAUTHORIZED_ERROR,
+                    errorMsg
+                );
+            case 403:
+                throw new FetchError(
+                    ErrorCode.FETCH_FORBIDDEN_ERROR,
+                    errorMsg
+                );
+            case 500:
+                throw new FetchError(
+                    ErrorCode.FETCH_SERVER_ERROR,
+                    errorMsg
+                );
+            case 503:
+                throw new FetchError(
+                    ErrorCode.FETCH_UNAVAILABLE_ERROR,
+                    errorMsg
+                );
+            default:
+                throw new FetchError(
+                    ErrorCode.FETCH_ERROR,
+                    errorMsg
+                );
+        }
+    }
+    return response
+}
