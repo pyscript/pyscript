@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { jest, describe, it, expect,  } from '@jest/globals';
 import { loadConfigFromElement, defaultConfig } from '../../src/pyconfig';
 import { version } from '../../src/runtime';
 import { UserError } from '../../src/exceptions'

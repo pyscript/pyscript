@@ -1,6 +1,6 @@
 # &lt;py-config&gt;
 
-Use the `<py-config>` tag to set and configure general metadata along with declaring dependencies for your PyScript application. The configuration has to be set in either [TOML](https://toml.io/) or [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON) format.
+Use the `<py-config>` tag to set and configure general metadata along with declaring dependencies for your PyScript application. The configuration has to be set in either [TOML](https://toml.io/)(default) or [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON) format.
 
 The `<py-config>` element should be placed within the `<body>` element.
 
@@ -15,6 +15,10 @@ The `<py-config>` element should be placed within the `<body>` element.
 
 ### `<py-config>` using TOML (default)
 
+```{note}
+Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[runtimes]]` and `[[fetch]]` must come after individual keys (like `paths = ...` and `packages=...`)
+```
+
 ```html
 <py-config>
   [splashscreen]
@@ -26,9 +30,9 @@ The `<py-config>` element should be placed within the `<body>` element.
   lang = "python"
 </py-config>
 ```
-Note: `[[runtimes]]` is a TOML table. Make sure this is the last item within a py-config, as the properties created after it go into the runtimes object.
 
 ### JSON config using the `type` attribute.
+
 ```html
 <py-config type="json">
   {
@@ -212,6 +216,8 @@ In the HTML tag `<py-config>`, paths to local modules are provided in the
 </html>
 ```
 
+## Supported configuration values
+
 The following optional values are supported by `<py-config>`:
 | Value | Type | Description |
 | ------ | ---- | ----------- |
@@ -229,6 +235,8 @@ The following optional values are supported by `<py-config>`:
 | `plugins` | List of Plugins | List of Plugins are to be specified here. The default value is an empty list. |
 | `runtimes` | List of Runtimes | List of runtime configurations, described below. The default value contains a single Pyodide based runtime. |
 
+### Fetch
+
 A fetch configuration consists of the following:
 
 | Value        | Type           | Description                                     |
@@ -239,6 +247,8 @@ A fetch configuration consists of the following:
 | `files`      | List of string | List of files to be downloaded.                 |
 
 The parameters `to_file` and `files` shouldn't be supplied together.
+
+### Runtime
 
 A runtime configuration consists of the following:
 | Value  | Type              | Description |

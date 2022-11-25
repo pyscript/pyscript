@@ -1,11 +1,10 @@
-import { Runtime } from './runtime';
+import { Runtime, version } from './runtime';
 import { getLogger } from './logger';
-import { FetchError } from './exceptions'
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
-import { version } from './runtime';
+import { robustFetch } from './fetch';
 import type { AppConfig } from './pyconfig';
 import type { Stdio } from './stdio';
 
@@ -112,10 +111,7 @@ export class PyodideRuntime extends Runtime {
                 this.interpreter.FS.mkdir(eachPath);
             }
         }
-        const response = await fetch(fetch_path);
-        if (response.status !== 200) {
-            throw new FetchError(`Unable to fetch  ${fetch_path}, reason: ${response.status} - ${response.statusText}`);
-        }
+        const response = await robustFetch(fetch_path);
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
         pathArr.push(filename);
