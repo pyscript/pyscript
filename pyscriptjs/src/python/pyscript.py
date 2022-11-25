@@ -9,6 +9,7 @@ from textwrap import dedent
 
 import micropip  # noqa: F401
 from js import console, document
+
 try:
     from pyodide import create_proxy
 except ImportError:
