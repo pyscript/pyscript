@@ -13,7 +13,7 @@ The convention is:
 export enum ErrorCode {
   GENERIC = "PY0000", // Use this only for development then change to a more specific error code
   FETCH_ERROR = "PY0001",
-  FETCH_NAME_ERROR = "PY2002",
+  FETCH_NAME_ERROR = "PY0002",
   // Currently these are created depending on error code received from fetching
   FETCH_UNAUTHORIZED_ERROR = "PY0401",
   FETCH_FORBIDDEN_ERROR = "PY0403",

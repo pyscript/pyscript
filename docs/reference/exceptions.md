@@ -14,7 +14,7 @@ This reference guide contains the error codes you might find and a description o
 
 ## Fetch Errors
 
-These error codes are related to any exception raised when trying to fetch a resource. If, while trying to fetch a resource, we encounter a status code that is not 200, the error code will contain the HTTP status code and the `PY2` prefix. For example, if we encounter a 404 error, the error code will be `PY2404`.
+These error codes are related to any exception raised when trying to fetch a resource. If, while trying to fetch a resource, we encounter a status code that is not 200, the error code will contain the HTTP status code and the `PY0` prefix. For example, if we encounter a 404 error, the error code will be `P02404`.
 
 
 | Error Code | Description                                                  |
