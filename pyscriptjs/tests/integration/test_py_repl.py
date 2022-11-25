@@ -65,7 +65,9 @@ class TestPyRepl(PyScriptTest):
         )
         self.page.wait_for_selector("#runButton")
         self.page.keyboard.press("Shift+Enter")
-        assert self.console.log.lines == [self.PY_COMPLETE, "hello world"]
+
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-1] == "hello world"
 
     def test_display(self):
         self.pyscript_run(

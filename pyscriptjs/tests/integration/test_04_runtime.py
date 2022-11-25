@@ -22,8 +22,8 @@ class TestRuntimeAccess(PyScriptTest):
         """
         )
 
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-2:] == [
             "x is 1",
             "py_func() returns 2",
         ]
@@ -38,5 +38,5 @@ class TestRuntimeAccess(PyScriptTest):
         interpreter.runPython('console.log("Interpreter Ran This")');
         """
         )
-
-        assert self.console.log.lines == [self.PY_COMPLETE, "Interpreter Ran This"]
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-1] == "Interpreter Ran This"

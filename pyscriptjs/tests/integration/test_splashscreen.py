@@ -34,11 +34,9 @@ class TestSplashscreen(PyScriptTest):
         # and now the splashscreen should have been removed
         expect(div).to_be_hidden()
         assert self.page.locator("py-locator").count() == 0
-        #
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
-            "hello pyscript",
-        ]
+
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert "hello pyscript" in self.console.log.lines
 
     def test_autoclose_false(self):
         self.pyscript_run(
@@ -56,10 +54,8 @@ class TestSplashscreen(PyScriptTest):
         expect(div).to_be_visible()
         expect(div).to_contain_text("Python startup...")
         expect(div).to_contain_text("Startup complete")
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
-            "hello pyscript",
-        ]
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert "hello pyscript" in self.console.log.lines
 
     def test_autoclose_loader_deprecated(self):
         self.pyscript_run(
@@ -75,12 +71,10 @@ class TestSplashscreen(PyScriptTest):
         warning = self.page.locator(".py-warning")
         inner_text = warning.inner_text()
         assert "The setting autoclose_loader is deprecated" in inner_text
-        #
+
         div = self.page.locator("py-splashscreen > div")
         expect(div).to_be_visible()
         expect(div).to_contain_text("Python startup...")
         expect(div).to_contain_text("Startup complete")
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
-            "hello pyscript",
-        ]
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert "hello pyscript" in self.console.log.lines

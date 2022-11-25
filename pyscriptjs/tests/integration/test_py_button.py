@@ -12,10 +12,11 @@ class TestPyButton(PyScriptTest):
             </py-button>
         """
         )
-        assert self.console.log.lines == [self.PY_COMPLETE]
+        assert self.console.log.lines[0] == self.PY_COMPLETE
         self.page.locator("text=my button").click()
         self.page.locator("text=my button").click()
-        assert self.console.log.lines == [self.PY_COMPLETE, "clicked!", "clicked!"]
+
+        assert self.console.log.lines[-2:] == ["clicked!", "clicked!"]
 
     def test_deprecated_element(self):
         self.pyscript_run(
