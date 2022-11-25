@@ -37,6 +37,18 @@ class TestOutput(PyScriptTest):
     def test_output_attribute_shows_deprecated_warning(self):
         self.pyscript_run(
             """
+            <py-script output="myDiv">
+                display('hello world')
+            </py-script>
+            <div id="mydiv"></div>
+            """
+        )
+        warning_banner = self.page.locator(".alert-banner")
+        assert "The 'output' attribute is deprecated" in warning_banner.inner_text()
+
+    def test_target_attribute(self):
+        self.pyscript_run(
+            """
             <py-script>
                 display('hello world', target="mydiv")
             </py-script>
