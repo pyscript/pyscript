@@ -55,8 +55,8 @@ class TestOutput(PyScriptTest):
             <div id="mydiv"></div>
             """
         )
-        warning_banner = self.page.locator(".alert-banner")
-        assert "The 'output' attribute is deprecated" in warning_banner.inner_text()
+        mydiv = self.page.locator("#mydiv")
+        assert mydiv.inner_text() == "hello world"
 
     def test_consecutive_display_target(self):
         self.pyscript_run(
