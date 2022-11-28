@@ -12,7 +12,8 @@ const production = !process.env.ROLLUP_WATCH || (process.env.NODE_ENV === "produ
 
 const copy_targets = {
   targets: [
-    { src: 'public/index.html', dest: 'build' }
+    { src: 'public/index.html', dest: 'build' },
+    { src: 'src/plugins/*', dest: 'build/plugins' }
   ]
 }
 

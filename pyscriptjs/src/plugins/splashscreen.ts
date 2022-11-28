@@ -27,7 +27,7 @@ export class SplashscreenPlugin extends Plugin {
         // deprecation warning)
         this.autoclose = true;
 
-        if ("autoclose_loader" in config) {
+        if ('autoclose_loader' in config) {
             this.autoclose = config.autoclose_loader;
             showWarning(AUTOCLOSE_LOADER_DEPRECATED);
         }

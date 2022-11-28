@@ -9,10 +9,8 @@ export class PyTitle extends HTMLElement {
     }
 
     connectedCallback() {
-        const deprecationMessage = (
-            'The element <py-title> is deprecated, please use an <h1> tag instead.'
-        )
-        createDeprecationWarning(deprecationMessage, "py-title")
+        const deprecationMessage = 'The element <py-title> is deprecated, please use an <h1> tag instead.';
+        createDeprecationWarning(deprecationMessage, 'py-title');
         this.label = htmlDecode(this.innerHTML);
         this.mount_name = this.id.split('-').join('_');
         this.innerHTML = '';

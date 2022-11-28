@@ -32,8 +32,7 @@ class TestPyTerminal(PyScriptTest):
             "this goes to stderr",
             "this goes to stdout",
         ]
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
+        assert self.console.log.lines[-3:] == [
             "hello world",
             "this goes to stderr",
             "this goes to stdout",

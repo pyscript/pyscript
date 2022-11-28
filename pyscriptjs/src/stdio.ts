@@ -8,8 +8,8 @@ export interface Stdio {
  */
 export const DEFAULT_STDIO: Stdio = {
     stdout_writeline: console.log,
-    stderr_writeline: console.log
-}
+    stderr_writeline: console.log,
+};
 
 /** Stdio provider which captures and store the messages.
  *  Useful for tests.
@@ -23,16 +23,16 @@ export class CaptureStdio implements Stdio {
     }
 
     reset() {
-        this.captured_stdout = "";
-        this.captured_stderr = "";
+        this.captured_stdout = '';
+        this.captured_stderr = '';
     }
 
     stdout_writeline(msg: string) {
-        this.captured_stdout += msg + "\n";
+        this.captured_stdout += msg + '\n';
     }
 
     stderr_writeline(msg: string) {
-        this.captured_stderr += msg + "\n";
+        this.captured_stderr += msg + '\n';
     }
 }
 
@@ -50,12 +50,10 @@ export class StdioMultiplexer implements Stdio {
     }
 
     stdout_writeline(msg: string) {
-        for(const obj of this._listeners)
-            obj.stdout_writeline(msg);
+        for (const obj of this._listeners) obj.stdout_writeline(msg);
     }
 
     stderr_writeline(msg: string) {
-        for(const obj of this._listeners)
-            obj.stderr_writeline(msg);
+        for (const obj of this._listeners) obj.stderr_writeline(msg);
     }
 }

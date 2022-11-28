@@ -11,10 +11,10 @@ export function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLElement) {
     ensureUniqueId(outElem);
     set_current_display_target(outElem.id);
     //This is the python function defined in pyscript.py
-    const usesTopLevelAwait = runtime.globals.get('uses_top_level_await')
+    const usesTopLevelAwait = runtime.globals.get('uses_top_level_await');
     try {
         try {
-            if (usesTopLevelAwait(pysrc)){
+            if (usesTopLevelAwait(pysrc)) {
                 throw new UserError(
                     ErrorCode.TOP_LEVEL_AWAIT,
                     'The use of top-level "await", "async for", and ' +

@@ -10,6 +10,11 @@ from textwrap import dedent
 import micropip  # noqa: F401
 from js import console, document
 
+try:
+    from pyodide import create_proxy
+except ImportError:
+    from pyodide.ffi import create_proxy
+
 loop = asyncio.get_event_loop()
 
 MIME_METHODS = {
@@ -461,6 +466,29 @@ class TopLevelAsyncFinder(ast.NodeVisitor):
 
 def uses_top_level_await(source: str) -> bool:
     return TopLevelAsyncFinder().is_source_top_level_await(source)
+
+
+class Plugin:
+    def __init__(self, name=None):
+        if not name:
+            name = self.__class__.__name__
+
+        self.name = name
+
+    def init(self, app):
+        self.app = app
+        self.app.plugins.addPythonPlugin(create_proxy(self))
+
+    def register_custom_element(self, tag):
+        # TODO: Ideally would be better to use the logger.
+        console.info(f"Defining new custom element {tag}")
+
+        def wrapper(class_):
+            # TODO: this is very pyodide specific but will have to do
+            #       until we have JS interface that works across interpreters
+            define_custom_element(tag, create_proxy(class_))  # noqa: F821
+
+        return create_proxy(wrapper)
 
 
 pyscript = PyScript()

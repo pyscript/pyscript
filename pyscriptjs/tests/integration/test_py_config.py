@@ -228,8 +228,8 @@ class TestConfig(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-2:] == [
             "hello from A",
             "hello from B",
         ]
@@ -279,7 +279,5 @@ class TestConfig(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
-            "hello from A",
-        ]
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-1] == "hello from A"
