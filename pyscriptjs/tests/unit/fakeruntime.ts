@@ -33,7 +33,7 @@ export class FakeRuntime extends Runtime {
         throw new Error("not implemented");
     }
 
-    async loadFromFile(path: string, fetch_path: string) {
+    writeToFile(path: string, data: Uint8Array) {
         throw new Error("not implemented");
     }
 }

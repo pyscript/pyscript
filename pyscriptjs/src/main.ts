@@ -19,6 +19,7 @@ import { ImportmapPlugin } from './plugins/importmap';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
+import { robustFetch } from './fetch';
 
 const logger = getLogger('pyscript/main');
 
@@ -62,6 +63,7 @@ export class PyScriptApp {
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
+    _filesToCopy: Array<{path: string, content: Uint8Array}>;
 
     constructor() {
         // initialize the builtin plugins
@@ -70,6 +72,7 @@ export class PyScriptApp {
 
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
+        this._filesToCopy = [];
     }
 
     // Error handling logic: if during the execution we encounter an error
@@ -168,9 +171,20 @@ export class PyScriptApp {
     async afterRuntimeLoad(runtime: Runtime): Promise<void> {
         console.assert(this.config !== undefined);
 
+        await this.fetchPaths(runtime);
+
         this.logStatus('Python startup...');
         await runtime.loadInterpreter();
         this.logStatus('Python ready!');
+
+        this.logStatus(`files already fetched, but yet to be copied: ${this._filesToCopy}`);
+
+        this._filesToCopy.forEach(file => {
+            runtime.writeToFile(file.path, file.content);
+        })
+
+        // clear memory once copy is completed
+        this._filesToCopy = []
 
         this.logStatus('Setting up virtual environment...');
         await this.setupVirtualEnv(runtime);
@@ -225,7 +239,6 @@ from pyscript import micropip, Element, console, document`);
 
         logger.info('Packages to install: ', this.config.packages);
         await runtime.installPackage(this.config.packages);
-        await this.fetchPaths(runtime);
 
         // Finally load plugins
         await this.fetchPythonPlugins(runtime);
@@ -242,7 +255,28 @@ from pyscript import micropip, Element, console, document`);
         for (let i = 0; i < paths.length; i++) {
             logger.info(`  fetching path: ${fetchPaths[i]}`);
             try {
-                await runtime.loadFromFile(paths[i], fetchPaths[i]);
+                const filePromise = fetch(fetchPaths[i]);
+                filePromise.then(async response => {
+                    if(response.ok)
+                    {
+                        const buffer = await response.arrayBuffer();
+                        const data = new Uint8Array(buffer);
+                        if(runtime.isInterpreterReady)
+                        {
+                            runtime.writeToFile(paths[i], data);
+                        }
+                        else
+                        {
+                            this._filesToCopy.push({
+                                path: paths[i],
+                                content: data
+                            })
+                        }
+                    }
+                    else {
+                        throw `💥 Cannot load file from "${fetchPaths[i]}"`;
+                    }
+                });
             } catch (e) {
                 // The 'TypeError' here happens when running pytest
                 // I'm not particularly happy with this solution.
@@ -272,7 +306,10 @@ from pyscript import micropip, Element, console, document`);
                 const filename = pathArr.pop();
                 // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
                 const destPath = `./${filename}`;
-                await runtime.loadFromFile(destPath, singleFile);
+                const response = await robustFetch(singleFile);
+                const buffer = await response.arrayBuffer();
+                const data = new Uint8Array(buffer);
+                runtime.writeToFile(destPath, data);
                 const modulename = singleFile.replace(/^.*[\\/]/, '').replace('.py', '');
 
                 console.log(`importing ${modulename}`);

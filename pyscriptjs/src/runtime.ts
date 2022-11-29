@@ -29,6 +29,7 @@ in `pyodide.ts`
 */
 export abstract class Runtime extends Object {
     config: AppConfig;
+    isInterpreterReady: boolean;
     abstract src: string;
     abstract name?: string;
     abstract lang?: string;
@@ -41,6 +42,7 @@ export abstract class Runtime extends Object {
     constructor(config: AppConfig) {
         super();
         this.config = config;
+        this.isInterpreterReady = false;
     }
 
     /**
@@ -99,5 +101,5 @@ export abstract class Runtime extends Object {
      * delegates the loading of files to the
      * underlying interpreter.
      * */
-    abstract loadFromFile(path: string, fetch_path: string): Promise<void>;
+    abstract writeToFile(path: string, data: Uint8Array): void;
 }

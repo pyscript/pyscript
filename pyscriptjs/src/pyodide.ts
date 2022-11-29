@@ -1,10 +1,6 @@
-import { Runtime, version } from './runtime';
+import { Runtime } from './runtime';
 import { getLogger } from './logger';
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
-// eslint-disable-next-line
-// @ts-ignore
-import pyscript from './python/pyscript.py';
-import { robustFetch } from './fetch';
 import type { AppConfig } from './pyconfig';
 import type { Stdio } from './stdio';
 
@@ -73,6 +69,7 @@ export class PyodideRuntime extends Runtime {
         // XXX: ideally, we should load micropip only if we actually need it
         await this.loadPackage('micropip');
         logger.info('pyodide loaded and initialized');
+        this.isInterpreterReady = true;
     }
 
     run(code: string): unknown {
@@ -97,7 +94,7 @@ export class PyodideRuntime extends Runtime {
         }
     }
 
-    async loadFromFile(path: string, fetch_path: string): Promise<void> {
+    writeToFile(path: string, data: Uint8Array): void {
         const pathArr = path.split('/');
         const filename = pathArr.pop();
         for (let i = 0; i < pathArr.length; i++) {
@@ -110,9 +107,6 @@ export class PyodideRuntime extends Runtime {
                 this.interpreter.FS.mkdir(eachPath);
             }
         }
-        const response = await robustFetch(fetch_path);
-        const buffer = await response.arrayBuffer();
-        const data = new Uint8Array(buffer);
         pathArr.push(filename);
         const stream = this.interpreter.FS.open(pathArr.join('/'), 'w');
         this.interpreter.FS.write(stream, data, 0, data.length, 0);
