@@ -6,6 +6,7 @@ import time
 import traceback
 import urllib
 from dataclasses import dataclass
+import os
 
 import py
 import pytest
@@ -595,7 +596,10 @@ class SmartRouter:
             self.log_request(200, "fake_server", full_url)
             assert url.path[0] == "/"
             relative_path = url.path[1:]
-            route.fulfill(status=200, path=relative_path)
+            if os.path.exists(relative_path):
+                route.fulfill(status=200, path=relative_path)
+            else:
+                route.fulfill(status=404)
             return
 
         # network requests might be cached
