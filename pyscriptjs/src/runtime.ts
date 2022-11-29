@@ -100,4 +100,10 @@ export abstract class Runtime extends Object {
      * underlying interpreter.
      * */
     abstract loadFromFile(path: string, fetch_path: string): Promise<void>;
+
+    /**
+     * delegates clearing importlib's module path
+     * caches to the underlying interpreter
+     */
+    abstract invalidate_module_path_cache(): void;
 }

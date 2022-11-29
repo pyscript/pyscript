@@ -180,7 +180,7 @@ export class PyScriptApp {
         this.plugins.afterSetup(runtime);
 
         //Refresh module cache in case plugins have modified the filesystem
-        runtime.interpreter.runPython(`import importlib; importlib.invalidate_caches()`)
+        runtime.invalidate_module_path_cache()
         this.logStatus('Executing <py-script> tags...');
         this.executeScripts(runtime);
 
@@ -208,7 +208,7 @@ export class PyScriptApp {
         // Save and load pyscript.py from FS
         runtime.interpreter.FS.writeFile('pyscript.py', pyscript, { encoding: 'utf8' });
         //Refresh the module cache so Python consistently finds pyscript module
-        runtime.interpreter.runPython(`import importlib; importlib.invalidate_caches()`)
+        runtime.invalidate_module_path_cache()
 
         // inject `define_custom_element` it into the PyScript module scope
         const pyscript_module = runtime.interpreter.pyimport('pyscript');
@@ -232,7 +232,7 @@ from pyscript import micropip, Element, console, document`);
         await this.fetchPaths(runtime);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
-        runtime.interpreter.runPython(`import importlib; importlib.invalidate_caches()`)
+        runtime.invalidate_module_path_cache()
         // Finally load plugins
         await this.fetchPythonPlugins(runtime);
     }
@@ -281,7 +281,7 @@ from pyscript import micropip, Element, console, document`);
                 await runtime.loadFromFile(destPath, singleFile);
 
                 //refresh module cache before trying to import module files into runtime
-                runtime.interpreter.runPython(`import importlib; importlib.invalidate_caches()`)
+                runtime.invalidate_module_path_cache()
 
                 const modulename = singleFile.replace(/^.*[\\/]/, '').replace('.py', '');
 

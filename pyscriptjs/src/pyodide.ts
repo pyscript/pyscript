@@ -118,4 +118,9 @@ export class PyodideRuntime extends Runtime {
         this.interpreter.FS.write(stream, data, 0, data.length, 0);
         this.interpreter.FS.close(stream);
     }
+
+    invalidate_module_path_cache(): void {
+        const importlib = this.interpreter.pyimport("importlib")
+        importlib.invalidate_caches()
+    }
 }
