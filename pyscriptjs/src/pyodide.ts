@@ -97,6 +97,32 @@ export class PyodideRuntime extends Runtime {
         }
     }
 
+    /**
+     *
+     * @param path : the path in the filesystem
+     * @param fetch_path : the path to be fetched
+     *
+     * For a given resource with `fetch_path` as `http://dummy.com/hi.py`
+     * and the location of `path` in the FS to be `a/b/c/foo.py`
+     *
+     * Iteratively analyses the paths:
+     *  - `a`
+     *  - `a/b`
+     *  - `a/b/c`
+     *
+     * The analysis returns if the path exists and if it's parent directory exists
+     * If the path itself doesn't exist, we create it
+     *
+     * Due to the manner in which we proceed, the parent will ALWAYS exist.
+     *
+     * Thus, the iteration proceeds in the following manner:
+     *
+     * - `a` doesn't exist but it's parent i.e. `root` exists --> create `a`
+     * - `a/b` doesn't exist but it's parent i.e. `a` exists --> create `a/b`
+     * - `a/b/c` doesn't exist but it's parent i.e. `a/b` exists --> create `a/b/c`
+     *
+     * Finally, write content of `http://dummy.com/hi.py` to `a/b/c/foo.py`
+     */
     async loadFromFile(path: string, fetch_path: string): Promise<void> {
         const pathArr = path.split('/');
         const filename = pathArr.pop();
