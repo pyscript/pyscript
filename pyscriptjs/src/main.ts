@@ -63,7 +63,7 @@ export class PyScriptApp {
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
-    _filesToCopy: Array<{path: string, content: Uint8Array}>;
+    _filesToCopy: {path: string, content: Uint8Array}[];
 
     constructor() {
         // initialize the builtin plugins
@@ -171,7 +171,7 @@ export class PyScriptApp {
     async afterRuntimeLoad(runtime: Runtime): Promise<void> {
         console.assert(this.config !== undefined);
 
-        await this.fetchPaths(runtime);
+        this.fetchPaths(runtime);
 
         this.logStatus('Python startup...');
         await runtime.loadInterpreter();
@@ -244,7 +244,7 @@ from pyscript import micropip, Element, console, document`);
         await this.fetchPythonPlugins(runtime);
     }
 
-    async fetchPaths(runtime: Runtime) {
+    fetchPaths(runtime: Runtime) {
         // XXX this can be VASTLY improved: for each path we need to fetch a
         // URL and write to the virtual filesystem: pyodide.loadFromFile does
         // it in Python, which means we need to have the runtime
