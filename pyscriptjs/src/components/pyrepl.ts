@@ -42,13 +42,20 @@ export function make_PyRepl(runtime: Runtime) {
             const slot = document.createElement('slot');
             this.shadow.appendChild(slot);
 
+            if (!this.hasAttribute('exec-id')) {
+                this.setAttribute('exec-id', '1');
+            }
+            if (!this.hasAttribute('root')) {
+                this.setAttribute('root', this.id);
+            }
+
             const pySrc = htmlDecode(this.innerHTML).trim();
             this.innerHTML = '';
             this.editor = this.makeEditor(pySrc);
             const boxDiv = this.makeBoxDiv();
             this.appendChild(boxDiv);
             this.editor.focus();
-            logger.debug(`element ${this} successfully connected`);
+            logger.debug(`element ${this.id} successfully connected`);
         }
 
         /** Create and configure the codemirror editor
@@ -134,6 +141,7 @@ export function make_PyRepl(runtime: Runtime) {
         makeOutDiv(): HTMLElement {
             const outDiv = document.createElement('div');
             outDiv.className = 'py-repl-output';
+            outDiv.id = this.id + '-' + this.getAttribute('exec-id');
             return outDiv;
         }
 
@@ -165,12 +173,7 @@ export function make_PyRepl(runtime: Runtime) {
                 pyDisplay(runtime, pyResult, { target: outEl.id });
             }
 
-            if (this.getAttribute('auto-generate') == 'false') {
-                return;
-            }
-            else {
-                this.autogenerate();
-            }
+            this.autogenerateMaybe();
         }
 
         getPySrc(): string {
@@ -192,27 +195,42 @@ export function make_PyRepl(runtime: Runtime) {
             }
         }
 
-        autogenerate(): void {
-            const newPyRepl = document.createElement('py-repl');
- 
-            newPyRepl.setAttribute('auto-generate', 'true');
+        // XXX the autogenerate logic is very messy. We should redo it, and it
+        // should be the default.
+        autogenerateMaybe(): void {
+            if (this.hasAttribute('auto-generate')) {
+                const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
+                const lastRepl = allPyRepls[allPyRepls.length - 1];
+                const lastExecId = lastRepl.getAttribute('exec-id');
+                const nextExecId = parseInt(lastExecId) + 1;
 
-            const outputMode = getAttribute(this, 'output-mode');
-            if (outputMode) {
-                newPyRepl.setAttribute('output-mode', outputMode);
-            }
+                const newPyRepl = document.createElement('py-repl');
+                newPyRepl.setAttribute('root', this.getAttribute('root'));
+                newPyRepl.id = this.getAttribute('root') + '-' + nextExecId.toString();
 
-            const addReplAttribute = (attribute: string) => {
-                const attr = getAttribute(this, attribute);
-                if (attr) {
-                    newPyRepl.setAttribute(attribute, attr);
+                if (this.hasAttribute('auto-generate')) {
+                    newPyRepl.setAttribute('auto-generate', '');
+                    this.removeAttribute('auto-generate');
                 }
-            };
 
-            addReplAttribute('output');
+                const outputMode = getAttribute(this, 'output-mode');
+                if (outputMode) {
+                    newPyRepl.setAttribute('output-mode', outputMode);
+                }
 
-            if (this.parentElement) {
-                this.parentElement.appendChild(newPyRepl);
+                const addReplAttribute = (attribute: string) => {
+                    const attr = getAttribute(this, attribute);
+                    if (attr) {
+                        newPyRepl.setAttribute(attribute, attr);
+                    }
+                };
+
+                addReplAttribute('output');
+
+                newPyRepl.setAttribute('exec-id', nextExecId.toString());
+                if (this.parentElement) {
+                    this.parentElement.appendChild(newPyRepl);
+                }
             }
         }
     }
