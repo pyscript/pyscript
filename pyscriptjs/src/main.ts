@@ -179,6 +179,8 @@ export class PyScriptApp {
         // lifecycle (6.5)
         this.plugins.afterSetup(runtime);
 
+        //Refresh module cache in case plugins have modified the filesystem
+        runtime.invalidate_module_path_cache()
         this.logStatus('Executing <py-script> tags...');
         this.executeScripts(runtime);
 
@@ -205,6 +207,8 @@ export class PyScriptApp {
 
         // Save and load pyscript.py from FS
         runtime.interpreter.FS.writeFile('pyscript.py', pyscript, { encoding: 'utf8' });
+        //Refresh the module cache so Python consistently finds pyscript module
+        runtime.invalidate_module_path_cache()
 
         // inject `define_custom_element` it into the PyScript module scope
         const pyscript_module = runtime.interpreter.pyimport('pyscript');
@@ -227,6 +231,8 @@ from pyscript import micropip, Element, console, document`);
         await runtime.installPackage(this.config.packages);
         await this.fetchPaths(runtime);
 
+        //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
+        runtime.invalidate_module_path_cache()
         // Finally load plugins
         await this.fetchPythonPlugins(runtime);
     }
@@ -273,6 +279,10 @@ from pyscript import micropip, Element, console, document`);
                 // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
                 const destPath = `./${filename}`;
                 await runtime.loadFromFile(destPath, singleFile);
+
+                //refresh module cache before trying to import module files into runtime
+                runtime.invalidate_module_path_cache()
+
                 const modulename = singleFile.replace(/^.*[\\/]/, '').replace('.py', '');
 
                 console.log(`importing ${modulename}`);
