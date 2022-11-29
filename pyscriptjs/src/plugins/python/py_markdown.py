@@ -1,7 +1,6 @@
 from textwrap import dedent
 
 from markdown import markdown
-
 from pyscript import Plugin, console
 
 console.warning(
