@@ -14,7 +14,7 @@ class TestOutput(PyScriptTest):
         """
         )
         node_list = self.page.query_selector_all(r'[id^="py-internal"]')
-        pattern = r'<div>hello world</div>'
+        pattern = r"<div>hello world</div>"
         assert re.search(pattern, node_list[0].inner_html())
         assert len(node_list) == 1
 
@@ -185,10 +185,9 @@ class TestOutput(PyScriptTest):
         """
         )
         node_list = self.page.query_selector_all(r'[id^="py-internal"]')
-        pattern = r'<div>hello world</div>'
+        pattern = r"<div>hello world</div>"
         assert re.search(pattern, node_list[0].inner_html())
         assert len(node_list) == 1
-
 
     def test_append_false(self):
         self.pyscript_run(
