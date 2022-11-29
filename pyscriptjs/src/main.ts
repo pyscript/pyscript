@@ -177,9 +177,8 @@ export class PyScriptApp {
         await runtime.loadInterpreter();
         this.logStatus('Python ready!');
 
-        this.logStatus(`files already fetched, but yet to be copied: ${this._filesToCopy}`);
-
         this._filesToCopy.forEach(file => {
+            this.logStatus(`file already fetched, but yet to be copied: ${file.path}`);
             runtime.writeToFile(file.path, file.content);
         })
 
