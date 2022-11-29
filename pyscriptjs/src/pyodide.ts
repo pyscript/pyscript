@@ -1,9 +1,6 @@
-import { Runtime, version } from './runtime';
+import { Runtime } from './runtime';
 import { getLogger } from './logger';
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
-// eslint-disable-next-line
-// @ts-ignore
-import pyscript from './python/pyscript.py';
 import { robustFetch } from './fetch';
 import type { AppConfig } from './pyconfig';
 import type { Stdio } from './stdio';
