@@ -1,4 +1,5 @@
 import dataclasses
+import os
 import pdb
 import re
 import sys
@@ -6,7 +7,6 @@ import time
 import traceback
 import urllib
 from dataclasses import dataclass
-import os
 
 import py
 import pytest
