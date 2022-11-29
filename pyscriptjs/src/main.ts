@@ -231,6 +231,8 @@ from pyscript import micropip, Element, console, document`);
         await runtime.installPackage(this.config.packages);
         await this.fetchPaths(runtime);
 
+        //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
+        runtime.interpreter.runPython(`import importlib; importlib.invalidate_caches()`)
         // Finally load plugins
         await this.fetchPythonPlugins(runtime);
     }
