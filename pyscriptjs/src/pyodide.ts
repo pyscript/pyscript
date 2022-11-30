@@ -131,7 +131,7 @@ export class PyodideRuntime extends Runtime {
         const filename = pathArr.pop();
         for (let i = 0; i < pathArr.length; i++) {
 
-            // iterative calculates parts of the path i.e. `a`, `a/b`, `a/b/c` for `a/b/c/foo.py`
+            // iteratively calculates parts of the path i.e. `a`, `a/b`, `a/b/c` for `a/b/c/foo.py`
             const eachPath = pathArr.slice(0, i + 1).join('/');
 
             // analyses `eachPath` and returns if it exists along with if its parent directory exists or not
