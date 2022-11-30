@@ -54,7 +54,7 @@ export class InstallError extends UserError {
   errorCode: ErrorCode;
   constructor(errorCode: ErrorCode, message: string) {
     super(errorCode, message)
-    this.name = "FetchError";
+    this.name = "InstallError";
   }
 }
 
