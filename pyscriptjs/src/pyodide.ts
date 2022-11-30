@@ -102,44 +102,56 @@ export class PyodideRuntime extends Runtime {
      * @param path : the path in the filesystem
      * @param fetch_path : the path to be fetched
      *
-     * For a given resource with `fetch_path` as `http://dummy.com/hi.py`
-     * and the location of `path` in the FS to be `a/b/c/foo.py`
+     * Given a file available at `fetch_path` URL (eg: `http://dummy.com/hi.py`),
+     * the function downloads the file and saves it to the `path` (eg: `a/b/c/foo.py`)
+     * on the FS.
      *
-     * Iteratively analyses the paths:
-     *  - `a`
-     *  - `a/b`
-     *  - `a/b/c`
+     * Nested paths are iteratively analysed and each part is created
+     * if it doesn't exist.
      *
-     * The analysis returns if the path exists and if it's parent directory exists
-     * If the path itself doesn't exist, we create it
-     *
+     * The analysis returns if the part exists and if it's parent directory exists
      * Due to the manner in which we proceed, the parent will ALWAYS exist.
      *
-     * Thus, the iteration proceeds in the following manner:
+     * The iteration proceeds in the following manner for `a/b/c/foo.py`:
      *
      * - `a` doesn't exist but it's parent i.e. `root` exists --> create `a`
      * - `a/b` doesn't exist but it's parent i.e. `a` exists --> create `a/b`
      * - `a/b/c` doesn't exist but it's parent i.e. `a/b` exists --> create `a/b/c`
      *
      * Finally, write content of `http://dummy.com/hi.py` to `a/b/c/foo.py`
+     *
+     * NOTE: The `path` parameter expects to have the `filename` in it i.e.
+     * `a/b/c/foo.py` is valid while `a/b/c` (i.e. only the folders) are incorrect.
      */
     async loadFromFile(path: string, fetch_path: string): Promise<void> {
         const pathArr = path.split('/');
         const filename = pathArr.pop();
         for (let i = 0; i < pathArr.length; i++) {
+
+            // iterative calculates parts of the path i.e. `a`, `a/b`, `a/b/c` for `a/b/c/foo.py`
             const eachPath = pathArr.slice(0, i + 1).join('/');
+
+            // analyses `eachPath` and returns if it exists along with if its parent directory exists or not
             const { exists, parentExists } = this.interpreter.FS.analyzePath(eachPath);
+
+            // due to the iterative manner in which we proceed, the parent directory should ALWAYS exist
             if (!parentExists) {
                 throw new Error(`'INTERNAL ERROR! cannot create ${path}, this should never happen'`);
             }
+
+            // creates `eachPath` if it doesn't exist
             if (!exists) {
                 this.interpreter.FS.mkdir(eachPath);
             }
         }
+
+        // `robustFetch` checks for failures in getting a response
         const response = await robustFetch(fetch_path);
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
+
         pathArr.push(filename);
+        // opens a file descriptor for the file at `path`
         const stream = this.interpreter.FS.open(pathArr.join('/'), 'w');
         this.interpreter.FS.write(stream, data, 0, data.length, 0);
         this.interpreter.FS.close(stream);
