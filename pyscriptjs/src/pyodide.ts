@@ -105,7 +105,7 @@ export class PyodideRuntime extends Runtime {
                 if (e.message.includes("Can't find a pure Python 3 wheel")) {
                     exceptionMessage += (
                         ` Reason: Can't find a pure Python 3 Wheel for package(s) '` + package_name +
-                        `. See: https://pyodide.org/en/stable/usage/faq.html#micropip-can-t-find-a-pure-python-wheel ` +
+                        `'. See: https://pyodide.org/en/stable/usage/faq.html#micropip-can-t-find-a-pure-python-wheel ` +
                         `for more information.`
                     )
                 } else if (e.message.includes("Can't fetch metadata")) {
