@@ -101,6 +101,47 @@ class TestBasic(PyScriptTest):
             "hello asciitree",  # printed by us
         ]
 
+    def test_non_existent_package(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                # we use asciitree because it's one of the smallest packages
+                # which are built and distributed with pyodide
+                packages = ["nonexistendright"]
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+
+        expected_alert_banner_msg = (
+            "(PY1001): Unable to install package(s) 'nonexistendright'. "
+            "Unable to find package in PyPI. Please make sure you have "
+            "entered a correct package name."
+        )
+
+        alert_banner = self.page.wait_for_selector(".alert-banner")
+        assert expected_alert_banner_msg in alert_banner.inner_text()
+
+    def test_no_python_wheel(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                # we use asciitree because it's one of the smallest packages
+                # which are built and distributed with pyodide
+                packages = ["opsdroid"]
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+
+        expected_alert_banner_msg = (
+            "(PY1001): Unable to install package(s) 'opsdroid'. "
+            "Reason: Can't find a pure Python 3 Wheel for package(s) 'opsdroid'"
+        )
+
+        alert_banner = self.page.wait_for_selector(".alert-banner")
+        assert expected_alert_banner_msg in alert_banner.inner_text()
+
     def test_dynamically_add_py_script_tag(self):
         self.pyscript_run(
             """

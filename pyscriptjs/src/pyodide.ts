@@ -1,5 +1,6 @@
 import { Runtime } from './runtime';
 import { getLogger } from './logger';
+import { InstallError, ErrorCode } from './exceptions'
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
 import { robustFetch } from './fetch';
 import type { AppConfig } from './pyconfig';
@@ -91,8 +92,36 @@ export class PyodideRuntime extends Runtime {
         if (package_name.length > 0) {
             logger.info(`micropip install ${package_name.toString()}`);
             const micropip = this.globals.get('micropip') as Micropip;
-            await micropip.install(package_name);
-            micropip.destroy();
+            try{
+                await micropip.install(package_name);
+                micropip.destroy();
+            } catch(e) {
+                let exceptionMessage = `Unable to install package(s) '` + package_name +`'.`
+
+                // If we can't fetch `package_name` micropip.install throws a huge
+                // Python traceback in `e.message` this logic is to handle the
+                // error and throw a more sensible error message instead of the
+                // huge traceback.
+                if (e.message.includes("Can't find a pure Python 3 wheel")) {
+                    exceptionMessage += (
+                        ` Reason: Can't find a pure Python 3 Wheel for package(s) '` + package_name +
+                        `. See: https://pyodide.org/en/stable/usage/faq.html#micropip-can-t-find-a-pure-python-wheel ` +
+                        `for more information.`
+                    )
+                } else if (e.message.includes("Can't fetch metadata")) {
+                    exceptionMessage += (
+                        " Unable to find package in PyPI. " +
+                        "Please make sure you have entered a correct package name."
+                    )
+                } else {
+                    exceptionMessage += ` Reason: ${e.message as string}`
+                }
+
+                throw new InstallError(
+                    ErrorCode.MICROPIP_INSTALL_ERROR,
+                    exceptionMessage
+                )
+            }
         }
     }
 
