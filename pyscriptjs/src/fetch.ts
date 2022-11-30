@@ -8,7 +8,8 @@ import { FetchError, ErrorCode } from "./exceptions";
 */
 export async function robustFetch(url: string, options?: RequestInit): Promise<Response> {
     const response = await fetch(url, options);
-    if (response.status !== 200) {
+    // Note that response.ok is true for 200-299 responses
+    if (!response.ok) {
         const errorMsg = `Fetching from URL ${url} failed with error ${response.status} (${response.statusText}).`;
         switch(response.status) {
             case 404:
