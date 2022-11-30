@@ -106,6 +106,9 @@ export class PyodideRuntime extends Runtime {
      * the function downloads the file and saves it to the `path` (eg: `a/b/c/foo.py`)
      * on the FS.
      *
+     * Example usage:
+     * await loadFromFile(`a/b/c/foo.py`, `http://dummy.com/hi.py`)
+     *
      * Nested paths are iteratively analysed and each part is created
      * if it doesn't exist.
      *
