@@ -8,6 +8,7 @@ This reference guide contains the error codes you might find and a description o
 | Error code | Description                    | Recommendation     |
 |------------|--------------------------------|--------------------|
 | PY1000     | Invalid configuration supplied | Confirm that your `py-config` tag is using a valid `TOML` or `JSON` syntax and is using the correct configuration type. |
+| PY1001     | Unable to install package(s)   | Confirm that the package contains a pure Python 3 wheel or the name of the package is correct. |
 | PY9000     | Top level await is deprecated  | Create a coroutine with your code and schedule it with `asyncio.ensure_future` or similar |
 
 
