@@ -1,9 +1,9 @@
-from textwrap import dedent
 import html
+from textwrap import dedent
+
+from js import console
 from markdown import markdown
 from pyscript import Plugin, console
-from js import console
-
 
 console.warn(
     "WARNING: This plugin is still in a very experimental phase and will likely change"
