@@ -105,8 +105,6 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-config>
-                # we use asciitree because it's one of the smallest packages
-                # which are built and distributed with pyodide
                 packages = ["nonexistendright"]
             </py-config>
             """,
@@ -126,8 +124,6 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-config>
-                # we use asciitree because it's one of the smallest packages
-                # which are built and distributed with pyodide
                 packages = ["opsdroid"]
             </py-config>
             """,

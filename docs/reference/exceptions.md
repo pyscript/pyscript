@@ -27,3 +27,13 @@ These error codes are related to any exception raised when trying to fetch a res
 | PY0404     | The page you are trying to fetch does not exist.             |
 | PY0500     | The server encountered an internal error.                    |
 | PY0503     | The server is currently unavailable.                         |
+
+## PY1001
+
+Pyscript cannot install the package(s) you specified in your `py-config` tag. This can happen for a few reasons:
+
+- The package does not exist
+- The package does not contain a pure Python 3 wheel
+- An error occurred while trying to install the package
+
+An error banner should appear on your page with the error code and a description of the error or a traceback. You can also check the developer console for more information.

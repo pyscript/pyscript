@@ -92,7 +92,7 @@ export class PyodideRuntime extends Runtime {
         if (package_name.length > 0) {
             logger.info(`micropip install ${package_name.toString()}`);
             const micropip = this.globals.get('micropip') as Micropip;
-            try{
+            try {
                 await micropip.install(package_name);
                 micropip.destroy();
             } catch(e) {
@@ -116,6 +116,8 @@ export class PyodideRuntime extends Runtime {
                 } else {
                     exceptionMessage += ` Reason: ${e.message as string}`
                 }
+
+                logger.error(e);
 
                 throw new InstallError(
                     ErrorCode.MICROPIP_INSTALL_ERROR,
