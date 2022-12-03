@@ -128,3 +128,30 @@ def test_set_version_info():
     # for backwards compatibility, should be killed eventually
     assert pyscript.PyScript.__version__ == pyscript.__version__
     assert pyscript.PyScript.version_info == pyscript.version_info
+
+
+class MyDeprecatedGlobal(pyscript.DeprecatedGlobal):
+    """
+    A subclass of DeprecatedGlobal, for tests.
+
+    Instead of showing warnings into the DOM (which we don't have inside unit
+    tests), we record the warnings into a field.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.warnings = []
+
+    def _show_warning(self, message):
+        self.warnings.append(message)
+
+
+class TestDeprecatedGlobal:
+    def test_show_warning_override(self):
+        """
+        Test that our overriding of _show_warning actually works.
+        """
+        glob = MyDeprecatedGlobal("foo", None)
+        glob._show_warning("foo")
+        glob._show_warning("bar")
+        assert glob.warnings == ["foo", "bar"]

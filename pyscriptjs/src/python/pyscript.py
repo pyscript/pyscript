@@ -505,3 +505,29 @@ class Plugin:
             define_custom_element(tag, create_proxy(class_))  # noqa: F821
 
         return create_proxy(wrapper)
+
+
+class DeprecatedGlobal:
+    """
+    Proxy for globals which are deprecated.
+
+    The intendend usage is as follows:
+
+        # in the global namespace
+        Element = pyscript.DeprecatedGlobal('Element', pyscript.Element)
+        console = pyscript.DeprecatedGlobal('console', pyscript.console)
+        ...
+
+    The proxy forwards __getattr__ and __call__ to the underlying object, and
+    emit a warning on the first usage.
+
+    This way users see a warning only if they actually access the top-level
+    name.
+    """
+
+    def __init__(self, name, obj):
+        self.name = name
+        self.obj = obj
+
+    def _show_warning(self, message):
+        assert False, "implement me"
