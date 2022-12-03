@@ -550,3 +550,7 @@ class DeprecatedGlobal:
     def __getattr__(self, attr):
         self._show_warning_maybe()
         return getattr(self.__obj, attr)
+
+    def __call__(self, *args, **kwargs):
+        self._show_warning_maybe()
+        return self.__obj(*args, **kwargs)

@@ -175,3 +175,13 @@ class TestDeprecatedGlobal:
         assert glob.name == "foo"
         assert glob.surname == "bar"
         assert len(glob.warnings) == 1
+
+    def test_call(self):
+        def foo(x, y):
+            return x + y
+
+        glob = MyDeprecatedGlobal("foo", foo)
+        assert glob(1, y=2) == 3
+        assert glob.warnings == [
+            "Direct usage of foo is deprecated. Please use pyscript.foo instead."
+        ]
