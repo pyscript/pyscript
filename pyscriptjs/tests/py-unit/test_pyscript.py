@@ -121,6 +121,10 @@ def test_uses_top_level_await():
 
 def test_set_version_info():
     version_string = "1234.56.78.ABCD"
-    pyscript.PyScript.set_version_info(version_string)
-    assert pyscript.PyScript.__version__ == version_string
-    assert pyscript.PyScript.version_info == (1234, 56, 78, "ABCD")
+    pyscript._set_version_info(version_string)
+    assert pyscript.__version__ == version_string
+    assert pyscript.version_info == (1234, 56, 78, "ABCD")
+    #
+    # for backwards compatibility, should be killed eventually
+    assert pyscript.PyScript.__version__ == pyscript.__version__
+    assert pyscript.PyScript.version_info == pyscript.version_info

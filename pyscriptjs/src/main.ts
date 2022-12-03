@@ -213,8 +213,11 @@ export class PyScriptApp {
         // inject `define_custom_element` it into the PyScript module scope
         const pyscript_module = runtime.interpreter.pyimport('pyscript');
         pyscript_module.define_custom_element = define_custom_element;
-        pyscript_module.PyScript.set_version_info(version);
+        pyscript_module._set_version_info(version);
         pyscript_module.destroy();
+
+        // import pyscript in the global namespace
+        await runtime.run("import pyscript");
 
         // TODO: Currently adding the imports for backwards compatibility, we should
         //       remove it

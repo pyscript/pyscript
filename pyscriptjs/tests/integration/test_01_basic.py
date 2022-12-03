@@ -173,8 +173,8 @@ class TestBasic(PyScriptTest):
             """
         <py-script>
             import js
-            js.console.log(PyScript.__version__)
-            js.console.log(str(PyScript.version_info))
+            js.console.log(pyscript.__version__)
+            js.console.log(str(pyscript.version_info))
         </py-script>
         """
         )
