@@ -516,8 +516,8 @@ class DeprecatedGlobal:
     The intendend usage is as follows:
 
         # in the global namespace
-        Element = pyscript.DeprecatedGlobal('Element', pyscript.Element)
-        console = pyscript.DeprecatedGlobal('console', pyscript.console)
+        Element = pyscript.DeprecatedGlobal('Element', pyscript.Element, "...")
+        console = pyscript.DeprecatedGlobal('console', pyscript.console, "...")
         ...
 
     The proxy forwards __getattr__ and __call__ to the underlying object, and
@@ -537,7 +537,9 @@ class DeprecatedGlobal:
         """
         NOTE: this is overridden by unit tests
         """
-        assert False, "implement me"
+        # this showWarning is implemented in js and injected into this
+        # namespace by main.ts
+        showWarning(message)  # noqa: F821
 
     def _show_warning_maybe(self):
         if self.__warning_already_shown:
@@ -552,3 +554,40 @@ class DeprecatedGlobal:
     def __call__(self, *args, **kwargs):
         self._show_warning_maybe()
         return self.__obj(*args, **kwargs)
+
+
+def _install_deprecated_globals_2022_12_1(ns):
+    """
+    Install into the given namespace all the globals which have been
+    deprecated since the 2022.12.1 release. Eventually they should be killed.
+    """
+
+    pyscript_names = [
+        "Element",
+        "PyItemTemplate",
+        "PyListTemplate",
+        "PyWidgetTheme",
+        "add_classes",
+        "create",
+        "loop",
+        "micropip",
+    ]
+
+    for name in pyscript_names:
+        obj = globals()[name]
+        message = (
+            f"Direct usage of {name} is deprecated. Please use pyscript.{name} instead"
+        )
+        ns[name] = DeprecatedGlobal(name, obj, message)
+
+    # XXX more deprecated names with different warning messages
+    ## stdlib_names = ['asyncio', 'base64', 'datetime', 'dedent', 'io', 'now',
+    ##                 'pyodide', 'sys', 'time']
+
+    ## private_names = ['MIME_METHODS', 'MIME_RENDERERS',
+    ##                  'eval_formatter',
+    ##                  'format_mime', 'identity', 'render_image']
+
+    ## js_names = ['document', 'console']
+
+    ## 'PyScript'

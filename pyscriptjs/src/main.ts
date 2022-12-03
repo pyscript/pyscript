@@ -210,25 +210,21 @@ export class PyScriptApp {
         //Refresh the module cache so Python consistently finds pyscript module
         runtime.invalidate_module_path_cache()
 
-        // inject `define_custom_element` it into the PyScript module scope
+        // inject `define_custom_element` and showWarning it into the PyScript
+        // module scope
         const pyscript_module = runtime.interpreter.pyimport('pyscript');
         pyscript_module.define_custom_element = define_custom_element;
+        pyscript_module.showWarning = showWarning;
         pyscript_module._set_version_info(version);
         pyscript_module.destroy();
 
-        // import pyscript in the global namespace
-        await runtime.run("import pyscript");
-
-        // TODO: Currently adding the imports for backwards compatibility, we should
-        //       remove it
+        // import some carefully selected names into the global namespace
         await runtime.run(`
-        from pyscript import *
-        `);
-        logger.warn(`DEPRECATION WARNING: 'micropip', 'Element', 'console', 'document' and several other \
-objects form the pyscript module (with the exception of 'display') will be \
-be removed from the Python global namespace in the following release. \
-To avoid errors in future releases use import from pyscript instead. For instance: \
-from pyscript import micropip, Element, console, document`);
+        import js
+        import pyscript
+        from pyscript import display
+        pyscript._install_deprecated_globals_2022_12_1(globals())
+        `)
 
         logger.info('Packages to install: ', this.config.packages);
         await runtime.installPackage(this.config.packages);
