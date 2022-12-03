@@ -70,23 +70,17 @@ def _set_version_info(version_from_runtime: str):
 
     __version__ = version_from_runtime
 
-    # version_info is namedtuple: (year, month, minor, releaselevel)
     version_parts = version_from_runtime.split(".")
-    version_dict = {
-        "year": int(version_parts[0]),
-        "month": int(version_parts[1]),
-        "minor": int(version_parts[2]),
-    }
+    year = int(version_parts[0])
+    month = int(version_parts[1])
+    minor = int(version_parts[2])
+    if len(version_parts) > 3:
+        releaselevel = version_parts[3]
+    else:
+        releaselevel = ""
 
-    # If the version only has three parts (e.g. 2022.09.1), let the releaselevel be ""
-    try:
-        version_dict["releaselevel"] = version_parts[3]
-    except IndexError:
-        version_dict["releaselevel"] = ""
-
-    # Format mimics sys.version_info
-    _VersionInfo = namedtuple("version_info", version_dict.keys())
-    version_info = _VersionInfo(**version_dict)
+    VersionInfo = namedtuple("version_info", ("year", "month", "minor", "releaselevel"))
+    version_info = VersionInfo(year, month, minor, releaselevel)
 
     # we ALSO set PyScript.__version__ and version_info for backwards
     # compatibility. Should be killed eventually.
