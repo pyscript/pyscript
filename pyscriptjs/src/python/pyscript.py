@@ -160,8 +160,10 @@ def format_mime(obj):
 
 class PyScript:
     """
-    This class is deprecated: all its old functionalities are available as
-    module-level functions. This class should be killed eventually.
+    This class is deprecated since 2022.12.1.
+
+    All its old functionalities are available as module-level functions. This
+    class should be killed eventually.
     """
 
     loop = loop
@@ -525,9 +527,10 @@ class DeprecatedGlobal:
     name.
     """
 
-    def __init__(self, name, obj):
+    def __init__(self, name, obj, message):
         self.__name = name
         self.__obj = obj
+        self.__message = message
         self.__warning_already_shown = False
 
     def _show_warning(self, message):
@@ -539,12 +542,7 @@ class DeprecatedGlobal:
     def _show_warning_maybe(self):
         if self.__warning_already_shown:
             return
-
-        message = (
-            f"Direct usage of {self.__name} is deprecated. "
-            f"Please use pyscript.{self.__name} instead."
-        )
-        self._show_warning(message)
+        self._show_warning(self.__message)
         self.__warning_already_shown = True
 
     def __getattr__(self, attr):

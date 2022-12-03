@@ -151,7 +151,7 @@ class TestDeprecatedGlobal:
         """
         Test that our overriding of _show_warning actually works.
         """
-        glob = MyDeprecatedGlobal("foo", None)
+        glob = MyDeprecatedGlobal("foo", None, "my message")
         glob._show_warning("foo")
         glob._show_warning("bar")
         assert glob.warnings == ["foo", "bar"]
@@ -160,18 +160,16 @@ class TestDeprecatedGlobal:
         class MyFakeObject:
             name = "FooBar"
 
-        glob = MyDeprecatedGlobal("MyFakeObject", MyFakeObject)
+        glob = MyDeprecatedGlobal("MyFakeObject", MyFakeObject, "this is my warning")
         assert glob.name == "FooBar"
-        assert glob.warnings == [
-            "Direct usage of MyFakeObject is deprecated. Please use pyscript.MyFakeObject instead."
-        ]
+        assert glob.warnings == ["this is my warning"]
 
     def test_dont_show_warning_twice(self):
         class MyFakeObject:
             name = "foo"
             surname = "bar"
 
-        glob = MyDeprecatedGlobal("MyFakeObject", MyFakeObject)
+        glob = MyDeprecatedGlobal("MyFakeObject", MyFakeObject, "this is my warning")
         assert glob.name == "foo"
         assert glob.surname == "bar"
         assert len(glob.warnings) == 1
@@ -180,8 +178,6 @@ class TestDeprecatedGlobal:
         def foo(x, y):
             return x + y
 
-        glob = MyDeprecatedGlobal("foo", foo)
+        glob = MyDeprecatedGlobal("foo", foo, "this is my warning")
         assert glob(1, y=2) == 3
-        assert glob.warnings == [
-            "Direct usage of foo is deprecated. Please use pyscript.foo instead."
-        ]
+        assert glob.warnings == ["this is my warning"]
