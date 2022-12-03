@@ -155,3 +155,13 @@ class TestDeprecatedGlobal:
         glob._show_warning("foo")
         glob._show_warning("bar")
         assert glob.warnings == ["foo", "bar"]
+
+    def test_getattr(self):
+        class MyFakeObject:
+            name = "FooBar"
+
+        glob = MyDeprecatedGlobal("MyFakeObject", MyFakeObject)
+        assert glob.name == "FooBar"
+        assert glob.warnings == [
+            "Direct usage of MyFakeObject is deprecated. Please use pyscript.MyFakeObject instead."
+        ]

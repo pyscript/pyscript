@@ -526,8 +526,22 @@ class DeprecatedGlobal:
     """
 
     def __init__(self, name, obj):
-        self.name = name
-        self.obj = obj
+        self.__name = name
+        self.__obj = obj
 
     def _show_warning(self, message):
+        """
+        NOTE: this is overridden by unit tests
+        """
         assert False, "implement me"
+
+    def _show_warning_maybe(self):
+        message = (
+            f"Direct usage of {self.__name} is deprecated. "
+            f"Please use pyscript.{self.__name} instead."
+        )
+        self._show_warning(message)
+
+    def __getattr__(self, attr):
+        self._show_warning_maybe()
+        return getattr(self.__obj, attr)
