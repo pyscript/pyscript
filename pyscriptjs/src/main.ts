@@ -222,7 +222,7 @@ export class PyScriptApp {
         await runtime.run(`
         import js
         import pyscript
-        from pyscript import Element, display
+        from pyscript import Element, display, HTML
         pyscript._install_deprecated_globals_2022_12_1(globals())
         `)
 
