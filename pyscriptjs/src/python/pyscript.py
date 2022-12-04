@@ -514,6 +514,9 @@ class DeprecatedGlobal:
         self.__message = message
         self.__warning_already_shown = False
 
+    def __repr__(self):
+        return f"<DeprecatedGlobal({self.__name!r})>"
+
     def _show_warning(self, message):
         """
         NOTE: this is overridden by unit tests

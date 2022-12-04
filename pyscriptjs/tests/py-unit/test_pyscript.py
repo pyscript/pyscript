@@ -148,6 +148,10 @@ class MyDeprecatedGlobal(pyscript.DeprecatedGlobal):
 
 
 class TestDeprecatedGlobal:
+    def test_repr(self):
+        glob = MyDeprecatedGlobal("foo", None, "my message")
+        assert repr(glob) == "<DeprecatedGlobal('foo')>"
+
     def test_show_warning_override(self):
         """
         Test that our overriding of _show_warning actually works.
