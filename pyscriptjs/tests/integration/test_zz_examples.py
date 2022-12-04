@@ -60,6 +60,7 @@ class TestExamples(PyScriptTest):
         content = self.page.content()
         pattern = "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+"  # e.g. 08/09/2022 15:57:32
         assert re.search(pattern, content)
+        self.assert_no_banners()
 
     def test_simple_clock(self):
         self.goto("examples/simple_clock.html")
@@ -77,6 +78,7 @@ class TestExamples(PyScriptTest):
                 time.sleep(1)
         else:
             assert False, "Espresso time not found :("
+        self.assert_no_banners()
 
     def test_altair(self):
         self.goto("examples/altair.html")
@@ -94,6 +96,7 @@ class TestExamples(PyScriptTest):
         # Let's confirm that the links are visible now after clicking the menu
         assert save_as_png_link.is_visible()
         assert see_source_link.is_visible()
+        self.assert_no_banners()
 
     def test_bokeh(self):
         # XXX improve this test
@@ -101,6 +104,7 @@ class TestExamples(PyScriptTest):
         self.wait_for_pyscript()
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*class=\\"bk\\".*>')
+        self.assert_no_banners()
 
     def test_bokeh_interactive(self):
         # XXX improve this test
@@ -108,6 +112,7 @@ class TestExamples(PyScriptTest):
         self.wait_for_pyscript()
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*?class=\\"bk\\".*?>')
+        self.assert_no_banners()
 
     @pytest.mark.skip("flaky, see issue 759")
     def test_d3(self):
@@ -123,6 +128,7 @@ class TestExamples(PyScriptTest):
         # Let's simply assert that the text of the chart is as expected which
         # means that the chart rendered successfully and with the right text
         assert "🍊21\n🍇13\n🍏8\n🍌5\n🍐3\n🍋2\n🍎1\n🍉1" in pyscript_chart.inner_text()
+        self.assert_no_banners()
 
     def test_folium(self):
         self.goto("examples/folium.html")
@@ -145,6 +151,7 @@ class TestExamples(PyScriptTest):
         zoom_out = iframe.locator("[aria-label='Zoom out']")
         assert "−" in zoom_out.inner_text()
         zoom_out.click()
+        self.assert_no_banners()
 
     def test_matplotlib(self):
         self.goto("examples/matplotlib.html")
@@ -171,6 +178,7 @@ class TestExamples(PyScriptTest):
         # let's confirm that they are the same
         deviation = np.mean(np.abs(img_data - ref_data))
         assert deviation == 0.0
+        self.assert_no_banners()
 
     def test_numpy_canvas_fractals(self):
         self.goto("examples/numpy_canvas_fractals.html")
@@ -217,6 +225,7 @@ class TestExamples(PyScriptTest):
         assert self.console.log.lines[-2] == "Computing Newton set ..."
         # Confirm that changing the input values, triggered a new computation
         assert self.console.log.lines[-1] == "Computing Newton set ..."
+        self.assert_no_banners()
 
     def test_panel(self):
         self.goto("examples/panel.html")
@@ -234,6 +243,7 @@ class TestExamples(PyScriptTest):
 
         # Let's confirm that slider title changed
         assert slider_title.inner_text() == "Amplitude: 5"
+        self.assert_no_banners()
 
     def test_panel_deckgl(self):
         # XXX improve this test
@@ -241,6 +251,7 @@ class TestExamples(PyScriptTest):
         self.wait_for_pyscript()
         assert self.page.title() == "PyScript/Panel DeckGL Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
+        self.assert_no_banners()
 
     def test_panel_kmeans(self):
         # XXX improve this test
@@ -248,6 +259,7 @@ class TestExamples(PyScriptTest):
         self.wait_for_pyscript()
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
+        self.assert_no_banners()
 
     def test_panel_stream(self):
         # XXX improve this test
@@ -255,6 +267,7 @@ class TestExamples(PyScriptTest):
         self.wait_for_pyscript()
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
+        self.assert_no_banners()
 
     def test_repl(self):
         self.goto("examples/repl.html")
@@ -274,6 +287,7 @@ class TestExamples(PyScriptTest):
         # before looking into the text_content
         assert self.page.wait_for_selector("#my-repl-2-2", state="attached")
         assert self.page.locator("#my-repl-2-2").text_content() == "4"
+        self.assert_no_banners()
 
     def test_repl2(self):
         self.goto("examples/repl2.html")
@@ -289,6 +303,7 @@ class TestExamples(PyScriptTest):
         content = self.page.content()
         pattern = "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+"  # e.g. 08/09/2022 15:57:32
         assert re.search(pattern, content)
+        self.assert_no_banners()
 
     def test_todo(self):
         self.goto("examples/todo.html")
@@ -316,6 +331,7 @@ class TestExamples(PyScriptTest):
             '<p class="m-0 inline line-through">Fold laundry</p>'
             in first_task.inner_html()
         )
+        self.assert_no_banners()
 
     def test_todo_pylist(self):
         # XXX improve this test
@@ -323,6 +339,7 @@ class TestExamples(PyScriptTest):
         self.wait_for_pyscript()
         assert self.page.title() == "Todo App"
         wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
+        self.assert_no_banners()
 
     @pytest.mark.xfail(reason="To be moved to collective and updated, see issue #686")
     def test_toga_freedom(self):
@@ -340,6 +357,7 @@ class TestExamples(PyScriptTest):
         self.page.locator("button#toga_calculate").click()
         result = self.page.locator("#toga_c_input")
         assert "40.555" in result.input_value()
+        self.assert_no_banners()
 
     def test_webgl_raycaster_index(self):
         # XXX improve this test
@@ -347,3 +365,4 @@ class TestExamples(PyScriptTest):
         self.wait_for_pyscript()
         assert self.page.title() == "Raycaster"
         wait_for_render(self.page, "*", "<canvas.*?>")
+        self.assert_no_banners()
