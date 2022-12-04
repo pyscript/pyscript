@@ -1,5 +1,4 @@
 import random
-import sys
 
 from js import DOMParser, document, setInterval
 from pyodide.ffi import create_proxy
@@ -11,9 +10,10 @@ class Antigravity:
     url = "./antigravity.svg"
 
     def __init__(self, target=None, interval=10, append=True, fly=False):
-        target = target or sys.stdout._out
         self.target = (
-            document.getElementById(target) if isinstance(target, str) else target
+            document.getElementById(target)
+            if isinstance(target, str)
+            else document.body
         )
         doc = DOMParser.new().parseFromString(
             open_url(self.url).read(), "image/svg+xml"
