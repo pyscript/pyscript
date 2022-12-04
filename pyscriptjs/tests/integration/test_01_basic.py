@@ -212,7 +212,7 @@ class TestBasic(PyScriptTest):
             """
             <py-script>
                 # trigger various warnings
-                Element("mydiv").write("hello world")
+                create("div", classes="a b c")
                 assert sys.__name__ == 'sys'
                 dedent("")
                 format_mime("")
@@ -223,8 +223,6 @@ class TestBasic(PyScriptTest):
             <div id="mydiv"></div>
             """
         )
-        mydiv = self.page.locator("#mydiv")
-        assert mydiv.inner_text() == "hello world"
         banner = self.page.locator(".py-warning")
         messages = banner.all_inner_texts()
         assert messages == [
@@ -233,5 +231,5 @@ class TestBasic(PyScriptTest):
             "format_mime is deprecated. This is a private implementation detail of pyscript. You should not use it.",  # noqa: E501
             "Direct usage of dedent is deprecated. Please use from textwrap import dedent instead.",
             "Direct usage of sys is deprecated. Please use import sys instead.",
-            "Direct usage of Element is deprecated. Please use pyscript.Element instead.",
+            "Direct usage of create is deprecated. Please use pyscript.create instead.",
         ]

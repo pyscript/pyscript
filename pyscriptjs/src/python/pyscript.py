@@ -571,7 +571,6 @@ def _install_deprecated_globals_2022_12_1(ns):
 
     # function/classes defined in pyscript.py ===> pyscript.XXX
     pyscript_names = [
-        "Element",
         "PyItemTemplate",
         "PyListTemplate",
         "PyWidgetTheme",
