@@ -191,6 +191,22 @@ class TestBasic(PyScriptTest):
             is not None
         )
 
+    def test_assert_no_banners(self):
+        """
+        Test that the DOM doesn't contain error/warning banners
+        """
+        self.pyscript_run(
+            """
+            <py-script>
+                import pyscript
+                pyscript.showWarning("hello")
+                pyscript.showWarning("world")
+            </py-script>
+            """
+        )
+        with pytest.raises(AssertionError, match="Found 2 alert banners"):
+            self.assert_no_banners()
+
     def test_deprecated_globals(self):
         self.pyscript_run(
             """

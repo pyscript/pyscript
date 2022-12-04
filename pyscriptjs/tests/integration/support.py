@@ -291,6 +291,17 @@ class PyScriptTest:
         elems = [loc.nth(i) for i in range(n)]
         return iter(elems)
 
+    def assert_no_banners(self):
+        """
+        Ensure that there are no alert banners on the page, which are used for
+        errors and warnings. Raise AssertionError if any if found.
+        """
+        loc = self.page.locator(".alert-banner")
+        n = loc.count()
+        if n > 0:
+            text = "\n".join(loc.all_inner_texts())
+            raise AssertionError(f"Found {n} alert banners:\n" + text)
+
 
 # ============== Helpers and utility functions ==============
 
