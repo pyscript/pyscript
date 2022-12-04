@@ -593,9 +593,15 @@ def _install_deprecated_globals_2022_12_1(ns):
         "dedent", dedent, "Please use <code>from textwrap import dedent</code> instead"
     )
 
-    ## private_names = ['MIME_METHODS', 'MIME_RENDERERS',
-    ##                  'eval_formatter',
-    ##                  'format_mime', 'identity', 'render_image']
+    # these are names that used to leak in the globals but they are just
+    # implementation details. People should not use them.
+    private_names = ["eval_formatter", "format_mime", "identity", "render_image"]
+    for name in private_names:
+        deprecate(
+            name,
+            globals()[name],
+            "This is a private implementation detail of pyscript. You should not use it",
+        )
 
     ## js_names = ['document', 'console']
 
