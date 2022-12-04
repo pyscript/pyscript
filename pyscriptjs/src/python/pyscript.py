@@ -8,7 +8,6 @@ from collections import namedtuple
 from textwrap import dedent
 
 import js
-import micropip  # noqa: F401
 
 try:
     from pyodide import create_proxy
@@ -577,7 +576,6 @@ def _install_deprecated_globals_2022_12_1(ns):
         "add_classes",
         "create",
         "loop",
-        "micropip",
     ]
     for name in pyscript_names:
         deprecate(
@@ -585,7 +583,16 @@ def _install_deprecated_globals_2022_12_1(ns):
         )
 
     # stdlib modules ===> import XXX
-    stdlib_names = ["asyncio", "base64", "io", "sys", "time", "datetime", "pyodide"]
+    stdlib_names = [
+        "asyncio",
+        "base64",
+        "io",
+        "sys",
+        "time",
+        "datetime",
+        "pyodide",
+        "micropip",
+    ]
     for name in stdlib_names:
         obj = __import__(name)
         deprecate(name, obj, f"Please use <code>import {name}</code> instead.")
