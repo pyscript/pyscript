@@ -539,7 +539,7 @@ class DeprecatedGlobal:
         """
         # this showWarning is implemented in js and injected into this
         # namespace by main.ts
-        showWarning(message)  # noqa: F821
+        showWarning(message, "html")  # noqa: F821
 
     def _show_warning_maybe(self):
         if self.__warning_already_shown:
@@ -562,6 +562,11 @@ def _install_deprecated_globals_2022_12_1(ns):
     deprecated since the 2022.12.1 release. Eventually they should be killed.
     """
 
+    def deprecate(name, obj, instead):
+        message = f"Direct usage of <code>{name}</code> is deprecated. " + instead
+        ns[name] = DeprecatedGlobal(name, obj, message)
+
+    # function/classes defined in pyscript.py ===> pyscript.XXX
     pyscript_names = [
         "Element",
         "PyItemTemplate",
@@ -572,17 +577,21 @@ def _install_deprecated_globals_2022_12_1(ns):
         "loop",
         "micropip",
     ]
-
     for name in pyscript_names:
-        obj = globals()[name]
-        message = (
-            f"Direct usage of {name} is deprecated. Please use pyscript.{name} instead"
+        deprecate(
+            name, globals()[name], f"Please use <code>pyscript.{name}</code> instead"
         )
-        ns[name] = DeprecatedGlobal(name, obj, message)
 
-    # XXX more deprecated names with different warning messages
-    ## stdlib_names = ['asyncio', 'base64', 'datetime', 'dedent', 'io', 'now',
-    ##                 'pyodide', 'sys', 'time']
+    # stdlib modules ===> import XXX
+    stdlib_names = ["asyncio", "base64", "io", "sys", "time", "datetime", "pyodide"]
+    for name in stdlib_names:
+        obj = __import__(name)
+        deprecate(name, obj, f"Please use <code>import {name}</code> instead")
+
+    # special case
+    deprecate(
+        "dedent", dedent, "Please use <code>from textwrap import dedent</code> instead"
+    )
 
     ## private_names = ['MIME_METHODS', 'MIME_RENDERERS',
     ##                  'eval_formatter',

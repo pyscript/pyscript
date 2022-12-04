@@ -195,7 +195,10 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
+                # trigger various warnings
                 Element("mydiv").write("hello world")
+                assert sys.__name__ == 'sys'
+                dedent("")
             </py-script>
 
             <div id="mydiv"></div>
@@ -204,6 +207,9 @@ class TestBasic(PyScriptTest):
         mydiv = self.page.locator("#mydiv")
         assert mydiv.inner_text() == "hello world"
         banner = self.page.locator(".py-warning")
-        assert banner.inner_text() == (
-            "Direct usage of Element is deprecated. Please use pyscript.Element instead"
-        )
+        messages = banner.all_inner_texts()
+        assert messages == [
+            "Direct usage of dedent is deprecated. Please use from textwrap import dedent instead",
+            "Direct usage of sys is deprecated. Please use import sys instead",
+            "Direct usage of Element is deprecated. Please use pyscript.Element instead",
+        ]
