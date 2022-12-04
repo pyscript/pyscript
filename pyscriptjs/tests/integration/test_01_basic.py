@@ -214,7 +214,7 @@ class TestBasic(PyScriptTest):
         assert messages == [
             "The PyScript object is deprecated. Please use pyscript instead.",
             "Direct usage of console is deprecated. Please use js.console instead.",
-            "Direct usage of format_mime is deprecated. This is a private implementation detail of pyscript. You should not use it.",  # noqa: E501
+            "format_mime is deprecated. This is a private implementation detail of pyscript. You should not use it.",  # noqa: E501
             "Direct usage of dedent is deprecated. Please use from textwrap import dedent instead.",
             "Direct usage of sys is deprecated. Please use import sys instead.",
             "Direct usage of Element is deprecated. Please use pyscript.Element instead.",

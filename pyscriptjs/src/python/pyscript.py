@@ -597,11 +597,13 @@ def _install_deprecated_globals_2022_12_1(ns):
     # implementation details. People should not use them.
     private_names = ["eval_formatter", "format_mime", "identity", "render_image"]
     for name in private_names:
-        deprecate(
-            name,
-            globals()[name],
-            "This is a private implementation detail of pyscript. You should not use it.",
+        obj = globals()[name]
+        message = (
+            f"<code>{name}</code> is deprecated. "
+            "This is a private implementation detail of pyscript. "
+            "You should not use it."
         )
+        ns[name] = DeprecatedGlobal(name, obj, message)
 
     # these names are available as js.XXX
     for name in ["document", "console"]:
