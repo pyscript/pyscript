@@ -158,25 +158,6 @@ def format_mime(obj):
     return MIME_RENDERERS[mime_type](output, meta), mime_type
 
 
-class PyScript:
-    """
-    This class is deprecated since 2022.12.1.
-
-    All its old functionalities are available as module-level functions. This
-    class should be killed eventually.
-    """
-
-    loop = loop
-
-    @staticmethod
-    def run_until_complete(f):
-        run_until_complete(f)
-
-    @staticmethod
-    def write(element_id, value, append=False, exec_id=0):
-        write(element_id, value, append, exec_id)
-
-
 @staticmethod
 def run_until_complete(f):
     _ = loop.run_until_complete(f)
@@ -556,6 +537,25 @@ class DeprecatedGlobal:
         return self.__obj(*args, **kwargs)
 
 
+class PyScript:
+    """
+    This class is deprecated since 2022.12.1.
+
+    All its old functionalities are available as module-level functions. This
+    class should be killed eventually.
+    """
+
+    loop = loop
+
+    @staticmethod
+    def run_until_complete(f):
+        run_until_complete(f)
+
+    @staticmethod
+    def write(element_id, value, append=False, exec_id=0):
+        write(element_id, value, append, exec_id)
+
+
 def _install_deprecated_globals_2022_12_1(ns):
     """
     Install into the given namespace all the globals which have been
@@ -579,18 +579,18 @@ def _install_deprecated_globals_2022_12_1(ns):
     ]
     for name in pyscript_names:
         deprecate(
-            name, globals()[name], f"Please use <code>pyscript.{name}</code> instead"
+            name, globals()[name], f"Please use <code>pyscript.{name}</code> instead."
         )
 
     # stdlib modules ===> import XXX
     stdlib_names = ["asyncio", "base64", "io", "sys", "time", "datetime", "pyodide"]
     for name in stdlib_names:
         obj = __import__(name)
-        deprecate(name, obj, f"Please use <code>import {name}</code> instead")
+        deprecate(name, obj, f"Please use <code>import {name}</code> instead.")
 
     # special case
     deprecate(
-        "dedent", dedent, "Please use <code>from textwrap import dedent</code> instead"
+        "dedent", dedent, "Please use <code>from textwrap import dedent</code> instead."
     )
 
     # these are names that used to leak in the globals but they are just
@@ -600,12 +600,17 @@ def _install_deprecated_globals_2022_12_1(ns):
         deprecate(
             name,
             globals()[name],
-            "This is a private implementation detail of pyscript. You should not use it",
+            "This is a private implementation detail of pyscript. You should not use it.",
         )
 
     # these names are available as js.XXX
     for name in ["document", "console"]:
         obj = getattr(js, name)
-        deprecate(name, obj, f"Please use <code>js.{name}</code> instead")
+        deprecate(name, obj, f"Please use <code>js.{name}</code> instead.")
 
-    ## 'PyScript'
+    # PyScript is special, use a different message
+    message = (
+        "The <code>PyScript</code> object is deprecated. "
+        "Please use <code>pyscript</code> instead."
+    )
+    ns["PyScript"] = DeprecatedGlobal("PyScript", PyScript, message)
