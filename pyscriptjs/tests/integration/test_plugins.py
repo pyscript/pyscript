@@ -2,7 +2,8 @@ from .support import PyScriptTest
 
 # Source code of a simple plugin that creates a Custom Element for testing purposes
 CE_PLUGIN_CODE = """
-from pyscript import Plugin, console
+from pyscript import Plugin
+from js import console
 
 plugin = Plugin('py-upper')
 
@@ -20,7 +21,8 @@ class Upper:
 
 # Source of a plugin hooks into the PyScript App lifecycle events
 HOOKS_PLUGIN_CODE = """
-from pyscript import Plugin, console
+from pyscript import Plugin
+from js import console
 
 class TestLogger(Plugin):
     def configure(self, config):
@@ -44,7 +46,8 @@ plugin = TestLogger()
 
 # Source of a script that doesn't call define a `plugin` attribute
 NO_PLUGIN_CODE = """
-from pyscript import Plugin, console
+from pyscript import Plugin
+from js import console
 
 class TestLogger(Plugin):
     pass
@@ -52,7 +55,8 @@ class TestLogger(Plugin):
 
 # Source code of a simple plugin that creates a Custom Element for testing purposes
 CODE_CE_PLUGIN_BAD_RETURNS = """
-from pyscript import Plugin, console
+from pyscript import Plugin
+from js import console
 
 plugin = Plugin('py-broken')
 
