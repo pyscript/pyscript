@@ -7,8 +7,8 @@ import time
 from collections import namedtuple
 from textwrap import dedent
 
+import js
 import micropip  # noqa: F401
-from js import console, document
 
 try:
     from pyodide import create_proxy
@@ -146,7 +146,7 @@ def format_mime(obj):
         break
     if output is None:
         if not_available:
-            console.warn(
+            js.console.warn(
                 f"Rendered object requested unavailable MIME renderers: {not_available}"
             )
         output = repr(output)
@@ -186,7 +186,7 @@ def run_until_complete(f):
 def write(element_id, value, append=False, exec_id=0):
     """Writes value to the element with id "element_id"""
     Element(element_id).write(value=value, append=append)
-    console.warn(
+    js.console.warn(
         dedent(
             """PyScript Deprecation Warning: PyScript.write is
     marked as deprecated and will be removed sometime soon. Please, use
@@ -235,7 +235,7 @@ class Element:
     def element(self):
         """Return the dom element"""
         if not self._element:
-            self._element = document.querySelector(f"#{self._id}")
+            self._element = js.document.querySelector(f"#{self._id}")
         return self._element
 
     @property
@@ -252,7 +252,7 @@ class Element:
             return
 
         if append:
-            child = document.createElement("div")
+            child = js.document.createElement("div")
             self.element.appendChild(child)
 
         if self.element.children:
@@ -261,7 +261,7 @@ class Element:
             out_element = self.element
 
         if mime_type in ("application/javascript", "text/html"):
-            script_element = document.createRange().createContextualFragment(html)
+            script_element = js.document.createRange().createContextualFragment(html)
             out_element.appendChild(script_element)
         else:
             out_element.innerHTML = html
@@ -281,7 +281,7 @@ class Element:
         if _el:
             return Element(_el.id, _el)
         else:
-            console.warn(f"WARNING: can't find element matching query {query}")
+            js.console.warn(f"WARNING: can't find element matching query {query}")
 
     def clone(self, new_id=None, to=None):
         if new_id is None:
@@ -315,7 +315,7 @@ def add_classes(element, class_list):
 
 
 def create(what, id_=None, classes=""):
-    element = document.createElement(what)
+    element = js.document.createElement(what)
     if id_:
         element.id = id_
     add_classes(element, classes)
@@ -429,7 +429,7 @@ class PyListTemplate:
             Element(new_id).element.onclick = foo
 
     def connect(self):
-        self.md = main_div = document.createElement("div")
+        self.md = main_div = js.document.createElement("div")
         main_div.id = self._id + "-list-tasks-container"
 
         if self.theme:
@@ -499,7 +499,7 @@ class Plugin:
 
     def register_custom_element(self, tag):
         # TODO: Ideally would be better to use the logger.
-        console.info(f"Defining new custom element {tag}")
+        js.console.info(f"Defining new custom element {tag}")
 
         def wrapper(class_):
             # TODO: this is very pyodide specific but will have to do
@@ -517,7 +517,7 @@ class DeprecatedGlobal:
 
         # in the global namespace
         Element = pyscript.DeprecatedGlobal('Element', pyscript.Element, "...")
-        console = pyscript.DeprecatedGlobal('console', pyscript.console, "...")
+        console = pyscript.DeprecatedGlobal('console', js.console, "...")
         ...
 
     The proxy forwards __getattr__ and __call__ to the underlying object, and
@@ -603,6 +603,9 @@ def _install_deprecated_globals_2022_12_1(ns):
             "This is a private implementation detail of pyscript. You should not use it",
         )
 
-    ## js_names = ['document', 'console']
+    # these names are available as js.XXX
+    for name in ["document", "console"]:
+        obj = getattr(js, name)
+        deprecate(name, obj, f"Please use <code>js.{name}</code> instead")
 
     ## 'PyScript'
