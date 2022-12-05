@@ -225,7 +225,7 @@ class Element:
 
     @property
     def innerHtml(self):
-        return self.element.innerHtml
+        return self.element.innerHTML
 
     def write(self, value, append=False):
         html, mime_type = format_mime(value)
@@ -255,6 +255,7 @@ class Element:
 
     def select(self, query, from_content=False):
         el = self.element
+
         if from_content:
             el = el.content
 
@@ -273,9 +274,11 @@ class Element:
 
         if to:
             to.element.appendChild(clone)
-
-        # Inject it into the DOM
-        self.element.after(clone)
+            # Inject it into the DOM
+            to.element.after(clone)
+        else:
+            # Inject it into the DOM
+            self.element.after(clone)
 
         return Element(clone.id, clone)
 
@@ -287,7 +290,11 @@ class Element:
             self.element.classList.remove(classname)
 
     def add_class(self, classname):
-        self.element.classList.add(classname)
+        if isinstance(classname, list):
+            for cl in classname:
+                self.element.classList.add(cl)
+        else:
+            self.element.classList.add(classname)
 
 
 def add_classes(element, class_list):
