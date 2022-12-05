@@ -33,6 +33,12 @@ MIME_METHODS = {
 
 
 def render_image(mime, value, meta):
+    # If the image value is using bytes we should convert it to base64
+    # otherwise it will return raw bytes and the browser will not be able to
+    # render it.
+    if isinstance(value, bytes):
+        value = base64.b64encode(value).decode("utf-8")
+
     data = f"data:{mime};charset=utf-8;base64,{value}"
     attrs = " ".join(['{k}="{v}"' for k, v in meta.items()])
     return f'<img src="{data}" {attrs}</img>'
