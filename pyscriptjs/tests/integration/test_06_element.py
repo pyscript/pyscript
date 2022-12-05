@@ -92,9 +92,10 @@ class TestElement(PyScriptTest):
         assert self.console.log.lines[0] == self.PY_COMPLETE
 
         parent_div = self.page.wait_for_selector("#foo")
-        child_div = self.page.wait_for_selector("#foo-1")
+
         assert "Hello!" in parent_div.inner_text()
-        assert "World!" in child_div.inner_text()
+        # confirm that the second write was appended
+        assert "Hello!<div>World!</div>" in parent_div.inner_html()
 
     def test_element_clear_div(self):
         """Test the element clear"""

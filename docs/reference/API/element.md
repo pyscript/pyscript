@@ -17,7 +17,7 @@ The `Element` API is a helpful way to create and manipulate elements in the DOM.
 |----------------------|--------------------------------------------------------------|
 | `write`                | Writes `value` to element and handles various mime types. `append` defaults to `False`, if set to true, it will create a child element.          |
 | `clear`                | Clears the element's value or content. |
-| `select`               | Select element from `query`.    |
+| `select`               | Select element from `query` which uses [Document.querySelector()](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector).    |
 | `clone`                | Clones the with `new_id` if provided and `to` element if provided.                   |
 | `remove_class`         | Removes one or more class name from the element.    |
 | `add_class`            | Adds one  or more class name to the element.    |
@@ -106,6 +106,20 @@ Return the element's inner HTML.
 
 Writes `value` to element and handles various mime types. This method also contains a `append` parameter, which defaults to `False`.
 
+Currently, these are the MIME types that are supported when rendering content using this method
+
+| Method              | Inferred MIME type     |
+|---------------------|------------------------|
+| `__repr__`          | text/plain             |
+| `_repr_html_`       | text/html              |
+| `_repr_svg_`        | image/svg+xml          |
+| `_repr_png_`        | image/png*             |
+| `_repr_pdf_`        | application/pdf        |
+| `_repr_jpeg_`       | image/jpeg*            |
+| `_repr_json_`       | application/json       |
+| `_repr_javascript_` | application/javascript*|
+| `savefig`           | image/png              |
+
 ```html
 <div id="foo"></div>
 
@@ -117,7 +131,7 @@ Writes `value` to element and handles various mime types. This method also conta
 </py-script>
 ```
 
-If we set `append` to `True`, it will create a child element.
+If we set `append` to `True`, it will create a child element using a `div`.
 
 ```html
 <div id="foo"></div>
@@ -164,7 +178,7 @@ Or we can clear the content of a div element.
 
 ## Element.select
 
-Select element from `query`, it will look into the main Element if `from_content` is `True`.
+Select element from `query`, it will look into the main Element if `from_content` is `True`. This method is a wrapper of [Document.querySelector()](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector).
 
 ```html
 <div id="foo">

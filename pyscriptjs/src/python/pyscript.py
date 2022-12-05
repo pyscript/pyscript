@@ -255,7 +255,7 @@ class Element:
 
     def select(self, query, from_content=False):
         el = self.element
-        # TODO: el.content doesn't seem to exist, should it?
+
         if from_content:
             el = el.content
 
