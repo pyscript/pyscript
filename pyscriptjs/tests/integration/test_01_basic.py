@@ -1,9 +1,6 @@
-import base64
-import io
 import re
 
 import pytest
-from PIL import Image
 
 from .support import JsErrors, PyScriptTest
 
@@ -255,33 +252,3 @@ class TestBasic(PyScriptTest):
         # we EXPECTED to find a deprecation warning about what will be removed from the Python
         # global namespace in the next releases
         assert warning_msg in self.console.warning.lines
-
-    def test_image_renders_correctly(self):
-        """This is just a sanity check to make sure that images are rendered correctly."""
-        buffer = io.BytesIO()
-        img = Image.new("RGB", (4, 4), color=(0, 0, 0))
-        img.save(buffer, format="PNG")
-
-        b64_img = base64.b64encode(buffer.getvalue()).decode("utf-8")
-        expected_img_src = f"data:image/png;charset=utf-8;base64,{b64_img}"
-
-        self.pyscript_run(
-            """
-            <py-config>
-                packages = ["pillow"]
-            </py-config>
-
-            <div id="img-target" />
-            <py-script>
-                from PIL import Image
-                img = Image.new("RGB", (4, 4), color=(0, 0, 0))
-                display(img, target='img-target', append=False)
-            </py-script>
-            """
-        )
-
-        # TODO: This seems to be a py-script tag, should it?
-        rendered_img_src = self.page.locator("#py-internal-0 > img").get_attribute(
-            "src"
-        )
-        assert rendered_img_src == expected_img_src
