@@ -114,7 +114,10 @@ export class PyodideRuntime extends Runtime {
                         "Please make sure you have entered a correct package name."
                     )
                 } else {
-                    exceptionMessage += ` Reason: ${e.message as string}`
+                    exceptionMessage += (
+                        ` Reason: ${e.message as string}. Please open an issue at ` +
+                        `https://github.com/pyscript/pyscript/issues/new if you require help or ` +
+                        `you think it's a bug.`)
                 }
 
                 logger.error(e);
