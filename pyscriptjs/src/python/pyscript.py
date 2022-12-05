@@ -228,19 +228,18 @@ class Element:
         return self.element.innerHTML
 
     def write(self, value, append=False):
-        out_element_id = self.id
-
         html, mime_type = format_mime(value)
         if html == "\n":
             return
 
         if append:
             child = document.createElement("div")
-            exec_id = self.element.childElementCount + 1
-            out_element_id = child.id = f"{self.id}-{exec_id}"
             self.element.appendChild(child)
 
-        out_element = document.querySelector(f"#{out_element_id}")
+        if self.element.children:
+            out_element = self.element.children[-1]
+        else:
+            out_element = self.element
 
         if mime_type in ("application/javascript", "text/html"):
             script_element = document.createRange().createContextualFragment(html)

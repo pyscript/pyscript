@@ -36,4 +36,8 @@ export class FakeRuntime extends Runtime {
     async loadFromFile(path: string, fetch_path: string) {
         throw new Error("not implemented");
     }
+
+    invalidate_module_path_cache(): void {
+        throw new Error("not implemented");
+    }
 }
