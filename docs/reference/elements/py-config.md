@@ -80,7 +80,7 @@ One can also use both i.e pass the config from `src` attribute as well as specif
 ```html
 <py-config src="./custom.toml">
   [[fetch]]
-  packages = ["numpy"]
+  files = ["./utils.py"]
 </py-config>
 ```
 
@@ -90,7 +90,7 @@ This can also be done via JSON using the `type` attribute.
 <py-config type="json" src="./custom.json">
   {
     "fetch": [{
-      "packages": ["numpy"]
+      "files": ["./utils.py"]
     }]
   }
 </py-config>
@@ -235,9 +235,186 @@ A fetch configuration consists of the following:
 | `from` | string | Base URL for the resource to be fetched. |
 | `to_folder` | string | Name of the folder to create in the filesystem. |
 | `to_file` | string | Name of the target to create in the filesystem. |
-| `files` | List of string | List of files to be downloaded. |
+| `files` | List of strings | List of files to be downloaded. |
 
 The parameters `to_file` and `files` shouldn't be supplied together.
+
+#### Mechanism
+
+The `fetch` mechanism works in the following manner:
+
+- If both `files` and `to_file` parameters are supplied: Error!
+- `from` defaults to an empty string i.e. `""` to denote relative URLs of the serving directory
+- `to_folder` defaults to `.` i.e. the current working directory of the filesystem
+- If `files` is specified
+  - for each `file` present in the `files` array
+    - the `sourcePath` is calculated as `from + file`
+    - the `destination` is calculated as `to_folder + file`
+      - thus, the object is downloaded from `sourcePath` to `destination`
+- Else i.e. `files` is NOT specified
+  - If `to_file` is specified
+    - the object is downloaded from `from` to `to_folder + to_file`
+  - Otherwise, calculate the `filename` at the end of `from` i.e. the part after last `/`
+    - the object is downloaded from `from` to `to_folder + filename at the end of 'from'`
+
+#### Use-Cases
+
+Assumptions:
+
+The directory being served has the following tree structure:
+
+```
+content/
+  ├─ index.html <<< File with <py-config>
+  ├─ info.txt
+  ├─ data/
+  │  ├─ sensordata.csv
+  ├─ packages/
+  │  ├─ my_package/
+  │  │  ├─ __init__.py
+  │  │  ├─ helloworld/
+  │  │  │  ├─ __init__.py
+  │  │  │  ├─ greetings.py
+```
+
+1. Fetching a single file
+
+```html
+<py-config>
+    [[fetch]]
+    files = ['info.txt']
+</py-config>
+```
+
+```html
+<py-script>
+    with open('info.txt', 'r') as fp:
+      print(fp.read())
+</py-script>
+```
+
+2. Single File with Renaming
+
+```html
+<py-config>
+    [[fetch]]
+    from = 'info.txt'
+    to_file = 'info_loaded_from_web.txt'
+</py-config>
+```
+
+```html
+<py-script>
+    with open('info_loaded_from_web.txt', 'r') as fp:
+      print(fp.read())
+</py-script>
+```
+
+3. Single File to another Directory
+
+```html
+<py-config>
+    [[fetch]]
+    files = ['info.txt']
+    to_folder = 'infofiles/loaded_info'
+</py-config>
+```
+
+```html
+<py-script>
+    with open('infofiles/loaded_info/info.txt', 'r') as fp:
+      print(fp.read())
+</py-script>
+```
+
+4. Single File to another Directory with Renaming
+
+```html
+<py-config>
+    [[fetch]]
+    from = 'info.txt'
+    to_folder = 'infofiles/loaded_info'
+    to_file = 'info_loaded_from_web.txt'
+</py-config>
+```
+
+```html
+<py-script>
+    with open('infofiles/loaded_info/info_loaded_from_web.txt', 'r') as fp:
+      print(fp.read())
+</py-script>
+```
+
+5. Single file from a folder to the current working directory
+
+```html
+<py-config>
+    [[fetch]]
+    from = 'data/'
+    files = ['sensordata.csv']
+</py-config>
+```
+
+```html
+<py-script>
+    with open('./sensordata.csv', 'r') as fp:
+      print(fp.read())
+</py-script>
+```
+
+6. Single file from a folder to another folder (i.e. not the current working directory)
+
+```html
+<py-config>
+    [[fetch]]
+    from = 'data/'
+    to_folder = './local_data'
+    files = ['sensordata.csv']
+</py-config>
+```
+
+```html
+<py-script>
+    with open('./local_data/sensordata.csv', 'r') as fp:
+      print(fp.read())
+</py-script>
+```
+
+7. Multiple files preserving directory structure
+
+```html
+<py-config>
+    [[fetch]]
+    from = 'packages/my_package/'
+    files = ['__init__.py', 'helloworld/greetings.py', 'helloworld/__init__.py']
+    to_folder = 'custom_pkg'
+</py-config>
+```
+
+```html
+<py-script>
+    from custom_pkg.helloworld.greetings import say_hi
+    print(say_hi())
+</py-script>
+```
+
+8. From an API endpoint which doesn't end in a filename
+
+```html
+<py-config>
+    [[fetch]]
+    from = 'https://catfact.ninja/fact'
+    to_file = './cat_fact.json'
+</py-config>
+```
+
+```html
+<py-script>
+    import json
+    with open("cat_fact.json", "r") as fp:
+      data = json.load(fp)
+</py-script>
+```
 
 ### Runtime
 
