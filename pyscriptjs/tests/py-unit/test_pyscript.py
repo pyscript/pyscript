@@ -186,3 +186,22 @@ class TestDeprecatedGlobal:
         glob = MyDeprecatedGlobal("foo", foo, "this is my warning")
         assert glob(1, y=2) == 3
         assert glob.warnings == ["this is my warning"]
+
+    def test_iter(self):
+        d = {"a": 1, "b": 2, "c": 3}
+        glob = MyDeprecatedGlobal("d", d, "this is my warning")
+        assert list(glob) == ["a", "b", "c"]
+        assert glob.warnings == ["this is my warning"]
+
+    def test_getitem(self):
+        d = {"a": 1, "b": 2, "c": 3}
+        glob = MyDeprecatedGlobal("d", d, "this is my warning")
+        assert glob["a"] == 1
+        assert glob.warnings == ["this is my warning"]
+
+    def test_setitem(self):
+        d = {"a": 1, "b": 2, "c": 3}
+        glob = MyDeprecatedGlobal("d", d, "this is my warning")
+        glob["a"] = 100
+        assert glob.warnings == ["this is my warning"]
+        assert glob["a"] == 100

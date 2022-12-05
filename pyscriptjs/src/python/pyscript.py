@@ -538,6 +538,18 @@ class DeprecatedGlobal:
         self._show_warning_maybe()
         return self.__obj(*args, **kwargs)
 
+    def __iter__(self):
+        self._show_warning_maybe()
+        return iter(self.__obj)
+
+    def __getitem__(self, key):
+        self._show_warning_maybe()
+        return self.__obj[key]
+
+    def __setitem__(self, key, value):
+        self._show_warning_maybe()
+        self.__obj[key] = value
+
 
 class PyScript:
     """
@@ -604,7 +616,14 @@ def _install_deprecated_globals_2022_12_1(ns):
 
     # these are names that used to leak in the globals but they are just
     # implementation details. People should not use them.
-    private_names = ["eval_formatter", "format_mime", "identity", "render_image"]
+    private_names = [
+        "eval_formatter",
+        "format_mime",
+        "identity",
+        "render_image",
+        "MIME_RENDERERS",
+        "MIME_METHODS",
+    ]
     for name in private_names:
         obj = globals()[name]
         message = (
