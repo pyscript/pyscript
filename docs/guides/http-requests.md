@@ -17,7 +17,7 @@ The `fetch` API is a modern way to make HTTP requests. It is available in all mo
 Although there are two ways to use `fetch`:
 1) using `JavaScript` from `PyScript`
 2) using Pyodide's Python wrapper,
-`Pyodide.http.pyfetch`
+`pyodide.http.pyfetch`
 
 This example will only show how to use the Python wrapper. Still, the
 [fetch documentation](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters) is a useful reference, as its
