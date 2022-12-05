@@ -227,8 +227,10 @@ be removed from the Python global namespace in the following release. \
 To avoid errors in future releases use import from pyscript instead. For instance: \
 from pyscript import micropip, Element, console, document`);
 
-        logger.info('Packages to install: ', this.config.packages);
-        await runtime.installPackage(this.config.packages);
+        if (this.config.packages) {
+            logger.info('Packages to install: ', this.config.packages);
+            await runtime.installPackage(this.config.packages);
+        }
         await this.fetchPaths(runtime);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
