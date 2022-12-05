@@ -226,8 +226,10 @@ export class PyScriptApp {
         pyscript._install_deprecated_globals_2022_12_1(globals())
         `)
 
-        logger.info('Packages to install: ', this.config.packages);
-        await runtime.installPackage(this.config.packages);
+        if (this.config.packages) {
+            logger.info('Packages to install: ', this.config.packages);
+            await runtime.installPackage(this.config.packages);
+        }
         await this.fetchPaths(runtime);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()

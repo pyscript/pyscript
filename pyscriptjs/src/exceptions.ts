@@ -21,6 +21,7 @@ export enum ErrorCode {
   FETCH_SERVER_ERROR = "PY0500",
   FETCH_UNAVAILABLE_ERROR = "PY0503",
   BAD_CONFIG = "PY1000",
+  MICROPIP_INSTALL_ERROR = "PY1001",
   TOP_LEVEL_AWAIT = "PY9000"
 }
 
@@ -45,6 +46,15 @@ export class FetchError extends Error {
     this.name = "FetchError";
     this.errorCode = errorCode;
     this.message = `(${errorCode}): ${message}`;
+  }
+}
+
+
+export class InstallError extends UserError {
+  errorCode: ErrorCode;
+  constructor(errorCode: ErrorCode, message: string) {
+    super(errorCode, message)
+    this.name = "InstallError";
   }
 }
 
