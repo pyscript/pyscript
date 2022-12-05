@@ -10,7 +10,7 @@ declare const loadPyodide: typeof loadPyodideDeclaration;
 
 const logger = getLogger('pyscript/pyodide');
 
-interface Micropip {
+interface Micropip extends PyProxy {
     install: (packageName: string | string[]) => Promise<void>;
     destroy: () => void;
 }
