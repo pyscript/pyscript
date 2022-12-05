@@ -3,6 +3,7 @@ import asyncio
 import base64
 import html
 import io
+import re
 import time
 from collections import namedtuple
 from textwrap import dedent
@@ -33,6 +34,20 @@ MIME_METHODS = {
 
 
 def render_image(mime, value, meta):
+    # If the image value is using bytes we should convert it to base64
+    # otherwise it will return raw bytes and the browser will not be able to
+    # render it.
+    if isinstance(value, bytes):
+        value = base64.b64encode(value).decode("utf-8")
+
+    # This is the pattern of base64 strings
+    base64_pattern = re.compile(
+        r"^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$"
+    )
+    # If value doesn't match the base64 pattern we should encode it to base64
+    if len(value) > 0 and not base64_pattern.match(value):
+        value = base64.b64encode(value.encode("utf-8")).decode("utf-8")
+
     data = f"data:{mime};charset=utf-8;base64,{value}"
     attrs = " ".join(['{k}="{v}"' for k, v in meta.items()])
     return f'<img src="{data}" {attrs}</img>'
