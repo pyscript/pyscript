@@ -279,6 +279,8 @@ The `fetch` mechanism works in the following manner:
   - Otherwise, calculate the `filename` at the end of `from` i.e. the part after last `/`
     - the object is downloaded from `from` to `to_folder + filename at the end of 'from'`
 
+Learn more about `fetch` on PyScript [here](https://jeff.glass/whats-new-pyscript-2022-12-1)
+
 #### Use-Cases
 
 Assumptions:
