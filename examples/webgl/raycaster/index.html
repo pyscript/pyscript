@@ -20,7 +20,7 @@
       <div class="col"></div>
     </div>
   </div>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/89/three.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/0.147.0/three.min.js'></script>
 
 <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
@@ -33,8 +33,6 @@ from js import performance
 from js import Object
 from js import document
 import asyncio
-
-
 
 mouse = THREE.Vector2.new();
 
@@ -146,13 +144,12 @@ scene.add(light);
 scene.add(lightBack);
 
 rectSize = 2
-intensity = 100
+intensity = 14
 rectLight = THREE.RectAreaLight.new( 0x0FFFFF, intensity,  rectSize, rectSize )
 rectLight.position.set( 0, 0, 1 )
 rectLight.lookAt( 0, 0, 0 )
 scene.add( rectLight )
 
-rectLightHelper = THREE.RectAreaLightHelper.new( rectLight );
 raycaster = THREE.Raycaster.new();
 uSpeed = 0.1
 
@@ -190,7 +187,7 @@ async def main():
     renderer.render( scene, camera )
     await asyncio.sleep(0.02)
 
-    asyncio.ensure_future(main())
+asyncio.ensure_future(main())
 
 </py-script>
 </body>
