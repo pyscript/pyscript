@@ -10,7 +10,7 @@ declare const loadPyodide: typeof loadPyodideDeclaration;
 
 const logger = getLogger('pyscript/pyodide');
 
-interface Micropip {
+interface Micropip extends PyProxy {
     install: (packageName: string | string[]) => Promise<void>;
     destroy: () => void;
 }
@@ -91,7 +91,8 @@ export class PyodideRuntime extends Runtime {
     async installPackage(package_name: string | string[]): Promise<void> {
         if (package_name.length > 0) {
             logger.info(`micropip install ${package_name.toString()}`);
-            const micropip = this.globals.get('micropip') as Micropip;
+
+            const micropip = this.interpreter.pyimport('micropip') as Micropip;
             try {
                 await micropip.install(package_name);
                 micropip.destroy();

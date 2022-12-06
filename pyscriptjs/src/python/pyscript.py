@@ -8,8 +8,7 @@ import time
 from collections import namedtuple
 from textwrap import dedent
 
-import micropip  # noqa: F401
-from js import console, document
+import js
 
 try:
     from pyodide import create_proxy
@@ -66,6 +65,41 @@ MIME_RENDERERS = {
     "application/json": identity,
     "application/javascript": lambda value, meta: f"<script>{value}</script>",
 }
+
+
+# these are set by _set_version_info
+__version__ = None
+version_info = None
+
+
+def _set_version_info(version_from_runtime: str):
+    """Sets the __version__ and version_info properties from provided JSON data
+    Args:
+        version_from_runtime (str): A "dotted" representation of the version:
+            YYYY.MM.m(m).releaselevel
+            Year, Month, and Minor should be integers; releaselevel can be any string
+    """
+    global __version__
+    global version_info
+
+    __version__ = version_from_runtime
+
+    version_parts = version_from_runtime.split(".")
+    year = int(version_parts[0])
+    month = int(version_parts[1])
+    minor = int(version_parts[2])
+    if len(version_parts) > 3:
+        releaselevel = version_parts[3]
+    else:
+        releaselevel = ""
+
+    VersionInfo = namedtuple("version_info", ("year", "month", "minor", "releaselevel"))
+    version_info = VersionInfo(year, month, minor, releaselevel)
+
+    # we ALSO set PyScript.__version__ and version_info for backwards
+    # compatibility. Should be killed eventually.
+    PyScript.__version__ = __version__
+    PyScript.version_info = version_info
 
 
 class HTML:
@@ -126,7 +160,7 @@ def format_mime(obj):
         break
     if output is None:
         if not_available:
-            console.warn(
+            js.console.warn(
                 f"Rendered object requested unavailable MIME renderers: {not_available}"
             )
         output = repr(output)
@@ -138,57 +172,22 @@ def format_mime(obj):
     return MIME_RENDERERS[mime_type](output, meta), mime_type
 
 
-class PyScript:
-    loop = loop
+@staticmethod
+def run_until_complete(f):
+    _ = loop.run_until_complete(f)
 
-    @staticmethod
-    def run_until_complete(f):
-        _ = loop.run_until_complete(f)
 
-    @staticmethod
-    def write(element_id, value, append=False, exec_id=0):
-        """Writes value to the element with id "element_id"""
-        Element(element_id).write(value=value, append=append)
-        console.warn(
-            dedent(
-                """PyScript Deprecation Warning: PyScript.write is
-        marked as deprecated and will be removed sometime soon. Please, use
-        Element(<id>).write instead."""
-            )
+@staticmethod
+def write(element_id, value, append=False, exec_id=0):
+    """Writes value to the element with id "element_id"""
+    Element(element_id).write(value=value, append=append)
+    js.console.warn(
+        dedent(
+            """PyScript Deprecation Warning: PyScript.write is
+    marked as deprecated and will be removed sometime soon. Please, use
+    Element(<id>).write instead."""
         )
-
-    @classmethod
-    def set_version_info(cls, version_from_runtime: str):
-        """Sets the __version__ and version_info properties from provided JSON data
-        Args:
-            version_from_runtime (str): A "dotted" representation of the version:
-                YYYY.MM.m(m).releaselevel
-                Year, Month, and Minor should be integers; releaselevel can be any string
-        """
-
-        # __version__ is the same string from runtime.ts
-        cls.__version__ = version_from_runtime
-
-        # version_info is namedtuple: (year, month, minor, releaselevel)
-        version_parts = version_from_runtime.split(".")
-        version_dict = {
-            "year": int(version_parts[0]),
-            "month": int(version_parts[1]),
-            "minor": int(version_parts[2]),
-        }
-
-        # If the version only has three parts (e.g. 2022.09.1), let the releaselevel be ""
-        try:
-            version_dict["releaselevel"] = version_parts[3]
-        except IndexError:
-            version_dict["releaselevel"] = ""
-
-        # Format mimics sys.version_info
-        _VersionInfo = namedtuple("version_info", version_dict.keys())
-        cls.version_info = _VersionInfo(**version_dict)
-
-        # tidy up class namespace
-        del cls.set_version_info
+    )
 
 
 def set_current_display_target(target_id):
@@ -231,7 +230,7 @@ class Element:
     def element(self):
         """Return the dom element"""
         if not self._element:
-            self._element = document.querySelector(f"#{self._id}")
+            self._element = js.document.querySelector(f"#{self._id}")
         return self._element
 
     @property
@@ -248,7 +247,7 @@ class Element:
             return
 
         if append:
-            child = document.createElement("div")
+            child = js.document.createElement("div")
             self.element.appendChild(child)
 
         if self.element.children:
@@ -257,7 +256,7 @@ class Element:
             out_element = self.element
 
         if mime_type in ("application/javascript", "text/html"):
-            script_element = document.createRange().createContextualFragment(html)
+            script_element = js.document.createRange().createContextualFragment(html)
             out_element.appendChild(script_element)
         else:
             out_element.innerHTML = html
@@ -278,7 +277,7 @@ class Element:
         if _el:
             return Element(_el.id, _el)
         else:
-            console.warn(f"WARNING: can't find element matching query {query}")
+            js.console.warn(f"WARNING: can't find element matching query {query}")
 
     def clone(self, new_id=None, to=None):
         if new_id is None:
@@ -318,7 +317,7 @@ def add_classes(element, class_list):
 
 
 def create(what, id_=None, classes=""):
-    element = document.createElement(what)
+    element = js.document.createElement(what)
     if id_:
         element.id = id_
     add_classes(element, classes)
@@ -432,7 +431,7 @@ class PyListTemplate:
             Element(new_id).element.onclick = foo
 
     def connect(self):
-        self.md = main_div = document.createElement("div")
+        self.md = main_div = js.document.createElement("div")
         main_div.id = self._id + "-list-tasks-container"
 
         if self.theme:
@@ -502,7 +501,7 @@ class Plugin:
 
     def register_custom_element(self, tag):
         # TODO: Ideally would be better to use the logger.
-        console.info(f"Defining new custom element {tag}")
+        js.console.info(f"Defining new custom element {tag}")
 
         def wrapper(class_):
             # TODO: this is very pyodide specific but will have to do
@@ -512,4 +511,158 @@ class Plugin:
         return create_proxy(wrapper)
 
 
-pyscript = PyScript()
+class DeprecatedGlobal:
+    """
+    Proxy for globals which are deprecated.
+
+    The intendend usage is as follows:
+
+        # in the global namespace
+        Element = pyscript.DeprecatedGlobal('Element', pyscript.Element, "...")
+        console = pyscript.DeprecatedGlobal('console', js.console, "...")
+        ...
+
+    The proxy forwards __getattr__ and __call__ to the underlying object, and
+    emit a warning on the first usage.
+
+    This way users see a warning only if they actually access the top-level
+    name.
+    """
+
+    def __init__(self, name, obj, message):
+        self.__name = name
+        self.__obj = obj
+        self.__message = message
+        self.__warning_already_shown = False
+
+    def __repr__(self):
+        return f"<DeprecatedGlobal({self.__name!r})>"
+
+    def _show_warning(self, message):
+        """
+        NOTE: this is overridden by unit tests
+        """
+        # this showWarning is implemented in js and injected into this
+        # namespace by main.ts
+        showWarning(message, "html")  # noqa: F821
+
+    def _show_warning_maybe(self):
+        if self.__warning_already_shown:
+            return
+        self._show_warning(self.__message)
+        self.__warning_already_shown = True
+
+    def __getattr__(self, attr):
+        self._show_warning_maybe()
+        return getattr(self.__obj, attr)
+
+    def __call__(self, *args, **kwargs):
+        self._show_warning_maybe()
+        return self.__obj(*args, **kwargs)
+
+    def __iter__(self):
+        self._show_warning_maybe()
+        return iter(self.__obj)
+
+    def __getitem__(self, key):
+        self._show_warning_maybe()
+        return self.__obj[key]
+
+    def __setitem__(self, key, value):
+        self._show_warning_maybe()
+        self.__obj[key] = value
+
+
+class PyScript:
+    """
+    This class is deprecated since 2022.12.1.
+
+    All its old functionalities are available as module-level functions. This
+    class should be killed eventually.
+    """
+
+    loop = loop
+
+    @staticmethod
+    def run_until_complete(f):
+        run_until_complete(f)
+
+    @staticmethod
+    def write(element_id, value, append=False, exec_id=0):
+        write(element_id, value, append, exec_id)
+
+
+def _install_deprecated_globals_2022_12_1(ns):
+    """
+    Install into the given namespace all the globals which have been
+    deprecated since the 2022.12.1 release. Eventually they should be killed.
+    """
+
+    def deprecate(name, obj, instead):
+        message = f"Direct usage of <code>{name}</code> is deprecated. " + instead
+        ns[name] = DeprecatedGlobal(name, obj, message)
+
+    # function/classes defined in pyscript.py ===> pyscript.XXX
+    pyscript_names = [
+        "PyItemTemplate",
+        "PyListTemplate",
+        "PyWidgetTheme",
+        "add_classes",
+        "create",
+        "loop",
+    ]
+    for name in pyscript_names:
+        deprecate(
+            name, globals()[name], f"Please use <code>pyscript.{name}</code> instead."
+        )
+
+    # stdlib modules ===> import XXX
+    stdlib_names = [
+        "asyncio",
+        "base64",
+        "io",
+        "sys",
+        "time",
+        "datetime",
+        "pyodide",
+        "micropip",
+    ]
+    for name in stdlib_names:
+        obj = __import__(name)
+        deprecate(name, obj, f"Please use <code>import {name}</code> instead.")
+
+    # special case
+    deprecate(
+        "dedent", dedent, "Please use <code>from textwrap import dedent</code> instead."
+    )
+
+    # these are names that used to leak in the globals but they are just
+    # implementation details. People should not use them.
+    private_names = [
+        "eval_formatter",
+        "format_mime",
+        "identity",
+        "render_image",
+        "MIME_RENDERERS",
+        "MIME_METHODS",
+    ]
+    for name in private_names:
+        obj = globals()[name]
+        message = (
+            f"<code>{name}</code> is deprecated. "
+            "This is a private implementation detail of pyscript. "
+            "You should not use it."
+        )
+        ns[name] = DeprecatedGlobal(name, obj, message)
+
+    # these names are available as js.XXX
+    for name in ["document", "console"]:
+        obj = getattr(js, name)
+        deprecate(name, obj, f"Please use <code>js.{name}</code> instead.")
+
+    # PyScript is special, use a different message
+    message = (
+        "The <code>PyScript</code> object is deprecated. "
+        "Please use <code>pyscript</code> instead."
+    )
+    ns["PyScript"] = DeprecatedGlobal("PyScript", PyScript, message)

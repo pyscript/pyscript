@@ -214,8 +214,8 @@ class TestBasic(PyScriptTest):
             """
         <py-script>
             import js
-            js.console.log(PyScript.__version__)
-            js.console.log(str(PyScript.version_info))
+            js.console.log(pyscript.__version__)
+            js.console.log(str(pyscript.version_info))
         </py-script>
         """
         )
@@ -232,27 +232,47 @@ class TestBasic(PyScriptTest):
             is not None
         )
 
-    def test_python_modules_deprecated(self):
-        # GIVEN a py-script tag
+    def test_assert_no_banners(self):
+        """
+        Test that the DOM doesn't contain error/warning banners
+        """
         self.pyscript_run(
             """
             <py-script>
-                print('hello pyscript')
-                raise Exception('this is an error')
+                import pyscript
+                pyscript.showWarning("hello")
+                pyscript.showWarning("world")
             </py-script>
-        """
+            """
         )
-        # TODO: Adding a quick check that the deprecation warning is logged. Not spending
-        #       to much time to make it perfect since we'll remove this right after the
-        #       release. (Anyone wanting to improve it, please feel free to)
-        warning_msg = (
-            "[pyscript/main] DEPRECATION WARNING: 'micropip', 'Element', 'console', 'document' "
-            "and several other objects form the pyscript module (with the exception of 'display') "
-            "will be be removed from the Python global namespace in the following release. "
-            "To avoid errors in future releases use import from pyscript "
-            "instead. For instance: from pyscript import micropip, Element, "
-            "console, document"
+        with pytest.raises(AssertionError, match="Found 2 alert banners"):
+            self.assert_no_banners()
+
+    def test_deprecated_globals(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                # trigger various warnings
+                create("div", classes="a b c")
+                assert sys.__name__ == 'sys'
+                dedent("")
+                format_mime("")
+                assert MIME_RENDERERS['text/html'] is not None
+                console.log("hello")
+                PyScript.loop
+            </py-script>
+
+            <div id="mydiv"></div>
+            """
         )
-        # we EXPECTED to find a deprecation warning about what will be removed from the Python
-        # global namespace in the next releases
-        assert warning_msg in self.console.warning.lines
+        banner = self.page.locator(".py-warning")
+        messages = banner.all_inner_texts()
+        assert messages == [
+            "The PyScript object is deprecated. Please use pyscript instead.",
+            "Direct usage of console is deprecated. Please use js.console instead.",
+            "MIME_RENDERERS is deprecated. This is a private implementation detail of pyscript. You should not use it.",  # noqa: E501
+            "format_mime is deprecated. This is a private implementation detail of pyscript. You should not use it.",  # noqa: E501
+            "Direct usage of dedent is deprecated. Please use from textwrap import dedent instead.",
+            "Direct usage of sys is deprecated. Please use import sys instead.",
+            "Direct usage of create is deprecated. Please use pyscript.create instead.",
+        ]
