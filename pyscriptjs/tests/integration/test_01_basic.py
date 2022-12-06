@@ -145,7 +145,10 @@ class TestBasic(PyScriptTest):
         error_msg = str(exc.value)
         print(error_msg)
         if self.is_fake_server:
-            assert "Fetching from URL foo.py failed with error 404 (Not Found)." in error_msg
+            assert (
+                "Fetching from URL foo.py failed with error 404 (Not Found)."
+                in error_msg
+            )
         else:
             assert (
                 "Fetching from URL foo.py failed with error 404 (File not found)"
