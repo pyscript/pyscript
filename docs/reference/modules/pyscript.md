@@ -63,7 +63,7 @@ A proxy for the runtime's `globals()` dictionary. For example:
     <button onclick="showX()">Click Me to Get 'x' from Python</button>
     <script>
         function showX(){
-            console.log(`In Python right now, x = ${PyScript.runtime.globals.get('x')}`)
+            console.log(`In Python right now, x = ${pyscript.runtime.globals.get('x')}`)
         }
     </script>
 </body>

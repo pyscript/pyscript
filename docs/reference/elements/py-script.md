@@ -4,13 +4,13 @@ The `<py-script>` element lets you execute multi-line Python scripts both inline
 
 ## Attributes
 
-| attribute | type | default | description |
-|----|----|----|----|
-| **src** | url |    | Url to a python source file. |
+| attribute | type | default | description                  |
+|-----------|------|---------|------------------------------|
+| **src**   | url  |         | Url of a python source file. |
 
 ## Examples
 
-### Inline `<py-script>` element:
+### Inline `<py-script>` element
 
 Let's execute this multi-line Python script to compute π and print it back onto the page
 
@@ -37,7 +37,7 @@ Let's execute this multi-line Python script to compute π and print it back onto
 </html>
 ```
 
-### Using `<py-script>` element with `src` attribute:
+### Using `<py-script>` element with `src` attribute
 
 we can also move our python code to its own file and reference it via the `src` attribute.
 

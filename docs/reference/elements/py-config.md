@@ -8,10 +8,10 @@ The `<py-config>` element should be placed within the `<body>` element.
 
 ## Attributes
 
-| attribute | type | default | description |
-|----|----|----|----|
-| **type** | string | "toml" | Syntax type of the `<py-config>`. Value can be `json` or `toml`. Default: "toml" if type is unspecifed. |
-| **src** | url |    | Source url to an external configuration file. |
+| attribute | type   | default | description                                                                                             |
+|-----------|--------|---------|---------------------------------------------------------------------------------------------------------|
+| **type**  | string | "toml"  | Syntax type of the `<py-config>`. Value can be `json` or `toml`. Default: "toml" if type is unspecifed. |
+| **src**   | url    |         | Source url to an external configuration file.                                                           |
 
 ## Examples
 
@@ -251,12 +251,13 @@ The following optional values are supported by `<py-config>`:
 ### <a name="fetch">Fetch</a>
 
 A fetch configuration consists of the following:
-| Value | Type | Description |
-| ----- | ---- | ----------- |
-| `from` | string | Base URL for the resource to be fetched. |
-| `to_folder` | string | Name of the folder to create in the filesystem. |
-| `to_file` | string | Name of the target to create in the filesystem. |
-| `files` | List of strings | List of files to be downloaded. |
+
+| Value        | Type            | Description                                     |
+|--------------|-----------------|-------------------------------------------------|
+| `from`       | string          | Base URL for the resource to be fetched.        |
+| `to_folder`  | string          | Name of the folder to create in the filesystem. |
+| `to_file`    | string          | Name of the target to create in the filesystem. |
+| `files`      | List of strings | List of files to be downloaded.                 |
 
 The parameters `to_file` and `files` shouldn't be supplied together.
 
@@ -440,11 +441,11 @@ content/
 ### Runtime
 
 A runtime configuration consists of the following:
-| Value | Type | Description |
-| ----- | ---- | ----------- |
-| `src` | string (Required) | URL to the runtime source. |
-| `name` | string | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
-| `lang` | string | Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
+| Value  | Type              | Description |
+|--------|-------------------|-------------|
+| `src`  | string (Required) | URL to the runtime source. |
+| `name` | string            | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
+| `lang` | string            | Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
 
 #### Example
 

@@ -29,7 +29,7 @@ export class SplashscreenPlugin extends Plugin {
 
         if ('autoclose_loader' in config) {
             this.autoclose = config.autoclose_loader;
-            showWarning(AUTOCLOSE_LOADER_DEPRECATED);
+            showWarning(AUTOCLOSE_LOADER_DEPRECATED, "html");
         }
 
         if (config.splashscreen) {
