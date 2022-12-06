@@ -100,18 +100,22 @@ class TestExamples(PyScriptTest):
         self.wait_for_pyscript()
         assert self.page.title() == "Antigravity"
 
-        #confirm that svg added to page
+        # confirm that svg added to page
         wait_for_render(self.page, "*", '<svg.*id="svg8".*>')
 
-        #Get svg layer of flying character
+        # Get svg layer of flying character
         char = self.page.wait_for_selector("#python")
         assert char is not None
 
-        #check that character moves in negative-y direction over time
-        ycoord_pattern = r'translate\(-?\d*\.\d*,\s(?P<ycoord>-?[\d.]+)\)'
-        starting_y_coord = float(re.match(ycoord_pattern, char.get_attribute('transform')).group("ycoord"))
+        # check that character moves in negative-y direction over time
+        ycoord_pattern = r"translate\(-?\d*\.\d*,\s(?P<ycoord>-?[\d.]+)\)"
+        starting_y_coord = float(
+            re.match(ycoord_pattern, char.get_attribute("transform")).group("ycoord")
+        )
         time.sleep(2)
-        later_y_coord = float(re.match(ycoord_pattern, char.get_attribute('transform')).group("ycoord"))
+        later_y_coord = float(
+            re.match(ycoord_pattern, char.get_attribute("transform")).group("ycoord")
+        )
         assert later_y_coord < starting_y_coord
 
     def test_bokeh(self):
