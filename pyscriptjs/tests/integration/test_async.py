@@ -20,12 +20,14 @@ class TestAsync(PyScriptTest):
     def test_asyncio_ensure_future(self):
         self.pyscript_run(self.coroutine_script.format(func="ensure_future"))
         self.wait_for_console("third")
-        assert self.console.log.lines == [self.PY_COMPLETE, "first", "second", "third"]
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-3:] == ["first", "second", "third"]
 
     def test_asyncio_create_task(self):
         self.pyscript_run(self.coroutine_script.format(func="create_task"))
         self.wait_for_console("third")
-        assert self.console.log.lines == [self.PY_COMPLETE, "first", "second", "third"]
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-3:] == ["first", "second", "third"]
 
     def test_asyncio_gather(self):
         self.pyscript_run(
@@ -77,8 +79,10 @@ class TestAsync(PyScriptTest):
         """
         )
         self.wait_for_console("b func done")
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        # We are getting some deprecation warnings from pyodide, so we
+        # need to skip the first 2 lines
+        assert self.console.log.lines[3:] == [
             "A 0",
             "B 0",
             "A 1",

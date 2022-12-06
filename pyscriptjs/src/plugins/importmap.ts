@@ -11,7 +11,6 @@ type ImportMapType = {
 };
 
 export class ImportmapPlugin extends Plugin {
-
     async afterSetup(runtime: Runtime) {
         // make importmap ES modules available from python using 'import'.
         //
@@ -26,9 +25,8 @@ export class ImportmapPlugin extends Plugin {
             const importmap: ImportMapType = (() => {
                 try {
                     return JSON.parse(node.textContent) as ImportMapType;
-                }
-                catch(error) {
-                    showWarning("Failed to parse import map: " + error.message);
+                } catch (error) {
+                    showWarning('Failed to parse import map: ' + error.message);
                 }
             })();
 
@@ -47,10 +45,9 @@ export class ImportmapPlugin extends Plugin {
                     continue;
                 }
 
-                logger.info("Registering JS module", name);
+                logger.info('Registering JS module', name);
                 runtime.registerJsModule(name, exports);
             }
         }
     }
-
 }

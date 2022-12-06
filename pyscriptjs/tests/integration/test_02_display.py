@@ -1,5 +1,9 @@
+import base64
 import html
+import io
 import re
+
+from PIL import Image
 
 from .support import PyScriptTest
 
@@ -13,9 +17,10 @@ class TestOutput(PyScriptTest):
             </py-script>
         """
         )
-        inner_html = self.page.content()
-        pattern = r'<div id="py-.*">hello world</div>'
-        assert re.search(pattern, inner_html)
+        node_list = self.page.query_selector_all(r'[id^="py-internal"]')
+        pattern = r"<div>hello world</div>"
+        assert re.search(pattern, node_list[0].inner_html())
+        assert len(node_list) == 1
 
     def test_consecutive_display(self):
         self.pyscript_run(
@@ -183,9 +188,10 @@ class TestOutput(PyScriptTest):
             </py-script>
         """
         )
-        inner_html = self.page.content()
-        pattern = r'<div id="py-.*">hello world</div>'
-        assert re.search(pattern, inner_html)
+        node_list = self.page.query_selector_all(r'[id^="py-internal"]')
+        pattern = r"<div>hello world</div>"
+        assert re.search(pattern, node_list[0].inner_html())
+        assert len(node_list) == 1
 
     def test_append_false(self):
         self.pyscript_run(
@@ -211,6 +217,19 @@ class TestOutput(PyScriptTest):
         )
         inner_text = self.page.inner_text("html")
         assert inner_text == "hello\nworld"
+
+    def test_display_multiple_append_false(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                display('hello', append=False)
+                display('world', append=False)
+            </py-script>
+        """
+        )
+        inner_html = self.page.content()
+        pattern = r'<py-script id="py-.*">world</py-script>'
+        assert re.search(pattern, inner_html)
 
     def test_display_list_dict_tuple(self):
         self.pyscript_run(
@@ -301,11 +320,12 @@ class TestOutput(PyScriptTest):
         )
         inner_text = self.page.inner_text("py-script")
         assert inner_text == "this goes to the DOM"
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-2:] == [
             "print from python",
             "print from js",
         ]
+        print(self.console.error.lines)
         assert self.console.error.lines[-1] == "error from js"
 
     def test_console_line_break(self):
@@ -320,3 +340,33 @@ class TestOutput(PyScriptTest):
         console_text = self.console.all.lines
         assert console_text.index("1print") == (console_text.index("2print") - 1)
         assert console_text.index("1console") == (console_text.index("2console") - 1)
+
+    def test_image_renders_correctly(self):
+        """This is just a sanity check to make sure that images are rendered correctly."""
+        buffer = io.BytesIO()
+        img = Image.new("RGB", (4, 4), color=(0, 0, 0))
+        img.save(buffer, format="PNG")
+
+        b64_img = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        expected_img_src = f"data:image/png;charset=utf-8;base64,{b64_img}"
+
+        self.pyscript_run(
+            """
+            <py-config>
+                packages = ["pillow"]
+            </py-config>
+
+            <div id="img-target" />
+            <py-script>
+                from PIL import Image
+                img = Image.new("RGB", (4, 4), color=(0, 0, 0))
+                display(img, target='img-target', append=False)
+            </py-script>
+            """
+        )
+
+        # TODO: This seems to be a py-script tag, should it?
+        rendered_img_src = self.page.locator("#py-internal-0 > img").get_attribute(
+            "src"
+        )
+        assert rendered_img_src == expected_img_src

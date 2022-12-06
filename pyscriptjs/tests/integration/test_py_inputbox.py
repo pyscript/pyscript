@@ -13,13 +13,13 @@ class TestPyInputBox(PyScriptTest):
             </py-inputbox>
             """
         )
-        assert self.console.log.lines == [self.PY_COMPLETE]
+        assert self.console.log.lines[0] == self.PY_COMPLETE
         input = self.page.locator("input")
 
         input.type("Hello")
         input.press("Enter")
 
-        assert self.console.log.lines == [self.PY_COMPLETE, "Hello"]
+        assert self.console.log.lines[-1] == "Hello"
 
     def test_deprecated_element(self):
         self.pyscript_run(

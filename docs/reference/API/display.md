@@ -8,12 +8,10 @@
 |---------------------|------------------------|
 | `__repr__`          | text/plain             |
 | `_repr_html_`       | text/html              |
-| `_repr_markdown_`   | text/markdown          |
 | `_repr_svg_`        | image/svg+xml          |
 | `_repr_png_`        | image/png*             |
 | `_repr_pdf_`        | application/pdf        |
 | `_repr_jpeg_`       | image/jpeg*            |
-| `_repr_latex__`     | text/latex             |
 | `_repr_json_`       | application/json       |
 | `_repr_javascript_` | application/javascript*|
 | `savefig`           | image/png              |

@@ -42,11 +42,10 @@ export function make_PyButton(runtime: Runtime) {
         }
 
         connectedCallback() {
-            const deprecationMessage = (
+            const deprecationMessage =
                 'The element <py-button> is deprecated, create a function with your ' +
-                'inline code and use <button py-click="function()" class="py-button"> instead.'
-            )
-            createDeprecationWarning(deprecationMessage, "py-button")
+                'inline code and use <button py-click="function()" class="py-button"> instead.';
+            createDeprecationWarning(deprecationMessage, 'py-button');
 
             ensureUniqueId(this);
             this.code = htmlDecode(this.innerHTML) || '';

@@ -6,15 +6,14 @@ import type { Runtime } from './runtime';
 const logger = getLogger('pyexec');
 
 export function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLElement) {
-    // this is the python function defined in pyscript.py
-    const set_current_display_target = runtime.globals.get('set_current_display_target');
+    //This is pyscript.py
+    const pyscript_py = runtime.interpreter.pyimport('pyscript');
+
     ensureUniqueId(outElem);
-    set_current_display_target(outElem.id);
-    //This is the python function defined in pyscript.py
-    const usesTopLevelAwait = runtime.globals.get('uses_top_level_await')
+    pyscript_py.set_current_display_target(outElem.id);
     try {
         try {
-            if (usesTopLevelAwait(pysrc)){
+            if (pyscript_py.uses_top_level_await(pysrc)) {
                 throw new UserError(
                     ErrorCode.TOP_LEVEL_AWAIT,
                     'The use of top-level "await", "async for", and ' +
@@ -33,7 +32,8 @@ export function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLElement) {
             displayPyException(err, outElem);
         }
     } finally {
-        set_current_display_target(undefined);
+        pyscript_py.set_current_display_target(undefined);
+        pyscript_py.destroy();
     }
 }
 

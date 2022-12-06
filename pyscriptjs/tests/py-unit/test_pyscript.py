@@ -12,15 +12,16 @@ class TestElement:
 
     def test_element(self, monkeypatch):
         el = pyscript.Element("something")
-        document_mock = Mock()
+        js_mock = Mock()
+        js_mock.document = Mock()
         call_result = "some_result"
-        document_mock.querySelector = Mock(return_value=call_result)
-        monkeypatch.setattr(pyscript, "document", document_mock)
+        js_mock.document.querySelector = Mock(return_value=call_result)
+        monkeypatch.setattr(pyscript, "js", js_mock)
         assert not el._element
         real_element = el.element
         assert real_element
-        assert pyscript.document.querySelector.call_count == 1
-        pyscript.document.querySelector.assert_called_with("#something")
+        assert js_mock.document.querySelector.call_count == 1
+        js_mock.document.querySelector.assert_called_with("#something")
         assert real_element == call_result
 
 
@@ -121,6 +122,86 @@ def test_uses_top_level_await():
 
 def test_set_version_info():
     version_string = "1234.56.78.ABCD"
-    pyscript.PyScript.set_version_info(version_string)
-    assert pyscript.PyScript.__version__ == version_string
-    assert pyscript.PyScript.version_info == (1234, 56, 78, "ABCD")
+    pyscript._set_version_info(version_string)
+    assert pyscript.__version__ == version_string
+    assert pyscript.version_info == (1234, 56, 78, "ABCD")
+    #
+    # for backwards compatibility, should be killed eventually
+    assert pyscript.PyScript.__version__ == pyscript.__version__
+    assert pyscript.PyScript.version_info == pyscript.version_info
+
+
+class MyDeprecatedGlobal(pyscript.DeprecatedGlobal):
+    """
+    A subclass of DeprecatedGlobal, for tests.
+
+    Instead of showing warnings into the DOM (which we don't have inside unit
+    tests), we record the warnings into a field.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.warnings = []
+
+    def _show_warning(self, message):
+        self.warnings.append(message)
+
+
+class TestDeprecatedGlobal:
+    def test_repr(self):
+        glob = MyDeprecatedGlobal("foo", None, "my message")
+        assert repr(glob) == "<DeprecatedGlobal('foo')>"
+
+    def test_show_warning_override(self):
+        """
+        Test that our overriding of _show_warning actually works.
+        """
+        glob = MyDeprecatedGlobal("foo", None, "my message")
+        glob._show_warning("foo")
+        glob._show_warning("bar")
+        assert glob.warnings == ["foo", "bar"]
+
+    def test_getattr(self):
+        class MyFakeObject:
+            name = "FooBar"
+
+        glob = MyDeprecatedGlobal("MyFakeObject", MyFakeObject, "this is my warning")
+        assert glob.name == "FooBar"
+        assert glob.warnings == ["this is my warning"]
+
+    def test_dont_show_warning_twice(self):
+        class MyFakeObject:
+            name = "foo"
+            surname = "bar"
+
+        glob = MyDeprecatedGlobal("MyFakeObject", MyFakeObject, "this is my warning")
+        assert glob.name == "foo"
+        assert glob.surname == "bar"
+        assert len(glob.warnings) == 1
+
+    def test_call(self):
+        def foo(x, y):
+            return x + y
+
+        glob = MyDeprecatedGlobal("foo", foo, "this is my warning")
+        assert glob(1, y=2) == 3
+        assert glob.warnings == ["this is my warning"]
+
+    def test_iter(self):
+        d = {"a": 1, "b": 2, "c": 3}
+        glob = MyDeprecatedGlobal("d", d, "this is my warning")
+        assert list(glob) == ["a", "b", "c"]
+        assert glob.warnings == ["this is my warning"]
+
+    def test_getitem(self):
+        d = {"a": 1, "b": 2, "c": 3}
+        glob = MyDeprecatedGlobal("d", d, "this is my warning")
+        assert glob["a"] == 1
+        assert glob.warnings == ["this is my warning"]
+
+    def test_setitem(self):
+        d = {"a": 1, "b": 2, "c": 3}
+        glob = MyDeprecatedGlobal("d", d, "this is my warning")
+        glob["a"] = 100
+        assert glob.warnings == ["this is my warning"]
+        assert glob["a"] == 100

@@ -65,7 +65,9 @@ class TestPyRepl(PyScriptTest):
         )
         self.page.wait_for_selector("#runButton")
         self.page.keyboard.press("Shift+Enter")
-        assert self.console.log.lines == [self.PY_COMPLETE, "hello world"]
+
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-1] == "hello world"
 
     def test_display(self):
         self.pyscript_run(
@@ -78,7 +80,7 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
         out_div = py_repl.locator("div.py-repl-output")
-        assert out_div.inner_text() == "hello world"
+        assert out_div.all_inner_texts()[0] == "hello world"
 
     def test_show_last_expression(self):
         """
@@ -95,7 +97,7 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
         out_div = py_repl.locator("div.py-repl-output")
-        assert out_div.inner_text() == "42"
+        assert out_div.all_inner_texts()[0] == "42"
 
     def test_run_clears_previous_output(self):
         """
@@ -104,7 +106,7 @@ class TestPyRepl(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <py-repl>
+            <py-repl  auto-generate="true">
                 display('hello world')
             </py-repl>
             """
@@ -112,12 +114,12 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
-        assert out_div.inner_text() == "hello world"
+        assert out_div.all_inner_texts()[0] == "hello world"
         #
         # clear the editor, write new code, execute
         self._replace(py_repl, "display('another output')")
         self.page.keyboard.press("Shift+Enter")
-        assert out_div.inner_text() == "another output"
+        assert out_div.all_inner_texts()[1] == "another output"
 
     def test_python_exception(self):
         """
@@ -148,7 +150,7 @@ class TestPyRepl(PyScriptTest):
     def test_python_exception_after_previous_output(self):
         self.pyscript_run(
             """
-            <py-repl>
+            <py-repl auto-generate="true">
                 display('hello world')
             </py-repl>
             """
@@ -156,13 +158,13 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
-        assert out_div.inner_text() == "hello world"
+        assert out_div.all_inner_texts()[0] == "hello world"
         #
         # clear the editor, write new code, execute
         self._replace(py_repl, "0/0")
         self.page.keyboard.press("Shift+Enter")
-        assert "hello world" not in out_div.inner_text()
-        assert "ZeroDivisionError" in out_div.inner_text()
+        assert "hello world" not in out_div.all_inner_texts()[1]
+        assert "ZeroDivisionError" in out_div.all_inner_texts()[1]
 
     def test_hide_previous_error_after_successful_run(self):
         """
@@ -172,7 +174,7 @@ class TestPyRepl(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <py-repl>
+            <py-repl  auto-generate="true">
                 raise Exception('this is an error')
             </py-repl>
             """
@@ -180,11 +182,11 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
-        assert "this is an error" in out_div.inner_text()
+        assert "this is an error" in out_div.all_inner_texts()[0]
         #
         self._replace(py_repl, "display('hello')")
         self.page.keyboard.press("Shift+Enter")
-        assert out_div.inner_text() == "hello"
+        assert out_div.all_inner_texts()[1] == "hello"
 
     def test_output_attribute(self):
         self.pyscript_run(
@@ -204,7 +206,7 @@ class TestPyRepl(PyScriptTest):
         assert out_div.inner_text() == ""
         # check that we are using mydiv instead
         mydiv = self.page.locator("#mydiv")
-        assert mydiv.inner_text() == "hello world"
+        assert mydiv.all_inner_texts()[0] == "hello world"
 
     def test_output_attribute_does_not_exist(self):
         """
@@ -223,7 +225,7 @@ class TestPyRepl(PyScriptTest):
         #
         out_div = py_repl.locator("div.py-repl-output")
         msg = "py-repl ERROR: cannot find the output element #I-dont-exist in the DOM"
-        assert out_div.inner_text() == msg
+        assert out_div.all_inner_texts()[0] == msg
         assert "I will not be executed" not in self.console.log.text
 
     def test_auto_generate(self):

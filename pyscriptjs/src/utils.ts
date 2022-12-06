@@ -41,8 +41,8 @@ export function ensureUniqueId(el: HTMLElement) {
     if (el.id === '') el.id = `py-internal-${_uniqueIdCounter++}`;
 }
 
-export function showWarning(msg: string, messageType: "text" | "html" = "text"): void {
-    _createAlertBanner(msg, "warning", messageType);
+export function showWarning(msg: string, messageType: 'text' | 'html' = 'text'): void {
+    _createAlertBanner(msg, 'warning', messageType);
 }
 
 export function handleFetchError(e: Error, singleFile: string) {
@@ -64,7 +64,7 @@ export function handleFetchError(e: Error, singleFile: string) {
     } else {
         errorContent = `PyScript encountered an error while loading from file: ${e.message}`;
     }
-    throw new UserError(ErrorCode.FETCH_ERROR, errorContent, "html");
+    throw new UserError(ErrorCode.FETCH_ERROR, errorContent, 'html');
 }
 
 export function readTextFromPath(path: string) {
@@ -98,10 +98,14 @@ export function getAttribute(el: Element, attr: string): string | null {
 }
 
 export function joinPaths(parts: string[], separator = '/') {
-    const res = parts.map(function(part) { return part.trim().replace(/(^[/]*|[/]*$)/g, ''); }).filter(p => p!== "").join(separator || '/');
-    if (parts[0].startsWith('/'))
-    {
-        return '/'+res;
+    const res = parts
+        .map(function (part) {
+            return part.trim().replace(/(^[/]*|[/]*$)/g, '');
+        })
+        .filter(p => p !== '')
+        .join(separator || '/');
+    if (parts[0].startsWith('/')) {
+        return '/' + res;
     }
     return res;
 }
@@ -115,6 +119,6 @@ export function createDeprecationWarning(msg: string, elementName: string): void
         }
     }
     if (bannerCount == 0) {
-        _createAlertBanner(msg, "warning");
+        _createAlertBanner(msg, 'warning');
     }
 }

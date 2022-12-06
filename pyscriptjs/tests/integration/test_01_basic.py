@@ -14,10 +14,8 @@ class TestBasic(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
-            "hello pyscript",
-        ]
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-1] == "hello pyscript"
 
     def test_python_exception(self):
         self.pyscript_run(
@@ -28,7 +26,8 @@ class TestBasic(PyScriptTest):
             </py-script>
         """
         )
-        assert self.console.log.lines == [self.PY_COMPLETE, "hello pyscript"]
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert "hello pyscript" in self.console.log.lines
         # check that we sent the traceback to the console
         tb_lines = self.console.error.lines[-1].splitlines()
         assert tb_lines[0] == "[pyexec] Python exception:"
@@ -57,8 +56,8 @@ class TestBasic(PyScriptTest):
             <py-script>js.console.log('four')</py-script>
         """
         )
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-4:] == [
             "one",
             "two",
             "three",
@@ -75,7 +74,9 @@ class TestBasic(PyScriptTest):
             <py-script>js.console.log("<div></div>")</py-script>
         """
         )
-        assert self.console.log.lines == [self.PY_COMPLETE, "true false", "<div></div>"]
+
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-2:] == ["true false", "<div></div>"]
 
     def test_packages(self):
         self.pyscript_run(
@@ -92,12 +93,50 @@ class TestBasic(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
+
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-3:] == [
             "Loading asciitree",  # printed by pyodide
             "Loaded asciitree",  # printed by pyodide
             "hello asciitree",  # printed by us
         ]
+
+    def test_non_existent_package(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                packages = ["nonexistendright"]
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+
+        expected_alert_banner_msg = (
+            "(PY1001): Unable to install package(s) 'nonexistendright'. "
+            "Unable to find package in PyPI. Please make sure you have "
+            "entered a correct package name."
+        )
+
+        alert_banner = self.page.wait_for_selector(".alert-banner")
+        assert expected_alert_banner_msg in alert_banner.inner_text()
+
+    def test_no_python_wheel(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                packages = ["opsdroid"]
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+
+        expected_alert_banner_msg = (
+            "(PY1001): Unable to install package(s) 'opsdroid'. "
+            "Reason: Can't find a pure Python 3 Wheel for package(s) 'opsdroid'"
+        )
+
+        alert_banner = self.page.wait_for_selector(".alert-banner")
+        assert expected_alert_banner_msg in alert_banner.inner_text()
 
     def test_dynamically_add_py_script_tag(self):
         self.pyscript_run(
@@ -114,10 +153,9 @@ class TestBasic(PyScriptTest):
         )
         self.page.locator("button").click()
         self.page.locator("py-script")  # wait until <py-script> appears
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
-            "hello world",
-        ]
+
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-1] == "hello world"
 
     def test_py_script_src_attribute(self):
         self.writefile("foo.py", "print('hello from foo')")
@@ -126,10 +164,8 @@ class TestBasic(PyScriptTest):
             <py-script src="foo.py"></py-script>
             """
         )
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
-            "hello from foo",
-        ]
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-1] == "hello from foo"
 
     def test_py_script_src_not_found(self):
         self.pyscript_run(
@@ -137,16 +173,19 @@ class TestBasic(PyScriptTest):
             <py-script src="foo.py"></py-script>
             """
         )
-        assert self.console.log.lines == [
-            self.PY_COMPLETE,
-        ]
+        assert self.PY_COMPLETE in self.console.log.lines
+
         assert "Failed to load resource" in self.console.error.lines[0]
         with pytest.raises(JsErrors) as exc:
             self.check_js_errors()
 
         error_msg = str(exc.value)
+        print(error_msg)
         if self.is_fake_server:
-            assert "Failed to fetch" in error_msg
+            assert (
+                "Fetching from URL foo.py failed with error 404 (Not Found)."
+                in error_msg
+            )
         else:
             assert (
                 "Fetching from URL foo.py failed with error 404 (File not found)"
@@ -175,8 +214,8 @@ class TestBasic(PyScriptTest):
             """
         <py-script>
             import js
-            js.console.log(PyScript.__version__)
-            js.console.log(str(PyScript.version_info))
+            js.console.log(pyscript.__version__)
+            js.console.log(str(pyscript.version_info))
         </py-script>
         """
         )
@@ -192,3 +231,48 @@ class TestBasic(PyScriptTest):
             )
             is not None
         )
+
+    def test_assert_no_banners(self):
+        """
+        Test that the DOM doesn't contain error/warning banners
+        """
+        self.pyscript_run(
+            """
+            <py-script>
+                import pyscript
+                pyscript.showWarning("hello")
+                pyscript.showWarning("world")
+            </py-script>
+            """
+        )
+        with pytest.raises(AssertionError, match="Found 2 alert banners"):
+            self.assert_no_banners()
+
+    def test_deprecated_globals(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                # trigger various warnings
+                create("div", classes="a b c")
+                assert sys.__name__ == 'sys'
+                dedent("")
+                format_mime("")
+                assert MIME_RENDERERS['text/html'] is not None
+                console.log("hello")
+                PyScript.loop
+            </py-script>
+
+            <div id="mydiv"></div>
+            """
+        )
+        banner = self.page.locator(".py-warning")
+        messages = banner.all_inner_texts()
+        assert messages == [
+            "The PyScript object is deprecated. Please use pyscript instead.",
+            "Direct usage of console is deprecated. Please use js.console instead.",
+            "MIME_RENDERERS is deprecated. This is a private implementation detail of pyscript. You should not use it.",  # noqa: E501
+            "format_mime is deprecated. This is a private implementation detail of pyscript. You should not use it.",  # noqa: E501
+            "Direct usage of dedent is deprecated. Please use from textwrap import dedent instead.",
+            "Direct usage of sys is deprecated. Please use import sys instead.",
+            "Direct usage of create is deprecated. Please use pyscript.create instead.",
+        ]

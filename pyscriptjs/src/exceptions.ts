@@ -1,6 +1,6 @@
 const CLOSEBUTTON = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill="currentColor" width="12px"><path d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/></svg>`;
 
-type MessageType = "text" | "html";
+type MessageType = 'text' | 'html';
 
 /*
 These error codes are used to identify the type of error that occurred.
@@ -21,6 +21,7 @@ export enum ErrorCode {
   FETCH_SERVER_ERROR = "PY0500",
   FETCH_UNAVAILABLE_ERROR = "PY0503",
   BAD_CONFIG = "PY1000",
+  MICROPIP_INSTALL_ERROR = "PY1001",
   TOP_LEVEL_AWAIT = "PY9000"
 }
 
@@ -48,42 +49,51 @@ export class FetchError extends Error {
   }
 }
 
+
+export class InstallError extends UserError {
+  errorCode: ErrorCode;
+  constructor(errorCode: ErrorCode, message: string) {
+    super(errorCode, message)
+    this.name = "InstallError";
+  }
+}
+
 export function _createAlertBanner(
-  message: string,
-  level: "error" | "warning" = "error",
-  messageType: MessageType = "text",
-  logMessage = true) {
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  switch (`log-${level}-${logMessage}`) {
-    case "log-error-true":
-      console.error(message);
-      break;
-    case "log-warning-true":
-      console.warn(message)
-      break;
-  }
+    message: string,
+    level: 'error' | 'warning' = 'error',
+    messageType: MessageType = 'text',
+    logMessage = true,
+) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    switch (`log-${level}-${logMessage}`) {
+        case 'log-error-true':
+            console.error(message);
+            break;
+        case 'log-warning-true':
+            console.warn(message);
+            break;
+    }
 
-  const banner = document.createElement("div")
-  banner.className = `alert-banner py-${level}`
+    const banner = document.createElement('div');
+    banner.className = `alert-banner py-${level}`;
 
-  if (messageType === "html") {
-    banner.innerHTML = message;
-  }
-  else {
-    banner.textContent = message;
-  }
+    if (messageType === 'html') {
+        banner.innerHTML = message;
+    } else {
+        banner.textContent = message;
+    }
 
-  if (level === "warning") {
-    const closeButton = document.createElement("button");
+    if (level === 'warning') {
+        const closeButton = document.createElement('button');
 
-    closeButton.id = "alert-close-button"
-    closeButton.addEventListener("click", () => {
-      banner.remove();
-    })
-    closeButton.innerHTML = CLOSEBUTTON;
+        closeButton.id = 'alert-close-button';
+        closeButton.addEventListener('click', () => {
+            banner.remove();
+        });
+        closeButton.innerHTML = CLOSEBUTTON;
 
-    banner.appendChild(closeButton);
-  }
+        banner.appendChild(closeButton);
+    }
 
-  document.body.prepend(banner);
+    document.body.prepend(banner);
 }

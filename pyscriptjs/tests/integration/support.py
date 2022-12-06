@@ -1,4 +1,5 @@
 import dataclasses
+import os
 import pdb
 import re
 import sys
@@ -290,6 +291,17 @@ class PyScriptTest:
         n = loc.count()
         elems = [loc.nth(i) for i in range(n)]
         return iter(elems)
+
+    def assert_no_banners(self):
+        """
+        Ensure that there are no alert banners on the page, which are used for
+        errors and warnings. Raise AssertionError if any if found.
+        """
+        loc = self.page.locator(".alert-banner")
+        n = loc.count()
+        if n > 0:
+            text = "\n".join(loc.all_inner_texts())
+            raise AssertionError(f"Found {n} alert banners:\n" + text)
 
 
 # ============== Helpers and utility functions ==============
@@ -595,7 +607,10 @@ class SmartRouter:
             self.log_request(200, "fake_server", full_url)
             assert url.path[0] == "/"
             relative_path = url.path[1:]
-            route.fulfill(status=200, path=relative_path)
+            if os.path.exists(relative_path):
+                route.fulfill(status=200, path=relative_path)
+            else:
+                route.fulfill(status=404)
             return
 
         # network requests might be cached

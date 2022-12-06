@@ -198,8 +198,7 @@ function validateConfig(configText: string, configType = 'toml') {
                         }
                         finalConfig[item].push(runtimeConfig);
                     });
-                }
-                else if (item === 'fetch') {
+                } else if (item === 'fetch') {
                     finalConfig[item] = [];
                     const fetchList = config[item] as FetchConfig[];
                     fetchList.forEach(function (eachFetch: FetchConfig) {
@@ -212,8 +211,7 @@ function validateConfig(configText: string, configType = 'toml') {
                         }
                         finalConfig[item].push(eachFetchConfig);
                     });
-                }
-                else {
+                } else {
                     finalConfig[item] = config[item];
                 }
             }
