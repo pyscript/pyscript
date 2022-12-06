@@ -203,6 +203,21 @@ export class PyScriptApp {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
+
+        // needed for patch inside pyscript.py
+        await runtime.installPackage("matplotlib");
+
+        if (this.config.packages) {
+            logger.info('Packages to install: ', this.config.packages);
+            await runtime.installPackage(this.config.packages);
+        }
+        await this.fetchPaths(runtime);
+
+        //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
+        runtime.invalidate_module_path_cache()
+        // Finally load plugins
+        await this.fetchPythonPlugins(runtime);
+
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS
