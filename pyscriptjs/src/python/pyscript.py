@@ -18,9 +18,11 @@ except ImportError:
 
 os.environ["MPLBACKEND"] = "AGG"
 
-import matplotlib.pyplot
+import matplotlib.pyplot  # noqa: E402
+
 _old_show = matplotlib.pyplot.show
 assert _old_show, "matplotlib.pyplot.show"
+
 
 def show(*, block=None):
     buf = io.BytesIO()
@@ -28,6 +30,7 @@ def show(*, block=None):
     buf.seek(0)
     display(matplotlib.pyplot)
     matplotlib.pyplot.clf()
+
 
 matplotlib.pyplot.show = show
 
@@ -45,7 +48,7 @@ MIME_METHODS = {
     "_repr_json_": "application/json",
     "_repr_javascript_": "application/javascript",
     "savefig": "image/png",
-    "show": "image/png"
+    "show": "image/png",
 }
 
 
