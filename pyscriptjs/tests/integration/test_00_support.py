@@ -389,3 +389,11 @@ class TestSupport(PyScriptTest):
             (200, "fake_server", "http://fake_server/mytest.html"),
             (200, "CACHED", URL),
         ]
+
+    def test_404(self):
+        """
+        Test that we capture a 404 in loading a page that does not exist.
+        """
+        self.goto("this_url_does_not_exist.html")
+        assert ['Failed to load resource: the server responded with a status of 404 (Not Found)'] == self.console.all.lines
+        
