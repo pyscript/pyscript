@@ -245,16 +245,10 @@ class TestConfig(PyScriptTest):
             wait_for_pyscript=False,
         )
 
-        if self.is_fake_server:
-            expected = """PyScript: Access to local files
-        (using "Paths:" in &lt;py-config&gt;)
-        is not available when directly opening a HTML file;
-        you must use a webserver to serve the additional files."""
-        else:
-            expected = (
-                "Loading from file <u>./f.py</u> failed with error 404 (File not Found). "
-                "Are your filename and path are correct?"
-            )
+        expected = (
+            "Loading from file <u>./f.py</u> failed with error 404 (File not Found). "
+            "Are your filename and path are correct?"
+        )
 
         inner_html = self.page.locator(".py-error").inner_html()
         assert expected in inner_html
