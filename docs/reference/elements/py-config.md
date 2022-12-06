@@ -2,6 +2,8 @@
 
 Use the `<py-config>` tag to set and configure general metadata along with declaring dependencies for your PyScript application. The configuration has to be set in either [TOML](https://toml.io/)(default) or [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON) format.
 
+If you are unfamiliar with TOML, consider [reading about it](https://learnxinyminutes.com/docs/toml/) or if you are unfamiliar with JSON, consider reading [freecodecamp's JSON for beginners](https://www.freecodecamp.org/news/what-is-json-a-json-file-example/) guide for more information.
+
 The `<py-config>` element should be placed within the `<body>` element.
 
 ## Attributes
@@ -13,8 +15,7 @@ The `<py-config>` element should be placed within the `<body>` element.
 
 ## Examples
 
-- `<py-config>` using TOML (default)
-
+### `<py-config>` using TOML (default)
 ```{note}
 Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[runtimes]]` and `[[fetch]]` must come after individual keys (like `paths = ...` and `packages=...`)
 ```
@@ -30,7 +31,8 @@ Reminder: when using TOML, any Arrays of Tables defined with double-brackets (li
 </py-config>
 ```
 
-- JSON config using the `type` attribute.
+### JSON config using the `type` attribute.
+
 ```html
 <py-config type="json">
   {
@@ -44,7 +46,8 @@ Reminder: when using TOML, any Arrays of Tables defined with double-brackets (li
 </py-config>
 ```
 
-- Use of the `src` attribute:
+### Use of the `src` attribute:
+
 ```html
 <py-config src="./custom.toml"></py-config>
 ```
@@ -58,7 +61,7 @@ name = "pyodide-0.21.2"
 lang = "python"
 ```
 
-- JSON using the `type` attribute.
+### JSON using the `type` and `src` attribute.
 ```html
 <py-config type="json" src="./custom.json"></py-config>
 ```
@@ -74,6 +77,8 @@ where `custom.json` contains
   }]
 }
 ```
+
+### Expanding with inline configuration
 
 One can also use both i.e pass the config from `src` attribute as well as specify it as `inline`. So the following snippet is also valid:
 
