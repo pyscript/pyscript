@@ -15,9 +15,12 @@ The `<py-config>` element should be placed within the `<body>` element.
 
 ## Examples
 
-### `<py-config>` using TOML (default)
+### Defining an inline config
+
+- `<py-config>` using TOML (default)
+
 ```{note}
-Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[runtimes]]` and `[[fetch]]` must come after individual keys (like `paths = ...` and `packages=...`)
+Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[runtimes]]` and `[[fetch]]` must come after individual keys (like `plugins = ...` and `packages=...`)
 ```
 
 ```html
@@ -32,13 +35,13 @@ Reminder: when using TOML, any Arrays of Tables defined with double-brackets (li
 </py-config>
 ```
 
-### JSON config using the `type` attribute.
+- `<py-config>` using JSON via `type` attribute
 
 ```html
 <py-config type="json">
   {
     "splashscreen": {
-      "autoclose": false
+      "autoclose": true
     },
     "runtimes": [{
       "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
@@ -49,7 +52,9 @@ Reminder: when using TOML, any Arrays of Tables defined with double-brackets (li
 </py-config>
 ```
 
-### Use of the `src` attribute:
+### Defining a file based config
+
+- Use of the `src` attribute
 
 ```html
 <py-config src="./custom.toml"></py-config>
@@ -58,7 +63,7 @@ where `custom.toml` contains
 
 ```toml
 [splashscreen]
-  autoclose = true
+autoclose = true
 
 [[runtimes]]
 src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
@@ -66,7 +71,8 @@ name = "pyodide-0.21.2"
 lang = "python"
 ```
 
-### JSON using the `type` and `src` attribute.
+- JSON using the `type` and `src` attribute
+
 ```html
 <py-config type="json" src="./custom.json"></py-config>
 ```
@@ -75,8 +81,8 @@ where `custom.json` contains
 ```json
 {
   "splashscreen": {
-      "autoclose": true
-    },
+    "autoclose": true,
+  },
   "runtimes": [{
     "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
     "name": "pyodide-0.21.2",
@@ -85,7 +91,7 @@ where `custom.json` contains
 }
 ```
 
-### Expanding with inline configuration
+### Mixing inline and file based configs
 
 One can also use both i.e pass the config from `src` attribute as well as specify it as `inline`. So the following snippet is also valid:
 
@@ -115,6 +121,8 @@ Note: While the `<py-config>` tag supports both TOML and JSON, one cannot mix th
 This is helpful in cases where a number of applications share a common configuration (which can be supplied via `src`), but their specific keys need to be customised and overridden.
 
 The keys supplied through `inline` override the values present in config supplied via `src`.
+
+## Dependencies and Packages
 
 One can also declare dependencies so as to get access to many 3rd party OSS packages that are supported by PyScript.
 You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/examples/toga/freedom.html).
@@ -190,7 +198,8 @@ def make_x_and_y(n):
 ```
 
 In the HTML tag `<py-config>`, paths to local modules are provided in the
-`files` key within the `fetch` section.
+`files` key within the `fetch` section. Refer to the [fetch](#fetch) section for
+more details.
 
 ```html
 <html>
@@ -239,7 +248,7 @@ The following optional values are supported by `<py-config>`:
 | `plugins` | List of Plugins | List of Plugins are to be specified here. The default value is an empty list. |
 | `runtimes` | List of Runtimes | List of runtime configurations, described below. The default value contains a single Pyodide based runtime. |
 
-### Fetch
+### <a name="fetch">Fetch</a>
 
 A fetch configuration consists of the following:
 
@@ -260,6 +269,21 @@ A runtime configuration consists of the following:
 | `src`  | string (Required) | URL to the runtime source. |
 | `name` | string            | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
 | `lang` | string            | Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
+
+#### Example
+
+- The default runtime is `pyodide`, another version of which can be specified as following
+
+```html
+<py-config>
+  [[runtimes]]
+  src = "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
+  name = "pyodide-0.20.0"
+  lang = "python"
+</py-config>
+```
+
+## Supplying extra information (or metadata)
 
 Besides the above schema, a user can also supply any extra keys and values that are relevant as metadata information or perhaps are being used within the application.
 
