@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="./assets/css/examples.css" />
     <link rel="stylesheet" href="./assets/prism/prism.css" />
     <script defer src="./assets/prism/prism.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
     .loading {
       display: inline-block;
@@ -56,16 +57,7 @@
         </div>
       </div>
 
-<script type="importmap">
-{
-  "imports": {
-    "d3": "https://cdn.skypack.dev/pin/d3@v7.6.1-1Q0NZ0WZnbYeSjDusJT3/mode=imports,min/optimized/d3.js"
-  }
-}
-</script>
-
 <script type="module">
-import * as d3 from "https://cdn.skypack.dev/pin/d3@v7.6.1-1Q0NZ0WZnbYeSjDusJT3/mode=imports,min/optimized/d3.js";
 
 const fruits = [
   {name: "🍊", count: 21},
@@ -120,8 +112,9 @@ for (const d of data) {
 </script>
 
 <py-script>
+import js
 from pyodide.ffi import create_proxy, to_js
-import d3
+d3 = js.d3
 
 fruits = [
   dict(name="🍊", count=21),
