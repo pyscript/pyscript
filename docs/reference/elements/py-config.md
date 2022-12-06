@@ -198,7 +198,8 @@ def make_x_and_y(n):
 ```
 
 In the HTML tag `<py-config>`, paths to local modules are provided in the
-`files` key within the `fetch` section.
+`files` key within the `fetch` section. Refer to the [fetch](#fetch) section for
+more details.
 
 ```html
 <html>
@@ -247,7 +248,7 @@ The following optional values are supported by `<py-config>`:
 | `plugins` | List of Plugins | List of Plugins are to be specified here. The default value is an empty list. |
 | `runtimes` | List of Runtimes | List of runtime configurations, described below. The default value contains a single Pyodide based runtime. |
 
-### Fetch
+### <a name="fetch">Fetch</a>
 
 A fetch configuration consists of the following:
 | Value | Type | Description |
