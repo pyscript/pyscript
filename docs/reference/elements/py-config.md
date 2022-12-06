@@ -269,6 +269,19 @@ A runtime configuration consists of the following:
 | `name` | string | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
 | `lang` | string | Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
 
+#### Example
+
+- The default runtime is `pyodide`, another version of which can be specified as following
+
+```html
+<py-config>
+  [[runtimes]]
+  src = "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
+  name = "pyodide-0.20.0"
+  lang = "python"
+</py-config>
+```
+
 ## Supplying extra information (or metadata)
 
 Besides the above schema, a user can also supply any extra keys and values that are relevant as metadata information or perhaps are being used within the application.
