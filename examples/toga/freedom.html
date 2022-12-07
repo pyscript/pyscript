@@ -16,10 +16,6 @@
 
     <title>Loading...</title>
     <link rel="icon" type="image/png" href="../favicon.png" />
-  </head>
-  <body>
-    <div id="toga-placeholder">Loading...</div>
-
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
@@ -33,22 +29,27 @@
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous">
         </script>
-  </body>
-
-  <py-config>
+  </head>
+  <body>
+    <py-config>
     packages = [
       "./static/wheels/travertino-0.1.3-py3-none-any.whl",
-      "./static/wheels/toga_core-0.3.0.dev33-py3-none-any.whl",
-      "./static/wheels/toga_web-0.3.0.dev33-py3-none-any.whl",
+      "./static/wheels/toga_core-0.3.0.dev39-py3-none-any.whl",
+      "./static/wheels/toga_web-0.3.0.dev39-py3-none-any.whl",
       "./static/wheels/freedom-0.0.1-py3-none-any.whl"
     ]
-  </py-config>
+    terminal = false
+    </py-config>
 
-  <py-script>
-from toga_web.dom import handle as dom_handle
+    <div id="app-placeholder">Loading...</div>
+    <py-script>
+        from pyscript import Element
+        from freedom.__main__ import main
 
-from freedom.__main__ import main
 
-app = main().main_loop(spa=True)
-  </py-script>
+        # Remove text from placeholder
+        Element('app-placeholder').write('', append=False)
+        app = main().main_loop()
+    </py-script>
+  </body>
 </html>
