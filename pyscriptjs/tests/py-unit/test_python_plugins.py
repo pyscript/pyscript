@@ -1,5 +1,3 @@
-import sys
-import textwrap
 from unittest.mock import Mock
 
 import py_markdown
