@@ -207,17 +207,6 @@ export class PyScriptApp {
         // needed for patch inside pyscript.py
         await runtime.installPackage("matplotlib");
 
-        if (this.config.packages) {
-            logger.info('Packages to install: ', this.config.packages);
-            await runtime.installPackage(this.config.packages);
-        }
-        await this.fetchPaths(runtime);
-
-        //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
-        runtime.invalidate_module_path_cache()
-        // Finally load plugins
-        await this.fetchPythonPlugins(runtime);
-
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS
