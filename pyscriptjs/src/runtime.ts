@@ -6,7 +6,7 @@ const logger = getLogger('pyscript/runtime');
 
 // VERSION
 // Version number of release
-export const version = '2022.11.1.dev';
+export const version = '2022.12.1.RC1';
 
 export type RuntimeInterpreter = PyodideInterface | null;
 
