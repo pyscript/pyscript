@@ -68,7 +68,10 @@ export class PyodideRuntime extends Runtime {
 
         this.globals = this.interpreter.globals;
 
-        await this.loadPackage('micropip');
+        if (this.config.packages) {
+            logger.info("Found packages in configuration to install. Loading micropip...")
+            await this.loadPackage('micropip');
+        }
         logger.info('pyodide loaded and initialized');
     }
 

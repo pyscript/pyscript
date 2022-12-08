@@ -204,9 +204,6 @@ export class PyScriptApp {
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
 
-        // needed for patch inside pyscript.py
-        await runtime.installPackage("matplotlib");
-
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS

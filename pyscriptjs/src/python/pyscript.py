@@ -3,7 +3,6 @@ import asyncio
 import base64
 import html
 import io
-import os
 import re
 import time
 from collections import namedtuple
@@ -15,24 +14,6 @@ try:
     from pyodide import create_proxy
 except ImportError:
     from pyodide.ffi import create_proxy
-
-os.environ["MPLBACKEND"] = "AGG"
-
-import matplotlib.pyplot  # noqa: E402
-
-_old_show = matplotlib.pyplot.show
-assert _old_show, "matplotlib.pyplot.show"
-
-
-def show(*, block=None):
-    buf = io.BytesIO()
-    matplotlib.pyplot.savefig(buf, format="png")
-    buf.seek(0)
-    display(matplotlib.pyplot)
-    matplotlib.pyplot.clf()
-
-
-matplotlib.pyplot.show = show
 
 loop = asyncio.get_event_loop()
 
@@ -48,7 +29,6 @@ MIME_METHODS = {
     "_repr_json_": "application/json",
     "_repr_javascript_": "application/javascript",
     "savefig": "image/png",
-    "show": "image/png",
 }
 
 
@@ -141,7 +121,7 @@ def eval_formatter(obj, print_method):
     if print_method == "__repr__":
         return repr(obj)
     elif hasattr(obj, print_method):
-        if print_method == "savefig" or print_method == "show":
+        if print_method == "savefig":
             buf = io.BytesIO()
             obj.savefig(buf, format="png")
             buf.seek(0)
