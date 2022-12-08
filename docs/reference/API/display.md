@@ -51,3 +51,37 @@ To write compliant code, make sure to specify the target using the `target` para
 <div id="helloDiv"></div>
 <button id="my-button" py-onClick="display_hello()">Click me</button>
 ```
+
+#### Using matplotlib with display
+
+`matplotlib` has two ways of plotting things as mentioned [here](https://matplotlib.org/matplotblog/posts/pyplot-vs-object-oriented-interface/)
+
+- In case of using the `pyplot` interface, the graph can be shown using `display(plt)`.
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Data for plotting
+t = np.arange(0.0, 2.0, 0.01)
+s = 1 + np.sin(2 * np.pi * t)
+plt.plot(t,s)
+
+display(plt)
+```
+
+- In case of using the `object oriented` interface, the graph can be shown using `display(fig)` or `display(plt)` both.
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Data for plotting
+t = np.arange(0.0, 2.0, 0.01)
+s = 1 + np.sin(2 * np.pi * t)
+
+fig, ax = plt.subplots()
+ax.plot(t, s)
+
+display(fig) # but even display(plt) would have worked!
+```
