@@ -14,6 +14,6 @@ class TestPyMarkdown:
 
         py_markdown.plugin.configure(config)
         console_mock.log.assert_called_with("configuration received: just a config")
-        
+
         py_markdown.plugin.afterStartup(runtime)
         console_mock.log.assert_called_with("runtime received: just a runtime")
