@@ -176,6 +176,17 @@ class TestExamples(PyScriptTest):
         zoom_out.click()
         self.assert_no_banners()
 
+    def test_markdown_plugin(self):
+        # Given the example page with:
+        # * <title>PyMarkdown</title>
+        # * <py-md>#Hello world!</py-md>
+        self.goto("examples/markdown-plugin.html")
+        self.wait_for_pyscript()
+        # ASSERT title is rendered correctly
+        assert self.page.title() == "PyMarkdown"
+        # ASSERT markdown is rendered to the corresponding HTML tag
+        wait_for_render(self.page, "*", "<h1>Hello world!</h1>")
+
     def test_matplotlib(self):
         self.goto("examples/matplotlib.html")
         self.wait_for_pyscript()

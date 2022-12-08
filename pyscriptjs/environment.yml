@@ -13,7 +13,7 @@ dependencies:
 -   pre-commit
 -   pillow
 -   numpy
-
+-   markdown
 -   pip:
     -   playwright
     -   pytest-playwright

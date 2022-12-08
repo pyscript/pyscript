@@ -1,9 +1,11 @@
+import html
 from textwrap import dedent
 
+from js import console
 from markdown import markdown
-from pyscript import Plugin, console
+from pyscript import Plugin
 
-console.warning(
+console.warn(
     "WARNING: This plugin is still in a very experimental phase and will likely change"
     " and potentially break in the future releases. Use it with caution."
 )
@@ -26,6 +28,7 @@ class PyMarkdown:
         self.element = element
 
     def connect(self):
-        self.element.innerHTML = markdown(
-            dedent(self.element.source), extensions=["fenced_code"]
-        )
+        unescaped_content = html.unescape(self.element.originalInnerHTML)
+        original = dedent(unescaped_content)
+        inner = markdown(original, extensions=["fenced_code"])
+        self.element.innerHTML = inner
