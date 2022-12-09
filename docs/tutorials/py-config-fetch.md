@@ -42,14 +42,6 @@ In this first step, we will create the `index.html` file and import both `pyscri
 
 Now we will use the `fetch` configuration from `py-config` to fetch the `todo.py` and `utils.py` files from a remote server and store them in a local directory called `todo`. Here we will fetch files from different URLs, using a `fetch` per item.
 
-Also, remember when we said that we needed three things? We actually need four things. We also need
-to fetch `pyscript.py` because we will use the `Element` class to interact with the DOM.
-
-```{note}
-We are not going into in-depth as to why we need to fetch `pyscript.py` here. The short version is that PyScript isn't installed in the filesystem when we fetch the files.
-```
-
-
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -65,15 +57,12 @@ We are not going into in-depth as to why we need to fetch `pyscript.py` here. Th
 
   <body>
     <py-config>
-    [[fetch]]
-    from = "https://raw.githubusercontent.com/pyscript/pyscript/main/pyscriptjs/src/python/"
-    files = ["pyscript.py"]
-    [[fetch]]
-    from = "https://pyscript.net/examples/"
-    files = ["utils.py"]
-    [[fetch]]
-    from = "https://gist.githubusercontent.com/FabioRosado/faba0b7f6ad4438b07c9ac567c73b864/raw/37603b76dc7ef7997bf36781ea0116150f727f44/"
-    files = ["todo.py"]
+      [[fetch]]
+      from = "https://pyscript.net/examples/"
+      files = ["utils.py"]
+      [[fetch]]
+      from = "https://gist.githubusercontent.com/FabioRosado/faba0b7f6ad4438b07c9ac567c73b864/raw/37603b76dc7ef7997bf36781ea0116150f727f44/"
+      files = ["todo.py"]
     </py-config>
   </body>
 </html>
@@ -100,9 +89,6 @@ Now we will create the todo elements in the `body` of the `index.html` file.
 
   <body>
     <py-config>
-      [[fetch]]
-      from = "https://raw.githubusercontent.com/pyscript/pyscript/main/pyscriptjs/src/python/"
-      files = ["pyscript.py"]
       [[fetch]]
       from = "https://pyscript.net/examples/"
       files = ["utils.py"]
@@ -155,9 +141,6 @@ This is where the magic happens. We can import the `todo.py` file by adding it a
 
   <body>
     <py-config>
-      [[fetch]]
-      from = "https://raw.githubusercontent.com/pyscript/pyscript/main/pyscriptjs/src/python/"
-      files = ["pyscript.py"]
       [[fetch]]
       from = "https://pyscript.net/examples/"
       files = ["utils.py"]
