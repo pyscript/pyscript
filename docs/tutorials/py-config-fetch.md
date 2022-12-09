@@ -57,12 +57,12 @@ Now we will use the `fetch` configuration from `py-config` to fetch the `todo.py
 
   <body>
     <py-config>
-    [[fetch]]
-    from = "https://pyscript.net/examples/"
-    files = ["utils.py"]
-    [[fetch]]
-    from = "https://gist.githubusercontent.com/FabioRosado/faba0b7f6ad4438b07c9ac567c73b864/raw/37603b76dc7ef7997bf36781ea0116150f727f44/"
-    files = ["todo.py"]
+      [[fetch]]
+      from = "https://pyscript.net/examples/"
+      files = ["utils.py"]
+      [[fetch]]
+      from = "https://gist.githubusercontent.com/FabioRosado/faba0b7f6ad4438b07c9ac567c73b864/raw/37603b76dc7ef7997bf36781ea0116150f727f44/"
+      files = ["todo.py"]
     </py-config>
   </body>
 </html>
