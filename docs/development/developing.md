@@ -63,26 +63,35 @@ A simple webapp to demonstrate the capabilities of PyScript.
 
 2. If you don't already have Rollup, install it. Rollup can be installed as a global resource using:
 
-	$ npm install --global rollup
+
+		$ npm install --global rollup
+
 
 3. Install the demo apps requirements:
 
-	$ npm install
+
+		$ npm install
+
 
 4. Start the server:
 
-	$ npm run dev
+
+		$ npm run dev
+
 
 > This will compile the resources for the app, and start the development server.
 
+
 5. When the compilation completes, it will display something like:
 
-		Your application is ready~! 🚀
 
-		- Local:      http://localhost:8080
-		- Network:    Add `--host` to expose
+			Your application is ready~! 🚀
 
-		────────────────── LOGS ──────────────────
+			- Local:      http://localhost:8080
+			- Network:    Add `--host` to expose
+
+			────────────────── LOGS ──────────────────
+
 
 Once this is visible, open a browser at [http://localhost:8080](http://localhost:8080). This will provide a list of demos that you can run.
 
