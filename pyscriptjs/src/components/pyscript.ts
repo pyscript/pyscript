@@ -11,11 +11,6 @@ export function make_PyScript(runtime: Runtime) {
     class PyScript extends HTMLElement {
         srcCode: string
 
-        constructor() {
-            super();
-            this.srcCode = this.innerHTML;
-        }
-
         async connectedCallback() {
             if (this.hasAttribute('output')) {
                 const deprecationMessage = (
@@ -26,6 +21,7 @@ export function make_PyScript(runtime: Runtime) {
                 showWarning(deprecationMessage)
             }
             ensureUniqueId(this);
+            this.srcCode = this.innerHTML;
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
             pyExec(runtime, pySrc, this);
