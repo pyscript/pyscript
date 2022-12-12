@@ -276,3 +276,19 @@ class TestBasic(PyScriptTest):
             "Direct usage of sys is deprecated. Please use import sys instead.",
             "Direct usage of create is deprecated. Please use pyscript.create instead.",
         ]
+
+    def test_getPySrc_returns_source_code(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                print("hello world!")
+            </py-script>
+            """
+        )
+
+        pyscript_tag = self.page.locator("py-script")
+        assert pyscript_tag.inner_html() == ""
+        assert (
+            pyscript_tag.evaluate("node => node.getPySrc()")
+            == 'print("hello world!")\n'
+        )
