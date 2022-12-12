@@ -9,13 +9,12 @@ js.console.warn(
 
 plugin = Plugin("PyTutorial")
 
+# TODO: We can totally implement this in Python
 PAGE_SCRIPT = """
     const viewCodeButton = document.getElementById("view-code-button");
-    console.log('----> viewCodeButton')
-    console.log(viewCodeButton)
+
     const codeSection = document.getElementById("code-section");
     const handleClick = () => {
-        console.log("IMA CLICKER!")
       if (codeSection.classList.contains("code-section-hidden")) {
         codeSection.classList.remove("code-section-hidden");
         codeSection.classList.add("code-section-visible");
@@ -24,14 +23,13 @@ PAGE_SCRIPT = """
         codeSection.classList.add("code-section-hidden");
       }
     }
-    console.log("ASSIGNING...")
+
     viewCodeButton.addEventListener("click", handleClick)
     viewCodeButton.addEventListener("keydown", (e) => {
       if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") {
         handleClick();
       }
     })
-    console.log("NEW SCRIPT EXECUTED!");
 """
 
 TEMPLATE_CODE_SECTION = """
@@ -62,35 +60,15 @@ class PyMarkdown:
 
         js.document.body.appendChild(el)
 
-    def _create_code_section(self, source, parent=None):
-        if not parent:
-            parent = js.document.body
-        el = js.document.createElement("section")
-        el.classList.add("code")
-
-        el.innerHTML = TEMPLATE_CODE_SECTION.format(source=source)
-
-        parent.appendChild(el)
-
-    def create_page_code_section(self):
-        self._create_code_section(html.escape(self.element.innerHTML))
-        # el = js.document.createElement('section')
-        # el.classList.add('code')
-
-        # el.innerHTML = TEMPLATE_CODE_SECTION.format(source = html.escape(self.element.innerHTML))
-
-        # js.document.body.appendChild(el)
-
     def add_prism(self):
+        # Add The CSS
         link = js.document.createElement("link")
         link.type = "text/css"
         link.rel = "stylesheet"
-
-        # //link.href = 'http://fonts.googleapis.com/css?family=Oswald&effect=neon';
         js.document.head.appendChild(link)
-
         link.href = "./assets/prism/prism.css"
 
+        # Add the JS file
         script = js.document.createElement("script")
         script.type = "text/javascript"
         try:
@@ -100,16 +78,30 @@ class PyMarkdown:
         script.src = "./assets/prism/prism.js"
         js.document.head.appendChild(script)
 
-    def create_single_scripts_section(self):
+    def _create_code_section(self, source, parent=None):
+        if not parent:
+            parent = js.document.body
+
         el = js.document.createElement("section")
+        el.classList.add("code")
+        el.innerHTML = TEMPLATE_CODE_SECTION.format(source=source)
+        parent.appendChild(el)
+
+    def create_page_code_section(self):
+        self._create_code_section(html.escape(self.element.innerHTML))
+
+    def create_single_scripts_section(self):
+        """
+        Creates a code section (that inspects the code) for each py-script element
+        in the page.
+        """
         for pyscript_tag in js.document.querySelectorAll("py-script"):
             try:
                 source = pyscript_tag.pySrc
             except AttributeError:
                 source = pyscript_tag.innerHTML
 
-            self.element.innerHTML = TEMPLATE_CODE_SECTION.format(source=source)
-        js.document.body.appendChild(el)
+            self._create_code_section(source)
 
     def connect(self):
         self.create_page_code_section()
