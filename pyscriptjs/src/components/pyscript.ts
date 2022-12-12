@@ -9,7 +9,7 @@ const logger = getLogger('py-script');
 
 export function make_PyScript(runtime: Runtime) {
     class PyScript extends HTMLElement {
-        srcCode: string = ""
+        srcCode: string
 
         constructor() {
             super();
