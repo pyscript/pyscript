@@ -9,6 +9,13 @@ const logger = getLogger('py-script');
 
 export function make_PyScript(runtime: Runtime) {
     class PyScript extends HTMLElement {
+        srcCode: string = ""
+
+        constructor() {
+            super();
+            this.srcCode = this.innerHTML;
+        }
+
         async connectedCallback() {
             if (this.hasAttribute('output')) {
                 const deprecationMessage = (
@@ -36,7 +43,7 @@ export function make_PyScript(runtime: Runtime) {
                     throw e
                 }
             } else {
-                return htmlDecode(this.innerHTML);
+                return htmlDecode(this.srcCode);
             }
         }
     }
