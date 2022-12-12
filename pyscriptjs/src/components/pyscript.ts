@@ -21,6 +21,9 @@ export function make_PyScript(runtime: Runtime) {
                 showWarning(deprecationMessage)
             }
             ensureUniqueId(this);
+            // Save innerHTML information in srcCode so we can access it later
+            // once we clean innerHTML (which is required since we don't want
+            // source code to be rendered on the screen)
             this.srcCode = this.innerHTML;
             const pySrc = await this.getPySrc();
             this.innerHTML = '';

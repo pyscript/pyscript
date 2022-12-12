@@ -277,7 +277,7 @@ class TestBasic(PyScriptTest):
             "Direct usage of create is deprecated. Please use pyscript.create instead.",
         ]
 
-    def test_getPySrc(self):
+    def test_getPySrc_returns_source_code(self):
         self.pyscript_run(
             """
             <py-script>
