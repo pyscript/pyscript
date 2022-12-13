@@ -28,7 +28,7 @@ repos:
         -   --skip=B101,B201
 
 -   repo: https://github.com/psf/black
-    rev: 22.10.0
+    rev: 22.12.0
     hooks:
     -   id: black
 
@@ -45,7 +45,7 @@ repos:
         additional_dependencies: [flake8-bugbear, flake8-comprehensions]
 
 -   repo: https://github.com/pycqa/isort
-    rev: 5.10.1
+    rev: 5.11.1
     hooks:
     -   id: isort
         name: isort (python)
@@ -59,7 +59,7 @@ repos:
         exclude: .github/ISSUE_TEMPLATE/.*\.yml$
 
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.0
+    rev: v3.3.1
     hooks:
     -   id: pyupgrade
         args:
