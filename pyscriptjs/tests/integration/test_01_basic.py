@@ -220,13 +220,13 @@ class TestBasic(PyScriptTest):
         """
         )
         assert (
-            re.match(r"\d{4}\.\d{2}\.\d+\.[a-zA-Z0-9]+", self.console.log.lines[-2])
+            re.match(r"\d{4}\.\d{2}\.\d+(\.[a-zA-Z0-9]+)?", self.console.log.lines[-2])
             is not None
         )
         assert (
             re.match(
                 r"version_info\(year=\d{4}, month=\d{2}, "
-                r"minor=\d+, releaselevel='[a-zA-Z0-9]+'\)",
+                r"minor=\d+, releaselevel='(\.[a-zA-Z0-9]+)?'\)",
                 self.console.log.lines[-1],
             )
             is not None
