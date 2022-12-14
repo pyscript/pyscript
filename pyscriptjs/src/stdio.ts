@@ -57,3 +57,24 @@ export class StdioMultiplexer implements Stdio {
         for (const obj of this._listeners) obj.stderr_writeline(msg);
     }
 }
+
+export class StdioDisplayer implements Stdio{
+
+    _stdout_target;
+
+    constructor() {
+        this._stdout_target = null;
+    }
+
+    setStdoutTarget(id: string) {
+        this._stdout_target = document.getElementById(id);
+    }
+
+    stdout_writeline (msg: string) {
+    }
+
+    stderr_writeline (msg: string) {
+
+    }
+
+}
