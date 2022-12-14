@@ -39,6 +39,10 @@ export class Plugin {
      */
     afterSetup(runtime: Runtime) {}
 
+    beforePyScriptExec(runtime, src, PyScriptTag) {}
+
+    afterPyScriptExec(runtime, src, PyScriptTag, result) {}
+
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and
      * the page is ready to accept user interactions.
@@ -87,6 +91,18 @@ export class PluginManager {
         for (const p of this._plugins) p.afterStartup(runtime);
 
         for (const p of this._pythonPlugins) p.afterStartup?.(runtime);
+    }
+
+    beforePyScriptExec(runtime, pyscriptTag, src) {
+        for (const p of this._plugins) p.beforePyScriptExec(runtime, pyscriptTag ,src);
+
+        for (const p of this._pythonPlugins) p.beforePyScriptExec?.(runtime, pyscriptTag ,src);
+    }
+
+    afterPyScriptExec(runtime: Runtime, pyscriptTag, src, result) {
+        for (const p of this._plugins) p.afterPyScriptExec(runtime, pyscriptTag, src, result);
+
+        for (const p of this._pythonPlugins) p.afterPyScriptExec?.(runtime, pyscriptTag, src, result);
     }
 
     onUserError(error: UserError) {

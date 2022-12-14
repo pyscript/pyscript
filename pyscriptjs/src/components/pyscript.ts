@@ -4,10 +4,11 @@ import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
 import { _createAlertBanner } from '../exceptions';
 import { robustFetch } from '../fetch';
+import { PyScriptApp } from '../main';
 
 const logger = getLogger('py-script');
 
-export function make_PyScript(runtime: Runtime) {
+export function make_PyScript(runtime: Runtime, app: PyScriptApp) {
     class PyScript extends HTMLElement {
         srcCode: string;
 
@@ -26,7 +27,9 @@ export function make_PyScript(runtime: Runtime) {
             this.srcCode = this.innerHTML;
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
-            pyExec(runtime, pySrc, this);
+            app.plugins.beforePyScriptExec(runtime, this, pySrc);
+            const result = pyExec(runtime, pySrc, this);
+            app.plugins.afterPyScriptExec(runtime, this, pySrc, result);
         }
 
         async getPySrc(): Promise<string> {

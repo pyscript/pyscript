@@ -37,11 +37,41 @@ class TestLogger(Plugin):
     def afterStartup(self, config):
         console.log('afterStartup called')
 
+    def beforePyScriptExec(self, runtime, pyscript_tag, src):
+        console.log(f'beforePyScriptExec called')
+        console.log(f'before_src:{src}')
+
+    def afterPyScriptExec(self, runtime, pyscript_tag, src, result):
+        console.log(f'afterPyScriptExec called')
+        console.log(f'after_src:{src}')
+
     def onUserError(self, config):
         console.log('onUserError called')
 
 
 plugin = TestLogger()
+"""
+
+# Source of script that defines a plugin with only beforePyScriptExec and
+# afterPyScriptExec methods
+EXEC_HOOKS_PLUGIN_CODE = """
+from pyscript import Plugin
+from js import console
+
+class ExecTestLogger(Plugin):
+
+    def beforePyScriptExec(self, runtime, pyscript_tag, src):
+        console.log(f'beforePyScriptExec called')
+        console.log(f'before_src:{src}')
+        console.log(f'before_id:{pyscript_tag.id}')
+
+    def afterPyScriptExec(self, runtime, pyscript_tag, src, result):
+        console.log(f'afterPyScriptExec called')
+        console.log(f'after_src:{src}')
+        console.log(f'after_id:{pyscript_tag.id}')
+
+
+plugin = ExecTestLogger()
 """
 
 # Source of a script that doesn't call define a `plugin` attribute
@@ -159,7 +189,12 @@ class TestPlugin(PyScriptTest):
         for each one of them"""
         # GIVEN a plugin that logs specific strings for each app execution event
         hooks_available = ["afterSetup", "afterStartup"]
-        hooks_unavailable = ["configure", "beforeLaunch"]
+        hooks_unavailable = [
+            "configure",
+            "beforeLaunch",
+            "beforePyScriptExec",
+            "afterPyScriptExec",
+        ]
 
         # EXPECT it to log the correct logs for the events it intercepts
         log_lines = self.console.log.lines
@@ -172,6 +207,27 @@ class TestPlugin(PyScriptTest):
             assert f"{method} called" not in log_lines
 
         # TODO: It'd be actually better to check that the events get called in order
+
+    @prepare_test(
+        "exec_test_logger",
+        EXEC_HOOKS_PLUGIN_CODE,
+        template=HTML_TEMPLATE_NO_TAG + "\n<py-script id='pyid'>x=2</py-script>",
+    )
+    def test_pyscript_exec_hooks(self):
+        """Test that the beforePyScriptExec and afterPyScriptExec hooks work as intended"""
+        assert self.page.locator("py-script") is not None
+
+        log_lines: list[str] = self.console.log.lines
+
+        assert "beforePyScriptExec called" in log_lines
+        assert "afterPyScriptExec called" in log_lines
+
+        # These could be made better with a utility funtcion that found log lines
+        # that match a filter function, or start with something
+        assert "before_src:x=2" in log_lines
+        assert "before_id:pyid" in log_lines
+        assert "after_src:x=2" in log_lines
+        assert "after_id:pyid" in log_lines
 
     @prepare_test("no_plugin", NO_PLUGIN_CODE)
     def test_no_plugin_attribute_error(self):

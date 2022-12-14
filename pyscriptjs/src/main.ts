@@ -309,7 +309,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
 
     // lifecycle (7)
     executeScripts(runtime: Runtime) {
-        this.PyScript = make_PyScript(runtime);
+        this.PyScript = make_PyScript(runtime, this);
         customElements.define('py-script', this.PyScript);
     }
 
