@@ -15,12 +15,16 @@
         "markdown"
       ]
       plugins = [
-        "../build/plugins/python/py_markdown.py"
+        "../build/plugins/python/py_markdown.py",
+        "../build/plugins/python/py_tutor.py"
       ]
     </py-config>
   </head>
 
   <body>
+
+    <py-tutor>
       <py-md>#Hello world!</py-md>
+    </py-tutor>
   </body>
 </html>
