@@ -95,6 +95,7 @@ class PyTutor:
 
         js.console.log("------> CALLING ")
         js.console.log(module_paths)
+
         modules_section = self.create_modules_section(module_paths)
         js.console.log("------> DONE ")
         el = js.document.createElement("section")
@@ -109,6 +110,8 @@ class PyTutor:
     def create_modules_section(cls, module_paths=None):
         js.console.log("--------ooooooo------")
         js.console.log(module_paths)
+        if not module_paths:
+            return ""
 
         return "\n\n".join([cls.create_module_section(m) for m in module_paths])
 
