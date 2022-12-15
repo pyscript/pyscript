@@ -11,6 +11,8 @@ plugin = Plugin("PyTutorial")
 
 # TODO: Part of the CSS is hidden in examples.css ---->> IMPORTANT: move it here!!
 
+# TODO: Python files running and <py-script src="bla.py"> not in the config are not available...
+
 # TODO: We can totally implement this in Python
 PAGE_SCRIPT = """
 const viewCodeButton = document.getElementById("view-code-button");
