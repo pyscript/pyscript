@@ -9,6 +9,8 @@ js.console.warn(
 
 plugin = Plugin("PyTutorial")
 
+# TODO: Part of the CSS is hidden in examples.css ---->> IMPORTANT: move it here!!
+
 # TODO: We can totally implement this in Python
 PAGE_SCRIPT = """
 const viewCodeButton = document.getElementById("view-code-button");
