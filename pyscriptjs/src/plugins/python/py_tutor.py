@@ -65,7 +65,11 @@ class PyTutor:
     def __init__(self, element):
         self.element = element
 
-    def create_script(self):
+    def append_script_to_page(self):
+        """
+        Append the JS script (PAGE_SCRIPT) to the page body in order to attach the
+        click and keydown events to show/hide the source code section on the page.
+        """
         el = js.document.createElement("script")
         el.type = "text/javascript"
         try:
@@ -94,6 +98,22 @@ class PyTutor:
         js.document.head.appendChild(script)
 
     def _create_code_section(self, source, module_paths=None, parent=None):
+        """
+        Get source and the path to modules to be displayed, create a new `code`
+        `section` where it's contents use TEMPLATE_CODE_SECTION with `source` and
+        `modules_paths` to display the information it needs.
+
+        Args:
+
+            source (str): source within a <py-tutor> tag that needs to be displaed
+            module_paths (list(str)): list of paths to modules that needs to be shown
+            parent(HTMLElement, optional): Element where the code section will be appended
+                                        to. I None is passed parent == document.body.
+                                        Defaults to None.
+
+        Returns:
+            (None)
+        """
         if not parent:
             parent = js.document.body
 
@@ -111,6 +131,17 @@ class PyTutor:
 
     @classmethod
     def create_modules_section(cls, module_paths=None):
+        """Create the HTML content for all modules passed in `module_paths`. More specifically,
+        reads the content of each module and calls PyTytor.create_module_section
+
+        Args:
+
+            module_paths (list(str)): list of paths to modules that needs to be shown
+
+        Returns:
+            (str) HTML code with the content of each module in `module_path`, ready to be
+                attached to the DOM
+        """
         js.console.info(f"Module paths to parse: {module_paths}")
         if not module_paths:
             return ""
@@ -119,6 +150,17 @@ class PyTutor:
 
     @staticmethod
     def create_module_section(module_path):
+        """Create the HTML content for the module passed as `module_path`.
+        More specifically, reads the content of module and calls PyTytor.create_module_section
+
+        Args:
+
+            module_paths (list(str)): list of paths to modules that needs to be shown
+
+        Returns:
+            (str) HTML code with the content of each module in `module_path`, ready to be
+                attached to the DOM
+        """
         js.console.info(f"Creating module section: {module_path}")
         with open(module_path) as fp:
             content = fp.read()
@@ -127,6 +169,17 @@ class PyTutor:
         )
 
     def create_page_code_section(self):
+        """
+        Create all the code content to be displayed on a page. More specifically:
+
+        * get the HTML code within the <py-tutor> tag
+        * get the source code from all files specified in the py-tytor `modules` attribute
+        * create the HTML to be attached on the page using the content created in
+          the previous 2 items and apply them to TEMPLATE_CODE_SECTION
+
+        Returns:
+            (None)
+        """
         # Get the content of all the modules that were passed to be documented
         module_paths = self.element.getAttribute("modules")
         if module_paths:
@@ -138,24 +191,10 @@ class PyTutor:
 
         self._create_code_section(tutor_tag_innerHTML, module_paths)
 
-    # def create_single_scripts_section(self):
-    #     """
-    #     Creates a code section (that inspects the code) for each py-script element
-    #     in the page.
-    #     """
-    #     # For all script tags in the page
-    #     for pyscript_tag in js.document.querySelectorAll("py-script"):
-    #         try:
-    #             source = pyscript_tag.pySrc
-    #         except AttributeError:
-    #             source = pyscript_tag.innerHTML
-
-    #         self._create_code_section(source)
-
     def connect(self):
         self.create_page_code_section()
 
         # append the script needed to show source first...
-        self.create_script()
+        self.append_script_to_page()
 
         self.add_prism()
