@@ -97,11 +97,10 @@ class PyTutor:
         if not parent:
             parent = js.document.body
 
-        js.console.log("------> CALLING ")
-        js.console.log(module_paths)
-
+        js.console.info("Creating code introspection section.")
         modules_section = self.create_modules_section(module_paths)
-        js.console.log("------> DONE ")
+
+        js.console.info("Creating new code section element.")
         el = js.document.createElement("section")
         el.classList.add("code")
 
@@ -112,8 +111,7 @@ class PyTutor:
 
     @classmethod
     def create_modules_section(cls, module_paths=None):
-        js.console.log("--------ooooooo------")
-        js.console.log(module_paths)
+        js.console.info(f"Module paths to parse: {module_paths}")
         if not module_paths:
             return ""
 
@@ -121,8 +119,7 @@ class PyTutor:
 
     @staticmethod
     def create_module_section(module_path):
-        js.console.log("--------MOOOOooooooo------")
-        js.console.log(module_path)
+        js.console.info(f"Creating module section: {module_path}")
         with open(module_path) as fp:
             content = fp.read()
         return TEMPLATE_PY_MODULE_SECTION.format(
@@ -130,34 +127,30 @@ class PyTutor:
         )
 
     def create_page_code_section(self):
+        # Get the content of all the modules that were passed to be documented
         module_paths = self.element.getAttribute("modules")
-        js.console.log("-------> BEFORE SPLITTING PATHS")
         if module_paths:
-            js.console.log("-------> SPLITTING PATHS")
-            js.console.log(module_paths)
-            js.console.log(str(module_paths))
-            js.console.log(type(module_paths))
-            js.console.log(type(str(module_paths)))
+            js.console.info(f"Module paths detected: {module_paths}")
             module_paths = str(module_paths).split(";")
-            js.console.log(module_paths)
-            js.console.log("llloooooo[")
-            for module_path in module_paths:
-                js.console.log(module_path)
 
-        self._create_code_section(html.escape(self.element.innerHTML), module_paths)
+        # Get the inner HTML content of the py-tutor tag and document that
+        tutor_tag_innerHTML = html.escape(self.element.innerHTML)
 
-    def create_single_scripts_section(self):
-        """
-        Creates a code section (that inspects the code) for each py-script element
-        in the page.
-        """
-        for pyscript_tag in js.document.querySelectorAll("py-script"):
-            try:
-                source = pyscript_tag.pySrc
-            except AttributeError:
-                source = pyscript_tag.innerHTML
+        self._create_code_section(tutor_tag_innerHTML, module_paths)
 
-            self._create_code_section(source)
+    # def create_single_scripts_section(self):
+    #     """
+    #     Creates a code section (that inspects the code) for each py-script element
+    #     in the page.
+    #     """
+    #     # For all script tags in the page
+    #     for pyscript_tag in js.document.querySelectorAll("py-script"):
+    #         try:
+    #             source = pyscript_tag.pySrc
+    #         except AttributeError:
+    #             source = pyscript_tag.innerHTML
+
+    #         self._create_code_section(source)
 
     def connect(self):
         self.create_page_code_section()
