@@ -192,9 +192,11 @@ class PyTutor:
         self._create_code_section(tutor_tag_innerHTML, module_paths)
 
     def connect(self):
+        # Create the core do show the source code on the page
         self.create_page_code_section()
 
         # append the script needed to show source first...
         self.append_script_to_page()
 
+        # inject the prism JS library dependency
         self.add_prism()
