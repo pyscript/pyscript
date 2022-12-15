@@ -20,12 +20,9 @@ export function make_PyScript(runtime: Runtime) {
                 showWarning(deprecationMessage)
             }
             ensureUniqueId(this);
-            console.log("DEFINING SOURCE")
             this.pySrc = await this.getPySrc();
-            console.log("SOURCE DEFINED")
             this.innerHTML = '';
             pyExec(runtime, this.pySrc, this);
-            console.log("PYSCRIP EXECUTED")
         }
 
         async getPySrc(): Promise<string> {
