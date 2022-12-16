@@ -25,17 +25,18 @@ export default {
   input: "src/main.ts",
   output:[
     {
-    sourcemap: true,
+    file: "build/pyscript.js",
     format: "iife",
+    sourcemap: true,
     inlineDynamicImports: true,
     name: "pyscript",
-    file: "build/pyscript.js",
     },
     {
       file: "build/pyscript.min.js",
       format: "iife",
       sourcemap: true,
       inlineDynamicImports: true,
+      name: "pyscript",
       plugins: [terser()],
     },
   ],
