@@ -9,7 +9,6 @@ const logger = getLogger('py-script');
 
 export function make_PyScript(runtime: Runtime) {
     class PyScript extends HTMLElement {
-        pySrc: string;
         async connectedCallback() {
             if (this.hasAttribute('output')) {
                 const deprecationMessage = (
@@ -20,9 +19,9 @@ export function make_PyScript(runtime: Runtime) {
                 showWarning(deprecationMessage)
             }
             ensureUniqueId(this);
-            this.pySrc = await this.getPySrc();
+            const pySrc = await this.getPySrc();
             this.innerHTML = '';
-            pyExec(runtime, this.pySrc, this);
+            pyExec(runtime, pySrc, this);
         }
 
         async getPySrc(): Promise<string> {
