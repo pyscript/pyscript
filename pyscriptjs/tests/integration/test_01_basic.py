@@ -220,13 +220,13 @@ class TestBasic(PyScriptTest):
         """
         )
         assert (
-            re.match(r"\d{4}\.\d{2}\.\d+\.[a-zA-Z0-9]+", self.console.log.lines[-2])
+            re.match(r"\d{4}\.\d{2}\.\d+(\.[a-zA-Z0-9]+)?", self.console.log.lines[-2])
             is not None
         )
         assert (
             re.match(
                 r"version_info\(year=\d{4}, month=\d{2}, "
-                r"minor=\d+, releaselevel='[a-zA-Z0-9]+'\)",
+                r"minor=\d+, releaselevel='([a-zA-Z0-9]+)?'\)",
                 self.console.log.lines[-1],
             )
             is not None
@@ -276,3 +276,19 @@ class TestBasic(PyScriptTest):
             "Direct usage of sys is deprecated. Please use import sys instead.",
             "Direct usage of create is deprecated. Please use pyscript.create instead.",
         ]
+
+    def test_getPySrc_returns_source_code(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                print("hello world!")
+            </py-script>
+            """
+        )
+
+        pyscript_tag = self.page.locator("py-script")
+        assert pyscript_tag.inner_html() == ""
+        assert (
+            pyscript_tag.evaluate("node => node.getPySrc()")
+            == 'print("hello world!")\n'
+        )

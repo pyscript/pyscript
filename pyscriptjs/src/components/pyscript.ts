@@ -9,6 +9,8 @@ const logger = getLogger('py-script');
 
 export function make_PyScript(runtime: Runtime) {
     class PyScript extends HTMLElement {
+        srcCode: string
+
         async connectedCallback() {
             if (this.hasAttribute('output')) {
                 const deprecationMessage = (
@@ -19,6 +21,10 @@ export function make_PyScript(runtime: Runtime) {
                 showWarning(deprecationMessage)
             }
             ensureUniqueId(this);
+            // Save innerHTML information in srcCode so we can access it later
+            // once we clean innerHTML (which is required since we don't want
+            // source code to be rendered on the screen)
+            this.srcCode = this.innerHTML;
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
             pyExec(runtime, pySrc, this);
@@ -36,7 +42,7 @@ export function make_PyScript(runtime: Runtime) {
                     throw e
                 }
             } else {
-                return htmlDecode(this.innerHTML);
+                return htmlDecode(this.srcCode);
             }
         }
     }
