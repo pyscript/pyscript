@@ -303,6 +303,73 @@ class PyScriptTest:
             text = "\n".join(loc.all_inner_texts())
             raise AssertionError(f"Found {n} alert banners:\n" + text)
 
+    def check_tutor_generated_code(self, modules_to_check=None):
+        """
+        Ensure that the source code viewer injected by the PyTutor plugin
+        is presend. Raise AssertionError if not found.
+
+        Args:
+
+            modules_to_check(str): iterable with names of the python modules
+                                that have been included in the tutor config
+                                and needs to be checked (if they are included
+                                in the displayed source code)
+
+        Returns:
+            None
+        """
+        # Given: a page that has a <py-tutor> tag
+        assert self.page.locator("py-tutor").count()
+
+        # EXPECT that"
+        #
+        # the page has the "view-code-button"
+        view_code_button = self.page.locator("#view-code-button")
+        vcb_count = view_code_button.count()
+        if vcb_count != 1:
+            raise AssertionError(
+                f"Found {vcb_count} code view button. Should have been 1!"
+            )
+
+        # the page has the code-section element
+        code_section = self.page.locator("#code-section")
+        code_section_count = code_section.count()
+        code_msg = (
+            f"One (and only one) code section should exist. Found: {code_section_count}"
+        )
+        assert code_section_count == 1, code_msg
+
+        pyconfig_tag = self.page.locator("py-config")
+        code_section_inner_html = code_section.inner_html()
+
+        # the code_section has the index.html section
+        assert "<p>index.html</p>" in code_section_inner_html
+
+        # the section has the tags highlighting the HTML code
+        assert (
+            '<pre class="prism-code language-html" tabindex="0">'
+            '    <code class="language-html">' in code_section_inner_html
+        )
+
+        # if modules were included, these are also presented in the code section
+        if modules_to_check:
+            for module in modules_to_check:
+                assert f"{module}" in code_section_inner_html
+
+        # the section also includes the config
+        assert "&lt;</span>py-config</span>" in code_section_inner_html
+
+        # the contents of the py-config tag are included in the code section
+        assert pyconfig_tag.inner_html() in code_section_inner_html
+
+        # the code section to be invisible by default (by having the hidden class)
+        assert "code-section-hidden" in code_section.get_attribute("class")
+
+        # once the view_code_button is pressed, the code section becomes visible
+        view_code_button.click()
+        assert "code-section-visible" in code_section.get_attribute("class")
+        breakpoint()
+
 
 # ============== Helpers and utility functions ==============
 
