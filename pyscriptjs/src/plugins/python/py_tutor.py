@@ -192,6 +192,19 @@ class PyTutor:
         self._create_code_section(tutor_tag_innerHTML, module_paths)
 
     def connect(self):
+        """
+        Handler meant to be called when the Plugin CE (Custom Element) is attached
+        to the page.
+
+        As so, it's the entry point that coordinates the whole plugin workflow and
+        is responsible for calling the right steps in order:
+
+        * identify what parts of the App (page) that are within the py-tutor tag
+          to be documented as well as any modules specified as attribute
+        * inject the button to show/hide button and related modal
+        * inject the JS code that attaches the click event to the button
+        * build the modal that shows/hides with the correct page/modules code
+        """
         # Create the core do show the source code on the page
         self.create_page_code_section()
 
