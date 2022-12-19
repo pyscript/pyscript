@@ -368,7 +368,6 @@ class PyScriptTest:
         # once the view_code_button is pressed, the code section becomes visible
         view_code_button.click()
         assert "code-section-visible" in code_section.get_attribute("class")
-        breakpoint()
 
 
 # ============== Helpers and utility functions ==============
