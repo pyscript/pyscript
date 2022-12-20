@@ -69,6 +69,7 @@ class ExecTestLogger(Plugin):
         console.log(f'afterPyScriptExec called')
         console.log(f'after_src:{src}')
         console.log(f'after_id:{pyscript_tag.id}')
+        console.log(f'result:{result}')
 
 
 plugin = ExecTestLogger()
@@ -211,7 +212,7 @@ class TestPlugin(PyScriptTest):
     @prepare_test(
         "exec_test_logger",
         EXEC_HOOKS_PLUGIN_CODE,
-        template=HTML_TEMPLATE_NO_TAG + "\n<py-script id='pyid'>x=2</py-script>",
+        template=HTML_TEMPLATE_NO_TAG + "\n<py-script id='pyid'>x=2; x</py-script>",
     )
     def test_pyscript_exec_hooks(self):
         """Test that the beforePyScriptExec and afterPyScriptExec hooks work as intended"""
@@ -222,12 +223,13 @@ class TestPlugin(PyScriptTest):
         assert "beforePyScriptExec called" in log_lines
         assert "afterPyScriptExec called" in log_lines
 
-        # These could be made better with a utility funtcion that found log lines
+        # These could be made better with a utility function that found log lines
         # that match a filter function, or start with something
-        assert "before_src:x=2" in log_lines
+        assert "before_src:x=2; x" in log_lines
         assert "before_id:pyid" in log_lines
-        assert "after_src:x=2" in log_lines
+        assert "after_src:x=2; x" in log_lines
         assert "after_id:pyid" in log_lines
+        assert "result:2" in log_lines
 
     @prepare_test("no_plugin", NO_PLUGIN_CODE)
     def test_no_plugin_attribute_error(self):
