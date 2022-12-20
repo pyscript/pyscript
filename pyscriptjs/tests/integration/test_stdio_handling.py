@@ -83,11 +83,6 @@ class TestOutputHandling(PyScriptTest):
         <py-script output="second">
             print("one.\\ntwo.\\nthree.")
         </py-script>
-
-        <div id="third"></div>
-        <py-script output="third">
-            print("one.<br>")
-        </py-script>
         """
         )
 
@@ -96,9 +91,6 @@ class TestOutputHandling(PyScriptTest):
 
         # new lines are converted to line breaks
         assert self.page.locator("#second").inner_html() == "one.<br>two.<br>three.<br>"
-
-        # No duplicate ending line breaks
-        assert self.page.locator("#third").inner_html() == "one.<br>"
 
     def test_targetted_stdio_async(self):
         # Test the behavior of stdio capture in async contexts
