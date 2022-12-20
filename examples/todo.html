@@ -11,8 +11,6 @@
 
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <link rel="stylesheet" href="./assets/css/examples.css" />
-    <link rel="stylesheet" href="./assets/prism/prism.css" />
-    <script defer src="./assets/prism/prism.js"></script>
   </head>
 
   <body>
@@ -25,184 +23,43 @@
       </div>
     </nav>
     <section class="pyscript">
-  <py-config>
-    [[fetch]]
-    files = ["./utils.py"]
-  </py-config>
+      <py-tutor modules="./utils.py;./todo.py">
+        <py-config>
+          plugins = [
+            "../build/plugins/python/py_tutor.py"
+          ]
+          [[fetch]]
+          files = ["./utils.py", "./todo.py"]
+        </py-config>
 
-  <py-script src="./todo.py">  </py-script>
+        <py-script src="./todo.py">  </py-script>
 
-  <main>
-    <section>
+      <main>
+        <section>
 
-    <div class="text-center w-full mb-8">
-      <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-tight">To Do List</h1>
-    </div>
-    <div>
-      <input id="new-task-content" class="py-input" type="text">
-      <button id="new-task-btn" class="py-button" type="submit" py-click="add_task()">
-        Add task
-      </button>
-    </div>
+          <div class="text-center w-full mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-tight">To Do List</h1>
+          </div>
+          <div>
+            <input id="new-task-content" class="py-input" type="text">
+            <button id="new-task-btn" class="py-button" type="submit" py-click="add_task()">
+              Add task
+            </button>
+          </div>
 
-    <py-list id="myList"></py-list>
-    <div id="list-tasks-container" class="flex flex-col-reverse mt-4">
-  </div>
+          <py-list id="myList"></py-list>
+          <div id="list-tasks-container" class="flex flex-col-reverse mt-4"></div>
 
-    <template id="task-template">
-        <section class="task py-li-element">
-            <label for="flex items-center p-2 ">
-              <input class="mr-2" type="checkbox">
-              <p class="m-0 inline"></p>
-            </label>
+          <template id="task-template">
+            <section class="task py-li-element">
+                <label for="flex items-center p-2 ">
+                  <input class="mr-2" type="checkbox">
+                  <p class="m-0 inline"></p>
+                </label>
+            </section>
+          </template>
         </section>
-      </template>
-
-  </section>
-  </main>
+      </main>
    </section>
-    <section class="code">
-      <div id="view-code-button" role="button" aria-pressed="false" tabindex="0">View Code</div>
-      <div id="code-section" class="code-section-hidden">
-        <p>index.html</p>
-        <pre class="prism-code language-html">
-          <code class="language-html">
-            &lt;py-config&gt;
-            [[fetch]]
-            files = ["./utils.py"]
-            &lt;/py-config&gt;
-            &lt;py-script src="./todo.py"&gt;
-            &lt;/py-script&gt;
-            &lt;main&gt;
-            &lt;section&gt;
-
-            &lt;div class=&quot;text-center w-full mb-8&quot;&gt;
-              &lt;h1 class=&quot;text-3xl font-bold text-gray-800 uppercase tracking-tight&quot;&gt;To Do List&lt;/h1&gt;
-            &lt;/div&gt;
-            &lt;div&gt;
-              &lt;input id=&quot;new-task-content&quot; class=&quot;py-input&quot; type=&quot;text&quot;&gt;
-              &lt;button id=&quot;new-task-btn&quot; class=&quot;py-button&quot; type=&quot;submit&quot; py-click=&quot;add_task()&quot;&gt;
-                Add task
-              &lt;/button&gt;
-            &lt;/div&gt;
-
-            &lt;py-list id=&quot;myList&quot;&gt;&lt;/py-list&gt;
-            &lt;div id=&quot;list-tasks-container&quot; class=&quot;flex flex-col-reverse mt-4&quot;&gt;
-          &lt;/div&gt;
-
-            &lt;template id=&quot;task-template&quot;&gt;
-                &lt;section class=&quot;task py-li-element&quot;&gt;
-                    &lt;label for=&quot;flex items-center p-2 &quot;&gt;
-                      &lt;input class=&quot;mr-2&quot; type=&quot;checkbox&quot;&gt;
-                      &lt;p class=&quot;m-0 inline&quot;&gt;&lt;/p&gt;
-                    &lt;/label&gt;
-                &lt;/section&gt;
-              &lt;/template&gt;
-
-          &lt;/section&gt;
-          &lt;/main&gt;
-          </code>
-        </pre>
-        <p>utils.py</p>
-        <pre class="prism-code language-python">
-          <code class="language-python">
-            from datetime import datetime as dt
-
-
-            def format_date(dt_, fmt="%m/%d/%Y, %H:%M:%S"):
-                return f"{dt_:{fmt}}"
-
-
-            def now(fmt="%m/%d/%Y, %H:%M:%S"):
-                return format_date(dt.now(), fmt)
-
-
-            def remove_class(element, class_name):
-                element.element.classList.remove(class_name)
-
-
-            def add_class(element, class_name):
-                element.element.classList.add(class_name)
-          </code>
-        </pre>
-        <p>todo.py</p>
-        <pre class="prism-code language-python">
-          <code class="language-python">
-            from datetime import datetime as dt
-
-            from utils import add_class, remove_class
-
-            tasks = []
-
-            # define the task template that will be use to render new templates to the page
-            task_template = Element("task-template").select(".task", from_content=True)
-            task_list = Element("list-tasks-container")
-            new_task_content = Element("new-task-content")
-
-
-            def add_task(*ags, **kws):
-                # ignore empty task
-                if not new_task_content.element.value:
-                    return None
-
-                # create task
-                task_id = f"task-{len(tasks)}"
-                task = {
-                    "id": task_id,
-                    "content": new_task_content.element.value,
-                    "done": False,
-                    "created_at": dt.now(),
-                }
-
-                tasks.append(task)
-
-                # add the task element to the page as new node in the list by cloning from a
-                # template
-                task_html = task_template.clone(task_id)
-                task_html_content = task_html.select("p")
-                task_html_content.element.innerText = task["content"]
-                task_html_check = task_html.select("input")
-                task_list.element.appendChild(task_html.element)
-
-                def check_task(evt=None):
-                    task["done"] = not task["done"]
-                    if task["done"]:
-                        add_class(task_html_content, "line-through")
-                    else:
-                        remove_class(task_html_content, "line-through")
-
-                new_task_content.clear()
-                task_html_check.element.onclick = check_task
-
-
-            def add_task_event(e):
-                if e.key == "Enter":
-                    add_task()
-
-
-            new_task_content.element.onkeypress = add_task_event
-                </code>
-              </pre>
-      </div>
-    </section>
-  <script>
-    const viewCodeButton = document.getElementById("view-code-button");
-    const codeSection = document.getElementById("code-section");
-    const handleClick = () => {
-      if (codeSection.classList.contains("code-section-hidden")) {
-        codeSection.classList.remove("code-section-hidden");
-        codeSection.classList.add("code-section-visible");
-      } else {
-        codeSection.classList.remove("code-section-visible");
-        codeSection.classList.add("code-section-hidden");
-      }
-    }
-    viewCodeButton.addEventListener("click", handleClick)
-    viewCodeButton.addEventListener("keydown", (e) => {
-      if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") {
-        handleClick();
-      }
-    })
-  </script>
 </body>
 </html>
