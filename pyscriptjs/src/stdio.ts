@@ -49,6 +49,13 @@ export class StdioMultiplexer implements Stdio {
         this._listeners.push(obj);
     }
 
+    removeListener(obj: Stdio) {
+        const index = this._listeners.indexOf(obj)
+        if (index > -1){
+            this._listeners.splice(index, 1)
+        }
+    }
+
     stdout_writeline(msg: string) {
         for (const obj of this._listeners) obj.stdout_writeline(msg);
     }
@@ -60,21 +67,25 @@ export class StdioMultiplexer implements Stdio {
 
 export class StdioDisplayer implements Stdio{
 
-    _stdout_target;
+    target_id;
 
-    constructor() {
-        this._stdout_target = null;
+    constructor(target_id: string) {
+        this.target_id = target_id;
+        //console.log(`Constructing new display manager for id ${this.target_id}`)
     }
 
     setStdoutTarget(id: string) {
-        this._stdout_target = document.getElementById(id);
+        this.target_id = id
     }
 
     stdout_writeline (msg: string) {
+        const target = document.getElementById(this.target_id)
+        target.innerHTML += "<div>" + msg + "</div>"
     }
 
     stderr_writeline (msg: string) {
-
+        const target = document.getElementById(this.target_id)
+        target.innerHTML += "<div>" + msg + "</div>"
     }
 
 }

@@ -10,14 +10,16 @@ const logger = getLogger('py-script');
 
 export function make_PyScript(runtime: Runtime, app: PyScriptApp) {
     class PyScript extends HTMLElement {
-        srcCode: string;
+        srcCode: string
+        stdout_display_manager
 
         async connectedCallback() {
-            if (this.hasAttribute('output')) {
-                const deprecationMessage =
+            if (this.hasAttribute('outputXXXXXXX')) {
+                const deprecationMessage = (
                     "The 'output' attribute is deprecated and ignored. You should use " +
                     "'display()' to output the content to a specific element. " +
-                    'For example display(myElement, target="divID").';
+                    'For example display(myElement, target="divID").'
+                )
                 showWarning(deprecationMessage);
             }
             ensureUniqueId(this);
@@ -27,9 +29,9 @@ export function make_PyScript(runtime: Runtime, app: PyScriptApp) {
             this.srcCode = this.innerHTML;
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
-            app.plugins.beforePyScriptExec(runtime, this, pySrc);
+            app.plugins.beforePyScriptExec(runtime, pySrc, this);
             const result = pyExec(runtime, pySrc, this);
-            app.plugins.afterPyScriptExec(runtime, this, pySrc, result);
+            app.plugins.afterPyScriptExec(runtime, pySrc, this, result);
         }
 
         async getPySrc(): Promise<string> {

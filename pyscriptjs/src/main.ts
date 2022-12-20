@@ -63,14 +63,18 @@ export class PyScriptApp {
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
+    _stdoutDirector : StdoutPlugin;
 
     constructor() {
         // initialize the builtin plugins
         this.plugins = new PluginManager();
-        this.plugins.add(new SplashscreenPlugin(), new PyTerminalPlugin(this), new ImportmapPlugin(), new StdoutPlugin());
+        this.plugins.add(new SplashscreenPlugin(), new PyTerminalPlugin(this), new ImportmapPlugin());
 
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
+
+        this._stdoutDirector = new StdoutPlugin(this._stdioMultiplexer)
+        this.plugins.add(this._stdoutDirector)
     }
 
     // Error handling logic: if during the execution we encounter an error
