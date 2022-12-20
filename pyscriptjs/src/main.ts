@@ -16,7 +16,7 @@ import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
-import { StdoutPlugin } from './plugins/stdout';
+import { StdoutDirector as StdoutDirector } from './plugins/stdout';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
@@ -63,7 +63,7 @@ export class PyScriptApp {
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
-    _stdoutDirector : StdoutPlugin;
+    _stdoutDirector : StdoutDirector;
 
     constructor() {
         // initialize the builtin plugins
@@ -73,7 +73,7 @@ export class PyScriptApp {
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
 
-        this._stdoutDirector = new StdoutPlugin(this._stdioMultiplexer)
+        this._stdoutDirector = new StdoutDirector(this._stdioMultiplexer)
         this.plugins.add(this._stdoutDirector)
     }
 

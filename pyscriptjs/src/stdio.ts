@@ -38,6 +38,38 @@ export class CaptureStdio implements Stdio {
     }
 }
 
+/** Stdio provider for sending output to DOM element
+ *  specified by ID. Used with "output" keyword.
+ *
+ */
+export class TargettedStdio implements Stdio{
+
+    target_id;
+
+    constructor(target_id: string) {
+        this.target_id = target_id;
+    }
+
+    stdout_writeline (msg: string) {
+        const target = document.getElementById(this.target_id)
+        msg = escape(msg).replace("\n", "<br>")
+        if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
+            msg = msg + "<br>"
+        }
+        target.innerHTML += msg
+    }
+
+    stderr_writeline (msg: string) {
+        const target = document.getElementById(this.target_id)
+        msg = escape(msg).replace("\n", "<br/>")
+        if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
+            msg = msg + "<br/>"
+        }
+        target.innerHTML += msg
+    }
+
+}
+
 /** Redirect stdio streams to multiple listeners
  */
 export class StdioMultiplexer implements Stdio {
@@ -65,32 +97,4 @@ export class StdioMultiplexer implements Stdio {
     stderr_writeline(msg: string) {
         for (const obj of this._listeners) obj.stderr_writeline(msg);
     }
-}
-
-export class TargettedStdio implements Stdio{
-
-    target_id;
-
-    constructor(target_id: string) {
-        this.target_id = target_id;
-    }
-
-    stdout_writeline (msg: string) {
-        const target = document.getElementById(this.target_id)
-        msg = escape(msg).replace("\n", "<br>")
-        if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
-            msg = msg + "<br>"
-        }
-        target.innerHTML += msg
-    }
-
-    stderr_writeline (msg: string) {
-        const target = document.getElementById(this.target_id)
-        msg = escape(msg).replace("\n", "<br/>")
-        if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
-            msg = msg + "<br/>"
-        }
-        target.innerHTML += msg
-    }
-
 }
