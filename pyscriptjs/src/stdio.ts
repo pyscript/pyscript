@@ -1,3 +1,5 @@
+import { escape } from "./utils";
+
 export interface Stdio {
     stdout_writeline: (msg: string) => void;
     stderr_writeline: (msg: string) => void;
@@ -79,7 +81,7 @@ export class TargettedStdio implements Stdio{
 
     stdout_writeline (msg: string) {
         const target = document.getElementById(this.target_id)
-        msg = msg.replace("\n", "<br/>")
+        msg = escape(msg.replace("\n", "<br/>"))
         if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
             msg = msg + "<br/>"
         }
@@ -88,7 +90,7 @@ export class TargettedStdio implements Stdio{
 
     stderr_writeline (msg: string) {
         const target = document.getElementById(this.target_id)
-        msg = msg.replace("\n", "<br/>")
+        msg = escape(msg.replace("\n", "<br/>"))
         if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
             msg = msg + "<br/>"
         }

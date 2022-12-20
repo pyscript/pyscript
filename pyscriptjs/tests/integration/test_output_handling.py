@@ -52,6 +52,23 @@ class TestOutputHandling(PyScriptTest):
             assert line_index > last_index
             last_index = line_index
 
+    def test_stdio_escape(self):
+        # Test that text that looks like HTML tags is properly escaped in stdio
+        self.pyscript_run(
+            """
+        <div id="first"></div>
+        <py-script output="first">
+            print("<p>Hello</p>")
+            print('<img src="https://example.net">')
+        </py-script>
+        """
+        )
+
+        text = self.page.locator("#first").text_content()
+
+        assert "<p>Hello</p>" in text
+        assert '<img src="https://example.net">' in text
+
     def test_targetted_stdio_linebreaks(self):
         self.pyscript_run(
             """
@@ -156,10 +173,10 @@ class TestOutputHandling(PyScriptTest):
         )
 
         # No text should appear from coroutines
-        assert self.page.locator("#bad").text_content == ""
+        assert self.page.locator("#bad").text_content() == ""
 
         # Three prints should appear from synchronous writes
-        assert self.page.locator("#good").text_content == "one.two.three."
+        assert self.page.locator("#good").text_content() == "one.two.three."
 
         # Check that all output ends up in the dev console, in order
         last_index = -1
