@@ -14,7 +14,7 @@ export function make_PyScript(runtime: Runtime, app: PyScriptApp) {
         stdout_display_manager
 
         async connectedCallback() {
-            if (this.hasAttribute('outputXXXXXXX')) {
+            if (this.hasAttribute('output')) {
                 const deprecationMessage = (
                     "The 'output' attribute is deprecated and ignored. You should use " +
                     "'display()' to output the content to a specific element. " +

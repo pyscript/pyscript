@@ -79,12 +79,20 @@ export class TargettedStdio implements Stdio{
 
     stdout_writeline (msg: string) {
         const target = document.getElementById(this.target_id)
-        target.innerHTML += "<div>" + msg + "</div>"
+        msg = msg.replace("\n", "<br/>")
+        if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
+            msg = msg + "<br/>"
+        }
+        target.innerHTML += msg
     }
 
     stderr_writeline (msg: string) {
         const target = document.getElementById(this.target_id)
-        target.innerHTML += "<div>" + msg + "</div>"
+        msg = msg.replace("\n", "<br/>")
+        if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
+            msg = msg + "<br/>"
+        }
+        target.innerHTML += msg
     }
 
 }

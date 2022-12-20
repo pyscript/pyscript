@@ -52,6 +52,37 @@ class TestOutputHandling(PyScriptTest):
             assert line_index > last_index
             last_index = line_index
 
+    def test_targetted_stdio_linebreaks(self):
+        self.pyscript_run(
+            """
+        <div id="first"></div>
+        <py-script output="first">
+            print("one.")
+            print("two.")
+            print("three.")
+        </py-script>
+
+        <div id="second"></div>
+        <py-script output="second">
+            print("one.\\ntwo.\\nthree.")
+        </py-script>
+
+        <div id="third"></div>
+        <py-script output="third">
+            print("one.<br>")
+        </py-script>
+        """
+        )
+
+        # check line breaks at end of each input
+        assert self.page.locator("#first").inner_html() == "one.<br>two.<br>three.<br>"
+
+        # new lines are converted to line breaks
+        assert self.page.locator("#second").inner_html() == "one.<br>two.<br>three.<br>"
+
+        # No duplicate ending line breaks
+        assert self.page.locator("#third").inner_html() == "one.<br>"
+
     def test_targetted_stdio_async(self):
         # Test the behavior of stdio capture in async contexts
         self.pyscript_run(
