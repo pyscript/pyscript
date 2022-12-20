@@ -186,3 +186,24 @@ class TestPlugin(PyScriptTest):
         )
         # EXPECT an error for the missing attribute
         assert error_msg in self.console.error.lines
+
+    def test_fetch_python_plugin(self):
+        """
+        Test that we can fetch a plugin from a remote URL. Note we need to use
+        the 'raw' URL for the plugin, otherwise the request will be rejected
+        by cors policy.
+        """
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "https://raw.githubusercontent.com/FabioRosado/pyscript-plugins/main/python/hello-world.py"
+                ]
+
+            </py-config>
+            <py-hello-world></py-hello-world>
+            """
+        )
+
+        hello_element = self.page.locator("py-hello-world")
+        assert hello_element.inner_html() == '<div id="hello">Hello World!</div>'
