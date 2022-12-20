@@ -8,22 +8,22 @@
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="../build/pyscript.css" />
 
+    <link rel="stylesheet" href="./assets/css/examples.css" />
     <script defer src="../build/pyscript.js"></script>
-
-    <py-config>
-      packages = [
-        "markdown"
-      ]
-      plugins = [
-        "../build/plugins/python/py_markdown.py",
-        "../build/plugins/python/py_tutor.py"
-      ]
-    </py-config>
   </head>
 
   <body>
-
     <py-tutor>
+      <py-config>
+        packages = [
+          "markdown"
+        ]
+        plugins = [
+          "../build/plugins/python/py_markdown.py",
+          "../build/plugins/python/py_tutor.py"
+        ]
+      </py-config>
+
       <py-md>#Hello world!</py-md>
     </py-tutor>
   </body>
