@@ -54,7 +54,7 @@ TEMPLATE_PY_MODULE_SECTION = """
 <p>{module_name}</p>
 <pre class="prism-code language-python">
     <code class="language-python">
-{source}
+        {source}
     </code>
 </pre>
 """
