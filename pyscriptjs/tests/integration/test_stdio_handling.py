@@ -26,10 +26,10 @@ class TestOutputHandling(PyScriptTest):
 
         # Check that page has desired parent/child structure, and that
         # Output divs are correctly located
-        assert (container := self.page.locator("#container")) is not None
-        assert (first_div := container.locator("#first")) is not None
-        assert (second_div := container.locator("#second")) is not None
-        assert (third_div := container.locator("#third")) is not None
+        assert (container := self.page.locator("#container")).count() > 0
+        assert (first_div := container.locator("#first")).count() > 0
+        assert (second_div := container.locator("#second")).count() > 0
+        assert (third_div := container.locator("#third")).count() > 0
 
         # Check that output ends up in proper div
         assert first_div.text_content() == "first 1.first 2."
@@ -175,3 +175,32 @@ class TestOutputHandling(PyScriptTest):
         for line in ["one.", "two.", "three.", "badthree.", "badone.", "badtwo."]:
             assert (line_index := self.console.log.lines.index(line)) > -1
             assert line_index > last_index
+
+    def test_targetted_stdio_dynamic_tags(self):
+        # Test that creating py-script tags via Python still leaves
+        # stdio targets working
+
+        self.pyscript_run(
+            """
+        <div id="first"></div>
+        <div id="second"></div>
+        <py-script output="first">
+            print("first.")
+
+            import js
+            tag = js.document.createElement("py-script")
+            tag.innerText = "print('second.')"
+            tag.setAttribute("output", "second")
+            js.document.body.appendChild(tag)
+
+            print("first.")
+        </py-script>
+        """
+        )
+
+        # Ensure second tag was added to page
+        assert (second_div := self.page.locator("#second")).count() > 0
+
+        # Ensure output when to correct locations
+        assert self.page.locator("#first").text_content() == "first.first."
+        assert second_div.text_content() == "second."
