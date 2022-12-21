@@ -1,7 +1,7 @@
 import { Plugin } from "../plugin";
 import { TargettedStdio, StdioMultiplexer } from "../stdio";
 
-export class StdoutDirector extends Plugin {
+export class StdioDirector extends Plugin {
     _stdioMultiplexer: StdioMultiplexer;
 
     constructor(stdio: StdioMultiplexer) {
@@ -17,8 +17,6 @@ export class StdoutDirector extends Plugin {
             PyScriptTag.stdout_manager = targetted_io
             this._stdioMultiplexer.addListener(targetted_io)
         }
-
-
     }
 
     afterPyScriptExec(runtime: any, src: any, PyScriptTag: any, result: any): void {
