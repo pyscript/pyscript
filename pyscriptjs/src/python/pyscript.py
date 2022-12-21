@@ -49,7 +49,7 @@ def render_image(mime, value, meta):
 
     data = f"data:{mime};charset=utf-8;base64,{value}"
     attrs = " ".join(['{k}="{v}"' for k, v in meta.items()])
-    return f'<img src="{data}" {attrs}</img>'
+    return f'<img src="{data}" {attrs}></img>'
 
 
 def identity(value, meta):
@@ -497,7 +497,6 @@ class Plugin:
 
     def init(self, app):
         self.app = app
-        self.app.plugins.addPythonPlugin(create_proxy(self))
 
     def register_custom_element(self, tag):
         # TODO: Ideally would be better to use the logger.

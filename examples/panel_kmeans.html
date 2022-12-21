@@ -42,12 +42,10 @@
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <link rel="stylesheet" href="./assets/css/examples.css" />
-    <link rel="stylesheet" href="./assets/prism/prism.css" />
-    <script defer src="./assets/prism/prism.js"></script>
   </head>
 
   <body>
-  <nav class="navbar" style="background-color: #000000;">
+    <nav class="navbar" style="background-color: #000000;">
       <div class="app-header">
         <a href="/">
           <img src="./logo.png" class="logo">
@@ -70,211 +68,98 @@
           <div class="bk-root" id="table"></div>
         </div>
       </div>
-    </div>
+      <py-tutor>
+        <py-config>
+          packages = [
+            "altair",
+            "numpy",
+            "pandas",
+            "scikit-learn",
+            "panel==0.13.1"
+          ]
+          plugins = [
+            "../build/plugins/python/py_tutor.py"
+          ]
+        </py-config>
 
-    <py-config>
-      packages = [
-        "altair",
-        "numpy",
-        "pandas",
-        "scikit-learn",
-        "panel==0.13.1"
-      ]
-    </py-config>
+        <py-script>
+          import altair as alt
+          import panel as pn
+          import pandas as pd
 
-    <py-script>
-      import altair as alt
-      import panel as pn
-      import pandas as pd
+          from sklearn.cluster import KMeans
+          from pyodide.http import open_url
 
-      from sklearn.cluster import KMeans
-      from pyodide.http import open_url
+          pn.config.sizing_mode = 'stretch_width'
 
-      pn.config.sizing_mode = 'stretch_width'
+          url = 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins.csv'
+          penguins = pd.read_csv(open_url(url)).dropna()
+          cols = list(penguins.columns)[2:6]
 
-      url = 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins.csv'
-      penguins = pd.read_csv(open_url(url)).dropna()
-      cols = list(penguins.columns)[2:6]
+          x = pn.widgets.Select(name='x', options=cols, value='bill_depth_mm').servable(target='x-widget')
+          y = pn.widgets.Select(name='y', options=cols, value='bill_length_mm').servable(target='y-widget')
+          n_clusters = pn.widgets.IntSlider(name='n_clusters', start=1, end=5, value=3).servable(target='n-widget')
 
-      x = pn.widgets.Select(name='x', options=cols, value='bill_depth_mm').servable(target='x-widget')
-      y = pn.widgets.Select(name='y', options=cols, value='bill_length_mm').servable(target='y-widget')
-      n_clusters = pn.widgets.IntSlider(name='n_clusters', start=1, end=5, value=3).servable(target='n-widget')
+          brush = alt.selection_interval(name='brush')  # selection of type "interval"
 
-      brush = alt.selection_interval(name='brush')  # selection of type "interval"
+          def get_clusters(n_clusters):
+              kmeans = KMeans(n_clusters=n_clusters)
+              est = kmeans.fit(penguins[cols].values)
+              df = penguins.copy()
+              df['labels'] = est.labels_.astype('str')
+              return df
 
-      def get_clusters(n_clusters):
-          kmeans = KMeans(n_clusters=n_clusters)
-          est = kmeans.fit(penguins[cols].values)
-          df = penguins.copy()
-          df['labels'] = est.labels_.astype('str')
-          return df
+          def get_chart(x, y, df):
+              centers = df.groupby('labels').mean()
+              return (
+                  alt.Chart(df)
+                      .mark_point(size=100)
+                      .encode(
+                          x=alt.X(x, scale=alt.Scale(zero=False)),
+                          y=alt.Y(y, scale=alt.Scale(zero=False)),
+                          shape='labels',
+                          color='species'
+                      ).add_selection(brush).properties(width=800) +
+                  alt.Chart(centers)
+                      .mark_point(size=250, shape='cross', color='black')
+                      .encode(x=x+':Q', y=y+':Q')
+              )
 
-      def get_chart(x, y, df):
-          centers = df.groupby('labels').mean()
-          return (
-              alt.Chart(df)
-                  .mark_point(size=100)
-                  .encode(
-                      x=alt.X(x, scale=alt.Scale(zero=False)),
-                      y=alt.Y(y, scale=alt.Scale(zero=False)),
-                      shape='labels',
-                      color='species'
-                  ).add_selection(brush).properties(width=800) +
-              alt.Chart(centers)
-                  .mark_point(size=250, shape='cross', color='black')
-                  .encode(x=x+':Q', y=y+':Q')
-          )
+          intro = pn.pane.Markdown("""
+          This app provides an example of **building a simple dashboard using
+          Panel**.\n\nIt demonstrates how to take the output of **k-means
+          clustering on the Penguins dataset** using scikit-learn,
+          parameterizing the number of clusters and the variables to
+          plot.\n\nThe plot and the table are linked, i.e. selecting on the plot
+          will filter the data in the table.\n\n The **`x` marks the center** of
+          the cluster.
+          """).servable(target='intro')
 
-      intro = pn.pane.Markdown("""
-      This app provides an example of **building a simple dashboard using
-      Panel**.\n\nIt demonstrates how to take the output of **k-means
-      clustering on the Penguins dataset** using scikit-learn,
-      parameterizing the number of clusters and the variables to
-      plot.\n\nThe plot and the table are linked, i.e. selecting on the plot
-      will filter the data in the table.\n\n The **`x` marks the center** of
-      the cluster.
-      """).servable(target='intro')
+          chart = pn.pane.Vega().servable(target='cluster-plot')
+          table = pn.widgets.Tabulator(pagination='remote', page_size=10).servable(target='table')
 
-      chart = pn.pane.Vega().servable(target='cluster-plot')
-      table = pn.widgets.Tabulator(pagination='remote', page_size=10).servable(target='table')
+          def update_table(event=None):
+              table.value = get_clusters(n_clusters.value)
 
-      def update_table(event=None):
-          table.value = get_clusters(n_clusters.value)
+          n_clusters.param.watch(update_table, 'value')
 
-      n_clusters.param.watch(update_table, 'value')
+          @pn.depends(x, y, n_clusters, watch=True)
+          def update_chart(*events):
+              chart.object = get_chart(x.value, y.value, table.value)
+              chart.selection.param.watch(update_filters, 'brush')
 
-      @pn.depends(x, y, n_clusters, watch=True)
-      def update_chart(*events):
-          chart.object = get_chart(x.value, y.value, table.value)
-          chart.selection.param.watch(update_filters, 'brush')
+          def update_filters(event=None):
+              filters = []
+              for k, v in (getattr(event, 'new') or {}).items():
+                  filters.append(dict(field=k, type='>=', value=v[0]))
+                  filters.append(dict(field=k, type='<=', value=v[1]))
+              table.filters = filters
 
-      def update_filters(event=None):
-          filters = []
-          for k, v in (getattr(event, 'new') or {}).items():
-              filters.append(dict(field=k, type='>=', value=v[0]))
-              filters.append(dict(field=k, type='<=', value=v[1]))
-          table.filters = filters
-
-      update_table()
-      update_chart()
-    </py-script>
-  </section>
-    <section class="code">
-      <div id="view-code-button" role="button" aria-pressed="false" tabindex="0" style="height: 95px;">View Code</div>
-      <div id="code-section" class="code-section-hidden">
-        <p>index.html</p>
-        <pre class="prism-code language-html">
-          <code class="language-html">
-            &lt;py-config&gt;
-              packages = [
-                "altair",
-                "numpy",
-                "pandas",
-                "scikit-learn",
-                "panel==0.13.1"
-              ]
-            &lt;/py-config&gt;
-            &lt;py-script&gt;
-              import altair as alt
-              import panel as pn
-              import pandas as pd
-
-              from sklearn.cluster import KMeans
-              from pyodide.http import open_url
-
-              pn.config.sizing_mode = 'stretch_width'
-
-              url = 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins.csv'
-              penguins = pd.read_csv(open_url(url)).dropna()
-              cols = list(penguins.columns)[2:6]
-
-              x = pn.widgets.Select(name='x', options=cols, value='bill_depth_mm').servable(target='x-widget')
-              y = pn.widgets.Select(name='y', options=cols, value='bill_length_mm').servable(target='y-widget')
-              n_clusters = pn.widgets.IntSlider(name='n_clusters', start=1, end=5, value=3).servable(target='n-widget')
-
-              brush = alt.selection_interval(name='brush')  # selection of type "interval"
-
-              def get_clusters(n_clusters):
-                  kmeans = KMeans(n_clusters=n_clusters)
-                  est = kmeans.fit(penguins[cols].values)
-                  df = penguins.copy()
-                  df['labels'] = est.labels_.astype('str')
-                  return df
-
-              def get_chart(x, y, df):
-                  centers = df.groupby('labels').mean()
-                  return (
-                      alt.Chart(df)
-                          .mark_point(size=100)
-                          .encode(
-                              x=alt.X(x, scale=alt.Scale(zero=False)),
-                              y=alt.Y(y, scale=alt.Scale(zero=False)),
-                              shape='labels',
-                              color='species'
-                          ).add_selection(brush).properties(width=800) +
-                      alt.Chart(centers)
-                          .mark_point(size=250, shape='cross', color='black')
-                          .encode(x=x+':Q', y=y+':Q')
-                  )
-
-              intro = pn.pane.Markdown("""
-              This app provides an example of **building a simple dashboard using
-              Panel**.\n\nIt demonstrates how to take the output of **k-means
-              clustering on the Penguins dataset** using scikit-learn,
-              parameterizing the number of clusters and the variables to
-              plot.\n\nThe plot and the table are linked, i.e. selecting on the plot
-              will filter the data in the table.\n\n The **`x` marks the center** of
-              the cluster.
-              """).servable(target='intro')
-
-              chart = pn.pane.Vega().servable(target='cluster-plot')
-              table = pn.widgets.Tabulator(pagination='remote', page_size=10).servable(target='table')
-
-              def update_table(event=None):
-                  table.value = get_clusters(n_clusters.value)
-
-              n_clusters.param.watch(update_table, 'value')
-
-              @pn.depends(x, y, n_clusters, watch=True)
-              def update_chart(*events):
-                  chart.object = get_chart(x.value, y.value, table.value)
-                  chart.selection.param.watch(update_filters, 'brush')
-
-              def update_filters(event=None):
-                  filters = []
-                  for k, v in (getattr(event, 'new') or {}).items():
-                      filters.append(dict(field=k, type='>=', value=v[0]))
-                      filters.append(dict(field=k, type='<=', value=v[1]))
-                  table.filters = filters
-
-              update_table()
-              update_chart()
-            &lt;/py-script&gt;
-          </code>
-        </pre>
-      </div>
+          update_table()
+          update_chart()
+        </py-script>
+     </py-tutor>
     </section>
-  </body>
-  <script>
-    const viewCodeButton = document.getElementById("view-code-button");
-    const codeSection = document.getElementById("code-section");
-    const handleClick = () => {
-      if (codeSection.classList.contains("code-section-hidden")) {
-        codeSection.classList.remove("code-section-hidden");
-        codeSection.classList.add("code-section-visible");
-      } else {
-        codeSection.classList.remove("code-section-visible");
-        codeSection.classList.add("code-section-hidden");
-      }
-    }
-    viewCodeButton.addEventListener("click", handleClick)
-    viewCodeButton.addEventListener("keydown", (e) => {
-      if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") {
-        handleClick();
-      }
-    })
-  </script>
-
     <script>
       $(document).ready(function () {
         $('#sidebarCollapse').on('click', function () {

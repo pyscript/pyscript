@@ -164,7 +164,7 @@ class TestPlugin(PyScriptTest):
         # EXPECT it to log the correct logs for the events it intercepts
         log_lines = self.console.log.lines
         for method in hooks_available:
-            assert f"{method} called" in log_lines
+            assert log_lines.count(f"{method} called") == 1
 
         # EXPECT it to NOT be called (hence not log anything) the events that happen
         # before it's ready, hence is not called
