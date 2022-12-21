@@ -263,12 +263,51 @@ export class PyScriptApp {
         logger.info('All paths fetched');
     }
 
+    async fetchUserPlugins(runtime: Runtime) {
+        const plugins = this.config.plugins;
+        logger.info('Plugins to fetch: ', plugins);
+        for (const singleFile of plugins) {
+            logger.info(`  fetching plugins: ${singleFile}`);
+            try {
+                if (singleFile.endsWith('.py')) {
+                    await this.fetchPythonPlugins(runtime);
+                } else if (singleFile.endsWith('.js')) {
+                    await this.fetchJSPlugin(singleFile);
+                } else {
+                    throw new Error(`Plugin ${singleFile} is not a python or javascript file`);
+                }
+            } catch (e) {
+                // The 'TypeError' here happens when running pytest
+                // I'm not particularly happy with this solution.
+                if (e.name === 'FetchError' || e.name === 'TypeError') {
+                    handleFetchError(<Error>e, singleFile);
+                } else {
+                    throw e;
+                }
+            }
+        }
+    }
+
+    async fetchJSPlugin(filePath: string) {
+        const pluginBlob = await (await fetch(filePath)).blob()
+        const blobFile = new File([pluginBlob], "plugin.js", {type: "text/javascript"})
+
+
+        const fileUrl = URL.createObjectURL(blobFile)
+        const module = await import(fileUrl);
+        const importedPlugin = module.default;
+
+        this.plugins.add(new importedPlugin());
+
+    }
+
     /**
      * Fetches all the python plugins specified in this.config, saves them on the FS and import
      * them as modules, executing any plugin define the module scope
      *
      * @param runtime - runtime that will execute the plugins
      */
+
     async fetchPythonPlugins(runtime: Runtime) {
         const plugins = this.config.plugins;
         logger.info('Python plugins to fetch: ', plugins);
@@ -300,12 +339,11 @@ export class PyScriptApp {
 modules must contain a "plugin" attribute. For more information check the plugins documentation.`);
                 }
             } catch (e) {
-                //Should we still export full error contents to console?
                 handleFetchError(<Error>e, singleFile);
             }
         }
-        logger.info('All plugins fetched');
     }
+
 
     // lifecycle (7)
     executeScripts(runtime: Runtime) {

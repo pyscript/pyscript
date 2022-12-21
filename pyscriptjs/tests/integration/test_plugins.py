@@ -207,3 +207,17 @@ class TestPlugin(PyScriptTest):
 
         hello_element = self.page.locator("py-hello-world")
         assert hello_element.inner_html() == '<div id="hello">Hello World!</div>'
+
+    def test_fetch_js_plugin(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "https://gist.githubusercontent.com/FabioRosado/f330d4795ae5da51313cd50896b512b6/raw/66d7505e3f62770c7a03888e4ccc222107ba5986/pyscript-plugin"
+                ]
+            </py-config>
+            """
+        )
+
+        hello_element = self.page.locator("py-hello-world")
+        assert hello_element.inner_html() == '<div id="hello">Hello World!</div>'
