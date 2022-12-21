@@ -8,7 +8,7 @@ import { PluginManager, define_custom_element } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideRuntime } from './pyodide';
 import { getLogger } from './logger';
-import { handleFetchError, showWarning, globalExport } from './utils';
+import { showWarning, globalExport } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
 import { UserError, ErrorCode, _createAlertBanner } from "./exceptions"
@@ -19,6 +19,7 @@ import { ImportmapPlugin } from './plugins/importmap';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
+import { robustFetch } from './fetch';
 
 const logger = getLogger('pyscript/main');
 
@@ -248,17 +249,9 @@ export class PyScriptApp {
         logger.info('Paths to fetch: ', fetchPaths);
         for (let i = 0; i < paths.length; i++) {
             logger.info(`  fetching path: ${fetchPaths[i]}`);
-            try {
-                await runtime.loadFromFile(paths[i], fetchPaths[i]);
-            } catch (e) {
-                // The 'TypeError' here happens when running pytest
-                // I'm not particularly happy with this solution.
-                if (e.name === 'FetchError' || e.name === 'TypeError') {
-                    handleFetchError(<Error>e, fetchPaths[i]);
-                } else {
-                    throw e;
-                }
-            }
+
+            // Exceptions raised from here will create an alert banner
+            await runtime.loadFromFile(paths[i], fetchPaths[i]);
         }
         logger.info('All paths fetched');
     }
@@ -268,82 +261,84 @@ export class PyScriptApp {
         logger.info('Plugins to fetch: ', plugins);
         for (const singleFile of plugins) {
             logger.info(`  fetching plugins: ${singleFile}`);
-            try {
-                if (singleFile.endsWith('.py')) {
-                    await this.fetchPythonPlugins(runtime, singleFile);
-                } else if (singleFile.endsWith('.js')) {
-                    await this.fetchJSPlugin(singleFile);
-                } else {
-                    throw new UserError(
-                        ErrorCode.BAD_PLUGIN_FILE_EXTENSION,
-                        `Unable to load plugin from '${singleFile}'. ` +
-                        `Plugins need to contain a file extension and be ` +
-                        `either a python or javascript file.`);
-                }
-            } catch (e) {
-                // The 'TypeError' here happens when running pytest
-                // I'm not particularly happy with this solution.
-                if (e.name === 'FetchError' || e.name === 'TypeError') {
-                    handleFetchError(<Error>e, singleFile);
-                } else {
-                    throw e;
-                }
+            if (singleFile.endsWith('.py')) {
+                await this.fetchPythonPlugins(runtime, singleFile);
+            } else if (singleFile.endsWith('.js')) {
+                await this.fetchJSPlugin(singleFile);
+            } else {
+                throw new UserError(
+                    ErrorCode.BAD_PLUGIN_FILE_EXTENSION,
+                    `Unable to load plugin from '${singleFile}'. ` +
+                    `Plugins need to contain a file extension and be ` +
+                    `either a python or javascript file.`);
             }
+            logger.info("All plugins fetched");
         }
-    }
-
-    async fetchJSPlugin(filePath: string) {
-        const pluginBlob = await (await fetch(filePath)).blob()
-        const blobFile = new File([pluginBlob], "plugin.js", {type: "text/javascript"})
-
-
-        const fileUrl = URL.createObjectURL(blobFile)
-        const module = await import(fileUrl);
-        const importedPlugin = module.default;
-
-        this.plugins.add(new importedPlugin());
-
     }
 
     /**
-     * Fetches all the python plugins specified in this.config, saves them on the FS and import
-     * them as modules, executing any plugin define the module scope
+     * Fetch a javascript plugin from a filePath, it gets a blob from the
+     * fetch and creates a file from it, then we create a URL from the file
+     * so we can import it as a module.
+     *
+     * This allow us to instantiate the imported plugin with the default
+     * export in the module (the plugin class) and add it to the plugins
+     * list with `new importedPlugin()`.
+     *
+     * @param filePath - path to the js file to fetch
+     */
+    async fetchJSPlugin(filePath: string) {
+        console.error(`Inside fetchJSPlugin, filePath: ${filePath}`)
+        const test = await robustFetch(filePath);
+        // const pluginBlob = await (await robustFetch(filePath)).blob()
+        const pluginBlob = await test.blob()
+        const blobFile = new File([pluginBlob], "plugin.js", {type: "text/javascript"})
+
+        const fileUrl = URL.createObjectURL(blobFile)
+        const module = await import(fileUrl);
+
+        // Note: We have to put module.default in a variable
+        // because we have seen weird behaviour when doing
+        // new module.default() directly.
+        const importedPlugin = module.default;
+
+        this.plugins.add(new importedPlugin());
+    }
+
+    /**
+     * Fetch python plugins from a filePath, saves it on the FS and import
+     * it as a module, executing any plugin define the module scope.
      *
      * @param runtime - runtime that will execute the plugins
+     * @param filePath - path to the python file to fetch
      */
-
     async fetchPythonPlugins(runtime: Runtime, filePath: string) {
         const plugins = this.config.plugins;
         logger.info('Python plugins to fetch: ', plugins);
-        try {
-            const pathArr = filePath.split('/');
-            const filename = pathArr.pop();
-            // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
-            const destPath = `./${filename}`;
-            await runtime.loadFromFile(destPath, filePath);
+        const pathArr = filePath.split('/');
+        const filename = pathArr.pop();
+        // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
+        const destPath = `./${filename}`;
+        await runtime.loadFromFile(destPath, filePath);
 
-            //refresh module cache before trying to import module files into runtime
-            runtime.invalidate_module_path_cache()
+        //refresh module cache before trying to import module files into runtime
+        runtime.invalidate_module_path_cache()
 
-            const modulename = filePath.replace(/^.*[\\/]/, '').replace('.py', '');
+        const modulename = filePath.replace(/^.*[\\/]/, '').replace('.py', '');
 
-            console.log(`importing ${modulename}`);
-            // TODO: This is very specific to Pyodide API and will not work for other interpreters,
-            //       when we add support for other interpreters we will need to move this to the
-            //       runtime (interpreter) API level and allow each one to implement it in its own way
-            const module = runtime.interpreter.pyimport(modulename);
-            if (typeof module.plugin !== 'undefined') {
-                const py_plugin = module.plugin;
-                py_plugin.init(this);
-                this.plugins.addPythonPlugin(py_plugin);
-            } else {
-                logger.error(`Cannot find plugin on Python module ${modulename}! Python plugins \
+        console.log(`importing ${modulename}`);
+        // TODO: This is very specific to Pyodide API and will not work for other interpreters,
+        //       when we add support for other interpreters we will need to move this to the
+        //       runtime (interpreter) API level and allow each one to implement it in its own way
+        const module = runtime.interpreter.pyimport(modulename);
+        if (typeof module.plugin !== 'undefined') {
+            const py_plugin = module.plugin;
+            py_plugin.init(this);
+            this.plugins.addPythonPlugin(py_plugin);
+        } else {
+            logger.error(`Cannot find plugin on Python module ${modulename}! Python plugins \
 modules must contain a "plugin" attribute. For more information check the plugins documentation.`);
-            }
-        } catch (e) {
-            handleFetchError(<Error>e, filePath);
         }
-
     }
 
 

@@ -237,8 +237,30 @@ class TestPlugin(PyScriptTest):
         alert_banner = self.page.locator(".alert-banner")
         expected_msg = (
             "(PY1002): Unable to load plugin from "
-            "http://non-existent.blah/hello-world. Plugins "
+            "'http://non-existent.blah/hello-world'. Plugins "
             "need to contain a file extension and be either a "
             "python or javascript file."
         )
+        assert expected_msg == alert_banner.inner_text()
+
+    def test_fetch_js_plugin_non_existent(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "http://non-existent.blah.com/hello-world.js"
+                ]
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+
+        alert_banner = self.page.locator(".alert-banner")
+        expected_msg = (
+            "(PY0001): Fetching from URL "
+            "http://non-existent.blah.com/hello-world.js failed "
+            "with error 'Failed to fetch'. Are your filename and "
+            "path correct?"
+        )
+
         assert expected_msg == alert_banner.inner_text()

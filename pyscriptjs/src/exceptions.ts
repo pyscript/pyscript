@@ -40,13 +40,11 @@ export class UserError extends Error {
 }
 
 
-export class FetchError extends Error {
+export class FetchError extends UserError {
   errorCode: ErrorCode;
   constructor(errorCode: ErrorCode, message: string) {
-    super(message)
+    super(errorCode, message)
     this.name = "FetchError";
-    this.errorCode = errorCode;
-    this.message = `(${errorCode}): ${message}`;
   }
 }
 

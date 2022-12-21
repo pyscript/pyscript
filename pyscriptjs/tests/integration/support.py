@@ -303,6 +303,19 @@ class PyScriptTest:
             text = "\n".join(loc.all_inner_texts())
             raise AssertionError(f"Found {n} alert banners:\n" + text)
 
+    def assert_banner_message(self, expected_message):
+        """
+        Ensure that there is an alert banner on the page with the given message.
+        Currently it only handles a single.
+        """
+        banner = self.page.locator(".alert-banner")
+        n = banner.count()
+        if n != 1:
+            raise AssertionError(f"Expected 1 alert banner, found {n}")
+        banner_text = banner.inner_text()
+
+        return expected_message in banner_text
+
 
 # ============== Helpers and utility functions ==============
 
