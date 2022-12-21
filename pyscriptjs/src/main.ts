@@ -262,7 +262,7 @@ export class PyScriptApp {
         for (const singleFile of plugins) {
             logger.info(`  fetching plugins: ${singleFile}`);
             if (singleFile.endsWith('.py')) {
-                await this.fetchPythonPlugins(runtime, singleFile);
+                await this.fetchPythonPlugin(runtime, singleFile);
             } else if (singleFile.endsWith('.js')) {
                 await this.fetchJSPlugin(singleFile);
             } else {
@@ -312,7 +312,7 @@ export class PyScriptApp {
      * @param runtime - runtime that will execute the plugins
      * @param filePath - path to the python file to fetch
      */
-    async fetchPythonPlugins(runtime: Runtime, filePath: string) {
+    async fetchPythonPlugin(runtime: Runtime, filePath: string) {
         const plugins = this.config.plugins;
         logger.info('Python plugins to fetch: ', plugins);
         const pathArr = filePath.split('/');
