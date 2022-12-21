@@ -1,5 +1,5 @@
 import { Plugin } from "../plugin";
-import { TargettedStdio, StdioMultiplexer } from "../stdio";
+import { TargetedStdio, StdioMultiplexer } from "../stdio";
 
 export class StdioDirector extends Plugin {
     _stdioMultiplexer: StdioMultiplexer;
@@ -13,9 +13,9 @@ export class StdioDirector extends Plugin {
         if (PyScriptTag.hasAttribute("output")){
             const target_id = PyScriptTag.getAttribute("output")
 
-            const targetted_io = new TargettedStdio(target_id)
-            PyScriptTag.stdout_manager = targetted_io
-            this._stdioMultiplexer.addListener(targetted_io)
+            const targeted_io = new TargetedStdio(target_id)
+            PyScriptTag.stdout_manager = targeted_io
+            this._stdioMultiplexer.addListener(targeted_io)
         }
     }
 

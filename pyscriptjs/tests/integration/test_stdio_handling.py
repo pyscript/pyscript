@@ -2,9 +2,9 @@ from .support import PyScriptTest
 
 
 class TestOutputHandling(PyScriptTest):
-    # Source of a script to test the TargettedStdio functionality
+    # Source of a script to test the TargetedStdio functionality
 
-    def test_targetted_stdio(self):
+    def test_targeted_stdio(self):
         self.pyscript_run(
             """
         <py-config>
@@ -69,7 +69,7 @@ class TestOutputHandling(PyScriptTest):
         assert "<p>Hello</p>" in text
         assert '<img src="https://example.net">' in text
 
-    def test_targetted_stdio_linebreaks(self):
+    def test_targeted_stdio_linebreaks(self):
         self.pyscript_run(
             """
         <div id="first"></div>
@@ -92,7 +92,7 @@ class TestOutputHandling(PyScriptTest):
         # new lines are converted to line breaks
         assert self.page.locator("#second").inner_html() == "one.<br>two.<br>three.<br>"
 
-    def test_targetted_stdio_async(self):
+    def test_targeted_stdio_async(self):
         # Test the behavior of stdio capture in async contexts
         self.pyscript_run(
             """
@@ -138,7 +138,7 @@ class TestOutputHandling(PyScriptTest):
         assert self.page.locator("#second").text_content() == ""
         assert self.page.locator("#third").text_content() == ""
 
-    def test_targetted_stdio_interleaved(self):
+    def test_targeted_stdio_interleaved(self):
         # Test that synchronous writes to stdout are placed correctly, even
         # While interleaved with scheduling coroutines in the same tag
         self.pyscript_run(
@@ -176,7 +176,7 @@ class TestOutputHandling(PyScriptTest):
             assert (line_index := self.console.log.lines.index(line)) > -1
             assert line_index > last_index
 
-    def test_targetted_stdio_dynamic_tags(self):
+    def test_targeted_stdio_dynamic_tags(self):
         # Test that creating py-script tags via Python still leaves
         # stdio targets working
 

@@ -42,7 +42,7 @@ export class CaptureStdio implements Stdio {
  *  specified by ID. Used with "output" keyword.
  *
  */
-export class TargettedStdio implements Stdio{
+export class TargetedStdio implements Stdio{
 
     target_id;
 
