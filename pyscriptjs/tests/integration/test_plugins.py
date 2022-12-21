@@ -213,7 +213,7 @@ class TestPlugin(PyScriptTest):
             """
             <py-config>
                 plugins = [
-                    "https://gist.githubusercontent.com/FabioRosado/f330d4795ae5da51313cd50896b512b6/raw/66d7505e3f62770c7a03888e4ccc222107ba5986/pyscript-plugin"
+                    "https://raw.githubusercontent.com/FabioRosado/pyscript-plugins/main/js/hello-world.js"
                 ]
             </py-config>
             """
@@ -221,3 +221,20 @@ class TestPlugin(PyScriptTest):
 
         hello_element = self.page.locator("py-hello-world")
         assert hello_element.inner_html() == '<div id="hello">Hello World!</div>'
+
+    def test_fetch_plugin_no_file_extension(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "http://non-existent.blah/hello-world"
+                ]
+            </py-config>
+            """
+        )
+
+        alert_banner = self.page.locator(".alert-banner")
+        assert (
+            "Plugin http://non-existent.blah/hello-world is not a python or javascript file."
+            in alert_banner.inner_text()
+        )
