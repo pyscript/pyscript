@@ -497,7 +497,6 @@ class Plugin:
 
     def init(self, app):
         self.app = app
-        self.app.plugins.addPythonPlugin(create_proxy(self))
 
     def register_custom_element(self, tag):
         # TODO: Ideally would be better to use the logger.
