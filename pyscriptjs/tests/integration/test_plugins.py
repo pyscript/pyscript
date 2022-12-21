@@ -236,7 +236,9 @@ class TestPlugin(PyScriptTest):
 
         alert_banner = self.page.locator(".alert-banner")
         expected_msg = (
-            "(PY1002): Plugin http://non-existent.blah/hello-world is "
-            "not a python or javascript file"
+            "(PY1002): Unable to load plugin from "
+            "http://non-existent.blah/hello-world. Plugins "
+            "need to contain a file extension and be either a "
+            "python or javascript file."
         )
         assert expected_msg == alert_banner.inner_text()

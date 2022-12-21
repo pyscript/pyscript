@@ -276,7 +276,9 @@ export class PyScriptApp {
                 } else {
                     throw new UserError(
                         ErrorCode.BAD_PLUGIN_FILE_EXTENSION,
-                        `Plugin ${singleFile} is not a python or javascript file`);
+                        `Unable to load plugin from '${singleFile}'. ` +
+                        `Plugins need to contain a file extension and be ` +
+                        `either a python or javascript file.`);
                 }
             } catch (e) {
                 // The 'TypeError' here happens when running pytest
