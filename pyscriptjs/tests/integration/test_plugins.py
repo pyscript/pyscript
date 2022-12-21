@@ -222,6 +222,20 @@ class TestPlugin(PyScriptTest):
         hello_element = self.page.locator("py-hello-world")
         assert hello_element.inner_html() == "<h1>Hello, world!</h1>"
 
+    def test_fetch_js_plugin_bare(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "https://raw.githubusercontent.com/FabioRosado/pyscript-plugins/main/js/hello-world-base.js"
+                ]
+            </py-config>
+            """
+        )
+
+        hello_element = self.page.locator("py-hello-world")
+        assert hello_element.inner_html() == "<h1>Hello, world!</h1>"
+
     def test_fetch_plugin_no_file_extension(self):
         self.pyscript_run(
             """

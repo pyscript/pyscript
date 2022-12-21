@@ -68,17 +68,35 @@ export class PluginManager {
     }
 
     configure(config: AppConfig) {
-        for (const p of this._plugins) p.configure(config);
+        for (const p of this._plugins) {
+            try {
+                p.configure(config);
+            } catch(e) {
+                logger.error('Error while configuring plugin', e);
+            }
+        }
 
         for (const p of this._pythonPlugins) p.configure?.(config);
     }
 
     beforeLaunch(config: AppConfig) {
-        for (const p of this._plugins) p.beforeLaunch(config);
+        for (const p of this._plugins) {
+            try{
+                p.beforeLaunch(config);
+            } catch(e) {
+                logger.error('Error while calling beforeLaunch hook', e);
+            }
+        }
     }
 
     afterSetup(runtime: Runtime) {
-        for (const p of this._plugins) p.afterSetup(runtime);
+        for (const p of this._plugins) {
+            try {
+                p.afterSetup(runtime);
+            } catch(e) {
+                logger.error('Error while calling afterSetup hook', e);
+            }
+        }
 
         for (const p of this._pythonPlugins) p.afterSetup?.(runtime);
     }
