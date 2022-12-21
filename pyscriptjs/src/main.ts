@@ -274,8 +274,9 @@ export class PyScriptApp {
                 } else if (singleFile.endsWith('.js')) {
                     await this.fetchJSPlugin(singleFile);
                 } else {
-                    // TODO: Throw user error here!
-                    throw new Error(`Plugin ${singleFile} is not a python or javascript file`);
+                    throw new UserError(
+                        ErrorCode.BAD_PLUGIN_FILE_EXTENSION,
+                        `Plugin ${singleFile} is not a python or javascript file`);
                 }
             } catch (e) {
                 // The 'TypeError' here happens when running pytest

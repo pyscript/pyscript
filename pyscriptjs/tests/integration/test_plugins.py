@@ -220,7 +220,7 @@ class TestPlugin(PyScriptTest):
         )
 
         hello_element = self.page.locator("py-hello-world")
-        assert hello_element.inner_html() == '<div id="hello">Hello World!</div>'
+        assert hello_element.inner_html() == "<h1>Hello, world!</h1>"
 
     def test_fetch_plugin_no_file_extension(self):
         self.pyscript_run(
@@ -230,11 +230,13 @@ class TestPlugin(PyScriptTest):
                     "http://non-existent.blah/hello-world"
                 ]
             </py-config>
-            """
+            """,
+            wait_for_pyscript=False,
         )
 
         alert_banner = self.page.locator(".alert-banner")
-        assert (
-            "Plugin http://non-existent.blah/hello-world is not a python or javascript file."
-            in alert_banner.inner_text()
+        expected_msg = (
+            "(PY1002): Plugin http://non-existent.blah/hello-world is "
+            "not a python or javascript file"
         )
+        assert expected_msg == alert_banner.inner_text()
