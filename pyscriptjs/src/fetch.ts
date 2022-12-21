@@ -1,11 +1,15 @@
 import { FetchError, ErrorCode } from "./exceptions";
 
 
-/*
-    This is a fetch wrapper that handles any non 200 response and throws a FetchError
-    with the right ErrorCode.
-
-*/
+/**
+ * This is a fetch wrapper that handles any non 200 responses and throws a
+ * FetchError with the right ErrorCode. This is useful because our FetchError
+ * will automatically create an alert banner.
+ *
+ * @param url: URL to fetch
+ * @param options: options to pass to fetch
+ * @returns Response
+ */
 export async function robustFetch(url: string, options?: RequestInit): Promise<Response> {
     let response: Response;
 
