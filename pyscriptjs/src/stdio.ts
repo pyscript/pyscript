@@ -1,4 +1,4 @@
-import { escape, showWarning } from "./utils";
+import { createSingularWarning, escape } from "./utils";
 
 export interface Stdio {
     stdout_writeline: (msg: string) => void;
@@ -56,19 +56,7 @@ export class TargetedStdio implements Stdio{
         const target = document.getElementById(this.target_id)
         console.log(target)
         if (target === null) { // No matching ID
-
-            //Show each output warning banner pnce per ID
-            const banners = document.getElementsByClassName('alert-banner py-warning');
-            let bannerCount = 0;
-            for (const banner of banners) {
-                if (banner.innerHTML.includes(`Output = "${this.target_id}"`)) {
-                    bannerCount++;
-                }
-            }
-            if (bannerCount == 0) {
-                showWarning(`Output = "${this.target_id}" does not match the id of any element on the page.`)
-            }
-
+            createSingularWarning(`Output = "${this.target_id}" does not match the id of any element on the page.`, `Output = "${this.target_id}" does not match the id of any element on the page.`)
         }
         else {
             msg = escape(msg).replace("\n", "<br>")
