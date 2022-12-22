@@ -204,3 +204,47 @@ class TestOutputHandling(PyScriptTest):
         # Ensure output when to correct locations
         assert self.page.locator("#first").text_content() == "first.first."
         assert second_div.text_content() == "second."
+
+    def test_stdio_id_errors(self):
+        # Test that using an ID not present on the page as the Output
+        # Attribute creates exactly 1 warning banner
+        self.pyscript_run(
+            """
+        <py-script output="not-on-page">
+            print("bad.")
+        </py-script>
+
+        <div id="on-page"></div>
+        <py-script>
+            print("good.")
+        </py-script>
+
+        <py-script output="not-on-page">
+            print("bad.")
+        </py-script>
+        """
+        )
+
+        banner = self.page.query_selector_all(".py-warning")
+        assert len(banner) == 1
+        banner_content = banner[0].inner_text()
+        expected = (
+            'Output = "not-on-page" does not match the id of any element on the page.'
+        )
+
+        assert banner_content == expected
+
+    def test_stdio_stderr(self):
+        # Test that stderr works, and routes to the same location as stdout
+        self.pyscript_run(
+            """
+        <div id="first"></div>
+        <py-script output="first">
+            import sys
+            print("one.", file=sys.stderr)
+            print("two.")
+        </py-script>
+        """
+        )
+
+        assert self.page.locator("#first").text_content() == "one.two."

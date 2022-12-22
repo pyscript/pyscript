@@ -1,4 +1,4 @@
-import { escape } from "./utils";
+import { escape, showWarning } from "./utils";
 
 export interface Stdio {
     stdout_writeline: (msg: string) => void;
@@ -44,28 +44,44 @@ export class CaptureStdio implements Stdio {
  */
 export class TargetedStdio implements Stdio{
 
-    target_id;
+    target_id: string;
 
     constructor(target_id: string) {
         this.target_id = target_id;
     }
 
     stdout_writeline (msg: string) {
+        // Elements are identified by ID at write-time, not
+        // when constructed, in case the running script changes element IDs
         const target = document.getElementById(this.target_id)
-        msg = escape(msg).replace("\n", "<br>")
-        if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
-            msg = msg + "<br>"
+        console.log(target)
+        if (target === null) { // No matching ID
+
+            //Show each output warning banner pnce per ID
+            const banners = document.getElementsByClassName('alert-banner py-warning');
+            let bannerCount = 0;
+            for (const banner of banners) {
+                if (banner.innerHTML.includes(`Output = "${this.target_id}"`)) {
+                    bannerCount++;
+                }
+            }
+            if (bannerCount == 0) {
+                showWarning(`Output = "${this.target_id}" does not match the id of any element on the page.`)
+            }
+
         }
-        target.innerHTML += msg
+        else {
+            msg = escape(msg).replace("\n", "<br>")
+            if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
+                msg = msg + "<br>"
+            }
+            target.innerHTML += msg
+        }
+
     }
 
     stderr_writeline (msg: string) {
-        const target = document.getElementById(this.target_id)
-        msg = escape(msg).replace("\n", "<br/>")
-        if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
-            msg = msg + "<br/>"
-        }
-        target.innerHTML += msg
+        this.stdout_writeline(msg);
     }
 
 }
