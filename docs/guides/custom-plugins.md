@@ -47,22 +47,21 @@ Let's now create our `index.html` page and add the plugin.
 ```html
 <!DOCTYPE html>
 <html lang="en">
- <head>
- <meta charset="utf-8" />
- <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
 
- <title>Javascript Plugin</title>
+        <title>Python Plugin</title>
 
- <link rel="stylesheet" href="https://pyscript.net/unstable/pyscript.css" />
- <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
- </head>
+        <link rel="stylesheet" href="https://pyscript.net/unstable/pyscript.css" />
+        <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
+    </head>
 
- <body>
- <py-config>
- plugins = ["./hello-world.py"]
- </py-config>
-
- </body>
+    <body>
+        <py-config>
+            plugins = ["./hello-world.py"]
+        </py-config>
+    </body>
 </html>
 ```
 
@@ -95,23 +94,23 @@ Now that we have registered our custom element, we can use the custom tag `<py-h
 ```html
 <!DOCTYPE html>
 <html lang="en">
- <head>
- <meta charset="utf-8" />
- <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
 
- <title>Javascript Plugin</title>
+        <title>Python Plugin</title>
 
- <link rel="stylesheet" href="https://pyscript.net/unstable/pyscript.css" />
- <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
- </head>
+        <link rel="stylesheet" href="https://pyscript.net/unstable/pyscript.css" />
+        <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
+    </head>
 
- <body>
- <py-config>
- plugins = ["./hello-world.py"]
- </py-config>
+    <body>
+        <py-config>
+            plugins = ["./hello-world.py"]
+        </py-config>
 
- <py-hello-world></py-hello-world>
- </body>
+        <py-hello-world></py-hello-world>
+    </body>
 </html>
 ```
 
@@ -160,22 +159,21 @@ Finally, we need to add the plugin to our page's `<py-config>` tag.
 ```html
 <!DOCTYPE html>
 <html lang="en">
- <head>
- <meta charset="utf-8" />
- <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
 
- <title>Javascript Plugin</title>
+        <title>Javascript Plugin</title>
 
- <link rel="stylesheet" href="https://pyscript.net/unstable/pyscript.css" />
- <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
- </head>
+        <link rel="stylesheet" href="https://pyscript.net/unstable/pyscript.css" />
+        <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
+    </head>
 
- <body>
- <py-config>
- plugins = ["./hello-world.js"]
- </py-config>
-
- </body>
+    <body>
+        <py-config>
+            plugins = ["./hello-world.js"]
+        </py-config>
+    </body>
 </html>
 ```
 
