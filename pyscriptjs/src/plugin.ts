@@ -68,13 +68,7 @@ export class PluginManager {
     }
 
     configure(config: AppConfig) {
-        for (const p of this._plugins) {
-            try {
-                p.configure(config);
-            } catch(e) {
-                logger.error('Error while configuring plugin', e);
-            }
-        }
+        for (const p of this._plugins) p.configure(config);
 
         for (const p of this._pythonPlugins) p.configure?.(config);
     }
