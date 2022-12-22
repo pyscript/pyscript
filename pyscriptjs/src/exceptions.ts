@@ -7,6 +7,7 @@ These error codes are used to identify the type of error that occurred.
 The convention is:
 * PY0 - errors that occur when fetching
 * PY1 - errors that occur in config
+* Py2 - errors that occur in plugins
 * PY9 - Deprecation errors
 */
 
@@ -23,7 +24,7 @@ export enum ErrorCode {
   BAD_CONFIG = "PY1000",
   MICROPIP_INSTALL_ERROR = "PY1001",
   BAD_PLUGIN_FILE_EXTENSION = "PY2000",
-  BAD_PLUGIN_FILE = "PY2001",
+  NO_DEFAULT_EXPORT = "PY2001",
   TOP_LEVEL_AWAIT = "PY9000"
 }
 

@@ -310,7 +310,7 @@ export class PyScriptApp {
         // an alter banner will be created.
         if (importedPlugin === undefined) {
             throw new UserError(
-                ErrorCode.BAD_PLUGIN_FILE,
+                ErrorCode.NO_DEFAULT_EXPORT,
                 `Unable to load plugin from '${filePath}'. ` +
                 `Plugins need to contain a default export.`);
         } else {
