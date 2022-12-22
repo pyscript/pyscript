@@ -288,21 +288,27 @@ export class PyScriptApp {
      * @param filePath - path to the js file to fetch
      */
     async fetchJSPlugin(filePath: string) {
-        console.error(`Inside fetchJSPlugin, filePath: ${filePath}`)
-        const test = await robustFetch(filePath);
-        // const pluginBlob = await (await robustFetch(filePath)).blob()
-        const pluginBlob = await test.blob()
-        const blobFile = new File([pluginBlob], "plugin.js", {type: "text/javascript"})
+        const pluginBlob = await (await robustFetch(filePath)).blob();
+        const blobFile = new File([pluginBlob], "plugin.js", {type: "text/javascript"});
+        const fileUrl = URL.createObjectURL(blobFile);
 
-        const fileUrl = URL.createObjectURL(blobFile)
         const module = await import(fileUrl);
-
         // Note: We have to put module.default in a variable
         // because we have seen weird behaviour when doing
         // new module.default() directly.
         const importedPlugin = module.default;
 
-        this.plugins.add(new importedPlugin());
+        // If the imported plugin doesn't have a default export
+        // it will be undefined, so we throw a user error, so
+        // an alter banner will be created.
+        if (importedPlugin === undefined) {
+            throw new UserError(
+                ErrorCode.BAD_PLUGIN_FILE,
+                `Unable to load plugin from '${filePath}'. ` +
+                `Plugins need to contain a default export.`);
+        } else {
+            this.plugins.add(new importedPlugin);
+        }
     }
 
     /**

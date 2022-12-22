@@ -308,13 +308,15 @@ class PyScriptTest:
         Ensure that there is an alert banner on the page with the given message.
         Currently it only handles a single.
         """
-        banner = self.page.locator(".alert-banner")
-        n = banner.count()
-        if n != 1:
-            raise AssertionError(f"Expected 1 alert banner, found {n}")
+        banner = self.page.wait_for_selector(".alert-banner")
         banner_text = banner.inner_text()
 
-        return expected_message in banner_text
+        if expected_message not in banner_text:
+            raise AssertionError(
+                f"Expected message '{expected_message}' does not "
+                f"match banner text '{banner_text}'"
+            )
+        return True
 
     def check_tutor_generated_code(self, modules_to_check=None):
         """

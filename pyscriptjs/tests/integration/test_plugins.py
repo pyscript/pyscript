@@ -248,14 +248,14 @@ class TestPlugin(PyScriptTest):
             wait_for_pyscript=False,
         )
 
-        alert_banner = self.page.locator(".alert-banner")
         expected_msg = (
-            "(PY1002): Unable to load plugin from "
+            "(PY2000): Unable to load plugin from "
             "'http://non-existent.blah/hello-world'. Plugins "
             "need to contain a file extension and be either a "
             "python or javascript file."
         )
-        assert expected_msg == alert_banner.inner_text()
+
+        assert self.assert_banner_message(expected_msg)
 
     def test_fetch_js_plugin_non_existent(self):
         self.pyscript_run(
@@ -269,7 +269,6 @@ class TestPlugin(PyScriptTest):
             wait_for_pyscript=False,
         )
 
-        alert_banner = self.page.locator(".alert-banner")
         expected_msg = (
             "(PY0001): Fetching from URL "
             "http://non-existent.blah.com/hello-world.js failed "
@@ -277,4 +276,25 @@ class TestPlugin(PyScriptTest):
             "path correct?"
         )
 
-        assert expected_msg == alert_banner.inner_text()
+        assert self.assert_banner_message(expected_msg)
+
+    def test_fetch_js_no_export(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "https://raw.githubusercontent.com/FabioRosado/pyscript-plugins/main/js/hello-world-no-export.js"
+                ]
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+
+        expected_message = (
+            "(PY2001): Unable to load plugin from "
+            "'https://raw.githubusercontent.com/FabioRosado/pyscript-plugins"
+            "/main/js/hello-world-no-export.js'. "
+            "Plugins need to contain a default export."
+        )
+
+        assert self.assert_banner_message(expected_message)
