@@ -6,8 +6,8 @@ import { FetchError, ErrorCode } from "./exceptions";
  * FetchError with the right ErrorCode. This is useful because our FetchError
  * will automatically create an alert banner.
  *
- * @param url: URL to fetch
- * @param options: options to pass to fetch
+ * @param url - URL to fetch
+ * @param options - options to pass to fetch
  * @returns Response
  */
 export async function robustFetch(url: string, options?: RequestInit): Promise<Response> {
@@ -24,7 +24,7 @@ export async function robustFetch(url: string, options?: RequestInit): Promise<R
             errMsg = `Fetching from URL ${url} failed with error ` +
             `'${error.message}'. Are your filename and path correct?`;
         } else {
-            errMsg = ` PyScript: Access to local files
+            errMsg = `PyScript: Access to local files
         (using "Paths:" in &lt;py-config&gt;)
         is not available when directly opening a HTML file;
         you must use a webserver to serve the additional files.

@@ -256,6 +256,13 @@ export class PyScriptApp {
         logger.info('All paths fetched');
     }
 
+    /**
+     * Fetch user plugins and adds them to `this.plugins` so they can
+     * be loaded by the PluginManager. Currently, we are just looking
+     * for .py and .js files and calling the appropriate methods.
+     *
+     * @param runtime - runtime that will be used to execute the plugins that need it.
+     */
     async fetchUserPlugins(runtime: Runtime) {
         const plugins = this.config.plugins;
         logger.info('Plugins to fetch: ', plugins);
