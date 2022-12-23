@@ -1,4 +1,4 @@
-# Pyscript Release Notes
+# Release Notes
 
 2023.01.1
 =========

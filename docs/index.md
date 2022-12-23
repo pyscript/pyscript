@@ -54,4 +54,5 @@ tutorials/index
 guides/index
 concepts/index
 reference/index
+changelog
 ```
