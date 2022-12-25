@@ -77,7 +77,7 @@ export class PluginManager {
     }
 
     beforeLaunch(config: AppConfig) {
-        this.setUpPlugins('beforeLaunch', config);
+        for (const p of this._plugins) p.beforeLaunch(config);
     }
 
     afterSetup(runtime: Runtime) {
