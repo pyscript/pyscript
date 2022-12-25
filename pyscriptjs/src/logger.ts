@@ -10,8 +10,8 @@
        logger.warn('...');
        logger.error('...');
 
-   The logger automatically adds the prefix "[my-prefix]" to all logs; so e.g., the
-   above call would print:
+   The logger automatically adds the prefix "[my-prefix]" to all logs.
+   E.g., the above call would print:
 
        [my-prefix] hello world
 
@@ -42,7 +42,7 @@ function getLogger(prefix: string): Logger {
 }
 
 function _makeLogger(prefix: string): Logger {
-    prefix = '[' + prefix + '] ';
+    prefix =`[${prefix}] `;
 
     function make(level: string) {
         const out_fn = console[level].bind(console);
