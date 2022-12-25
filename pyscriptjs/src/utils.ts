@@ -112,12 +112,10 @@ export function joinPaths(parts: string[], separator = '/') {
 
 export function createDeprecationWarning(msg: string, elementName: string): void {
     const banners = document.getElementsByClassName('alert-banner py-warning');
-    let bannerCount = 0;
-    for (const banner of banners) {
-        if (banner.innerHTML.includes(elementName)) {
-            bannerCount++;
-        }
-    }
+    const bannerCount = Array.from(banners)
+        .reduce((count,banner)=> banner.innerHTML
+        .includes(elementName) ? count + 1 : count, 0)
+
     if (bannerCount == 0) {
         _createAlertBanner(msg, 'warning');
     }
