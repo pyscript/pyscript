@@ -59,6 +59,11 @@ export class PluginManager {
         this._pythonPlugins = [];
     }
 
+    private setUpPlugins = (property: keyof Plugin, parameter: any) => {
+        for (const p of this._plugins) p[property](parameter);
+        for (const p of this._pythonPlugins) p[property]?.(parameter);
+    }
+
     add(...plugins: Plugin[]) {
         for (const p of plugins) this._plugins.push(p);
     }
@@ -68,31 +73,23 @@ export class PluginManager {
     }
 
     configure(config: AppConfig) {
-        for (const p of this._plugins) p.configure(config);
-
-        for (const p of this._pythonPlugins) p.configure?.(config);
+        this.setUpPlugins('configure', config)
     }
 
     beforeLaunch(config: AppConfig) {
-        for (const p of this._plugins) p.beforeLaunch(config);
+        this.setUpPlugins('beforeLaunch', config);
     }
 
     afterSetup(runtime: Runtime) {
-        for (const p of this._plugins) p.afterSetup(runtime);
-
-        for (const p of this._pythonPlugins) p.afterSetup?.(runtime);
+        this.setUpPlugins('afterSetup', runtime);
     }
 
     afterStartup(runtime: Runtime) {
-        for (const p of this._plugins) p.afterStartup(runtime);
-
-        for (const p of this._pythonPlugins) p.afterStartup?.(runtime);
+        this.setUpPlugins('afterStartup', runtime);
     }
 
     onUserError(error: UserError) {
-        for (const p of this._plugins) p.onUserError(error);
-
-        for (const p of this._pythonPlugins) p.onUserError?.(error);
+        this.setUpPlugins('onUserError', error);
     }
 }
 
