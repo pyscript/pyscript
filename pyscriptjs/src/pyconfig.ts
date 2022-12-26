@@ -140,28 +140,38 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
 }
 
 function parseConfig(configText: string, configType = 'toml') {
-    const generateError = (errMsg: string) => new UserError(ErrorCode.BAD_CONFIG, errMsg);
-
     if (configType === 'toml') {
         try {
             // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
             if (configText.trim()[0] === '{') {
-              throw generateError(`The config supplied: ${configText} is an invalid TOML and cannot be parsed`);
+                throw new UserError(
+                    ErrorCode.BAD_CONFIG,
+                    `The config supplied: ${configText} is an invalid TOML and cannot be parsed`
+                );
             }
             return toml.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            throw generateError(`The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`);
+            throw new UserError(
+                ErrorCode.BAD_CONFIG,
+                `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`
+            );
         }
     } else if (configType === 'json') {
         try {
             return JSON.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            throw generateError(`The config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}`);
+            throw new UserError(
+                ErrorCode.BAD_CONFIG,
+                `The config supplied: ${configText} is an invalid JSON and cannot be parsed: ${errMessage}`,
+            );
         }
     } else {
-        throw generateError(`The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`);
+        throw new UserError(
+            ErrorCode.BAD_CONFIG,
+            `The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`
+        );
     }
 }
 
