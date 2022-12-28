@@ -11,7 +11,7 @@ import { getLogger } from './logger';
 import { showWarning, globalExport } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
-import { UserError, ErrorCode, _createAlertBanner } from "./exceptions"
+import { UserError, ErrorCode, _createAlertBanner } from './exceptions';
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
@@ -20,6 +20,7 @@ import { ImportmapPlugin } from './plugins/importmap';
 // @ts-ignore
 import pyscript from './python/pyscript.py';
 import { robustFetch } from './fetch';
+import type { Plugin } from './plugin';
 
 const logger = getLogger('pyscript/main');
 
@@ -181,7 +182,7 @@ export class PyScriptApp {
         this.plugins.afterSetup(runtime);
 
         //Refresh module cache in case plugins have modified the filesystem
-        runtime.invalidate_module_path_cache()
+        runtime.invalidate_module_path_cache();
         this.logStatus('Executing <py-script> tags...');
         this.executeScripts(runtime);
 
@@ -209,7 +210,7 @@ export class PyScriptApp {
         // Save and load pyscript.py from FS
         runtime.interpreter.FS.writeFile('pyscript.py', pyscript, { encoding: 'utf8' });
         //Refresh the module cache so Python consistently finds pyscript module
-        runtime.invalidate_module_path_cache()
+        runtime.invalidate_module_path_cache();
 
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
@@ -225,7 +226,7 @@ export class PyScriptApp {
         import pyscript
         from pyscript import Element, display, HTML
         pyscript._install_deprecated_globals_2022_12_1(globals())
-        `)
+        `);
 
         if (this.config.packages) {
             logger.info('Packages to install: ', this.config.packages);
@@ -234,7 +235,7 @@ export class PyScriptApp {
         await this.fetchPaths(runtime);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
-        runtime.invalidate_module_path_cache()
+        runtime.invalidate_module_path_cache();
         // Finally load plugins
         await this.fetchUserPlugins(runtime);
     }
@@ -276,10 +277,11 @@ export class PyScriptApp {
                 throw new UserError(
                     ErrorCode.BAD_PLUGIN_FILE_EXTENSION,
                     `Unable to load plugin from '${singleFile}'. ` +
-                    `Plugins need to contain a file extension and be ` +
-                    `either a python or javascript file.`);
+                        `Plugins need to contain a file extension and be ` +
+                        `either a python or javascript file.`,
+                );
             }
-            logger.info("All plugins fetched");
+            logger.info('All plugins fetched');
         }
     }
 
@@ -292,11 +294,11 @@ export class PyScriptApp {
      * export in the module (the plugin class) and add it to the plugins
      * list with `new importedPlugin()`.
      *
-     * @param filePath - path to the js file to fetch
+     * @param filePath - URL of the javascript file to fetch.
      */
     async fetchJSPlugin(filePath: string) {
         const pluginBlob = await (await robustFetch(filePath)).blob();
-        const blobFile = new File([pluginBlob], "plugin.js", {type: "text/javascript"});
+        const blobFile = new File([pluginBlob], 'plugin.js', { type: 'text/javascript' });
         const fileUrl = URL.createObjectURL(blobFile);
 
         const module = await import(fileUrl);
@@ -311,10 +313,10 @@ export class PyScriptApp {
         if (importedPlugin === undefined) {
             throw new UserError(
                 ErrorCode.NO_DEFAULT_EXPORT,
-                `Unable to load plugin from '${filePath}'. ` +
-                `Plugins need to contain a default export.`);
+                `Unable to load plugin from '${filePath}'. ` + `Plugins need to contain a default export.`,
+            );
         } else {
-            this.plugins.add(new importedPlugin);
+            this.plugins.add(new importedPlugin());
         }
     }
 
@@ -326,8 +328,6 @@ export class PyScriptApp {
      * @param filePath - path to the python file to fetch
      */
     async fetchPythonPlugin(runtime: Runtime, filePath: string) {
-        const plugins = this.config.plugins;
-        logger.info('Python plugins to fetch: ', plugins);
         const pathArr = filePath.split('/');
         const filename = pathArr.pop();
         // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
@@ -335,7 +335,7 @@ export class PyScriptApp {
         await runtime.loadFromFile(destPath, filePath);
 
         //refresh module cache before trying to import module files into runtime
-        runtime.invalidate_module_path_cache()
+        runtime.invalidate_module_path_cache();
 
         const modulename = filePath.replace(/^.*[\\/]/, '').replace('.py', '');
 
@@ -353,7 +353,6 @@ export class PyScriptApp {
 modules must contain a "plugin" attribute. For more information check the plugins documentation.`);
         }
     }
-
 
     // lifecycle (7)
     executeScripts(runtime: Runtime) {

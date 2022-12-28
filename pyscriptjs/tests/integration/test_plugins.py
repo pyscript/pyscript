@@ -262,7 +262,7 @@ class TestPlugin(PyScriptTest):
             """
             <py-config>
                 plugins = [
-                    "http://non-existent.blah.com/hello-world.js"
+                    "http://non-existent.example.com/hello-world.js"
                 ]
             </py-config>
             """,
@@ -271,7 +271,7 @@ class TestPlugin(PyScriptTest):
 
         expected_msg = (
             "(PY0001): Fetching from URL "
-            "http://non-existent.blah.com/hello-world.js failed "
+            "http://non-existent.example.com/hello-world.js failed "
             "with error 'Failed to fetch'. Are your filename and "
             "path correct?"
         )

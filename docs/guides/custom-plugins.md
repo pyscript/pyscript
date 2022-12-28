@@ -10,7 +10,7 @@ You can add your custom plugins to the `<py-config>` tag on your page. For examp
 
 ```html
 <py-config>
-    plugins = ["http://mydomain.com/hello-world.py"]
+    plugins = ["http://example.com/hello-world.py"]
 </py-config>
 ```
 

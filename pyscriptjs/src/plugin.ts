@@ -75,10 +75,10 @@ export class PluginManager {
 
     beforeLaunch(config: AppConfig) {
         for (const p of this._plugins) {
-            try{
+            try {
                 p.beforeLaunch(config);
-            } catch(e) {
-                logger.error('Error while calling beforeLaunch hook', e);
+            } catch (e) {
+                logger.error(`Error while calling beforeLaunch hook of plugin ${p.constructor.name}`, e);
             }
         }
     }
@@ -87,8 +87,8 @@ export class PluginManager {
         for (const p of this._plugins) {
             try {
                 p.afterSetup(runtime);
-            } catch(e) {
-                logger.error('Error while calling afterSetup hook', e);
+            } catch (e) {
+                logger.error(`Error while calling afterSetup hook of plugin ${p.constructor.name}`, e);
             }
         }
 
