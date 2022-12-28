@@ -59,9 +59,11 @@ export class PluginManager {
         this._pythonPlugins = [];
     }
 
-    private runPluginMethod = (property: keyof Plugin, parameter: any) => {
-        for (const p of this._plugins) p[property](parameter);
-        for (const p of this._pythonPlugins) p[property]?.(parameter);
+    private runPluginMethods = (property: keyof Plugin, parameters: any[]) => {
+      for (let param of parameters){
+        for (const p of this._plugins) p[property](param);
+        for (const p of this._pythonPlugins) p[property]?.(param);
+      }
     }
 
     add(...plugins: Plugin[]) {
@@ -73,7 +75,7 @@ export class PluginManager {
     }
 
     configure(config: AppConfig) {
-        this.runPluginMethod('configure', config)
+        this.runPluginMethods('configure', [config])
     }
 
     beforeLaunch(config: AppConfig) {
@@ -81,15 +83,15 @@ export class PluginManager {
     }
 
     afterSetup(runtime: Runtime) {
-        this.runPluginMethod('afterSetup', runtime);
+        this.runPluginMethods('afterSetup', [runtime]);
     }
 
     afterStartup(runtime: Runtime) {
-        this.runPluginMethod('afterStartup', runtime);
+        this.runPluginMethods('afterStartup', [runtime]);
     }
 
     onUserError(error: UserError) {
-        this.runPluginMethod('onUserError', error);
+        this.runPluginMethods('onUserError', [error]);
     }
 }
 
