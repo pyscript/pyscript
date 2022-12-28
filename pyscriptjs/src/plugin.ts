@@ -60,7 +60,7 @@ export class PluginManager {
     }
 
     private runPluginMethods = (property: keyof Plugin, parameters: any[]) => {
-      for (let param of parameters){
+      for (const param of parameters){
         for (const p of this._plugins) p[property](param);
         for (const p of this._pythonPlugins) p[property]?.(param);
       }
