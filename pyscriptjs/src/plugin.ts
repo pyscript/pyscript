@@ -59,11 +59,11 @@ export class PluginManager {
         this._pythonPlugins = [];
     }
 
-    private runPluginMethods = (property: keyof Plugin, parameters: any[]) => {
-      for (const param of parameters){
-        for (const p of this._plugins) p[property](param);
-        for (const p of this._pythonPlugins) p[property]?.(param);
-      }
+    private runPluginMethod = (property: keyof Plugin, parameters: any[]) => {
+        // TS doesn't like that we're passing a spread array into functions that may only take single params.
+        // @ts-ignore
+        for (const p of this._plugins) p[property](...parameters);
+        for (const p of this._pythonPlugins) p[property]?.(...parameters);
     }
 
     add(...plugins: Plugin[]) {
@@ -75,7 +75,7 @@ export class PluginManager {
     }
 
     configure(config: AppConfig) {
-        this.runPluginMethods('configure', [config])
+        this.runPluginMethod('configure', [config])
     }
 
     beforeLaunch(config: AppConfig) {
@@ -83,15 +83,15 @@ export class PluginManager {
     }
 
     afterSetup(runtime: Runtime) {
-        this.runPluginMethods('afterSetup', [runtime]);
+        this.runPluginMethod('afterSetup', [runtime]);
     }
 
     afterStartup(runtime: Runtime) {
-        this.runPluginMethods('afterStartup', [runtime]);
+        this.runPluginMethod('afterStartup', [runtime]);
     }
 
     onUserError(error: UserError) {
-        this.runPluginMethods('onUserError', [error]);
+        this.runPluginMethod('onUserError', [error]);
     }
 }
 
