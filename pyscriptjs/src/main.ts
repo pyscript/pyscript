@@ -6,7 +6,7 @@ import type { Interpreter } from './interpreter';
 import { version } from './interpreter';
 import { PluginManager, define_custom_element } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
-import { PyodideRuntime } from './pyodide';
+import { PyodideInterpreter } from './pyodide';
 import { getLogger } from './logger';
 import { handleFetchError, showWarning, globalExport } from './utils';
 import { calculatePaths } from './plugins/fetch';
@@ -135,7 +135,7 @@ export class PyScriptApp {
             showWarning('Multiple runtimes are not supported yet.<br />Only the first will be used', 'html');
         }
         const runtime_cfg = this.config.runtimes[0];
-        this.interpreter = new PyodideRuntime(
+        this.interpreter = new PyodideInterpreter(
             this.config,
             this._stdioMultiplexer,
             runtime_cfg.src,

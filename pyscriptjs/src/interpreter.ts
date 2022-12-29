@@ -24,7 +24,7 @@ to implement.
 Methods available handle loading of the interpreter, initialization,
 running code, loading and installation of packages, loading from files etc.
 
-For an example implementation, refer to the `PyodideRuntime` class
+For an example implementation, refer to the `PyodideInterpreter` class
 in `pyodide.ts`
 */
 export abstract class Interpreter extends Object {

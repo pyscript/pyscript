@@ -15,7 +15,7 @@ interface Micropip extends PyProxy {
     destroy: () => void;
 }
 
-export class PyodideRuntime extends Interpreter {
+export class PyodideInterpreter extends Interpreter {
     src: string;
     stdio: Stdio;
     name?: string;
