@@ -14,7 +14,7 @@ describe('PyInputBox', () => {
 
     beforeEach(() => {
         instance = new PyInputBox();
-        instance.runAfterRuntimeInitialized = jest.fn();
+        instance.runAfterInterpreterInitialized = jest.fn();
     });
 
     it('PyInputBox instantiates correctly', async () => {
