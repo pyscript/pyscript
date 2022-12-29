@@ -8,6 +8,6 @@ maxdepth: 2
 ---
 getting-started
 py-config-fetch
-py-config-runtime
+py-config-interpreter
 writing-to-page
 ```

@@ -20,7 +20,7 @@ The `<py-config>` element should be placed within the `<body>` element.
 - `<py-config>` using TOML (default)
 
 ```{note}
-Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[runtimes]]` and `[[fetch]]` must come after individual keys (like `plugins = ...` and `packages=...`)
+Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[interpreter]]` and `[[fetch]]` must come after individual keys (like `plugins = ...` and `packages=...`)
 ```
 
 ```html
@@ -28,7 +28,7 @@ Reminder: when using TOML, any Arrays of Tables defined with double-brackets (li
   [splashscreen]
   autoclose = true
 
-  [[runtimes]]
+  [[interpreter]]
   src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
   name = "pyodide-0.21.2"
   lang = "python"
@@ -43,7 +43,7 @@ Reminder: when using TOML, any Arrays of Tables defined with double-brackets (li
     "splashscreen": {
       "autoclose": true
     },
-    "runtimes": [{
+    "interpreter": [{
       "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
       "name": "pyodide-0.21.2",
       "lang": "python"
@@ -65,7 +65,7 @@ where `custom.toml` contains
 [splashscreen]
 autoclose = true
 
-[[runtimes]]
+[[interpreter]]
 src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
 name = "pyodide-0.21.2"
 lang = "python"
@@ -83,7 +83,7 @@ where `custom.json` contains
   "splashscreen": {
     "autoclose": true,
   },
-  "runtimes": [{
+  "interpreter": [{
     "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
     "name": "pyodide-0.21.2",
     "lang": "python"
@@ -127,7 +127,7 @@ The keys supplied through `inline` override the values present in config supplie
 One can also declare dependencies so as to get access to many 3rd party OSS packages that are supported by PyScript.
 You can also link to `.whl` files directly on disk like in our [toga example](https://github.com/pyscript/pyscript/blob/main/examples/toga/freedom.html).
 
-Package dependencies in the `<py-config>` can be declared by using the direct link to the package URL (whl or any other format supported by the chosen runtime) or by just providing the package name [and version]. If only the name [and version] are provided, packages will be installed directly from what's provided by your runtime or from PyPI.
+Package dependencies in the `<py-config>` can be declared by using the direct link to the package URL (whl or any other format supported by the chosen interpreter) or by just providing the package name [and version]. If only the name [and version] are provided, packages will be installed directly from what's provided by your interpreter or from PyPI.
 
 NOTICE that only pure python packages from PyPI will work and packages with C dependencies will not. These need to be built specifically for WASM (please, consult the Pyodide project for more information about what's supported and on how to build packages with C dependencies)
 
@@ -246,7 +246,8 @@ The following optional values are supported by `<py-config>`:
 | `packages` | List of Packages | Dependencies on 3rd party OSS packages are specified here. The default value is an empty list. |
 | `fetch` | List of Stuff to fetch | Local Python modules OR resources from the internet are to be specified here using a Fetch Configuration, described below. The default value is an empty list. |
 | `plugins` | List of Plugins | List of Plugins are to be specified here. The default value is an empty list. |
-| `runtimes` | List of Runtimes | List of runtime configurations, described below. The default value contains a single Pyodide based runtime. |
+| `interpreter` | List of Interpreter| List of Interpreter configurations, described below. The default value contains a single Pyodide based interpreter. |
+| `runtimes`  {bdg-warning-line}`Deprecated`  | List of Runtimes | This value is deprecated, please use `interpreter`. List of runtime configurations, described below. The default value contains a single Pyodide based interpreter. |
 
 ### <a name="fetch">Fetch</a>
 
@@ -440,22 +441,23 @@ content/
 </py-script>
 ```
 
-### Runtime
+### Interpreter
 
-A runtime configuration consists of the following:
+An interpreter configuration consists of the following:
+
 | Value  | Type              | Description |
 |--------|-------------------|-------------|
-| `src`  | string (Required) | URL to the runtime source. |
-| `name` | string            | Name of the runtime. This field can be any string and is to be used by the application author for their own customization purposes |
-| `lang` | string            | Programming language supported by the runtime. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
+| `src`  | string (Required) | URL to the interpreter source. |
+| `name` | string            | Name of the interpreter. This field can be any string and is to be used by the application author for their own customization purposes |
+| `lang` | string            | Programming language supported by the interpreter. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
 
 #### Example
 
-- The default runtime is `pyodide`, another version of which can be specified as following
+- The default interpreter is `pyodide`, another version of which can be specified as following
 
 ```html
 <py-config>
-  [[runtimes]]
+  [[interpreter]]
   src = "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
   name = "pyodide-0.20.0"
   lang = "python"
