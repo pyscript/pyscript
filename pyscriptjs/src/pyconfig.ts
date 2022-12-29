@@ -1,7 +1,7 @@
 import toml from '../src/toml';
 import { getLogger } from './logger';
 import { version } from './interpreter';
-import { getAttribute, readTextFromPath, htmlDecode } from './utils';
+import { getAttribute, readTextFromPath, htmlDecode, createDeprecationWarning } from './utils';
 import { UserError, ErrorCode } from './exceptions';
 
 const logger = getLogger('py-config');
@@ -15,7 +15,8 @@ export interface AppConfig extends Record<string, any> {
     author_name?: string;
     author_email?: string;
     license?: string;
-    runtimes?: RuntimeConfig[];
+    interpreter?: InterpreterConfig[];
+    runtimes?: InterpreterConfig[];
     packages?: string[];
     fetch?: FetchConfig[];
     plugins?: string[];
@@ -29,7 +30,7 @@ export type FetchConfig = {
     files?: string[];
 };
 
-export type RuntimeConfig = {
+export type InterpreterConfig = {
     src?: string;
     name?: string;
     lang?: string;
@@ -43,19 +44,21 @@ export type PyScriptMetadata = {
 const allKeys = {
     string: ['name', 'description', 'version', 'type', 'author_name', 'author_email', 'license'],
     number: ['schema_version'],
-    array: ['runtimes', 'packages', 'fetch', 'plugins'],
+    array: ['runtimes', 'interpreter', 'packages', 'fetch', 'plugins'],
 };
 
 export const defaultConfig: AppConfig = {
     schema_version: 1,
     type: 'app',
-    runtimes: [
+    interpreter: [
         {
             src: 'https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js',
             name: 'pyodide-0.21.3',
             lang: 'python',
         },
     ],
+    // This is for backward compatibility, we need to remove it in the future
+    runtimes: [],
     packages: [],
     fetch: [],
     plugins: [],
@@ -184,17 +187,40 @@ function validateConfig(configText: string, configType = 'toml') {
         const keys: string[] = allKeys[keyType];
         keys.forEach(function (item: string) {
             if (validateParamInConfig(item, keyType, config)) {
-                if (item === 'runtimes') {
+                if (item === 'interpreter') {
                     finalConfig[item] = [];
-                    const runtimes = config[item] as RuntimeConfig[];
-                    runtimes.forEach(function (eachRuntime: RuntimeConfig) {
-                        const runtimeConfig: RuntimeConfig = {};
-                        for (const eachRuntimeParam in eachRuntime) {
-                            if (validateParamInConfig(eachRuntimeParam, 'string', eachRuntime)) {
-                                runtimeConfig[eachRuntimeParam] = eachRuntime[eachRuntimeParam];
+                    const interpreters = config[item] as InterpreterConfig[];
+                    interpreters.forEach(function (eachInterpreter: InterpreterConfig) {
+                        const interpreterConfig: InterpreterConfig = {};
+                        for (const eachInterpreterParam in eachInterpreter) {
+                            if (validateParamInConfig(eachInterpreterParam, 'string', eachInterpreter)) {
+                                interpreterConfig[eachInterpreterParam] = eachInterpreter[eachInterpreterParam];
                             }
                         }
-                        finalConfig[item].push(runtimeConfig);
+                        finalConfig[item].push(interpreterConfig);
+                    });
+                } else if (item === 'runtimes') {
+                    // This code is a bit of a mess, but it's used for backwards
+                    // compatibility with the old runtimes config. It should be
+                    // removed when we remove support for the old config.
+                    // We also need the warning here since we are pushing
+                    // runtimes to `interpreter` and we can't show the warning
+                    // in main.js
+                    createDeprecationWarning(
+                        'The configuration option `config.runtimes` is deprecated. ' +
+                            'Please use `config.interpreter` instead.',
+                        '',
+                    );
+                    finalConfig['interpreter'] = [];
+                    const interpreters = config[item] as InterpreterConfig[];
+                    interpreters.forEach(function (eachInterpreter: InterpreterConfig) {
+                        const interpreterConfig: InterpreterConfig = {};
+                        for (const eachInterpreterParam in eachInterpreter) {
+                            if (validateParamInConfig(eachInterpreterParam, 'string', eachInterpreter)) {
+                                interpreterConfig[eachInterpreterParam] = eachInterpreter[eachInterpreterParam];
+                            }
+                        }
+                        finalConfig['interpreter'].push(interpreterConfig);
                     });
                 } else if (item === 'fetch') {
                     finalConfig[item] = [];

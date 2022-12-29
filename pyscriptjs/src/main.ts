@@ -127,22 +127,23 @@ export class PyScriptApp {
     // lifecycle (4)
     loadInterpreter() {
         logger.info('Initializing interpreter');
-        if (this.config.runtimes.length == 0) {
-            throw new UserError(ErrorCode.BAD_CONFIG, 'Fatal error: config.runtimes is empty');
+        if (this.config.interpreter.length == 0) {
+            throw new UserError(ErrorCode.BAD_CONFIG, 'Fatal error: config.interpreter is empty');
         }
 
-        if (this.config.runtimes.length > 1) {
-            showWarning('Multiple runtimes are not supported yet.<br />Only the first will be used', 'html');
+        if (this.config.interpreter.length > 1) {
+            showWarning('Multiple interpreters are not supported yet.<br />Only the first will be used', 'html');
         }
-        const runtime_cfg = this.config.runtimes[0];
+
+        const interpreter_cfg = this.config.interpreter[0];
         this.interpreter = new PyodideInterpreter(
             this.config,
             this._stdioMultiplexer,
-            runtime_cfg.src,
-            runtime_cfg.name,
-            runtime_cfg.lang,
+            interpreter_cfg.src,
+            interpreter_cfg.name,
+            interpreter_cfg.lang,
         );
-        this.logStatus(`Downloading ${runtime_cfg.name}...`);
+        this.logStatus(`Downloading ${interpreter_cfg.name}...`);
 
         // download pyodide by using a <script> tag. Once it's ready, the
         // "load" event will be fired and the exeuction logic will continue.
