@@ -30,7 +30,7 @@ export class PyodideInterpreter extends Interpreter {
         name = 'pyodide-default',
         lang = 'python',
     ) {
-        logger.info('Runtime config:', { name, lang, src });
+        logger.info('Interpreter config:', { name, lang, src });
         super(config);
         this.stdio = stdio;
         this.src = src;

@@ -30,7 +30,7 @@ const logger = getLogger('pyscript/main');
 
    3. (it used to be "show the splashscreen", but now it's a plugin)
 
-   4. loadRuntime(): start downloading the actual runtime (e.g. pyodide.js)
+   4. loadInterpreter(): start downloading the actual interpreter (e.g. pyodide.js)
 
    --- wait until (4) has finished ---
 
@@ -49,11 +49,11 @@ More concretely:
 
   - Points 1-4 are implemented sequentially in PyScriptApp.main().
 
-  - PyScriptApp.loadRuntime adds a <script> tag to the document to initiate
+  - PyScriptApp.loadInterpreter adds a <script> tag to the document to initiate
     the download, and then adds an event listener for the 'load' event, which
-    in turns calls PyScriptApp.afterRuntimeLoad().
+    in turns calls PyScriptApp.afterInterpreterLoad().
 
-  - PyScriptApp.afterRuntimeLoad() implements all the points >= 5.
+  - PyScriptApp.afterInterpreterLoad() implements all the points >= 5.
 */
 
 export class PyScriptApp {
@@ -101,7 +101,7 @@ export class PyScriptApp {
         this.loadConfig();
         this.plugins.configure(this.config);
         this.plugins.beforeLaunch(this.config);
-        this.loadRuntime();
+        this.loadInterpreter();
     }
 
     // lifecycle (2)
@@ -125,8 +125,8 @@ export class PyScriptApp {
     }
 
     // lifecycle (4)
-    loadRuntime() {
-        logger.info('Initializing runtime');
+    loadInterpreter() {
+        logger.info('Initializing interpreter');
         if (this.config.runtimes.length == 0) {
             throw new UserError(ErrorCode.BAD_CONFIG, 'Fatal error: config.runtimes is empty');
         }
@@ -153,7 +153,7 @@ export class PyScriptApp {
         const script = document.createElement('script'); // create a script DOM node
         script.src = this.interpreter.src;
         script.addEventListener('load', () => {
-            this.afterRuntimeLoad(this.interpreter).catch(error => {
+            this.afterInterpreterLoad(this.interpreter).catch(error => {
                 this._handleUserErrorMaybe(error);
             });
         });
@@ -165,7 +165,7 @@ export class PyScriptApp {
     // point (4) to point (5).
     //
     // Invariant: this.config is set and available.
-    async afterRuntimeLoad(interpreter: Interpreter): Promise<void> {
+    async afterInterpreterLoad(interpreter: Interpreter): Promise<void> {
         console.assert(this.config !== undefined);
 
         this.logStatus('Python startup...');
@@ -190,7 +190,7 @@ export class PyScriptApp {
 
         initHandlers(interpreter);
 
-        // NOTE: runtime message is used by integration tests to know that
+        // NOTE: interpreter message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
         // change it also in tests/integration/support.py
         this.logStatus('Startup complete');
@@ -241,7 +241,7 @@ export class PyScriptApp {
     async fetchPaths(interpreter: Interpreter) {
         // XXX this can be VASTLY improved: for each path we need to fetch a
         // URL and write to the virtual filesystem: pyodide.loadFromFile does
-        // it in Python, which means we need to have the runtime
+        // it in Python, which means we need to have the interpreter
         // initialized. But we could easily do it in JS in parallel with the
         // download/startup of pyodide.
         const [paths, fetchPaths] = calculatePaths(this.config.fetch);
@@ -267,7 +267,7 @@ export class PyScriptApp {
      * Fetches all the python plugins specified in this.config, saves them on the FS and import
      * them as modules, executing any plugin define the module scope
      *
-     * @param runtime - runtime that will execute the plugins
+     * @param interpreter - interpreter that will execute the plugins
      */
     async fetchPythonPlugins(interpreter: Interpreter) {
         const plugins = this.config.plugins;
@@ -281,7 +281,7 @@ export class PyScriptApp {
                 const destPath = `./${filename}`;
                 await interpreter.loadFromFile(destPath, singleFile);
 
-                //refresh module cache before trying to import module files into runtime
+                //refresh module cache before trying to import module files into the interpreter
                 interpreter.invalidate_module_path_cache();
 
                 const modulename = singleFile.replace(/^.*[\\/]/, '').replace('.py', '');
@@ -289,7 +289,7 @@ export class PyScriptApp {
                 console.log(`importing ${modulename}`);
                 // TODO: This is very specific to Pyodide API and will not work for other interpreters,
                 //       when we add support for other interpreters we will need to move this to the
-                //       runtime (interpreter) API level and allow each one to implement it in its own way
+                //       interpreter API level and allow each one to implement it in its own way
                 const module = interpreter.interface.pyimport(modulename);
                 if (typeof module.plugin !== 'undefined') {
                     const py_plugin = module.plugin;
