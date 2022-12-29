@@ -1,10 +1,10 @@
-import type { Runtime } from "../../src/runtime"
-import { FakeRuntime } from "./fakeruntime"
+import type { Interpreter } from '../../src/interpreter';
+import { FakeInterpreter } from './fakeinterpreter';
 import { make_PyButton } from '../../src/components/pybutton';
 import { ensureUniqueId } from '../../src/utils';
 
-const runtime: Runtime = new FakeRuntime();
-const PyButton = make_PyButton(runtime);
+const interpreter: Interpreter = new FakeInterpreter();
+const PyButton = make_PyButton(interpreter);
 customElements.define('py-button', PyButton);
 
 describe('PyButton', () => {
@@ -12,9 +12,9 @@ describe('PyButton', () => {
     beforeEach(() => {
         instance = new PyButton();
         // Remove all the alert banners created when calling `connectedCallback`
-        const banners = document.getElementsByClassName("alert-banner")
+        const banners = document.getElementsByClassName('alert-banner');
         for (const banner of banners) {
-            banner.remove()
+            banner.remove();
         }
     });
 
@@ -72,17 +72,17 @@ describe('PyButton', () => {
     });
 
     it('should create a single deprecation banner', async () => {
-        document.body.innerHTML = ""
+        document.body.innerHTML = '';
         let alertBanners = document.getElementsByClassName('alert-banner');
         expect(alertBanners.length).toBe(0);
 
         instance.connectedCallback();
         expect(alertBanners.length).toBe(1);
-        expect(alertBanners[0].innerHTML).toContain("&lt;py-button&gt; is deprecated");
+        expect(alertBanners[0].innerHTML).toContain('&lt;py-button&gt; is deprecated');
 
         // Calling `connectedCallback` again should not create a new banner
         instance.connectedCallback();
         alertBanners = document.getElementsByClassName('alert-banner');
         expect(alertBanners.length).toBe(1);
-    })
+    });
 });

@@ -1,4 +1,4 @@
-import type { Runtime } from '../runtime';
+import type { Interpreter } from '../interpreter';
 import { showWarning } from '../utils';
 import { Plugin } from '../plugin';
 import { getLogger } from '../logger';
@@ -11,7 +11,7 @@ type ImportMapType = {
 };
 
 export class ImportmapPlugin extends Plugin {
-    async afterSetup(runtime: Runtime) {
+    async afterSetup(interpreter: Interpreter) {
         // make importmap ES modules available from python using 'import'.
         //
         // XXX: this code can probably be improved because errors are silently
@@ -46,7 +46,7 @@ export class ImportmapPlugin extends Plugin {
                 }
 
                 logger.info('Registering JS module', name);
-                runtime.registerJsModule(name, exports);
+                interpreter.registerJsModule(name, exports);
             }
         }
     }

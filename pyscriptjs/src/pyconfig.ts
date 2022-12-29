@@ -1,8 +1,8 @@
 import toml from '../src/toml';
 import { getLogger } from './logger';
-import { version } from './runtime';
+import { version } from './interpreter';
 import { getAttribute, readTextFromPath, htmlDecode } from './utils';
-import { UserError, ErrorCode } from "./exceptions"
+import { UserError, ErrorCode } from './exceptions';
 
 const logger = getLogger('py-config');
 
@@ -146,7 +146,7 @@ function parseConfig(configText: string, configType = 'toml') {
             if (configText.trim()[0] === '{') {
                 throw new UserError(
                     ErrorCode.BAD_CONFIG,
-                    `The config supplied: ${configText} is an invalid TOML and cannot be parsed`
+                    `The config supplied: ${configText} is an invalid TOML and cannot be parsed`,
                 );
             }
             return toml.parse(configText);
@@ -154,7 +154,7 @@ function parseConfig(configText: string, configType = 'toml') {
             const errMessage: string = err.toString();
             throw new UserError(
                 ErrorCode.BAD_CONFIG,
-                `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`
+                `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`,
             );
         }
     } else if (configType === 'json') {
@@ -170,7 +170,7 @@ function parseConfig(configText: string, configType = 'toml') {
     } else {
         throw new UserError(
             ErrorCode.BAD_CONFIG,
-            `The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`
+            `The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`,
         );
     }
 }

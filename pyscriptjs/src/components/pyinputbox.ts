@@ -1,10 +1,10 @@
 import { getAttribute, addClasses, htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import { getLogger } from '../logger';
-import type { Runtime } from '../runtime';
+import type { Interpreter } from '../interpreter';
 
 const logger = getLogger('py-inputbox');
 
-export function make_PyInputBox(runtime: Runtime) {
+export function make_PyInputBox(interpreter: Interpreter) {
     class PyInputBox extends HTMLElement {
         widths: string[] = [];
         label: string | undefined = undefined;
@@ -48,8 +48,8 @@ export function make_PyInputBox(runtime: Runtime) {
                 registrationCode += `\n${this.mount_name}.element.addEventListener('keypress', create_proxy(on_keypress_${this.mount_name}))`;
             }
 
-            runtime.runButDontRaise(this.code);
-            runtime.runButDontRaise(registrationCode);
+            interpreter.runButDontRaise(this.code);
+            interpreter.runButDontRaise(registrationCode);
             logger.debug('py-inputbox connected');
         }
     }

@@ -1,5 +1,5 @@
 import type { AppConfig } from './pyconfig';
-import type { Runtime } from './runtime';
+import type { Interpreter } from './interpreter';
 import type { UserError } from './exceptions';
 import { getLogger } from './logger';
 
@@ -37,13 +37,13 @@ export class Plugin {
      *
      * The <py-script> tags will be executed after this hook.
      */
-    afterSetup(runtime: Runtime) {}
+    afterSetup(interpreter: Interpreter) {}
 
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and
      * the page is ready to accept user interactions.
      */
-    afterStartup(runtime: Runtime) {}
+    afterStartup(interpreter: Interpreter) {}
 
     /** Called when an UserError is raised
      */
@@ -77,16 +77,16 @@ export class PluginManager {
         for (const p of this._plugins) p.beforeLaunch(config);
     }
 
-    afterSetup(runtime: Runtime) {
-        for (const p of this._plugins) p.afterSetup(runtime);
+    afterSetup(interpreter: Interpreter) {
+        for (const p of this._plugins) p.afterSetup(interpreter);
 
-        for (const p of this._pythonPlugins) p.afterSetup?.(runtime);
+        for (const p of this._pythonPlugins) p.afterSetup?.(interpreter);
     }
 
-    afterStartup(runtime: Runtime) {
-        for (const p of this._plugins) p.afterStartup(runtime);
+    afterStartup(interpreter: Interpreter) {
+        for (const p of this._plugins) p.afterStartup(interpreter);
 
-        for (const p of this._pythonPlugins) p.afterStartup?.(runtime);
+        for (const p of this._pythonPlugins) p.afterStartup?.(interpreter);
     }
 
     onUserError(error: UserError) {

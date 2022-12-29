@@ -2,8 +2,8 @@ import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
-import type { Runtime } from './runtime';
-import { version } from './runtime';
+import type { Interpreter } from './interpreter';
+import { version } from './interpreter';
 import { PluginManager, define_custom_element } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideRuntime } from './pyodide';
@@ -11,7 +11,7 @@ import { getLogger } from './logger';
 import { handleFetchError, showWarning, globalExport } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
-import { UserError, ErrorCode, _createAlertBanner } from "./exceptions"
+import { UserError, ErrorCode, _createAlertBanner } from './exceptions';
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
@@ -58,7 +58,7 @@ More concretely:
 
 export class PyScriptApp {
     config: AppConfig;
-    runtime: Runtime;
+    interpreter: Interpreter;
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
@@ -135,7 +135,7 @@ export class PyScriptApp {
             showWarning('Multiple runtimes are not supported yet.<br />Only the first will be used', 'html');
         }
         const runtime_cfg = this.config.runtimes[0];
-        this.runtime = new PyodideRuntime(
+        this.interpreter = new PyodideRuntime(
             this.config,
             this._stdioMultiplexer,
             runtime_cfg.src,
@@ -151,9 +151,9 @@ export class PyScriptApp {
         // by the try/catch inside main(): that's why we need to .catch() it
         // explicitly and call _handleUserErrorMaybe also there.
         const script = document.createElement('script'); // create a script DOM node
-        script.src = this.runtime.src;
+        script.src = this.interpreter.src;
         script.addEventListener('load', () => {
-            this.afterRuntimeLoad(this.runtime).catch(error => {
+            this.afterRuntimeLoad(this.interpreter).catch(error => {
                 this._handleUserErrorMaybe(error);
             });
         });
@@ -165,80 +165,80 @@ export class PyScriptApp {
     // point (4) to point (5).
     //
     // Invariant: this.config is set and available.
-    async afterRuntimeLoad(runtime: Runtime): Promise<void> {
+    async afterRuntimeLoad(interpreter: Interpreter): Promise<void> {
         console.assert(this.config !== undefined);
 
         this.logStatus('Python startup...');
-        await runtime.loadInterpreter();
+        await this.interpreter.loadInterpreter();
         this.logStatus('Python ready!');
 
         this.logStatus('Setting up virtual environment...');
-        await this.setupVirtualEnv(runtime);
-        mountElements(runtime);
+        await this.setupVirtualEnv(interpreter);
+        mountElements(interpreter);
 
         // lifecycle (6.5)
-        this.plugins.afterSetup(runtime);
+        this.plugins.afterSetup(interpreter);
 
         //Refresh module cache in case plugins have modified the filesystem
-        runtime.invalidate_module_path_cache()
+        interpreter.invalidate_module_path_cache();
         this.logStatus('Executing <py-script> tags...');
-        this.executeScripts(runtime);
+        this.executeScripts(interpreter);
 
         this.logStatus('Initializing web components...');
         // lifecycle (8)
-        createCustomElements(runtime);
+        createCustomElements(interpreter);
 
-        initHandlers(runtime);
+        initHandlers(interpreter);
 
         // NOTE: runtime message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
         // change it also in tests/integration/support.py
         this.logStatus('Startup complete');
-        this.plugins.afterStartup(runtime);
+        this.plugins.afterStartup(interpreter);
         logger.info('PyScript page fully initialized');
     }
 
     // lifecycle (6)
-    async setupVirtualEnv(runtime: Runtime): Promise<void> {
+    async setupVirtualEnv(interpreter: Interpreter): Promise<void> {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS
-        runtime.interpreter.FS.writeFile('pyscript.py', pyscript, { encoding: 'utf8' });
+        interpreter.interface.FS.writeFile('pyscript.py', pyscript, { encoding: 'utf8' });
         //Refresh the module cache so Python consistently finds pyscript module
-        runtime.invalidate_module_path_cache()
+        interpreter.invalidate_module_path_cache();
 
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
-        const pyscript_module = runtime.interpreter.pyimport('pyscript');
+        const pyscript_module = interpreter.interface.pyimport('pyscript');
         pyscript_module.define_custom_element = define_custom_element;
         pyscript_module.showWarning = showWarning;
         pyscript_module._set_version_info(version);
         pyscript_module.destroy();
 
         // import some carefully selected names into the global namespace
-        await runtime.run(`
+        await interpreter.run(`
         import js
         import pyscript
         from pyscript import Element, display, HTML
         pyscript._install_deprecated_globals_2022_12_1(globals())
-        `)
+        `);
 
         if (this.config.packages) {
             logger.info('Packages to install: ', this.config.packages);
-            await runtime.installPackage(this.config.packages);
+            await interpreter.installPackage(this.config.packages);
         }
-        await this.fetchPaths(runtime);
+        await this.fetchPaths(interpreter);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
-        runtime.invalidate_module_path_cache()
+        interpreter.invalidate_module_path_cache();
         // Finally load plugins
-        await this.fetchPythonPlugins(runtime);
+        await this.fetchPythonPlugins(interpreter);
     }
 
-    async fetchPaths(runtime: Runtime) {
+    async fetchPaths(interpreter: Interpreter) {
         // XXX this can be VASTLY improved: for each path we need to fetch a
         // URL and write to the virtual filesystem: pyodide.loadFromFile does
         // it in Python, which means we need to have the runtime
@@ -249,7 +249,7 @@ export class PyScriptApp {
         for (let i = 0; i < paths.length; i++) {
             logger.info(`  fetching path: ${fetchPaths[i]}`);
             try {
-                await runtime.loadFromFile(paths[i], fetchPaths[i]);
+                await interpreter.loadFromFile(paths[i], fetchPaths[i]);
             } catch (e) {
                 // The 'TypeError' here happens when running pytest
                 // I'm not particularly happy with this solution.
@@ -269,7 +269,7 @@ export class PyScriptApp {
      *
      * @param runtime - runtime that will execute the plugins
      */
-    async fetchPythonPlugins(runtime: Runtime) {
+    async fetchPythonPlugins(interpreter: Interpreter) {
         const plugins = this.config.plugins;
         logger.info('Python plugins to fetch: ', plugins);
         for (const singleFile of plugins) {
@@ -279,10 +279,10 @@ export class PyScriptApp {
                 const filename = pathArr.pop();
                 // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
                 const destPath = `./${filename}`;
-                await runtime.loadFromFile(destPath, singleFile);
+                await interpreter.loadFromFile(destPath, singleFile);
 
                 //refresh module cache before trying to import module files into runtime
-                runtime.invalidate_module_path_cache()
+                interpreter.invalidate_module_path_cache();
 
                 const modulename = singleFile.replace(/^.*[\\/]/, '').replace('.py', '');
 
@@ -290,7 +290,7 @@ export class PyScriptApp {
                 // TODO: This is very specific to Pyodide API and will not work for other interpreters,
                 //       when we add support for other interpreters we will need to move this to the
                 //       runtime (interpreter) API level and allow each one to implement it in its own way
-                const module = runtime.interpreter.pyimport(modulename);
+                const module = interpreter.interface.pyimport(modulename);
                 if (typeof module.plugin !== 'undefined') {
                     const py_plugin = module.plugin;
                     py_plugin.init(this);
@@ -308,8 +308,8 @@ modules must contain a "plugin" attribute. For more information check the plugin
     }
 
     // lifecycle (7)
-    executeScripts(runtime: Runtime) {
-        this.PyScript = make_PyScript(runtime);
+    executeScripts(interpreter: Interpreter) {
+        this.PyScript = make_PyScript(interpreter);
         customElements.define('py-script', this.PyScript);
     }
 
@@ -336,4 +336,4 @@ const globalApp = new PyScriptApp();
 globalApp.main();
 
 export { version };
-export const runtime = globalApp.runtime;
+export const interpreter = globalApp.interpreter;

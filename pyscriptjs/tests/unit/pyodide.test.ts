@@ -1,18 +1,18 @@
 import type { AppConfig } from '../../src/pyconfig';
-import { Runtime } from '../../src/runtime';
+import { Interpreter } from '../../src/interpreter';
 import { PyodideRuntime } from '../../src/pyodide';
 import { CaptureStdio } from '../../src/stdio';
 
-import { TextEncoder, TextDecoder } from 'util'
-global.TextEncoder = TextEncoder
-global.TextDecoder = TextDecoder
+import { TextEncoder, TextDecoder } from 'util';
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 describe('PyodideRuntime', () => {
-    let runtime: PyodideRuntime;
+    let interpreter: PyodideRuntime;
     let stdio: CaptureStdio = new CaptureStdio();
     beforeAll(async () => {
         const config: AppConfig = {};
-        runtime = new PyodideRuntime(config, stdio);
+        interpreter = new PyodideRuntime(config, stdio);
 
         /**
          * Since import { loadPyodide } from 'pyodide';
@@ -37,33 +37,33 @@ describe('PyodideRuntime', () => {
          * See https://github.com/pyodide/pyodide/blob/7dfee03a82c19069f714a09da386547aeefef242/src/js/pyodide.ts#L161-L179
          */
         const pyodideSpec = await import('pyodide');
-        global.loadPyodide = async (options) => pyodideSpec.loadPyodide(Object.assign({indexURL: '../pyscriptjs/node_modules/pyodide/'}, options));
-        await runtime.loadInterpreter();
+        global.loadPyodide = async options =>
+            pyodideSpec.loadPyodide(Object.assign({ indexURL: '../pyscriptjs/node_modules/pyodide/' }, options));
+        await interpreter.loadInterpreter();
     });
 
     it('should check if runtime is an instance of abstract Runtime', async () => {
-        expect(runtime).toBeInstanceOf(Runtime);
+        expect(interpreter).toBeInstanceOf(Interpreter);
     });
 
     it('should check if runtime is an instance of PyodideRuntime', async () => {
-        expect(runtime).toBeInstanceOf(PyodideRuntime);
+        expect(interpreter).toBeInstanceOf(PyodideRuntime);
     });
 
     it('should check if runtime can run python code asynchronously', async () => {
-        expect(runtime.run("2+3")).toBe(5);
+        expect(interpreter.run('2+3')).toBe(5);
     });
 
     it('should capture stdout', async () => {
         stdio.reset();
-        runtime.run("print('hello')");
-        expect(stdio.captured_stdout).toBe("hello\n");
+        interpreter.run("print('hello')");
+        expect(stdio.captured_stdout).toBe('hello\n');
     });
 
     it('should check if runtime is able to load a package', async () => {
-        await runtime.loadPackage("numpy");
-        runtime.run("import numpy as np");
-        runtime.run("x = np.ones((10,))");
-        expect(runtime.globals.get('x').toJs()).toBeInstanceOf(Float64Array);
+        await interpreter.loadPackage('numpy');
+        interpreter.run('import numpy as np');
+        interpreter.run('x = np.ones((10,))');
+        expect(interpreter.globals.get('x').toJs()).toBeInstanceOf(Float64Array);
     });
-
-  });
+});

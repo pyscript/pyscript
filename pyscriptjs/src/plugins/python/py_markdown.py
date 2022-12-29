@@ -3,6 +3,7 @@ from textwrap import dedent
 
 from js import console
 from markdown import markdown
+
 from pyscript import Plugin
 
 console.warn(
@@ -15,8 +16,8 @@ class MyPlugin(Plugin):
     def configure(self, config):
         console.log(f"configuration received: {config}")
 
-    def afterStartup(self, runtime):
-        console.log(f"runtime received: {runtime}")
+    def afterStartup(self, interpreter):
+        console.log(f"interpreter received: {interpreter}")
 
 
 plugin = MyPlugin("py-markdown")

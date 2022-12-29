@@ -1,10 +1,10 @@
 import { getAttribute, addClasses, htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import { getLogger } from '../logger';
-import type { Runtime } from '../runtime';
+import type { Interpreter } from '../interpreter';
 
 const logger = getLogger('py-button');
 
-export function make_PyButton(runtime: Runtime) {
+export function make_PyButton(interpreter: Interpreter) {
     class PyButton extends HTMLElement {
         widths: string[] = [];
         label: string | undefined = undefined;
@@ -75,8 +75,8 @@ export function make_PyButton(runtime: Runtime) {
 
             // now that we appended and the element is attached, lets connect with the event handlers
             // defined for this widget
-            runtime.runButDontRaise(this.code);
-            runtime.runButDontRaise(registrationCode);
+            interpreter.runButDontRaise(this.code);
+            interpreter.runButDontRaise(registrationCode);
             logger.debug('py-button connected');
         }
     }

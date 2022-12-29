@@ -1,7 +1,7 @@
-import { jest, describe, it, expect,  } from '@jest/globals';
+import { jest, describe, it, expect } from '@jest/globals';
 import { loadConfigFromElement, defaultConfig } from '../../src/pyconfig';
-import { version } from '../../src/runtime';
-import { UserError } from '../../src/exceptions'
+import { version } from '../../src/interpreter';
+import { UserError } from '../../src/exceptions';
 
 // inspired by trump typos
 const covfefeConfig = {
@@ -27,7 +27,6 @@ name = "covfefe"
 lang = "covfefe"
 `;
 
-
 // ideally, I would like to be able to just do "new HTMLElement" in the tests
 // below, but it is not permitted. The easiest work around is to create a fake
 // custom element: not that we are not using any specific feature of custom
@@ -47,7 +46,6 @@ function make_config_element(attrs) {
     }
     return el;
 }
-
 
 describe('loadConfigFromElement', () => {
     const xhrMockClass = () => ({
@@ -92,7 +90,6 @@ describe('loadConfigFromElement', () => {
         expect(config.schema_version).toBe(1);
     });
 
-
     it('should load the JSON config from both inline and src', () => {
         const el = make_config_element({ type: 'json', src: '/covfefe.json' });
         el.innerHTML = JSON.stringify({ version: '0.2a', wonderful: 'hijacked' });
@@ -123,42 +120,48 @@ describe('loadConfigFromElement', () => {
     it('should NOT be able to load an inline config in JSON format with type as TOML', () => {
         const el = make_config_element({});
         el.innerHTML = JSON.stringify(covfefeConfig);
-        expect(()=>loadConfigFromElement(el)).toThrow(/config supplied: {.*} is an invalid TOML and cannot be parsed/);
+        expect(() => loadConfigFromElement(el)).toThrow(
+            /config supplied: {.*} is an invalid TOML and cannot be parsed/,
+        );
     });
 
     it('should NOT be able to load an inline config in TOML format with type as JSON', () => {
         const el = make_config_element({ type: 'json' });
         el.innerHTML = covfefeConfigToml;
-        expect(()=>loadConfigFromElement(el)).toThrow(UserError);
+        expect(() => loadConfigFromElement(el)).toThrow(UserError);
     });
 
     it('should NOT be able to load an inline TOML config with a JSON config from src with type as toml', () => {
         const el = make_config_element({ src: '/covfefe.json' });
         el.innerHTML = covfefeConfigToml;
-        expect(()=>loadConfigFromElement(el)).toThrow(/config supplied: {.*} is an invalid TOML and cannot be parsed/);
+        expect(() => loadConfigFromElement(el)).toThrow(
+            /config supplied: {.*} is an invalid TOML and cannot be parsed/,
+        );
     });
 
     it('should NOT be able to load an inline TOML config with a JSON config from src with type as json', () => {
         const el = make_config_element({ type: 'json', src: '/covfefe.json' });
         el.innerHTML = covfefeConfigToml;
-        expect(()=>loadConfigFromElement(el)).toThrow(UserError);
+        expect(() => loadConfigFromElement(el)).toThrow(UserError);
     });
 
     it('should error out when passing an invalid JSON', () => {
         const el = make_config_element({ type: 'json' });
         el.innerHTML = '[[';
-        expect(()=>loadConfigFromElement(el)).toThrow(UserError);
+        expect(() => loadConfigFromElement(el)).toThrow(UserError);
     });
 
     it('should error out when passing an invalid TOML', () => {
         const el = make_config_element({});
         el.innerHTML = '[[';
-        expect(()=>loadConfigFromElement(el)).toThrow(UserError);
+        expect(() => loadConfigFromElement(el)).toThrow(UserError);
     });
 
     it('should not escape characters like &', () => {
-        const el = make_config_element({ type: 'json'});
-        el.innerHTML = JSON.stringify({ fetch: [{from: 'https://datausa.io/api/data?drilldowns=Nation&measures=Population'}]});
+        const el = make_config_element({ type: 'json' });
+        el.innerHTML = JSON.stringify({
+            fetch: [{ from: 'https://datausa.io/api/data?drilldowns=Nation&measures=Population' }],
+        });
         const config = loadConfigFromElement(el);
         expect(config.fetch[0].from).toBe('https://datausa.io/api/data?drilldowns=Nation&measures=Population');
     });
