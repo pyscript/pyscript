@@ -338,3 +338,4 @@ globalApp.main();
 
 export { version };
 export const interpreter = globalApp.interpreter;
+export const runtime = globalApp.interpreter;

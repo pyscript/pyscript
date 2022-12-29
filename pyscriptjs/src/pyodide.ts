@@ -22,6 +22,8 @@ export class PyodideInterpreter extends Interpreter {
     lang?: string;
     interface: PyodideInterface;
     globals: PyProxy;
+    // TODO: Remove this once `runtimes` is removed!
+    interpreter: PyodideInterface;
 
     constructor(
         config: AppConfig,
@@ -65,6 +67,9 @@ export class PyodideInterpreter extends Interpreter {
             },
             fullStdLib: false,
         });
+
+        // TODO: Remove this once `runtimes` is removed!
+        this.interpreter = this.interface;
 
         this.globals = this.interface.globals;
 
