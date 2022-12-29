@@ -46,6 +46,33 @@ make tests
 
 * When you make changes locally, double check that your contribution follows the PyScript formatting rules by running `npm run lint`. Note that in this case you're looking for the errors, <u>**NOT**</u> the warnings (Unless the warning is created by a local change). If an error is found by lint you should fix it <u>**before**</u> creating a pull request
 
+## Updating the changelog
+
+As you work on your changes, please update the changelog file `changelog.md` with a short description of the changes you made. This will help us keep track of what has changed in each release.
+
+You can look at the [changelog](../changelog.md) for examples on how to add your changes to the changelog. But here's a quick example:
+
+```
+2023.02.01
+=========
+
+Bug fixes
+---------
+
+- Fixed a bug that was causing the app to crash when you tried to do something #PR_NUMBER
+
+Enhancements
+------------
+
+- Made awesome new feature #PR_NUMBER
+
+Documentation
+-------------
+
+- Added a new section to the docs #PR_NUMBER
+
+```
+
 
 ## Rebasing changes
 
