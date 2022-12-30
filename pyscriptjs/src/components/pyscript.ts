@@ -1,4 +1,4 @@
-import { htmlDecode, ensureUniqueId, showWarning } from '../utils';
+import { htmlDecode, ensureUniqueId, showWarning, createDeprecationWarning } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
@@ -165,9 +165,10 @@ function createElementsWithEventListeners(runtime: Runtime, pyAttribute: string)
         const event = pyAttributeToEvent.get(pyAttribute);
 
         if (pyAttribute === 'pys-onClick' || pyAttribute === 'pys-onKeyDown') {
-            console.warn(
-                'Use of pys-onClick and pys-onKeyDown attributes is deprecated in favor of py-onClick() and py-onKeyDown(). pys-on* attributes will be deprecated in a future version of PyScript.',
-            );
+            const msg =
+                `The attribute 'pys-onClick' and 'pys-onKeyDown' are deprecated. Please 'py-click="myFunction()"' ` +
+                ` or 'py-keydown="myFunction()"' instead.`;
+            createDeprecationWarning(msg, msg);
             const source = `
             from pyodide.ffi import create_proxy
             Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
