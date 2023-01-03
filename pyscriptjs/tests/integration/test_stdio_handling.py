@@ -258,3 +258,54 @@ class TestOutputHandling(PyScriptTest):
 
         assert self.page.locator("#first").text_content() == "one.two."
         self.assert_no_banners()
+
+    def test_stdio_output_attribute_change(self):
+        # If the user changes the 'output' attribute of a <py-script> tag mid-execution,
+        # Output should no longer go to the selected div and a warning should appear
+        self.pyscript_run(
+            """
+            <div id="first"></div>
+            <py-script id="pyscript-tag" output="first">
+                print("one.")
+
+                # Change the 'output' attribute of this tag
+                import js
+                js.document.getElementById("pyscript-tag").setAttribute("output", "second")
+                print("two.")
+            </py-script>
+            """
+        )
+
+        assert self.page.locator("#first").text_content() == "one."
+        expected_alert_banner_msg = (
+            'Output = "second" does not match the id of any element on the page.'
+        )
+
+        alert_banner = self.page.locator(".alert-banner")
+        assert expected_alert_banner_msg in alert_banner.inner_text()
+
+    def test_stdio_target_element_id_change(self):
+        # If the user changes the ID of the targeted DOM element mid-execution,
+        # Output should no longer go to the selected element and a warning should appear
+        self.pyscript_run(
+            """
+            <div id="first"></div>
+            <py-script id="pyscript-tag" output="first">
+                print("one.")
+
+                # Change the ID of the targeted DIV to something else
+                import js
+                js.document.getElementById("first").setAttribute("id", "second")
+                print("two.")
+            </py-script>
+            """
+        )
+
+        # Note the ID of the div has changed by the time of this assert
+        assert self.page.locator("#second").text_content() == "one."
+
+        expected_alert_banner_msg = (
+            'Output = "first" does not match the id of any element on the page.'
+        )
+        alert_banner = self.page.locator(".alert-banner")
+        assert expected_alert_banner_msg in alert_banner.inner_text()

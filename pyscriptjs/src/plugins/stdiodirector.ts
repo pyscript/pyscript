@@ -26,9 +26,7 @@ export class StdioDirector extends Plugin {
      */
     beforePyScriptExec(runtime: any, src: any, PyScriptTag): void {
         if (PyScriptTag.hasAttribute("output")){
-            const target_id = PyScriptTag.getAttribute("output")
-
-            const targeted_io = new TargetedStdio(target_id)
+            const targeted_io = new TargetedStdio(PyScriptTag, "output")
             PyScriptTag.stdout_manager = targeted_io
             this._stdioMultiplexer.addListener(targeted_io)
         }

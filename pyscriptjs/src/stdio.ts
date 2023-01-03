@@ -44,19 +44,25 @@ export class CaptureStdio implements Stdio {
  */
 export class TargetedStdio implements Stdio{
 
-    target_id: string;
+    source_element: HTMLElement;
+    source_attribute: string;
 
-    constructor(target_id: string) {
-        this.target_id = target_id;
+    constructor(source_element: HTMLElement, source_attribute: string) {
+        this.source_element = source_element;
+        this.source_attribute = source_attribute;
     }
 
     stdout_writeline (msg: string) {
-        // Elements are identified by ID at write-time, not
-        // when constructed, in case the running script changes element IDs
-        const target = document.getElementById(this.target_id)
+        // Both the element to be targeted and the ID of the element to write to
+        // are determined at write-time, not when the TargetdStdio object is
+        // created. This way, if either the 'output' attribute of the HTML tag
+        // Or the ID of the target element changes during execution of the Python
+        // code, the output is still routed (or not) as expected
+        const target_id = this.source_element.getAttribute(this.source_attribute)
+        const target = document.getElementById(target_id)
         console.log(target)
         if (target === null) { // No matching ID
-            createSingularWarning(`Output = "${this.target_id}" does not match the id of any element on the page.`, `Output = "${this.target_id}" does not match the id of any element on the page.`)
+            createSingularWarning(`Output = "${target_id}" does not match the id of any element on the page.`, `Output = "${target_id}" does not match the id of any element on the page.`)
         }
         else {
             msg = escape(msg).replace("\n", "<br>")

@@ -72,7 +72,6 @@ export class PyScriptApp {
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
 
-        //this._stdoutDirector =
         this.plugins.add(new StdioDirector(this._stdioMultiplexer))
     }
 
@@ -313,6 +312,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
 
     // lifecycle (7)
     executeScripts(runtime: Runtime) {
+        // make_PyScript takes a runtime and a PyScriptApp as arguments
         this.PyScript = make_PyScript(runtime, this);
         customElements.define('py-script', this.PyScript);
     }
