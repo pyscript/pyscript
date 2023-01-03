@@ -292,3 +292,22 @@ class TestBasic(PyScriptTest):
             pyscript_tag.evaluate("node => node.getPySrc()")
             == 'print("hello world!")\n'
         )
+
+    def test_pys_onClick_shows_deprecation_warning(self):
+        self.pyscript_run(
+            """
+            <button id="1" pys-onClick="myfunc()">Click me</button>
+            <py-script>
+                def myfunc():
+                    print("hello world")
+
+            </py-script>
+            """
+        )
+        banner = self.page.locator(".alert-banner")
+        expected_message = (
+            "The attribute 'pys-onClick' and 'pys-onKeyDown' are "
+            "deprecated. Please 'py-click=\"myFunction()\"' or "
+            "'py-keydown=\"myFunction()\"' instead."
+        )
+        assert banner.inner_text() == expected_message
