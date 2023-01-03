@@ -73,15 +73,9 @@ describe('TargetedStdio', () => {
     let multi: StdioMultiplexer;
 
     beforeEach(() => {
-        capture = new CaptureStdio();
-        targeted = new TargetedStdio('target-id');
-
-        multi = new StdioMultiplexer();
-        multi.addListener(capture)
-        multi.addListener(targeted)
-
         let div = document.getElementById("target-id")
-        if ( div=== null){
+
+        if (div=== null){
             div = document.createElement('div')
             div.id = "target-id"
             document.body.appendChild(div)
@@ -89,10 +83,22 @@ describe('TargetedStdio', () => {
         else {
             div.innerHTML = ""
         }
+
+        const tag = document.createElement('div')
+        tag.setAttribute("output", "target-id")
+
+        capture = new CaptureStdio();
+        targeted = new TargetedStdio(tag, 'output');
+
+        multi = new StdioMultiplexer();
+        multi.addListener(capture)
+        multi.addListener(targeted)
+
+
     });
 
     it('targeted id is set by constructor', () =>{
-        expect(targeted.target_id).toBe("target-id");
+        expect(targeted.source_attribute).toBe("output");
     });
 
     it('targeted stdio/stderr also goes to multiplexer', () =>{
