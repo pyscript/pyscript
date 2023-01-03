@@ -114,11 +114,19 @@ export function createDeprecationWarning(msg: string, elementName: string): void
     createSingularWarning(msg, elementName);
 }
 
-export function createSingularWarning(msg: string, sentinelText: string): void {
+/** Adds a warning banner with content {msg} at the top of the page if
+ *  and only if no banner containing the {sentinelText} already exists.
+ *  If sentinelText is null, the full text of {msg} is used instead
+ *
+ * @param msg {string} The full text content of the warning banner to be displayed
+ * @param sentinelText {string} [null] The text to match against existing warning banners.
+ *                     If null, the full text of 'msg' is used instead.
+ */
+export function createSingularWarning(msg: string, sentinelText: string | null = null): void {
     const banners = document.getElementsByClassName('alert-banner py-warning');
     let bannerCount = 0;
     for (const banner of banners) {
-        if (banner.innerHTML.includes(sentinelText)) {
+        if (banner.innerHTML.includes(sentinelText ? sentinelText : msg)) {
             bannerCount++;
         }
     }
