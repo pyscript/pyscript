@@ -39,8 +39,23 @@ export class Plugin {
      */
     afterSetup(runtime: Runtime) {}
 
+    /** The source of a <py-script>> tag has been fetched, and we're about
+     * to evaluate that source using the provided runtime.
+     *
+     * @param runtime The Runtime object that will be used to evaluated the Python source code
+     * @param src {string} The Python source code to be evaluated
+     * @param PyScriptTag The <py-script> HTML tag that originated the evaluation
+     */
     beforePyScriptExec(runtime, src, PyScriptTag) {}
 
+    /** The Python in a <py-script> has just been evaluated, but control
+     * has not been ceded back to the JavaScript event loop yet
+     *
+     * @param runtime The Runtime object that will be used to evaluated the Python source code
+     * @param src {string} The Python source code to be evaluated
+     * @param PyScriptTag The <py-script> HTML tag that originated the evaluation
+     * @param result The returned result of evaluating the Python (if any)
+     */
     afterPyScriptExec(runtime, src, PyScriptTag, result) {}
 
     /** Startup complete. The interpreter is initialized and ready, user
