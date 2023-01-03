@@ -265,20 +265,28 @@ class TestOutputHandling(PyScriptTest):
         self.pyscript_run(
             """
             <div id="first"></div>
+            <div id="second"></div>
+            <!-- There is no tag with id "third" -->
             <py-script id="pyscript-tag" output="first">
                 print("one.")
 
                 # Change the 'output' attribute of this tag
                 import js
-                js.document.getElementById("pyscript-tag").setAttribute("output", "second")
+                this_tag = js.document.getElementById("pyscript-tag")
+
+                this_tag.setAttribute("output", "second")
                 print("two.")
+
+                this_tag.setAttribute("output", "third")
+                print("three.")
             </py-script>
             """
         )
 
         assert self.page.locator("#first").text_content() == "one."
+        assert self.page.locator("#second").text_content() == "two."
         expected_alert_banner_msg = (
-            'Output = "second" does not match the id of any element on the page.'
+            'Output = "third" does not match the id of any element on the page.'
         )
 
         alert_banner = self.page.locator(".alert-banner")
@@ -290,19 +298,30 @@ class TestOutputHandling(PyScriptTest):
         self.pyscript_run(
             """
             <div id="first"></div>
+            <div id="second"></div>
+            <!-- There is no tag with id "third" -->
             <py-script id="pyscript-tag" output="first">
                 print("one.")
 
                 # Change the ID of the targeted DIV to something else
                 import js
-                js.document.getElementById("first").setAttribute("id", "second")
+                target_tag = js.document.getElementById("first")
+
+                # should fail and show banner
+                target_tag.setAttribute("id", "second")
                 print("two.")
+
+                # But changing both the 'output' attribute and the id of the target
+                # should work
+                target_tag.setAttribute("id", "third")
+                js.document.getElementById("pyscript-tag").setAttribute("output", "third")
+                print("three.")
             </py-script>
             """
         )
 
         # Note the ID of the div has changed by the time of this assert
-        assert self.page.locator("#second").text_content() == "one."
+        assert self.page.locator("#third").text_content() == "one.three."
 
         expected_alert_banner_msg = (
             'Output = "first" does not match the id of any element on the page.'
