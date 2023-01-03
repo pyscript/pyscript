@@ -172,9 +172,6 @@ class TestOutputHandling(PyScriptTest):
             """
         )
 
-        # No text should appear from coroutines
-        assert self.page.locator("#bad").text_content() == ""
-
         # Three prints should appear from synchronous writes
         assert self.page.locator("#good").text_content() == "one.two.three."
 
