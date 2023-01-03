@@ -35,7 +35,3 @@ glob:
 py-config-fetch
 py-config-runtime
 ```
-
-## Advanced
-
-This section contains tutorials about more advanced PyScript features.
