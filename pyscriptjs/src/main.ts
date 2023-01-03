@@ -3,7 +3,7 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import type { Runtime } from './runtime';
-import { version } from './runtime';
+import { version } from './version';
 import { PluginManager, define_custom_element } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideRuntime } from './pyodide';
@@ -11,7 +11,7 @@ import { getLogger } from './logger';
 import { handleFetchError, showWarning, globalExport } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
-import { UserError, ErrorCode, _createAlertBanner } from "./exceptions"
+import { UserError, ErrorCode, _createAlertBanner } from './exceptions';
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
@@ -180,7 +180,7 @@ export class PyScriptApp {
         this.plugins.afterSetup(runtime);
 
         //Refresh module cache in case plugins have modified the filesystem
-        runtime.invalidate_module_path_cache()
+        runtime.invalidate_module_path_cache();
         this.logStatus('Executing <py-script> tags...');
         this.executeScripts(runtime);
 
@@ -208,7 +208,7 @@ export class PyScriptApp {
         // Save and load pyscript.py from FS
         runtime.interpreter.FS.writeFile('pyscript.py', pyscript, { encoding: 'utf8' });
         //Refresh the module cache so Python consistently finds pyscript module
-        runtime.invalidate_module_path_cache()
+        runtime.invalidate_module_path_cache();
 
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
@@ -224,7 +224,7 @@ export class PyScriptApp {
         import pyscript
         from pyscript import Element, display, HTML
         pyscript._install_deprecated_globals_2022_12_1(globals())
-        `)
+        `);
 
         if (this.config.packages) {
             logger.info('Packages to install: ', this.config.packages);
@@ -233,7 +233,7 @@ export class PyScriptApp {
         await this.fetchPaths(runtime);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
-        runtime.invalidate_module_path_cache()
+        runtime.invalidate_module_path_cache();
         // Finally load plugins
         await this.fetchPythonPlugins(runtime);
     }
@@ -282,7 +282,7 @@ export class PyScriptApp {
                 await runtime.loadFromFile(destPath, singleFile);
 
                 //refresh module cache before trying to import module files into runtime
-                runtime.invalidate_module_path_cache()
+                runtime.invalidate_module_path_cache();
 
                 const modulename = singleFile.replace(/^.*[\\/]/, '').replace('.py', '');
 

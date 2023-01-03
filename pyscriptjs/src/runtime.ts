@@ -4,10 +4,6 @@ import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/runtime');
 
-// VERSION
-// Version number of release
-export const version = '2022.12.1.dev';
-
 export type RuntimeInterpreter = PyodideInterface | null;
 
 /*
