@@ -68,8 +68,8 @@ export function make_PyRepl(runtime: Runtime) {
                 languageConf.of(python()),
                 keymap.of([
                     ...defaultKeymap,
-                    { key: 'Ctrl-Enter', run: this.execute.bind(this) },
-                    { key: 'Shift-Enter', run: this.execute.bind(this) },
+                    { key: 'Ctrl-Enter', run: this.execute.bind(this), preventDefault: true },
+                    { key: 'Shift-Enter', run: this.execute.bind(this), preventDefault: true },
                 ]),
             ];
 
