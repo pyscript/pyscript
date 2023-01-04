@@ -4,11 +4,7 @@ import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/interpreter');
 
-// VERSION
-// Version number of release
-export const version = '2022.12.1.dev';
-
-export type InterpreterInterface = PyodideInterface | null;
+export type RuntimeInterpreter = PyodideInterface | null;
 
 /*
 Interpreter class is a super class that all different interpreters must respect

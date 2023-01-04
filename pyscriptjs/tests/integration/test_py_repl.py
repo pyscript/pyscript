@@ -69,6 +69,9 @@ class TestPyRepl(PyScriptTest):
         assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "hello world"
 
+        # Shift-enter should not add a newline to the editor
+        assert self.page.locator(".cm-line").count() == 1
+
     def test_display(self):
         self.pyscript_run(
             """

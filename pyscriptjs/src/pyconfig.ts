@@ -1,6 +1,6 @@
 import toml from '../src/toml';
 import { getLogger } from './logger';
-import { version } from './interpreter';
+import { version } from './version';
 import { getAttribute, readTextFromPath, htmlDecode, createDeprecationWarning } from './utils';
 import { UserError, ErrorCode } from './exceptions';
 

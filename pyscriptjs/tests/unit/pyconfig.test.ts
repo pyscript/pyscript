@@ -1,6 +1,6 @@
 import { jest, describe, it, expect } from '@jest/globals';
 import { loadConfigFromElement, defaultConfig } from '../../src/pyconfig';
-import { version } from '../../src/interpreter';
+import { version } from '../../src/version';
 import { UserError } from '../../src/exceptions';
 
 // inspired by trump typos
