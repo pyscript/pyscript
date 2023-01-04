@@ -9,6 +9,7 @@ This reference guide contains the error codes you might find and a description o
 |------------|--------------------------------|--------------------|
 | PY1000     | Invalid configuration supplied | Confirm that your `py-config` tag is using a valid `TOML` or `JSON` syntax and is using the correct configuration type. |
 | PY1001     | Unable to install package(s)   | Confirm that the package contains a pure Python 3 wheel or the name of the package is correct. |
+| PY3000     | Missing `id` attribute        | Add an `id` attribute to the element. |
 | PY9000     | Top level await is deprecated  | Create a coroutine with your code and schedule it with `asyncio.ensure_future` or similar |
 
 
@@ -37,3 +38,11 @@ Pyscript cannot install the package(s) you specified in your `py-config` tag. Th
 - An error occurred while trying to install the package
 
 An error banner should appear on your page with the error code and a description of the error or a traceback. You can also check the developer console for more information.
+
+## PY3000
+
+When using any of the `py-*` attributes, you must specify an `id` for the element. This is required for all `py-*` attributes to work. For example, if you want to use the `py-click` attribute, you must specify an `id` for the element.
+
+```html
+<button py-click="my_function()" id="my-button">Click me</button>
+```
