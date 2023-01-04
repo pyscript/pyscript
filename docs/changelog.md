@@ -3,6 +3,12 @@
 2023.01.1
 =========
 
+Features
+--------
+
+- Restored the `output` attribute of &lt;py-script&gt; tags to route `sys.stdout` to a DOM element with the given ID. ([#1063](https://github.com/pyscript/pyscript/pull/1063))
+- Added a `stderr` attribute of &lt;py-script&gt; tags to route `sys.stderr` to a DOM element with the given ID. ([#1063](https://github.com/pyscript/pyscript/pull/1063))
+
 Bug fixes
 ---------
 
