@@ -79,7 +79,7 @@ In this step, we will create the Python function that will be called when the bu
             import datetime
 
             def current_time():
-            now = datetime.datetime.now()
+                now = datetime.datetime.now()
         </py-script>
     </body>
 </html>
@@ -112,13 +112,13 @@ If you run the example, you will notice that nothing happened. This is because w
             import datetime
 
             def current_time():
-            now = datetime.datetime.now()
+                now = datetime.datetime.now()
 
-            # Get paragraph element by id
-            paragraph = Element("current-time")
+                # Get paragraph element by id
+                paragraph = Element("current-time")
 
-            # Add current time to the paragraph element
-            paragraph.write(now.strftime("%Y-%m-%d %H:%M:%S"))
+                # Add current time to the paragraph element
+                paragraph.write(now.strftime("%Y-%m-%d %H:%M:%S"))
         </py-script>
     </body>
 </html>
