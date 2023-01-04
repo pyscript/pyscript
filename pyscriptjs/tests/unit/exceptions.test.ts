@@ -1,127 +1,123 @@
-import { expect, it, jest, describe, afterEach } from "@jest/globals"
-import { _createAlertBanner, UserError, FetchError, ErrorCode } from "../../src/exceptions"
+import { expect, it, jest, describe, afterEach } from '@jest/globals';
+import { _createAlertBanner, UserError, FetchError, ErrorCode } from '../../src/exceptions';
 
-describe("Test _createAlertBanner", () => {
-  afterEach(() => {
-    // Ensure we always have a clean body
-    document.body.innerHTML = `<div>Hello World</div>`;
-  })
+describe('Test _createAlertBanner', () => {
+    afterEach(() => {
+        // Ensure we always have a clean body
+        document.body.innerHTML = `<div>Hello World</div>`;
+    });
 
+    it("error level shouldn't contain close button", async () => {
+        _createAlertBanner('Something went wrong!', 'error');
 
-  it("error level shouldn't contain close button", async () => {
-    _createAlertBanner("Something went wrong!", "error");
+        const banner = document.getElementsByClassName('alert-banner');
+        const closeButton = document.getElementById('alert-close-button');
+        expect(banner.length).toBe(1);
+        expect(banner[0].innerHTML).toBe('Something went wrong!');
+        expect(closeButton).toBeNull();
+    });
 
-    const banner = document.getElementsByClassName("alert-banner");
-    const closeButton = document.getElementById("alert-close-button");
-    expect(banner.length).toBe(1);
-    expect(banner[0].innerHTML).toBe("Something went wrong!");
-    expect(closeButton).toBeNull();
-  })
+    it('warning level should contain close button', async () => {
+        _createAlertBanner('This is a warning', 'warning');
 
-  it("warning level should contain close button", async () => {
-    _createAlertBanner("This is a warning", "warning");
+        const banner = document.getElementsByClassName('alert-banner');
+        const closeButton = document.getElementById('alert-close-button');
+        expect(banner.length).toBe(1);
+        expect(banner[0].innerHTML).toContain('This is a warning');
+        expect(closeButton).not.toBeNull();
+    });
 
-    const banner = document.getElementsByClassName("alert-banner");
-    const closeButton = document.getElementById("alert-close-button");
-    expect(banner.length).toBe(1);
-    expect(banner[0].innerHTML).toContain("This is a warning");
-    expect(closeButton).not.toBeNull();
-  })
+    it('error level banner should log to console', async () => {
+        const logSpy = jest.spyOn(console, 'error');
 
-  it("error level banner should log to console", async () => {
-    const logSpy = jest.spyOn(console, "error");
+        _createAlertBanner('Something went wrong!');
 
-    _createAlertBanner("Something went wrong!");
+        expect(logSpy).toHaveBeenCalledWith('Something went wrong!');
+    });
 
-    expect(logSpy).toHaveBeenCalledWith("Something went wrong!");
+    it('warning level banner should log to console', async () => {
+        const logSpy = jest.spyOn(console, 'warn');
 
-  })
+        _createAlertBanner('This warning', 'warning');
 
-  it("warning level banner should log to console", async () => {
-    const logSpy = jest.spyOn(console, "warn");
+        expect(logSpy).toHaveBeenCalledWith('This warning');
+    });
 
-    _createAlertBanner("This warning", "warning");
+    it('close button should remove element from page', async () => {
+        let banner = document.getElementsByClassName('alert-banner');
+        expect(banner.length).toBe(0);
 
-    expect(logSpy).toHaveBeenCalledWith("This warning");
-  })
+        _createAlertBanner('Warning!', 'warning');
 
-  it("close button should remove element from page", async () => {
-    let banner = document.getElementsByClassName("alert-banner");
-    expect(banner.length).toBe(0);
+        // Just a sanity check
+        banner = document.getElementsByClassName('alert-banner');
+        expect(banner.length).toBe(1);
 
-    _createAlertBanner("Warning!", "warning");
+        const closeButton = document.getElementById('alert-close-button');
+        if (closeButton) {
+            closeButton.click();
+            // Confirm that clicking the close button, removes the element
+            banner = document.getElementsByClassName('alert-banner');
+            expect(banner.length).toBe(0);
+        } else {
+            fail('Unable to find close button on the page, but should exist');
+        }
+    });
 
-    // Just a sanity check
-    banner = document.getElementsByClassName("alert-banner");
-    expect(banner.length).toBe(1);
+    it("toggling logging off on error alert shouldn't log to console", async () => {
+        const errorLogSpy = jest.spyOn(console, 'error');
 
-    const closeButton = document.getElementById("alert-close-button");
-    if(closeButton) {
-      closeButton.click();
-      // Confirm that clicking the close button, removes the element
-      banner = document.getElementsByClassName("alert-banner");
-      expect(banner.length).toBe(0);
-    } else {
-      fail("Unable to find close button on the page, but should exist");
-    }
+        _createAlertBanner('Test error', 'error', 'text', false);
+        expect(errorLogSpy).not.toHaveBeenCalledWith('Test error');
+    });
 
-  })
+    it("toggling logging off on warning alert shouldn't log to console", async () => {
+        const warnLogSpy = jest.spyOn(console, 'warn');
+        _createAlertBanner('Test warning', 'warning', 'text', false);
+        expect(warnLogSpy).not.toHaveBeenCalledWith('Test warning');
+    });
 
-  it("toggling logging off on error alert shouldn't log to console", async () => {
-    const errorLogSpy = jest.spyOn(console, "error");
+    it('_createAlertBanner messageType text writes message to content', async () => {
+        let banner = document.getElementsByClassName('alert-banner');
+        expect(banner.length).toBe(0);
 
-    _createAlertBanner("Test error", "error", "text", false);
-    expect(errorLogSpy).not.toHaveBeenCalledWith("Test error");
-  })
+        const message = '<p>Test message</p>';
+        _createAlertBanner(message, 'error', 'text');
+        banner = document.getElementsByClassName('alert-banner');
 
-  it("toggling logging off on warning alert shouldn't log to console", async () => {
-    const warnLogSpy = jest.spyOn(console, "warn");
-    _createAlertBanner("Test warning", "warning", "text", false);
-    expect(warnLogSpy).not.toHaveBeenCalledWith("Test warning");
-  })
+        expect(banner.length).toBe(1);
+        expect(banner[0].innerHTML).toBe('&lt;p&gt;Test message&lt;/p&gt;');
+        expect(banner[0].textContent).toBe(message);
+    });
 
+    it('_createAlertbanner messageType html writes message to innerHTML', async () => {
+        let banner = document.getElementsByClassName('alert-banner');
+        expect(banner.length).toBe(0);
 
-  it('_createAlertbanner messageType text writes message to content', async () => {
-    let banner = document.getElementsByClassName("alert-banner");
-    expect(banner.length).toBe(0);
+        const message = '<p>Test message</p>';
+        _createAlertBanner(message, 'error', 'html');
+        banner = document.getElementsByClassName('alert-banner');
 
-    const message = '<p>Test message</p>'
-    _createAlertBanner(message, 'error', 'text');
-    banner = document.getElementsByClassName("alert-banner");
+        expect(banner.length).toBe(1);
+        expect(banner[0].innerHTML).toBe(message);
+        expect(banner[0].textContent).toBe('Test message');
+    });
+});
 
-    expect(banner.length).toBe(1);
-    expect(banner[0].innerHTML).toBe("&lt;p&gt;Test message&lt;/p&gt;");
-    expect(banner[0].textContent).toBe(message);
-  })
+describe('Test Exceptions', () => {
+    it('UserError contains errorCode and shows in message', async () => {
+        const errorCode = ErrorCode.BAD_CONFIG;
+        const message = 'Test error';
+        const userError = new UserError(ErrorCode.BAD_CONFIG, message);
+        expect(userError.errorCode).toBe(errorCode);
+        expect(userError.message).toBe(`(${errorCode}): ${message}`);
+    });
 
-  it('_createAlertbanner messageType html writes message to innerHTML', async () => {
-    let banner = document.getElementsByClassName("alert-banner");
-    expect(banner.length).toBe(0);
-
-    const message = '<p>Test message</p>';
-    _createAlertBanner(message, 'error', 'html');
-    banner = document.getElementsByClassName("alert-banner");
-
-    expect(banner.length).toBe(1);
-    expect(banner[0].innerHTML).toBe(message);
-    expect(banner[0].textContent).toBe("Test message");
-  })
-})
-
-describe("Test Exceptions", () => {
-  it('UserError contains errorCode and shows in message', async() => {
-    const errorCode = ErrorCode.BAD_CONFIG;
-    const message = 'Test error';
-    const userError = new UserError(ErrorCode.BAD_CONFIG, message);
-    expect(userError.errorCode).toBe(errorCode);
-    expect(userError.message).toBe(`(${errorCode}): ${message}`);
-  })
-
-  it('FetchError contains errorCode and shows in message', async() => {
-    const errorCode = ErrorCode.FETCH_NOT_FOUND_ERROR;
-    const message = 'Test error';
-    const fetchError = new FetchError(errorCode, message);
-    expect(fetchError.errorCode).toBe(errorCode);
-    expect(fetchError.message).toBe(`(${errorCode}): ${message}`);
-  })
-})
+    it('FetchError contains errorCode and shows in message', async () => {
+        const errorCode = ErrorCode.FETCH_NOT_FOUND_ERROR;
+        const message = 'Test error';
+        const fetchError = new FetchError(errorCode, message);
+        expect(fetchError.errorCode).toBe(errorCode);
+        expect(fetchError.message).toBe(`(${errorCode}): ${message}`);
+    });
+});

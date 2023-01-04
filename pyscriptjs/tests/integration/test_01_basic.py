@@ -311,3 +311,24 @@ class TestBasic(PyScriptTest):
             "'py-keydown=\"myFunction()\"' instead."
         )
         assert banner.inner_text() == expected_message
+
+    def test_py_attribute_shows_error_if_no_id(self):
+        self.pyscript_run(
+            """
+            <button py-click="myfunc()">Click me</button>
+            <py-script>
+                def myfunc():
+                    print("hello world")
+            </py-script>
+            """,
+            wait_for_pyscript=False,
+        )
+
+        banner = self.page.locator(".alert-banner")
+        expected_message = (
+            "(PY3000): The element '<button py-click=\"myfunc()\">Click me</button>' "
+            "must have an 'id' attribute, when using the 'py-click' attribute. For "
+            'example: \'<button id="myDiv" py-click="myFunction()">Click me</button>\'.'
+        )
+
+        assert banner.inner_text() == expected_message

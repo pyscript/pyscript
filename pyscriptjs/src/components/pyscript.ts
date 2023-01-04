@@ -2,7 +2,7 @@ import { htmlDecode, ensureUniqueId, showWarning, createDeprecationWarning } fro
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
-import { _createAlertBanner } from '../exceptions';
+import { _createAlertBanner, UserError, ErrorCode } from '../exceptions';
 import { robustFetch } from '../fetch';
 
 const logger = getLogger('py-script');
@@ -157,8 +157,12 @@ function createElementsWithEventListeners(runtime: Runtime, pyAttribute: string)
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
     for (const el of matches) {
         if (el.id.length === 0) {
-            throw new TypeError(
-                `<${el.tagName.toLowerCase()}> must have an id attribute, when using the ${pyAttribute} attribute`,
+            const tag = el.tagName.toLowerCase();
+            throw new UserError(
+                ErrorCode.NO_ID_IN_ELEMENT,
+                `The element '${el.outerHTML}' must have an 'id' attribute, when using the ` +
+                    `'${pyAttribute}' attribute. For example: ` +
+                    `'<${tag} id="myDiv" ${pyAttribute}="myFunction()">${el.textContent}</${tag}>'.`,
             );
         }
         const handlerCode = el.getAttribute(pyAttribute);
