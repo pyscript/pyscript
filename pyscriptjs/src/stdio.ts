@@ -55,17 +55,18 @@ export class TargetedStdio implements Stdio{
         this.capture_stdout = capture_stdout;
         this.capture_stderr = capture_stderr;
     }
+
     /** Writes the given msg to an element with a given ID. The ID is the value an attribute
      *  of the source_element specified by source_attribute.
+     *  Both the element to be targeted and the ID of the element to write to
+     *  are determined at write-time, not when the TargetdStdio object is
+     *  created. This way, if either the 'output' attribute of the HTML tag
+     *  or the ID of the target element changes during execution of the Python
+     *  code, the output is still routed (or not) as expected
      *
      * @param msg The output to be written
      */
     writeline_by_attribute(msg:string){
-            // Both the element to be targeted and the ID of the element to write to
-            // are determined at write-time, not when the TargetdStdio object is
-            // created. This way, if either the 'output' attribute of the HTML tag
-            // or the ID of the target element changes during execution of the Python
-            // code, the output is still routed (or not) as expected
             const target_id = this.source_element.getAttribute(this.source_attribute)
             const target = document.getElementById(target_id)
             if (target === null) { // No matching ID
