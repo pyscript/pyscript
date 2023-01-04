@@ -1,4 +1,4 @@
-import { htmlDecode, ensureUniqueId } from '../utils';
+import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
@@ -13,6 +13,7 @@ export function make_PyScript(runtime: Runtime, app: PyScriptApp) {
     class PyScript extends HTMLElement {
         srcCode: string
         stdout_manager: Stdio | null
+        stderr_manager: Stdio | null
 
         async connectedCallback() {
             ensureUniqueId(this);

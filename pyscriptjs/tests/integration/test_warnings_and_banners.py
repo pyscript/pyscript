@@ -24,5 +24,5 @@ class TestWarningsAndBanners(PyScriptTest):
         assert loc.count() == 1
         assert (
             loc.text_content()
-            == 'Output = "foo" does not match the id of any element on the page.'
+            == 'output = "foo" does not match the id of any element on the page.'
         )

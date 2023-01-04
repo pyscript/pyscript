@@ -46,37 +46,52 @@ export class TargetedStdio implements Stdio{
 
     source_element: HTMLElement;
     source_attribute: string;
+    capture_stdout: boolean;
+    capture_stderr: boolean;
 
-    constructor(source_element: HTMLElement, source_attribute: string) {
+    constructor(source_element: HTMLElement, source_attribute: string, capture_stdout = true, capture_stderr = true) {
         this.source_element = source_element;
         this.source_attribute = source_attribute;
+        this.capture_stdout = capture_stdout;
+        this.capture_stderr = capture_stderr;
+    }
+    /** Writes the given msg to an element with a given ID. The ID is the value an attribute
+     *  of the source_element specified by source_attribute.
+     *
+     * @param msg The output to be written
+     */
+    writeline_by_attribute(msg:string){
+            // Both the element to be targeted and the ID of the element to write to
+            // are determined at write-time, not when the TargetdStdio object is
+            // created. This way, if either the 'output' attribute of the HTML tag
+            // or the ID of the target element changes during execution of the Python
+            // code, the output is still routed (or not) as expected
+            const target_id = this.source_element.getAttribute(this.source_attribute)
+            const target = document.getElementById(target_id)
+            if (target === null) { // No matching ID
+                createSingularWarning(`${this.source_attribute} = "${target_id}" does not match the id of any element on the page.`)
+            }
+            else {
+                msg = escape(msg).replace("\n", "<br>")
+                if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
+                    msg = msg + "<br>"
+                }
+                target.innerHTML += msg
+            }
     }
 
     stdout_writeline (msg: string) {
-        // Both the element to be targeted and the ID of the element to write to
-        // are determined at write-time, not when the TargetdStdio object is
-        // created. This way, if either the 'output' attribute of the HTML tag
-        // or the ID of the target element changes during execution of the Python
-        // code, the output is still routed (or not) as expected
-        const target_id = this.source_element.getAttribute(this.source_attribute)
-        const target = document.getElementById(target_id)
-        if (target === null) { // No matching ID
-            createSingularWarning(`Output = "${target_id}" does not match the id of any element on the page.`)
-        }
-        else {
-            msg = escape(msg).replace("\n", "<br>")
-            if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
-                msg = msg + "<br>"
-            }
-            target.innerHTML += msg
+        if (this.capture_stdout){
+            this.writeline_by_attribute(msg)
         }
 
     }
 
     stderr_writeline (msg: string) {
-        this.stdout_writeline(msg);
+        if (this.capture_stderr){
+            this.writeline_by_attribute(msg)
+        }
     }
-
 }
 
 /** Redirect stdio streams to multiple listeners

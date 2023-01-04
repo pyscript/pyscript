@@ -26,8 +26,13 @@ export class StdioDirector extends Plugin {
      */
     beforePyScriptExec(runtime: any, src: any, PyScriptTag): void {
         if (PyScriptTag.hasAttribute("output")){
-            const targeted_io = new TargetedStdio(PyScriptTag, "output")
+            const targeted_io = new TargetedStdio(PyScriptTag, "output", true, true)
             PyScriptTag.stdout_manager = targeted_io
+            this._stdioMultiplexer.addListener(targeted_io)
+        }
+        if (PyScriptTag.hasAttribute("stderr")){
+            const targeted_io = new TargetedStdio(PyScriptTag, "stderr", false, true)
+            PyScriptTag.stderr_manager = targeted_io
             this._stdioMultiplexer.addListener(targeted_io)
         }
     }
@@ -39,6 +44,10 @@ export class StdioDirector extends Plugin {
         if (PyScriptTag.stdout_manager != null){
             this._stdioMultiplexer.removeListener(PyScriptTag.stdout_manager)
             PyScriptTag.stdout_manager = null
+        }
+        if (PyScriptTag.stderr_manager != null){
+            this._stdioMultiplexer.removeListener(PyScriptTag.stderr_manager)
+            PyScriptTag.stderr_manager = null
         }
     }
 }

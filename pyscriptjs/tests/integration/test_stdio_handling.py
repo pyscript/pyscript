@@ -214,9 +214,9 @@ class TestOutputHandling(PyScriptTest):
 
         self.assert_no_banners()
 
-    def test_stdio_id_errors(self):
+    def test_stdio_stdout_id_errors(self):
         # Test that using an ID not present on the page as the Output
-        # Attribute creates exactly 1 warning banner
+        # Attribute creates exactly 1 warning banner per missing id
         self.pyscript_run(
             """
             <py-script output="not-on-page">
@@ -238,17 +238,49 @@ class TestOutputHandling(PyScriptTest):
         assert len(banner) == 1
         banner_content = banner[0].inner_text()
         expected = (
-            'Output = "not-on-page" does not match the id of any element on the page.'
+            'output = "not-on-page" does not match the id of any element on the page.'
+        )
+
+        assert banner_content == expected
+
+    def test_stdio_stderr_id_errors(self):
+        # Test that using an ID not present on the page as the stderr
+        # attribute creates exactly 1 warning banner per missing id
+        self.pyscript_run(
+            """
+            <py-script stderr="not-on-page">
+                import sys
+                print("bad.", file=sys.stderr)
+            </py-script>
+
+            <div id="on-page"></div>
+            <py-script>
+                print("good.", file=sys.stderr)
+            </py-script>
+
+            <py-script stderr="not-on-page">
+                print("bad.", file=sys.stderr)
+            </py-script>
+            """
+        )
+
+        banner = self.page.query_selector_all(".py-warning")
+        assert len(banner) == 1
+        banner_content = banner[0].inner_text()
+        expected = (
+            'stderr = "not-on-page" does not match the id of any element on the page.'
         )
 
         assert banner_content == expected
 
     def test_stdio_stderr(self):
         # Test that stderr works, and routes to the same location as stdout
+        # Also, script tags with the stderr attribute route to an additional location
         self.pyscript_run(
             """
-            <div id="first"></div>
-            <py-script output="first">
+            <div id="stdout-div"></div>
+            <div id="stderr-div"></div>
+            <py-script output="stdout-div" stderr="stderr-div">
                 import sys
                 print("one.", file=sys.stderr)
                 print("two.")
@@ -256,7 +288,8 @@ class TestOutputHandling(PyScriptTest):
             """
         )
 
-        assert self.page.locator("#first").text_content() == "one.two."
+        assert self.page.locator("#stdout-div").text_content() == "one.two."
+        assert self.page.locator("#stderr-div").text_content() == "one."
         self.assert_no_banners()
 
     def test_stdio_output_attribute_change(self):
@@ -286,7 +319,7 @@ class TestOutputHandling(PyScriptTest):
         assert self.page.locator("#first").text_content() == "one."
         assert self.page.locator("#second").text_content() == "two."
         expected_alert_banner_msg = (
-            'Output = "third" does not match the id of any element on the page.'
+            'output = "third" does not match the id of any element on the page.'
         )
 
         alert_banner = self.page.locator(".alert-banner")
@@ -324,7 +357,7 @@ class TestOutputHandling(PyScriptTest):
         assert self.page.locator("#third").text_content() == "one.three."
 
         expected_alert_banner_msg = (
-            'Output = "first" does not match the id of any element on the page.'
+            'output = "first" does not match the id of any element on the page.'
         )
         alert_banner = self.page.locator(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()

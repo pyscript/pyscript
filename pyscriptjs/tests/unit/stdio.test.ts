@@ -70,31 +70,46 @@ describe('StdioMultiplexer', () => {
 describe('TargetedStdio', () => {
     let capture: CaptureStdio;
     let targeted: TargetedStdio;
+    let error_targeted: TargetedStdio;
     let multi: StdioMultiplexer;
 
     beforeEach(() => {
-        let div = document.getElementById("target-id")
+        //DOM element to capture stdout and stderr
+        let target_div = document.getElementById("output-id");
 
-        if (div=== null){
-            div = document.createElement('div')
-            div.id = "target-id"
-            document.body.appendChild(div)
+        if (target_div=== null){
+            target_div = document.createElement('div');
+            target_div.id = "output-id";
+            document.body.appendChild(target_div);
         }
         else {
-            div.innerHTML = ""
+            target_div.innerHTML = "";
         }
 
-        const tag = document.createElement('div')
-        tag.setAttribute("output", "target-id")
+        //DOM element to capture stderr
+        let error_div = document.getElementById("error-id");
+
+        if (error_div=== null){
+            error_div = document.createElement('div');
+            error_div.id = "error-id";
+            document.body.appendChild(error_div);
+        }
+        else {
+            error_div.innerHTML = "";
+        }
+
+        const tag = document.createElement('div');
+        tag.setAttribute("output", "output-id");
+        tag.setAttribute("stderr", "error-id");
 
         capture = new CaptureStdio();
-        targeted = new TargetedStdio(tag, 'output');
+        targeted = new TargetedStdio(tag, 'output', true, true);
+        error_targeted = new TargetedStdio(tag, 'stderr', false, true);
 
         multi = new StdioMultiplexer();
-        multi.addListener(capture)
-        multi.addListener(targeted)
-
-
+        multi.addListener(capture);
+        multi.addListener(targeted);
+        multi.addListener(error_targeted);
     });
 
     it('targeted id is set by constructor', () =>{
@@ -106,7 +121,8 @@ describe('TargetedStdio', () => {
         multi.stderr_writeline("out 2");
         expect(capture.captured_stdout).toBe("out 1\n");
         expect(capture.captured_stderr).toBe("out 2\n");
-        expect(document.getElementById("target-id")?.innerHTML).toBe("out 1<br>out 2<br>");
+        expect(document.getElementById("output-id")?.innerHTML).toBe("out 1<br>out 2<br>");
+        expect(document.getElementById("error-id")?.innerHTML).toBe("out 2<br>");
     });
 
     it('Add and remove targeted listener', () => {
@@ -116,7 +132,9 @@ describe('TargetedStdio', () => {
         multi.addListener(targeted);
         multi.stdout_writeline("out 3");
 
+        //all three should be captured by multiplexer
         expect(capture.captured_stdout).toBe("out 1\nout 2\nout 3\n");
-        expect(document.getElementById("target-id")?.innerHTML).toBe("out 1<br>out 3<br>");
+        //out 2 should not be present in the DOM element
+        expect(document.getElementById("output-id")?.innerHTML).toBe("out 1<br>out 3<br>");
     });
 });
