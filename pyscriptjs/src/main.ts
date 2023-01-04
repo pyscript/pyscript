@@ -16,6 +16,7 @@ import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
+import { AutomaticImportPlugin } from './plugins/automaticImport';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
@@ -66,7 +67,12 @@ export class PyScriptApp {
     constructor() {
         // initialize the builtin plugins
         this.plugins = new PluginManager();
-        this.plugins.add(new SplashscreenPlugin(), new PyTerminalPlugin(this), new ImportmapPlugin());
+        this.plugins.add(
+            new SplashscreenPlugin(),
+            new PyTerminalPlugin(this),
+            new ImportmapPlugin(),
+            new AutomaticImportPlugin(),
+        );
 
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);

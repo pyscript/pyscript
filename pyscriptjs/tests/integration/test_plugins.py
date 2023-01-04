@@ -1,3 +1,5 @@
+import re
+
 from .support import PyScriptTest
 
 # Source code of a simple plugin that creates a Custom Element for testing purposes
@@ -186,3 +188,60 @@ class TestPlugin(PyScriptTest):
         )
         # EXPECT an error for the missing attribute
         assert error_msg in self.console.error.lines
+
+
+class TestCorePlugins(PyScriptTest):
+    def test_core_plugin_automatic_import(self):
+        """Test that packages get installed automatically"""
+
+        self.pyscript_run(
+            """
+            <py-script>
+                import numpy as np
+                print(np.__version__)
+            </py-script>
+            """
+        )
+
+        py_terminal = self.page.locator("py-terminal")
+        assert re.match(r"\d+.\d+.\d+", py_terminal.inner_text())
+
+    def test_core_plugin_automatic_multiple_imports(self):
+        """Test that packages get installed automatically"""
+
+        self.pyscript_run(
+            """
+            <py-script>
+                import numpy as np
+                import pandas as pd
+                print(np.__version__)
+                print(pd.__version__)
+            </py-script>
+            """
+        )
+
+        py_terminal = self.page.locator("py-terminal")
+        assert re.match(r"\d+.\d+.\d+\n\d+.\d+.\d+", py_terminal.inner_text())
+
+    def test_core_plugin_automatic_import_python_file(self):
+        """Test that packages get installed automatically"""
+        py_file = (
+            "import numpy as np\n"
+            "import pandas as pd\n"
+            "\n"
+            "print(np.__version__)\n"
+            "print(pd.__version__)\n"
+        )
+
+        self.writefile("automatic_import.py", py_file)
+        self.pyscript_run(
+            """
+            <py-script src="automatic_import.py">
+            </py-script>
+            """
+        )
+
+        py_terminal = self.page.locator("py-terminal")
+        assert re.match(r"\d+.\d+.\d+\n\d+.\d+.\d+", py_terminal.inner_text())
+
+    # TODO: Add test for disabling automatic imports!
