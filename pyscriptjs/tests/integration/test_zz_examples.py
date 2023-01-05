@@ -1,6 +1,5 @@
 import base64
 import io
-import math
 import os
 import re
 import time
@@ -9,32 +8,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from .support import ROOT, PyScriptTest
-
-MAX_TEST_TIME = 30  # Number of seconds allowed for checking a testing condition
-TEST_TIME_INCREMENT = 0.25  # 1/4 second, the length of each iteration
-TEST_ITERATIONS = math.ceil(
-    MAX_TEST_TIME / TEST_TIME_INCREMENT
-)  # 120 iters of 1/4 second
-
-
-def wait_for_render(page, selector, pattern):
-    """
-    Assert that rendering inserts data into the page as expected: search the
-    DOM from within the timing loop for a string that is not present in the
-    initial markup but should appear by way of rendering
-    """
-    re_sub_content = re.compile(pattern)
-    py_rendered = False  # Flag to be set to True when condition met
-
-    for _ in range(TEST_ITERATIONS):
-        content = page.inner_html(selector)
-        if re_sub_content.search(content):
-            py_rendered = True
-            break
-        time.sleep(TEST_TIME_INCREMENT)
-
-    assert py_rendered  # nosec
+from .support import ROOT, PyScriptTest, wait_for_render
 
 
 @pytest.mark.usefixtures("chdir")
