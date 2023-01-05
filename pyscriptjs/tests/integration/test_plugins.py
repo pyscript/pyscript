@@ -193,12 +193,25 @@ class TestPlugin(PyScriptTest):
 class TestCorePlugins(PyScriptTest):
     def test_core_plugin_automatic_import(self):
         """Test that packages get installed automatically"""
-
         self.pyscript_run(
             """
             <py-script>
                 import numpy as np
                 print(np.__version__)
+            </py-script>
+            """
+        )
+
+        py_terminal = self.page.locator("py-terminal")
+        assert re.match(r"\d+.\d+.\d+", py_terminal.inner_text())
+
+    def test_core_plugin_automatic_import_from(self):
+        """Test that packages get installed automatically"""
+        self.pyscript_run(
+            """
+            <py-script>
+                from numpy import __version__ as np_version
+                print(np_version)
             </py-script>
             """
         )
@@ -213,9 +226,9 @@ class TestCorePlugins(PyScriptTest):
             """
             <py-script>
                 import numpy as np
-                import pandas as pd
+                from pandas import __version__ as pandas_version
                 print(np.__version__)
-                print(pd.__version__)
+                print(pandas_version)
             </py-script>
             """
         )
@@ -227,10 +240,10 @@ class TestCorePlugins(PyScriptTest):
         """Test that packages get installed automatically"""
         py_file = (
             "import numpy as np\n"
-            "import pandas as pd\n"
+            "from pandas import __version__ as pandas_version\n"
             "\n"
             "print(np.__version__)\n"
-            "print(pd.__version__)\n"
+            "print(pandas_version)\n"
         )
 
         self.writefile("automatic_import.py", py_file)
@@ -244,4 +257,39 @@ class TestCorePlugins(PyScriptTest):
         py_terminal = self.page.locator("py-terminal")
         assert re.match(r"\d+.\d+.\d+\n\d+.\d+.\d+", py_terminal.inner_text())
 
-    # TODO: Add test for disabling automatic imports!
+    def test_core_plugin_automatic_import_disabled(self):
+        """Test that packages get installed automatically"""
+        self.pyscript_run(
+            """
+            <py-config>
+                autoImports = false
+            </py-config>
+            <py-script>
+                from numpy import __version__ as np_version
+                print(np._version)
+            </py-script>
+            """,
+            wait_for_pyscript=False,
+        )
+
+        alert_banner = self.page.locator(".py-error")
+        assert (
+            "ModuleNotFoundError: No module named 'numpy'" in alert_banner.inner_text()
+        )
+
+    def test_core_plugin_automatic_import_doesnt_match_text(self):
+        """Test that packages get installed automatically"""
+        self.pyscript_run(
+            """
+            <py-script>
+                from numpy import __version__ as np_version
+                print(np_version)
+
+                def test_import_regex_logic():
+                    "from docstrings?"
+                    print("import my packages")
+            </py-script>
+            """
+        )
+        py_terminal = self.page.locator("py-terminal")
+        assert re.match(r"\d+.\d+.\d+", py_terminal.inner_text())

@@ -9,6 +9,25 @@ export class AutomaticImportPlugin extends Plugin {
     pyscriptTag = document.querySelector('py-script');
 
     /**
+     * Trim whitespace from the beginning and end of a string.
+     * The text that we are getting has new lines and possibly
+     * whitespace at the beginning and end of the line. Since
+     * we want to match only import statements, we need to trim
+     * the whitespace on each line, join them together and then
+     * match each beginning of the line so the regex rule will
+     * only match what we perceive as import statements.
+     *
+     * NOTE: This is not a perfect solution and I'm a bit worried
+     * about the performance of this. I'm sure there is a better
+     * way to do this.
+     *
+     * @param text - The text to trim
+     */
+    _trimWhiteSpace(text: string): string {
+        const lines = text.split('\n');
+        return lines.map(line => line.trim()).join('\n');
+    }
+    /**
      *
      * Use regex magic to capture import statements and add the
      * dependency(s) to the packages list in the config.
@@ -19,8 +38,12 @@ export class AutomaticImportPlugin extends Plugin {
      */
     _addImportToPackagesList(text: string, config: AppConfig) {
         // Regex encantation to capture the imported dependency into a
-        // named group called "dependency".
-        const importRegexRule = /import\s+(?<dependency>[a-zA-Z0-9_]+)?/g;
+        // named group called "dependency". The rule will match any text
+        // that contains 'import' or 'from' at the beginning of the line
+        // or '\nimport', '\nfrom' which is the case when we invoke _trimWhiteSpace
+        const importRegexRule = /^(?:\\n)?(?:import|from)\s+(?<dependency>[a-zA-Z0-9_]+)?/gm;
+
+        text = this._trimWhiteSpace(text);
 
         const matches = text.matchAll(importRegexRule);
         // Regex matches full match and groups, let's just push the group.
@@ -43,15 +66,15 @@ export class AutomaticImportPlugin extends Plugin {
      *
      */
     configure(config: AppConfig) {
-        // TODO: Add logic to let users opt out of this behavior.
+        if (config.autoImports ?? true) {
+            // config.packages should already be a list, but
+            // let's be defensive just in case.
+            if (!config.packages) {
+                config.packages = [];
+            }
 
-        // config.packages should already be a list, but
-        // let's be defensive just in case.
-        if (!config.packages) {
-            config.packages = [];
+            this._addImportToPackagesList(this.pyscriptTag.innerHTML, config);
         }
-
-        this._addImportToPackagesList(this.pyscriptTag.innerHTML, config);
     }
 
     /**
@@ -66,17 +89,19 @@ export class AutomaticImportPlugin extends Plugin {
      *
      */
     beforeLaunch(config: AppConfig) {
-        const srcAttribute = this.pyscriptTag.getAttribute('src');
-        if (srcAttribute) {
-            logger.info(`Found src attribute in <py-script> tag, fetching ${srcAttribute}...`);
-            robustFetch(srcAttribute)
-                .then(response => response.text())
-                .then(text => {
-                    this._addImportToPackagesList(text, config);
-                })
-                .catch(error => {
-                    logger.error(`Failed to fetch ${srcAttribute}: ${(error as Error).message}`);
-                });
+        if (config.autoImports ?? true) {
+            const srcAttribute = this.pyscriptTag.getAttribute('src');
+            if (srcAttribute) {
+                logger.info(`Found src attribute in <py-script> tag, fetching ${srcAttribute}...`);
+                robustFetch(srcAttribute)
+                    .then(response => response.text())
+                    .then(text => {
+                        this._addImportToPackagesList(text, config);
+                    })
+                    .catch(error => {
+                        logger.error(`Failed to fetch ${srcAttribute}: ${(error as Error).message}`);
+                    });
+            }
         }
     }
 }
