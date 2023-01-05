@@ -4,7 +4,7 @@ import { getLogger } from './logger';
 
 const logger = getLogger('pyscript/interpreter');
 
-export type RuntimeInterpreter = PyodideInterface | null;
+export type InterpreterInterface = PyodideInterface | null;
 
 /*
 Interpreter class is a super class that all different interpreters must respect
