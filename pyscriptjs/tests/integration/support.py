@@ -398,6 +398,7 @@ def wait_for_render(page, selector, pattern):
 
     assert py_rendered  # nosec
 
+
 class JsErrors(Exception):
     """
     Represent one or more exceptions which happened in JS.
