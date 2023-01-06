@@ -1,4 +1,4 @@
-import { htmlDecode, ensureUniqueId, showWarning } from '../utils';
+import { htmlDecode, ensureUniqueId, showWarning, createDeprecationWarning } from '../utils';
 import type { Runtime } from '../runtime';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
@@ -9,16 +9,15 @@ const logger = getLogger('py-script');
 
 export function make_PyScript(runtime: Runtime) {
     class PyScript extends HTMLElement {
-        srcCode: string
+        srcCode: string;
 
         async connectedCallback() {
             if (this.hasAttribute('output')) {
-                const deprecationMessage = (
+                const deprecationMessage =
                     "The 'output' attribute is deprecated and ignored. You should use " +
                     "'display()' to output the content to a specific element. " +
-                    'For example display(myElement, target="divID").'
-                )
-                showWarning(deprecationMessage)
+                    'For example display(myElement, target="divID").';
+                showWarning(deprecationMessage);
             }
             ensureUniqueId(this);
             // Save innerHTML information in srcCode so we can access it later
@@ -36,10 +35,10 @@ export function make_PyScript(runtime: Runtime) {
                 try {
                     const response = await robustFetch(url);
                     return await response.text();
-                } catch(e) {
+                } catch (e) {
                     _createAlertBanner(e.message);
                     this.innerHTML = '';
-                    throw e
+                    throw e;
                 }
             } else {
                 return htmlDecode(this.srcCode);
@@ -166,14 +165,23 @@ function createElementsWithEventListeners(runtime: Runtime, pyAttribute: string)
         const event = pyAttributeToEvent.get(pyAttribute);
 
         if (pyAttribute === 'pys-onClick' || pyAttribute === 'pys-onKeyDown') {
-            console.warn(
-                'Use of pys-onClick and pys-onKeyDown attributes is deprecated in favor of py-onClick() and py-onKeyDown(). pys-on* attributes will be deprecated in a future version of PyScript.',
-            );
+            const msg =
+                `The attribute 'pys-onClick' and 'pys-onKeyDown' are deprecated. Please 'py-click="myFunction()"' ` +
+                ` or 'py-keydown="myFunction()"' instead.`;
+            createDeprecationWarning(msg, msg);
             const source = `
             from pyodide.ffi import create_proxy
             Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
             `;
-            runtime.run(source);
+
+            // We meed to run the source code in a try/catch block, because
+            // the source code may contain a syntax error, which will cause
+            // the splashscreen to not be removed.
+            try {
+                runtime.run(source);
+            } catch (e) {
+                logger.error((e as Error).message);
+            }
         } else {
             el.addEventListener(event, () => {
                 runtime.run(handlerCode);

@@ -1,8 +1,8 @@
 import toml from '../src/toml';
 import { getLogger } from './logger';
-import { version } from './runtime';
+import { version } from './version';
 import { getAttribute, readTextFromPath, htmlDecode } from './utils';
-import { UserError, ErrorCode } from "./exceptions"
+import { UserError, ErrorCode } from './exceptions';
 
 const logger = getLogger('py-config');
 
@@ -75,7 +75,7 @@ export function loadConfigFromElement(el: Element): AppConfig {
     srcConfig = mergeConfig(srcConfig, defaultConfig);
     const result = mergeConfig(inlineConfig, srcConfig);
     result.pyscript = {
-        version: version,
+        version,
         time: new Date().toISOString(),
     };
     return result;
@@ -140,27 +140,26 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
 }
 
 function parseConfig(configText: string, configType = 'toml') {
-    let config: object;
     if (configType === 'toml') {
         try {
             // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
             if (configText.trim()[0] === '{') {
                 throw new UserError(
                     ErrorCode.BAD_CONFIG,
-                    `The config supplied: ${configText} is an invalid TOML and cannot be parsed`
+                    `The config supplied: ${configText} is an invalid TOML and cannot be parsed`,
                 );
             }
-            config = toml.parse(configText);
+            return toml.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
             throw new UserError(
                 ErrorCode.BAD_CONFIG,
-                `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`
+                `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`,
             );
         }
     } else if (configType === 'json') {
         try {
-            config = JSON.parse(configText);
+            return JSON.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
             throw new UserError(
@@ -171,10 +170,9 @@ function parseConfig(configText: string, configType = 'toml') {
     } else {
         throw new UserError(
             ErrorCode.BAD_CONFIG,
-            `The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`
+            `The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`,
         );
     }
-    return config;
 }
 
 function validateConfig(configText: string, configType = 'toml') {
