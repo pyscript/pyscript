@@ -166,9 +166,6 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp)  {
                 return;
             }
 
-            // clear the old output before executing the new code
-            outEl.innerHTML = '';
-
             // execute the python code
             app.plugins.beforePyReplExec(interpreter, pySrc, outEl, this);
             const pyResult = (await pyExec(interpreter, pySrc, outEl)).result;

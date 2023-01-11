@@ -60,6 +60,14 @@ export class StdioDirector extends Plugin {
     }
 
     beforePyReplExec(runtime: any, src: any, outEl: any, pyReplTag: any): void {
+        //Handle 'output-mode' attribute (removed in PR #881/f9194cc8, restored here)
+        if (pyReplTag.getAttribute('output-mode') != 'append'){
+            outEl.innerHTML = ''
+        }
+
+        // Handle 'output' attribute; defaults to writing stdout to the existing outEl
+        // If 'output' attribute is used, the DOM element with the specified ID receives
+        // -both- sys.stdout and sys.stderr
         let output_targeted_io;
         if (pyReplTag.hasAttribute("output")){
             output_targeted_io = new TargetedStdio(pyReplTag, "output", true, true);
@@ -67,11 +75,10 @@ export class StdioDirector extends Plugin {
         else {
             output_targeted_io = new TargetedStdio(pyReplTag.outDiv, "id", true, true);
         }
-
         pyReplTag.stdout_manager = output_targeted_io;
         this._stdioMultiplexer.addListener(output_targeted_io);
 
-
+        //Handle 'stderr' attribute;
         if (pyReplTag.hasAttribute("stderr")){
             const stderr_targeted_io = new TargetedStdio(pyReplTag, "stderr", false, true);
             pyReplTag.stderr_manager = stderr_targeted_io;
