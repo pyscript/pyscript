@@ -1,24 +1,21 @@
-import { htmlDecode, ensureUniqueId, showWarning, createDeprecationWarning } from '../utils';
+import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import type { Interpreter } from '../interpreter';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
 import { _createAlertBanner } from '../exceptions';
 import { robustFetch } from '../fetch';
+import { PyScriptApp } from '../main';
+import { Stdio } from '../stdio';
 
 const logger = getLogger('py-script');
 
-export function make_PyScript(interpreter: Interpreter) {
+export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
     class PyScript extends HTMLElement {
         srcCode: string;
+        stdout_manager: Stdio | null;
+        stderr_manager: Stdio | null;
 
         async connectedCallback() {
-            if (this.hasAttribute('output')) {
-                const deprecationMessage =
-                    "The 'output' attribute is deprecated and ignored. You should use " +
-                    "'display()' to output the content to a specific element. " +
-                    'For example display(myElement, target="divID").';
-                showWarning(deprecationMessage);
-            }
             ensureUniqueId(this);
             // Save innerHTML information in srcCode so we can access it later
             // once we clean innerHTML (which is required since we don't want
@@ -26,7 +23,10 @@ export function make_PyScript(interpreter: Interpreter) {
             this.srcCode = this.innerHTML;
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
-            pyExec(interpreter, pySrc, this);
+
+            app.plugins.beforePyScriptExec(interpreter, pySrc, this);
+            const result = pyExec(interpreter, pySrc, this);
+            app.plugins.afterPyScriptExec(interpreter, pySrc, this, result);
         }
 
         async getPySrc(): Promise<string> {

@@ -16,6 +16,7 @@ import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
 import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
+import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript.py';
@@ -70,6 +71,8 @@ export class PyScriptApp {
 
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
+
+        this.plugins.add(new StdioDirector(this._stdioMultiplexer))
     }
 
     // Error handling logic: if during the execution we encounter an error
@@ -310,7 +313,8 @@ modules must contain a "plugin" attribute. For more information check the plugin
 
     // lifecycle (7)
     executeScripts(interpreter: Interpreter) {
-        this.PyScript = make_PyScript(interpreter);
+        // make_PyScript takes a runtime and a PyScriptApp as arguments
+        this.PyScript = make_PyScript(interpreter, this);
         customElements.define('py-script', this.PyScript);
     }
 
