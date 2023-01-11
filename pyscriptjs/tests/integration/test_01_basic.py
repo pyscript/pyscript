@@ -179,18 +179,12 @@ class TestBasic(PyScriptTest):
         with pytest.raises(JsErrors) as exc:
             self.check_js_errors()
 
-        error_msg = str(exc.value)
-        print(error_msg)
-        if self.is_fake_server:
-            assert (
-                "Fetching from URL foo.py failed with error 404 (Not Found)."
-                in error_msg
-            )
-        else:
-            assert (
-                "Fetching from URL foo.py failed with error 404 (File not found)"
-                in error_msg
-            )
+        error_msgs = str(exc.value)
+
+        expected_msg = "(PY0404): Fetching from URL foo.py failed with error 404"
+
+        assert expected_msg in error_msgs
+        assert self.assert_banner_message(expected_msg)
 
         pyscript_tag = self.page.locator("py-script")
         assert pyscript_tag.inner_html() == ""

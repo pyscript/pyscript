@@ -304,6 +304,21 @@ class PyScriptTest:
             text = "\n".join(loc.all_inner_texts())
             raise AssertionError(f"Found {n} alert banners:\n" + text)
 
+    def assert_banner_message(self, expected_message):
+        """
+        Ensure that there is an alert banner on the page with the given message.
+        Currently it only handles a single.
+        """
+        banner = self.page.wait_for_selector(".alert-banner")
+        banner_text = banner.inner_text()
+
+        if expected_message not in banner_text:
+            raise AssertionError(
+                f"Expected message '{expected_message}' does not "
+                f"match banner text '{banner_text}'"
+            )
+        return True
+
     def check_tutor_generated_code(self, modules_to_check=None):
         """
         Ensure that the source code viewer injected by the PyTutor plugin

@@ -17,4 +17,5 @@ caption: 'Contents:'
 passing-objects
 http-requests
 asyncio
+custom-plugins
 ```

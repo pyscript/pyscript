@@ -245,12 +245,10 @@ class TestConfig(PyScriptTest):
             wait_for_pyscript=False,
         )
 
-        expected = (
-            "Loading from file <u>./f.py</u> failed with error 404 (File not Found). "
-            "Are your filename and path are correct?"
-        )
+        expected = "(PY0404): Fetching from URL ./f.py failed with " "error 404"
 
         inner_html = self.page.locator(".py-error").inner_html()
+
         assert expected in inner_html
         assert expected in self.console.error.lines[-1]
 
