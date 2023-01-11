@@ -1,5 +1,6 @@
 import { Plugin } from "../plugin";
 import { TargetedStdio, StdioMultiplexer } from "../stdio";
+import type { Interpreter } from "../interpreter";
 
 
 /**
@@ -24,7 +25,7 @@ export class StdioDirector extends Plugin {
      * with that ID for the duration of the evaluation.
      *
      */
-    beforePyScriptExec(runtime: any, src: any, PyScriptTag): void {
+    beforePyScriptExec(interpreter: Interpreter, src: string, PyScriptTag: any): void {
         if (PyScriptTag.hasAttribute("output")){
             const targeted_io = new TargetedStdio(PyScriptTag, "output", true, true)
             PyScriptTag.stdout_manager = targeted_io
@@ -40,7 +41,7 @@ export class StdioDirector extends Plugin {
     /** After a <py-script> tag is evaluated, if that tag has a 'stdout_manager'
      *  (presumably TargetedStdio, or some other future IO handler), it is removed.
      */
-    afterPyScriptExec(runtime: any, src: any, PyScriptTag: any, result: any): void {
+    afterPyScriptExec(interpreter: Interpreter, src: string, PyScriptTag: any, result: any): void {
         if (PyScriptTag.stdout_manager != null){
             this._stdioMultiplexer.removeListener(PyScriptTag.stdout_manager)
             PyScriptTag.stdout_manager = null
