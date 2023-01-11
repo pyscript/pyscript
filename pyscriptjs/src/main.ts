@@ -189,8 +189,9 @@ export class PyScriptApp {
 
         this.logStatus('Initializing web components...');
         // lifecycle (8)
-        createCustomElements(interpreter);
-
+        
+        //Takes a runtime and a reference to the PyScriptApp (to access plugins)
+        createCustomElements(interpreter, this);
         await initHandlers(interpreter);
 
         // NOTE: interpreter message is used by integration tests to know that
