@@ -166,9 +166,6 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
                 return;
             }
 
-            // clear the old output before executing the new code
-            outEl.innerHTML = '';
-
             // execute the python code
             app.plugins.beforePyReplExec(runtime, pySrc, outEl, this);
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
