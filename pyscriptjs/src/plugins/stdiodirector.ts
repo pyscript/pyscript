@@ -58,4 +58,36 @@ export class StdioDirector extends Plugin {
             options.pyScriptTag.stderr_manager = null;
         }
     }
+
+    beforePyReplExec(runtime: any, src: any, outEl: any, pyReplTag: any): void {
+        let output_targeted_io;
+        if (pyReplTag.hasAttribute("output")){
+            output_targeted_io = new TargetedStdio(pyReplTag, "output", true, true);
+        }
+        else {
+            output_targeted_io = new TargetedStdio(pyReplTag.outDiv, "id", true, true);
+        }
+
+        pyReplTag.stdout_manager = output_targeted_io;
+        this._stdioMultiplexer.addListener(output_targeted_io);
+
+
+        if (pyReplTag.hasAttribute("stderr")){
+            const stderr_targeted_io = new TargetedStdio(pyReplTag, "stderr", false, true);
+            pyReplTag.stderr_manager = stderr_targeted_io;
+            this._stdioMultiplexer.addListener(stderr_targeted_io);
+        }
+
+    }
+
+    afterPyReplExec(runtime: any, src: any, outEl: any, pyReplTag: any, result: any): void {
+        if (pyReplTag.stdout_manager != null){
+            this._stdioMultiplexer.removeListener(pyReplTag.stdout_manager)
+            pyReplTag.stdout_manager = null
+        }
+        if (pyReplTag.stderr_manager != null){
+            this._stdioMultiplexer.removeListener(pyReplTag.stderr_manager)
+            pyReplTag.stderr_manager = null
+        }
+    }
 }
