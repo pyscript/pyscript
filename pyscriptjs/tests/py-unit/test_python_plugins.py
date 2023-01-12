@@ -1,4 +1,4 @@
-from textwrap import dedent
+import html
 from unittest.mock import Mock
 
 import py_markdown
@@ -6,6 +6,28 @@ import py_tutor
 import pyscript_plugins_tester as ppt
 
 import pyscript
+
+TUTOR_SOURCE = """
+<py-config>
+    packages = [
+    "folium",
+    "pandas"
+    ]
+    plugins = [
+    "../build/plugins/python/py_tutor.py"
+    ]
+</py-config>
+
+<py-script>
+import folium
+import json
+import pandas as pd
+
+from pyodide.http import open_url
+
+# the rest of the code goes one
+</py-script>
+"""
 
 
 class TestPyMarkdown:
@@ -65,6 +87,22 @@ class TestPyTutor:
         else:
             assert script.text == py_tutor.PAGE_SCRIPT
 
+    def check_create_code_section(self):
+        console = py_tutor.js.console
+        console.info.assert_any_call("Creating code introspection section.")
+        console.info.assert_any_call("Creating new code section element.")
+
+        body = pyscript.js.document.body
+        sections = body.getElementsByTagName("section")
+        section = sections[0]
+        assert "code" in section.classList._classes
+        section_innerHTML = py_tutor.TEMPLATE_CODE_SECTION.format(
+            source=html.escape(TUTOR_SOURCE), modules_section=""
+        )
+        assert html.escape(TUTOR_SOURCE) in section.innerHTML
+        assert section.innerHTML == section_innerHTML
+        breakpoint()
+
     def test_connected_calls(self, plugins_manager: ppt.PluginsManager):
         # GIVEN THAT we add the plugin to the app plugin manager
         # this will:
@@ -78,29 +116,7 @@ class TestPyTutor:
         tutor_ce = plugins_manager._custom_elements["py-tutor"]
         # tutor_ce_python_instance = tutor_ce.pyPluginInstance
         # GIVEN: The following innerHTML on the ce elements
-        tutor_ce.innerHTML = dedent(
-            """
-        <py-config>
-          packages = [
-            "folium",
-            "pandas"
-          ]
-          plugins = [
-            "../build/plugins/python/py_tutor.py"
-          ]
-        </py-config>
-
-        <py-script>
-        import folium
-        import json
-        import pandas as pd
-
-        from pyodide.http import open_url
-
-        # the rest of the code goes one
-        </py-script>
-        """
-        )
+        tutor_ce.innerHTML = TUTOR_SOURCE
 
         # GIVEN: the CustomElement connectedCallback gets called
         tutor_ce.connectedCallback()
@@ -109,6 +125,8 @@ class TestPyTutor:
         self.check_prism_added()
 
         self.check_append_script_to_page()
+
+        self.check_create_code_section()
 
     def test_plugin_registered(self):
         pass

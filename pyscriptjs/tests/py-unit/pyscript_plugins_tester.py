@@ -8,7 +8,7 @@ class classList:
         self._classes = []
 
     def add(self, classname):
-        self._classes.append
+        self._classes.append(classname)
 
     def remove(self, classname):
         self._classes.remove(classname)
