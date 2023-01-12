@@ -127,5 +127,18 @@ class TestPyTutor:
 
         self.check_create_code_section()
 
-    def test_plugin_registered(self):
-        pass
+    def test_plugin_registered(self, plugins_manager: ppt.PluginsManager):
+        # EXPECT py_tutor.plugin to not have any app associate
+        assert not py_tutor.plugin.app
+
+        # EXPECT: the plugin manager to not have any plugin registered
+        assert not plugins_manager.plugins
+
+        # GIVEN THAT we add the plugin to the app plugin manager
+        plugins_manager.addPythonPlugin(py_tutor.plugin)
+
+        # EXPECT: the plugin app to now be the plugin manager
+        assert py_tutor.plugin.app == plugins_manager
+
+        # EXPECT: the pytutor.plugin manager to be part of
+        assert py_tutor.plugin in plugins_manager.plugins
