@@ -46,9 +46,14 @@ class TestPyMarkdown:
 
 class TestPyTutor:
     def check_prism_added(self):
+        """
+        Assert that the add_prism method has been correctly executed and the
+        related prism assets have been added to the page head
+        """
+        # GIVEN a previous call to py_tutor.plugin.append_script_to_page
         head = pyscript.js.document.head
 
-        # EXPECT the head elements to be present and correctly configured
+        # EXPECT the head to contain a link element pointing to the prism.css
         links = head.getElementsByTagName("link")
         assert len(links) == 1
         link = links[0]
@@ -56,23 +61,24 @@ class TestPyTutor:
         assert link.rel == "stylesheet"
         assert link.href == "./assets/prism/prism.css"
 
+        # EXPECT the head to contain a script src == prism.js
         scripts = head.getElementsByTagName("script")
         assert len(scripts) == 1
         script = scripts[0]
         assert script.type == "text/javascript"
         assert script.src == "./assets/prism/prism.js"
 
-        # TODO: Check this because seems wrong. It should have src and not really PAGE_SCRIPT?
-
-        # Check the actual JS script code
-        # To do so we have 2 methods (it depends on browser support so we check either...)
-        if script.childNodes:
-            # in this case it means the content has been added as a child element
-            node = script.childNodes[0]
-            assert node.data == py_tutor.PAGE_SCRIPT
-
     def check_append_script_to_page(self):
+        """
+        Assert that the append_script_to_page has been correctly executed and the
+        py_tutor.PAGE_SCRIPT code needed for the plugin JS animation has been added
+        to the page body
+        """
+        # GIVEN a previous call to py_tutor.plugin.append_script_to_page
         body = pyscript.js.document.body
+
+        # EXPECT the body of the page to contain a script of type text/javascript
+        #        and that contains the py_tutor.PAGE_SCRIPT script
         scripts = body.getElementsByTagName("script")
         assert len(scripts) == 1
         script = scripts[0]
@@ -88,10 +94,19 @@ class TestPyTutor:
             assert script.text == py_tutor.PAGE_SCRIPT
 
     def check_create_code_section(self):
+        """
+        Assert that the create_code_section has been correctly executed and the
+        related code section has been created and added to the page.
+        """
+        # GIVEN a previous call to py_tutor.plugin.check_create_code_section
         console = py_tutor.js.console
+
+        # EXPECT the console to have the messages printed by the plugin while
+        #        executing the plugin operations
         console.info.assert_any_call("Creating code introspection section.")
         console.info.assert_any_call("Creating new code section element.")
 
+        # EXPECT the page body to contain a section with the input source code
         body = pyscript.js.document.body
         sections = body.getElementsByTagName("section")
         section = sections[0]
@@ -103,6 +118,12 @@ class TestPyTutor:
         assert section.innerHTML == section_innerHTML
 
     def test_connected_calls(self, plugins_manager: ppt.PluginsManager):
+        """
+        Test that all parts of the plugin have been added to the page body and head
+        properly. This test effectively calls `self.check_prism_added`,
+        `self.check_append_script_to_page` and `check_create_code_section` assert
+        the new nodes have been added properly.
+        """
         # GIVEN THAT we add the plugin to the app plugin manager
         # this will:
         # - init the plugin instance passing the plugins_manager as parent app
@@ -128,6 +149,10 @@ class TestPyTutor:
         self.check_create_code_section()
 
     def test_plugin_registered(self, plugins_manager: ppt.PluginsManager):
+        """
+        Test that, when registered, plugin actually has an app attribute set
+        and that it's present in plugins manager plugins list.
+        """
         # EXPECT py_tutor.plugin to not have any app associate
         assert not py_tutor.plugin.app
 
@@ -139,6 +164,7 @@ class TestPyTutor:
 
         # EXPECT: the plugin app to now be the plugin manager
         assert py_tutor.plugin.app == plugins_manager
+        assert "py-tutor" in py_tutor.plugin._custom_elements
 
         # EXPECT: the pytutor.plugin manager to be part of
         assert py_tutor.plugin in plugins_manager.plugins
