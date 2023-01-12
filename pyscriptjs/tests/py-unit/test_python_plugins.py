@@ -62,6 +62,8 @@ class TestPyTutor:
             # in this case it means the content has been added as a child element
             node = script.childNodes[0]
             assert node.data == py_tutor.PAGE_SCRIPT
+        else:
+            assert script.text == py_tutor.PAGE_SCRIPT
 
     def test_connected_calls(self, plugins_manager: ppt.PluginsManager):
         # add the plugin to the app plugin manager
