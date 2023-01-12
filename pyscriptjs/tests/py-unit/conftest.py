@@ -25,4 +25,5 @@ pyscript.define_custom_element = ppt.define_custom_element
 @pytest.fixture()
 def plugins_manager():
     """return a new instance of a Test version the PyScript application plugins manager"""
-    return ppt.plugins_manager  # PluginsManager()
+    yield ppt.plugins_manager  # PluginsManager()
+    ppt.plugins_manager.reset()

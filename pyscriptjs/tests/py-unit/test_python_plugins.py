@@ -101,7 +101,6 @@ class TestPyTutor:
         )
         assert html.escape(TUTOR_SOURCE) in section.innerHTML
         assert section.innerHTML == section_innerHTML
-        breakpoint()
 
     def test_connected_calls(self, plugins_manager: ppt.PluginsManager):
         # GIVEN THAT we add the plugin to the app plugin manager

@@ -25,6 +25,16 @@ class PluginsManager:
         pluginInstance.init(self)
         self.plugins.append(pluginInstance)
 
+    def reset(self):
+        """
+        Unregister all plugins and related custom elements.
+        """
+        for plugin in self.plugins:
+            plugin.app = None
+
+        self.plugins = []
+        self._custom_elements = {}
+
 
 class CustomElement:
     def __init__(self, plugin_class):
