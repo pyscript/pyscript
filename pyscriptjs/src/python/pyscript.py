@@ -495,6 +495,7 @@ class Plugin:
 
         self.name = name
         self._custom_elements = []
+        self.app = None
 
     def init(self, app):
         self.app = app

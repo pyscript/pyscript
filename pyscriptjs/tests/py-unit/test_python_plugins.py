@@ -66,10 +66,15 @@ class TestPyTutor:
             assert script.text == py_tutor.PAGE_SCRIPT
 
     def test_connected_calls(self, plugins_manager: ppt.PluginsManager):
-        # add the plugin to the app plugin manager
+        # GIVEN THAT we add the plugin to the app plugin manager
         # this will:
-        # create
+        # - init the plugin instance passing the plugins_manager as parent app
+        # - add the plugin instance to plugins_manager.plugins
+        assert not py_tutor.plugin.app
         plugins_manager.addPythonPlugin(py_tutor.plugin)
+
+        # EXPECT: the plugin app to now be the plugin manager
+        assert py_tutor.plugin.app == plugins_manager
         tutor_ce = plugins_manager._custom_elements["py-tutor"]
         # tutor_ce_python_instance = tutor_ce.pyPluginInstance
         # GIVEN: The following innerHTML on the ce elements
