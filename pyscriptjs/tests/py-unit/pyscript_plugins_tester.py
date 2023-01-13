@@ -1,27 +1,40 @@
 import xml.dom
+from xml.dom.minidom import Node  # nosec
 
 import pyscript
 
 
 class classList:
+    """Class that (lightly) emulates the behaviour of HTML Nodes ClassList"""
+
     def __init__(self):
         self._classes = []
 
-    def add(self, classname):
+    def add(self, classname: str):
+        """Add classname to the classList"""
         self._classes.append(classname)
 
-    def remove(self, classname):
+    def remove(self, classname: str):
+        """Remove classname from the classList"""
         self._classes.remove(classname)
 
 
 class PluginsManager:
+    """
+    Emulator of PyScript PluginsManager that can be used to simulate plugins lifecycle events
+    """
+
     def __init__(self):
         self.plugins = []
 
         # mapping containing all the custom elements createed by plugins
         self._custom_elements = {}
 
-    def addPythonPlugin(self, pluginInstance):
+    def addPythonPlugin(self, pluginInstance: pyscript.Plugin):
+        """
+        Add a pluginInstance to the plugins managed by the PluginManager and calls
+        pluginInstance.init(self) to initialized the plugin with the manager
+        """
         pluginInstance.init(self)
         self.plugins.append(pluginInstance)
 
@@ -37,7 +50,7 @@ class PluginsManager:
 
 
 class CustomElement:
-    def __init__(self, plugin_class):
+    def __init__(self, plugin_class: pyscript.Plugin):
         self.pyPluginInstance = plugin_class(self)
         self.attributes = {}
         self.innerHTML = ""
@@ -45,15 +58,20 @@ class CustomElement:
     def connectedCallback(self):
         return self.pyPluginInstance.connect()
 
-    def getAttribute(self, attr):
+    def getAttribute(self, attr: str):
         return self.attributes.get(attr)
 
 
-def define_custom_element(tag, plugin_class):
+def define_custom_element(tag, plugin_class: pyscript.Plugin):
+    """
+    Mock method to emulate the behaviour of the PyScript `define_custom_element`
+    that basically creates a new CustomElement passing plugin_class as Python
+    proxy object. For more info check out the logic of the original implementation at:
+
+    src/plugin.ts:define_custom_element
+    """
     ce = CustomElement(plugin_class)
     plugins_manager._custom_elements[tag] = ce
-
-    # plugins_manager.addPythonPlugin(plugin_class)
 
 
 plugins_manager = PluginsManager()
@@ -63,12 +81,18 @@ impl = xml.dom.getDOMImplementation()
 
 
 class Node:
-    def __init__(self, el):
+    """
+    Represent an HTML Node.
+
+    This classes us an abstraction on top of xml.dom.minidom.Node
+    """
+
+    def __init__(self, el: Node):
         self._el = el
         self.classList = classList()
 
     # Automatic delegation is a simple and short boilerplate:
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str):
         return getattr(self._el, attr)
 
     def createElement(self, *args, **kws):
@@ -77,6 +101,12 @@ class Node:
 
 
 class Document(Node):
+    """
+    Represent an HTML Document.
+
+    This classes us an abstraction on top of xml.dom.minidom.Document
+    """
+
     def __init__(self):
         self._el = impl.createDocument(None, "document", None)
 
