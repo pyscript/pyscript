@@ -83,7 +83,7 @@ class TestConfig(PyScriptTest):
             """
             <py-config type="json">
                 {
-                    "interpreter": [{
+                    "interpreters": [{
                         "src": "/pyodide/pyodide.js",
                         "name": "pyodide-0.20.0",
                         "lang": "python"
@@ -138,7 +138,7 @@ class TestConfig(PyScriptTest):
         deprecation_banner = self.page.wait_for_selector(".alert-banner")
         expected_message = (
             "The configuration option `config.runtimes` is deprecated. "
-            "Please use `config.interpreter` instead."
+            "Please use `config.interpreters` instead."
         )
         assert deprecation_banner.inner_text() == expected_message
 
@@ -210,7 +210,7 @@ class TestConfig(PyScriptTest):
         snippet = """
             <py-config type="json">
             {
-                "interpreter": []
+                "interpreters": []
             }
             </py-config>
         """
@@ -224,7 +224,7 @@ class TestConfig(PyScriptTest):
         snippet = """
             <py-config type="json">
             {
-                "interpreter": [
+                "interpreters": [
                     {
                         "src": "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js",
                         "name": "pyodide-0.21.3",

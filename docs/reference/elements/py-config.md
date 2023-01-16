@@ -20,7 +20,7 @@ The `<py-config>` element should be placed within the `<body>` element.
 - `<py-config>` using TOML (default)
 
 ```{note}
-Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[interpreter]]` and `[[fetch]]` must come after individual keys (like `plugins = ...` and `packages=...`)
+Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[interpreters]]` and `[[fetch]]` must come after individual keys (like `plugins = ...` and `packages=...`)
 ```
 
 ```html
@@ -28,7 +28,7 @@ Reminder: when using TOML, any Arrays of Tables defined with double-brackets (li
   [splashscreen]
   autoclose = true
 
-  [[interpreter]]
+  [[interpreters]]
   src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
   name = "pyodide-0.21.2"
   lang = "python"
@@ -43,7 +43,7 @@ Reminder: when using TOML, any Arrays of Tables defined with double-brackets (li
     "splashscreen": {
       "autoclose": true
     },
-    "interpreter": [{
+    "interpreters": [{
       "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
       "name": "pyodide-0.21.2",
       "lang": "python"
@@ -65,7 +65,7 @@ where `custom.toml` contains
 [splashscreen]
 autoclose = true
 
-[[interpreter]]
+[[interpreters]]
 src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
 name = "pyodide-0.21.2"
 lang = "python"
@@ -83,7 +83,7 @@ where `custom.json` contains
   "splashscreen": {
     "autoclose": true,
   },
-  "interpreter": [{
+  "interpreters": [{
     "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
     "name": "pyodide-0.21.2",
     "lang": "python"
@@ -246,8 +246,8 @@ The following optional values are supported by `<py-config>`:
 | `packages` | List of Packages | Dependencies on 3rd party OSS packages are specified here. The default value is an empty list. |
 | `fetch` | List of Stuff to fetch | Local Python modules OR resources from the internet are to be specified here using a Fetch Configuration, described below. The default value is an empty list. |
 | `plugins` | List of Plugins | List of Plugins are to be specified here. The default value is an empty list. |
-| `interpreter` | List of Interpreter| List of Interpreter configurations, described below. The default value contains a single Pyodide based interpreter. |
-| `runtimes`  {bdg-warning-line}`Deprecated`  | List of Runtimes | This value is deprecated, please use `interpreter`. List of runtime configurations, described below. The default value contains a single Pyodide based interpreter. |
+| `interpreters` | List of Interpreters| List of Interpreter configurations, described below. The default value contains a single Pyodide based interpreter. **Note:** Currently, only a single interpreter is supported. |
+| `runtimes`  {bdg-warning-line}`Deprecated`  | List of Runtimes | This value is deprecated, please use `interpreters`. List of runtime configurations, described below. The default value contains a single Pyodide based interpreter. |
 
 ### <a name="fetch">Fetch</a>
 
@@ -457,11 +457,15 @@ An interpreter configuration consists of the following:
 
 ```html
 <py-config>
-  [[interpreter]]
+  [[interpreters]]
   src = "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
   name = "pyodide-0.20.0"
   lang = "python"
 </py-config>
+```
+
+```{note}
+Currently, PyScript supports a single interpreter, this may change in the future.
 ```
 
 ## Supplying extra information (or metadata)

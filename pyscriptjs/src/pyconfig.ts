@@ -15,7 +15,7 @@ export interface AppConfig extends Record<string, any> {
     author_name?: string;
     author_email?: string;
     license?: string;
-    interpreter?: InterpreterConfig[];
+    interpreters?: InterpreterConfig[];
     // TODO: Remove `runtimes` once the deprecation cycle is over
     runtimes?: InterpreterConfig[];
     packages?: string[];
@@ -45,13 +45,13 @@ export type PyScriptMetadata = {
 const allKeys = {
     string: ['name', 'description', 'version', 'type', 'author_name', 'author_email', 'license'],
     number: ['schema_version'],
-    array: ['runtimes', 'interpreter', 'packages', 'fetch', 'plugins'],
+    array: ['runtimes', 'interpreters', 'packages', 'fetch', 'plugins'],
 };
 
 export const defaultConfig: AppConfig = {
     schema_version: 1,
     type: 'app',
-    interpreter: [
+    interpreters: [
         {
             src: 'https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js',
             name: 'pyodide-0.21.3',
@@ -188,7 +188,7 @@ function validateConfig(configText: string, configType = 'toml') {
         const keys: string[] = allKeys[keyType];
         keys.forEach(function (item: string) {
             if (validateParamInConfig(item, keyType, config)) {
-                if (item === 'interpreter') {
+                if (item === 'interpreters') {
                     finalConfig[item] = [];
                     const interpreters = config[item] as InterpreterConfig[];
                     interpreters.forEach(function (eachInterpreter: InterpreterConfig) {
@@ -209,10 +209,10 @@ function validateConfig(configText: string, configType = 'toml') {
                     // in main.js
                     createDeprecationWarning(
                         'The configuration option `config.runtimes` is deprecated. ' +
-                            'Please use `config.interpreter` instead.',
+                            'Please use `config.interpreters` instead.',
                         '',
                     );
-                    finalConfig['interpreter'] = [];
+                    finalConfig['interpreters'] = [];
                     const interpreters = config[item] as InterpreterConfig[];
                     interpreters.forEach(function (eachInterpreter: InterpreterConfig) {
                         const interpreterConfig: InterpreterConfig = {};
@@ -221,7 +221,7 @@ function validateConfig(configText: string, configType = 'toml') {
                                 interpreterConfig[eachInterpreterParam] = eachInterpreter[eachInterpreterParam];
                             }
                         }
-                        finalConfig['interpreter'].push(interpreterConfig);
+                        finalConfig['interpreters'].push(interpreterConfig);
                     });
                 } else if (item === 'fetch') {
                     finalConfig[item] = [];

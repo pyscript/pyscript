@@ -46,7 +46,7 @@ To set the interpreter, you can use the `interpreter` configuration in the `py-c
 
   <body>
     <py-config>
-      [[interpreter]]
+      [[interpreters]]
         src = "https://cdn.jsdelivr.net/pyodide/v0.22.0a3/full/pyodide.js"
         name = "pyodide-0.22.0a3"
         lang = "python"
@@ -74,7 +74,7 @@ To confirm that the interpreter is set correctly, you can open the DevTools and 
 
   <body>
     <py-config>
-      [[interpreter]]
+      [[interpreters]]
         src = "https://cdn.jsdelivr.net/pyodide/v0.22.0a3/full/pyodide.js"
         name = "pyodide-0.22.0a3"
         lang = "python"

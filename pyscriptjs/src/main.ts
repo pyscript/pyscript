@@ -132,15 +132,15 @@ export class PyScriptApp {
     // lifecycle (4)
     loadInterpreter() {
         logger.info('Initializing interpreter');
-        if (this.config.interpreter.length == 0) {
+        if (this.config.interpreters.length == 0) {
             throw new UserError(ErrorCode.BAD_CONFIG, 'Fatal error: config.interpreter is empty');
         }
 
-        if (this.config.interpreter.length > 1) {
+        if (this.config.interpreters.length > 1) {
             showWarning('Multiple interpreters are not supported yet.<br />Only the first will be used', 'html');
         }
 
-        const interpreter_cfg = this.config.interpreter[0];
+        const interpreter_cfg = this.config.interpreters[0];
         this.interpreter = new PyodideInterpreter(
             this.config,
             this._stdioMultiplexer,
