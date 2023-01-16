@@ -74,7 +74,7 @@ export class PyScriptApp {
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
 
-        this.plugins.add(new StdioDirector(this._stdioMultiplexer))
+        this.plugins.add(new StdioDirector(this._stdioMultiplexer));
     }
 
     // Error handling logic: if during the execution we encounter an error
@@ -389,4 +389,6 @@ globalApp.main();
 
 export { version };
 export const interpreter = globalApp.interpreter;
+// TODO: This is for backwards compatibility, it should be removed
+// when we finish the deprecation cycle of `runtime`
 export const runtime = globalApp.interpreter;

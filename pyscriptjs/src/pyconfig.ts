@@ -16,6 +16,7 @@ export interface AppConfig extends Record<string, any> {
     author_email?: string;
     license?: string;
     interpreter?: InterpreterConfig[];
+    // TODO: Remove `runtimes` once the deprecation cycle is over
     runtimes?: InterpreterConfig[];
     packages?: string[];
     fetch?: FetchConfig[];

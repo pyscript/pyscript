@@ -35,11 +35,15 @@ class TestInterpreterAccess(PyScriptTest):
         self.page.add_script_tag(
             content="""
         const interface = pyscript.interpreter.interface;
-        interface.runPython('console.log("Interpreter Ran This")');
+        interface.runPython('print("Interpreter Ran This")');
         """
         )
+        expected_message = "Interpreter Ran This"
         assert self.console.log.lines[0] == self.PY_COMPLETE
-        assert self.console.log.lines[-1] == "Interpreter Ran This"
+        assert self.console.log.lines[-1] == expected_message
+
+        py_terminal = self.page.wait_for_selector("py-terminal")
+        assert py_terminal.text_content() == expected_message
 
     def test_backward_compatibility_runtime_script_execution(self):
         """Test running Python code from js via pyscript.runtime"""
@@ -48,11 +52,15 @@ class TestInterpreterAccess(PyScriptTest):
         self.page.add_script_tag(
             content="""
         const interface = pyscript.runtime.interpreter;
-        interface.runPython('console.log("Interpreter Ran This")');
+        interface.runPython('print("Interpreter Ran This")');
         """
         )
+        expected_message = "Interpreter Ran This"
         assert self.console.log.lines[0] == self.PY_COMPLETE
-        assert self.console.log.lines[-1] == "Interpreter Ran This"
+        assert self.console.log.lines[-1] == expected_message
+
+        py_terminal = self.page.wait_for_selector("py-terminal")
+        assert py_terminal.text_content() == expected_message
 
     def test_backward_compatibility_runtime_python_access(self):
         """Test accessing Python objects from JS via pyscript.runtime"""

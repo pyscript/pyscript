@@ -30,7 +30,7 @@ export abstract class Interpreter extends Object {
     abstract lang?: string;
     abstract interface: InterpreterInterface;
     /**
-     * global symbols table for the underlying interpreter.
+     * global symbols table for the underlying interface.
      * */
     abstract globals: PyProxy;
 
@@ -40,14 +40,14 @@ export abstract class Interpreter extends Object {
     }
 
     /**
-     * loads the interpreter for the interpreter and saves an instance of it
-     * in the `this.interpreter` property along with calling of other
+     * loads the interface for the interpreter and saves an instance of it
+     * in the `this.interface` property along with calling of other
      * additional convenience functions.
      * */
     abstract loadInterpreter(): Promise<void>;
 
     /**
-     * delegates the code to be run to the underlying interpreter
+     * delegates the code to be run to the underlying interface
      * (asynchronously) which can call its own API behind the scenes.
      * Python exceptions are turned into JS exceptions.
      * */
@@ -72,20 +72,20 @@ export abstract class Interpreter extends Object {
 
     /**
      * delegates the setting of JS objects to
-     * the underlying interpreter.
+     * the underlying interface.
      * */
     abstract registerJsModule(name: string, module: object): void;
 
     /**
      * delegates the loading of packages to
-     * the underlying interpreter.
+     * the underlying interface.
      * */
     abstract loadPackage(names: string | string[]): Promise<void>;
 
     /**
      * delegates the installation of packages
      * (using a package manager, which can be specific to
-     * the interface) to the underlying interpreter.
+     * the interface) to the underlying interface.
      *
      * For Pyodide, we use `micropip`
      * */
@@ -93,13 +93,13 @@ export abstract class Interpreter extends Object {
 
     /**
      * delegates the loading of files to the
-     * underlying interpreter.
+     * underlying interface.
      * */
     abstract loadFromFile(path: string, fetch_path: string): Promise<void>;
 
     /**
      * delegates clearing importlib's module path
-     * caches to the underlying interpreter
+     * caches to the underlying interface
      */
     abstract invalidate_module_path_cache(): void;
 }
