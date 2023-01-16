@@ -1,6 +1,6 @@
 # How to make HTTP requests using `PyScript`, in pure Python
 
-[Pyodide](https://pyodide.org), the runtime that underlies `PyScript`, does not have the `requests` module
+[Pyodide](https://pyodide.org), the interpreter that underlies `PyScript`, does not have the `requests` module
 (or other similar modules) available by default, which are traditionally used to make HTTP requests in Python.
 However, it is possible to make HTTP requests in Pyodide using the modern `JavaScript` `fetch` API
 ([docs](https://developer.mozilla.org/en-US/docs/Web/API/fetch)). This example shows how to make common HTTP request

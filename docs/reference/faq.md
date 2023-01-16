@@ -155,6 +155,6 @@ Requests and Black do not work out of the box because they weren’t meant for t
 
 For Black, it’s a design choice that can be patched. This is currently being addressed by the team at Pyodide.
 
-Requests do not work because of the sockets issue (sockets and websockets are two different things) and requests are blocking—which you don’t want in the browser. It’ll require putting the runtime on a webworker and utilizing an assistant, but on the main thread it’s unlikely that it’ll work.
+Requests do not work because of the sockets issue (sockets and websockets are two different things) and requests are blocking—which you don’t want in the browser. It’ll require putting the interpreter on a webworker and utilizing an assistant, but on the main thread it’s unlikely that it’ll work.
 
 There are options as a path forward. For example, Requests can be leveraged using javascript libraries, or building a python async version of Requests API or a python wrapper for fetch (pyfetch), etc. The websockets library has a client side that could be made to work—given that it has all asynchronous APIs, there’s nothing fundamentally difficult about getting it to work.

@@ -1,11 +1,11 @@
-import type { Runtime } from '../runtime';
+import type { Interpreter } from '../interpreter';
 import type { PyProxy } from 'pyodide';
 import { getLogger } from '../logger';
 import { robustFetch } from '../fetch';
 
 const logger = getLogger('py-register-widget');
 
-function createWidget(runtime: Runtime, name: string, code: string, klass: string) {
+function createWidget(interpreter: Interpreter, name: string, code: string, klass: string) {
     class CustomWidget extends HTMLElement {
         shadow: ShadowRoot;
         wrapper: HTMLElement;
@@ -27,8 +27,8 @@ function createWidget(runtime: Runtime, name: string, code: string, klass: strin
         }
 
         connectedCallback() {
-            runtime.runButDontRaise(this.code);
-            this.proxyClass = runtime.globals.get(this.klass);
+            interpreter.runButDontRaise(this.code);
+            this.proxyClass = interpreter.globals.get(this.klass);
             this.proxy = this.proxyClass(this);
             this.proxy.connect();
             this.registerWidget();
@@ -36,7 +36,7 @@ function createWidget(runtime: Runtime, name: string, code: string, klass: strin
 
         registerWidget() {
             logger.info('new widget registered:', this.name);
-            runtime.globals.set(this.id, this.proxy);
+            interpreter.globals.set(this.id, this.proxy);
         }
     }
     /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -44,7 +44,7 @@ function createWidget(runtime: Runtime, name: string, code: string, klass: strin
     /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
-export function make_PyWidget(runtime: Runtime) {
+export function make_PyWidget(interpreter: Interpreter) {
     class PyWidget extends HTMLElement {
         shadow: ShadowRoot;
         name: string;
@@ -89,7 +89,7 @@ export function make_PyWidget(runtime: Runtime) {
             this.appendChild(mainDiv);
             logger.debug('PyWidget: reading source', this.source);
             this.code = await this.getSourceFromFile(this.source);
-            createWidget(runtime, this.name, this.code, this.klass);
+            createWidget(interpreter, this.name, this.code, this.klass);
         }
 
         async getSourceFromFile(s: string): Promise<string> {

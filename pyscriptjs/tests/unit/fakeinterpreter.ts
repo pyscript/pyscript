@@ -1,12 +1,11 @@
-import { Runtime } from "../../src/runtime"
+import { Interpreter } from '../../src/interpreter';
 import type { PyodideInterface } from 'pyodide';
 
-export class FakeRuntime extends Runtime {
-
+export class FakeInterpreter extends Interpreter {
     src: string;
     name?: string;
     lang?: string;
-    interpreter: PyodideInterface;
+    interface: PyodideInterface;
     globals: any;
 
     constructor() {
@@ -18,26 +17,26 @@ export class FakeRuntime extends Runtime {
     }
 
     async loadInterpreter() {
-        throw new Error("not implemented");
+        throw new Error('not implemented');
     }
 
     registerJsModule(name: string, module: object) {
-        throw new Error("not implemented");
+        throw new Error('not implemented');
     }
 
     async loadPackage(names: string | string[]) {
-        throw new Error("not implemented");
+        throw new Error('not implemented');
     }
 
     async installPackage(package_name: string | string[]) {
-        throw new Error("not implemented");
+        throw new Error('not implemented');
     }
 
     async loadFromFile(path: string, fetch_path: string) {
-        throw new Error("not implemented");
+        throw new Error('not implemented');
     }
 
     invalidate_module_path_cache(): void {
-        throw new Error("not implemented");
+        throw new Error('not implemented');
     }
 }
