@@ -283,6 +283,9 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code()
 
+    @pytest.xfail(
+        reason="Tabulator not found - Issue: https://github.com/pyscript/pyscript/issues/1109"
+    )
     def test_panel_stream(self):
         # XXX improve this test
         self.goto("examples/panel_stream.html")
