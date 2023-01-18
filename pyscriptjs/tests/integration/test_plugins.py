@@ -37,11 +37,42 @@ class TestLogger(Plugin):
     def afterStartup(self, config):
         console.log('afterStartup called')
 
+    def beforePyScriptExec(self, runtime, src, pyscript_tag):
+        console.log(f'beforePyScriptExec called')
+        console.log(f'before_src:{src}')
+
+    def afterPyScriptExec(self, runtime, src, pyscript_tag, result):
+        console.log(f'afterPyScriptExec called')
+        console.log(f'after_src:{src}')
+
     def onUserError(self, config):
         console.log('onUserError called')
 
 
 plugin = TestLogger()
+"""
+
+# Source of script that defines a plugin with only beforePyScriptExec and
+# afterPyScriptExec methods
+EXEC_HOOKS_PLUGIN_CODE = """
+from pyscript import Plugin
+from js import console
+
+class ExecTestLogger(Plugin):
+
+    def beforePyScriptExec(self, runtime, src, pyscript_tag):
+        console.log(f'beforePyScriptExec called')
+        console.log(f'before_src:{src}')
+        console.log(f'before_id:{pyscript_tag.id}')
+
+    def afterPyScriptExec(self, runtime, src, pyscript_tag, result):
+        console.log(f'afterPyScriptExec called')
+        console.log(f'after_src:{src}')
+        console.log(f'after_id:{pyscript_tag.id}')
+        console.log(f'result:{result}')
+
+
+plugin = ExecTestLogger()
 """
 
 # Source of a script that doesn't call define a `plugin` attribute
@@ -159,7 +190,12 @@ class TestPlugin(PyScriptTest):
         for each one of them"""
         # GIVEN a plugin that logs specific strings for each app execution event
         hooks_available = ["afterSetup", "afterStartup"]
-        hooks_unavailable = ["configure", "beforeLaunch"]
+        hooks_unavailable = [
+            "configure",
+            "beforeLaunch",
+            "beforePyScriptExec",
+            "afterPyScriptExec",
+        ]
 
         # EXPECT it to log the correct logs for the events it intercepts
         log_lines = self.console.log.lines
@@ -172,6 +208,28 @@ class TestPlugin(PyScriptTest):
             assert f"{method} called" not in log_lines
 
         # TODO: It'd be actually better to check that the events get called in order
+
+    @prepare_test(
+        "exec_test_logger",
+        EXEC_HOOKS_PLUGIN_CODE,
+        template=HTML_TEMPLATE_NO_TAG + "\n<py-script id='pyid'>x=2; x</py-script>",
+    )
+    def test_pyscript_exec_hooks(self):
+        """Test that the beforePyScriptExec and afterPyScriptExec hooks work as intended"""
+        assert self.page.locator("py-script") is not None
+
+        log_lines: list[str] = self.console.log.lines
+
+        assert "beforePyScriptExec called" in log_lines
+        assert "afterPyScriptExec called" in log_lines
+
+        # These could be made better with a utility function that found log lines
+        # that match a filter function, or start with something
+        assert "before_src:x=2; x" in log_lines
+        assert "before_id:pyid" in log_lines
+        assert "after_src:x=2; x" in log_lines
+        assert "after_id:pyid" in log_lines
+        assert "result:2" in log_lines
 
     @prepare_test("no_plugin", NO_PLUGIN_CODE)
     def test_no_plugin_attribute_error(self):
@@ -186,3 +244,115 @@ class TestPlugin(PyScriptTest):
         )
         # EXPECT an error for the missing attribute
         assert error_msg in self.console.error.lines
+
+    def test_fetch_python_plugin(self):
+        """
+        Test that we can fetch a plugin from a remote URL. Note we need to use
+        the 'raw' URL for the plugin, otherwise the request will be rejected
+        by cors policy.
+        """
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "https://raw.githubusercontent.com/FabioRosado/pyscript-plugins/main/python/hello-world.py"
+                ]
+
+            </py-config>
+            <py-hello-world></py-hello-world>
+            """
+        )
+
+        hello_element = self.page.locator("py-hello-world")
+        assert hello_element.inner_html() == '<div id="hello">Hello World!</div>'
+
+    def test_fetch_js_plugin(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "https://raw.githubusercontent.com/FabioRosado/pyscript-plugins/main/js/hello-world.js"
+                ]
+            </py-config>
+            """
+        )
+
+        hello_element = self.page.locator("py-hello-world")
+        assert hello_element.inner_html() == "<h1>Hello, world!</h1>"
+
+    def test_fetch_js_plugin_bare(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "https://raw.githubusercontent.com/FabioRosado/pyscript-plugins/main/js/hello-world-base.js"
+                ]
+            </py-config>
+            """
+        )
+
+        hello_element = self.page.locator("py-hello-world")
+        assert hello_element.inner_html() == "<h1>Hello, world!</h1>"
+
+    def test_fetch_plugin_no_file_extension(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "http://non-existent.blah/hello-world"
+                ]
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+
+        expected_msg = (
+            "(PY2000): Unable to load plugin from "
+            "'http://non-existent.blah/hello-world'. Plugins "
+            "need to contain a file extension and be either a "
+            "python or javascript file."
+        )
+
+        assert self.assert_banner_message(expected_msg)
+
+    def test_fetch_js_plugin_non_existent(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "http://non-existent.example.com/hello-world.js"
+                ]
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+
+        expected_msg = (
+            "(PY0001): Fetching from URL "
+            "http://non-existent.example.com/hello-world.js failed "
+            "with error 'Failed to fetch'. Are your filename and "
+            "path correct?"
+        )
+
+        assert self.assert_banner_message(expected_msg)
+
+    def test_fetch_js_no_export(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                plugins = [
+                    "https://raw.githubusercontent.com/FabioRosado/pyscript-plugins/main/js/hello-world-no-export.js"
+                ]
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+
+        expected_message = (
+            "(PY2001): Unable to load plugin from "
+            "'https://raw.githubusercontent.com/FabioRosado/pyscript-plugins"
+            "/main/js/hello-world-no-export.js'. "
+            "Plugins need to contain a default export."
+        )
+
+        assert self.assert_banner_message(expected_message)

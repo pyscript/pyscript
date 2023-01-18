@@ -39,6 +39,25 @@ export class Plugin {
      */
     afterSetup(runtime: Runtime) {}
 
+    /** The source of a <py-script>> tag has been fetched, and we're about
+     * to evaluate that source using the provided runtime.
+     *
+     * @param runtime The Runtime object that will be used to evaluated the Python source code
+     * @param src {string} The Python source code to be evaluated
+     * @param PyScriptTag The <py-script> HTML tag that originated the evaluation
+     */
+    beforePyScriptExec(runtime, src, PyScriptTag) {}
+
+    /** The Python in a <py-script> has just been evaluated, but control
+     * has not been ceded back to the JavaScript event loop yet
+     *
+     * @param runtime The Runtime object that will be used to evaluated the Python source code
+     * @param src {string} The Python source code to be evaluated
+     * @param PyScriptTag The <py-script> HTML tag that originated the evaluation
+     * @param result The returned result of evaluating the Python (if any)
+     */
+    afterPyScriptExec(runtime, src, PyScriptTag, result) {}
+
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and
      * the page is ready to accept user interactions.
@@ -74,11 +93,23 @@ export class PluginManager {
     }
 
     beforeLaunch(config: AppConfig) {
-        for (const p of this._plugins) p.beforeLaunch(config);
+        for (const p of this._plugins) {
+            try {
+                p.beforeLaunch(config);
+            } catch (e) {
+                logger.error(`Error while calling beforeLaunch hook of plugin ${p.constructor.name}`, e);
+            }
+        }
     }
 
     afterSetup(runtime: Runtime) {
-        for (const p of this._plugins) p.afterSetup(runtime);
+        for (const p of this._plugins) {
+            try {
+                p.afterSetup(runtime);
+            } catch (e) {
+                logger.error(`Error while calling afterSetup hook of plugin ${p.constructor.name}`, e);
+            }
+        }
 
         for (const p of this._pythonPlugins) p.afterSetup?.(runtime);
     }
@@ -87,6 +118,18 @@ export class PluginManager {
         for (const p of this._plugins) p.afterStartup(runtime);
 
         for (const p of this._pythonPlugins) p.afterStartup?.(runtime);
+    }
+
+    beforePyScriptExec(runtime, src, pyscriptTag) {
+        for (const p of this._plugins) p.beforePyScriptExec(runtime, src, pyscriptTag);
+
+        for (const p of this._pythonPlugins) p.beforePyScriptExec?.(runtime, src, pyscriptTag);
+    }
+
+    afterPyScriptExec(runtime: Runtime, src, pyscriptTag, result) {
+        for (const p of this._plugins) p.afterPyScriptExec(runtime, src, pyscriptTag, result);
+
+        for (const p of this._pythonPlugins) p.afterPyScriptExec?.(runtime, src, pyscriptTag, result);
     }
 
     onUserError(error: UserError) {

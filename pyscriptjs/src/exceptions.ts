@@ -7,6 +7,7 @@ These error codes are used to identify the type of error that occurred.
 The convention is:
 * PY0 - errors that occur when fetching
 * PY1 - errors that occur in config
+* Py2 - errors that occur in plugins
 * PY9 - Deprecation errors
 */
 
@@ -22,6 +23,8 @@ export enum ErrorCode {
   FETCH_UNAVAILABLE_ERROR = "PY0503",
   BAD_CONFIG = "PY1000",
   MICROPIP_INSTALL_ERROR = "PY1001",
+  BAD_PLUGIN_FILE_EXTENSION = "PY2000",
+  NO_DEFAULT_EXPORT = "PY2001",
   TOP_LEVEL_AWAIT = "PY9000"
 }
 
@@ -39,13 +42,11 @@ export class UserError extends Error {
 }
 
 
-export class FetchError extends Error {
+export class FetchError extends UserError {
   errorCode: ErrorCode;
   constructor(errorCode: ErrorCode, message: string) {
-    super(message)
+    super(errorCode, message)
     this.name = "FetchError";
-    this.errorCode = errorCode;
-    this.message = `(${errorCode}): ${message}`;
   }
 }
 

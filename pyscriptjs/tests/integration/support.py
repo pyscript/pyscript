@@ -1,4 +1,5 @@
 import dataclasses
+import math
 import os
 import pdb
 import re
@@ -303,6 +304,21 @@ class PyScriptTest:
             text = "\n".join(loc.all_inner_texts())
             raise AssertionError(f"Found {n} alert banners:\n" + text)
 
+    def assert_banner_message(self, expected_message):
+        """
+        Ensure that there is an alert banner on the page with the given message.
+        Currently it only handles a single.
+        """
+        banner = self.page.wait_for_selector(".alert-banner")
+        banner_text = banner.inner_text()
+
+        if expected_message not in banner_text:
+            raise AssertionError(
+                f"Expected message '{expected_message}' does not "
+                f"match banner text '{banner_text}'"
+            )
+        return True
+
     def check_tutor_generated_code(self, modules_to_check=None):
         """
         Ensure that the source code viewer injected by the PyTutor plugin
@@ -371,6 +387,31 @@ class PyScriptTest:
 
 
 # ============== Helpers and utility functions ==============
+
+MAX_TEST_TIME = 30  # Number of seconds allowed for checking a testing condition
+TEST_TIME_INCREMENT = 0.25  # 1/4 second, the length of each iteration
+TEST_ITERATIONS = math.ceil(
+    MAX_TEST_TIME / TEST_TIME_INCREMENT
+)  # 120 iters of 1/4 second
+
+
+def wait_for_render(page, selector, pattern):
+    """
+    Assert that rendering inserts data into the page as expected: search the
+    DOM from within the timing loop for a string that is not present in the
+    initial markup but should appear by way of rendering
+    """
+    re_sub_content = re.compile(pattern)
+    py_rendered = False  # Flag to be set to True when condition met
+
+    for _ in range(TEST_ITERATIONS):
+        content = page.inner_html(selector)
+        if re_sub_content.search(content):
+            py_rendered = True
+            break
+        time.sleep(TEST_TIME_INCREMENT)
+
+    assert py_rendered  # nosec
 
 
 class JsErrors(Exception):
