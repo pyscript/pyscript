@@ -11,9 +11,9 @@ const logger = getLogger('py-script');
 
 export function make_PyScript(runtime: Runtime, app: PyScriptApp) {
     class PyScript extends HTMLElement {
-        srcCode: string
-        stdout_manager: Stdio | null
-        stderr_manager: Stdio | null
+        srcCode: string;
+        stdout_manager: Stdio | null;
+        stderr_manager: Stdio | null;
 
         async connectedCallback() {
             ensureUniqueId(this);
@@ -182,8 +182,9 @@ function createElementsWithEventListeners(runtime: Runtime, pyAttribute: string)
                 logger.error((e as Error).message);
             }
         } else {
-            el.addEventListener(event, () => {
-                runtime.run(handlerCode);
+            el.addEventListener(event, event => {
+                console.trace(event);
+                runtime.run(handlerCode, { event });
             });
         }
         // TODO: Should we actually map handlers in JS instead of Python?

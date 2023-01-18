@@ -51,7 +51,7 @@ export abstract class Runtime extends Object {
      * (asynchronously) which can call its own API behind the scenes.
      * Python exceptions are turned into JS exceptions.
      * */
-    abstract run(code: string): unknown;
+    abstract run(code: string, namespace?: object): unknown;
 
     /**
      * Same as run, but Python exceptions are not propagated: instead, they

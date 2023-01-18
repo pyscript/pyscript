@@ -305,3 +305,17 @@ class TestBasic(PyScriptTest):
             "'py-keydown=\"myFunction()\"' instead."
         )
         assert banner.inner_text() == expected_message
+
+    def test_py_click(self):
+        self.pyscript_run(
+            """
+            <button id="btn" py-click="myfunc(event)">Click me</button>
+            <py-script>
+                def myfunc(event):
+                    print(event.target.id)
+            </py-script>
+            """
+        )
+        # self.page.click("#btn")
+        # assert self.console.log.lines[-1] == "hello world"
+        breakpoint()
