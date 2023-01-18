@@ -1,13 +1,13 @@
 import { getLogger } from './logger';
 import { ensureUniqueId } from './utils';
 import { UserError, ErrorCode } from './exceptions';
-import type { Runtime } from './runtime';
+import type { Interpreter } from './interpreter';
 
 const logger = getLogger('pyexec');
 
-export function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLElement) {
+export function pyExec(interpreter: Interpreter, pysrc: string, outElem: HTMLElement) {
     //This is pyscript.py
-    const pyscript_py = runtime.interpreter.pyimport('pyscript');
+    const pyscript_py = interpreter.interface.pyimport('pyscript');
 
     ensureUniqueId(outElem);
     pyscript_py.set_current_display_target(outElem.id);
@@ -17,14 +17,14 @@ export function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLElement) {
                 throw new UserError(
                     ErrorCode.TOP_LEVEL_AWAIT,
                     'The use of top-level "await", "async for", and ' +
-                    '"async with" is deprecated.' +
-                    '\nPlease write a coroutine containing ' +
-                    'your code and schedule it using asyncio.ensure_future() or similar.' +
-                    '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.',
-                )
-       }
-       return runtime.run(pysrc);
-   } catch (err) {
+                        '"async with" is deprecated.' +
+                        '\nPlease write a coroutine containing ' +
+                        'your code and schedule it using asyncio.ensure_future() or similar.' +
+                        '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.',
+                );
+            }
+            return interpreter.run(pysrc);
+        } catch (err) {
             // XXX: currently we display exceptions in the same position as
             // the output. But we probably need a better way to do that,
             // e.g. allowing plugins to intercept exceptions and display them
@@ -41,11 +41,11 @@ export function pyExec(runtime: Runtime, pysrc: string, outElem: HTMLElement) {
  * Javascript API to call the python display() function
  *
  * Expected usage:
- *     pyDisplay(runtime, obj);
- *     pyDisplay(runtime, obj, { target: targetID });
+ *     pyDisplay(interpreter, obj);
+ *     pyDisplay(interpreter, obj, { target: targetID });
  */
-export function pyDisplay(runtime: Runtime, obj: any, kwargs: object) {
-    const display = runtime.globals.get('display');
+export function pyDisplay(interpreter: Interpreter, obj: any, kwargs: object) {
+    const display = interpreter.globals.get('display');
     if (kwargs === undefined) display(obj);
     else {
         display.callKwargs(obj, kwargs);

@@ -33,5 +33,6 @@ maxdepth: 1
 glob:
 ---
 py-config-fetch
-py-config-runtime
+py-config-interpreter
+writing-to-page
 ```

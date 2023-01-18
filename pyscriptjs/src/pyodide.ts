@@ -1,6 +1,6 @@
-import { Runtime } from './runtime';
+import { Interpreter } from './interpreter';
 import { getLogger } from './logger';
-import { InstallError, ErrorCode } from './exceptions'
+import { InstallError, ErrorCode } from './exceptions';
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
 import { robustFetch } from './fetch';
 import type { AppConfig } from './pyconfig';
@@ -15,13 +15,15 @@ interface Micropip extends PyProxy {
     destroy: () => void;
 }
 
-export class PyodideRuntime extends Runtime {
+export class PyodideInterpreter extends Interpreter {
     src: string;
     stdio: Stdio;
     name?: string;
     lang?: string;
-    interpreter: PyodideInterface;
+    interface: PyodideInterface;
     globals: PyProxy;
+    // TODO: Remove this once `runtimes` is removed!
+    interpreter: PyodideInterface;
 
     constructor(
         config: AppConfig,
@@ -30,7 +32,7 @@ export class PyodideRuntime extends Runtime {
         name = 'pyodide-default',
         lang = 'python',
     ) {
-        logger.info('Runtime config:', { name, lang, src });
+        logger.info('Interpreter config:', { name, lang, src });
         super(config);
         this.stdio = stdio;
         this.src = src;
@@ -56,7 +58,7 @@ export class PyodideRuntime extends Runtime {
      */
     async loadInterpreter(): Promise<void> {
         logger.info('Loading pyodide');
-        this.interpreter = await loadPyodide({
+        this.interface = await loadPyodide({
             stdout: (msg: string) => {
                 this.stdio.stdout_writeline(msg);
             },
@@ -66,67 +68,66 @@ export class PyodideRuntime extends Runtime {
             fullStdLib: false,
         });
 
-        this.globals = this.interpreter.globals;
+        // TODO: Remove this once `runtimes` is removed!
+        this.interpreter = this.interface;
+
+        this.globals = this.interface.globals;
 
         if (this.config.packages) {
-            logger.info("Found packages in configuration to install. Loading micropip...")
+            logger.info('Found packages in configuration to install. Loading micropip...');
             await this.loadPackage('micropip');
         }
         logger.info('pyodide loaded and initialized');
     }
 
     run(code: string): unknown {
-        return this.interpreter.runPython(code);
+        return this.interface.runPython(code);
     }
 
     registerJsModule(name: string, module: object): void {
-        this.interpreter.registerJsModule(name, module);
+        this.interface.registerJsModule(name, module);
     }
 
     async loadPackage(names: string | string[]): Promise<void> {
         logger.info(`pyodide.loadPackage: ${names.toString()}`);
-        await this.interpreter.loadPackage(names, logger.info.bind(logger), logger.info.bind(logger));
+        await this.interface.loadPackage(names, logger.info.bind(logger), logger.info.bind(logger));
     }
 
     async installPackage(package_name: string | string[]): Promise<void> {
         if (package_name.length > 0) {
             logger.info(`micropip install ${package_name.toString()}`);
 
-            const micropip = this.interpreter.pyimport('micropip') as Micropip;
+            const micropip = this.interface.pyimport('micropip') as Micropip;
             try {
                 await micropip.install(package_name);
                 micropip.destroy();
-            } catch(e) {
-                let exceptionMessage = `Unable to install package(s) '` + package_name +`'.`
+            } catch (e) {
+                let exceptionMessage = `Unable to install package(s) '` + package_name + `'.`;
 
                 // If we can't fetch `package_name` micropip.install throws a huge
                 // Python traceback in `e.message` this logic is to handle the
                 // error and throw a more sensible error message instead of the
                 // huge traceback.
                 if (e.message.includes("Can't find a pure Python 3 wheel")) {
-                    exceptionMessage += (
-                        ` Reason: Can't find a pure Python 3 Wheel for package(s) '` + package_name +
+                    exceptionMessage +=
+                        ` Reason: Can't find a pure Python 3 Wheel for package(s) '` +
+                        package_name +
                         `'. See: https://pyodide.org/en/stable/usage/faq.html#micropip-can-t-find-a-pure-python-wheel ` +
-                        `for more information.`
-                    )
+                        `for more information.`;
                 } else if (e.message.includes("Can't fetch metadata")) {
-                    exceptionMessage += (
-                        " Unable to find package in PyPI. " +
-                        "Please make sure you have entered a correct package name."
-                    )
+                    exceptionMessage +=
+                        ' Unable to find package in PyPI. ' +
+                        'Please make sure you have entered a correct package name.';
                 } else {
-                    exceptionMessage += (
+                    exceptionMessage +=
                         ` Reason: ${e.message as string}. Please open an issue at ` +
                         `https://github.com/pyscript/pyscript/issues/new if you require help or ` +
-                        `you think it's a bug.`)
+                        `you think it's a bug.`;
                 }
 
                 logger.error(e);
 
-                throw new InstallError(
-                    ErrorCode.MICROPIP_INSTALL_ERROR,
-                    exceptionMessage
-                )
+                throw new InstallError(ErrorCode.MICROPIP_INSTALL_ERROR, exceptionMessage);
             }
         }
     }
@@ -164,12 +165,11 @@ export class PyodideRuntime extends Runtime {
         const pathArr = path.split('/');
         const filename = pathArr.pop();
         for (let i = 0; i < pathArr.length; i++) {
-
             // iteratively calculates parts of the path i.e. `a`, `a/b`, `a/b/c` for `a/b/c/foo.py`
             const eachPath = pathArr.slice(0, i + 1).join('/');
 
             // analyses `eachPath` and returns if it exists along with if its parent directory exists or not
-            const { exists, parentExists } = this.interpreter.FS.analyzePath(eachPath);
+            const { exists, parentExists } = this.interface.FS.analyzePath(eachPath);
 
             // due to the iterative manner in which we proceed, the parent directory should ALWAYS exist
             if (!parentExists) {
@@ -178,7 +178,7 @@ export class PyodideRuntime extends Runtime {
 
             // creates `eachPath` if it doesn't exist
             if (!exists) {
-                this.interpreter.FS.mkdir(eachPath);
+                this.interface.FS.mkdir(eachPath);
             }
         }
 
@@ -189,13 +189,13 @@ export class PyodideRuntime extends Runtime {
 
         pathArr.push(filename);
         // opens a file descriptor for the file at `path`
-        const stream = this.interpreter.FS.open(pathArr.join('/'), 'w');
-        this.interpreter.FS.write(stream, data, 0, data.length, 0);
-        this.interpreter.FS.close(stream);
+        const stream = this.interface.FS.open(pathArr.join('/'), 'w');
+        this.interface.FS.write(stream, data, 0, data.length, 0);
+        this.interface.FS.close(stream);
     }
 
     invalidate_module_path_cache(): void {
-        const importlib = this.interpreter.pyimport("importlib")
-        importlib.invalidate_caches()
+        const importlib = this.interface.pyimport('importlib');
+        importlib.invalidate_caches();
     }
 }
