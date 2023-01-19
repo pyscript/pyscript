@@ -1,6 +1,6 @@
 # PyScript
 
-## What is PyScript
+## What is PyScript.
 
 ### tl;dr
 PyScript is a Pythonic alternative to Scratch, JSFiddle or other "easy to use" programming frameworks, making the web a friendly, hackable, place where anyone can author interesting and interactive applications.
