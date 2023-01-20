@@ -183,7 +183,6 @@ function createElementsWithEventListeners(runtime: Runtime, pyAttribute: string)
             }
         } else {
             el.addEventListener(event, event => {
-                console.trace(event);
                 runtime.run(handlerCode, { event });
             });
         }

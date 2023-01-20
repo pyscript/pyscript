@@ -316,6 +316,27 @@ class TestBasic(PyScriptTest):
             </py-script>
             """
         )
-        # self.page.click("#btn")
-        # assert self.console.log.lines[-1] == "hello world"
-        breakpoint()
+        button = self.page.wait_for_selector("#btn")
+        button.click()
+        assert self.console.log.lines[-1] == "btn"
+
+    def test_multiple_py_events(self):
+        self.pyscript_run(
+            """
+            <button id="btn" py-click="myfunc(event)" py-keydown="myfunc(event)">Click me</button>
+            <button id="btn2" py-click="newfunc(event)" >Click me</button>
+            <py-script>
+                def myfunc(event):
+                    print(event.target.id)
+
+                def newfunc(event):
+                    print(event.target.id)
+            </py-script>
+            """
+        )
+        button1 = self.page.wait_for_selector("#btn")
+        button1.click("")
+        assert self.console.log.lines[-1] == "btn"
+        button2 = self.page.wait_for_selector("#btn2")
+        button2.click()
+        assert self.console.log.lines[-1] == "btn2"
