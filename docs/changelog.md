@@ -18,7 +18,7 @@ Bug fixes
 
 Enhancements
 ------------
-- When adding py-* attributes to an element, you can now use the `event` variable to access the event object in Python. ([#119](https://github.com/pyscript/pyscript/pull/1119))
+- When adding py-* attributes to an element, you can now use the `event` variable to access the event object in Python. ([#1120](https://github.com/pyscript/pyscript/pull/1120))
 
 Documentation
 -------------
