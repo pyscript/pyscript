@@ -1,5 +1,5 @@
 import type { AppConfig } from './pyconfig';
-import type { Runtime } from './runtime';
+import type { Interpreter } from './interpreter';
 import type { UserError } from './exceptions';
 import { getLogger } from './logger';
 
@@ -37,32 +37,32 @@ export class Plugin {
      *
      * The <py-script> tags will be executed after this hook.
      */
-    afterSetup(runtime: Runtime) {}
+    afterSetup(interpreter: Interpreter) {}
 
     /** The source of a <py-script>> tag has been fetched, and we're about
-     * to evaluate that source using the provided runtime.
+     * to evaluate that source using the provided interpreter.
      *
-     * @param runtime The Runtime object that will be used to evaluated the Python source code
+     * @param interpreter The Interpreter object that will be used to evaluated the Python source code
      * @param src {string} The Python source code to be evaluated
      * @param PyScriptTag The <py-script> HTML tag that originated the evaluation
      */
-    beforePyScriptExec(runtime, src, PyScriptTag) {}
+    beforePyScriptExec(interpreter: Interpreter, src: string, PyScriptTag: HTMLElement) {}
 
     /** The Python in a <py-script> has just been evaluated, but control
      * has not been ceded back to the JavaScript event loop yet
      *
-     * @param runtime The Runtime object that will be used to evaluated the Python source code
+     * @param interpreter The Interpreter object that will be used to evaluated the Python source code
      * @param src {string} The Python source code to be evaluated
      * @param PyScriptTag The <py-script> HTML tag that originated the evaluation
      * @param result The returned result of evaluating the Python (if any)
      */
-    afterPyScriptExec(runtime, src, PyScriptTag, result) {}
+    afterPyScriptExec(interpreter: Interpreter, src: string, PyScriptTag: HTMLElement, result) {}
 
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and
      * the page is ready to accept user interactions.
      */
-    afterStartup(runtime: Runtime) {}
+    afterStartup(interpreter: Interpreter) {}
 
     /** Called when an UserError is raised
      */
@@ -102,34 +102,34 @@ export class PluginManager {
         }
     }
 
-    afterSetup(runtime: Runtime) {
+    afterSetup(interpreter: Interpreter) {
         for (const p of this._plugins) {
             try {
-                p.afterSetup(runtime);
+                p.afterSetup(interpreter);
             } catch (e) {
                 logger.error(`Error while calling afterSetup hook of plugin ${p.constructor.name}`, e);
             }
         }
 
-        for (const p of this._pythonPlugins) p.afterSetup?.(runtime);
+        for (const p of this._pythonPlugins) p.afterSetup?.(interpreter);
     }
 
-    afterStartup(runtime: Runtime) {
-        for (const p of this._plugins) p.afterStartup(runtime);
+    afterStartup(interpreter: Interpreter) {
+        for (const p of this._plugins) p.afterStartup(interpreter);
 
-        for (const p of this._pythonPlugins) p.afterStartup?.(runtime);
+        for (const p of this._pythonPlugins) p.afterStartup?.(interpreter);
     }
 
-    beforePyScriptExec(runtime, src, pyscriptTag) {
-        for (const p of this._plugins) p.beforePyScriptExec(runtime, src, pyscriptTag);
+    beforePyScriptExec(interpreter: Interpreter, src: string, pyscriptTag: HTMLElement) {
+        for (const p of this._plugins) p.beforePyScriptExec(interpreter, src, pyscriptTag);
 
-        for (const p of this._pythonPlugins) p.beforePyScriptExec?.(runtime, src, pyscriptTag);
+        for (const p of this._pythonPlugins) p.beforePyScriptExec?.(interpreter, src, pyscriptTag);
     }
 
-    afterPyScriptExec(runtime: Runtime, src, pyscriptTag, result) {
-        for (const p of this._plugins) p.afterPyScriptExec(runtime, src, pyscriptTag, result);
+    afterPyScriptExec(interpreter: Interpreter, src: string, pyscriptTag: HTMLElement, result) {
+        for (const p of this._plugins) p.afterPyScriptExec(interpreter, src, pyscriptTag, result);
 
-        for (const p of this._pythonPlugins) p.afterPyScriptExec?.(runtime, src, pyscriptTag, result);
+        for (const p of this._pythonPlugins) p.afterPyScriptExec?.(interpreter, src, pyscriptTag, result);
     }
 
     onUserError(error: UserError) {
