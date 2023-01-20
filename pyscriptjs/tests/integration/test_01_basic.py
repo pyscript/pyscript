@@ -335,7 +335,7 @@ class TestBasic(PyScriptTest):
             """
         )
         button1 = self.page.wait_for_selector("#btn")
-        button1.click("")
+        button1.click()
         assert self.console.log.lines[-1] == "btn"
         button2 = self.page.wait_for_selector("#btn2")
         button2.click()

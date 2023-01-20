@@ -98,8 +98,6 @@ export class PyodideInterpreter extends Interpreter {
         const optionsGlobals = options?.globals;
         if (optionsGlobals && Object.keys(optionsGlobals).length > 0) {
             for (const [key, value] of Object.entries(optionsGlobals)) {
-                console.error(key);
-                console.error(value);
                 this.globals.set(key, value);
             }
         }
