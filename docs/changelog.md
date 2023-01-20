@@ -16,6 +16,10 @@ Bug fixes
 - Fixed missing closing tag when rendering an image with `display`. ([#1058](https://github.com/pyscript/pyscript/pull/1058))
 - Fixed a bug where Python plugins methods were being executed twice. ([#1064](https://github.com/pyscript/pyscript/pull/1064))
 
+Enhancements
+------------
+- When adding py-* attributes to an element, you can now use the `event` variable to access the event object in Python. ([#119](https://github.com/pyscript/pyscript/pull/1119))
+
 Documentation
 -------------
 
