@@ -1,4 +1,5 @@
 import { Runtime } from './runtime';
+import type { RunOptions } from './runtime';
 import { getLogger } from './logger';
 import { InstallError, ErrorCode } from './exceptions';
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
@@ -76,14 +77,24 @@ export class PyodideRuntime extends Runtime {
     }
 
     /**
+     * Run the given code in the interpreter, optionally you can pass an options
+     * object which will be added to the interpreter's globals. Ideally we would
+     * pass the options to `locals` but Pyodide's `runPython` doesn't support
+     * that yet.
      *
-     * @param code
-     * @param namespace
-     * @returns
+     * @param code - Python code to run in the interpreter
+     * @param options? - Options to pass to the interpreter (currently, only used for `globals`)
+     * @returns The result of the code execution
      */
-    run(code: string, namespace?: object): unknown {
-        if (namespace && Object.keys(namespace).length > 0) {
-            for (const [key, value] of Object.entries(namespace)) {
+    run(code: string, options?: RunOptions): unknown {
+        // Since Pyodide doesn't support passing `locals` to `runPython` we
+        // just iterate over the globals. Once(if) it does, we should move
+        // this logic to `locals` or extend to support both.
+        const optionsGlobals = options?.globals;
+        if (optionsGlobals && Object.keys(optionsGlobals).length > 0) {
+            for (const [key, value] of Object.entries(optionsGlobals)) {
+                console.error(key);
+                console.error(value);
                 this.globals.set(key, value);
             }
         }

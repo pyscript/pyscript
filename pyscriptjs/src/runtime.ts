@@ -5,6 +5,9 @@ import { getLogger } from './logger';
 const logger = getLogger('pyscript/runtime');
 
 export type RuntimeInterpreter = PyodideInterface | null;
+export type RunOptions = {
+    globals?: object;
+};
 
 /*
 Runtime class is a super class that all different runtimes must respect
@@ -51,7 +54,7 @@ export abstract class Runtime extends Object {
      * (asynchronously) which can call its own API behind the scenes.
      * Python exceptions are turned into JS exceptions.
      * */
-    abstract run(code: string, namespace?: object): unknown;
+    abstract run(code: string, options?: RunOptions): unknown;
 
     /**
      * Same as run, but Python exceptions are not propagated: instead, they
