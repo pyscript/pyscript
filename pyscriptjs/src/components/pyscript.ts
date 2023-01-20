@@ -156,10 +156,9 @@ export function initHandlers(interpreter: Interpreter) {
 function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute: string) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
     for (const el of matches) {
+        // If the element doesn't have an id, let's add one automatically!
         if (el.id.length === 0) {
-            throw new TypeError(
-                `<${el.tagName.toLowerCase()}> must have an id attribute, when using the ${pyAttribute} attribute`,
-            );
+            ensureUniqueId(el);
         }
         const handlerCode = el.getAttribute(pyAttribute);
         const event = pyAttributeToEvent.get(pyAttribute);
