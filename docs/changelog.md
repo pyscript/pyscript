@@ -19,6 +19,7 @@ Bug fixes
 Enhancements
 ------------
 - When adding py-* attributes to an element, you can now use the `event` variable to access the event object in Python. ([#1120](https://github.com/pyscript/pyscript/pull/1120))
+- When adding a `py-` attribute to an element but didn't added an `id` attribute, PyScript will now generate a random ID for the element instead of throwing an error which caused the splash screen to not shutdown. ([#1122](https://github.com/pyscript/pyscript/pull/1122))
 
 Documentation
 -------------

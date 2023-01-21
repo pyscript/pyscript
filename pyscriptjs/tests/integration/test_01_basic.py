@@ -340,3 +340,18 @@ class TestBasic(PyScriptTest):
         button2 = self.page.wait_for_selector("#btn2")
         button2.click()
         assert self.console.log.lines[-1] == "btn2"
+
+    def test_py_attribute_without_id(self):
+        self.pyscript_run(
+            """
+            <button py-click="myfunc()">Click me</button>
+            <py-script>
+                def myfunc():
+                    print("hello world!")
+            </py-script>
+            """
+        )
+        btn = self.page.wait_for_selector("button")
+        btn.click()
+        assert self.console.log.lines[-1] == "hello world!"
+        assert self.console.error.lines == []
