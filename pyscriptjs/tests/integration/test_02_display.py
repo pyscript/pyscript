@@ -227,7 +227,7 @@ class TestOutput(PyScriptTest):
                 class Circle:
                     r = 0
                     def _repr_svg_(self):
-                        return f'<svg height="{self.r*2}" width="{self.r*2}"><circle cx="{self.r}" cy="{self.r}" r="{self.r}" fill="red" /></svg>'
+                        return f'<svg height="{self.r*2}" width="{self.r*2}"><circle cx="{self.r}" cy="{self.r}" r="{self.r}" fill="red" /></svg>' # noqa: E501
 
                 circle = Circle()
 
@@ -239,7 +239,10 @@ class TestOutput(PyScriptTest):
         """
         )
         innerhtml = self.page.locator("id=circle-div").inner_html()
-        assert innerhtml == '<svg height="20" width="20"><circle cx="10" cy="10" r="10" fill="red"></circle></svg>'
+        assert (
+            innerhtml
+            == '<svg height="20" width="20"><circle cx="10" cy="10" r="10" fill="red"></circle></svg>'  # noqa: E501
+        )
 
     def test_display_list_dict_tuple(self):
         self.pyscript_run(
