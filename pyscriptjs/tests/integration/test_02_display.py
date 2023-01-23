@@ -219,6 +219,28 @@ class TestOutput(PyScriptTest):
         pattern = r'<py-script id="py-.*">world</py-script>'
         assert re.search(pattern, inner_html)
 
+    def test_display_multiple_append_false_with_target(self):
+        self.pyscript_run(
+            """
+            <div id="circle-div"></div>
+            <py-script>
+                class Circle:
+                    r = 0
+                    def _repr_svg_(self):
+                        return f'<svg height="{self.r*2}" width="{self.r*2}"><circle cx="{self.r}" cy="{self.r}" r="{self.r}" fill="red" /></svg>'
+
+                circle = Circle()
+
+                circle.r += 5
+                display(circle, target="circle-div", append=False)
+                circle.r += 5
+                display(circle, target="circle-div", append=False)
+            </py-script>
+        """
+        )
+        innerhtml = self.page.locator("id=circle-div").inner_html()
+        assert innerhtml == '<svg height="20" width="20"><circle cx="10" cy="10" r="10" fill="red"></circle></svg>'
+
     def test_display_list_dict_tuple(self):
         self.pyscript_run(
             """

@@ -250,7 +250,7 @@ class Element:
             child = js.document.createElement("div")
             self.element.appendChild(child)
 
-        if self.element.children:
+        if append and self.element.children:
             out_element = self.element.children[-1]
         else:
             out_element = self.element
