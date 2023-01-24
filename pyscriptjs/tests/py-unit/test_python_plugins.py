@@ -3,8 +3,9 @@ from unittest.mock import Mock
 
 import py_markdown
 import py_tutor
-import pyscript
 import pyscript_plugins_tester as ppt
+
+import pyscript
 
 TUTOR_SOURCE = """
 <py-config>
@@ -34,13 +35,13 @@ class TestPyMarkdown:
         console_mock = Mock()
         monkeypatch.setattr(py_markdown, "console", console_mock)
         config = "just a config"
-        runtime = "just a runtime"
+        interpreter = "just a runtime"
 
         py_markdown.plugin.configure(config)
         console_mock.log.assert_called_with("configuration received: just a config")
 
-        py_markdown.plugin.afterStartup(runtime)
-        console_mock.log.assert_called_with("runtime received: just a runtime")
+        py_markdown.plugin.afterStartup(interpreter)
+        console_mock.log.assert_called_with("interpreter received: just an interpreter")
 
 
 class TestPyTutor:
