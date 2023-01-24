@@ -1,8 +1,8 @@
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
-import type { Runtime } from '../runtime';
+import type { Interpreter } from '../interpreter';
 import { Plugin } from '../plugin';
-import { UserError, ErrorCode } from "../exceptions"
+import { UserError, ErrorCode } from '../exceptions';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 
@@ -23,8 +23,8 @@ export class PyTerminalPlugin extends Plugin {
             const got = JSON.stringify(t);
             throw new UserError(
                 ErrorCode.BAD_CONFIG,
-                'Invalid value for config.terminal: the only accepted'  +
-                `values are true, false and "auto", got "${got}".`
+                'Invalid value for config.terminal: the only accepted' +
+                    `values are true, false and "auto", got "${got}".`,
             );
         }
         if (t === undefined) {
@@ -46,7 +46,7 @@ export class PyTerminalPlugin extends Plugin {
         }
     }
 
-    afterSetup(runtime: Runtime) {
+    afterSetup(interpreter: Interpreter) {
         // the Python interpreter has been initialized and we are ready to
         // execute user code:
         //

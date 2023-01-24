@@ -72,19 +72,19 @@ __version__ = None
 version_info = None
 
 
-def _set_version_info(version_from_runtime: str):
+def _set_version_info(version_from_interpreter: str):
     """Sets the __version__ and version_info properties from provided JSON data
     Args:
-        version_from_runtime (str): A "dotted" representation of the version:
+        version_from_interpreter (str): A "dotted" representation of the version:
             YYYY.MM.m(m).releaselevel
             Year, Month, and Minor should be integers; releaselevel can be any string
     """
     global __version__
     global version_info
 
-    __version__ = version_from_runtime
+    __version__ = version_from_interpreter
 
-    version_parts = version_from_runtime.split(".")
+    version_parts = version_from_interpreter.split(".")
     year = int(version_parts[0])
     month = int(version_parts[1])
     minor = int(version_parts[2])
@@ -250,7 +250,7 @@ class Element:
             child = js.document.createElement("div")
             self.element.appendChild(child)
 
-        if self.element.children:
+        if append and self.element.children:
             out_element = self.element.children[-1]
         else:
             out_element = self.element

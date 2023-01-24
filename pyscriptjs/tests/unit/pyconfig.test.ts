@@ -6,7 +6,7 @@ import { UserError } from '../../src/exceptions';
 // inspired by trump typos
 const covfefeConfig = {
     name: 'covfefe',
-    runtimes: [
+    interpreters: [
         {
             src: '/demo/covfefe.js',
             name: 'covfefe',
@@ -21,7 +21,7 @@ name = "covfefe"
 
 wonderful = "hijacked"
 
-[[runtimes]]
+[[interpreters]]
 src = "/demo/covfefe.js"
 name = "covfefe"
 lang = "covfefe"
@@ -73,7 +73,7 @@ describe('loadConfigFromElement', () => {
         const el = make_config_element({ type: 'json' });
         el.innerHTML = JSON.stringify(covfefeConfig);
         const config = loadConfigFromElement(el);
-        expect(config.runtimes[0].lang).toBe('covfefe');
+        expect(config.interpreters[0].lang).toBe('covfefe');
         expect(config.pyscript?.time).not.toBeNull();
         // schema_version wasn't present in `inline config` but is still set due to merging with default
         expect(config.schema_version).toBe(1);
@@ -82,7 +82,7 @@ describe('loadConfigFromElement', () => {
     it('should load the JSON config from src attribute', () => {
         const el = make_config_element({ type: 'json', src: '/covfefe.json' });
         const config = loadConfigFromElement(el);
-        expect(config.runtimes[0].lang).toBe('covfefe');
+        expect(config.interpreters[0].lang).toBe('covfefe');
         expect(config.pyscript?.time).not.toBeNull();
         // wonderful is an extra key supplied by the user and is unaffected by merging process
         expect(config.wonderful).toBe('disgrace');
@@ -94,7 +94,7 @@ describe('loadConfigFromElement', () => {
         const el = make_config_element({ type: 'json', src: '/covfefe.json' });
         el.innerHTML = JSON.stringify({ version: '0.2a', wonderful: 'hijacked' });
         const config = loadConfigFromElement(el);
-        expect(config.runtimes[0].lang).toBe('covfefe');
+        expect(config.interpreters[0].lang).toBe('covfefe');
         expect(config.pyscript?.time).not.toBeNull();
         // config from src had an extra key "wonderful" with value "disgrace"
         // inline config had the same extra key "wonderful" with value "hijacked"
@@ -110,7 +110,7 @@ describe('loadConfigFromElement', () => {
         const el = make_config_element({});
         el.innerHTML = covfefeConfigToml;
         const config = loadConfigFromElement(el);
-        expect(config.runtimes[0].lang).toBe('covfefe');
+        expect(config.interpreters[0].lang).toBe('covfefe');
         expect(config.pyscript?.time).not.toBeNull();
         // schema_version wasn't present in `inline config` but is still set due to merging with default
         expect(config.schema_version).toBe(1);

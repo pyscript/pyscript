@@ -70,10 +70,41 @@ class TestConfig(PyScriptTest):
     # this test which is newer than the one we are loading below
     # (after downloading locally) -- which is 0.20.0
 
-    # The test checks if loading a different runtime is possible
+    # The test checks if loading a different interpreter is possible
     # and that too from a locally downloaded file without needing
     # the use of explicit `indexURL` calculation.
-    def test_runtime_config(self, tar_location):
+    def test_interpreter_config(self, tar_location):
+        unzip(
+            location=tar_location,
+            extract_to=self.tmpdir,
+        )
+
+        self.pyscript_run(
+            """
+            <py-config type="json">
+                {
+                    "interpreters": [{
+                        "src": "/pyodide/pyodide.js",
+                        "name": "pyodide-0.20.0",
+                        "lang": "python"
+                    }]
+                }
+            </py-config>
+
+            <py-script>
+                import sys, js
+                pyodide_version = sys.modules["pyodide"].__version__
+                js.console.log("version", pyodide_version)
+                display(pyodide_version)
+            </py-script>
+        """,
+        )
+
+        assert self.console.log.lines[-1] == "version 0.20.0"
+        version = self.page.locator("py-script").inner_text()
+        assert version == "0.20.0"
+
+    def test_runtime_still_works_but_shows_deprecation_warning(self, tar_location):
         unzip(
             location=tar_location,
             extract_to=self.tmpdir,
@@ -103,6 +134,13 @@ class TestConfig(PyScriptTest):
         assert self.console.log.lines[-1] == "version 0.20.0"
         version = self.page.locator("py-script").inner_text()
         assert version == "0.20.0"
+
+        deprecation_banner = self.page.wait_for_selector(".alert-banner")
+        expected_message = (
+            "The configuration option `config.runtimes` is deprecated. "
+            "Please use `config.interpreters` instead."
+        )
+        assert deprecation_banner.inner_text() == expected_message
 
     def test_invalid_json_config(self):
         # we need wait_for_pyscript=False because we bail out very soon,
@@ -168,23 +206,25 @@ class TestConfig(PyScriptTest):
         )
         assert banner.text_content() == expected
 
-    def test_no_runtimes(self):
+    def test_no_interpreter(self):
         snippet = """
             <py-config type="json">
             {
-                "runtimes": []
+                "interpreters": []
             }
             </py-config>
         """
         self.pyscript_run(snippet, wait_for_pyscript=False)
         div = self.page.wait_for_selector(".py-error")
-        assert div.text_content() == "(PY1000): Fatal error: config.runtimes is empty"
+        assert (
+            div.text_content() == "(PY1000): Fatal error: config.interpreter is empty"
+        )
 
-    def test_multiple_runtimes(self):
+    def test_multiple_interpreter(self):
         snippet = """
             <py-config type="json">
             {
-                "runtimes": [
+                "interpreters": [
                     {
                         "src": "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js",
                         "name": "pyodide-0.21.3",
@@ -206,7 +246,9 @@ class TestConfig(PyScriptTest):
         """
         self.pyscript_run(snippet)
         banner = self.page.wait_for_selector(".py-warning")
-        expected = "Multiple runtimes are not supported yet.Only the first will be used"
+        expected = (
+            "Multiple interpreters are not supported yet.Only the first will be used"
+        )
         assert banner.text_content() == expected
         assert self.console.log.lines[-1] == "hello world"
 

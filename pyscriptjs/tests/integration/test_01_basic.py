@@ -305,3 +305,18 @@ class TestBasic(PyScriptTest):
             "'py-keydown=\"myFunction()\"' instead."
         )
         assert banner.inner_text() == expected_message
+
+    def test_py_attribute_without_id(self):
+        self.pyscript_run(
+            """
+            <button py-click="myfunc()">Click me</button>
+            <py-script>
+                def myfunc():
+                    print("hello world!")
+            </py-script>
+            """
+        )
+        btn = self.page.wait_for_selector("button")
+        btn.click()
+        assert self.console.log.lines[-1] == "hello world!"
+        assert self.console.error.lines == []

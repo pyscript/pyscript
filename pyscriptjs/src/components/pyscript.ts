@@ -1,5 +1,5 @@
 import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
-import type { Runtime } from '../runtime';
+import type { Interpreter } from '../interpreter';
 import { getLogger } from '../logger';
 import { pyExec } from '../pyexec';
 import { _createAlertBanner } from '../exceptions';
@@ -9,11 +9,11 @@ import { Stdio } from '../stdio';
 
 const logger = getLogger('py-script');
 
-export function make_PyScript(runtime: Runtime, app: PyScriptApp) {
+export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
     class PyScript extends HTMLElement {
-        srcCode: string
-        stdout_manager: Stdio | null
-        stderr_manager: Stdio | null
+        srcCode: string;
+        stdout_manager: Stdio | null;
+        stderr_manager: Stdio | null;
 
         async connectedCallback() {
             ensureUniqueId(this);
@@ -23,9 +23,10 @@ export function make_PyScript(runtime: Runtime, app: PyScriptApp) {
             this.srcCode = this.innerHTML;
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
-            app.plugins.beforePyScriptExec(runtime, pySrc, this);
-            const result = pyExec(runtime, pySrc, this);
-            app.plugins.afterPyScriptExec(runtime, pySrc, this, result);
+
+            app.plugins.beforePyScriptExec(interpreter, pySrc, this);
+            const result = pyExec(interpreter, pySrc, this);
+            app.plugins.afterPyScriptExec(interpreter, pySrc, this, result);
         }
 
         async getPySrc(): Promise<string> {
@@ -144,21 +145,20 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
 ]);
 
 /** Initialize all elements with py-* handlers attributes  */
-export function initHandlers(runtime: Runtime) {
+export function initHandlers(interpreter: Interpreter) {
     logger.debug('Initializing py-* event handlers...');
     for (const pyAttribute of pyAttributeToEvent.keys()) {
-        createElementsWithEventListeners(runtime, pyAttribute);
+        createElementsWithEventListeners(interpreter, pyAttribute);
     }
 }
 
 /** Initializes an element with the given py-on* attribute and its handler */
-function createElementsWithEventListeners(runtime: Runtime, pyAttribute: string) {
+function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute: string) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
     for (const el of matches) {
+        // If the element doesn't have an id, let's add one automatically!
         if (el.id.length === 0) {
-            throw new TypeError(
-                `<${el.tagName.toLowerCase()}> must have an id attribute, when using the ${pyAttribute} attribute`,
-            );
+            ensureUniqueId(el);
         }
         const handlerCode = el.getAttribute(pyAttribute);
         const event = pyAttributeToEvent.get(pyAttribute);
@@ -177,13 +177,13 @@ function createElementsWithEventListeners(runtime: Runtime, pyAttribute: string)
             // the source code may contain a syntax error, which will cause
             // the splashscreen to not be removed.
             try {
-                runtime.run(source);
+                interpreter.run(source);
             } catch (e) {
                 logger.error((e as Error).message);
             }
         } else {
             el.addEventListener(event, () => {
-                runtime.run(handlerCode);
+                interpreter.run(handlerCode);
             });
         }
         // TODO: Should we actually map handlers in JS instead of Python?
@@ -203,7 +203,7 @@ function createElementsWithEventListeners(runtime: Runtime, pyAttribute: string)
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
-export function mountElements(runtime: Runtime) {
+export function mountElements(interpreter: Interpreter) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
     logger.info(`py-mount: found ${matches.length} elements`);
 
@@ -212,5 +212,5 @@ export function mountElements(runtime: Runtime) {
         const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
         source += `\n${mountName} = Element("${el.id}")`;
     }
-    runtime.run(source);
+    interpreter.run(source);
 }
