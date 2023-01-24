@@ -33,6 +33,8 @@ Check out the [the examples directory](examples) folder for more examples on how
 
 Read the [contributing guide](CONTRIBUTING.md) to learn about our development process, reporting bugs and improvements, creating issues and asking questions.
 
+check out the [developing process](docs/development/developing.md) for help
+
 ## Resources
 
 * [Official docs](https://docs.pyscript.net)
