@@ -22,6 +22,9 @@ class classList:
 class PluginsManager:
     """
     Emulator of PyScript PluginsManager that can be used to simulate plugins lifecycle events
+
+    TODO: Currently missing most of the lifecycle events in PluginsManager implementation. Need
+        to add more than just addPythonPlugin
     """
 
     def __init__(self):
