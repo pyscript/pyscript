@@ -378,8 +378,5 @@ class TestOutput(PyScriptTest):
             """
         )
 
-        # TODO: This seems to be a py-script tag, should it?
-        rendered_img_src = self.page.locator("#py-internal-0 > img").get_attribute(
-            "src"
-        )
+        rendered_img_src = self.page.locator("img").get_attribute("src")
         assert rendered_img_src == expected_img_src
