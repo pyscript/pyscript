@@ -90,10 +90,6 @@ class PyTutor:
         # Add the JS file
         script = js.document.createElement("script")
         script.type = "text/javascript"
-        try:
-            script.appendChild(js.document.createTextNode(PAGE_SCRIPT))
-        except BaseException:
-            script.text = PAGE_SCRIPT
         script.src = "./assets/prism/prism.js"
         js.document.head.appendChild(script)
 
