@@ -25,15 +25,15 @@ export class StdioDirector extends Plugin {
      * with that ID for the duration of the evaluation.
      *
      */
-    beforePyScriptExec(interpreter: Interpreter, src: string, PyScriptTag: any): void {
-        if (PyScriptTag.hasAttribute("output")){
-            const targeted_io = new TargetedStdio(PyScriptTag, "output", true, true)
-            PyScriptTag.stdout_manager = targeted_io
+    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: any}): void {
+        if (options.pyScriptTag.hasAttribute("output")){
+            const targeted_io = new TargetedStdio(options.pyScriptTag, "output", true, true)
+            options.pyScriptTag.stdout_manager = targeted_io
             this._stdioMultiplexer.addListener(targeted_io)
         }
-        if (PyScriptTag.hasAttribute("stderr")){
-            const targeted_io = new TargetedStdio(PyScriptTag, "stderr", false, true)
-            PyScriptTag.stderr_manager = targeted_io
+        if (options.pyScriptTag.hasAttribute("stderr")){
+            const targeted_io = new TargetedStdio(options.pyScriptTag, "stderr", false, true)
+            options.pyScriptTag.stderr_manager = targeted_io
             this._stdioMultiplexer.addListener(targeted_io)
         }
     }

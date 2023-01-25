@@ -37,7 +37,7 @@ class TestLogger(Plugin):
     def afterStartup(self, config):
         console.log('afterStartup called')
 
-    def beforePyScriptExec(self, interpreter, src, pyscript_tag):
+    def beforePyScriptExec(self, interpreter, src, pyScriptTag):
         console.log(f'beforePyScriptExec called')
         console.log(f'before_src:{src}')
 
@@ -60,10 +60,10 @@ from js import console
 
 class ExecTestLogger(Plugin):
 
-    def beforePyScriptExec(self, interpreter, src, pyscript_tag):
+    def beforePyScriptExec(self, interpreter, src, pyScriptTag):
         console.log(f'beforePyScriptExec called')
         console.log(f'before_src:{src}')
-        console.log(f'before_id:{pyscript_tag.id}')
+        console.log(f'before_id:{pyScriptTag.id}')
 
     def afterPyScriptExec(self, interpreter, src, pyscript_tag, result):
         console.log(f'afterPyScriptExec called')

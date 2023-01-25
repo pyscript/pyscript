@@ -24,7 +24,7 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
 
-            app.plugins.beforePyScriptExec(interpreter, pySrc, this);
+            app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
             const result = pyExec(interpreter, pySrc, this);
             app.plugins.afterPyScriptExec(interpreter, pySrc, this, result);
         }
