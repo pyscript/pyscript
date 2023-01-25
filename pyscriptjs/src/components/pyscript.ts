@@ -1,7 +1,7 @@
 import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import type { Interpreter } from '../interpreter';
 import { getLogger } from '../logger';
-import { pyExec } from '../pyexec';
+import { pyExec, displayPyException } from '../pyexec';
 import { _createAlertBanner } from '../exceptions';
 import { robustFetch } from '../fetch';
 import { PyScriptApp } from '../main';
@@ -183,7 +183,12 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
             }
         } else {
             el.addEventListener(event, () => {
-                interpreter.run(handlerCode);
+                try {
+                    interpreter.run(handlerCode)
+                }
+                catch (err) {
+                    displayPyException(err, el.parentElement);
+                }
             });
         }
         // TODO: Should we actually map handlers in JS instead of Python?

@@ -43,6 +43,30 @@ class TestBasic(PyScriptTest):
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
 
+    def test_python_exception_in_event_handler(self):
+        self.pyscript_run(
+            """
+            <button py-click="onclick()">Click me</button>
+            <py-script>
+                def onclick():
+                    raise Exception("this is an error inside handler")
+            </py-script>
+        """
+        )
+
+        self.page.locator("button").click()
+
+        ## error in console
+        tb_lines = self.console.error.lines[-1].splitlines()
+        assert tb_lines[0] == "[pyexec] Python exception:"
+        assert tb_lines[1] == "Traceback (most recent call last):"
+        assert tb_lines[-1] == "Exception: this is an error inside handler"
+
+        ## error in DOM
+        tb_lines = self.page.locator(".py-error").inner_text().splitlines()
+        assert tb_lines[0] == "Traceback (most recent call last):"
+        assert tb_lines[-1] == "Exception: this is an error inside handler"
+
     def test_execution_in_order(self):
         """
         Check that they py-script tags are executed in the same order they are
