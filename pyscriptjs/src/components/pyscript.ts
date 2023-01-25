@@ -183,7 +183,7 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
             }
         } else {
             el.addEventListener(event, () => {
-                interpreter.run(handlerCode);
+                pyExec(interpreter, handlerCode, el.parentElement);
             });
         }
         // TODO: Should we actually map handlers in JS instead of Python?
