@@ -109,17 +109,20 @@ class TestOutput(PyScriptTest):
                 def display_hello():
                     # this fails because we don't have any implicit target
                     # from event handlers
-                    display('hello')
+                    display('hello world')
             </py-script>
             <button id="my-button" py-onClick="display_hello()">Click me</button>
         """
         )
         self.page.locator("text=Click me").click()
+        ## error in console
+        tb_lines = self.console.error.lines[-1].splitlines()
+        assert tb_lines[0] == "[pyexec] Python exception:"
+        assert tb_lines[1] == "Traceback (most recent call last):"
+        assert tb_lines[-1] == "Exception: Implicit target not allowed here. Please use display(..., target=...)"
+
         text = self.page.text_content("body")
-        assert "hello" not in text
-        self.check_js_errors(
-            "Implicit target not allowed here. Please use display(..., target=...)"
-        )
+        assert "hello world" not in text
 
     def test_explicit_target_pyscript_tag(self):
         self.pyscript_run(
