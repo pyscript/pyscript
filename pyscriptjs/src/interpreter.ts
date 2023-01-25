@@ -6,7 +6,7 @@ const logger = getLogger('pyscript/interpreter');
 
 export type InterpreterInterface = PyodideInterface | null;
 export type RunOptions = {
-    globals?: object;
+    additionalGlobals?: object;
 };
 
 /*

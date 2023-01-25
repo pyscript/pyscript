@@ -177,13 +177,13 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
             // the source code may contain a syntax error, which will cause
             // the splashscreen to not be removed.
             try {
-                interpreter.run(source, { globals: { event } });
+                interpreter.run(source, { additionalGlobals: { event } });
             } catch (e) {
                 logger.error((e as Error).message);
             }
         } else {
             el.addEventListener(event, event => {
-                interpreter.run(handlerCode, { globals: { event } });
+                interpreter.run(handlerCode, { additionalGlobals: { event } });
             });
         }
         // TODO: Should we actually map handlers in JS instead of Python?

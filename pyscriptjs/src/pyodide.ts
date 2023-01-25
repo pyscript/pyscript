@@ -95,9 +95,9 @@ export class PyodideInterpreter extends Interpreter {
         // Since Pyodide doesn't support passing `locals` to `runPython` we
         // just iterate over the globals. Once(if) it does, we should move
         // this logic to `locals` or extend to support both.
-        const optionsGlobals = options?.globals;
-        if (optionsGlobals && Object.keys(optionsGlobals).length > 0) {
-            for (const [key, value] of Object.entries(optionsGlobals)) {
+        const additionalGlobals = options?.additionalGlobals;
+        if (additionalGlobals && Object.keys(additionalGlobals).length > 0) {
+            for (const [key, value] of Object.entries(additionalGlobals)) {
                 this.globals.set(key, value);
             }
         }
