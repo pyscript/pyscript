@@ -59,42 +59,42 @@ export class StdioDirector extends Plugin {
         }
     }
 
-    beforePyReplExec(runtime: any, src: any, outEl: any, pyReplTag: any): void {
+    beforePyReplExec(options: {runtime: Interpreter, src: string, outEl: HTMLElement, pyReplTag: any}): void {
         //Handle 'output-mode' attribute (removed in PR #881/f9194cc8, restored here)
-        if (pyReplTag.getAttribute('output-mode') != 'append'){
-            outEl.innerHTML = ''
+        if (options.pyReplTag.getAttribute('output-mode') != 'append'){
+            options.outEl.innerHTML = ''
         }
 
         // Handle 'output' attribute; defaults to writing stdout to the existing outEl
         // If 'output' attribute is used, the DOM element with the specified ID receives
         // -both- sys.stdout and sys.stderr
         let output_targeted_io;
-        if (pyReplTag.hasAttribute("output")){
-            output_targeted_io = new TargetedStdio(pyReplTag, "output", true, true);
+        if (options.pyReplTag.hasAttribute("output")){
+            output_targeted_io = new TargetedStdio(options.pyReplTag, "output", true, true);
         }
         else {
-            output_targeted_io = new TargetedStdio(pyReplTag.outDiv, "id", true, true);
+            output_targeted_io = new TargetedStdio(options.pyReplTag.outDiv, "id", true, true);
         }
-        pyReplTag.stdout_manager = output_targeted_io;
+        options.pyReplTag.stdout_manager = output_targeted_io;
         this._stdioMultiplexer.addListener(output_targeted_io);
 
         //Handle 'stderr' attribute;
-        if (pyReplTag.hasAttribute("stderr")){
-            const stderr_targeted_io = new TargetedStdio(pyReplTag, "stderr", false, true);
-            pyReplTag.stderr_manager = stderr_targeted_io;
+        if (options.pyReplTag.hasAttribute("stderr")){
+            const stderr_targeted_io = new TargetedStdio(options.pyReplTag, "stderr", false, true);
+            options.pyReplTag.stderr_manager = stderr_targeted_io;
             this._stdioMultiplexer.addListener(stderr_targeted_io);
         }
 
     }
 
-    afterPyReplExec(runtime: any, src: any, outEl: any, pyReplTag: any, result: any): void {
-        if (pyReplTag.stdout_manager != null){
-            this._stdioMultiplexer.removeListener(pyReplTag.stdout_manager)
-            pyReplTag.stdout_manager = null
+    afterPyReplExec(options: {runtime: any, src: any, outEl: any, pyReplTag: any, result: any}): void {
+        if (options.pyReplTag.stdout_manager != null){
+            this._stdioMultiplexer.removeListener(options.pyReplTag.stdout_manager)
+            options.pyReplTag.stdout_manager = null
         }
-        if (pyReplTag.stderr_manager != null){
-            this._stdioMultiplexer.removeListener(pyReplTag.stderr_manager)
-            pyReplTag.stderr_manager = null
+        if (options.pyReplTag.stderr_manager != null){
+            this._stdioMultiplexer.removeListener(options.pyReplTag.stderr_manager)
+            options.pyReplTag.stderr_manager = null
         }
     }
 }
