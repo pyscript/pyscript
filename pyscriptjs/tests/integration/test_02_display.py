@@ -119,7 +119,10 @@ class TestOutput(PyScriptTest):
         tb_lines = self.console.error.lines[-1].splitlines()
         assert tb_lines[0] == "[pyexec] Python exception:"
         assert tb_lines[1] == "Traceback (most recent call last):"
-        assert tb_lines[-1] == "Exception: Implicit target not allowed here. Please use display(..., target=...)"
+        assert (
+            tb_lines[-1]
+            == "Exception: Implicit target not allowed here. Please use display(..., target=...)"
+        )
 
         text = self.page.text_content("body")
         assert "hello world" not in text
