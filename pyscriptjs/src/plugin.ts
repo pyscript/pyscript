@@ -83,22 +83,22 @@ export class Plugin {
     /** The source of the <py-repl> tag has been fetched and its output-element determined;
      * we're about to evaluate the source using the provided runtime
      *
-     * @param runtime The Runtime object that will be used to evaluated the Python source code
-     * @param src {string} The Python source code to be evaluated
-     * @param outEl The element that the result of the REPL evaluation will be output to.
-     * @param pyReplTag The <py-repl> HTML tag the originated the evaluation
+     * @param options.runtime The Runtime object that will be used to evaluated the Python source code
+     * @param options.src {string} The Python source code to be evaluated
+     * @param options.outEl The element that the result of the REPL evaluation will be output to.
+     * @param options.pyReplTag The <py-repl> HTML tag the originated the evaluation
      */
-    beforePyReplExec(runtime, src, outEl, pyReplTag){}
+    beforePyReplExec(options: {runtime: Interpreter, src: string, outEl: HTMLElement, pyReplTag: any}){}
 
     /**
      *
-     * @param runtime  The Runtime object that will be used to evaluated the Python source code
-     * @param src  {string} The Python source code to be evaluated
-     * @param outEl  The element that the result of the REPL evaluation will be output to.
-     * @param pyReplTag  The <py-repl> HTML tag the originated the evaluation
-     * @param result The result of evaluating the Python (if any)
+     * @param options.runtime  The Runtime object that will be used to evaluated the Python source code
+     * @param options.src  {string} The Python source code to be evaluated
+     * @param options.outEl  The element that the result of the REPL evaluation will be output to.
+     * @param options.pyReplTag  The <py-repl> HTML tag the originated the evaluation
+     * @param options.result The result of evaluating the Python (if any)
      */
-    afterPyReplExec(runtime, src, outEl, pyReplTag, result){}
+    afterPyReplExec(options: {runtime: Interpreter, src: string, outEl: HTMLElement, pyReplTag: HTMLElement, result: any}){}
 
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and
@@ -178,16 +178,16 @@ export class PluginManager {
         for (const p of this._pythonPlugins) p.afterPyScriptExec?.callKwargs(options);
     }
 
-    beforePyReplExec(runtime, src, outEl, pyReplTag){
-        for (const p of this._plugins) p.beforePyReplExec(runtime, src, outEl, pyReplTag);
+    beforePyReplExec(options: {runtime: Interpreter, src: string, outEl: HTMLElement, pyReplTag: any}){
+        for (const p of this._plugins) p.beforePyReplExec(options);
 
-        for (const p of this._pythonPlugins) p.beforePyReplExec?.(runtime, src, outEl, pyReplTag);
+        for (const p of this._pythonPlugins) p.beforePyReplExec?.callKwargs(options);
     }
 
-    afterPyReplExec(runtime, src, outEl, pyReplTag, result){
-        for (const p of this._plugins) p.afterPyReplExec(runtime, src, outEl, pyReplTag, result);
+    afterPyReplExec(options: {runtime: Interpreter, src: string, outEl, pyReplTag, result}){
+        for (const p of this._plugins) p.afterPyReplExec(options);
 
-        for (const p of this._pythonPlugins) p.afterPyReplExec?.(runtime, src, outEl, pyReplTag, result);
+        for (const p of this._pythonPlugins) p.afterPyReplExec?.callKwargs(options);
     }
 
     onUserError(error: UserError) {

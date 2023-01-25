@@ -167,14 +167,14 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
             }
 
             // execute the python code
-            app.plugins.beforePyReplExec(runtime, pySrc, outEl, this);
+            app.plugins.beforePyReplExec({InterpreterClient: interpreter, src: pySrc, outEl: outEl, pyReplTag: this});
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const pyResult = (await pyExec(interpreter, pySrc, outEl)).result;
-            app.plugins.afterPyReplExec(runtime, pySrc, outEl, this, pyResult);
+            app.plugins.afterPyReplExec({InterpreterClient: interpreter, src: pySrc, outEl: outEl, pyReplTag: this, result: pyResult});
 
             // display the value of the last evaluated expression (REPL-style)
             if (pyResult !== undefined) {
-                pyDisplay(interpreter, pyResult, { target: outEl.id });
+                pyDisplay(runtime, pyResult, { target: outEl.id });
             }
 
             this.autogenerateMaybe();
