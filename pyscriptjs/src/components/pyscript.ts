@@ -26,7 +26,7 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
 
             app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
             const result = pyExec(interpreter, pySrc, this);
-            app.plugins.afterPyScriptExec(interpreter, pySrc, this, result);
+            app.plugins.afterPyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result});
         }
 
         async getPySrc(): Promise<string> {

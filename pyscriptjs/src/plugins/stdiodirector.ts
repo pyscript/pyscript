@@ -41,14 +41,14 @@ export class StdioDirector extends Plugin {
     /** After a <py-script> tag is evaluated, if that tag has a 'stdout_manager'
      *  (presumably TargetedStdio, or some other future IO handler), it is removed.
      */
-    afterPyScriptExec(interpreter: Interpreter, src: string, PyScriptTag: any, result: any): void {
-        if (PyScriptTag.stdout_manager != null){
-            this._stdioMultiplexer.removeListener(PyScriptTag.stdout_manager)
-            PyScriptTag.stdout_manager = null
+    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: any, result: any}): void {
+        if (options.pyScriptTag.stdout_manager != null){
+            this._stdioMultiplexer.removeListener(options.pyScriptTag.stdout_manager)
+            options.pyScriptTag.stdout_manager = null
         }
-        if (PyScriptTag.stderr_manager != null){
-            this._stdioMultiplexer.removeListener(PyScriptTag.stderr_manager)
-            PyScriptTag.stderr_manager = null
+        if (options.pyScriptTag.stderr_manager != null){
+            this._stdioMultiplexer.removeListener(options.pyScriptTag.stderr_manager)
+            options.pyScriptTag.stderr_manager = null
         }
     }
 }
