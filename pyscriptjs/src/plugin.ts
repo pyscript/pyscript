@@ -84,7 +84,7 @@ export class Plugin {
     /** The source of the <py-repl> tag has been fetched and its output-element determined;
      * we're about to evaluate the source using the provided runtime
      *
-     * @param options.runtime The Runtime object that will be used to evaluated the Python source code
+     * @param options.interpreter The Runtime object that will be used to evaluated the Python source code
      * @param options.src {string} The Python source code to be evaluated
      * @param options.outEl The element that the result of the REPL evaluation will be output to.
      * @param options.pyReplTag The <py-repl> HTML tag the originated the evaluation
@@ -93,7 +93,7 @@ export class Plugin {
 
     /**
      *
-     * @param options.runtime  The Runtime object that will be used to evaluated the Python source code
+     * @param options.interpreter  The Runtime object that will be used to evaluated the Python source code
      * @param options.src  {string} The Python source code to be evaluated
      * @param options.outEl  The element that the result of the REPL evaluation will be output to.
      * @param options.pyReplTag  The <py-repl> HTML tag the originated the evaluation

@@ -87,7 +87,7 @@ export class StdioDirector extends Plugin {
 
     }
 
-    afterPyReplExec(options: {runtime: any, src: any, outEl: any, pyReplTag: any, result: any}): void {
+    afterPyReplExec(options: {interpreter: any, src: any, outEl: any, pyReplTag: any, result: any}): void {
         if (options.pyReplTag.stdout_manager != null){
             this._stdioMultiplexer.removeListener(options.pyReplTag.stdout_manager)
             options.pyReplTag.stdout_manager = null
