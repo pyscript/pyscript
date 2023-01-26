@@ -42,21 +42,21 @@ export class Plugin {
     /** The source of a <py-script>> tag has been fetched, and we're about
      * to evaluate that source using the provided interpreter.
      *
-     * @param interpreter The Interpreter object that will be used to evaluated the Python source code
-     * @param src {string} The Python source code to be evaluated
-     * @param PyScriptTag The <py-script> HTML tag that originated the evaluation
+     * @param options.interpreter The Interpreter object that will be used to evaluated the Python source code
+     * @param options.src {string} The Python source code to be evaluated
+     * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
      */
-    beforePyScriptExec(interpreter: Interpreter, src: string, PyScriptTag: HTMLElement) {}
+    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: HTMLElement}) {}
 
     /** The Python in a <py-script> has just been evaluated, but control
      * has not been ceded back to the JavaScript event loop yet
      *
-     * @param interpreter The Interpreter object that will be used to evaluated the Python source code
-     * @param src {string} The Python source code to be evaluated
-     * @param PyScriptTag The <py-script> HTML tag that originated the evaluation
-     * @param result The returned result of evaluating the Python (if any)
+     * @param options.interpreter The Interpreter object that will be used to evaluated the Python source code
+     * @param options.src {string} The Python source code to be evaluated
+     * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
+     * @param options.result The returned result of evaluating the Python (if any)
      */
-    afterPyScriptExec(interpreter: Interpreter, src: string, PyScriptTag: HTMLElement, result) {}
+    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: HTMLElement, result: any}) {}
 
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and
@@ -120,16 +120,16 @@ export class PluginManager {
         for (const p of this._pythonPlugins) p.afterStartup?.(interpreter);
     }
 
-    beforePyScriptExec(interpreter: Interpreter, src: string, pyscriptTag: HTMLElement) {
-        for (const p of this._plugins) p.beforePyScriptExec(interpreter, src, pyscriptTag);
+    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: HTMLElement}) {
+        for (const p of this._plugins) p.beforePyScriptExec(options);
 
-        for (const p of this._pythonPlugins) p.beforePyScriptExec?.(interpreter, src, pyscriptTag);
+        for (const p of this._pythonPlugins) p.beforePyScriptExec?.callKwargs(options);
     }
 
-    afterPyScriptExec(interpreter: Interpreter, src: string, pyscriptTag: HTMLElement, result) {
-        for (const p of this._plugins) p.afterPyScriptExec(interpreter, src, pyscriptTag, result);
+    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: HTMLElement, result: any}) {
+        for (const p of this._plugins) p.afterPyScriptExec(options);
 
-        for (const p of this._pythonPlugins) p.afterPyScriptExec?.(interpreter, src, pyscriptTag, result);
+        for (const p of this._pythonPlugins) p.afterPyScriptExec?.callKwargs(options);
     }
 
     onUserError(error: UserError) {
