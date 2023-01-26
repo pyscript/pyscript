@@ -2,8 +2,10 @@ import type { AppConfig } from './pyconfig';
 import type { Interpreter } from './interpreter';
 import type { UserError } from './exceptions';
 import { getLogger } from './logger';
+import { make_PyScript } from './components/pyscript';
 
 const logger = getLogger('plugin');
+type PyScriptTag =  InstanceType<ReturnType<typeof make_PyScript>>;
 
 export class Plugin {
     /** Validate the configuration of the plugin and handle default values.
@@ -46,7 +48,7 @@ export class Plugin {
      * @param options.src {string} The Python source code to be evaluated
      * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
      */
-    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: HTMLElement}) {}
+    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag}) {}
 
     /** The Python in a <py-script> has just been evaluated, but control
      * has not been ceded back to the JavaScript event loop yet
@@ -56,7 +58,7 @@ export class Plugin {
      * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
      * @param options.result The returned result of evaluating the Python (if any)
      */
-    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: HTMLElement, result: any}) {}
+    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag, result: any}) {}
 
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and
@@ -120,13 +122,13 @@ export class PluginManager {
         for (const p of this._pythonPlugins) p.afterStartup?.(interpreter);
     }
 
-    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: HTMLElement}) {
+    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag}) {
         for (const p of this._plugins) p.beforePyScriptExec(options);
 
         for (const p of this._pythonPlugins) p.beforePyScriptExec?.callKwargs(options);
     }
 
-    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: HTMLElement, result: any}) {
+    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag, result: any}) {
         for (const p of this._plugins) p.afterPyScriptExec(options);
 
         for (const p of this._pythonPlugins) p.afterPyScriptExec?.callKwargs(options);
