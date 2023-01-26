@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 from .support import PyScriptTest
 
 # Source code of a simple plugin that creates a Custom Element for testing purposes
@@ -54,7 +56,7 @@ plugin = TestLogger()
 
 # Source of script that defines a plugin with only beforePyScriptExec and
 # afterPyScriptExec methods
-EXEC_HOOKS_PLUGIN_CODE = """
+PYSCRIPT_HOOKS_PLUGIN_CODE = """
 from pyscript import Plugin
 from js import console
 
@@ -195,6 +197,8 @@ class TestPlugin(PyScriptTest):
             "beforeLaunch",
             "beforePyScriptExec",
             "afterPyScriptExec",
+            "beforePyReplExec",
+            "afterPyReplExec",
         ]
 
         # EXPECT it to log the correct logs for the events it intercepts
@@ -211,7 +215,7 @@ class TestPlugin(PyScriptTest):
 
     @prepare_test(
         "exec_test_logger",
-        EXEC_HOOKS_PLUGIN_CODE,
+        PYSCRIPT_HOOKS_PLUGIN_CODE,
         template=HTML_TEMPLATE_NO_TAG + "\n<py-script id='pyid'>x=2; x</py-script>",
     )
     def test_pyscript_exec_hooks(self):
@@ -222,6 +226,55 @@ class TestPlugin(PyScriptTest):
 
         assert "beforePyScriptExec called" in log_lines
         assert "afterPyScriptExec called" in log_lines
+
+        # These could be made better with a utility function that found log lines
+        # that match a filter function, or start with something
+        assert "before_src:x=2; x" in log_lines
+        assert "before_id:pyid" in log_lines
+        assert "after_src:x=2; x" in log_lines
+        assert "after_id:pyid" in log_lines
+        assert "result:2" in log_lines
+
+    # Source of script that defines a plugin with only beforePyScriptExec and
+    # afterPyScriptExec methods
+    PYREPL_HOOKS_PLUGIN_CODE = dedent(
+        """
+    from pyscript import Plugin
+    from js import console
+
+    console.warn("This is in pyrepl hooks file")
+
+    class PyReplTestLogger(Plugin):
+
+        def beforePyReplExec(self, interpreter, outEl, src, pyReplTag):
+            console.log(f'beforePyReplExec called')
+            console.log(f'before_src:{src}')
+            console.log(f'before_id:{pyReplTag.id}')
+
+        def afterPyReplExec(self, interpreter, src, outEl, pyReplTag, result):
+            console.log(f'afterPyReplExec called')
+            console.log(f'after_src:{src}')
+            console.log(f'after_id:{pyReplTag.id}')
+            console.log(f'result:{result}')
+
+
+    plugin = PyReplTestLogger()
+    """
+    )
+
+    @prepare_test(
+        "pyrepl_test_logger",
+        PYREPL_HOOKS_PLUGIN_CODE,
+        template=HTML_TEMPLATE_NO_TAG + "\n<py-repl id='pyid'>x=2; x</py-repl>",
+    )
+    def test_pyrepl_exec_hooks(self):
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+
+        log_lines: list[str] = self.console.log.lines
+
+        assert "beforePyReplExec called" in log_lines
+        assert "afterPyReplExec called" in log_lines
 
         # These could be made better with a utility function that found log lines
         # that match a filter function, or start with something
