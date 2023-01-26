@@ -1,4 +1,5 @@
 import platform
+import pytest
 
 from .support import PyScriptTest, wait_for_render
 
@@ -340,7 +341,7 @@ class TestPyRepl(PyScriptTest):
 
     def test_repl_output_display_async(self):
         # py-repls running async code are not expected to
-        # send stdout element
+        # send display to element element
         self.pyscript_run(
             """
             <div id="repl-target"></div>
@@ -377,3 +378,39 @@ class TestPyRepl(PyScriptTest):
 
         assert self.page.locator("#repl-target").text_content() == ""
         self.assert_no_banners()
+
+    @pytest.mark.xfail(reason="Test not yet written")
+    def test_repl_stdio_dynamic_tags(self):
+        # Test that creating py-repl tags via Python still leaves
+        # stdio targets working
+        assert False
+
+    @pytest.mark.xfail(reason="Test not yet written")
+    def test_repl_output_id_errors(self):
+        # Test that using an ID not present on the page as the Output
+        # Attribute creates exactly 1 warning banner per missing id
+        assert False
+
+    @pytest.mark.xfail(reason="Test not yet written")
+    def test_repl_stderr_id_errors(self):
+        # Test that using an ID not present on the page as the Output
+        # Attribute creates exactly 1 warning banner per missing id
+        assert False
+
+    @pytest.mark.xfail(reason="Test not yet written")
+    def test_repl_output_stderr(self):
+        # Test that stderr works, and routes to the same location as stdout
+        # Also, repls with the stderr attribute route to an additional location
+        assert False
+
+    @pytest.mark.xfail(reason="Test not yet written")
+    def test_repl_output_attribute_change(self):
+        # If the user changes the 'output' attribute of a <py-repl> tag mid-execution,
+        # Output should no longer go to the selected div and a warning should appear
+        assert False
+
+    @pytest.mark.xfail(reason="Test not yet written")
+    def test_repl_output_element_id_change(self):
+        # If the user changes the ID of the targeted DOM element mid-execution,
+        # Output should no longer go to the selected element and a warning should appear
+        assert False
