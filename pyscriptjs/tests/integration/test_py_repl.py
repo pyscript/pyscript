@@ -336,3 +336,45 @@ class TestPyRepl(PyScriptTest):
         target = self.page.locator("#repl-target")
         assert "print from py-repl" in target.text_content()
         assert "display from py-repl" in target.text_content()
+
+        self.assert_no_banners()
+
+    def test_repl_output_display_async(self):
+        # py-repls running async code are not expected to
+        # send stdout element
+        self.pyscript_run(
+            """
+            <div id="repl-target"></div>
+            <py-script>
+                import asyncio
+                import js
+
+                async def print_it():
+                    await asyncio.sleep(1)
+                    print('print from py-repl')
+
+
+                async def display_it():
+                    display('display from py-repl')
+                    await asyncio.sleep(2)
+
+                async def done():
+                    await asyncio.sleep(3)
+                    js.console.log("DONE")
+            </py-script>
+
+            <py-repl output="repl-target">
+                asyncio.ensure_future(print_it());
+                asyncio.ensure_future(display_it());
+                asyncio.ensure_future(done());
+            </py-repl>
+            """
+        )
+
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+
+        self.wait_for_console("DONE")
+
+        assert self.page.locator("#repl-target").text_content() == ""
+        self.assert_no_banners()
