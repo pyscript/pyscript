@@ -88,7 +88,7 @@ export class Plugin {
      * @param options.outEl The element that the result of the REPL evaluation will be output to.
      * @param options.pyReplTag The <py-repl> HTML tag the originated the evaluation
      */
-    beforePyReplExec(options: {runtime: Interpreter, src: string, outEl: HTMLElement, pyReplTag: any}){}
+    beforePyReplExec(options: {interpreter: Interpreter, src: string, outEl: HTMLElement, pyReplTag: any}){}
 
     /**
      *
@@ -98,7 +98,7 @@ export class Plugin {
      * @param options.pyReplTag  The <py-repl> HTML tag the originated the evaluation
      * @param options.result The result of evaluating the Python (if any)
      */
-    afterPyReplExec(options: {runtime: Interpreter, src: string, outEl: HTMLElement, pyReplTag: HTMLElement, result: any}){}
+    afterPyReplExec(options: {interpreter: Interpreter, src: string, outEl: HTMLElement, pyReplTag: HTMLElement, result: any}){}
 
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and
@@ -178,13 +178,13 @@ export class PluginManager {
         for (const p of this._pythonPlugins) p.afterPyScriptExec?.callKwargs(options);
     }
 
-    beforePyReplExec(options: {runtime: Interpreter, src: string, outEl: HTMLElement, pyReplTag: any}){
+    beforePyReplExec(options: {interpreter: Interpreter, src: string, outEl: HTMLElement, pyReplTag: any}){
         for (const p of this._plugins) p.beforePyReplExec(options);
 
         for (const p of this._pythonPlugins) p.beforePyReplExec?.callKwargs(options);
     }
 
-    afterPyReplExec(options: {runtime: Interpreter, src: string, outEl, pyReplTag, result}){
+    afterPyReplExec(options: {interpreter: Interpreter, src: string, outEl, pyReplTag, result}){
         for (const p of this._plugins) p.afterPyReplExec(options);
 
         for (const p of this._pythonPlugins) p.afterPyReplExec?.callKwargs(options);

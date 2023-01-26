@@ -59,7 +59,7 @@ export class StdioDirector extends Plugin {
         }
     }
 
-    beforePyReplExec(options: {runtime: Interpreter, src: string, outEl: HTMLElement, pyReplTag: any}): void {
+    beforePyReplExec(options: {interpreter: Interpreter, src: string, outEl: HTMLElement, pyReplTag: any}): void {
         //Handle 'output-mode' attribute (removed in PR #881/f9194cc8, restored here)
         if (options.pyReplTag.getAttribute('output-mode') != 'append'){
             options.outEl.innerHTML = ''
