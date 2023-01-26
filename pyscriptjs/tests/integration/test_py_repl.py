@@ -315,3 +315,24 @@ class TestPyRepl(PyScriptTest):
 
         assert self.page.inner_text("#py-internal-1-1-repl-output") == "second children"
         assert self.page.inner_text("#py-internal-0-1-repl-output") == "first children"
+
+    def test_repl_output_attribute(self):
+        # Test that output attribute sends stdout and display()
+        # To the element with the given ID
+        self.pyscript_run(
+            """
+            <div id="repl-target"></div>
+            <py-repl output="repl-target">
+                print('print from py-repl')
+                display('display from py-repl')
+            </py-repl>
+
+            """
+        )
+
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+
+        target = self.page.locator("#repl-target")
+        assert "print from py-repl" in target.text_content()
+        assert "display from py-repl" in target.text_content()
