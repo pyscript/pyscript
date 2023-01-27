@@ -379,11 +379,32 @@ class TestPyRepl(PyScriptTest):
         assert self.page.locator("#repl-target").text_content() == ""
         self.assert_no_banners()
 
-    @pytest.mark.xfail(reason="Test not yet written")
     def test_repl_stdio_dynamic_tags(self):
-        # Test that creating py-repl tags via Python still leaves
-        # stdio targets working
-        assert False
+        self.pyscript_run(
+            """
+            <div id="first"></div>
+            <div id="second"></div>
+            <py-repl output="first">
+                import js
+
+                print("first.")
+
+                # Using string, since no clean way to write to the
+                # code contents of the CodeMirror in a PyRepl
+                newTag = '<py-repl id="second-repl" output="second">print("second.")</py-repl>'
+                js.document.body.innerHTML += newTag
+            </py-repl>
+            """
+        )
+
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+
+        assert self.page.locator("#first").text_content() == "first."
+
+        second_repl = self.page.locator("py-repl#second-repl")
+        second_repl.locator("button").click()
+        assert self.page.locator("#second").text_content() == "second."
 
     @pytest.mark.xfail(reason="Test not yet written")
     def test_repl_output_id_errors(self):
