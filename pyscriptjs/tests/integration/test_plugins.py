@@ -1,5 +1,3 @@
-from textwrap import dedent
-
 from .support import PyScriptTest
 
 # Source code of a simple plugin that creates a Custom Element for testing purposes
@@ -237,30 +235,28 @@ class TestPlugin(PyScriptTest):
 
     # Source of script that defines a plugin with only beforePyScriptExec and
     # afterPyScriptExec methods
-    PYREPL_HOOKS_PLUGIN_CODE = dedent(
+    PYREPL_HOOKS_PLUGIN_CODE = """
+        from pyscript import Plugin
+        from js import console
+
+        console.warn("This is in pyrepl hooks file")
+
+        class PyReplTestLogger(Plugin):
+
+            def beforePyReplExec(self, interpreter, outEl, src, pyReplTag):
+                console.log(f'beforePyReplExec called')
+                console.log(f'before_src:{src}')
+                console.log(f'before_id:{pyReplTag.id}')
+
+            def afterPyReplExec(self, interpreter, src, outEl, pyReplTag, result):
+                console.log(f'afterPyReplExec called')
+                console.log(f'after_src:{src}')
+                console.log(f'after_id:{pyReplTag.id}')
+                console.log(f'result:{result}')
+
+
+        plugin = PyReplTestLogger()
         """
-    from pyscript import Plugin
-    from js import console
-
-    console.warn("This is in pyrepl hooks file")
-
-    class PyReplTestLogger(Plugin):
-
-        def beforePyReplExec(self, interpreter, outEl, src, pyReplTag):
-            console.log(f'beforePyReplExec called')
-            console.log(f'before_src:{src}')
-            console.log(f'before_id:{pyReplTag.id}')
-
-        def afterPyReplExec(self, interpreter, src, outEl, pyReplTag, result):
-            console.log(f'afterPyReplExec called')
-            console.log(f'after_src:{src}')
-            console.log(f'after_id:{pyReplTag.id}')
-            console.log(f'result:{result}')
-
-
-    plugin = PyReplTestLogger()
-    """
-    )
 
     @prepare_test(
         "pyrepl_test_logger",
