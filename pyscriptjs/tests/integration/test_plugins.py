@@ -75,6 +75,31 @@ class ExecTestLogger(Plugin):
 plugin = ExecTestLogger()
 """
 
+# Source of script that defines a plugin with only beforePyScriptExec and
+# afterPyScriptExec methods
+PYREPL_HOOKS_PLUGIN_CODE = """
+from pyscript import Plugin
+from js import console
+
+console.warn("This is in pyrepl hooks file")
+
+class PyReplTestLogger(Plugin):
+
+    def beforePyReplExec(self, interpreter, outEl, src, pyReplTag):
+        console.log(f'beforePyReplExec called')
+        console.log(f'before_src:{src}')
+        console.log(f'before_id:{pyReplTag.id}')
+
+    def afterPyReplExec(self, interpreter, src, outEl, pyReplTag, result):
+        console.log(f'afterPyReplExec called')
+        console.log(f'after_src:{src}')
+        console.log(f'after_id:{pyReplTag.id}')
+        console.log(f'result:{result}')
+
+
+plugin = PyReplTestLogger()
+"""
+
 # Source of a script that doesn't call define a `plugin` attribute
 NO_PLUGIN_CODE = """
 from pyscript import Plugin
@@ -232,31 +257,6 @@ class TestPlugin(PyScriptTest):
         assert "after_src:x=2; x" in log_lines
         assert "after_id:pyid" in log_lines
         assert "result:2" in log_lines
-
-    # Source of script that defines a plugin with only beforePyScriptExec and
-    # afterPyScriptExec methods
-    PYREPL_HOOKS_PLUGIN_CODE = """
-        from pyscript import Plugin
-        from js import console
-
-        console.warn("This is in pyrepl hooks file")
-
-        class PyReplTestLogger(Plugin):
-
-            def beforePyReplExec(self, interpreter, outEl, src, pyReplTag):
-                console.log(f'beforePyReplExec called')
-                console.log(f'before_src:{src}')
-                console.log(f'before_id:{pyReplTag.id}')
-
-            def afterPyReplExec(self, interpreter, src, outEl, pyReplTag, result):
-                console.log(f'afterPyReplExec called')
-                console.log(f'after_src:{src}')
-                console.log(f'after_id:{pyReplTag.id}')
-                console.log(f'result:{result}')
-
-
-        plugin = PyReplTestLogger()
-        """
 
     @prepare_test(
         "pyrepl_test_logger",

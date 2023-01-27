@@ -254,11 +254,15 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
-        #
-        out_div = py_repl.locator("div.py-repl-output")
-        msg = "py-repl ERROR: cannot find the output element #I-dont-exist in the DOM"
-        assert out_div.all_inner_texts()[0] == msg
-        assert "I will not be executed" not in self.console.log.text
+
+        banner = self.page.query_selector_all(".py-warning")
+        assert len(banner) == 1
+
+        banner_content = banner[0].inner_text()
+        expected = (
+            'output = "I-dont-exist" does not match the id of any element on the page.'
+        )
+        assert banner_content == expected
 
     def test_auto_generate(self):
         self.pyscript_run(
@@ -407,32 +411,156 @@ class TestPyRepl(PyScriptTest):
         second_repl.locator("button").click()
         assert self.page.locator("#second").text_content() == "second."
 
-    @pytest.mark.xfail(reason="Test not yet written")
     def test_repl_output_id_errors(self):
-        # Test that using an ID not present on the page as the Output
-        # Attribute creates exactly 1 warning banner per missing id
-        assert False
+        self.pyscript_run(
+            """
+            <py-repl output="not-on-page">
+                print("bad.")
+                print("bad.")
+            </py-repl>
 
-    @pytest.mark.xfail(reason="Test not yet written")
+            <py-repl output="not-on-page">
+                print("bad.")
+            </py-repl>
+            """
+        )
+        py_repls = self.page.query_selector_all("py-repl")
+        for repl in py_repls:
+            repl.query_selector_all("button")[0].click()
+
+        banner = self.page.query_selector_all(".py-warning")
+        assert len(banner) == 1
+
+        banner_content = banner[0].inner_text()
+        expected = (
+            'output = "not-on-page" does not match the id of any element on the page.'
+        )
+
+        assert banner_content == expected
+
     def test_repl_stderr_id_errors(self):
-        # Test that using an ID not present on the page as the Output
-        # Attribute creates exactly 1 warning banner per missing id
-        assert False
+        self.pyscript_run(
+            """
+            <py-repl stderr="not-on-page">
+                import sys
+                print("bad.", file=sys.stderr)
+                print("bad.", file=sys.stderr)
+            </py-repl>
 
-    @pytest.mark.xfail(reason="Test not yet written")
+            <py-repl stderr="not-on-page">
+                print("bad.", file=sys.stderr)
+            </py-repl>
+            """
+        )
+        py_repls = self.page.query_selector_all("py-repl")
+        for repl in py_repls:
+            repl.query_selector_all("button")[0].click()
+
+        banner = self.page.query_selector_all(".py-warning")
+        assert len(banner) == 1
+
+        banner_content = banner[0].inner_text()
+        expected = (
+            'stderr = "not-on-page" does not match the id of any element on the page.'
+        )
+
+        assert banner_content == expected
+
     def test_repl_output_stderr(self):
         # Test that stderr works, and routes to the same location as stdout
         # Also, repls with the stderr attribute route to an additional location
-        assert False
+        self.pyscript_run(
+            """
+            <div id="stdout-div"></div>
+            <div id="stderr-div"></div>
+            <py-repl output="stdout-div" stderr="stderr-div">
+                import sys
+                print("one.", file=sys.stderr)
+                print("two.")
+            </py-repl>
+            """
+        )
 
-    @pytest.mark.xfail(reason="Test not yet written")
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+
+        assert self.page.locator("#stdout-div").text_content() == "one.two."
+        assert self.page.locator("#stderr-div").text_content() == "one."
+        self.assert_no_banners()
+
     def test_repl_output_attribute_change(self):
         # If the user changes the 'output' attribute of a <py-repl> tag mid-execution,
         # Output should no longer go to the selected div and a warning should appear
-        assert False
+        self.pyscript_run(
+            """
+            <div id="first"></div>
+            <div id="second"></div>
+            <!-- There is no tag with id "third" -->
+            <py-repl id="repl-tag" output="first">
+                print("one.")
 
-    @pytest.mark.xfail(reason="Test not yet written")
+                # Change the 'output' attribute of this tag
+                import js
+                this_tag = js.document.getElementById("repl-tag")
+
+                this_tag.setAttribute("output", "second")
+                print("two.")
+
+                this_tag.setAttribute("output", "third")
+                print("three.")
+            </py-script>
+            """
+        )
+
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+
+        assert self.page.locator("#first").text_content() == "one."
+        assert self.page.locator("#second").text_content() == "two."
+
+        expected_alert_banner_msg = (
+            'output = "third" does not match the id of any element on the page.'
+        )
+
+        alert_banner = self.page.locator(".alert-banner")
+        assert expected_alert_banner_msg in alert_banner.inner_text()
+
     def test_repl_output_element_id_change(self):
         # If the user changes the ID of the targeted DOM element mid-execution,
         # Output should no longer go to the selected element and a warning should appear
-        assert False
+        self.pyscript_run(
+            """
+            <div id="first"></div>
+            <div id="second"></div>
+            <!-- There is no tag with id "third" -->
+            <py-repl id="pyscript-tag" output="first">
+                print("one.")
+
+                # Change the ID of the targeted DIV to something else
+                import js
+                target_tag = js.document.getElementById("first")
+
+                # should fail and show banner
+                target_tag.setAttribute("id", "second")
+                print("two.")
+
+                # But changing both the 'output' attribute and the id of the target
+                # should work
+                target_tag.setAttribute("id", "third")
+                js.document.getElementById("pyscript-tag").setAttribute("output", "third")
+                print("three.")
+            </py-repl>
+            """
+        )
+
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+
+        # Note the ID of the div has changed by the time of this assert
+        assert self.page.locator("#third").text_content() == "one.three."
+
+        expected_alert_banner_msg = (
+            'output = "first" does not match the id of any element on the page.'
+        )
+        alert_banner = self.page.locator(".alert-banner")
+        assert expected_alert_banner_msg in alert_banner.inner_text()
