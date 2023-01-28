@@ -27,6 +27,7 @@ export class SplashscreenPlugin extends Plugin {
         // but we still also support the old config.autoclose_loader (with a
         // deprecation warning)
         this.autoclose = true;
+        this.disabled = false;
 
         if ('autoclose_loader' in config) {
             this.autoclose = config.autoclose_loader;
@@ -35,9 +36,8 @@ export class SplashscreenPlugin extends Plugin {
 
         if (config.splashscreen) {
             this.autoclose = config.splashscreen.autoclose ?? true;
+            this.disabled = config.splashscreen.disabled ?? false;
         }
-
-        this.disabled = config.splashscreen.disabled ?? false;
     }
 
     beforeLaunch(config: AppConfig) {
