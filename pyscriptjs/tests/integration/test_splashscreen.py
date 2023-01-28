@@ -97,3 +97,23 @@ class TestSplashscreen(PyScriptTest):
 
         assert self.page.locator("py-splashscreen").count() == 0
         assert "Python exception" in self.console.error.text
+
+    def test_splashscreen_disabled_option(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                [splashscreen]
+                disabled = true
+            </py-config>
+
+            <py-script>
+                def test():
+                    print("Hello pyscript!")
+                test()
+            </py-script>
+            """,
+        )
+        assert self.page.locator("py-splashscreen").count() == 0
+        assert self.console.log.lines[-1] == "Hello pyscript!"
+        py_terminal = self.page.wait_for_selector("py-terminal")
+        assert py_terminal.inner_text() == "Hello pyscript!\n"
