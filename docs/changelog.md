@@ -19,11 +19,13 @@ Bug fixes
 Enhancements
 ------------
 - When adding a `py-` attribute to an element but didn't added an `id` attribute, PyScript will now generate a random ID for the element instead of throwing an error which caused the splash screen to not shutdown. ([#1122](https://github.com/pyscript/pyscript/pull/1122))
+- You can now disable the splashscreen by setting `splashscreen.disabled = false` in your `py-config`. ([#1138](https://github.com/pyscript/pyscript/pull/1138))
 
 Documentation
 -------------
 
 - Fixed 'Direct usage of document is deprecated' warning in the getting started guide. ([#1052](https://github.com/pyscript/pyscript/pull/1052))
+- Added reference documentation for the `py-splashscreen` plugin ([#1138](https://github.com/pyscript/pyscript/pull/1138))
 
 Deprecations and Removals
 -------------------------
