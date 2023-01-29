@@ -164,11 +164,6 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
             const pyResult = (await pyExec(interpreter, pySrc, outEl)).result;
             app.plugins.afterPyReplExec({InterpreterClient: interpreter, src: pySrc, outEl: outEl, pyReplTag: this, result: pyResult});
 
-            // display the value of the last evaluated expression (REPL-style)
-            if (pyResult !== undefined) {
-                pyDisplay(runtime, pyResult, { target: outEl.id });
-            }
-
             this.autogenerateMaybe();
         }
 
