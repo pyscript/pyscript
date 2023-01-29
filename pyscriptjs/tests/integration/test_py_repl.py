@@ -220,26 +220,6 @@ class TestPyRepl(PyScriptTest):
         self.page.keyboard.press("Shift+Enter")
         assert out_div.all_inner_texts()[0] == "hello"
 
-    def test_output_attribute(self):
-        self.pyscript_run(
-            """
-            <py-repl output="mydiv">
-                display('hello world')
-            </py-repl>
-            <hr>
-            <div id="mydiv"></div>
-            """
-        )
-        py_repl = self.page.locator("py-repl")
-        py_repl.locator("button").click()
-        #
-        # check that we did NOT write to py-repl-output
-        out_div = py_repl.locator("div.py-repl-output")
-        assert out_div.inner_text() == ""
-        # check that we are using mydiv instead
-        mydiv = self.page.locator("#mydiv")
-        assert mydiv.all_inner_texts()[0] == "hello world"
-
     def test_output_attribute_does_not_exist(self):
         """
         If we try to use an attribute which doesn't exist, we display an error
@@ -321,8 +301,8 @@ class TestPyRepl(PyScriptTest):
         assert self.page.inner_text("#py-internal-1-1-repl-output") == "second children"
         assert self.page.inner_text("#py-internal-0-1-repl-output") == "first children"
     def test_repl_output_attribute(self):
-        # Test that output attribute sends stdout and display()
-        # To the element with the given ID
+        # Test that output attribute sends stdout to the element
+        # with the given ID, but not display()
         self.pyscript_run(
             """
             <div id="repl-target"></div>
@@ -339,7 +319,9 @@ class TestPyRepl(PyScriptTest):
 
         target = self.page.locator("#repl-target")
         assert "print from py-repl" in target.text_content()
-        assert "display from py-repl" in target.text_content()
+
+        out_div = py_repl.locator("div.py-repl-output")
+        assert out_div.all_inner_texts()[0] == "display from py-repl"
 
         self.assert_no_banners()
 

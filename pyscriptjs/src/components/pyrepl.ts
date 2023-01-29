@@ -156,15 +156,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp)  {
          */
         async execute(): Promise<void> {
             const pySrc = this.getPySrc();
-
-            // determine the output element
-            const outEl = this.getOutputElement();
-            if (outEl === undefined) {
-                // this happens if we specified output="..." but we couldn't
-                // find the ID. We already displayed an error message inside
-                // getOutputElement, stop the execution.
-                return;
-            }
+            const outEl = this.outDiv
 
             // execute the python code
             app.plugins.beforePyReplExec({interpreter: interpreter, src: pySrc, outEl: outEl, pyReplTag: this});
@@ -181,20 +173,6 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp)  {
 
         getPySrc(): string {
             return this.editor.state.doc.toString();
-        }
-
-        getOutputElement(): HTMLElement {
-            const outputID = getAttribute(this, 'output');
-            if (outputID !== null) {
-                const el = document.getElementById(outputID);
-                if (el === null) {
-                    createSingularWarning(`output = "${this.getAttribute("output")}" does not match the id of any element on the page.`)
-                    return undefined;
-                }
-                return el;
-            } else {
-                return this.outDiv;
-            }
         }
 
         // XXX the autogenerate logic is very messy. We should redo it, and it
