@@ -110,6 +110,27 @@ class TestPyRepl(PyScriptTest):
         out_div = py_repl.locator("div.py-repl-output")
         assert out_div.all_inner_texts()[0] == "42"
 
+    def test_show_last_expression_with_output(self):
+        """
+        Test that we display() the value of the last expression, as you would
+        expect by a REPL
+        """
+        self.pyscript_run(
+            """
+            <div id="repl-target"></div>
+            <py-repl output="repl-target">
+                42
+            </py-repl>
+            """
+        )
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+        out_div = py_repl.locator("div.py-repl-output")
+        assert out_div.all_inner_texts()[0] == ""
+
+        out_div = self.page.locator("#repl-target")
+        assert out_div.all_inner_texts()[0] == "42"
+
     def test_run_clears_previous_output(self):
         """
         Check that we clear the previous output of the cell before executing it

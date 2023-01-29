@@ -1,7 +1,9 @@
-import { Plugin } from '../plugin';
-import { TargetedStdio, StdioMultiplexer } from '../stdio';
+import { Plugin } from "../plugin";
+import { TargetedStdio, StdioMultiplexer } from "../stdio";
+import type { InterpreterClient } from "../interpreter_client";
+import { createSingularWarning } from '../utils'
 import { make_PyScript } from '../components/pyscript';
-import { InterpreterClient } from '../interpreter_client';
+import { pyDisplay } from '../pyexec'
 
 type PyScriptTag = InstanceType<ReturnType<typeof make_PyScript>>;
 
@@ -59,7 +61,7 @@ export class StdioDirector extends Plugin {
         }
     }
 
-    beforePyReplExec(options: {interpreter: Interpreter, src: string, outEl: HTMLElement, pyReplTag: any}): void {
+    beforePyReplExec(options: {interpreter: InterpreterClient, src: string, outEl: HTMLElement, pyReplTag: any}): void {
         //Handle 'output-mode' attribute (removed in PR #881/f9194cc8, restored here)
         if (options.pyReplTag.getAttribute('output-mode') != 'append'){
             options.outEl.innerHTML = ''
@@ -88,6 +90,28 @@ export class StdioDirector extends Plugin {
     }
 
     afterPyReplExec(options: {interpreter: any, src: any, outEl: any, pyReplTag: any, result: any}): void {
+        // display the value of the last evaluated expression (REPL-style)
+        if (options.result !== undefined) {
+
+            
+            const outputId =  options.pyReplTag.getAttribute("output")
+            if (outputId) { 
+                // 'output' attribute also used as location to send
+                // result of REPL
+                if (document.getElementById(outputId)){
+                    pyDisplay(options.interpreter, options.result, { target: outputId });
+                } 
+                else { //no matching element on page
+                    createSingularWarning(`output = "${outputId}" does not match the id of any element on the page.`)
+                }
+                
+            }
+            else {
+                // 'otuput atribuite not provided
+                pyDisplay(options.interpreter, options.result, { target: options.outEl.id });
+            }
+        }
+
         if (options.pyReplTag.stdout_manager != null){
             this._stdioMultiplexer.removeListener(options.pyReplTag.stdout_manager)
             options.pyReplTag.stdout_manager = null
