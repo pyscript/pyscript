@@ -19,7 +19,7 @@ Bug fixes
 Enhancements
 ------------
 - When adding a `py-` attribute to an element but didn't added an `id` attribute, PyScript will now generate a random ID for the element instead of throwing an error which caused the splash screen to not shutdown. ([#1122](https://github.com/pyscript/pyscript/pull/1122))
-- You can now disable the splashscreen by setting `splashscreen.disabled = false` in your `py-config`. ([#1138](https://github.com/pyscript/pyscript/pull/1138))
+- You can now disable the splashscreen by setting `disabled = false` in your `py-config` under the `[splashscreen]` configuration section. ([#1138](https://github.com/pyscript/pyscript/pull/1138))
 
 Documentation
 -------------

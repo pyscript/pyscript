@@ -11,13 +11,13 @@ You can control how `<py-splashscreen>` behaves by setting the value of the  `sp
 | parameter   | default | description |
 |-------------|---------|-------------|
 | `autoclose` | `true`  | Whether to close the splashscreen automatically when the page is ready or not |
-| `enabled` | `true`    | Whether to show the splashscreen or not |
+| `disabled` | `true`    | Whether to show the splashscreen or not |
 
 ### Examples
 
 #### Disabling the splashscreen
 
-If you don't want the splashscreen to show and log any loading messages, you can disable it by setting `splashscreen.disabled` to `false`.
+If you don't want the splashscreen to show and log any loading messages, you can disable it by setting the splashscreen option `disabled` to `false`.
 
 ```html
 <py-config>
