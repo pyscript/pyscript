@@ -8,27 +8,27 @@ This is one of the core plugins in PyScript, which is active by default. The spl
 You can control how `<py-splashscreen>` behaves by setting the value of the  `splashscreen` configuration in your `<py-config>`.
 
 
-| parameter   | default | description |
-|-------------|---------|-------------|
-| `autoclose` | `true`  | Whether to close the splashscreen automatically when the page is ready or not |
-| `disabled` | `true`    | Whether to show the splashscreen or not |
+| parameter   | default   | description |
+|-------------|-----------|-------------|
+| `autoclose` | `true`    | Whether to close the splashscreen automatically when the page is ready or not |
+| `enabled`   | `true`    | Whether to show the splashscreen or not |
 
 ### Examples
 
 #### Disabling the splashscreen
 
-If you don't want the splashscreen to show and log any loading messages, you can disable it by setting the splashscreen option `disabled` to `false`.
+If you don't want the splashscreen to show and log any loading messages, you can disable it by setting the splashscreen option `enabled` to `false`.
 
 ```html
 <py-config>
     [splashscreen]
-        disabled = true
+        enabled = false
 </py-config>
 ```
 
 #### Disabling autoclose
 
-If you want to keep the splashscreen open even after the page is ready, you can disable autoclose by setting `splashscreen.autoclose` to `false`.
+If you want to keep the splashscreen open even after the page is ready, you can disable autoclose by setting `autoclose` to `false`.
 
 ```html
 <py-config>
