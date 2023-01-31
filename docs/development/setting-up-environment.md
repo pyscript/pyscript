@@ -20,7 +20,7 @@ git remote add upstream git@github.com:pyscript/pyscript.git
 cd pyscript/pyscriptjs
 ```
 
-* Install the dependencies with the command below (you must have node >=16)
+* Install the dependencies with the command below (you must have `nodejs` >=16 and `make`)
 
 ```
 make setup
