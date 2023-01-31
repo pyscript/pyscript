@@ -56,13 +56,13 @@ export class SplashscreenPlugin extends Plugin {
     }
 
     afterStartup(interpreter: Interpreter) {
-        if (this.autoclose && !this.enabled) {
+        if (this.autoclose && this.enabled) {
             this.elem.close();
         }
     }
 
     onUserError(error: UserError) {
-        if (this.elem !== undefined && !this.enabled) {
+        if (this.elem !== undefined && this.enabled) {
             // Remove the splashscreen so users can see the banner better
             this.elem.close();
         }

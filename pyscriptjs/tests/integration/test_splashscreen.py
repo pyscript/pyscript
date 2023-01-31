@@ -103,7 +103,7 @@ class TestSplashscreen(PyScriptTest):
             """
             <py-config>
                 [splashscreen]
-                enabled = false
+                disabled = true
             </py-config>
 
             <py-script>
