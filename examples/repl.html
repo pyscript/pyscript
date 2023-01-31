@@ -10,8 +10,6 @@
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <link rel="stylesheet" href="./assets/css/examples.css" />
-    <link rel="stylesheet" href="./assets/prism/prism.css" />
-    <script defer src="./assets/prism/prism.js"></script>
   </head>
 
   <body>
@@ -24,100 +22,21 @@
       </div>
     </nav>
     <section class="pyscript">
-    <h1><b>PyScript REPL</b></h1>
-    Tip: press Shift-ENTER to evaluate a cell
-    <br>
-    <py-config>
-      [[fetch]]
-      files = ["./antigravity.py"]
-    </py-config>
-    <div style="margin-right: 3rem;">
-      <py-repl id="my-repl" auto-generate="true"> </py-repl>
-    </div>
+      <h1><b>PyScript REPL</b></h1>
+      Tip: press Shift-ENTER to evaluate a cell
+      <br>
+      <py-tutor modules="antigravity.py">
+        <py-config>
+          plugins = [
+            "../build/plugins/python/py_tutor.py"
+          ]
+          [[fetch]]
+          files = ["./antigravity.py"]
+        </py-config>
+        <div style="margin-right: 3rem;">
+          <py-repl id="my-repl" auto-generate="true"> </py-repl>
+        </div>
+      </py-tutor>
    </section>
-    <section class="code">
-      <div id="view-code-button" role="button" aria-pressed="false" tabindex="0">View Code</div>
-      <div id="code-section" class="code-section-hidden">
-        <p>index.html</p>
-        <pre class="prism-code language-html">
-          <code class="language-html">
-            &lt;py-config&gt;
-            [[fetch]]
-            files = [&quot;./antigravity.py&quot;]
-          &lt;/py-config&gt;
-          &lt;div&gt;
-            &lt;py-repl id=&quot;my-repl&quot; auto-generate=&quot;true&quot;&gt; &lt;/py-repl&gt;
-          &lt;/div&gt;
-          </code>
-        </pre>
-        <p>antigravity.py</p>
-        <pre class="prism-code language-python">
-          <code class="language-python">
-            import random
-            import sys
-
-            from js import DOMParser, document, setInterval
-            from pyodide.ffi import create_proxy
-            from pyodide.http import open_url
-
-
-            class Antigravity:
-
-                url = "./antigravity.svg"
-
-                def __init__(self, target=None, interval=10, append=True, fly=False):
-                    target = target or sys.stdout._out
-                    self.target = (
-                        document.getElementById(target) if isinstance(target, str) else target
-                    )
-                    doc = DOMParser.new().parseFromString(
-                        open_url(self.url).read(), "image/svg+xml"
-                    )
-                    self.node = doc.documentElement
-                    if append:
-                        self.target.append(self.node)
-                    else:
-                        self.target.replaceChildren(self.node)
-                    self.xoffset, self.yoffset = 0, 0
-                    self.interval = interval
-                    if fly:
-                        self.fly()
-
-                def fly(self):
-                    setInterval(create_proxy(self.move), self.interval)
-
-                def move(self):
-                    char = self.node.getElementsByTagName("g")[1]
-                    char.setAttribute("transform", f"translate({self.xoffset}, {-self.yoffset})")
-                    self.xoffset += random.normalvariate(0, 1) / 20
-                    if self.yoffset < 50:
-                        self.yoffset += 0.1
-                    else:
-                        self.yoffset += random.normalvariate(0, 1) / 20
-
-            _auto = Antigravity(append=True)
-            fly = _auto.fly
-          </code>
-      </div>
-    </section>
   </body>
-  <script>
-    const viewCodeButton = document.getElementById("view-code-button");
-    const codeSection = document.getElementById("code-section");
-    const handleClick = () => {
-      if (codeSection.classList.contains("code-section-hidden")) {
-        codeSection.classList.remove("code-section-hidden");
-        codeSection.classList.add("code-section-visible");
-      } else {
-        codeSection.classList.remove("code-section-visible");
-        codeSection.classList.add("code-section-hidden");
-      }
-    }
-    viewCodeButton.addEventListener("click", handleClick)
-    viewCodeButton.addEventListener("keydown", (e) => {
-      if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") {
-        handleClick();
-      }
-    })
-  </script>
 </html>

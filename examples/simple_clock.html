@@ -11,8 +11,6 @@
 
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <link rel="stylesheet" href="./assets/css/examples.css" />
-    <link rel="stylesheet" href="./assets/prism/prism.css" />
-    <script defer src="./assets/prism/prism.js"></script>
   </head>
 
   <body>
@@ -25,19 +23,24 @@
       </div>
     </nav>
     <section class="pyscript">
-    <div class="font-mono">start time: <label id="outputDiv"></label></div>
-    <div id="outputDiv2" class="font-mono"></div>
-    <div id="outputDiv3" class="font-mono"></div>
-    <py-config>
-      [[fetch]]
-      files = ["./utils.py"]
-    </py-config>
-    <py-script>
+      <div class="font-mono">start time: <label id="outputDiv"></label></div>
+      <div id="outputDiv2" class="font-mono"></div>
+      <div id="outputDiv3" class="font-mono"></div>
+
+      <py-tutor modules="utils.py">
+        <py-config>
+          plugins = [
+            "../build/plugins/python/py_tutor.py"
+          ]
+          [[fetch]]
+          files = ["./utils.py"]
+        </py-config>
+        <py-script>
 import utils
 display(utils.now())
-    </py-script>
+        </py-script>
 
-    <py-script>
+        <py-script>
 from utils import now
 import asyncio
 
@@ -54,79 +57,8 @@ async def foo():
       out3.clear()
 
 pyscript.run_until_complete(foo())
-    </py-script>
+        </py-script>
+      </py-tutor>
    </section>
-    <section class="code">
-      <div id="view-code-button" role="button" aria-pressed="false" tabindex="0">View Code</div>
-      <div id="code-section" class="code-section-hidden">
-        <p>index.html</p>
-        <pre class="prism-code language-html">
-          <code class="language-html">
-            &lt;div class=&quot;font-mono&quot;&gt;start time: &lt;label id=&quot;outputDiv&quot;&gt;&lt;/label&gt;&lt;/div&gt;
-            &lt;div id=&quot;outputDiv2&quot; class=&quot;font-mono&quot;&gt;&lt;/div&gt;
-            &lt;div id=&quot;outputDiv3&quot; class=&quot;font-mono&quot;&gt;&lt;/div&gt;
-            &lt;py-config&gt;
-              [[fetch]]
-              files = ["./utils.py"]
-            &lt;/py-config&gt;
-            &lt;py-script&gt;
-              from utils import now
-              import asyncio
-
-              async def foo():
-                while True:
-                  await asyncio.sleep(1)
-                  output = now()
-                  Element("outputDiv2").write(output)
-
-                  out3 = Element("outputDiv3")
-                  if output[-1] in ["0", "4", "8"]:
-                    out3.write("It's espresso time!")
-                  else:
-                    out3.clear()
-
-              pyscript.run_until_complete(foo())
-            &lt;/py-script&gt;
-          </code>
-        </pre>
-        <p>utils.py</p>
-        <pre class="prism-code language-python">
-          <code class="language-python">
-            from datetime import datetime as dt
-
-            def format_date(dt_, fmt="%m/%d/%Y, %H:%M:%S"):
-                return f"{dt_:{fmt}}"
-
-            def now(fmt="%m/%d/%Y, %H:%M:%S"):
-                return format_date(dt.now(), fmt)
-
-            def remove_class(element, class_name):
-                element.element.classList.remove(class_name)
-
-            def add_class(element, class_name):
-                element.element.classList.add(class_name)
-          </code>
-        </pre>
-      </div>
-    </section>
   </body>
-  <script>
-    const viewCodeButton = document.getElementById("view-code-button");
-    const codeSection = document.getElementById("code-section");
-    const handleClick = () => {
-      if (codeSection.classList.contains("code-section-hidden")) {
-        codeSection.classList.remove("code-section-hidden");
-        codeSection.classList.add("code-section-visible");
-      } else {
-        codeSection.classList.remove("code-section-visible");
-        codeSection.classList.add("code-section-hidden");
-      }
-    }
-    viewCodeButton.addEventListener("click", handleClick)
-    viewCodeButton.addEventListener("keydown", (e) => {
-      if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") {
-        handleClick();
-      }
-    })
-  </script>
 </html>

@@ -1,5 +1,5 @@
 import { beforeEach, expect, describe, it } from "@jest/globals"
-import { ensureUniqueId, joinPaths} from "../../src/utils"
+import { ensureUniqueId, joinPaths, createSingularWarning} from "../../src/utils"
 
 describe("Utils", () => {
 
@@ -50,5 +50,24 @@ describe("JoinPaths", () => {
     const paths: string[] = ['', '///hhh/ll/pp///', '', 'kkk'];
     const joinedPath = joinPaths(paths);
     expect(joinedPath).toStrictEqual('hhh/ll/pp/kkk');
+  })
+
+describe("createSingularBanner", () => {
+    it("should create one and new banner containing the sentinel text, and not duplicate it", () => {
+      //One warning banner with the desired text should be created
+      createSingularWarning("A unique error message", "unique")
+      expect(document.getElementsByClassName("alert-banner")?.length).toEqual(1)
+      expect(document.getElementsByClassName("alert-banner")[0].textContent).toEqual(expect.stringContaining("A unique error message"))
+
+      //Should still only be one banner, since the second uses the existing sentinel value "unique"
+      createSingularWarning("This banner should not appear", "unique")
+      expect(document.getElementsByClassName("alert-banner")?.length).toEqual(1)
+      expect(document.getElementsByClassName("alert-banner")[0].textContent).toEqual(expect.stringContaining("A unique error message"))
+
+      //If the sentinel value is not provided, the entire msg is used as the sentinel
+      createSingularWarning("A unique error message", null)
+      expect(document.getElementsByClassName("alert-banner")?.length).toEqual(1)
+      expect(document.getElementsByClassName("alert-banner")[0].textContent).toEqual(expect.stringContaining("A unique error message"))
+    })
   })
 })

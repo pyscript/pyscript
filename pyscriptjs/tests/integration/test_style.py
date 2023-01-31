@@ -15,10 +15,6 @@ class TestStyle(PyScriptTest):
             <py-config>hello</py-config>
             <py-script>hello</py-script>
             <py-repl>hello</py-repl>
-            <py-title>hello</py-title>
-            <py-inputbox>hello</py-inputbox>
-            <py-button>hello</py-button>
-            <py-box>hello</py-box>
           </body>
         </html>
         """
@@ -27,10 +23,6 @@ class TestStyle(PyScriptTest):
         expect(self.page.locator("py-config")).to_be_hidden()
         expect(self.page.locator("py-script")).to_be_hidden()
         expect(self.page.locator("py-repl")).to_be_hidden()
-        expect(self.page.locator("py-title")).to_be_hidden()
-        expect(self.page.locator("py-inputbox")).to_be_hidden()
-        expect(self.page.locator("py-button")).to_be_hidden()
-        expect(self.page.locator("py-box")).to_be_hidden()
 
     def test_pyscript_defined(self):
         """Test elements have visibility that should"""
@@ -41,26 +33,8 @@ class TestStyle(PyScriptTest):
             </py-config>
             <py-script>display("hello")</py-script>
             <py-repl>display("hello")</py-repl>
-            <py-title>hello</py-title>
-            <py-inputbox label="my input">
-                import js
-                def on_keypress(evt):
-                    if evt.key == "Enter":
-                        js.console.log(evt.target.value)
-            </py-inputbox>
-            <py-box>
-                <py-button label="my button">
-                import js
-                def on_click(evt):
-                    js.console.log('clicked!')
-                </py-button>
-            </py-box>
             """
         )
         expect(self.page.locator("py-config")).to_be_hidden()
         expect(self.page.locator("py-script")).to_be_visible()
         expect(self.page.locator("py-repl")).to_be_visible()
-        expect(self.page.locator("py-title")).to_be_visible()
-        expect(self.page.locator("py-inputbox")).to_be_visible()
-        expect(self.page.locator("py-button")).to_be_visible()
-        expect(self.page.locator("py-box")).to_be_visible()

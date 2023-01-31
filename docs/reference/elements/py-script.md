@@ -4,9 +4,24 @@ The `<py-script>` element lets you execute multi-line Python scripts both inline
 
 ## Attributes
 
-| attribute | type | default | description                  |
-|-----------|------|---------|------------------------------|
-| **src**   | url  |         | Url of a python source file. |
+| attribute | type   | default | description                  |
+|-----------|--------|---------|------------------------------|
+| **src**   | url    |         | Url of a python source file. |
+| **output**| string |         | The id of a DOM element to route `sys.stdout` and `stderr` to, in addition to sending it to the `<py-terminal>`|
+| **stderr**| string |         | The id of a DOM element to route just `sys.stderr` to, in addition to sending it to the `<py-terminal>`|
+
+### output
+
+If the `output` attribute is provided, any output to [sys.stdout](https://docs.python.org/3/library/sys.html#sys.stdout) or [sys.stderr](https://docs.python.org/3/library/sys.html#sys.stderr) is written to the DOM element with the ID matching the attribute. If no DOM element is found with a matching ID, a warning is shown. The msg is output to the `innerHTML` of the HTML Element, with newlines (`\n'`) converted to breaks (`<br\>`).
+
+This output is in addition to the output being written to the developer console and the `<py-terminal>` if it is being used.
+
+### stderr
+
+If the `stderr` attribute is provided, any output to [sys.stderr](https://docs.python.org/3/library/sys.html#sys.stderr) is written to the DOM element with the ID matching the attribute. If no DOM element is found with a matching ID, a warning is shown. The msg is output to the `innerHTML` of the HTML Element, with newlines (`\n'`) converted to breaks (`<br\>`).
+
+This output is in addition to the output being written to the developer console and the `<py-terminal>` if it is being used.
+
 
 ## Examples
 

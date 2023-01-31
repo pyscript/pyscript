@@ -1,6 +1,5 @@
 import base64
 import io
-import math
 import os
 import re
 import time
@@ -9,32 +8,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from .support import ROOT, PyScriptTest
-
-MAX_TEST_TIME = 30  # Number of seconds allowed for checking a testing condition
-TEST_TIME_INCREMENT = 0.25  # 1/4 second, the length of each iteration
-TEST_ITERATIONS = math.ceil(
-    MAX_TEST_TIME / TEST_TIME_INCREMENT
-)  # 120 iters of 1/4 second
-
-
-def wait_for_render(page, selector, pattern):
-    """
-    Assert that rendering inserts data into the page as expected: search the
-    DOM from within the timing loop for a string that is not present in the
-    initial markup but should appear by way of rendering
-    """
-    re_sub_content = re.compile(pattern)
-    py_rendered = False  # Flag to be set to True when condition met
-
-    for _ in range(TEST_ITERATIONS):
-        content = page.inner_html(selector)
-        if re_sub_content.search(content):
-            py_rendered = True
-            break
-        time.sleep(TEST_TIME_INCREMENT)
-
-    assert py_rendered  # nosec
+from .support import ROOT, PyScriptTest, wait_for_render
 
 
 @pytest.mark.usefixtures("chdir")
@@ -61,6 +35,7 @@ class TestExamples(PyScriptTest):
         pattern = "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+"  # e.g. 08/09/2022 15:57:32
         assert re.search(pattern, content)
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_simple_clock(self):
         self.goto("examples/simple_clock.html")
@@ -79,6 +54,7 @@ class TestExamples(PyScriptTest):
         else:
             assert False, "Espresso time not found :("
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_altair(self):
         self.goto("examples/altair.html")
@@ -97,6 +73,7 @@ class TestExamples(PyScriptTest):
         assert save_as_png_link.is_visible()
         assert see_source_link.is_visible()
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_antigravity(self):
         self.goto("examples/antigravity.html")
@@ -120,6 +97,7 @@ class TestExamples(PyScriptTest):
             re.match(ycoord_pattern, char.get_attribute("transform")).group("ycoord")
         )
         assert later_y_coord < starting_y_coord
+        self.check_tutor_generated_code(modules_to_check=["antigravity.py"])
 
     def test_bokeh(self):
         # XXX improve this test
@@ -128,6 +106,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*class=\\"bk\\".*>')
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_bokeh_interactive(self):
         # XXX improve this test
@@ -136,6 +115,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*?class=\\"bk\\".*?>')
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     @pytest.mark.skip("flaky, see issue 759")
     def test_d3(self):
@@ -152,6 +132,7 @@ class TestExamples(PyScriptTest):
         # means that the chart rendered successfully and with the right text
         assert "🍊21\n🍇13\n🍏8\n🍌5\n🍐3\n🍋2\n🍎1\n🍉1" in pyscript_chart.inner_text()
         self.assert_no_banners()
+        self.check_tutor_generated_code(modules_to_check=["d3.py"])
 
     def test_folium(self):
         self.goto("examples/folium.html")
@@ -175,6 +156,7 @@ class TestExamples(PyScriptTest):
         assert "−" in zoom_out.inner_text()
         zoom_out.click()
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_markdown_plugin(self):
         # Given the example page with:
@@ -186,6 +168,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "PyMarkdown"
         # ASSERT markdown is rendered to the corresponding HTML tag
         wait_for_render(self.page, "*", "<h1>Hello world!</h1>")
+        self.check_tutor_generated_code()
 
     def test_matplotlib(self):
         self.goto("examples/matplotlib.html")
@@ -213,6 +196,7 @@ class TestExamples(PyScriptTest):
         deviation = np.mean(np.abs(img_data - ref_data))
         assert deviation == 0.0
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_numpy_canvas_fractals(self):
         self.goto("examples/numpy_canvas_fractals.html")
@@ -260,6 +244,7 @@ class TestExamples(PyScriptTest):
         # Confirm that changing the input values, triggered a new computation
         assert self.console.log.lines[-1] == "Computing Newton set ..."
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_panel(self):
         self.goto("examples/panel.html")
@@ -278,6 +263,7 @@ class TestExamples(PyScriptTest):
         # Let's confirm that slider title changed
         assert slider_title.inner_text() == "Amplitude: 5"
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_panel_deckgl(self):
         # XXX improve this test
@@ -286,6 +272,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "PyScript/Panel DeckGL Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_panel_kmeans(self):
         # XXX improve this test
@@ -294,6 +281,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_panel_stream(self):
         # XXX improve this test
@@ -302,6 +290,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_repl(self):
         self.goto("examples/repl.html")
@@ -322,6 +311,7 @@ class TestExamples(PyScriptTest):
         assert self.page.wait_for_selector("#my-repl-2-2", state="attached")
         assert self.page.locator("#my-repl-2-2").text_content() == "4"
         self.assert_no_banners()
+        self.check_tutor_generated_code(modules_to_check=["antigravity.py"])
 
     def test_repl2(self):
         self.goto("examples/repl2.html")
@@ -338,6 +328,7 @@ class TestExamples(PyScriptTest):
         pattern = "\\d+/\\d+/\\d+, \\d+:\\d+:\\d+"  # e.g. 08/09/2022 15:57:32
         assert re.search(pattern, content)
         self.assert_no_banners()
+        self.check_tutor_generated_code(modules_to_check=["antigravity.py"])
 
     def test_todo(self):
         self.goto("examples/todo.html")
@@ -366,6 +357,7 @@ class TestExamples(PyScriptTest):
             in first_task.inner_html()
         )
         self.assert_no_banners()
+        self.check_tutor_generated_code(modules_to_check=["./utils.py", "./todo.py"])
 
     def test_todo_pylist(self):
         # XXX improve this test
@@ -374,6 +366,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Todo App"
         wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
         self.assert_no_banners()
+        self.check_tutor_generated_code(modules_to_check=["utils.py", "pylist.py"])
 
     @pytest.mark.xfail(reason="To be moved to collective and updated, see issue #686")
     def test_toga_freedom(self):
@@ -392,6 +385,7 @@ class TestExamples(PyScriptTest):
         result = self.page.locator("#toga_c_input")
         assert "40.555" in result.input_value()
         self.assert_no_banners()
+        self.check_tutor_generated_code()
 
     def test_webgl_raycaster_index(self):
         # XXX improve this test

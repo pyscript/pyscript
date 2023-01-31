@@ -49,7 +49,7 @@ def render_image(mime, value, meta):
 
     data = f"data:{mime};charset=utf-8;base64,{value}"
     attrs = " ".join(['{k}="{v}"' for k, v in meta.items()])
-    return f'<img src="{data}" {attrs}</img>'
+    return f'<img src="{data}" {attrs}></img>'
 
 
 def identity(value, meta):
@@ -72,19 +72,19 @@ __version__ = None
 version_info = None
 
 
-def _set_version_info(version_from_runtime: str):
+def _set_version_info(version_from_interpreter: str):
     """Sets the __version__ and version_info properties from provided JSON data
     Args:
-        version_from_runtime (str): A "dotted" representation of the version:
+        version_from_interpreter (str): A "dotted" representation of the version:
             YYYY.MM.m(m).releaselevel
             Year, Month, and Minor should be integers; releaselevel can be any string
     """
     global __version__
     global version_info
 
-    __version__ = version_from_runtime
+    __version__ = version_from_interpreter
 
-    version_parts = version_from_runtime.split(".")
+    version_parts = version_from_interpreter.split(".")
     year = int(version_parts[0])
     month = int(version_parts[1])
     minor = int(version_parts[2])
@@ -250,7 +250,7 @@ class Element:
             child = js.document.createElement("div")
             self.element.appendChild(child)
 
-        if self.element.children:
+        if append and self.element.children:
             out_element = self.element.children[-1]
         else:
             out_element = self.element
@@ -494,12 +494,27 @@ class Plugin:
             name = self.__class__.__name__
 
         self.name = name
+        self._custom_elements = []
+        self.app = None
 
     def init(self, app):
         self.app = app
-        self.app.plugins.addPythonPlugin(create_proxy(self))
 
     def register_custom_element(self, tag):
+        """
+        Decorator to register a new custom element as part of a Plugin and associate
+        tag to it. Internally, it delegates the registration to the PyScript internal
+        [JS] plugin manager, who actually creates the JS custom element that can be
+        attached to the page and instantiate an instance of the class passing the custom
+        element to the plugin constructor.
+
+        Exammple:
+        >> plugin = Plugin("PyTutorial")
+        >> @plugin.register_custom_element("py-tutor")
+        >> class PyTutor:
+        >>     def __init__(self, element):
+        >>     self.element = element
+        """
         # TODO: Ideally would be better to use the logger.
         js.console.info(f"Defining new custom element {tag}")
 
@@ -508,6 +523,7 @@ class Plugin:
             #       until we have JS interface that works across interpreters
             define_custom_element(tag, create_proxy(class_))  # noqa: F821
 
+        self._custom_elements.append(tag)
         return create_proxy(wrapper)
 
 

@@ -10,8 +10,6 @@
 
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <link rel="stylesheet" href="./assets/css/examples.css" />
-    <link rel="stylesheet" href="./assets/prism/prism.css" />
-    <script defer src="./assets/prism/prism.js"></script>
   </head>
 
   <body>
@@ -25,146 +23,55 @@
     </nav>
     <section class="pyscript">
       <h1>To Do List</h1>
-    <py-register-widget src="./pylist.py" name="py-list" klass="PyList"></py-register-widget>
+      <py-tutor modules="utils.py;pylist.py">
+        <py-register-widget src="./pylist.py" name="py-list" klass="PyList"></py-register-widget>
 
-    <py-config>
-      [[fetch]]
-      files = ["./utils.py"]
-    </py-config>
+        <py-config>
+          plugins = [
+            "../build/plugins/python/py_tutor.py"
+          ]
+          [[fetch]]
+          files = ["./utils.py", "./pylist.py"]
+        </py-config>
 
-    <py-script>
-      from js import document
-      from pyodide.ffi.wrappers import add_event_listener
+        <py-script>
+          from js import document
+          from pyodide.ffi.wrappers import add_event_listener
 
-      def add_task(*ags, **kws):
-        # create a new dictionary representing the new task
-        new_task_content = Element("new-task-content")
-        task = { "content": new_task_content.value,  "done": False, "created_at": dt.now() }
+          def add_task(*ags, **kws):
+            # create a new dictionary representing the new task
+            new_task_content = Element("new-task-content")
+            task = { "content": new_task_content.value,  "done": False, "created_at": dt.now() }
 
-        # add a new task to the list and tell it to use the `content` key to show in the UI
-        # and to use the key `done` to sync the task status with a checkbox element in the UI
-        myList.add(task)
+            # add a new task to the list and tell it to use the `content` key to show in the UI
+            # and to use the key `done` to sync the task status with a checkbox element in the UI
+            myList.add(task)
 
-        # clear the inputbox element used to create the new task
-        new_task_content.clear()
+            # clear the inputbox element used to create the new task
+            new_task_content.clear()
 
-      def on_click(evt):
-        add_task()
+          def on_click(evt):
+            add_task()
 
-      def handle_keypress(evt):
-        if evt.key == "Enter":
-          add_task()
+          def handle_keypress(evt):
+            if evt.key == "Enter":
+              add_task()
 
-      add_event_listener(
-        document.getElementById("new-task-content"),
-        "keypress",
-        handle_keypress
-      )
+          add_event_listener(
+            document.getElementById("new-task-content"),
+            "keypress",
+            handle_keypress
+          )
 
-    </py-script>
-      <div class="py-box">
-        <input id="new-task-content" />
-        <button py-click="add_task()" id="new-task-btn" class="py-button">Add Task!</button>
-      </div>
+        </py-script>
+        <div class="py-box">
+          <input id="new-task-content" />
+          <button py-click="add_task()" id="new-task-btn" class="py-button">Add Task!</button>
+        </div>
 
-      <py-list id="myList"></py-list>
-      <py-repl id="my-repl" auto-generate="true"> </py-repl>
-   </section>
-    <section class="code">
-      <div id="view-code-button" role="button" aria-pressed="false" tabindex="0">View Code</div>
-      <div id="code-section" class="code-section-hidden">
-        <p>index.html</p>
-        <pre class="prism-code language-html">
-          <code class="language-html">
-            &lt;py-register-widget src=&quot;./pylist.py&quot; name=&quot;py-list&quot; klass=&quot;PyList&quot;&gt;&lt;/py-register-widget&gt;
-
-            &lt;py-config&gt;
-              [[fetch]]
-              files = ["./utils.py"]
-            &lt;/py-config&gt;
-
-            &lt;py-script&gt;
-              from js import document
-              from pyodide.ffi.wrappers import add_event_listener
-
-              def add_task(*ags, **kws):
-                # create a new dictionary representing the new task
-                new_task_content = Element("new-task-content")
-                task = { "content": new_task_content.value,  "done": False, "created_at": dt.now() }
-
-                # add a new task to the list and tell it to use the `content` key to show in the UI
-                # and to use the key `done` to sync the task status with a checkbox element in the UI
-                myList.add(task)
-
-                # clear the inputbox element used to create the new task
-                new_task_content.clear()
-
-              def on_click(evt):
-                add_task()
-
-              def handle_keypress(evt):
-                if evt.key == "Enter":
-                  add_task()
-
-              add_event_listener(
-                document.getElementById("new-task-content"),
-                "keypress",
-                handle_keypress
-              )
-            &lt;/py-script&gt;
-              &lt;div class=&quot;py-box&quot;&gt;
-                &lt;input id=&quot;new-task-content&quot; /&gt;
-                &lt;button py-click=&quot;add_task()&quot; id=&quot;new-task-btn&quot; class=&quot;py-button&quot;&gt;Add Task!&lt;/button&gt;
-              &lt;/div&gt;
-
-              &lt;py-list id=&quot;myList&quot;&gt;&lt;/py-list&gt;
-              &lt;py-repl id=&quot;my-repl&quot; auto-generate=&quot;true&quot;&gt; &lt;/py-repl&gt;
-          </code>
-        </pre>
-        <p>pylist.py</p>
-        <pre class="prism-code language-python">
-          <code class="language-python">
-            import pyscript
-            from datetime import datetime as dt
-
-            class PyItem(pyscript.PyItemTemplate):
-                def on_click(self, evt=None):
-                    self.data["done"] = not self.data["done"]
-                    self.strike(self.data["done"])
-
-                    self.select("input").element.checked = self.data["done"]
-
-            class PyList(pyscript.PyListTemplate):
-                item_class = PyItem
-
-                def add(self, item):
-                    if isinstance(item, str):
-                        item = {"content": item, "done": False, "created_at": dt.now()}
-
-                    super().add(item, labels=["content"], state_key="done")
-
-          </code>
-        </pre>
-      </div>
+        <py-list id="myList"></py-list>
+        <py-repl id="my-repl" auto-generate="true"> </py-repl>
+      </py-tutor>
     </section>
   </body>
-  <script>
-    const viewCodeButton = document.getElementById("view-code-button");
-    const codeSection = document.getElementById("code-section");
-    const handleClick = () => {
-      if (codeSection.classList.contains("code-section-hidden")) {
-        codeSection.classList.remove("code-section-hidden");
-        codeSection.classList.add("code-section-visible");
-      } else {
-        codeSection.classList.remove("code-section-visible");
-        codeSection.classList.add("code-section-hidden");
-      }
-    }
-    viewCodeButton.addEventListener("click", handleClick)
-    viewCodeButton.addEventListener("keydown", (e) => {
-      if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") {
-        handleClick();
-      }
-    })
-  </script>
 </html>

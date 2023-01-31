@@ -92,7 +92,7 @@ class TestAsync(PyScriptTest):
             "b func done",
         ]
 
-    def test_multiple_async_multiple_display_targetted(self):
+    def test_multiple_async_multiple_display_targeted(self):
         self.pyscript_run(
             """
                 <py-script id='pyA'>
@@ -124,7 +124,7 @@ class TestAsync(PyScriptTest):
         inner_text = self.page.inner_text("html")
         assert "A0\nA1\nB0\nB1" in inner_text
 
-    def test_async_display_untargetted(self):
+    def test_async_display_untargeted(self):
         self.pyscript_run(
             """
                 <py-script id='pyA'>
