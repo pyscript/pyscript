@@ -227,4 +227,3 @@ Cache cleared
 **NOTE**: this works only if you are inside `tests/integration`, or if you
 explicitly specify `tests/integration` from the command line. This is due to
 how `pytest` decides to search for and load the various `conftest.py`.
-

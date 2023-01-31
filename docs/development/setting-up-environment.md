@@ -115,4 +115,3 @@ For more information:
 * [Discord Channel](https://discord.gg/BYB2kvyFwm)
 
 We use Discord as the main place for our discussions
-
