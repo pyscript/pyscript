@@ -1,6 +1,6 @@
 import type { AppConfig } from '../pyconfig';
 import type { UserError } from '../exceptions';
-import type { Runtime } from '../runtime';
+import type { Interpreter } from '../interpreter';
 import { showWarning } from '../utils';
 import { Plugin } from '../plugin';
 import { getLogger } from '../logger';
@@ -29,7 +29,7 @@ export class SplashscreenPlugin extends Plugin {
 
         if ('autoclose_loader' in config) {
             this.autoclose = config.autoclose_loader;
-            showWarning(AUTOCLOSE_LOADER_DEPRECATED, "html");
+            showWarning(AUTOCLOSE_LOADER_DEPRECATED, 'html');
         }
 
         if (config.splashscreen) {
@@ -43,13 +43,13 @@ export class SplashscreenPlugin extends Plugin {
         customElements.define('py-splashscreen', PySplashscreen);
         this.elem = <PySplashscreen>document.createElement('py-splashscreen');
         document.body.append(this.elem);
-        document.addEventListener("py-status-message", (e: CustomEvent) => {
+        document.addEventListener('py-status-message', (e: CustomEvent) => {
             const msg = e.detail;
             this.elem.log(msg);
         });
     }
 
-    afterStartup(runtime: Runtime) {
+    afterStartup(interpreter: Interpreter) {
         if (this.autoclose) {
             this.elem.close();
         }

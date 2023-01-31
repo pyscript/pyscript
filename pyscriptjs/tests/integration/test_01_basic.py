@@ -43,6 +43,30 @@ class TestBasic(PyScriptTest):
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
 
+    def test_python_exception_in_event_handler(self):
+        self.pyscript_run(
+            """
+            <button py-click="onclick()">Click me</button>
+            <py-script>
+                def onclick():
+                    raise Exception("this is an error inside handler")
+            </py-script>
+        """
+        )
+
+        self.page.locator("button").click()
+
+        ## error in console
+        tb_lines = self.console.error.lines[-1].splitlines()
+        assert tb_lines[0] == "[pyexec] Python exception:"
+        assert tb_lines[1] == "Traceback (most recent call last):"
+        assert tb_lines[-1] == "Exception: this is an error inside handler"
+
+        ## error in DOM
+        tb_lines = self.page.locator(".py-error").inner_text().splitlines()
+        assert tb_lines[0] == "Traceback (most recent call last):"
+        assert tb_lines[-1] == "Exception: this is an error inside handler"
+
     def test_execution_in_order(self):
         """
         Check that they py-script tags are executed in the same order they are
@@ -179,18 +203,12 @@ class TestBasic(PyScriptTest):
         with pytest.raises(JsErrors) as exc:
             self.check_js_errors()
 
-        error_msg = str(exc.value)
-        print(error_msg)
-        if self.is_fake_server:
-            assert (
-                "Fetching from URL foo.py failed with error 404 (Not Found)."
-                in error_msg
-            )
-        else:
-            assert (
-                "Fetching from URL foo.py failed with error 404 (File not found)"
-                in error_msg
-            )
+        error_msgs = str(exc.value)
+
+        expected_msg = "(PY0404): Fetching from URL foo.py failed with error 404"
+
+        assert expected_msg in error_msgs
+        assert self.assert_banner_message(expected_msg)
 
         pyscript_tag = self.page.locator("py-script")
         assert pyscript_tag.inner_html() == ""
@@ -220,13 +238,13 @@ class TestBasic(PyScriptTest):
         """
         )
         assert (
-            re.match(r"\d{4}\.\d{2}\.\d+\.[a-zA-Z0-9]+", self.console.log.lines[-2])
+            re.match(r"\d{4}\.\d{2}\.\d+(\.[a-zA-Z0-9]+)?", self.console.log.lines[-2])
             is not None
         )
         assert (
             re.match(
                 r"version_info\(year=\d{4}, month=\d{2}, "
-                r"minor=\d+, releaselevel='[a-zA-Z0-9]+'\)",
+                r"minor=\d+, releaselevel='([a-zA-Z0-9]+)?'\)",
                 self.console.log.lines[-1],
             )
             is not None
@@ -276,3 +294,53 @@ class TestBasic(PyScriptTest):
             "Direct usage of sys is deprecated. Please use import sys instead.",
             "Direct usage of create is deprecated. Please use pyscript.create instead.",
         ]
+
+    def test_getPySrc_returns_source_code(self):
+        self.pyscript_run(
+            """
+            <py-script>
+                print("hello world!")
+            </py-script>
+            """
+        )
+
+        pyscript_tag = self.page.locator("py-script")
+        assert pyscript_tag.inner_html() == ""
+        assert (
+            pyscript_tag.evaluate("node => node.getPySrc()")
+            == 'print("hello world!")\n'
+        )
+
+    def test_pys_onClick_shows_deprecation_warning(self):
+        self.pyscript_run(
+            """
+            <button id="1" pys-onClick="myfunc()">Click me</button>
+            <py-script>
+                def myfunc():
+                    print("hello world")
+
+            </py-script>
+            """
+        )
+        banner = self.page.locator(".alert-banner")
+        expected_message = (
+            "The attribute 'pys-onClick' and 'pys-onKeyDown' are "
+            "deprecated. Please 'py-click=\"myFunction()\"' or "
+            "'py-keydown=\"myFunction()\"' instead."
+        )
+        assert banner.inner_text() == expected_message
+
+    def test_py_attribute_without_id(self):
+        self.pyscript_run(
+            """
+            <button py-click="myfunc()">Click me</button>
+            <py-script>
+                def myfunc():
+                    print("hello world!")
+            </py-script>
+            """
+        )
+        btn = self.page.wait_for_selector("button")
+        btn.click()
+        assert self.console.log.lines[-1] == "hello world!"
+        assert self.console.error.lines == []

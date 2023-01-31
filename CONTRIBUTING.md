@@ -11,7 +11,7 @@ Thank you for wanting to contribute to the PyScript project!
     * [Asking questions](#asking-questions)
     * [Setting up your local environment and developing](#setting-up-your-local-environment-and-developing)
     * [Places to start](#places-to-start)
-    * [Submitting a change](#submitting-a-change)
+    * [Setting up your local environment and developing](#setting-up-your-local-environment-and-developing)
 * [License terms for contributions](#license-terms-for-contributions)
 * [Becoming a maintainer](#becoming-a-maintainer)
 * [Trademarks](#trademarks)

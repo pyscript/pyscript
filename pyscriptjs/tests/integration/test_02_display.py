@@ -39,18 +39,6 @@ class TestOutput(PyScriptTest):
         lines = [line for line in lines if line != ""]  # remove empty lines
         assert lines == ["hello 1", "hello 2", "hello 3"]
 
-    def test_output_attribute_shows_deprecated_warning(self):
-        self.pyscript_run(
-            """
-            <py-script output="myDiv">
-                display('hello world')
-            </py-script>
-            <div id="mydiv"></div>
-            """
-        )
-        warning_banner = self.page.locator(".alert-banner")
-        assert "The 'output' attribute is deprecated" in warning_banner.inner_text()
-
     def test_target_attribute(self):
         self.pyscript_run(
             """
@@ -121,17 +109,23 @@ class TestOutput(PyScriptTest):
                 def display_hello():
                     # this fails because we don't have any implicit target
                     # from event handlers
-                    display('hello')
+                    display('hello world')
             </py-script>
             <button id="my-button" py-onClick="display_hello()">Click me</button>
         """
         )
         self.page.locator("text=Click me").click()
-        text = self.page.text_content("body")
-        assert "hello" not in text
-        self.check_js_errors(
-            "Implicit target not allowed here. Please use display(..., target=...)"
+        ## error in console
+        tb_lines = self.console.error.lines[-1].splitlines()
+        assert tb_lines[0] == "[pyexec] Python exception:"
+        assert tb_lines[1] == "Traceback (most recent call last):"
+        assert (
+            tb_lines[-1]
+            == "Exception: Implicit target not allowed here. Please use display(..., target=...)"
         )
+
+        text = self.page.text_content("body")
+        assert "hello world" not in text
 
     def test_explicit_target_pyscript_tag(self):
         self.pyscript_run(
@@ -230,6 +224,31 @@ class TestOutput(PyScriptTest):
         inner_html = self.page.content()
         pattern = r'<py-script id="py-.*">world</py-script>'
         assert re.search(pattern, inner_html)
+
+    def test_display_multiple_append_false_with_target(self):
+        self.pyscript_run(
+            """
+            <div id="circle-div"></div>
+            <py-script>
+                class Circle:
+                    r = 0
+                    def _repr_svg_(self):
+                        return f'<svg height="{self.r*2}" width="{self.r*2}"><circle cx="{self.r}" cy="{self.r}" r="{self.r}" fill="red" /></svg>' # noqa: E501
+
+                circle = Circle()
+
+                circle.r += 5
+                display(circle, target="circle-div", append=False)
+                circle.r += 5
+                display(circle, target="circle-div", append=False)
+            </py-script>
+        """
+        )
+        innerhtml = self.page.locator("id=circle-div").inner_html()
+        assert (
+            innerhtml
+            == '<svg height="20" width="20"><circle cx="10" cy="10" r="10" fill="red"></circle></svg>'  # noqa: E501
+        )
 
     def test_display_list_dict_tuple(self):
         self.pyscript_run(
@@ -365,8 +384,5 @@ class TestOutput(PyScriptTest):
             """
         )
 
-        # TODO: This seems to be a py-script tag, should it?
-        rendered_img_src = self.page.locator("#py-internal-0 > img").get_attribute(
-            "src"
-        )
+        rendered_img_src = self.page.locator("img").get_attribute("src")
         assert rendered_img_src == expected_img_src

@@ -209,7 +209,7 @@ Now that we have a way to explore the data using `py-repl` and a way to create t
       ice_data = pd.read_csv(open_url(url))
 
       current_selected = []
-      flavour_elements = document.getElementsByName("flavour")
+      flavour_elements = js.document.getElementsByName("flavour")
 
       def plot(data):
           plt.rcParams["figure.figsize"] = (22,20)

@@ -1,4 +1,5 @@
 import dataclasses
+import math
 import os
 import pdb
 import re
@@ -241,7 +242,7 @@ class PyScriptTest:
         If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
-        # this is printed by runtime.ts:Runtime.initialize
+        # this is printed by interpreter.ts:Interpreter.initialize
         self.wait_for_console(
             "[pyscript/main] PyScript page fully initialized",
             timeout=timeout,
@@ -303,8 +304,114 @@ class PyScriptTest:
             text = "\n".join(loc.all_inner_texts())
             raise AssertionError(f"Found {n} alert banners:\n" + text)
 
+    def assert_banner_message(self, expected_message):
+        """
+        Ensure that there is an alert banner on the page with the given message.
+        Currently it only handles a single.
+        """
+        banner = self.page.wait_for_selector(".alert-banner")
+        banner_text = banner.inner_text()
+
+        if expected_message not in banner_text:
+            raise AssertionError(
+                f"Expected message '{expected_message}' does not "
+                f"match banner text '{banner_text}'"
+            )
+        return True
+
+    def check_tutor_generated_code(self, modules_to_check=None):
+        """
+        Ensure that the source code viewer injected by the PyTutor plugin
+        is presend. Raise AssertionError if not found.
+
+        Args:
+
+            modules_to_check(str): iterable with names of the python modules
+                                that have been included in the tutor config
+                                and needs to be checked (if they are included
+                                in the displayed source code)
+
+        Returns:
+            None
+        """
+        # Given: a page that has a <py-tutor> tag
+        assert self.page.locator("py-tutor").count()
+
+        # EXPECT that"
+        #
+        # the page has the "view-code-button"
+        view_code_button = self.page.locator("#view-code-button")
+        vcb_count = view_code_button.count()
+        if vcb_count != 1:
+            raise AssertionError(
+                f"Found {vcb_count} code view button. Should have been 1!"
+            )
+
+        # the page has the code-section element
+        code_section = self.page.locator("#code-section")
+        code_section_count = code_section.count()
+        code_msg = (
+            f"One (and only one) code section should exist. Found: {code_section_count}"
+        )
+        assert code_section_count == 1, code_msg
+
+        pyconfig_tag = self.page.locator("py-config")
+        code_section_inner_html = code_section.inner_html()
+
+        # the code_section has the index.html section
+        assert "<p>index.html</p>" in code_section_inner_html
+
+        # the section has the tags highlighting the HTML code
+        assert (
+            '<pre class="prism-code language-html" tabindex="0">'
+            '    <code class="language-html">' in code_section_inner_html
+        )
+
+        # if modules were included, these are also presented in the code section
+        if modules_to_check:
+            for module in modules_to_check:
+                assert f"{module}" in code_section_inner_html
+
+        # the section also includes the config
+        assert "&lt;</span>py-config</span>" in code_section_inner_html
+
+        # the contents of the py-config tag are included in the code section
+        assert pyconfig_tag.inner_html() in code_section_inner_html
+
+        # the code section to be invisible by default (by having the hidden class)
+        assert "code-section-hidden" in code_section.get_attribute("class")
+
+        # once the view_code_button is pressed, the code section becomes visible
+        view_code_button.click()
+        assert "code-section-visible" in code_section.get_attribute("class")
+
 
 # ============== Helpers and utility functions ==============
+
+MAX_TEST_TIME = 30  # Number of seconds allowed for checking a testing condition
+TEST_TIME_INCREMENT = 0.25  # 1/4 second, the length of each iteration
+TEST_ITERATIONS = math.ceil(
+    MAX_TEST_TIME / TEST_TIME_INCREMENT
+)  # 120 iters of 1/4 second
+
+
+def wait_for_render(page, selector, pattern):
+    """
+    Assert that rendering inserts data into the page as expected: search the
+    DOM from within the timing loop for a string that is not present in the
+    initial markup but should appear by way of rendering
+    """
+    re_sub_content = re.compile(pattern)
+    py_rendered = False  # Flag to be set to True when condition met
+
+    for _ in range(TEST_ITERATIONS):
+        content = page.inner_html(selector)
+        if re_sub_content.search(content):
+            py_rendered = True
+            break
+        time.sleep(TEST_TIME_INCREMENT)
+
+    assert py_rendered  # nosec
 
 
 class JsErrors(Exception):

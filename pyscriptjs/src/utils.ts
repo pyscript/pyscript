@@ -1,4 +1,4 @@
-import { _createAlertBanner, UserError, FetchError, ErrorCode } from "./exceptions"
+import { _createAlertBanner } from "./exceptions"
 
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
@@ -45,28 +45,6 @@ export function showWarning(msg: string, messageType: 'text' | 'html' = 'text'):
     _createAlertBanner(msg, 'warning', messageType);
 }
 
-export function handleFetchError(e: Error, singleFile: string) {
-    // XXX: inspecting the error message to understand what happened is very
-    // fragile. We need a better solution.
-    let errorContent: string;
-    if (e.message.includes('Failed to fetch')) {
-        errorContent = `PyScript: Access to local files
-        (using "Paths:" in &lt;py-config&gt;)
-        is not available when directly opening a HTML file;
-        you must use a webserver to serve the additional files.
-        See <a style="text-decoration: underline;" href="https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062">this reference</a>
-        on starting a simple webserver with Python.`;
-    } else if (e.message.includes('404')) {
-        errorContent =
-            `PyScript: Loading from file <u>` +
-            singleFile +
-            `</u> failed with error 404 (File not Found). Are your filename and path are correct?`;
-    } else {
-        errorContent = `PyScript encountered an error while loading from file: ${e.message}`;
-    }
-    throw new UserError(ErrorCode.FETCH_ERROR, errorContent, 'html');
-}
-
 export function readTextFromPath(path: string) {
     const request = new XMLHttpRequest();
     request.open('GET', path, false);
@@ -111,10 +89,22 @@ export function joinPaths(parts: string[], separator = '/') {
 }
 
 export function createDeprecationWarning(msg: string, elementName: string): void {
+    createSingularWarning(msg, elementName);
+}
+
+/** Adds a warning banner with content {msg} at the top of the page if
+ *  and only if no banner containing the {sentinelText} already exists.
+ *  If sentinelText is null, the full text of {msg} is used instead
+ *
+ * @param msg {string} The full text content of the warning banner to be displayed
+ * @param sentinelText {string} [null] The text to match against existing warning banners.
+ *                     If null, the full text of 'msg' is used instead.
+ */
+export function createSingularWarning(msg: string, sentinelText: string | null = null): void {
     const banners = document.getElementsByClassName('alert-banner py-warning');
     let bannerCount = 0;
     for (const banner of banners) {
-        if (banner.innerHTML.includes(elementName)) {
+        if (banner.innerHTML.includes(sentinelText ? sentinelText : msg)) {
             bannerCount++;
         }
     }

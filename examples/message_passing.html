@@ -4,22 +4,28 @@
     <link rel="icon" type="image/x-icon" href="./favicon.png">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+    <link rel="stylesheet" href="./assets/css/examples.css" />
 </head>
 
 <body>
 
-    <py-config>
-        packages = [
-          "numpy",
-          "networkx",
-          "matplotlib"
-        ]
-    </py-config>
+    <py-tutor>
+        <py-config>
+            packages = [
+            "numpy",
+            "networkx",
+            "matplotlib"
+            ]
+            plugins = [
+              "../build/plugins/python/py_tutor.py"
+            ]
+        </py-config>
 
-    <py-script>
+        <py-script>
 import numpy as np
 import networkx as nx
-    </py-script>
+        </py-script>
 
     <p>Message passing with linear algebra: a demo.</p>
     <p>Imagine we have a chain graph that looks like this:</p>
@@ -31,21 +37,22 @@ G = nx.Graph()
 nodes = list(range(4))
 G.add_edges_from(zip(nodes[0:-1], nodes[1:]))
 print(G.edges())
-</py-script></pre>
+        </py-script>
+    </pre>
     <p>This chain graph has the following adjacency matrix:</p>
     <pre>
-<py-script>
+        <py-script>
 adj_mat = np.eye(4, k=1)
 print(f"A: {adj_mat}")
-</py-script>
-        </pre>
+        </py-script>
+    </pre>
     <p>And imagine that we have a message that lives on the graph:</p>
     <pre>
-            <py-script>
+        <py-script>
 message = np.array([1.0, 0.0, 0.0, 0.0])
 print(f"message: {message}")
-            </py-script>
-        </pre>
+        </py-script>
+    </pre>
     <p>Try out message passing below by doing any one of the following steps:</p>
     <pre><code>message @ adj_mat</code></pre>
     <pre><code>message @ adj_mat @ adj_mat</code></pre>
@@ -53,6 +60,7 @@ print(f"message: {message}")
     <div>
         <py-repl id="my-repl" auto-generate="true"> </py-repl>
     </div>
+    </py-tutor>
 </body>
 
 </html>

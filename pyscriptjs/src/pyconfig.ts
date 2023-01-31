@@ -1,8 +1,8 @@
 import toml from '../src/toml';
 import { getLogger } from './logger';
-import { version } from './runtime';
-import { getAttribute, readTextFromPath, htmlDecode } from './utils';
-import { UserError, ErrorCode } from "./exceptions"
+import { version } from './version';
+import { getAttribute, readTextFromPath, htmlDecode, createDeprecationWarning } from './utils';
+import { UserError, ErrorCode } from './exceptions';
 
 const logger = getLogger('py-config');
 
@@ -15,7 +15,9 @@ export interface AppConfig extends Record<string, any> {
     author_name?: string;
     author_email?: string;
     license?: string;
-    runtimes?: RuntimeConfig[];
+    interpreters?: InterpreterConfig[];
+    // TODO: Remove `runtimes` once the deprecation cycle is over
+    runtimes?: InterpreterConfig[];
     packages?: string[];
     fetch?: FetchConfig[];
     plugins?: string[];
@@ -29,7 +31,7 @@ export type FetchConfig = {
     files?: string[];
 };
 
-export type RuntimeConfig = {
+export type InterpreterConfig = {
     src?: string;
     name?: string;
     lang?: string;
@@ -43,19 +45,21 @@ export type PyScriptMetadata = {
 const allKeys = {
     string: ['name', 'description', 'version', 'type', 'author_name', 'author_email', 'license'],
     number: ['schema_version'],
-    array: ['runtimes', 'packages', 'fetch', 'plugins'],
+    array: ['runtimes', 'interpreters', 'packages', 'fetch', 'plugins'],
 };
 
 export const defaultConfig: AppConfig = {
     schema_version: 1,
     type: 'app',
-    runtimes: [
+    interpreters: [
         {
             src: 'https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js',
             name: 'pyodide-0.21.3',
             lang: 'python',
         },
     ],
+    // This is for backward compatibility, we need to remove it in the future
+    runtimes: [],
     packages: [],
     fetch: [],
     plugins: [],
@@ -75,7 +79,7 @@ export function loadConfigFromElement(el: Element): AppConfig {
     srcConfig = mergeConfig(srcConfig, defaultConfig);
     const result = mergeConfig(inlineConfig, srcConfig);
     result.pyscript = {
-        version: version,
+        version,
         time: new Date().toISOString(),
     };
     return result;
@@ -140,27 +144,26 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
 }
 
 function parseConfig(configText: string, configType = 'toml') {
-    let config: object;
     if (configType === 'toml') {
         try {
             // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
             if (configText.trim()[0] === '{') {
                 throw new UserError(
                     ErrorCode.BAD_CONFIG,
-                    `The config supplied: ${configText} is an invalid TOML and cannot be parsed`
+                    `The config supplied: ${configText} is an invalid TOML and cannot be parsed`,
                 );
             }
-            config = toml.parse(configText);
+            return toml.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
             throw new UserError(
                 ErrorCode.BAD_CONFIG,
-                `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`
+                `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`,
             );
         }
     } else if (configType === 'json') {
         try {
-            config = JSON.parse(configText);
+            return JSON.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
             throw new UserError(
@@ -171,10 +174,9 @@ function parseConfig(configText: string, configType = 'toml') {
     } else {
         throw new UserError(
             ErrorCode.BAD_CONFIG,
-            `The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`
+            `The type of config supplied '${configType}' is not supported, supported values are ["toml", "json"]`,
         );
     }
-    return config;
 }
 
 function validateConfig(configText: string, configType = 'toml') {
@@ -186,17 +188,40 @@ function validateConfig(configText: string, configType = 'toml') {
         const keys: string[] = allKeys[keyType];
         keys.forEach(function (item: string) {
             if (validateParamInConfig(item, keyType, config)) {
-                if (item === 'runtimes') {
+                if (item === 'interpreters') {
                     finalConfig[item] = [];
-                    const runtimes = config[item] as RuntimeConfig[];
-                    runtimes.forEach(function (eachRuntime: RuntimeConfig) {
-                        const runtimeConfig: RuntimeConfig = {};
-                        for (const eachRuntimeParam in eachRuntime) {
-                            if (validateParamInConfig(eachRuntimeParam, 'string', eachRuntime)) {
-                                runtimeConfig[eachRuntimeParam] = eachRuntime[eachRuntimeParam];
+                    const interpreters = config[item] as InterpreterConfig[];
+                    interpreters.forEach(function (eachInterpreter: InterpreterConfig) {
+                        const interpreterConfig: InterpreterConfig = {};
+                        for (const eachInterpreterParam in eachInterpreter) {
+                            if (validateParamInConfig(eachInterpreterParam, 'string', eachInterpreter)) {
+                                interpreterConfig[eachInterpreterParam] = eachInterpreter[eachInterpreterParam];
                             }
                         }
-                        finalConfig[item].push(runtimeConfig);
+                        finalConfig[item].push(interpreterConfig);
+                    });
+                } else if (item === 'runtimes') {
+                    // This code is a bit of a mess, but it's used for backwards
+                    // compatibility with the old runtimes config. It should be
+                    // removed when we remove support for the old config.
+                    // We also need the warning here since we are pushing
+                    // runtimes to `interpreter` and we can't show the warning
+                    // in main.js
+                    createDeprecationWarning(
+                        'The configuration option `config.runtimes` is deprecated. ' +
+                            'Please use `config.interpreters` instead.',
+                        '',
+                    );
+                    finalConfig['interpreters'] = [];
+                    const interpreters = config[item] as InterpreterConfig[];
+                    interpreters.forEach(function (eachInterpreter: InterpreterConfig) {
+                        const interpreterConfig: InterpreterConfig = {};
+                        for (const eachInterpreterParam in eachInterpreter) {
+                            if (validateParamInConfig(eachInterpreterParam, 'string', eachInterpreter)) {
+                                interpreterConfig[eachInterpreterParam] = eachInterpreter[eachInterpreterParam];
+                            }
+                        }
+                        finalConfig['interpreters'].push(interpreterConfig);
                     });
                 } else if (item === 'fetch') {
                     finalConfig[item] = [];

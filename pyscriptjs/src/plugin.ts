@@ -1,9 +1,11 @@
 import type { AppConfig } from './pyconfig';
-import type { Runtime } from './runtime';
+import type { Interpreter } from './interpreter';
 import type { UserError } from './exceptions';
 import { getLogger } from './logger';
+import { make_PyScript } from './components/pyscript';
 
 const logger = getLogger('plugin');
+type PyScriptTag =  InstanceType<ReturnType<typeof make_PyScript>>;
 
 export class Plugin {
     /** Validate the configuration of the plugin and handle default values.
@@ -37,13 +39,32 @@ export class Plugin {
      *
      * The <py-script> tags will be executed after this hook.
      */
-    afterSetup(runtime: Runtime) {}
+    afterSetup(interpreter: Interpreter) {}
+
+    /** The source of a <py-script>> tag has been fetched, and we're about
+     * to evaluate that source using the provided interpreter.
+     *
+     * @param options.interpreter The Interpreter object that will be used to evaluated the Python source code
+     * @param options.src {string} The Python source code to be evaluated
+     * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
+     */
+    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag}) {}
+
+    /** The Python in a <py-script> has just been evaluated, but control
+     * has not been ceded back to the JavaScript event loop yet
+     *
+     * @param options.interpreter The Interpreter object that will be used to evaluated the Python source code
+     * @param options.src {string} The Python source code to be evaluated
+     * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
+     * @param options.result The returned result of evaluating the Python (if any)
+     */
+    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag, result: any}) {}
 
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and
      * the page is ready to accept user interactions.
      */
-    afterStartup(runtime: Runtime) {}
+    afterStartup(interpreter: Interpreter) {}
 
     /** Called when an UserError is raised
      */
@@ -74,19 +95,43 @@ export class PluginManager {
     }
 
     beforeLaunch(config: AppConfig) {
-        for (const p of this._plugins) p.beforeLaunch(config);
+        for (const p of this._plugins) {
+            try {
+                p.beforeLaunch(config);
+            } catch (e) {
+                logger.error(`Error while calling beforeLaunch hook of plugin ${p.constructor.name}`, e);
+            }
+        }
     }
 
-    afterSetup(runtime: Runtime) {
-        for (const p of this._plugins) p.afterSetup(runtime);
+    afterSetup(interpreter: Interpreter) {
+        for (const p of this._plugins) {
+            try {
+                p.afterSetup(interpreter);
+            } catch (e) {
+                logger.error(`Error while calling afterSetup hook of plugin ${p.constructor.name}`, e);
+            }
+        }
 
-        for (const p of this._pythonPlugins) p.afterSetup?.(runtime);
+        for (const p of this._pythonPlugins) p.afterSetup?.(interpreter);
     }
 
-    afterStartup(runtime: Runtime) {
-        for (const p of this._plugins) p.afterStartup(runtime);
+    afterStartup(interpreter: Interpreter) {
+        for (const p of this._plugins) p.afterStartup(interpreter);
 
-        for (const p of this._pythonPlugins) p.afterStartup?.(runtime);
+        for (const p of this._pythonPlugins) p.afterStartup?.(interpreter);
+    }
+
+    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag}) {
+        for (const p of this._plugins) p.beforePyScriptExec(options);
+
+        for (const p of this._pythonPlugins) p.beforePyScriptExec?.callKwargs(options);
+    }
+
+    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag, result: any}) {
+        for (const p of this._plugins) p.afterPyScriptExec(options);
+
+        for (const p of this._pythonPlugins) p.afterPyScriptExec?.callKwargs(options);
     }
 
     onUserError(error: UserError) {
