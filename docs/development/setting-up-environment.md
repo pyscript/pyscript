@@ -113,5 +113,6 @@ For more information:
 * [Home Page](https://pyscript.net/)
 * [Blog Post](https://engineering.anaconda.com/2022/04/welcome-pyscript.html)
 * [Discord Channel](https://discord.gg/BYB2kvyFwm)
+
 We use Discord as the main place for our discussions
 
