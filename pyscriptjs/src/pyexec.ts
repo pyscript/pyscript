@@ -52,7 +52,7 @@ export function pyDisplay(interpreter: Interpreter, obj: any, kwargs: object) {
     }
 }
 
-function displayPyException(err: any, errElem: HTMLElement) {
+export function displayPyException(err: any, errElem: HTMLElement) {
     //addClasses(errElem, ['py-error'])
     const pre = document.createElement('pre');
     pre.className = 'py-error';

@@ -80,7 +80,6 @@ Sometimes you might be asked to rebase main into your branch. Please refer to th
 
 If you need help with anything, feel free to reach out and ask for help!
 
-
 ## pytest quick guide
 
 We make a heavy usage of `pytest`. Here is a quick guide and collection of

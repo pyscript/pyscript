@@ -1,7 +1,7 @@
 import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import type { Interpreter } from '../interpreter';
 import { getLogger } from '../logger';
-import { pyExec } from '../pyexec';
+import { pyExec, displayPyException } from '../pyexec';
 import { _createAlertBanner } from '../exceptions';
 import { robustFetch } from '../fetch';
 import { PyScriptApp } from '../main';
@@ -24,9 +24,9 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
 
-            app.plugins.beforePyScriptExec(interpreter, pySrc, this);
+            app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
             const result = pyExec(interpreter, pySrc, this);
-            app.plugins.afterPyScriptExec(interpreter, pySrc, this, result);
+            app.plugins.afterPyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result});
         }
 
         async getPySrc(): Promise<string> {
@@ -183,7 +183,12 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
             }
         } else {
             el.addEventListener(event, event => {
-                interpreter.run(handlerCode, { additionalGlobals: { event } });
+                try {
+                    interpreter.run(handlerCode, { additionalGlobals: { event } });
+                }
+                catch (err) {
+                    displayPyException(err, el.parentElement);
+                }
             });
         }
         // TODO: Should we actually map handlers in JS instead of Python?

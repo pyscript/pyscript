@@ -30,5 +30,5 @@ class PyMarkdown:
     def connect(self):
         unescaped_content = html.unescape(self.element.originalInnerHTML)
         original = dedent(unescaped_content)
-        inner = markdown(original, extensions=["fenced_code"])
+        inner = markdown(original, extensions=["markdown.extensions.fenced_code"])
         self.element.innerHTML = inner
