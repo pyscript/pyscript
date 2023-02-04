@@ -2,11 +2,11 @@
     <title>Bokeh Example</title>
     <meta charset="iso-8859-1">
     <link rel="icon" type="image/x-icon" href="./favicon.png">
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-gl-2.4.2.min.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.2.min.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.2.min.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-mathjax-2.4.2.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.0.3.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-gl-3.0.3.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.0.3.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.0.3.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-mathjax-3.0.3.min.js"></script>
     <link rel="stylesheet" href="./assets/css/examples.css" />
 
     <script type="text/javascript">
@@ -32,8 +32,10 @@
 
           <py-config>
               packages = [
+                "pandas",
                 "bokeh",
-                "numpy"
+                "numpy",
+                "xyzservices"
               ]
               plugins = [
                 "../build/plugins/python/py_tutor.py"
@@ -52,7 +54,8 @@ from bokeh.document import Document
 from bokeh.embed.util import OutputDocumentFor, standalone_docs_json_and_render_items
 from bokeh.models import Slider, Div
 from bokeh.layouts import Row
-from bokeh.protocol.messages.patch_doc import process_document_events
+from bokeh.document.json import PatchJson
+from bokeh.core.serialization import Serializer
 
 # create a new plot with default tools, using figure
 p = Slider(start=0.1, end=10, value=1, step=.1, title="Amplitude")
@@ -93,9 +96,11 @@ def _link_docs(pydoc, jsdoc):
     jsdoc.on_change(pyodide.ffi.create_proxy(jssync), pyodide.ffi.to_js(False))
 
     def pysync(event):
-        json_patch, buffers = process_document_events([event], use_buffers=True)
+        doc = event.document
+        serializer = Serializer(references=doc.models.synced_references)
+        json_patch = PatchJson(events=serializer.encode([event]))
         buffer_map = {}
-        for (ref, buffer) in buffers:
+        for (ref, buffer) in serializer.buffers:
             buffer_map[ref['id']] = buffer
         jsdoc.apply_json_patch(JSON.parse(json_patch), pyodide.ffi.to_js(buffer_map), setter_id='js')
 
