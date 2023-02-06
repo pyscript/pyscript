@@ -197,6 +197,7 @@ Now that we have a way to explore the data using `py-repl` and a way to create t
     </py-config>
 
     <py-script>
+      import js
       import pandas as pd
       import matplotlib.pyplot as plt
 
