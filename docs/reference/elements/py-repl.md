@@ -45,4 +45,4 @@ The following will write "Hello! World!" to the div with id `replOutput`.
 </py-repl>
 ```
 
-Note that if we `print` any element in the repl (or otherwise write to `sys.stdout`), the output will be printed in the [`py-terminal`](../plugins/py-terminal.md) if is enabled.
+Note that if we `print` from the REPL (or otherwise write to `sys.stdout`), the output will be printed in the [`py-terminal`](../plugins/py-terminal.md) if is enabled.

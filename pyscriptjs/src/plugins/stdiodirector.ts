@@ -63,6 +63,7 @@ export class StdioDirector extends Plugin {
 
     beforePyReplExec(options: {interpreter: Interpreter, src: string, outEl: HTMLElement, pyReplTag: any}): void {
         //Handle 'output-mode' attribute (removed in PR #881/f9194cc8, restored here)
+        //If output-mode == 'append', don't clear target tag before writing
         if (options.pyReplTag.getAttribute('output-mode') != 'append'){
             options.outEl.innerHTML = ''
         }
@@ -93,18 +94,18 @@ export class StdioDirector extends Plugin {
         // display the value of the last evaluated expression (REPL-style)
         if (options.result !== undefined) {
 
-            
-            const outputId =  options.pyReplTag.getAttribute("output")
-            if (outputId) { 
+
+            const outputId: string | undefined =  options.pyReplTag.getAttribute("output")
+            if (outputId) {
                 // 'output' attribute also used as location to send
                 // result of REPL
                 if (document.getElementById(outputId)){
                     pyDisplay(options.interpreter, options.result, { target: outputId });
-                } 
+                }
                 else { //no matching element on page
                     createSingularWarning(`output = "${outputId}" does not match the id of any element on the page.`)
                 }
-                
+
             }
             else {
                 // 'otuput atribuite not provided
