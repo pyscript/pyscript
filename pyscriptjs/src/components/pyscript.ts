@@ -24,9 +24,9 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
 
-            app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
+            app.plugins.beforePyScriptExec({ interpreter: interpreter, src: pySrc, pyScriptTag: this });
             const result = pyExec(interpreter, pySrc, this);
-            app.plugins.afterPyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result});
+            app.plugins.afterPyScriptExec({ interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result });
         }
 
         async getPySrc(): Promise<string> {
@@ -177,16 +177,15 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
             // the source code may contain a syntax error, which will cause
             // the splashscreen to not be removed.
             try {
-                interpreter.run(source, { additionalGlobals: { event } });
+                interpreter.run(source, { additionalGlobals: { js_event: event } });
             } catch (e) {
                 logger.error((e as Error).message);
             }
         } else {
             el.addEventListener(event, event => {
                 try {
-                    interpreter.run(handlerCode, { additionalGlobals: { event } });
-                }
-                catch (err) {
+                    interpreter.run(handlerCode, { additionalGlobals: { js_event: event } });
+                } catch (err) {
                     displayPyException(err, el.parentElement);
                 }
             });

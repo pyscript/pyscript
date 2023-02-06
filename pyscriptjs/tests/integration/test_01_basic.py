@@ -333,10 +333,10 @@ class TestBasic(PyScriptTest):
     def test_py_click(self):
         self.pyscript_run(
             """
-            <button id="btn" py-click="myfunc(event)">Click me</button>
+            <button id="btn" py-click="myfunc(js_event)">Click me</button>
             <py-script>
-                def myfunc(event):
-                    print(event.target.id)
+                def myfunc(js_event):
+                    print(js_event.target.id)
             </py-script>
             """
         )
@@ -347,14 +347,14 @@ class TestBasic(PyScriptTest):
     def test_multiple_py_events(self):
         self.pyscript_run(
             """
-            <button id="btn" py-click="myfunc(event)" py-keydown="myfunc(event)">Click me</button>
-            <button id="btn2" py-click="newfunc(event)" >Click me</button>
+            <button id="btn" py-click="myfunc(js_event)" py-keydown="myfunc(js_event)">Click me</button>
+            <button id="btn2" py-click="newfunc(js_event)" >Click me</button>
             <py-script>
-                def myfunc(event):
-                    print(event.target.id)
+                def myfunc(js_event):
+                    print(js_event.target.id)
 
-                def newfunc(event):
-                    print(event.target.id)
+                def newfunc(js_event):
+                    print(js_event.target.id)
             </py-script>
             """
         )
