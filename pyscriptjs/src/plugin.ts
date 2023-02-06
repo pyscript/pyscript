@@ -8,7 +8,6 @@ import type { UserError } from './exceptions';
 import { getLogger } from './logger';
 import { make_PyScript } from './components/pyscript';
 import { InterpreterClient } from './interpreter_client';
-import { interpreter } from './main';
 
 const logger = getLogger('plugin');
 type PyScriptTag = InstanceType<ReturnType<typeof make_PyScript>>;
