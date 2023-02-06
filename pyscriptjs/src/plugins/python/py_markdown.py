@@ -3,7 +3,6 @@ from textwrap import dedent
 
 from js import console
 from markdown import markdown
-
 from pyscript import Plugin
 
 console.warn(
