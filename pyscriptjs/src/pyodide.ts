@@ -28,7 +28,7 @@ export class PyodideInterpreter extends Interpreter {
     constructor(
         config: AppConfig,
         stdio: Stdio,
-        src = 'https://cdn.jsdelivr.net/pyodide/v22.1/full/pyodide.js',
+        src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js',
         name = 'pyodide-default',
         lang = 'python',
     ) {
