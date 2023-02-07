@@ -43,7 +43,7 @@ export function make_PyRepl(interpreter: Interpreter) {
             this.shadow.appendChild(slot);
 
             if (!this.hasAttribute('exec-id')) {
-                this.setAttribute('exec-id', '1');
+                this.setAttribute('exec-id', '0');
             }
             if (!this.hasAttribute('root')) {
                 this.setAttribute('root', this.id);
@@ -141,7 +141,7 @@ export function make_PyRepl(interpreter: Interpreter) {
         makeOutDiv(): HTMLElement {
             const outDiv = document.createElement('div');
             outDiv.className = 'py-repl-output';
-            outDiv.id = this.id + '-' + this.getAttribute('exec-id');
+            outDiv.id = this.id + '-repl-output';
             return outDiv;
         }
 
