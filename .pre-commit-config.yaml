@@ -28,7 +28,7 @@ repos:
         -   --skip=B101,B201
 
 -   repo: https://github.com/psf/black
-    rev: 22.12.0
+    rev: 23.1.0
     hooks:
     -   id: black
 
