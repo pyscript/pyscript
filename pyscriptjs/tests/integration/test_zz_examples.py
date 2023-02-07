@@ -301,7 +301,9 @@ class TestExamples(PyScriptTest):
         self.page.locator("py-repl").type("display('Hello, World!')")
         self.page.locator("#runButton").click()
 
-        assert self.page.locator("#my-repl-repl-output").text_content() == "Hello, World!"
+        assert (
+            self.page.locator("#my-repl-repl-output").text_content() == "Hello, World!"
+        )
 
         # Confirm that using the second repl still works properly
         self.page.locator("#my-repl-2").type("display(2*2)")
