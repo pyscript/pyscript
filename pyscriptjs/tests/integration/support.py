@@ -73,6 +73,7 @@ class PyScriptTest:
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
         self.logger = logger
+        self._js_errors = list()
 
         if request.config.option.no_fake_server:
             # use a real HTTP server. Note that as soon as we request the

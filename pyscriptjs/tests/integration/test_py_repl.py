@@ -247,14 +247,14 @@ class TestPyRepl(PyScriptTest):
         # evaluate the py-repl, and wait for the newly generated one
         self.page.keyboard.type("'hello'")
         self.page.keyboard.press("Shift+Enter")
-        self.page.locator('py-repl[exec-id="2"]').wait_for()
+        self.page.locator('py-repl[exec-id="1"]').wait_for()
         assert py_repls.count() == 2
         assert outputs.count() == 2
         #
         # now we type something else: the new py-repl should have the focus
         self.page.keyboard.type("'world'")
         self.page.keyboard.press("Shift+Enter")
-        self.page.locator('py-repl[exec-id="3"]').wait_for()
+        self.page.locator('py-repl[exec-id="2"]').wait_for()
         assert py_repls.count() == 3
         assert outputs.count() == 3
         #
