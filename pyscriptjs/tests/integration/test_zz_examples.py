@@ -104,7 +104,7 @@ class TestExamples(PyScriptTest):
         self.goto("examples/bokeh.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Bokeh Example"
-        wait_for_render(self.page, "*", '<div.*class=\\"bk\\".*>')
+        wait_for_render(self.page, "*", '<div.*?class="bk.*".*?>')
         self.assert_no_banners()
         self.check_tutor_generated_code()
 

@@ -28,7 +28,7 @@ export class PyodideInterpreter extends Interpreter {
     constructor(
         config: AppConfig,
         stdio: Stdio,
-        src = 'https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js',
+        src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js',
         name = 'pyodide-default',
         lang = 'python',
     ) {
@@ -78,6 +78,7 @@ export class PyodideInterpreter extends Interpreter {
             await this.loadPackage('micropip');
         }
         logger.info('pyodide loaded and initialized');
+        this.run('print("Python initialization complete")')
     }
 
     run(code: string): unknown {
@@ -90,7 +91,17 @@ export class PyodideInterpreter extends Interpreter {
 
     async loadPackage(names: string | string[]): Promise<void> {
         logger.info(`pyodide.loadPackage: ${names.toString()}`);
-        await this.interface.loadPackage(names, logger.info.bind(logger), logger.info.bind(logger));
+        // the new way in v0.22.1 is to pass it as a dict of options i.e.
+        // { messageCallback: logger.info.bind(logger), errorCallback: logger.info.bind(logger) }
+        // but one of our tests tries to use a locally downloaded older version of pyodide
+        // for which the signature of `loadPackage` accepts the above params as args i.e.
+        // the call uses `logger.info.bind(logger), logger.info.bind(logger)`.
+        if (this.run("import sys; sys.modules['pyodide'].__version__").toString().startsWith("0.22")) {
+            await this.interface.loadPackage(names, { messageCallback: logger.info.bind(logger), errorCallback: logger.info.bind(logger) });
+        }
+        else {
+            await this.interface.loadPackage(names, logger.info.bind(logger), logger.info.bind(logger));
+        }
     }
 
     async installPackage(package_name: string | string[]): Promise<void> {
