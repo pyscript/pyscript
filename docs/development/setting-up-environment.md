@@ -68,6 +68,14 @@ make livehtml
 
 Visible here: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
+## Setting up and building tests
+
+You'll need to install the following softwares to have a functional test environment: `playwright`, `pytest-playwright`, `pillow`, `requests` and `numpy`.
+
+`pytest-playwright`is only available as a `pip` package so we recommend that you install `playwright` and `pytest` from `pip`.
+
+If you're interested to learn more about PyScript's testing framework, head over to the [development process](developing.md) page.
+
 # PyScript Demonstrator
 
 A simple webapp to demonstrate the capabilities of PyScript.
