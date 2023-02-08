@@ -70,7 +70,7 @@ Visible here: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ## Setting up and building tests
 
-You'll need to install the following softwares to have a functional test environment: `playwright`, `pytest-playwright`, `pillow`, `requests` and `numpy`.
+You'll need to install the following to have a functional test environment: `playwright`, `pytest-playwright`, `pillow`, `requests` and `numpy`.
 
 `pytest-playwright`is only available as a `pip` package so we recommend that you install `playwright` and `pytest` from `pip`.
 
