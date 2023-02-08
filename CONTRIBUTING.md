@@ -54,7 +54,7 @@ If you would like to contribute to PyScript, but you aren't sure where to begin,
 
 If you would like to contribute to PyScript, you will need to set up a local development environment. The [following instructions](https://docs.pyscript.net/latest/development/setting-up-environment.html) will help you get started.
 
-You can also read the [developing process](https://docs.pyscript.net/latest/development/developing.html) and how to rebase your branch with the latest changes.
+You can also read about PyScript's [development process](https://docs.pyscript.net/latest/development/developing.html) to learn how to contribute code to PyScript, how to run tests and what's the PR etiquette of the community!
 
 ## License terms for contributions
 

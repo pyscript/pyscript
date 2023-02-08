@@ -1,6 +1,6 @@
-# Developing Process
+# Development Process
 
-This document is intended to help you get started developing for pyscript, it assumes that you have [setup your development environment](setting-up-environment.md).
+This document is intended to help you get started in developing software for the PyScript project. It assumes that you have [a working development environment](setting-up-environment.md). It also assumes you have a remote named `upstream` pointing to PyScript's repository and one named `origin` pointing to your own repository.
 
 * First, make sure you are using the latest version of the pyscript main branch
 
@@ -34,7 +34,7 @@ pre-commit install
 git checkout -b <your branch name>
 ```
 
-* Work on your change
+* Work on your changes
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: If you are working on a python file, you may encounter linting issues when pre-commit runs. Pyscript uses [black](https://black.readthedocs.io/en/stable/) to fix any linting problems automatically. All you need to do is add the changes again and commit using your previous commit message (the previous one that failed didn't complete due to black formatting files).
 
@@ -44,7 +44,16 @@ git checkout -b <your branch name>
 make tests
 ```
 
-* When you make changes locally, double check that your contribution follows the PyScript formatting rules by running `npm run lint`. Note that in this case you're looking for the errors, <u>**NOT**</u> the warnings (Unless the warning is created by a local change). If an error is found by lint you should fix it <u>**before**</u> creating a pull request
+To learn more about tests please refer to the session [Quick guide to pytest](## Quick guide to pytest).
+
+* When you make changes locally, double check that your contribution follows the PyScript formatting rules by running `npm run lint`. Note that in this case you're looking for the errors, <u>**NOT**</u> the warnings (Unless the warning is created by a local change). If an error is found by the linter you should fix it <u>**before**</u> creating a pull request.
+
+#### Rebasing changes
+
+Sometimes you might be asked to rebase the main branch into your local branch. Please refer to this [section on git rebase from GitHub docs](https://docs.github.com/en/get-started/using-git/about-git-rebase).
+
+If you need help with anything, feel free to reach out and ask for help!
+
 
 ## Updating the changelog
 
@@ -73,16 +82,9 @@ Documentation
 
 ```
 
+## Quick guide to pytest
 
-## Rebasing changes
-
-Sometimes you might be asked to rebase main into your branch. Please refer to this [section on git rebase from GitHub docs](https://docs.github.com/en/get-started/using-git/about-git-rebase).
-
-If you need help with anything, feel free to reach out and ask for help!
-
-## pytest quick guide
-
-We make a heavy usage of `pytest`. Here is a quick guide and collection of
+We make heavy usage of `pytest`. Here is a quick guide and collection of
 useful options:
 
 - To run all tests in the current directory and subdirectories: `pytest`
@@ -105,7 +107,7 @@ useful options:
 - `-k 'foo and not bar'`
 
 
-## Running integration tests under pytest
+### Running integration tests under pytest
 
 `make test` is useful to run all the tests, but during the development is
 useful to have more control on how tests are run. The following guide assumes
@@ -189,7 +191,7 @@ $ pytest test_01_basic.py -k test_pyscript_hello -s --dev
 automatically open chrome dev tools.
 
 
-#### Fake server, HTTP cache
+## Fake server, HTTP cache
 
 By default, our test machinery uses a playwright router which intercepts and
 cache HTTP requests, so that for example you don't have to download pyodide
