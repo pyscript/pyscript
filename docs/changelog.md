@@ -26,6 +26,7 @@ Documentation
 
 - Fixed 'Direct usage of document is deprecated' warning in the getting started guide. ([#1052](https://github.com/pyscript/pyscript/pull/1052))
 - Added reference documentation for the `py-splashscreen` plugin ([#1138](https://github.com/pyscript/pyscript/pull/1138))
+- Adds doc for installing tests ([#1156](https://github.com/pyscript/pyscript/pull/1156))
 
 Deprecations and Removals
 -------------------------
