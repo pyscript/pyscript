@@ -116,7 +116,7 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        out_div = py_repl.locator("div.py-repl-output")
+        out_div = py_repl.locator("div.my-repl-repl-output")
         self.page.keyboard.press("Shift+Enter")
         assert out_div.all_inner_texts()[0] == "hello world"
         #
@@ -150,6 +150,26 @@ class TestPyRepl(PyScriptTest):
         tb_lines = err_pre.inner_text().splitlines()
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
+
+    def test_multiple_repls(self):
+        """
+        Multiple repls showing in the correct order in the page
+        """
+        self.pyscript_run(
+            """
+            <py-repl data-testid=="first"> display("first") </py-repl>
+            <py-repl data-testid=="second"> display("second") </py-repl>
+            """
+        )
+        first_py_repl = self.page.get_by_text("first")
+        first_py_repl.click()
+        self.page.keyboard.press("Shift+Enter")
+        assert self.page.inner_text("#py-internal-0-repl-output") == "first"
+
+        second_py_repl = self.page.get_by_text("second")
+        second_py_repl.click()
+        self.page.keyboard.press("Shift+Enter")
+        assert self.page.inner_text("#py-internal-1-repl-output") == "second"
 
     def test_python_exception_after_previous_output(self):
         self.pyscript_run(
@@ -261,3 +281,30 @@ class TestPyRepl(PyScriptTest):
         # check that the code and the outputs are in order
         out_texts = [el.inner_text() for el in self.iter_locator(outputs)]
         assert out_texts == ["hello", "world", ""]
+
+    def test_multiple_repls_mixed_display_order(self):
+        """
+        Displaying several outputs that don't obey the order in which the original
+        repl displays were created using the auto_generate attr
+        """
+        self.pyscript_run(
+            """
+            <py-repl auto-generate="true" data-testid=="first"> display("root first") </py-repl>
+            <py-repl auto-generate="true" data-testid=="second"> display("root second") </py-repl>
+            """
+        )
+
+        second_py_repl = self.page.get_by_text("root second")
+        second_py_repl.click()
+        self.page.keyboard.press("Shift+Enter")
+        self.page.keyboard.type("display('second children')")
+        self.page.keyboard.press("Shift+Enter")
+
+        first_py_repl = self.page.get_by_text("root first")
+        first_py_repl.click()
+        self.page.keyboard.press("Shift+Enter")
+        self.page.keyboard.type("display('first children')")
+        self.page.keyboard.press("Shift+Enter")
+
+        assert self.page.inner_text("#py-internal-1-1-repl-output") == "second children"
+        assert self.page.inner_text("#py-internal-0-1-repl-output") == "first children"
