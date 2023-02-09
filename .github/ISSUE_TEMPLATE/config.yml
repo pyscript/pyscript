@@ -1,5 +1,9 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
--   name: Question
-    url: https://community.anaconda.cloud/c/tech-topics/pyscript
+-   name: Feature Proposals
+    url: https://github.com/pyscript/pyscript/discussions/new?category=proposals
+    about: Create a feature request to make PyScript even better
+
+-   name: Questions
+    url: https://github.com/pyscript/pyscript/discussions/new?category=q-a
     about: For questions or discussions about pyscript
