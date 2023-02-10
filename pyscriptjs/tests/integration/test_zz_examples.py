@@ -306,12 +306,12 @@ class TestExamples(PyScriptTest):
         )
 
         # Confirm that using the second repl still works properly
-        self.page.locator("#my-repl-2").type("display(2*2)")
+        self.page.locator("#my-repl-1").type("display(2*2)")
         self.page.keyboard.press("Shift+Enter")
         # Make sure that the child of the second repl is attached properly
         # before looking into the text_content
-        assert self.page.wait_for_selector("#my-repl-2-2", state="attached")
-        assert self.page.locator("#my-repl-2-2").text_content() == "4"
+        assert self.page.wait_for_selector("#my-repl-1-repl-output", state="attached")
+        assert self.page.locator("#my-repl-1-repl-output").text_content() == "4"
         self.assert_no_banners()
         self.check_tutor_generated_code(modules_to_check=["antigravity.py"])
 

@@ -75,8 +75,7 @@ class TestConfig(PyScriptTest):
     # the use of explicit `indexURL` calculation.
     def test_interpreter_config(self, tar_location):
         unzip(
-            location=tar_location,
-            extract_to=self.tmpdir,
+            location=tar_location, extract_to=self.tmpdir,
         )
 
         self.pyscript_run(
@@ -106,8 +105,7 @@ class TestConfig(PyScriptTest):
 
     def test_runtime_still_works_but_shows_deprecation_warning(self, tar_location):
         unzip(
-            location=tar_location,
-            extract_to=self.tmpdir,
+            location=tar_location, extract_to=self.tmpdir,
         )
 
         self.pyscript_run(

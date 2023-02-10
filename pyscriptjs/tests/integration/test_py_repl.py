@@ -116,13 +116,14 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        out_div = py_repl.locator("div.my-repl-repl-output")
+        out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
         assert out_div.all_inner_texts()[0] == "hello world"
         #
         # clear the editor, write new code, execute
         self._replace(py_repl, "display('another output')")
         self.page.keyboard.press("Shift+Enter")
+        print
         assert out_div.all_inner_texts()[1] == "another output"
 
     def test_python_exception(self):
