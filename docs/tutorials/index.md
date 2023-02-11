@@ -20,6 +20,7 @@ glob:
 ---
 writing-to-page
 py-click
+requests
 ```
 
 ## PyScript Configuration
