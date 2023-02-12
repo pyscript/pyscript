@@ -1,4 +1,4 @@
-import { _createAlertBanner } from "./exceptions"
+import { _createAlertBanner } from './exceptions';
 
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {

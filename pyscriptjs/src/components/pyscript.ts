@@ -24,9 +24,9 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
             const pySrc = await this.getPySrc();
             this.innerHTML = '';
 
-            app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
+            app.plugins.beforePyScriptExec({ interpreter: interpreter, src: pySrc, pyScriptTag: this });
             const result = pyExec(interpreter, pySrc, this);
-            app.plugins.afterPyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result});
+            app.plugins.afterPyScriptExec({ interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result });
         }
 
         async getPySrc(): Promise<string> {
@@ -184,9 +184,8 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
         } else {
             el.addEventListener(event, () => {
                 try {
-                    interpreter.run(handlerCode)
-                }
-                catch (err) {
+                    interpreter.run(handlerCode);
+                } catch (err) {
                     displayPyException(err, el.parentElement);
                 }
             });
