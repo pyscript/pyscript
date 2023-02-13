@@ -149,3 +149,58 @@ class TestAsync(PyScriptTest):
             self.console.error.lines[-1]
             == "Implicit target not allowed here. Please use display(..., target=...)"
         )
+
+    def test_sync_and_async_order(self):
+        """
+        The order of execution is defined as follows:
+          1. first, we execute all the py-script tag in order
+          2. then, we start all the tasks which were scheduled with create_task
+
+        Note that tasks are started *AFTER* all py-script tags have been
+        executed. That's why the console.log() inside mytask1 and mytask2 are
+        executed after e.g. js.console.log("6").
+        """
+        src = """
+                <py-script>
+                    import js
+                    js.console.log("1")
+                </py-script>
+
+                <py-script>
+                    import asyncio
+                    import js
+
+                    async def mytask1():
+                        js.console.log("7")
+                        await asyncio.sleep(0)
+                        js.console.log("9")
+
+                    js.console.log("2")
+                    asyncio.create_task(mytask1())
+                    js.console.log("3")
+                </py-script>
+
+                <py-script>
+                    import js
+                    js.console.log("4")
+                </py-script>
+
+                <py-script>
+                    import asyncio
+                    import js
+
+                    async def mytask2():
+                        js.console.log("8")
+                        await asyncio.sleep(0)
+                        js.console.log("10")
+                        js.console.log("DONE")
+
+                    js.console.log("5")
+                    asyncio.create_task(mytask2())
+                    js.console.log("6")
+                </py-script>
+            """
+        self.pyscript_run(src, wait_for_pyscript=False)
+        self.wait_for_console("DONE")
+        lines = self.console.log.lines[-11:]
+        assert lines == ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "DONE"]
