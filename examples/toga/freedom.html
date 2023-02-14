@@ -1,55 +1,51 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" type="image/png" href="./static/logo-32.png"/>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Freedom Units</title>
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-          crossorigin="anonymous">
-    <link rel="stylesheet" href="./static/toga.css">
+        <link rel="icon" type="image/png" href="/static/logo-32.png"/>
 
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-
-    <title>Loading...</title>
-    <link rel="icon" type="image/png" href="../favicon.png" />
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous">
-        </script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous">
-        </script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-        crossorigin="anonymous">
-        </script>
-  </head>
-  <body>
-    <py-config>
-    packages = [
-      "./static/wheels/travertino-0.1.3-py3-none-any.whl",
-      "./static/wheels/toga_core-0.3.0.dev39-py3-none-any.whl",
-      "./static/wheels/toga_web-0.3.0.dev39-py3-none-any.whl",
-      "./static/wheels/freedom-0.0.1-py3-none-any.whl"
-    ]
-    terminal = false
-    </py-config>
-
-    <div id="app-placeholder">Loading...</div>
-    <py-script>
-        from pyscript import Element
-        from freedom.__main__ import main
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
 
 
-        # Remove text from placeholder
-        Element('app-placeholder').write('', append=False)
-        app = main().main_loop()
-    </py-script>
-  </body>
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+              integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+              crossorigin="anonymous">
+
+        <link rel="stylesheet" href="/static/css/briefcase.css">
+    </head>
+    <body>
+        <div id="app-placeholder"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+                integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+                crossorigin="anonymous"></script>
+
+        <py-config>
+name = "Freedom Units"
+description = "A testing app"
+version = "0.0.1"
+terminal = false
+packages = [
+    "./static/wheels/freedom-0.0.1-py3-none-any.whl",
+    "toga_core==0.3.0",
+    "toga_web==0.3.0",
+    "travertino==0.1.3",
+]
+
+[splashscreen]
+autoclose = true
+        </py-config>
+        <py-script>
+            import runpy
+            result = runpy.run_module("freedom", run_name="__main__", alter_sys=True)
+        </py-script>
+    </body>
 </html>
