@@ -20,50 +20,30 @@ repos:
         exclude: \.min\.js$
     -   id: trailing-whitespace
 
--   repo: https://github.com/PyCQA/bandit
-    rev: 1.7.4
+-   repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.247
     hooks:
-    -   id: bandit
-        args:
-        -   --skip=B101,B201
+    -   id: ruff
+        # args: [--fix, --exit-non-zero-on-fix]
 
 -   repo: https://github.com/psf/black
     rev: 23.1.0
     hooks:
     -   id: black
 
-
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.2.2
     hooks:
-    -   id: codespell  # See 'setup.cfg' for args
-
--   repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
-    hooks:
-    -   id: flake8  # See 'setup.cfg' for args
-        additional_dependencies: [flake8-bugbear, flake8-comprehensions]
-
--   repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-    -   id: isort
-        name: isort (python)
-        args: [--profile, black]
+    -   id: codespell  # See 'pyproject.toml' for args
+        additional_dependencies:
+        -   tomli
 
 -   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.6.0
+    rev: v2.7.0
     hooks:
     -   id: pretty-format-yaml
         args: [--autofix, --indent, '4']
         exclude: .github/ISSUE_TEMPLATE/.*\.yml$
-
--   repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
-    hooks:
-    -   id: pyupgrade
-        args:
-        -   --py310-plus
 
 -   repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.34.0

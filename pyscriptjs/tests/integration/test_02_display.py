@@ -233,7 +233,10 @@ class TestOutput(PyScriptTest):
                 class Circle:
                     r = 0
                     def _repr_svg_(self):
-                        return f'<svg height="{self.r*2}" width="{self.r*2}"><circle cx="{self.r}" cy="{self.r}" r="{self.r}" fill="red" /></svg>' # noqa: E501
+                        return (
+                            f'<svg height="{self.r*2}" width="{self.r*2}">'
+                            f'<circle cx="{self.r}" cy="{self.r}" r="{self.r}" fill="red" /></svg>'
+                        )
 
                 circle = Circle()
 
