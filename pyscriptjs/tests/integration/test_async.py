@@ -133,8 +133,11 @@ class TestAsync(PyScriptTest):
 
                     async def a_func():
                         try:
-                            display('A')
+                            js.console.info("JEFF WROTE THIS")
                             await asyncio.sleep(0.1)
+                            display('A')
+                            
+                            
                         except Exception as err:
                             js.console.error(str(err))
                         await asyncio.sleep(1)
@@ -145,6 +148,7 @@ class TestAsync(PyScriptTest):
             """
         )
         self.wait_for_console("DONE")
+        print("xxx", self.console.error.lines)
         assert (
             self.console.error.lines[-1]
             == "Implicit target not allowed here. Please use display(..., target=...)"

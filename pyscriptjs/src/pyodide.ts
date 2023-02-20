@@ -81,7 +81,7 @@ export class PyodideInterpreter extends Interpreter {
         this.run('print("Python initialization complete")')
     }
 
-    run(code: string): unknown {
+    async run(code: string): Promise<any> {
         return this.interface.runPython(code);
     }
 

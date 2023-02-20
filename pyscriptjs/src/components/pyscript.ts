@@ -25,7 +25,7 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
             this.innerHTML = '';
 
             app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
-            const result = pyExec(interpreter, pySrc, this);
+            const result = await pyExec(interpreter, pySrc, this);
             app.plugins.afterPyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result});
         }
 
@@ -182,9 +182,9 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
                 logger.error((e as Error).message);
             }
         } else {
-            el.addEventListener(event, () => {
+            el.addEventListener(event, async () => {
                 try {
-                    interpreter.run(handlerCode)
+                    await interpreter.run(handlerCode)
                 }
                 catch (err) {
                     displayPyException(err, el.parentElement);
