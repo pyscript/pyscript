@@ -60,10 +60,10 @@ export abstract class Interpreter extends Object {
      * This is a bad API and should be killed/refactored/changed eventually,
      * but for now we have code which relies on it.
      * */
-    runButDontRaise(code: string): unknown {
+    async runButDontRaise(code: string): Promise<unknown> {
         let result: unknown;
         try {
-            result = this.run(code);
+            result = await this.run(code);
         } catch (error: unknown) {
             logger.error('Error:', error);
         }
