@@ -133,22 +133,19 @@ class TestAsync(PyScriptTest):
 
                     async def a_func():
                         try:
-                            js.console.info("JEFF WROTE THIS")
-                            await asyncio.sleep(0.1)
                             display('A')
-                            
-                            
+                            await asyncio.sleep(0.1)
                         except Exception as err:
                             js.console.error(str(err))
                         await asyncio.sleep(1)
                         js.console.log("DONE")
 
-                    asyncio.ensure_future(a_func())
+                    # explanation for semi-colon needed pending!
+                    asyncio.ensure_future(a_func());
                 </py-script>
             """
         )
         self.wait_for_console("DONE")
-        print("xxx", self.console.error.lines)
         assert (
             self.console.error.lines[-1]
             == "Implicit target not allowed here. Please use display(..., target=...)"

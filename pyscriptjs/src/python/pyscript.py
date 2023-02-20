@@ -202,15 +202,11 @@ get_current_display_target._id = None
 
 
 def display(*values, target=None, append=True):
-    # print('ddd 1')
     default_target = get_current_display_target()
-    # print('ddd 2', default_target, target)
     if default_target is None and target is None:
-        # print('ddd 3')
         raise Exception(
             "Implicit target not allowed here. Please use display(..., target=...)"
         )
-    # print('ddd 4')
     if target is not None:
         for v in values:
             Element(target).write(v, append=append)
