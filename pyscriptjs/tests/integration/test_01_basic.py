@@ -15,7 +15,7 @@ class TestBasic(PyScriptTest):
             """
         )
         assert self.console.log.lines[0] == self.PY_COMPLETE
-        assert self.console.log.lines[-1] == "hellopytpyscript"
+        assert self.console.log.lines[-1] == "hello pyscript"
 
     def test_python_exception(self):
         self.pyscript_run(
