@@ -80,7 +80,7 @@ class TestSplashscreen(PyScriptTest):
         assert self.console.log.lines[0] == self.PY_COMPLETE
         assert "hello pyscript" in self.console.log.lines
 
-    @pytest.mark.skip(reason="pys-onClick is broken, we should kill it")
+    @pytest.mark.skip(reason="pys-onClick is broken, we should kill it, see #1213")
     def test_splashscreen_closes_on_error_with_pys_onClick(self):
         self.pyscript_run(
             """
