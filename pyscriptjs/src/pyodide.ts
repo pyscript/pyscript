@@ -81,10 +81,12 @@ export class PyodideInterpreter extends Interpreter {
         await this.run('print("Python initialization complete")')
     }
 
+    /* eslint-disable */
     async run(code: string): Promise<{result: any}> {
         // TODO: ADD A COMMENT TO EXPLAIN WHY RESULT IS WRAPPED IN A DICTIONARY
-        return { result: await this.interface.runPython(code) };
+        return { result: this.interface.runPython(code) };
     }
+    /* eslint-enable */
 
     registerJsModule(name: string, module: object): void {
         this.interface.registerJsModule(name, module);

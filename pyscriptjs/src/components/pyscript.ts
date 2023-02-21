@@ -190,13 +190,15 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
                 logger.error((e as Error).message);
             }
         } else {
-            el.addEventListener(event, async () => {
-                try {
-                    await interpreter.run(handlerCode)
-                }
-                catch (err) {
-                    displayPyException(err, el.parentElement);
-                }
+            el.addEventListener(event, () => {
+                void (async () => {
+                    try {
+                        await interpreter.run(handlerCode);
+                    }
+                    catch (err) {
+                        displayPyException(err, el.parentElement);
+                    }
+                })();
             });
         }
         // TODO: Should we actually map handlers in JS instead of Python?
