@@ -131,7 +131,6 @@ export function createLock() {
       let releaseLock: () => void;
       _lock = new Promise((resolve) => (releaseLock = resolve));
       await old_lock;
-      // @ts-ignore
       return releaseLock;
     }
     return acquireLock;

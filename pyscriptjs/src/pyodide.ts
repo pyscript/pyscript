@@ -83,7 +83,7 @@ export class PyodideInterpreter extends Interpreter {
 
     async run(code: string): Promise<{result: any}> {
         // TODO: ADD A COMMENT TO EXPLAIN WHY RESULT IS WRAPPED IN A DICTIONARY
-        return {result: this.interface.runPython(code)};
+        return { result: await this.interface.runPython(code) };
     }
 
     registerJsModule(name: string, module: object): void {
