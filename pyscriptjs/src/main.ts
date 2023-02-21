@@ -181,7 +181,7 @@ export class PyScriptApp {
 
         this.logStatus('Setting up virtual environment...');
         await this.setupVirtualEnv(interpreter);
-        mountElements(interpreter);
+        await mountElements(interpreter);
 
         // lifecycle (6.5)
         this.plugins.afterSetup(interpreter);

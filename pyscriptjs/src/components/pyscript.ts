@@ -216,7 +216,7 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
-export function mountElements(interpreter: Interpreter) {
+export async function mountElements(interpreter: Interpreter) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
     logger.info(`py-mount: found ${matches.length} elements`);
 
@@ -225,5 +225,5 @@ export function mountElements(interpreter: Interpreter) {
         const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
         source += `\n${mountName} = Element("${el.id}")`;
     }
-    interpreter.run(source);
+    await interpreter.run(source);
 }
