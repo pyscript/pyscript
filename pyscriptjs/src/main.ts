@@ -226,12 +226,12 @@ export class PyScriptApp {
         pyscript_module.destroy();
 
         // import some carefully selected names into the global namespace
-        (await interpreter.run(`
+        await interpreter.run(`
         import js
         import pyscript
         from pyscript import Element, display, HTML
         pyscript._install_deprecated_globals_2022_12_1(globals())
-        `)).result;
+        `);
 
         if (this.config.packages) {
             logger.info('Packages to install: ', this.config.packages);
