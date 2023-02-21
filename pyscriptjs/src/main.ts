@@ -8,7 +8,7 @@ import { PluginManager, define_custom_element } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideInterpreter } from './pyodide';
 import { getLogger } from './logger';
-import { showWarning, globalExport } from './utils';
+import { showWarning, globalExport, createLock } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
 import { UserError, ErrorCode, _createAlertBanner } from './exceptions';
@@ -65,7 +65,8 @@ export class PyScriptApp {
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
-
+    tagExecitionLock: any;
+ 
     constructor() {
         // initialize the builtin plugins
         this.plugins = new PluginManager();
@@ -75,6 +76,7 @@ export class PyScriptApp {
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
 
         this.plugins.add(new StdioDirector(this._stdioMultiplexer));
+        this.tagExecitionLock = createLock();
     }
 
     // Error handling logic: if during the execution we encounter an error
@@ -225,12 +227,12 @@ export class PyScriptApp {
         pyscript_module.destroy();
 
         // import some carefully selected names into the global namespace
-        await interpreter.run(`
+        (await interpreter.run(`
         import js
         import pyscript
         from pyscript import Element, display, HTML
         pyscript._install_deprecated_globals_2022_12_1(globals())
-        `);
+        `)).result;
 
         if (this.config.packages) {
             logger.info('Packages to install: ', this.config.packages);

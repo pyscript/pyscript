@@ -140,8 +140,10 @@ class TestAsync(PyScriptTest):
                         await asyncio.sleep(1)
                         js.console.log("DONE")
 
-                    # explanation for semi-colon needed pending!
-                    asyncio.ensure_future(a_func());
+                    asyncio.ensure_future(a_func())
+                    # The following None return value is important! If we return the Task
+                    # FIX FIX FIX
+                    ...
                 </py-script>
             """
         )

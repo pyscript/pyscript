@@ -51,7 +51,7 @@ export abstract class Interpreter extends Object {
      * (asynchronously) which can call its own API behind the scenes.
      * Python exceptions are turned into JS exceptions.
      * */
-    abstract run(code: string): Promise<void>;
+    abstract run(code: string): Promise<{result:any}>;
 
     /**
      * Same as run, but Python exceptions are not propagated: instead, they
@@ -63,7 +63,7 @@ export abstract class Interpreter extends Object {
     async runButDontRaise(code: string): Promise<unknown> {
         let result: unknown;
         try {
-            result = await this.run(code);
+            result = (await this.run(code)).result;
         } catch (error: unknown) {
             logger.error('Error:', error);
         }

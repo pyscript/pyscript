@@ -1,4 +1,4 @@
-import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
+import { htmlDecode, ensureUniqueId, createDeprecationWarning, } from '../utils';
 import type { Interpreter } from '../interpreter';
 import { getLogger } from '../logger';
 import { pyExec, displayPyException } from '../pyexec';
@@ -16,17 +16,26 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
         stderr_manager: Stdio | null;
 
         async connectedCallback() {
-            ensureUniqueId(this);
-            // Save innerHTML information in srcCode so we can access it later
-            // once we clean innerHTML (which is required since we don't want
-            // source code to be rendered on the screen)
-            this.srcCode = this.innerHTML;
-            const pySrc = await this.getPySrc();
-            this.innerHTML = '';
 
-            app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
-            const result = await pyExec(interpreter, pySrc, this);
-            app.plugins.afterPyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result});
+            let releaseLock;
+            try {
+                releaseLock = await app.tagExecitionLock();
+
+                ensureUniqueId(this);
+                // Save innerHTML information in srcCode so we can access it later
+                // once we clean innerHTML (which is required since we don't want
+                // source code to be rendered on the screen)
+                this.srcCode = this.innerHTML;
+                const pySrc = await this.getPySrc();
+                this.innerHTML = '';
+
+                app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
+                const result = (await pyExec(interpreter, pySrc, this)).result;
+                app.plugins.afterPyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result});
+            } finally{
+                releaseLock()
+            }
+
         }
 
         async getPySrc(): Promise<string> {

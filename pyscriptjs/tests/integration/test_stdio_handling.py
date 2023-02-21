@@ -4,7 +4,7 @@ from .support import PyScriptTest
 class TestOutputHandling(PyScriptTest):
     # Source of a script to test the TargetedStdio functionality
 
-    def test_targeted_stdio(self):
+    def test_targeted_stdio_solo(self):
         self.pyscript_run(
             """
             <py-config>
@@ -16,11 +16,11 @@ class TestOutputHandling(PyScriptTest):
                 <div id="second"></div>
                 <div id="third"></div>
             </div>
-            <py-script output="first">print("first 1.")</py-script>
-            <py-script output="second">print("second.")</py-script>
-            <py-script output="third">print("third.")</py-script>
-            <py-script output="first">print("first 2.")</py-script>
-            <py-script>print("no output.")</py-script>
+            <py-script output="first">print("first 1.");</py-script>
+            <py-script output="second">print("second.");</py-script>
+            <py-script output="third">print("third.");</py-script>
+            <py-script output="first">print("first 2.");</py-script>
+            <py-script>print("no output.");</py-script>
             """
         )
 
@@ -110,25 +110,26 @@ class TestOutputHandling(PyScriptTest):
                     print(value)
                     await asyncio.sleep(delay)
                     js.console.log(f"DONE {value}")
+                None 
             </py-script>
 
             <div id="first"></div>
             <py-script>
-                asyncio.ensure_future(coro("first", 1))
+                asyncio.ensure_future(coro("first", 1));
             </py-script>
 
             <div id="second"></div>
             <py-script output="second">
-                asyncio.ensure_future(coro("second", 1))
+                asyncio.ensure_future(coro("second", 1));
             </py-script>
 
             <div id="third"></div>
             <py-script output="third">
-                asyncio.ensure_future(coro("third", 0))
+                asyncio.ensure_future(coro("third", 0));
             </py-script>
 
             <py-script output="third">
-                asyncio.ensure_future(coro("DONE", 3))
+                asyncio.ensure_future(coro("DONE", 3));
             </py-script>
             """
         )
@@ -167,7 +168,7 @@ class TestOutputHandling(PyScriptTest):
                 asyncio.ensure_future(coro_bad("badtwo.", 0.2))
                 print("three.")
                 asyncio.ensure_future(coro_bad("badthree.", 0))
-                asyncio.ensure_future(coro_bad("DONE", 1))
+                asyncio.ensure_future(coro_bad("DONE", 1));
             </py-script>
             """
         )
