@@ -51,19 +51,19 @@ describe('PyodideInterpreter', () => {
     });
 
     it('should check if interpreter can run python code asynchronously', async () => {
-        expect(interpreter.run('2+3')).toBe(5);
+        expect((await interpreter.run('2+3')).result).toBe(5);
     });
 
     it('should capture stdout', async () => {
         stdio.reset();
-        interpreter.run("print('hello')");
+        await interpreter.run("print('hello')");
         expect(stdio.captured_stdout).toBe('hello\n');
     });
 
     it('should check if interpreter is able to load a package', async () => {
         await interpreter.loadPackage('numpy');
-        interpreter.run('import numpy as np');
-        interpreter.run('x = np.ones((10,))');
+        await interpreter.run('import numpy as np');
+        await interpreter.run('x = np.ones((10,))');
         expect(interpreter.globals.get('x').toJs()).toBeInstanceOf(Float64Array);
     });
 });

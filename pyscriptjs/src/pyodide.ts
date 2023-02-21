@@ -78,12 +78,32 @@ export class PyodideInterpreter extends Interpreter {
             await this.loadPackage('micropip');
         }
         logger.info('pyodide loaded and initialized');
-        this.run('print("Python initialization complete")')
+        await this.run('print("Python initialization complete")')
     }
 
-    run(code: string): unknown {
-        return this.interface.runPython(code);
+    /* eslint-disable */
+    async run(code: string): Promise<{result: any}> {
+        /**
+         * eslint wants `await` keyword to be used i.e.
+         * { result: await this.interface.runPython(code) }
+         * However, `await` is not a no-op (no-operation) i.e.
+         * `await 42` is NOT the same as `42` i.e. if the awaited
+         * thing is not a promise, it is wrapped inside a promise and
+         * that promise is awaited. Thus, it changes the execution order.
+         * See https://stackoverflow.com/questions/55262996/does-awaiting-a-non-promise-have-any-detectable-effect
+         * Thus, `eslint` is disabled for this block / snippet.
+         */
+
+        /**
+         * The output of `runPython` is wrapped inside an object
+         * since an object is not thennable and avoids return of
+         * a coroutine directly. This is so we do not `await` the results
+         * of the underlying python execution, even if it's an
+         * awaitable object (Future, Task, etc.)
+         */
+        return { result: this.interface.runPython(code) };
     }
+    /* eslint-enable */
 
     registerJsModule(name: string, module: object): void {
         this.interface.registerJsModule(name, module);
@@ -96,7 +116,8 @@ export class PyodideInterpreter extends Interpreter {
         // but one of our tests tries to use a locally downloaded older version of pyodide
         // for which the signature of `loadPackage` accepts the above params as args i.e.
         // the call uses `logger.info.bind(logger), logger.info.bind(logger)`.
-        if (this.run("import sys; sys.modules['pyodide'].__version__").toString().startsWith("0.22")) {
+        const pyodide_version = (await this.run("import sys; sys.modules['pyodide'].__version__")).result.toString();
+        if (pyodide_version.startsWith("0.22")) {
             await this.interface.loadPackage(names, { messageCallback: logger.info.bind(logger), errorCallback: logger.info.bind(logger) });
         }
         else {

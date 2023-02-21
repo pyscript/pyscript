@@ -16,17 +16,30 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
         stderr_manager: Stdio | null;
 
         async connectedCallback() {
-            ensureUniqueId(this);
-            // Save innerHTML information in srcCode so we can access it later
-            // once we clean innerHTML (which is required since we don't want
-            // source code to be rendered on the screen)
-            this.srcCode = this.innerHTML;
-            const pySrc = await this.getPySrc();
-            this.innerHTML = '';
+            /**
+             * Since connectedCallback is async, multiple py-script tags can be executed in
+             * an order which is not particularly sequential. The locking mechanism here ensures
+             * a sequential execution of multiple py-script tags present in one page.
+             *
+             * Concurrent access to the multiple py-script tags is thus avoided.
+             */
+            let releaseLock: any;
+            try {
+                releaseLock = await app.tagExecutionLock();
+                ensureUniqueId(this);
+                // Save innerHTML information in srcCode so we can access it later
+                // once we clean innerHTML (which is required since we don't want
+                // source code to be rendered on the screen)
+                this.srcCode = this.innerHTML;
+                const pySrc = await this.getPySrc();
+                this.innerHTML = '';
 
-            app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
-            const result = pyExec(interpreter, pySrc, this);
-            app.plugins.afterPyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result});
+                app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
+                const result = (await pyExec(interpreter, pySrc, this)).result;
+                app.plugins.afterPyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result});
+            } finally {
+                releaseLock()
+            }
         }
 
         async getPySrc(): Promise<string> {
@@ -183,12 +196,14 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
             }
         } else {
             el.addEventListener(event, () => {
-                try {
-                    interpreter.run(handlerCode)
-                }
-                catch (err) {
-                    displayPyException(err, el.parentElement);
-                }
+                void (async () => {
+                    try {
+                        await interpreter.run(handlerCode);
+                    }
+                    catch (err) {
+                        displayPyException(err, el.parentElement);
+                    }
+                })();
             });
         }
         // TODO: Should we actually map handlers in JS instead of Python?
@@ -208,7 +223,7 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
-export function mountElements(interpreter: Interpreter) {
+export async function mountElements(interpreter: Interpreter) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
     logger.info(`py-mount: found ${matches.length} elements`);
 
@@ -217,5 +232,5 @@ export function mountElements(interpreter: Interpreter) {
         const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
         source += `\n${mountName} = Element("${el.id}")`;
     }
-    interpreter.run(source);
+    await interpreter.run(source);
 }
