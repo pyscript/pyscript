@@ -17,6 +17,7 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
 
         async connectedCallback() {
 
+            // TODO: ADD A COMMENT TO EXPLAIN WHY LOCKING IS NEEDED
             let releaseLock: any;
             try {
                 releaseLock = await app.tagExecutionLock();

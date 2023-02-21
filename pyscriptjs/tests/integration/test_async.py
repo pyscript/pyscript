@@ -141,9 +141,6 @@ class TestAsync(PyScriptTest):
                         js.console.log("DONE")
 
                     asyncio.ensure_future(a_func())
-                    # The following None return value is important! If we return the Task
-                    # FIX FIX FIX
-                    ...
                 </py-script>
             """
         )
