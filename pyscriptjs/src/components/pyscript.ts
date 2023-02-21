@@ -16,8 +16,13 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
         stderr_manager: Stdio | null;
 
         async connectedCallback() {
-
-            // TODO: ADD A COMMENT TO EXPLAIN WHY LOCKING IS NEEDED
+            /**
+             * Since connectedCallback is async, multiple py-script tags can be executed in
+             * an order which is not particularly sequential. The locking mechanism here ensures
+             * a sequential execution of multiple py-script tags present in one page.
+             *
+             * Concurrent access to the multiple py-script tags is thus avoided.
+             */
             let releaseLock: any;
             try {
                 releaseLock = await app.tagExecutionLock();
