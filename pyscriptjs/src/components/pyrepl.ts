@@ -166,9 +166,7 @@ export function make_PyRepl(interpreter: Interpreter) {
             outEl.innerHTML = '';
 
             // execute the python code
-            const temp = (await pyExec(interpreter, pySrc, outEl));
-            console.info(">>>> TEMP >>>>", temp);
-            const pyResult = temp.result;
+            const pyResult = (await pyExec(interpreter, pySrc, outEl)).result;
 
             // display the value of the last evaluated expression (REPL-style)
             if (pyResult !== undefined) {

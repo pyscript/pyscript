@@ -21,7 +21,6 @@ import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 // @ts-ignore
 import pyscript from './python/pyscript.py';
 import { robustFetch } from './fetch';
-import type { Plugin } from './plugin';
 
 const logger = getLogger('pyscript/main');
 
@@ -65,8 +64,8 @@ export class PyScriptApp {
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
-    tagExecitionLock: any;
- 
+    tagExecutionLock: any;
+
     constructor() {
         // initialize the builtin plugins
         this.plugins = new PluginManager();
@@ -76,7 +75,7 @@ export class PyScriptApp {
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
 
         this.plugins.add(new StdioDirector(this._stdioMultiplexer));
-        this.tagExecitionLock = createLock();
+        this.tagExecutionLock = createLock();
     }
 
     // Error handling logic: if during the execution we encounter an error

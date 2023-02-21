@@ -120,7 +120,7 @@ export function createSingularWarning(msg: string, sentinelText: string | null =
 export function createLock() {
     // This is a promise that is resolved when the lock is open, not resolved when lock is held.
     let _lock = Promise.resolve();
-  
+
     /**
      * Acquire the async lock
      * @returns A zero argument function that releases the lock.

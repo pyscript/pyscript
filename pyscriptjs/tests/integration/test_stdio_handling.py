@@ -110,7 +110,7 @@ class TestOutputHandling(PyScriptTest):
                     print(value)
                     await asyncio.sleep(delay)
                     js.console.log(f"DONE {value}")
-                None 
+                None
             </py-script>
 
             <div id="first"></div>

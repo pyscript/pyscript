@@ -78,13 +78,11 @@ export class PyodideInterpreter extends Interpreter {
             await this.loadPackage('micropip');
         }
         logger.info('pyodide loaded and initialized');
-        (await this.run('print("Python initialization complete")'))
+        await this.run('print("Python initialization complete")')
     }
 
     async run(code: string): Promise<{result: any}> {
-        const x = {result: this.interface.runPython(code)};
-        console.info("llllll", x)
-        return x
+        return {result: this.interface.runPython(code)};
     }
 
     registerJsModule(name: string, module: object): void {
@@ -98,11 +96,7 @@ export class PyodideInterpreter extends Interpreter {
         // but one of our tests tries to use a locally downloaded older version of pyodide
         // for which the signature of `loadPackage` accepts the above params as args i.e.
         // the call uses `logger.info.bind(logger), logger.info.bind(logger)`.
-        const raw_result = this.run("import sys; sys.modules['pyodide'].__version__")
-        //console.log(raw_result)
-        const awaited = await raw_result
-        //console.log(awaited)
-        const pyodide_version = awaited.result.toString();
+        const pyodide_version = (await this.run("import sys; sys.modules['pyodide'].__version__")).result.toString();
         if (pyodide_version.startsWith("0.22")) {
             await this.interface.loadPackage(names, { messageCallback: logger.info.bind(logger), errorCallback: logger.info.bind(logger) });
         }

@@ -1,4 +1,4 @@
-import { htmlDecode, ensureUniqueId, createDeprecationWarning, } from '../utils';
+import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import type { Interpreter } from '../interpreter';
 import { getLogger } from '../logger';
 import { pyExec, displayPyException } from '../pyexec';
@@ -17,10 +17,9 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
 
         async connectedCallback() {
 
-            let releaseLock;
+            let releaseLock: any;
             try {
-                releaseLock = await app.tagExecitionLock();
-
+                releaseLock = await app.tagExecutionLock();
                 ensureUniqueId(this);
                 // Save innerHTML information in srcCode so we can access it later
                 // once we clean innerHTML (which is required since we don't want
@@ -32,10 +31,9 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
                 app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
                 const result = (await pyExec(interpreter, pySrc, this)).result;
                 app.plugins.afterPyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result});
-            } finally{
+            } finally {
                 releaseLock()
             }
-
         }
 
         async getPySrc(): Promise<string> {
