@@ -185,6 +185,7 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
         const userProvidedFunctionName = el.getAttribute(pyAttribute);
         const eventName = pyAttributeToEvent.get(pyAttribute);
 
+        // TODO: this if statement should be removed in the next deprecation cycle (version that follows 2022.12.1)
         if (pyAttribute === 'pys-onClick' || pyAttribute === 'pys-onKeyDown') {
             const msg =
                 `The attribute 'pys-onClick' and 'pys-onKeyDown' are deprecated. Please 'py-click="myFunction()"' ` +
@@ -212,22 +213,25 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
                     
                     const pyInspectModule = await interpreter.interface.pyimport('inspect')
                     const params = pyInspectModule.signature(pythonFunction).parameters
-                    if (params.length == 0){
+
+                    // Functions that don't receive an event attribute
+                    if (params.length == 0) {
                         pythonFunction();
                     }
-                    else if (params.length == 1){
+                    // Functions that receive an event attribute
+                    else if (params.length == 1) {
                         pythonFunction(evt);
                     }
                     else {
                         throw new UserError(ErrorCode.GENERIC, "py-events take 0 or 1 arguments")
                     }
                 }
+
                 catch (err) {
-                    //This should be an error - probably need to refactor
-                    //This function into createSingularBanner
+                    // TODO: This should be an error - probably need to refactor
+                    // this function into createSingularBanner
                     createSingularWarning(err);
                 }
-
             });
         }
         // TODO: Should we actually map handlers in JS instead of Python?
