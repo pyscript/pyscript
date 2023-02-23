@@ -1,15 +1,15 @@
 import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
-import type { Interpreter } from '../interpreter';
 import { getLogger } from '../logger';
 import { pyExec, displayPyException } from '../pyexec';
 import { _createAlertBanner } from '../exceptions';
 import { robustFetch } from '../fetch';
 import { PyScriptApp } from '../main';
 import { Stdio } from '../stdio';
+import { InterpreterClient } from '../interpreter_client';
 
 const logger = getLogger('py-script');
 
-export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
+export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) {
     class PyScript extends HTMLElement {
         srcCode: string;
         stdout_manager: Stdio | null;
@@ -158,7 +158,7 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
 ]);
 
 /** Initialize all elements with py-* handlers attributes  */
-export function initHandlers(interpreter: Interpreter) {
+export function initHandlers(interpreter: InterpreterClient) {
     logger.debug('Initializing py-* event handlers...');
     for (const pyAttribute of pyAttributeToEvent.keys()) {
         createElementsWithEventListeners(interpreter, pyAttribute);
@@ -166,7 +166,7 @@ export function initHandlers(interpreter: Interpreter) {
 }
 
 /** Initializes an element with the given py-on* attribute and its handler */
-function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute: string) {
+function createElementsWithEventListeners(interpreter: InterpreterClient, pyAttribute: string) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
     for (const el of matches) {
         // If the element doesn't have an id, let's add one automatically!
@@ -223,7 +223,7 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
-export async function mountElements(interpreter: Interpreter) {
+export async function mountElements(interpreter: InterpreterClient) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
     logger.info(`py-mount: found ${matches.length} elements`);
 

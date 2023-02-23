@@ -2,11 +2,10 @@ import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
-import type { Interpreter } from './interpreter';
+import { InterpreterClient } from './interpreter_client';
 import { version } from './version';
 import { PluginManager, define_custom_element } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
-import { PyodideInterpreter } from './pyodide';
 import { getLogger } from './logger';
 import { showWarning, globalExport, createLock } from './utils';
 import { calculatePaths } from './plugins/fetch';
@@ -60,7 +59,7 @@ More concretely:
 
 export class PyScriptApp {
     config: AppConfig;
-    interpreter: Interpreter;
+    interpreter: InterpreterClient;
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
@@ -142,13 +141,9 @@ export class PyScriptApp {
         }
 
         const interpreter_cfg = this.config.interpreters[0];
-        this.interpreter = new PyodideInterpreter(
-            this.config,
-            this._stdioMultiplexer,
-            interpreter_cfg.src,
-            interpreter_cfg.name,
-            interpreter_cfg.lang,
-        );
+
+        this.interpreter = new InterpreterClient(this.config, this._stdioMultiplexer);
+
         this.logStatus(`Downloading ${interpreter_cfg.name}...`);
 
         // download pyodide by using a <script> tag. Once it's ready, the
@@ -158,7 +153,7 @@ export class PyScriptApp {
         // by the try/catch inside main(): that's why we need to .catch() it
         // explicitly and call _handleUserErrorMaybe also there.
         const script = document.createElement('script'); // create a script DOM node
-        script.src = this.interpreter.src;
+        script.src = this.interpreter._remote.src;
         script.addEventListener('load', () => {
             this.afterInterpreterLoad(this.interpreter).catch(error => {
                 this._handleUserErrorMaybe(error);
@@ -172,11 +167,11 @@ export class PyScriptApp {
     // point (4) to point (5).
     //
     // Invariant: this.config is set and available.
-    async afterInterpreterLoad(interpreter: Interpreter): Promise<void> {
+    async afterInterpreterLoad(interpreter: InterpreterClient): Promise<void> {
         console.assert(this.config !== undefined);
 
         this.logStatus('Python startup...');
-        await this.interpreter.loadInterpreter();
+        await this.interpreter.initializeRemote();
         this.logStatus('Python ready!');
 
         this.logStatus('Setting up virtual environment...');
@@ -187,7 +182,7 @@ export class PyScriptApp {
         this.plugins.afterSetup(interpreter);
 
         //Refresh module cache in case plugins have modified the filesystem
-        interpreter.invalidate_module_path_cache();
+        interpreter._remote.invalidate_module_path_cache();
         this.logStatus('Executing <py-script> tags...');
         this.executeScripts(interpreter);
 
@@ -206,21 +201,21 @@ export class PyScriptApp {
     }
 
     // lifecycle (6)
-    async setupVirtualEnv(interpreter: Interpreter): Promise<void> {
+    async setupVirtualEnv(interpreter: InterpreterClient): Promise<void> {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS
-        interpreter.interface.FS.mkdirTree("/home/pyodide/pyscript");
-        interpreter.interface.FS.writeFile('pyscript/__init__.py', pyscript);
+        interpreter._remote.interface.FS.mkdirTree("/home/pyodide/pyscript");
+        interpreter._remote.interface.FS.writeFile('pyscript/__init__.py', pyscript);
         //Refresh the module cache so Python consistently finds pyscript module
-        interpreter.invalidate_module_path_cache();
+        interpreter._remote.invalidate_module_path_cache();
 
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
-        const pyscript_module = interpreter.interface.pyimport('pyscript');
+        const pyscript_module = interpreter._remote.interface.pyimport('pyscript');
         pyscript_module.define_custom_element = define_custom_element;
         pyscript_module.showWarning = showWarning;
         pyscript_module._set_version_info(version);
@@ -236,17 +231,17 @@ export class PyScriptApp {
 
         if (this.config.packages) {
             logger.info('Packages to install: ', this.config.packages);
-            await interpreter.installPackage(this.config.packages);
+            await interpreter._remote.installPackage(this.config.packages);
         }
         await this.fetchPaths(interpreter);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
-        interpreter.invalidate_module_path_cache();
+        interpreter._remote.invalidate_module_path_cache();
         // Finally load plugins
         await this.fetchUserPlugins(interpreter);
     }
 
-    async fetchPaths(interpreter: Interpreter) {
+    async fetchPaths(interpreter: InterpreterClient) {
         // XXX this can be VASTLY improved: for each path we need to fetch a
         // URL and write to the virtual filesystem: pyodide.loadFromFile does
         // it in Python, which means we need to have the interpreter
@@ -258,7 +253,7 @@ export class PyScriptApp {
             logger.info(`  fetching path: ${fetchPaths[i]}`);
 
             // Exceptions raised from here will create an alert banner
-            await interpreter.loadFromFile(paths[i], fetchPaths[i]);
+            await interpreter._remote.loadFromFile(paths[i], fetchPaths[i]);
         }
         logger.info('All paths fetched');
     }
@@ -270,7 +265,7 @@ export class PyScriptApp {
      *
      * @param interpreter - the interpreter that will be used to execute the plugins that need it.
      */
-    async fetchUserPlugins(interpreter: Interpreter) {
+    async fetchUserPlugins(interpreter: InterpreterClient) {
         const plugins = this.config.plugins;
         logger.info('Plugins to fetch: ', plugins);
         for (const singleFile of plugins) {
@@ -333,15 +328,15 @@ export class PyScriptApp {
      * @param interpreter - the interpreter that will execute the plugins
      * @param filePath - path to the python file to fetch
      */
-    async fetchPythonPlugin(interpreter: Interpreter, filePath: string) {
+    async fetchPythonPlugin(interpreter: InterpreterClient, filePath: string) {
         const pathArr = filePath.split('/');
         const filename = pathArr.pop();
         // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
         const destPath = `./${filename}`;
-        await interpreter.loadFromFile(destPath, filePath);
+        await interpreter._remote.loadFromFile(destPath, filePath);
 
         //refresh module cache before trying to import module files into interpreter
-        interpreter.invalidate_module_path_cache();
+        interpreter._remote.invalidate_module_path_cache();
 
         const modulename = filePath.replace(/^.*[\\/]/, '').replace('.py', '');
 
@@ -349,7 +344,7 @@ export class PyScriptApp {
         // TODO: This is very specific to Pyodide API and will not work for other interpreters,
         //       when we add support for other interpreters we will need to move this to the
         //       interpreter API level and allow each one to implement it in its own way
-        const module = interpreter.interface.pyimport(modulename);
+        const module = interpreter._remote.interface.pyimport(modulename);
         if (typeof module.plugin !== 'undefined') {
             const py_plugin = module.plugin;
             py_plugin.init(this);
@@ -361,7 +356,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
     }
 
     // lifecycle (7)
-    executeScripts(interpreter: Interpreter) {
+    executeScripts(interpreter: InterpreterClient) {
         // make_PyScript takes an interpreter and a PyScriptApp as arguments
         this.PyScript = make_PyScript(interpreter, this);
         customElements.define('py-script', this.PyScript);

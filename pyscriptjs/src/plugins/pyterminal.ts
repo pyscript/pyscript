@@ -1,10 +1,10 @@
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
-import type { Interpreter } from '../interpreter';
 import { Plugin } from '../plugin';
 import { UserError, ErrorCode } from '../exceptions';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
+import { InterpreterClient } from '../interpreter_client';
 
 const logger = getLogger('py-terminal');
 
@@ -46,7 +46,7 @@ export class PyTerminalPlugin extends Plugin {
         }
     }
 
-    afterSetup(interpreter: Interpreter) {
+    afterSetup(interpreter: InterpreterClient) {
         // the Python interpreter has been initialized and we are ready to
         // execute user code:
         //
