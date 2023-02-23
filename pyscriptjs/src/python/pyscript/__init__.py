@@ -3,6 +3,7 @@ import asyncio
 import base64
 import contextvars
 import html
+import inspect
 import io
 import re
 import time
@@ -22,6 +23,9 @@ try:
 except ImportError:
     from pyodide import JsProxy, create_once_callable, create_proxy, eval_code
 
+
+import pyodide
+from pyodide.ffi.wrappers import add_event_listener
 
 loop = asyncio.get_event_loop()
 
@@ -211,6 +215,82 @@ def get_current_display_target():
 
 get_current_display_target._id = None
 
+'''
+@when
+def jeff():
+    print("hello")
+
+jeff = when(jeff)
+
+######
+
+@where("Lisbon")
+def martin():
+    print("goodbye)
+
+martin = where("Lisbon")(martin)
+'''
+
+def when(event = None, id = None):
+    if not js.hasOwnProperty("handlers"):
+        js.handlers = js.Object.new()
+    def decorator(func):
+        # Inspect func
+        # if it takes 1 argument, we can just it (for evt)
+        # if it takes 0 arguments, wrap it in a wrapper that
+        # takes 1 argument and ignores it
+
+        element = js.document.getElementById(id)
+        sig = inspect.signature(func)
+        print(sig)
+        print(sig.parameters)
+        if not sig.parameters: #func takes an evt
+            print("I have not parameters")
+            def wrapper(*args, **kwargs):
+                func()
+            add_event_listener(element, event, wrapper)
+        else:
+            add_event_listener(element, event, func)
+
+        #...
+
+
+    return decorator
+
+
+    # if func is None:
+    #     return decorator
+
+    # # just @pys_handler
+    # else:
+    #     js.set_handler_value(js.handlers, func.__name__, create_proxy(func))
+    #     return func
+
+# @when("click", id="fab")
+# def myfoo(evt):
+#     return f"I've clicked {evt.target}"
+
+
+# def pys_handler(_func=None, *args, event=None, element=js.document, options=None):
+#     """Decorates a Python function
+#     """
+#     if not js.hasOwnProperty("handlers"):
+#         js.handlers = js.Object.new()
+
+#     def decorator(_func):
+#         proxy = create_proxy(_func)
+#         js.set_handler_value(js.handlers, _func.__name__, proxy)
+#         if event:
+#             element.addEventListener(event, proxy, options)
+#         return _func
+
+#     if _func is None:
+#         return decorator
+
+#     # just @pys_handler
+#     else:
+#         js.set_handler_value(js.handlers, _func.__name__, create_proxy(_func))
+#         return _func
 
 def display(*values, target=None, append=True):
     if target is None:

@@ -1,7 +1,8 @@
 import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
+import type { Interpreter } from '../interpreter';
 import { getLogger } from '../logger';
 import { pyExec, displayPyException } from '../pyexec';
-import { _createAlertBanner } from '../exceptions';
+import { _createAlertBanner, UserError, ErrorCode } from '../exceptions';
 import { robustFetch } from '../fetch';
 import { PyScriptApp } from '../main';
 import { Stdio } from '../stdio';
@@ -181,8 +182,8 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
         if (el.id.length === 0) {
             ensureUniqueId(el);
         }
-        const handlerCode = el.getAttribute(pyAttribute);
-        const event = pyAttributeToEvent.get(pyAttribute);
+        const userProvidedFunctionName = el.getAttribute(pyAttribute);
+        const eventName = pyAttributeToEvent.get(pyAttribute);
 
         if (pyAttribute === 'pys-onClick' || pyAttribute === 'pys-onKeyDown') {
             const msg =
@@ -191,7 +192,7 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
             createDeprecationWarning(msg, msg);
             const source = `
             from pyodide.ffi import create_proxy
-            Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
+            Element("${el.id}").element.addEventListener("${eventName}",  create_proxy(${userProvidedFunctionName}))
             `;
 
             // We meed to run the source code in a try/catch block, because
