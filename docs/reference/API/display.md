@@ -2,7 +2,10 @@
 
 ## Parameters
 
-`*values` - the objects to be displayed. String objects are output as-written. For non-string objects, the default content to display is the the object's `repr()`. Objects may implement the following methods to indicate that they should be displayed as a different MIME type. MIME types with a * indicate that the content will be wrapped in the appropriate html tags and attributes before output:
+
+
+`*values` - the objects to be displayed. String objects are output as-written. For non-string objects, the default content to display is the the object's {py:func}`repr`. Objects may implement the following methods to indicate that they should be displayed as a different MIME type. MIME types with a * indicate that the content will be wrapped in the appropriate html tags and attributes before output:
+
 
 | Method              | Inferred MIME type     |
 |---------------------|------------------------|

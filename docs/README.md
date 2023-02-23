@@ -29,3 +29,26 @@ static files like templates and themes, to build the static end result.
 ### Build
 
 To learn how to build the docs, head over the [CONTRIBUTING](../CONTRIBUTING.md) page.
+
+
+## Cross-referencing
+
+You can link to other pages in the documentation by using the `{doc}` role. For example, to link to the `docs/README.md` file, you would use:
+
+```markdown
+{doc}`docs/README.md`
+```
+
+You can also cross-reference the python glossary by using the `{term}` role. For example, to link to the `terable` term, you would use:
+
+```markdown
+{term}`iterable`
+```
+
+You can also cross-reference, functions, methods or data attributes by using the `{attr}` for example:
+
+```markdown
+{py:func}`repr`
+```
+
+This would link to the `repr` function in the python builtins.

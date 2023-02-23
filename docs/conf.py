@@ -36,7 +36,12 @@ extensions = [
     "sphinx_sitemap",
     "sphinxemoji.sphinxemoji",
     "sphinxcontrib.youtube",
+    "sphinx.ext.intersphinx",
 ]
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3.10", None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
