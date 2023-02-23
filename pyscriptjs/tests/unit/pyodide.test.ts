@@ -11,7 +11,7 @@ describe('RemoteInterpreter', () => {
     let interpreter: InterpreterClient;
     let stdio: CaptureStdio = new CaptureStdio();
     beforeAll(async () => {
-        const config: AppConfig = {};
+        const config: AppConfig = {interpreters: [{src: "../pyscriptjs/node_modules/pyodide/pyodide.js"}]};
         interpreter = new InterpreterClient(config, stdio);
 
         /**
