@@ -46,7 +46,7 @@ describe('RemoteInterpreter', () => {
         expect(interpreter).toBeInstanceOf(InterpreterClient);
     });
 
-    it('should check if interpreter is an instance of PyodideInterpreter', async () => {
+    it('should check if interpreter is an instance of RemoteInterpreter', async () => {
         expect(interpreter._remote).toBeInstanceOf(RemoteInterpreter);
     });
 
