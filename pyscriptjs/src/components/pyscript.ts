@@ -241,7 +241,7 @@ export function mountElements(interpreter: Interpreter) {
 }
 
 globalThis.set_handler_value = function set_handler_value(target, prop, receiver) {
-/* 
+/*
   called once the python handler function is resolved
   @param target - obj that saves all the functions coming from the python side
   @param prop - name of the function
@@ -271,5 +271,3 @@ globalThis.when = new Proxy(
         }
     }
 )
-
-
