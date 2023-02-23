@@ -8,17 +8,34 @@ import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy }
 declare const loadPyodide: typeof loadPyodideDeclaration;
 const logger = getLogger('pyscript/pyodide');
 
+export type InterpreterInterface = PyodideInterface | null;
+
 interface Micropip extends PyProxy {
     install: (packageName: string | string[]) => Promise<void>;
     destroy: () => void;
 }
 
+/*
+RemoteInterpreter class is responsible to process requests from the
+`InterpreterClient` class -- these can be requests for installation of
+a package, executing code, etc.
+
+Currently, the only interpreter available is Pyodide as indicated by the
+`InterpreterInterface` type above. This serves as a Union of types of
+different interpreters which will be added in near future.
+
+Methods available handle loading of the interpreter, initialization,
+running code, loading and installation of packages, loading from files etc.
+
+The class will be turned `abstract` in future, to support more runtimes
+such as MicroPython.
+ */
 export class RemoteInterpreter extends Object {
     src: string;
-    interface: PyodideInterface;
+    interface: InterpreterInterface;
     globals: PyProxy;
     // TODO: Remove this once `runtimes` is removed!
-    interpreter: PyodideInterface;
+    interpreter: InterpreterInterface;
 
     constructor(
         src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js'
@@ -27,6 +44,28 @@ export class RemoteInterpreter extends Object {
         this.src = src;
     }
 
+    /**
+     * loads the interface for the interpreter and saves an instance of it
+     * in the `this.interface` property along with calling of other
+     * additional convenience functions.
+     * */
+
+    /**
+     * Although `loadPyodide` is used below,
+     * notice that it is not imported i.e.
+     * import { loadPyodide } from 'pyodide';
+     * is not used at the top of this file.
+     *
+     * This is because, if it's used, loadPyodide
+     * behaves mischievously i.e. it tries to load
+     * `pyodide.asm.js` and `pyodide_py.tar` but
+     * with paths that are wrong such as:
+     *
+     * http://127.0.0.1:8080/build/pyodide_py.tar
+     * which results in a 404 since `build` doesn't
+     * contain these files and is clearly the wrong
+     * path.
+     */
     async loadInterpreter(config: AppConfig, stdio: Stdio): Promise<void> {
         this.interface = await loadPyodide({
             stdout: (msg: string) => {
@@ -44,22 +83,56 @@ export class RemoteInterpreter extends Object {
         this.globals = this.interface.globals;
 
         if (config.packages) {
+            logger.info('Found packages in configuration to install. Loading micropip...');
             await this.loadPackage('micropip');
         }
-        await this.run('print("Python initialization complete")');
+        logger.info('pyodide loaded and initialized');
+        await this.run('print("Python initialization complete")')
     }
 
     /* eslint-disable */
     async run(code: string): Promise<{result: any}> {
+        /**
+         * eslint wants `await` keyword to be used i.e.
+         * { result: await this.interface.runPython(code) }
+         * However, `await` is not a no-op (no-operation) i.e.
+         * `await 42` is NOT the same as `42` i.e. if the awaited
+         * thing is not a promise, it is wrapped inside a promise and
+         * that promise is awaited. Thus, it changes the execution order.
+         * See https://stackoverflow.com/questions/55262996/does-awaiting-a-non-promise-have-any-detectable-effect
+         * Thus, `eslint` is disabled for this block / snippet.
+         */
+
+        /**
+         * The output of `runPython` is wrapped inside an object
+         * since an object is not thennable and avoids return of
+         * a coroutine directly. This is so we do not `await` the results
+         * of the underlying python execution, even if it's an
+         * awaitable object (Future, Task, etc.)
+         */
         return { result: this.interface.runPython(code) };
     }
     /* eslint-enable */
 
+    /**
+     * delegates the setting of JS objects to
+     * the underlying interface.
+     * */
     registerJsModule(name: string, module: object): void {
         this.interface.registerJsModule(name, module);
     }
 
+    /**
+     * delegates the loading of packages to
+     * the underlying interface.
+     * */
     async loadPackage(names: string | string[]): Promise<void> {
+        logger.info(`pyodide.loadPackage: ${names.toString()}`);
+        // the new way in v0.22.1 is to pass it as a dict of options i.e.
+        // { messageCallback: logger.info.bind(logger), errorCallback: logger.info.bind(logger) }
+        // but one of our tests tries to use a locally downloaded older version of pyodide
+        // for which the signature of `loadPackage` accepts the above params as args i.e.
+        // the call uses `logger.info.bind(logger), logger.info.bind(logger)`.
         const pyodide_version = (await this.run("import sys; sys.modules['pyodide'].__version__")).result.toString();
         if (pyodide_version.startsWith("0.22")) {
             await this.interface.loadPackage(names, { messageCallback: logger.info.bind(logger), errorCallback: logger.info.bind(logger) });
@@ -69,6 +142,13 @@ export class RemoteInterpreter extends Object {
         }
     }
 
+    /**
+     * delegates the installation of packages
+     * (using a package manager, which can be specific to
+     * the interface) to the underlying interface.
+     *
+     * For Pyodide, we use `micropip`
+     * */
     async installPackage(package_name: string | string[]): Promise<void> {
         if (package_name.length > 0) {
             logger.info(`micropip install ${package_name.toString()}`);
@@ -170,6 +250,10 @@ export class RemoteInterpreter extends Object {
         this.interface.FS.close(stream);
     }
 
+    /**
+     * delegates clearing importlib's module path
+     * caches to the underlying interface
+     */
     invalidate_module_path_cache(): void {
         const importlib = this.interface.pyimport('importlib');
         importlib.invalidate_caches();
