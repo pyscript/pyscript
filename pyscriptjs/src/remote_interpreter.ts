@@ -49,9 +49,11 @@ export class RemoteInterpreter extends Object {
         await this.run('print("Python initialization complete")');
     }
 
+    /* eslint-disable */
     async run(code: string): Promise<{result: any}> {
         return { result: this.interface.runPython(code) };
     }
+    /* eslint-enable */
 
     registerJsModule(name: string, module: object): void {
         this.interface.registerJsModule(name, module);

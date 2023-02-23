@@ -38,5 +38,5 @@ export class InterpreterClient extends Object {
         }
         return result;
     }
-    
+
 }
