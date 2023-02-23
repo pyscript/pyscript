@@ -204,15 +204,30 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
                 logger.error((e as Error).message);
             }
         } else {
-            el.addEventListener(event, () => {
+            el.addEventListener(event, (evt) => {
                 void (async () => {
-                    try {
-                        await interpreter.run(handlerCode);
-                    } catch (e) {
-                        const err = e as Error;
-                        displayPyException(err, el.parentElement);
+                try {
+                    const pyEval = await interpreter.globals.get('eval')
+                    const pythonFunction = pyEval(userProvidedFunctionName, interpreter.globals)
+                    
+                    const pyInspectModule = await interpreter.interface.pyimport('inspect')
+                    const params = pyInspectModule.signature(pythonFunction).parameters
+                    if (params.length == 0){
+                        pythonFunction();
                     }
-                })();
+                    else if (params.length == 1){
+                        pythonFunction(evt);
+                    }
+                    else {
+                        throw new UserError(ErrorCode.GENERIC, "py-events take 0 or 1 arguments")
+                    }
+                }
+                catch (err) {
+                    //This should be an error - probably need to refactor
+                    //This function into createSingularBanner
+                    createSingularWarning(err);
+                }
+
             });
         }
         // TODO: Should we actually map handlers in JS instead of Python?
@@ -248,5 +263,39 @@ export async function mountElements(interpreter: InterpreterClient) {
         const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
         source += `\n${mountName} = Element("${el.id}")`;
     }
-    await interpreter.run(source);
+    interpreter.run(source);
 }
+
+globalThis.set_handler_value = function set_handler_value(target, prop, receiver) {
+/* 
+  called once the python handler function is resolved
+  @param target - obj that saves all the functions coming from the python side
+  @param prop - name of the function
+  @param receiver - the python function converted to js
+*/
+    target[prop] = receiver
+    globalThis.target = target
+}
+
+globalThis.get_handler_value = function get_handler_value(target, prop) {
+    return globalThis.target[prop]
+}
+
+globalThis.when = new Proxy(
+    {
+        set: set_handler_value,
+        get: get_handler_value
+    },
+    {
+        get: function(target, prop, receiver) {
+            if (prop in globalThis.target) {
+                return globalThis.target[prop]
+            }
+            else {
+                throw new Error("No handler exists")
+            }
+        }
+    }
+)
+
+
