@@ -83,12 +83,12 @@ export class RemoteInterpreter extends Object {
      */
     async loadInterpreter(config: AppConfig, stdio: Stdio): Promise<void> {
         this.interface = await loadPyodide({
-            // stdout: (msg: string) => {
-            //     stdio.stdout_writeline(msg);
-            // },
-            // stderr: (msg: string) => {
-            //     stdio.stderr_writeline(msg);
-            // },
+            stdout: async (msg: string) => {
+                await stdio.stdout_writeline(msg);
+            },
+            stderr: async (msg: string) => {
+                await stdio.stderr_writeline(msg);
+            },
             fullStdLib: false,
         });
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -275,10 +275,10 @@ export class RemoteInterpreter extends Object {
         this.interface.FS.writeFile(path, content, { encoding: 'utf8' });
     }
 
-    setWarningHandler(handler: any): void {
+    async setHandler(func_name: any,handler: any): Promise<void> {
         const pyscript_module = this.interface.pyimport('pyscript');
-        pyscript_module.showWarning = (x) => {
-            handler(x).syncify();
+        pyscript_module[func_name] = async (...args: any[]) => {
+            await handler(...args); // wrapper ensures task is scheduled
         }
     }
 }

@@ -26,6 +26,15 @@ import { RemoteInterpreter } from './remote_interpreter';
 
 const logger = getLogger('pyscript/main');
 
+const old_val = Synclink.transferHandlers.get("throw").serialize
+function new_val({value}) {
+    const result = old_val({value});
+    // @ts-ignore
+    result[0].value.$$isUserError = value.$$isUserError;
+    return result;
+}
+Synclink.transferHandlers.get("throw").serialize = new_val
+
 /* High-level overview of the lifecycle of a PyScript App:
 
    1. pyscript.js is loaded by the browser. PyScriptApp().main() is called
@@ -93,8 +102,8 @@ export class PyScriptApp {
         }
     }
 
-    _handleUserErrorMaybe(error) {
-        if (error instanceof UserError) {
+    async _handleUserErrorMaybe(error) {
+        if (error.$$isUserError) {
             _createAlertBanner(error.message, 'error', error.messageType);
             this.plugins.onUserError(error);
         } else {
@@ -164,8 +173,8 @@ export class PyScriptApp {
         const script = document.createElement('script'); // create a script DOM node
         script.src = await this.interpreter._remote.src;
         script.addEventListener('load', () => {
-            this.afterInterpreterLoad(this.interpreter).catch(error => {
-                this._handleUserErrorMaybe(error);
+            this.afterInterpreterLoad(this.interpreter).catch(async (error) => {
+                await this._handleUserErrorMaybe(error);
             });
         });
         document.head.appendChild(script);
@@ -226,8 +235,8 @@ export class PyScriptApp {
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
         const pyscript_module = await interpreter.pyimport('pyscript');
-        pyscript_module.define_custom_element = define_custom_element;
-        pyscript_module.showWarning = showWarning;
+        await interpreter._remote.setHandler("define_custom_element", Synclink.proxy(define_custom_element));
+        await interpreter._remote.setHandler("showWarning", Synclink.proxy(showWarning));
         await pyscript_module._set_version_info(version);
         pyscript_module.destroy();
 
