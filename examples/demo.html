@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>PyScript Hello World</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="../pyscriptjs/build/pyscript.css" />
+    <link rel="stylesheet" href="./assets/css/examples.css" />
+    <script defer src="../pyscriptjs/build/pyscript.js"></script>
+  </head>
+
+  <body>
+    <nav class="navbar" style="background-color: #000000;">
+      <div class="app-header">
+        <a href="/">
+          <img src="./logo.png" class="logo">
+        </a>
+        <a class="title" href="" style="color: #f0ab3c;">Hello World</a>
+      </div>
+    </nav>
+
+    <py-tutor>
+      <py-config>
+      </py-config>
+      <!-- <button py-click="pop">call loo on click w event + 123</button><br><br>
+      <button onclick="pys_handler.fun()">fun</button><br><br> -->
+
+      <!-- @when-->
+      <button id="whenWithEvent">when: takes event</button><br><br>
+      <button id="whenWithoutEvent">when: doesn't take event</button><br><br>
+
+      <!-- Takes a Callable -->
+
+      <button py-click="pyClickWithEvent">py-click: takes event</button><br><br>
+      <button py-click="pyClickWithoutEvent">py-click: my function doesn't take argument, with py-click</button><br><br>
+      <button py-click="pyClickTwoArguments">Two arguments? Should Error</button><br><br>
+      <button py-click="instance.somefunc">Instance Method</button><br><br>
+      <button py-click="instance.someEventFunc">Instance Method with Event</button><br><br>
+      <button py-click="print">cls</button><br><br>
+
+      <!-- eval()-ish -->
+
+      <button py-click="pyClickWithEvent()">event with parens</button><br><br>
+
+      <button py-click="print('hello world')">Ted's Son</button><br><br>
+
+      <button py-click="{print('hello world')}">Brackets</button><br><br>
+
+      <button py-click-eval="print('hello world')">with -eval</button><br><br>
+
+      <button py-click="lambda : print('hello world')">lambda</button><br><br>
+
+      <input id="inp" py-input="setValueOfSlider(event.target.value)"/>
+
+
+
+
+      <button id="Fabios-Fav" py-click="{printEventId(event, 'fabio')}"></button><br><br>
+      <py-repl></py-repl>
+      <section class="pyscript">
+        Hello world! 🦄<br>
+
+<py-script src="pyclickdemo.py">
+        </py-script>
+        <py-script>
+            print("hello world")
+        </py-script>
+      </section>
+    </py-tutor>
+  </body>
+</html>
