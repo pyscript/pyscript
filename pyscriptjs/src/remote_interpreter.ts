@@ -83,11 +83,12 @@ export class RemoteInterpreter extends Object {
      */
     async loadInterpreter(config: AppConfig, stdio: Stdio): Promise<void> {
         this.interface = await loadPyodide({
-            stdout: async (msg: string) => {
-                await stdio.stdout_writeline(msg);
+            stdout: (msg: string) => {
+                // TODO: add syncify when moved to worker
+                stdio.stdout_writeline(msg);
             },
-            stderr: async (msg: string) => {
-                await stdio.stderr_writeline(msg);
+            stderr: (msg: string) => {
+                stdio.stderr_writeline(msg);
             },
             fullStdLib: false,
         });

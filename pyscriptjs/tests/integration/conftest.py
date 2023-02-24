@@ -142,10 +142,18 @@ class HTTPServer(SuperHTTPServer):
 @pytest.fixture(scope="session")
 def http_server(logger):
     class MyHTTPRequestHandler(SimpleHTTPRequestHandler):
+        def end_headers(self):
+            self.send_my_headers()
+            SimpleHTTPRequestHandler.end_headers(self)
+
+        def send_my_headers(self):
+            self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
+            self.send_header("Cross-Origin-Opener-Policy", "same-origin")
+
         def log_message(self, fmt, *args):
             logger.log("http_server", fmt % args, color="blue")
 
-    host, port = "127.0.0.1", 8080
+    host, port = "localhost", 8080
     base_url = f"http://{host}:{port}"
 
     # serve_Run forever under thread
