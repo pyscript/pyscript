@@ -1,11 +1,15 @@
 # `py-[event]` proposal
 
+## Overview
+
+This proposal defines two pieces of relative syntax: `py-[event]`, which hooks browser events to Python event handler _functions_, and `py-[event]-code`, which causes browser events to _evaluate_ Python code.
+
 ## Examples
 
 The following example user code demonstrates all the functionality in this proposal:
 
 ```html
-<!------------ Event Handlers ------------>
+<!--------------------- Event Handlers --------------------->
 <py-script>
     def eventFunc(evt):
         print(f"This function got the event {evt}")
@@ -17,12 +21,6 @@ The following example user code demonstrates all the functionality in this propo
         print("This function doesn't take an argument, and won't be passed one")
 </py-script>
 <button py-click="noEventFunc">Doesn't Take An Event</button>
-
-<py-script>
-    def multipleNotAllowed(first, second):
-        ... #Functions with multiple arguments are not valid Event Handlers
-</py-script>
-<button py-click="multipleNotAllowed">Click me to throw an error</button>
 
 <py-script>
     class SomeClass():
@@ -39,13 +37,24 @@ The following example user code demonstrates all the functionality in this propo
     instance = SomeClass()
 </py-script>
 <button py-click="instance.somefunc">Instance Methods do work</button>
-<button py-click="instance.someEventFunc">Instance Method gets passed event</button><br><br>
-<button py-click="Instance.threeFunc">cClass Methods work too</button><br><br>
+<button py-click="instance.someEventFunc">Instance Method gets passed event</button>
+<button py-click="Instance.threeFunc">cClass Methods work too</button>
 
-<!------------ Event Code Runers ------------>
+<!--- Event Handlers Errors/Warnings --->
+
+<py-script>
+    def multipleNotAllowed(first, second):
+        ... #Functions with multiple arguments are not valid Event Handlers
+</py-script>
+<button py-click="multipleNotAllowed">Click me to throw an error</button>
+
+<button py-click="print('hi')">Throws an error, since it doesn't evaluate to a Callable</button>
+<button py-click="print((">Throws an error, since evaluating this string fails</button>
+
+<!--------------------- Event CodeRuners --------------------->
 
 <button py-click-code="print('hello world')">Click to Print</button>
-<button py-click-code="print(f'The event was {event}')">'event' as a local variable</button>
+<button py-click-code="print(f'The event was {event}')">When evaluating, 'event' is a local variable</button>
 
 <py-script>
     def myFunc(a, b, c):
@@ -54,6 +63,11 @@ The following example user code demonstrates all the functionality in this propo
     ultimateAnswer = 42
 </py-script>
 <button py-click-code="myFunc('Jeff', 0, ultimateAnswer)">Call a Function with Arguments</button>
+
+<!--- Event CodeRuner Errors/Warnings --->
+
+<button py-click-code="myFunc">Shows a warning, since this evaluates to a Callable</button>
+<button py-click-code="print((">Raises an error, since evaluating this fails</button>
 ```
 
 ## Context
