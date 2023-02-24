@@ -1,8 +1,9 @@
 import type { AppConfig } from './pyconfig';
 import { RemoteInterpreter } from './remote_interpreter';
-import type { PyProxyDict } from 'pyodide';
+import type { PyProxyDict, PyProxy } from 'pyodide';
 import { getLogger } from './logger';
 import type { Stdio } from './stdio';
+import * as Synclink from 'synclink';
 
 const logger = getLogger('pyscript/interpreter');
 
@@ -11,7 +12,8 @@ InterpreterClient class is responsible to request code execution
 (among other things) from a `RemoteInterpreter`
 */
 export class InterpreterClient extends Object {
-    _remote: RemoteInterpreter;
+
+    _remote: Synclink.Remote<RemoteInterpreter>;
     config: AppConfig;
     /**
      * global symbols table for the underlying interface.
@@ -19,10 +21,10 @@ export class InterpreterClient extends Object {
     globals: PyProxyDict;
     stdio: Stdio;
 
-    constructor(config: AppConfig, stdio: Stdio) {
+    constructor(config: AppConfig, stdio: Stdio, remote: Synclink.Remote<RemoteInterpreter>) {
         super();
         this.config = config;
-        this._remote = new RemoteInterpreter(this.config.interpreters[0].src);
+        this._remote = remote;
         this.stdio = stdio;
     }
 
@@ -32,7 +34,7 @@ export class InterpreterClient extends Object {
      * */
     async initializeRemote(): Promise<void> {
         await this._remote.loadInterpreter(this.config, this.stdio);
-        this.globals = this._remote.globals as PyProxyDict;
+        this.globals = await this._remote.globals as PyProxyDict;
     }
 
     /**
@@ -60,5 +62,17 @@ export class InterpreterClient extends Object {
             logger.error('Error:', error);
         }
         return result;
+    }
+
+    async pyimport(mod_name: string): Promise<PyProxy> {
+        return await this._remote.pyimport(mod_name);
+    }
+
+    async mkdirTree(path: string) {
+        await this._remote.mkdirTree(path);
+    }
+
+    async writeFile(path: string, content: string) {
+        await this._remote.writeFile(path, content);
     }
 }

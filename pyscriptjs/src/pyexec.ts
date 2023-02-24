@@ -12,7 +12,7 @@ export async function pyExec(
     outElem: HTMLElement,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<{ result: any }> {
-    const pyscript_py = interpreter._remote.interface.pyimport('pyscript') as PyProxy & {
+    const pyscript_py = await interpreter.pyimport('pyscript') as PyProxy & {
         set_current_display_target(id: string): void;
         uses_top_level_await(code: string): boolean;
     };
@@ -20,7 +20,7 @@ export async function pyExec(
     pyscript_py.set_current_display_target(outElem.id);
     try {
         try {
-            if (pyscript_py.uses_top_level_await(pysrc)) {
+            if (await pyscript_py.uses_top_level_await(pysrc)) {
                 throw new UserError(
                     ErrorCode.TOP_LEVEL_AWAIT,
                     'The use of top-level "await", "async for", and ' +
@@ -41,7 +41,7 @@ export async function pyExec(
             return { result: undefined };
         }
     } finally {
-        pyscript_py.set_current_display_target(undefined);
+        await pyscript_py.set_current_display_target(undefined);
         pyscript_py.destroy();
     }
 }

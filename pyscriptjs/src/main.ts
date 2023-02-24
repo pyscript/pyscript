@@ -17,10 +17,12 @@ import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 import type { PyProxy } from 'pyodide';
+import * as Synclink from 'synclink';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript/__init__.py';
 import { robustFetch } from './fetch';
+import { RemoteInterpreter } from './remote_interpreter';
 
 const logger = getLogger('pyscript/main');
 
@@ -131,7 +133,7 @@ export class PyScriptApp {
     }
 
     // lifecycle (4)
-    loadInterpreter() {
+    async loadInterpreter() {
         logger.info('Initializing interpreter');
         if (this.config.interpreters.length == 0) {
             throw new UserError(ErrorCode.BAD_CONFIG, 'Fatal error: config.interpreter is empty');
@@ -143,7 +145,13 @@ export class PyScriptApp {
 
         const interpreter_cfg = this.config.interpreters[0];
 
-        this.interpreter = new InterpreterClient(this.config, this._stdioMultiplexer);
+        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
+        const { port1, port2 } = new MessageChannel();
+        port1.start();
+        port2.start();
+        Synclink.expose(remote_interpreter, port2);
+        const wrapped_remote_interpreter = Synclink.wrap(port1);
+        this.interpreter = new InterpreterClient(this.config, this._stdioMultiplexer, wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>);
 
         this.logStatus(`Downloading ${interpreter_cfg.name}...`);
 
@@ -154,7 +162,7 @@ export class PyScriptApp {
         // by the try/catch inside main(): that's why we need to .catch() it
         // explicitly and call _handleUserErrorMaybe also there.
         const script = document.createElement('script'); // create a script DOM node
-        script.src = this.interpreter._remote.src;
+        script.src = await this.interpreter._remote.src;
         script.addEventListener('load', () => {
             this.afterInterpreterLoad(this.interpreter).catch(error => {
                 this._handleUserErrorMaybe(error);
@@ -183,7 +191,7 @@ export class PyScriptApp {
         this.plugins.afterSetup(interpreter);
 
         //Refresh module cache in case plugins have modified the filesystem
-        interpreter._remote.invalidate_module_path_cache();
+        await interpreter._remote.invalidate_module_path_cache();
         this.logStatus('Executing <py-script> tags...');
         this.executeScripts(interpreter);
 
@@ -210,18 +218,17 @@ export class PyScriptApp {
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS
-        interpreter._remote.FS.mkdirTree('/home/pyodide/pyscript');
-        interpreter._remote.FS.writeFile('pyscript/__init__.py', pyscript as string);
+        await interpreter.mkdirTree('/home/pyodide/pyscript');
+        await interpreter.writeFile('pyscript/__init__.py', pyscript as string);
         //Refresh the module cache so Python consistently finds pyscript module
-        interpreter._remote.invalidate_module_path_cache();
+        await interpreter._remote.invalidate_module_path_cache();
 
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
-        const pyscript_module = interpreter._remote.interface.pyimport('pyscript');
+        const pyscript_module = await interpreter.pyimport('pyscript');
         pyscript_module.define_custom_element = define_custom_element;
         pyscript_module.showWarning = showWarning;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        pyscript_module._set_version_info(version);
+        await pyscript_module._set_version_info(version);
         pyscript_module.destroy();
 
         // import some carefully selected names into the global namespace
@@ -239,7 +246,7 @@ export class PyScriptApp {
         await this.fetchPaths(interpreter);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
-        interpreter._remote.invalidate_module_path_cache();
+        await interpreter._remote.invalidate_module_path_cache();
         // Finally load plugins
         await this.fetchUserPlugins(interpreter);
     }
@@ -339,7 +346,7 @@ export class PyScriptApp {
         await interpreter._remote.loadFromFile(filename, filePath);
 
         //refresh module cache before trying to import module files into interpreter
-        interpreter._remote.invalidate_module_path_cache();
+        await interpreter._remote.invalidate_module_path_cache();
 
         const modulename = filePath.replace(/^.*[\\/]/, '').replace('.py', '');
 
@@ -347,8 +354,8 @@ export class PyScriptApp {
         // TODO: This is very specific to Pyodide API and will not work for other interpreters,
         //       when we add support for other interpreters we will need to move this to the
         //       interpreter API level and allow each one to implement it in its own way
-        const module = interpreter._remote.interface.pyimport(modulename);
-        if (typeof module.plugin !== 'undefined') {
+        const module = await interpreter.pyimport(modulename);
+        if (typeof (await module.plugin) !== 'undefined') {
             const py_plugin = module.plugin as PyProxy & { init(app: PyScriptApp): void };
             py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);

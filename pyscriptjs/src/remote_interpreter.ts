@@ -83,12 +83,12 @@ export class RemoteInterpreter extends Object {
      */
     async loadInterpreter(config: AppConfig, stdio: Stdio): Promise<void> {
         this.interface = await loadPyodide({
-            stdout: (msg: string) => {
-                stdio.stdout_writeline(msg);
-            },
-            stderr: (msg: string) => {
-                stdio.stderr_writeline(msg);
-            },
+            // stdout: (msg: string) => {
+            //     stdio.stdout_writeline(msg);
+            // },
+            // stderr: (msg: string) => {
+            //     stdio.stderr_writeline(msg);
+            // },
             fullStdLib: false,
         });
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -261,5 +261,24 @@ export class RemoteInterpreter extends Object {
     invalidate_module_path_cache(): void {
         const importlib = this.interface.pyimport('importlib') as PyProxy & { invalidate_caches(): void };
         importlib.invalidate_caches();
+    }
+
+    pyimport(mod_name: string): PyProxy {
+        return this.interface.pyimport(mod_name);
+    }
+
+    mkdirTree(path: string) {
+        this.interface.FS.mkdirTree(path);
+    }
+
+    writeFile(path: string, content: string) {
+        this.interface.FS.writeFile(path, content, { encoding: 'utf8' });
+    }
+
+    setWarningHandler(handler: any): void {
+        const pyscript_module = this.interface.pyimport('pyscript');
+        pyscript_module.showWarning = (x) => {
+            handler(x).syncify();
+        }
     }
 }
