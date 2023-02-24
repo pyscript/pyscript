@@ -6,13 +6,12 @@ This proposal defines two pieces of related syntax, which users can add as attri
 
 | Concept          | HTML Attribute  | Purpose                                                  |
 |------------------|-----------------|----------------------------------------------------------|
-| Event Handler    | `py-[event]-func`      | Hooks browser events to Python event handler _functions_ |
+| Event Handler    | `py-[event]`| Hooks browser events to Python event handler _functions_ |
 | Event CodeRunner | `py-[event]-code` | Run Python code.                                  |
 
 ### What "`[event]`" Means Here
 
 In all of the discussion that follows, the shorthand `[event]` is a stand-in for any* of the [Browser Events](https://developer.mozilla.org/en-US/docs/Web/Events). For example, an example which references `py-[event]=someFunc` could be read as `py-click=someFunc`, `py-change=someFunc` etc. 
-
 
 ## Examples
 
@@ -84,7 +83,9 @@ The following example user code demonstrates all the functionality in this propo
 
 ## Description of Behavior
 
-When PyScript loads, following the execution off all \<py-script\> tags on, any tags on the the page with an attribute of `py-[event]` are processed as "Python Event Handlers". Any tags on the page with an attribute of `py-[event]-code` are processed as "Python Event CodeRunners". See below for the behavior of these 
+When PyScript loads, following the execution off all \<py-script\> tags on:
+  - any tags on the the page with an attribute of `py-[event]` are processed as "Python Event Handlers"
+  - any tags on the page with an attribute of `py-[event]-code` are processed as "Python Event CodeRunners".
 
 ### Python Event Handler Behavior (`py-[event]`)
 
