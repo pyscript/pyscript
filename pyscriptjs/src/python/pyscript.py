@@ -11,9 +11,9 @@ from textwrap import dedent
 import js
 
 try:
-    from pyodide import create_proxy
-except ImportError:
     from pyodide.ffi import create_proxy
+except ImportError:
+    from pyodide import create_proxy
 
 loop = asyncio.get_event_loop()
 
