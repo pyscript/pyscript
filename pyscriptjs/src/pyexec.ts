@@ -16,7 +16,7 @@ export async function pyExec(interpreter: Interpreter, pysrc: string, outElem: H
                 throw new UserError(
                     ErrorCode.TOP_LEVEL_AWAIT,
                     'The use of top-level "await", "async for", and ' +
-                        '"async with" is deprecated.' +
+                        '"async with" has been removed.' +
                         '\nPlease write a coroutine containing ' +
                         'your code and schedule it using asyncio.ensure_future() or similar.' +
                         '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.',
