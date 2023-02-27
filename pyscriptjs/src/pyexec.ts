@@ -5,10 +5,9 @@ import type { Interpreter } from './interpreter';
 
 const logger = getLogger('pyexec');
 
-export function pyExec(interpreter: Interpreter, pysrc: string, outElem: HTMLElement) {
+export async function pyExec(interpreter: Interpreter, pysrc: string, outElem: HTMLElement) {
     //This is pyscript.py
     const pyscript_py = interpreter.interface.pyimport('pyscript');
-
     ensureUniqueId(outElem);
     pyscript_py.set_current_display_target(outElem.id);
     try {
@@ -23,13 +22,14 @@ export function pyExec(interpreter: Interpreter, pysrc: string, outElem: HTMLEle
                         '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.',
                 );
             }
-            return interpreter.run(pysrc);
+            return (await interpreter.run(pysrc));
         } catch (err) {
             // XXX: currently we display exceptions in the same position as
             // the output. But we probably need a better way to do that,
             // e.g. allowing plugins to intercept exceptions and display them
             // in a configurable way.
             displayPyException(err, outElem);
+            return {result: undefined};
         }
     } finally {
         pyscript_py.set_current_display_target(undefined);

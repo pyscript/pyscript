@@ -8,7 +8,7 @@ import { PluginManager, define_custom_element } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { PyodideInterpreter } from './pyodide';
 import { getLogger } from './logger';
-import { showWarning, globalExport } from './utils';
+import { showWarning, globalExport, createLock } from './utils';
 import { calculatePaths } from './plugins/fetch';
 import { createCustomElements } from './components/elements';
 import { UserError, ErrorCode, _createAlertBanner } from './exceptions';
@@ -21,7 +21,6 @@ import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 // @ts-ignore
 import pyscript from './python/pyscript.py';
 import { robustFetch } from './fetch';
-import type { Plugin } from './plugin';
 
 const logger = getLogger('pyscript/main');
 
@@ -65,6 +64,7 @@ export class PyScriptApp {
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
+    tagExecutionLock: any; // this is used to ensure that py-script tags are executed sequentially
 
     constructor() {
         // initialize the builtin plugins
@@ -75,6 +75,7 @@ export class PyScriptApp {
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
 
         this.plugins.add(new StdioDirector(this._stdioMultiplexer));
+        this.tagExecutionLock = createLock();
     }
 
     // Error handling logic: if during the execution we encounter an error
@@ -180,7 +181,7 @@ export class PyScriptApp {
 
         this.logStatus('Setting up virtual environment...');
         await this.setupVirtualEnv(interpreter);
-        mountElements(interpreter);
+        await mountElements(interpreter);
 
         // lifecycle (6.5)
         this.plugins.afterSetup(interpreter);

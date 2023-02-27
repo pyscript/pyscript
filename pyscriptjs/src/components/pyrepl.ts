@@ -43,7 +43,7 @@ export function make_PyRepl(interpreter: Interpreter) {
             this.shadow.appendChild(slot);
 
             if (!this.hasAttribute('exec-id')) {
-                this.setAttribute('exec-id', '1');
+                this.setAttribute('exec-id', '0');
             }
             if (!this.hasAttribute('root')) {
                 this.setAttribute('root', this.id);
@@ -141,7 +141,7 @@ export function make_PyRepl(interpreter: Interpreter) {
         makeOutDiv(): HTMLElement {
             const outDiv = document.createElement('div');
             outDiv.className = 'py-repl-output';
-            outDiv.id = this.id + '-' + this.getAttribute('exec-id');
+            outDiv.id = this.id + '-repl-output';
             return outDiv;
         }
 
@@ -150,7 +150,7 @@ export function make_PyRepl(interpreter: Interpreter) {
         /** Execute the python code written in the editor, and automatically
          *  display() the last evaluated expression
          */
-        execute(): void {
+        async execute(): Promise<void> {
             const pySrc = this.getPySrc();
 
             // determine the output element
@@ -166,7 +166,7 @@ export function make_PyRepl(interpreter: Interpreter) {
             outEl.innerHTML = '';
 
             // execute the python code
-            const pyResult = pyExec(interpreter, pySrc, outEl);
+            const pyResult = (await pyExec(interpreter, pySrc, outEl)).result;
 
             // display the value of the last evaluated expression (REPL-style)
             if (pyResult !== undefined) {

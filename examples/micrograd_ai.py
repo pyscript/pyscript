@@ -119,7 +119,6 @@ def micrograd_demo(*args, **kwargs):
     # cell
     # optimization
     for k in range(20):  # was 100
-
         # forward
         total_loss, _ = loss()
 

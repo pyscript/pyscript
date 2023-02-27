@@ -4,7 +4,7 @@ from .support import PyScriptTest
 class TestOutputHandling(PyScriptTest):
     # Source of a script to test the TargetedStdio functionality
 
-    def test_targeted_stdio(self):
+    def test_targeted_stdio_solo(self):
         self.pyscript_run(
             """
             <py-config>

@@ -26,8 +26,8 @@ function createWidget(interpreter: Interpreter, name: string, code: string, klas
             this.shadow.appendChild(this.wrapper);
         }
 
-        connectedCallback() {
-            interpreter.runButDontRaise(this.code);
+        async connectedCallback() {
+            await interpreter.runButDontRaise(this.code);
             this.proxyClass = interpreter.globals.get(this.klass);
             this.proxy = this.proxyClass(this);
             this.proxy.connect();

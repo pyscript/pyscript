@@ -6,7 +6,6 @@ from pyodide.http import open_url
 
 
 class Antigravity:
-
     url = "./antigravity.svg"
 
     def __init__(self, target=None, interval=10, append=True, fly=False):

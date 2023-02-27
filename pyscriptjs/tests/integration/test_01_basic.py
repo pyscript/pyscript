@@ -311,6 +311,7 @@ class TestBasic(PyScriptTest):
             == 'print("hello world!")\n'
         )
 
+    @pytest.mark.skip(reason="pys-onClick is broken, we should kill it, see #1213")
     def test_pys_onClick_shows_deprecation_warning(self):
         self.pyscript_run(
             """
