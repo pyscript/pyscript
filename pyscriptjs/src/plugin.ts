@@ -122,13 +122,13 @@ export class PluginManager {
         for (const p of this._pythonPlugins) p.afterStartup?.(interpreter);
     }
 
-    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: HTMLElement}) {
-        for (const p of this._plugins) p?.beforePyScriptExec?.(options);
+    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag}) {
+        for (const p of this._plugins) p.beforePyScriptExec?.(options);
 
         for (const p of this._pythonPlugins) p.beforePyScriptExec?.callKwargs(options);
     }
 
-    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: HTMLElement, result: any}) {
+    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag, result: any}) {
         for (const p of this._plugins) p.afterPyScriptExec?.(options);
 
         for (const p of this._pythonPlugins) p.afterPyScriptExec?.callKwargs(options);
