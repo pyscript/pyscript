@@ -39,13 +39,13 @@ You can link to other pages in the documentation by using the `{doc}` role. For 
 {doc}`docs/README.md`
 ```
 
-You can also cross-reference the python glossary by using the `{term}` role. For example, to link to the `terable` term, you would use:
+You can also cross-reference the python glossary by using the `{term}` role. For example, to link to the `iterable` term, you would use:
 
 ```markdown
 {term}`iterable`
 ```
 
-You can also cross-reference, functions, methods or data attributes by using the `{attr}` for example:
+You can also cross-reference functions, methods or data attributes by using the `{attr}` for example:
 
 ```markdown
 {py:func}`repr`
