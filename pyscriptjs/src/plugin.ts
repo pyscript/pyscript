@@ -89,7 +89,7 @@ export class PluginManager {
     }
 
     configure(config: AppConfig) {
-        for (const p of this._plugins) p.configure(config);
+        for (const p of this._plugins) p.configure?.(config);
 
         for (const p of this._pythonPlugins) p.configure?.(config);
     }
@@ -97,7 +97,7 @@ export class PluginManager {
     beforeLaunch(config: AppConfig) {
         for (const p of this._plugins) {
             try {
-                p.beforeLaunch(config);
+                p?.beforeLaunch?.(config);
             } catch (e) {
                 logger.error(`Error while calling beforeLaunch hook of plugin ${p.constructor.name}`, e);
             }
@@ -107,7 +107,7 @@ export class PluginManager {
     afterSetup(interpreter: Interpreter) {
         for (const p of this._plugins) {
             try {
-                p.afterSetup(interpreter);
+                p.afterSetup?.(interpreter);
             } catch (e) {
                 logger.error(`Error while calling afterSetup hook of plugin ${p.constructor.name}`, e);
             }
@@ -117,25 +117,25 @@ export class PluginManager {
     }
 
     afterStartup(interpreter: Interpreter) {
-        for (const p of this._plugins) p.afterStartup(interpreter);
+        for (const p of this._plugins) p.afterStartup?.(interpreter);
 
         for (const p of this._pythonPlugins) p.afterStartup?.(interpreter);
     }
 
     beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag}) {
-        for (const p of this._plugins) p.beforePyScriptExec(options);
+        for (const p of this._plugins) p.beforePyScriptExec?.(options);
 
         for (const p of this._pythonPlugins) p.beforePyScriptExec?.callKwargs(options);
     }
 
     afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag, result: any}) {
-        for (const p of this._plugins) p.afterPyScriptExec(options);
+        for (const p of this._plugins) p.afterPyScriptExec?.(options);
 
         for (const p of this._pythonPlugins) p.afterPyScriptExec?.callKwargs(options);
     }
 
     onUserError(error: UserError) {
-        for (const p of this._plugins) p.onUserError(error);
+        for (const p of this._plugins) p.onUserError?.(error);
 
         for (const p of this._pythonPlugins) p.onUserError?.(error);
     }
