@@ -172,12 +172,10 @@ def format_mime(obj):
     return MIME_RENDERERS[mime_type](output, meta), mime_type
 
 
-@staticmethod
 def run_until_complete(f):
     _ = loop.run_until_complete(f)
 
 
-@staticmethod
 def write(element_id, value, append=False, exec_id=0):
     """Writes value to the element with id "element_id"""
     Element(element_id).write(value=value, append=append)
