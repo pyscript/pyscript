@@ -64,7 +64,7 @@ export class PyScriptApp {
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
-    tagExecutionLock: any; // this is used to ensure that py-script tags are executed sequentially
+    tagExecutionLock: ReturnType<typeof createLock>; // this is used to ensure that py-script tags are executed sequentially
 
     constructor() {
         // initialize the builtin plugins
