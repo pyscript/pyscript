@@ -80,9 +80,7 @@ class TestAsync(PyScriptTest):
         )
         self.wait_for_console("b func done")
         assert self.console.log.lines[0] == self.PY_COMPLETE
-        # We are getting some deprecation warnings from pyodide, so we
-        # need to skip the first 2 lines
-        assert self.console.log.lines[3:] == [
+        assert self.console.log.lines[1:] == [
             "A 0",
             "B 0",
             "A 1",
