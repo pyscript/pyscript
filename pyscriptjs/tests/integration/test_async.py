@@ -43,7 +43,7 @@ class TestAsync(PyScriptTest):
 
             async def get_results():
                 results = await asyncio.gather(*[coro(d) for d in range(3,0,-1)])
-                js.console.log(to_js(results))
+                js.console.log(str(results)) #Compare to string representation, not Proxy
                 js.console.log("DONE")
 
             asyncio.ensure_future(get_results())
@@ -51,7 +51,7 @@ class TestAsync(PyScriptTest):
             """
         )
         self.wait_for_console("DONE")
-        assert self.console.log.lines[-2:] == ["[3,2,1]", "DONE"]
+        assert self.console.log.lines[-2:] == ["[3, 2, 1]", "DONE"]
 
     def test_multiple_async(self):
         self.pyscript_run(
