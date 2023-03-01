@@ -58,7 +58,7 @@ class TestEventHandler(PyScriptTest):
         console_text = self.console.all.lines
         assert "I've clicked [object HTMLButtonElement] with id bar_id" in console_text
 
-    #I wonder if we want to support this kind of behaviour?
+    # I wonder if we want to support this kind of behaviour?
     # def test_when_targets_all_click_events(self):
     #     self.pyscript_run(
     #         """
@@ -77,6 +77,3 @@ class TestEventHandler(PyScriptTest):
     #     console_text = self.console.all.lines
     #     assert console_text[0] == "Any click will trigger this"
     #     assert console_text[1] == "Any click will trigger this"
-
-
-
