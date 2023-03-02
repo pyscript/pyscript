@@ -2,7 +2,7 @@
     margin-bottom: 5rem;
 }
 
-.example h2{
+.example h2 {
     /* color: #000000; */
     font-family: "Inconsolata", monospace;
     font-size: 2.25rem;
@@ -16,9 +16,12 @@
     border-radius: 10px;
 }
 
-.card:hover, .card:hover a, .card:hover a:visited, .card:hover h2 {
+.card:hover,
+.card:hover a,
+.card:hover a:visited,
+.card:hover h2 {
     background-color: var(--color-primary);
-    color: #1D1D22
+    color: #1d1d22;
 }
 
 .card a h2 {
@@ -46,7 +49,8 @@ a .card {
     justify-content: space-between;
 }
 
-.card-content a, .card-content a:visited {
+.card-content a,
+.card-content a:visited {
     color: var(--color-primary);
 }
 

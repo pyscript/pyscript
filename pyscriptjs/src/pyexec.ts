@@ -22,14 +22,14 @@ export async function pyExec(interpreter: Interpreter, pysrc: string, outElem: H
                         '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.',
                 );
             }
-            return (await interpreter.run(pysrc));
+            return await interpreter.run(pysrc);
         } catch (err) {
             // XXX: currently we display exceptions in the same position as
             // the output. But we probably need a better way to do that,
             // e.g. allowing plugins to intercept exceptions and display them
             // in a configurable way.
             displayPyException(err, outElem);
-            return {result: undefined};
+            return { result: undefined };
         }
     } finally {
         pyscript_py.set_current_display_target(undefined);

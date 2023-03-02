@@ -12,51 +12,49 @@ The convention is:
 */
 
 export enum ErrorCode {
-  GENERIC = "PY0000", // Use this only for development then change to a more specific error code
-  FETCH_ERROR = "PY0001",
-  FETCH_NAME_ERROR = "PY0002",
-  // Currently these are created depending on error code received from fetching
-  FETCH_UNAUTHORIZED_ERROR = "PY0401",
-  FETCH_FORBIDDEN_ERROR = "PY0403",
-  FETCH_NOT_FOUND_ERROR = "PY0404",
-  FETCH_SERVER_ERROR = "PY0500",
-  FETCH_UNAVAILABLE_ERROR = "PY0503",
-  BAD_CONFIG = "PY1000",
-  MICROPIP_INSTALL_ERROR = "PY1001",
-  BAD_PLUGIN_FILE_EXTENSION = "PY2000",
-  NO_DEFAULT_EXPORT = "PY2001",
-  TOP_LEVEL_AWAIT = "PY9000"
+    GENERIC = 'PY0000', // Use this only for development then change to a more specific error code
+    FETCH_ERROR = 'PY0001',
+    FETCH_NAME_ERROR = 'PY0002',
+    // Currently these are created depending on error code received from fetching
+    FETCH_UNAUTHORIZED_ERROR = 'PY0401',
+    FETCH_FORBIDDEN_ERROR = 'PY0403',
+    FETCH_NOT_FOUND_ERROR = 'PY0404',
+    FETCH_SERVER_ERROR = 'PY0500',
+    FETCH_UNAVAILABLE_ERROR = 'PY0503',
+    BAD_CONFIG = 'PY1000',
+    MICROPIP_INSTALL_ERROR = 'PY1001',
+    BAD_PLUGIN_FILE_EXTENSION = 'PY2000',
+    NO_DEFAULT_EXPORT = 'PY2001',
+    TOP_LEVEL_AWAIT = 'PY9000',
 }
 
 export class UserError extends Error {
-  messageType: MessageType;
-  errorCode: ErrorCode;
+    messageType: MessageType;
+    errorCode: ErrorCode;
 
-  constructor(errorCode: ErrorCode, message: string, t: MessageType = "text") {
-    super(message);
-    this.errorCode = errorCode;
-    this.name = "UserError";
-    this.messageType = t;
-    this.message = `(${errorCode}): ${message}`;
-  }
+    constructor(errorCode: ErrorCode, message: string, t: MessageType = 'text') {
+        super(message);
+        this.errorCode = errorCode;
+        this.name = 'UserError';
+        this.messageType = t;
+        this.message = `(${errorCode}): ${message}`;
+    }
 }
-
 
 export class FetchError extends UserError {
-  errorCode: ErrorCode;
-  constructor(errorCode: ErrorCode, message: string) {
-    super(errorCode, message)
-    this.name = "FetchError";
-  }
+    errorCode: ErrorCode;
+    constructor(errorCode: ErrorCode, message: string) {
+        super(errorCode, message);
+        this.name = 'FetchError';
+    }
 }
 
-
 export class InstallError extends UserError {
-  errorCode: ErrorCode;
-  constructor(errorCode: ErrorCode, message: string) {
-    super(errorCode, message)
-    this.name = "InstallError";
-  }
+    errorCode: ErrorCode;
+    constructor(errorCode: ErrorCode, message: string) {
+        super(errorCode, message);
+        this.name = 'InstallError';
+    }
 }
 
 export function _createAlertBanner(

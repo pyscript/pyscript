@@ -42,7 +42,7 @@ function getLogger(prefix: string): Logger {
 }
 
 function _makeLogger(prefix: string): Logger {
-    prefix =`[${prefix}] `;
+    prefix = `[${prefix}] `;
 
     function make(level: string) {
         const out_fn = console[level].bind(console);

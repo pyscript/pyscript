@@ -1,22 +1,18 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "_version": "3.0.0",
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "_version": "3.0.0",
 
-  "include": ["src/**/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
-  "compilerOptions": {
-    "moduleResolution": "node",
-    "target": "ES2020",
-    "module": "ES2020",
-    "types": ["jest", "node"],
-    "strict": false,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": [
-      "es2017",
-      "dom",
-      "DOM.Iterable"
-    ]
-  }
+    "include": ["src/**/*"],
+    "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "target": "ES2020",
+        "module": "ES2020",
+        "types": ["jest", "node"],
+        "strict": false,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "lib": ["es2017", "dom", "DOM.Iterable"]
+    }
 }

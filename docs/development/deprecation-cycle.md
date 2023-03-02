@@ -20,11 +20,14 @@ This function creates a warning banner on the page if any of the deprecated feat
 ### Example
 
 ```js
-import {showWarning} from './utils'
+import { showWarning } from "./utils";
 
-showWarning(`
+showWarning(
+    `
     <p>
         The <code>py-deprecated</code> tag is deprecated. Please use the <code>py-actual</code> tag instead. Please refer to <a href="#">this documentation page</a> for more information.
     </p>
-`, "html")
+`,
+    "html",
+);
 ```

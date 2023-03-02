@@ -2,12 +2,13 @@
 @import "./variables.css";
 @import "./reset.css";
 
-
 body {
-    background: #2D2E35 url('https://assets.anaconda.com/production/Content/1650828148240.png?w=3240&auto=compress%2Cformat&fit=crop&dm=1650828161&s=c558dc55e0ed1f8419a892e842a5728f') repeat-x center bottom / 250px;
+    background: #2d2e35
+        url("https://assets.anaconda.com/production/Content/1650828148240.png?w=3240&auto=compress%2Cformat&fit=crop&dm=1650828161&s=c558dc55e0ed1f8419a892e842a5728f")
+        repeat-x center bottom / 250px;
     background-attachment: fixed;
     overflow-x: hidden;
-    color: var(--text-color)
+    color: var(--text-color);
 }
 
 .container {

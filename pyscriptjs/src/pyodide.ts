@@ -78,11 +78,11 @@ export class PyodideInterpreter extends Interpreter {
             await this.loadPackage('micropip');
         }
         logger.info('pyodide loaded and initialized');
-        await this.run('print("Python initialization complete")')
+        await this.run('print("Python initialization complete")');
     }
 
     /* eslint-disable */
-    async run(code: string): Promise<{result: any}> {
+    async run(code: string): Promise<{ result: any }> {
         /**
          * eslint wants `await` keyword to be used i.e.
          * { result: await this.interface.runPython(code) }
@@ -117,10 +117,12 @@ export class PyodideInterpreter extends Interpreter {
         // for which the signature of `loadPackage` accepts the above params as args i.e.
         // the call uses `logger.info.bind(logger), logger.info.bind(logger)`.
         const pyodide_version = (await this.run("import sys; sys.modules['pyodide'].__version__")).result.toString();
-        if (pyodide_version.startsWith("0.22")) {
-            await this.interface.loadPackage(names, { messageCallback: logger.info.bind(logger), errorCallback: logger.info.bind(logger) });
-        }
-        else {
+        if (pyodide_version.startsWith('0.22')) {
+            await this.interface.loadPackage(names, {
+                messageCallback: logger.info.bind(logger),
+                errorCallback: logger.info.bind(logger),
+            });
+        } else {
             await this.interface.loadPackage(names, logger.info.bind(logger), logger.info.bind(logger));
         }
     }

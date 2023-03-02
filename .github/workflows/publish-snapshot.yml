@@ -1,11 +1,11 @@
-name: '[CI] Publish Snapshot'
+name: "[CI] Publish Snapshot"
 # Copy /unstable/ to /snapshots/2022.09.1.RC1/
 
 on:
     workflow_dispatch:
         inputs:
             snapshot_version:
-                description: 'The calver version of this snapshot: 2022.09.1 or 2022.09.1.RC1'
+                description: "The calver version of this snapshot: 2022.09.1 or 2022.09.1.RC1"
                 type: string
                 required: true
 
@@ -16,11 +16,11 @@ jobs:
             contents: read
             id-token: write
         steps:
-        -   name: Configure AWS credentials
-            uses: aws-actions/configure-aws-credentials@v1.6.1
-            with:
-                aws-region: ${{ secrets.AWS_REGION }}
-                role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
-        -   name: Sync to S3
-            run: >
-                aws s3 sync s3://pyscript.net/unstable/ s3://pyscript.net/snapshots/${{ inputs.snapshot_version }}/
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v1.6.1
+              with:
+                  aws-region: ${{ secrets.AWS_REGION }}
+                  role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
+            - name: Sync to S3
+              run: >
+                  aws s3 sync s3://pyscript.net/unstable/ s3://pyscript.net/snapshots/${{ inputs.snapshot_version }}/

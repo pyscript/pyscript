@@ -34,11 +34,16 @@ export function make_PyScript(interpreter: Interpreter, app: PyScriptApp) {
                 const pySrc = await this.getPySrc();
                 this.innerHTML = '';
 
-                app.plugins.beforePyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this});
+                app.plugins.beforePyScriptExec({ interpreter: interpreter, src: pySrc, pyScriptTag: this });
                 const result = (await pyExec(interpreter, pySrc, this)).result;
-                app.plugins.afterPyScriptExec({interpreter: interpreter, src: pySrc, pyScriptTag: this, result: result});
+                app.plugins.afterPyScriptExec({
+                    interpreter: interpreter,
+                    src: pySrc,
+                    pyScriptTag: this,
+                    result: result,
+                });
             } finally {
-                releaseLock()
+                releaseLock();
             }
         }
 
@@ -199,8 +204,7 @@ function createElementsWithEventListeners(interpreter: Interpreter, pyAttribute:
                 void (async () => {
                     try {
                         await interpreter.run(handlerCode);
-                    }
-                    catch (err) {
+                    } catch (err) {
                         displayPyException(err, el.parentElement);
                     }
                 })();

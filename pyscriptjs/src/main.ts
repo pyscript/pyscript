@@ -213,7 +213,7 @@ export class PyScriptApp {
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS
-        interpreter.interface.FS.mkdirTree("/home/pyodide/pyscript");
+        interpreter.interface.FS.mkdirTree('/home/pyodide/pyscript');
         interpreter.interface.FS.writeFile('pyscript/__init__.py', pyscript);
         //Refresh the module cache so Python consistently finds pyscript module
         interpreter.invalidate_module_path_cache();

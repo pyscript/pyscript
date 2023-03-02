@@ -1,4 +1,3 @@
-
 /* Unset the overly generic pyscript .label style */
 #app-placeholder .label {
     margin-top: inherit;
@@ -9,7 +8,6 @@
     color: inherit;
     font-size: inherit;
     margin-top: inherit;
-
 }
 
 /*******************************************************************
