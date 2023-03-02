@@ -19,7 +19,7 @@ import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 // eslint-disable-next-line
 // @ts-ignore
-import pyscript from './python/pyscript.py';
+import pyscript from './python/pyscript/__init__.py';
 import { robustFetch } from './fetch';
 
 const logger = getLogger('pyscript/main');
@@ -213,7 +213,8 @@ export class PyScriptApp {
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS
-        interpreter.interface.FS.writeFile('pyscript.py', pyscript, { encoding: 'utf8' });
+        interpreter.interface.FS.mkdirTree("/home/pyodide/pyscript");
+        interpreter.interface.FS.writeFile('pyscript/__init__.py', pyscript);
         //Refresh the module cache so Python consistently finds pyscript module
         interpreter.invalidate_module_path_cache();
 
