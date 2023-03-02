@@ -76,6 +76,13 @@ jobs:
                 if-no-files-found: error
                 retention-days: 7
 
+      - uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: test_results
+          path: test_results
+
+
     Deploy:
         runs-on: ubuntu-latest
         needs: BuildAndTest

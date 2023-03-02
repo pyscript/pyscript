@@ -138,3 +138,6 @@ dmypy.json
 node_modules/
 
 coverage/
+
+# junit xml for test results
+test_results
