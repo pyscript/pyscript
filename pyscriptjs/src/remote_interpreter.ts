@@ -115,7 +115,7 @@ export class RemoteInterpreter extends Object {
     /* eslint-enable */
 
     /**
-     * delegates the setting of JS objects to
+     * delegates the registration of JS modules to
      * the underlying interface.
      * */
     registerJsModule(name: string, module: object): void {
