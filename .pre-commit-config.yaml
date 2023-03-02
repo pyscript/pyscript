@@ -54,7 +54,10 @@ repos:
       rev: "v3.0.0-alpha.5"
       hooks:
           - id: prettier
-            exclude: .github/ISSUE_TEMPLATE/.*\.yml$
+            exclude: |
+                .github/ISSUE_TEMPLATE/.*\.yml$
+                examples/assets/
+
             args: [--tab-width, "4"]
 
     - repo: https://github.com/asottile/pyupgrade
