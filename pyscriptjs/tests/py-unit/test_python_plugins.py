@@ -52,20 +52,20 @@ class TestPyTutor:
         # GIVEN a previous call to py_tutor.plugin.append_script_to_page
         head = pyscript.js.document.head
 
-        # EXPECT the head to contain a link element pointing to the prism.css
+        # EXPECT the head to contain a link element pointing to the prism.min.css
         links = head.getElementsByTagName("link")
         assert len(links) == 1
         link = links[0]
         assert link.type == "text/css"
         assert link.rel == "stylesheet"
-        assert link.href == "./assets/prism/prism.css"
+        assert link.href == "./assets/prism/prism.min.css"
 
-        # EXPECT the head to contain a script src == prism.js
+        # EXPECT the head to contain a script src == prism.min.js
         scripts = head.getElementsByTagName("script")
         assert len(scripts) == 1
         script = scripts[0]
         assert script.type == "text/javascript"
-        assert script.src == "./assets/prism/prism.js"
+        assert script.src == "./assets/prism/prism.min.js"
 
     def check_append_script_to_page(self):
         """
