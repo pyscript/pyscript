@@ -85,15 +85,18 @@ test:
 
 test-integration:
 	make examples
-	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning
+	mkdir -p test_results
+	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
 
 test-integration-parallel:
 	make examples
-	$(PYTEST_EXE) --numprocesses auto -vv $(ARGS) tests/integration/ --log-cli-level=warning
+	mkdir -p test_results
+	$(PYTEST_EXE) --numprocesses auto -vv $(ARGS) tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
 
 test-py:
 	@echo "Tests from $(src_dir)"
-	$(PYTEST_EXE) -vv $(ARGS) tests/py-unit/ --log-cli-level=warning
+	mkdir -p test_results
+	$(PYTEST_EXE) -vv $(ARGS) tests/py-unit/ --log-cli-level=warning --junitxml=test_results/py-unit.xml
 
 test-ts:
 	npm run test
