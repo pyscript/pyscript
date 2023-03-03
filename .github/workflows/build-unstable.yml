@@ -80,8 +80,8 @@ jobs:
             if: success() || failure()
             with:
                 name: test_results
-                path: test_results
-
+                path: pyscriptjs/test_results
+                if-no-files-found: error
 
     Deploy:
         runs-on: ubuntu-latest
