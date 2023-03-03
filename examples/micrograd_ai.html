@@ -43,21 +43,17 @@
                 classify the data. <br>
             </p>
             <p>
-                Currently the <code>&gt;</code> symbol is being imported incorrectly as <code>&ampgt;</code> into the REPL's.
+                Currently the <code>&gt;</code> symbol is being imported incorrectly as <code>&amp;gt;</code> into the REPL's.
                 In this app the <code>&gt;</code> symbol has been replaced with <code>().__gt__()</code> so you can run the code
                 without issue. Ex: instead of <code>a &gt; b</code>, you will see <code>(a).__gt__(b)</code> instead. <br>
             </p>
-            <p>
-                <py-script>import js; js.document.getElementById('python-status').innerHTML = 'Python is now ready. You may proceed.'</py-script>
-                <div id="python-status">Python is currently starting.  Please wait...</div>
-            </p>
-            <p>
-                <button id="run-all-button" class="btn btn-primary" type="submit" py-onClick="run_all_micrograd_demo()">Run All</button><br>
-                <py-script src="/micrograd_ai.py"></py-script>
-                <div id="micrograd-run-all-print-div"></div><br>
-                <div id="micrograd-run-all-fig1-div"></div>
-                <div id="micrograd-run-all-fig2-div"></div><br>
-            </p>
+            <py-script>import js; js.document.getElementById('python-status').innerHTML = 'Python is now ready. You may proceed.'</py-script>
+            <div id="python-status">Python is currently starting.  Please wait...</div>
+            <button id="run-all-button" class="btn btn-primary" type="submit" py-onClick="run_all_micrograd_demo()">Run All</button><br>
+            <py-script src="/micrograd_ai.py"></py-script>
+            <div id="micrograd-run-all-print-div"></div><br>
+            <div id="micrograd-run-all-fig1-div"></div>
+            <div id="micrograd-run-all-fig2-div"></div><br>
         </div>
         <py-repl auto-generate="false">
 import random
