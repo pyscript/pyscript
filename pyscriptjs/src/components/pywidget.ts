@@ -1,11 +1,11 @@
-import type { Interpreter } from '../interpreter';
 import type { PyProxy } from 'pyodide';
 import { getLogger } from '../logger';
 import { robustFetch } from '../fetch';
+import { InterpreterClient } from '../interpreter_client';
 
 const logger = getLogger('py-register-widget');
 
-function createWidget(interpreter: Interpreter, name: string, code: string, klass: string) {
+function createWidget(interpreter: InterpreterClient, name: string, code: string, klass: string) {
     class CustomWidget extends HTMLElement {
         shadow: ShadowRoot;
         wrapper: HTMLElement;
@@ -44,7 +44,7 @@ function createWidget(interpreter: Interpreter, name: string, code: string, klas
     /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
-export function make_PyWidget(interpreter: Interpreter) {
+export function make_PyWidget(interpreter: InterpreterClient) {
     class PyWidget extends HTMLElement {
         shadow: ShadowRoot;
         name: string;

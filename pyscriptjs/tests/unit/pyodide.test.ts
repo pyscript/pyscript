@@ -1,18 +1,18 @@
 import type { AppConfig } from '../../src/pyconfig';
-import { Interpreter } from '../../src/interpreter';
-import { PyodideInterpreter } from '../../src/pyodide';
+import { InterpreterClient } from '../../src/interpreter_client';
+import { RemoteInterpreter } from '../../src/remote_interpreter';
 import { CaptureStdio } from '../../src/stdio';
 
 import { TextEncoder, TextDecoder } from 'util';
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 
-describe('PyodideInterpreter', () => {
-    let interpreter: PyodideInterpreter;
+describe('RemoteInterpreter', () => {
+    let interpreter: InterpreterClient;
     let stdio: CaptureStdio = new CaptureStdio();
     beforeAll(async () => {
-        const config: AppConfig = {};
-        interpreter = new PyodideInterpreter(config, stdio);
+        const config: AppConfig = {interpreters: [{src: "../pyscriptjs/node_modules/pyodide/pyodide.js"}]};
+        interpreter = new InterpreterClient(config, stdio);
 
         /**
          * Since import { loadPyodide } from 'pyodide';
@@ -39,15 +39,15 @@ describe('PyodideInterpreter', () => {
         const pyodideSpec = await import('pyodide');
         global.loadPyodide = async options =>
             pyodideSpec.loadPyodide(Object.assign({ indexURL: '../pyscriptjs/node_modules/pyodide/' }, options));
-        await interpreter.loadInterpreter();
+        await interpreter.initializeRemote();
     });
 
     it('should check if interpreter is an instance of abstract Interpreter', async () => {
-        expect(interpreter).toBeInstanceOf(Interpreter);
+        expect(interpreter).toBeInstanceOf(InterpreterClient);
     });
 
-    it('should check if interpreter is an instance of PyodideInterpreter', async () => {
-        expect(interpreter).toBeInstanceOf(PyodideInterpreter);
+    it('should check if interpreter is an instance of RemoteInterpreter', async () => {
+        expect(interpreter._remote).toBeInstanceOf(RemoteInterpreter);
     });
 
     it('should check if interpreter can run python code asynchronously', async () => {
@@ -61,7 +61,7 @@ describe('PyodideInterpreter', () => {
     });
 
     it('should check if interpreter is able to load a package', async () => {
-        await interpreter.loadPackage('numpy');
+        await interpreter._remote.loadPackage('numpy');
         await interpreter.run('import numpy as np');
         await interpreter.run('x = np.ones((10,))');
         expect(interpreter.globals.get('x').toJs()).toBeInstanceOf(Float64Array);

@@ -1,7 +1,7 @@
-import type { Interpreter } from '../interpreter';
 import { showWarning } from '../utils';
 import { Plugin } from '../plugin';
 import { getLogger } from '../logger';
+import { InterpreterClient } from '../interpreter_client';
 
 const logger = getLogger('plugins/importmap');
 
@@ -11,7 +11,7 @@ type ImportMapType = {
 };
 
 export class ImportmapPlugin extends Plugin {
-    async afterSetup(interpreter: Interpreter) {
+    async afterSetup(interpreter: InterpreterClient) {
         // make importmap ES modules available from python using 'import'.
         //
         // XXX: this code can probably be improved because errors are silently
@@ -46,7 +46,7 @@ export class ImportmapPlugin extends Plugin {
                 }
 
                 logger.info('Registering JS module', name);
-                interpreter.registerJsModule(name, exports);
+                interpreter._remote.registerJsModule(name, exports);
             }
         }
     }

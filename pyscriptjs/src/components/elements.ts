@@ -1,8 +1,8 @@
-import type { Interpreter } from '../interpreter';
+import { InterpreterClient } from '../interpreter_client';
 import { make_PyRepl } from './pyrepl';
 import { make_PyWidget } from './pywidget';
 
-function createCustomElements(interpreter: Interpreter) {
+function createCustomElements(interpreter: InterpreterClient) {
     const PyWidget = make_PyWidget(interpreter);
     const PyRepl = make_PyRepl(interpreter);
 

@@ -34,7 +34,7 @@ class TestInterpreterAccess(PyScriptTest):
 
         self.page.add_script_tag(
             content="""
-        const interface = pyscript.interpreter.interface;
+        const interface = pyscript.interpreter._remote.interface;
         interface.runPython('print("Interpreter Ran This")');
         """
         )
@@ -51,7 +51,7 @@ class TestInterpreterAccess(PyScriptTest):
 
         self.page.add_script_tag(
             content="""
-        const interface = pyscript.runtime.interpreter;
+        const interface = pyscript.runtime._remote.interpreter;
         interface.runPython('print("Interpreter Ran This")');
         """
         )

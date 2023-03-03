@@ -1,8 +1,8 @@
 import type { AppConfig } from './pyconfig';
-import type { Interpreter } from './interpreter';
 import type { UserError } from './exceptions';
 import { getLogger } from './logger';
 import { make_PyScript } from './components/pyscript';
+import { InterpreterClient } from './interpreter_client';
 
 const logger = getLogger('plugin');
 type PyScriptTag =  InstanceType<ReturnType<typeof make_PyScript>>;
@@ -39,7 +39,7 @@ export class Plugin {
      *
      * The <py-script> tags will be executed after this hook.
      */
-    afterSetup(interpreter: Interpreter) {}
+    afterSetup(interpreter: InterpreterClient) {}
 
     /** The source of a <py-script>> tag has been fetched, and we're about
      * to evaluate that source using the provided interpreter.
@@ -48,7 +48,7 @@ export class Plugin {
      * @param options.src {string} The Python source code to be evaluated
      * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
      */
-    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag}) {}
+    beforePyScriptExec(options: {interpreter: InterpreterClient, src: string, pyScriptTag: PyScriptTag}) {}
 
     /** The Python in a <py-script> has just been evaluated, but control
      * has not been ceded back to the JavaScript event loop yet
@@ -58,13 +58,13 @@ export class Plugin {
      * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
      * @param options.result The returned result of evaluating the Python (if any)
      */
-    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag, result: any}) {}
+    afterPyScriptExec(options: {interpreter: InterpreterClient, src: string, pyScriptTag: PyScriptTag, result: any}) {}
 
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and
      * the page is ready to accept user interactions.
      */
-    afterStartup(interpreter: Interpreter) {}
+    afterStartup(interpreter: InterpreterClient) {}
 
     /** Called when an UserError is raised
      */
@@ -104,7 +104,7 @@ export class PluginManager {
         }
     }
 
-    afterSetup(interpreter: Interpreter) {
+    afterSetup(interpreter: InterpreterClient) {
         for (const p of this._plugins) {
             try {
                 p.afterSetup?.(interpreter);
@@ -116,19 +116,19 @@ export class PluginManager {
         for (const p of this._pythonPlugins) p.afterSetup?.(interpreter);
     }
 
-    afterStartup(interpreter: Interpreter) {
+    afterStartup(interpreter: InterpreterClient) {
         for (const p of this._plugins) p.afterStartup?.(interpreter);
 
         for (const p of this._pythonPlugins) p.afterStartup?.(interpreter);
     }
 
-    beforePyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag}) {
+    beforePyScriptExec(options: {interpreter: InterpreterClient, src: string, pyScriptTag: PyScriptTag}) {
         for (const p of this._plugins) p.beforePyScriptExec?.(options);
 
         for (const p of this._pythonPlugins) p.beforePyScriptExec?.callKwargs(options);
     }
 
-    afterPyScriptExec(options: {interpreter: Interpreter, src: string, pyScriptTag: PyScriptTag, result: any}) {
+    afterPyScriptExec(options: {interpreter: InterpreterClient, src: string, pyScriptTag: PyScriptTag, result: any}) {
         for (const p of this._plugins) p.afterPyScriptExec?.(options);
 
         for (const p of this._pythonPlugins) p.afterPyScriptExec?.callKwargs(options);

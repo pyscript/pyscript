@@ -1,44 +1,54 @@
-import { Interpreter } from './interpreter';
-import { getLogger } from './logger';
-import { InstallError, ErrorCode } from './exceptions';
-import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
-import { robustFetch } from './fetch';
 import type { AppConfig } from './pyconfig';
-import type { Stdio } from './stdio';
+import { getLogger } from './logger';
+import { Stdio } from './stdio';
+import { InstallError, ErrorCode } from './exceptions';
+import { robustFetch } from './fetch';
+import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
 
 declare const loadPyodide: typeof loadPyodideDeclaration;
-
 const logger = getLogger('pyscript/pyodide');
+
+export type InterpreterInterface = PyodideInterface | null;
 
 interface Micropip extends PyProxy {
     install: (packageName: string | string[]) => Promise<void>;
     destroy: () => void;
 }
 
-export class PyodideInterpreter extends Interpreter {
+/*
+RemoteInterpreter class is responsible to process requests from the
+`InterpreterClient` class -- these can be requests for installation of
+a package, executing code, etc.
+
+Currently, the only interpreter available is Pyodide as indicated by the
+`InterpreterInterface` type above. This serves as a Union of types of
+different interpreters which will be added in near future.
+
+Methods available handle loading of the interpreter, initialization,
+running code, loading and installation of packages, loading from files etc.
+
+The class will be turned `abstract` in future, to support more runtimes
+such as MicroPython.
+ */
+export class RemoteInterpreter extends Object {
     src: string;
-    stdio: Stdio;
-    name?: string;
-    lang?: string;
-    interface: PyodideInterface;
+    interface: InterpreterInterface;
     globals: PyProxy;
     // TODO: Remove this once `runtimes` is removed!
-    interpreter: PyodideInterface;
+    interpreter: InterpreterInterface;
 
     constructor(
-        config: AppConfig,
-        stdio: Stdio,
-        src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js',
-        name = 'pyodide-default',
-        lang = 'python',
+        src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js'
     ) {
-        logger.info('Interpreter config:', { name, lang, src });
-        super(config);
-        this.stdio = stdio;
+        super();
         this.src = src;
-        this.name = name;
-        this.lang = lang;
     }
+
+    /**
+     * loads the interface for the interpreter and saves an instance of it
+     * in the `this.interface` property along with calling of other
+     * additional convenience functions.
+     * */
 
     /**
      * Although `loadPyodide` is used below,
@@ -56,14 +66,13 @@ export class PyodideInterpreter extends Interpreter {
      * contain these files and is clearly the wrong
      * path.
      */
-    async loadInterpreter(): Promise<void> {
-        logger.info('Loading pyodide');
+    async loadInterpreter(config: AppConfig, stdio: Stdio): Promise<void> {
         this.interface = await loadPyodide({
             stdout: (msg: string) => {
-                this.stdio.stdout_writeline(msg);
+                stdio.stdout_writeline(msg);
             },
             stderr: (msg: string) => {
-                this.stdio.stderr_writeline(msg);
+                stdio.stderr_writeline(msg);
             },
             fullStdLib: false,
         });
@@ -73,7 +82,7 @@ export class PyodideInterpreter extends Interpreter {
 
         this.globals = this.interface.globals;
 
-        if (this.config.packages) {
+        if (config.packages) {
             logger.info('Found packages in configuration to install. Loading micropip...');
             await this.loadPackage('micropip');
         }
@@ -105,10 +114,18 @@ export class PyodideInterpreter extends Interpreter {
     }
     /* eslint-enable */
 
+    /**
+     * delegates the registration of JS modules to
+     * the underlying interface.
+     * */
     registerJsModule(name: string, module: object): void {
         this.interface.registerJsModule(name, module);
     }
 
+    /**
+     * delegates the loading of packages to
+     * the underlying interface.
+     * */
     async loadPackage(names: string | string[]): Promise<void> {
         logger.info(`pyodide.loadPackage: ${names.toString()}`);
         // the new way in v0.22.1 is to pass it as a dict of options i.e.
@@ -125,6 +142,13 @@ export class PyodideInterpreter extends Interpreter {
         }
     }
 
+    /**
+     * delegates the installation of packages
+     * (using a package manager, which can be specific to
+     * the interface) to the underlying interface.
+     *
+     * For Pyodide, we use `micropip`
+     * */
     async installPackage(package_name: string | string[]): Promise<void> {
         if (package_name.length > 0) {
             logger.info(`micropip install ${package_name.toString()}`);
@@ -226,6 +250,10 @@ export class PyodideInterpreter extends Interpreter {
         this.interface.FS.close(stream);
     }
 
+    /**
+     * delegates clearing importlib's module path
+     * caches to the underlying interface
+     */
     invalidate_module_path_cache(): void {
         const importlib = this.interface.pyimport('importlib');
         importlib.invalidate_caches();
