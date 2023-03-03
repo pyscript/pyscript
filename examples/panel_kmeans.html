@@ -1,38 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="theme-color" content="#000000">
-    <meta name="name" content="PyScript/Panel KMeans Demo">
+    <meta charset="utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="name" content="PyScript/Panel KMeans Demo" />
 
     <title>Pyscript/Panel KMeans Demo</title>
-    <link rel="icon" type="image/x-icon" href="./favicon.png">
+    <link rel="icon" type="image/x-icon" href="./favicon.png" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.1/dist/css/widgets.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.1/dist/css/markdown.css" type="text/css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@holoviz/panel@0.13.1/dist/css/widgets.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@holoviz/panel@0.13.1/dist/css/markdown.css"
+      type="text/css"
+    />
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
-    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.3.min.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.3.min.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@holoviz/panel@0.13.1/dist/panel.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/vega@5"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/vega-lite@5"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/vega-embed@6"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.3.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.3.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/@holoviz/panel@0.13.1/dist/panel.min.js"
+    ></script>
     <script type="text/javascript">
       Bokeh.set_log_level("info");
     </script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.1/dist/bundled/bootstraptemplate/bootstrap.css">
-    <link rel="stylesheet" href="https://unpkg.com/@holoviz/panel@0.13.1/dist/bundled/defaulttheme/default.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@holoviz/panel@0.13.1/dist/bundled/bootstraptemplate/bootstrap.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@holoviz/panel@0.13.1/dist/bundled/defaulttheme/default.css"
+    />
 
     <style>
       #sidebar {
-	  width: 350px;
+        width: 350px;
       }
     </style>
 
@@ -45,21 +90,23 @@
   </head>
 
   <body>
-    <nav class="navbar" style="background-color: #000000;">
+    <nav class="navbar" style="background-color: #000000">
       <div class="app-header">
         <a href="/">
-          <img src="./logo.png" class="logo">
+          <img src="./logo.png" class="logo" />
         </a>
-        <a class="title" href="" style="color: #f0ab3c;">Panel KMeans Clustering Demo</a>
+        <a class="title" href="" style="color: #f0ab3c"
+          >Panel KMeans Clustering Demo</a
+        >
       </div>
     </nav>
     <section class="pyscript">
       <div class="row overflow-hidden" id="content">
-	      <div class="sidenav" id="sidebar">
+        <div class="sidenav" id="sidebar">
           <ul class="nav flex-column">
-                  <div class="bk-root" id="x-widget"></div>
-                  <div class="bk-root" id="y-widget"></div>
-                  <div class="bk-root" id="n-widget"></div>
+            <div class="bk-root" id="x-widget"></div>
+            <div class="bk-root" id="y-widget"></div>
+            <div class="bk-root" id="n-widget"></div>
           </ul>
         </div>
         <div class="col mh-100 float-left" id="main">
@@ -159,15 +206,19 @@
           update_table()
           update_chart()
         </py-script>
-     </py-tutor>
+      </py-tutor>
     </section>
     <script>
       $(document).ready(function () {
-        $('#sidebarCollapse').on('click', function () {
-        $('#sidebar').toggleClass('active')
-        $(this).toggleClass('active')
-        var interval = setInterval(function () { window.dispatchEvent(new Event('resize')); }, 10);
-          setTimeout(function () { clearInterval(interval) }, 210)
+        $("#sidebarCollapse").on("click", function () {
+          $("#sidebar").toggleClass("active");
+          $(this).toggleClass("active");
+          var interval = setInterval(function () {
+            window.dispatchEvent(new Event("resize"));
+          }, 10);
+          setTimeout(function () {
+            clearInterval(interval);
+          }, 210);
         });
       });
     </script>

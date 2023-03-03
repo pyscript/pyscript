@@ -10,7 +10,7 @@
  * nothing.
  */
 
- console.warn(`.py files that are not explicitly mocked in \
+console.warn(`.py files that are not explicitly mocked in \
  jest.config.js and /__mocks__/ are mocked as empty strings`);
 
- module.exports = "";
+module.exports = '';

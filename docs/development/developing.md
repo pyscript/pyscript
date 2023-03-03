@@ -2,43 +2,45 @@
 
 This document is intended to help you get started in developing software for the PyScript project. It assumes that you have [a working development environment](setting-up-environment.md). It also assumes you have a remote named `upstream` pointing to PyScript's repository and one named `origin` pointing to your own repository.
 
-* First, make sure you are using the latest version of the pyscript main branch
+- First, make sure you are using the latest version of the pyscript main branch
 
 ```
 git pull upstream main
 ```
 
-* Update your fork with the latest changes
+- Update your fork with the latest changes
 
 ```
 git push origin main
 ```
 
-* Activate the conda environment (this environment will contain all the necessary dependencies)
+- Activate the conda environment (this environment will contain all the necessary dependencies)
 
 ```
 conda activate pyscriptjs/env/
 ```
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: We are assuming you are in the root folder. If you are in the pyscriptjs you can run `conda activate env/` instead.
 
-* Install pre-commit (you only need to do this once)
+- Install pre-commit (you only need to do this once)
 
 ```
 pre-commit install
 ```
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: On first run, pre-commit installs a bunch of hooks that will be run when you commit changes to your branch - this will make sure that your code is following our style (it will also lint your code automatically).
 
-* Create a branch for the issue that you want to work on
+- Create a branch for the issue that you want to work on
 
 ```
 git checkout -b <your branch name>
 ```
 
-* Work on your changes
+- Work on your changes
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: If you are working on a python file, you may encounter linting issues when pre-commit runs. Pyscript uses [black](https://black.readthedocs.io/en/stable/) to fix any linting problems automatically. All you need to do is add the changes again and commit using your previous commit message (the previous one that failed didn't complete due to black formatting files).
 
-* Run tests before pushing the changes
+- Run tests before pushing the changes
 
 ```
 make tests
@@ -46,14 +48,13 @@ make tests
 
 To learn more about tests please refer to the session [Quick guide to pytest](## Quick guide to pytest).
 
-* When you make changes locally, double check that your contribution follows the PyScript formatting rules by running `npm run lint`. Note that in this case you're looking for the errors, <u>**NOT**</u> the warnings (Unless the warning is created by a local change). If an error is found by the linter you should fix it <u>**before**</u> creating a pull request.
+- When you make changes locally, double check that your contribution follows the PyScript formatting rules by running `npm run lint`. Note that in this case you're looking for the errors, <u>**NOT**</u> the warnings (Unless the warning is created by a local change). If an error is found by the linter you should fix it <u>**before**</u> creating a pull request.
 
 #### Rebasing changes
 
 Sometimes you might be asked to rebase the main branch into your local branch. Please refer to this [section on git rebase from GitHub docs](https://docs.github.com/en/get-started/using-git/about-git-rebase).
 
 If you need help with anything, feel free to reach out and ask for help!
-
 
 ## Updating the changelog
 
@@ -106,7 +107,6 @@ useful options:
 
 - `-k 'foo and not bar'`
 
-
 ### Running integration tests under pytest
 
 `make test` is useful to run all the tests, but during the development is
@@ -135,11 +135,13 @@ basic things, you will notice immediately.
 
 If you have the `pytest-xdist` plugin installed, you can run all the
 integration tests on 4 cores in parallel:
+
 ```
 $ pytest -n 4
 ```
 
 #### To run a single test, headless
+
 ```
 $ pytest test_01_basic.py -k test_pyscript_hello -s
 ...
@@ -159,6 +161,7 @@ output you can see various useful things, including network requests and JS
 console messages.
 
 #### To run a single test, headed
+
 ```
 $ pytest test_01_basic.py -k test_pyscript_hello -s --headed
 ...
@@ -189,7 +192,6 @@ $ pytest test_01_basic.py -k test_pyscript_hello -s --dev
 
 `--dev` implies `--headed --no-fake-server`. In addition, it also
 automatically open chrome dev tools.
-
 
 ## Fake server, HTTP cache
 

@@ -1,29 +1,28 @@
-(function() {
-  if (typeof Mario === 'undefined')
-  window.Mario = {};
+(function () {
+  if (typeof Mario === "undefined") window.Mario = {};
 
-  var Mushroom = Mario.Mushroom = function(pos) {
+  var Mushroom = (Mario.Mushroom = function (pos) {
     this.spawning = false;
     this.waiting = 0;
 
     Mario.Entity.call(this, {
       pos: pos,
       sprite: level.superShroomSprite,
-      hitbox: [0,0,16,16]
+      hitbox: [0, 0, 16, 16],
     });
-  }
+  });
 
   Mario.Util.inherits(Mushroom, Mario.Entity);
 
-  Mushroom.prototype.render = function(ctx, vX, vY) {
+  Mushroom.prototype.render = function (ctx, vX, vY) {
     if (this.spawning > 1) return;
     this.sprite.render(ctx, this.pos[0], this.pos[1], vX, vY);
-  }
+  };
 
-  Mushroom.prototype.spawn = function() {
+  Mushroom.prototype.spawn = function () {
     if (player.power > 0) {
       //replace this with a fire flower
-      var ff = new Mario.Fireflower(this.pos)
+      var ff = new Mario.Fireflower(this.pos);
       ff.spawn();
       return;
     }
@@ -34,12 +33,12 @@
     this.targetpos = [];
     this.targetpos[0] = this.pos[0];
     this.targetpos[1] = this.pos[1] - 16;
-  }
+  };
 
-  Mushroom.prototype.update = function(dt) {
+  Mushroom.prototype.update = function (dt) {
     if (this.spawning > 1) {
       this.spawning -= 1;
-      if (this.spawning == 1) this.vel[1] = -.5;
+      if (this.spawning == 1) this.vel[1] = -0.5;
       return;
     }
     if (this.spawning) {
@@ -62,14 +61,14 @@
       this.pos[1] += this.vel[1];
       this.sprite.update(dt);
     }
-  }
+  };
 
-  Mushroom.prototype.collideWall = function() {
+  Mushroom.prototype.collideWall = function () {
     this.vel[0] = -this.vel[0];
-  }
+  };
 
-  Mushroom.prototype.checkCollisions = function() {
-    if(this.spawning) {
+  Mushroom.prototype.checkCollisions = function () {
+    if (this.spawning) {
       return;
     }
     var h = this.pos[1] % 16 == 0 ? 1 : 2;
@@ -95,24 +94,36 @@
     }
 
     this.isPlayerCollided();
-  }
+  };
 
   //we have access to player everywhere, so let's just do this.
-  Mushroom.prototype.isPlayerCollided = function() {
+  Mushroom.prototype.isPlayerCollided = function () {
     //the first two elements of the hitbox array are an offset, so let's do this now.
     var hpos1 = [this.pos[0] + this.hitbox[0], this.pos[1] + this.hitbox[1]];
-    var hpos2 = [player.pos[0] + player.hitbox[0], player.pos[1] + player.hitbox[1]];
+    var hpos2 = [
+      player.pos[0] + player.hitbox[0],
+      player.pos[1] + player.hitbox[1],
+    ];
 
     //if the hitboxes actually overlap
-    if (!(hpos1[0] > hpos2[0]+player.hitbox[2] || (hpos1[0]+this.hitbox[2] < hpos2[0]))) {
-      if (!(hpos1[1] > hpos2[1]+player.hitbox[3] || (hpos1[1]+this.hitbox[3] < hpos2[1]))) {
+    if (
+      !(
+        hpos1[0] > hpos2[0] + player.hitbox[2] ||
+        hpos1[0] + this.hitbox[2] < hpos2[0]
+      )
+    ) {
+      if (
+        !(
+          hpos1[1] > hpos2[1] + player.hitbox[3] ||
+          hpos1[1] + this.hitbox[3] < hpos2[1]
+        )
+      ) {
         player.powerUp(this.idx);
       }
     }
-  }
+  };
 
-  Mushroom.prototype.bump = function() {
+  Mushroom.prototype.bump = function () {
     this.vel[1] = -2;
-  }
-
+  };
 })();

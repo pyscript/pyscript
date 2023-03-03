@@ -1,90 +1,91 @@
 body {
-    margin: 0;
+  margin: 0;
 }
 
 .pyscript {
-    margin: 0.5rem;
+  margin: 0.5rem;
 }
 
 .code {
-    display: flex;
-    position: absolute;
-    right: 0px;
-    z-index: 9998;
-    top: 7rem;
+  display: flex;
+  position: absolute;
+  right: 0px;
+  z-index: 9998;
+  top: 7rem;
 }
 
 @media (max-width: 1300px) {
-    .code:has(> .code-section-visible) {
-        width: 90%;
-        /* Absolute position is messing up the layout on small screens */
-        right: 70px;
-    }
+  .code:has(> .code-section-visible) {
+    width: 90%;
+    /* Absolute position is messing up the layout on small screens */
+    right: 70px;
+  }
 }
 
 .code-section-hidden {
-    width: 0px;
-    display: none;
+  width: 0px;
+  display: none;
 }
 
 .code-section-visible {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    background-color: rgb(45 46 53 / 90%);
-    padding: 1rem;
-    border-radius: 10px 0px 0px 10px;
-    color: #c6c6c8;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: rgb(45 46 53 / 90%);
+  padding: 1rem;
+  border-radius: 10px 0px 0px 10px;
+  color: #c6c6c8;
 }
-.code-section-visible p{
-    margin: 0;
-    font-style: italic;
-    font-size: small;
+.code-section-visible p {
+  margin: 0;
+  font-style: italic;
+  font-size: small;
 }
 
-.language-html, .language-python {
-    float: left;
+.language-html,
+.language-python {
+  float: left;
 }
 
 #view-code-button {
-    writing-mode: tb-rl;
-    text-orientation: sideways-right;
-    background-color: #1D1D22;
-    color: white;
-    padding: 0.5rem;
-    border-radius: 5px;
-    cursor: pointer;
-    height: 81px;
+  writing-mode: tb-rl;
+  text-orientation: sideways-right;
+  background-color: #1d1d22;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  height: 81px;
 }
 
 nav {
-    position: sticky;
-    width: 100%;
-    top: 0;
-    left: 0;
-    z-index: 9999;
+  position: sticky;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 9999;
 }
 
 .logo {
-    padding-right: 10px;
-    font-size: 28px;
-    height: 30px;
-    max-width: inherit;
+  padding-right: 10px;
+  font-size: 28px;
+  height: 30px;
+  max-width: inherit;
 }
 
 .title {
-    text-decoration: none;
-    text-decoration-line: none;
-    text-decoration-style: initial;
-    text-decoration-color: initial;
-    font-weight: 400;
-    font-size: 1.5em;
-    line-height: 2em;
-    white-space: nowrap;
+  text-decoration: none;
+  text-decoration-line: none;
+  text-decoration-style: initial;
+  text-decoration-color: initial;
+  font-weight: 400;
+  font-size: 1.5em;
+  line-height: 2em;
+  white-space: nowrap;
 }
 
 .app-header {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
 }

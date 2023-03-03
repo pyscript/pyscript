@@ -11,7 +11,6 @@ InterpreterClient class is responsible to request code execution
 (among other things) from a `RemoteInterpreter`
 */
 export class InterpreterClient extends Object {
-
     _remote: RemoteInterpreter;
     config: AppConfig;
     /**
@@ -41,7 +40,7 @@ export class InterpreterClient extends Object {
      * the remote interpreter.
      * Python exceptions are turned into JS exceptions.
      * */
-    async run(code: string): Promise<{result: any}> {
+    async run(code: string): Promise<{ result: any }> {
         return await this._remote.run(code);
     }
 

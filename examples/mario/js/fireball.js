@@ -1,21 +1,26 @@
-(function() {
-  if (typeof Mario === 'undefined')
-    window.Mario = {};
+(function () {
+  if (typeof Mario === "undefined") window.Mario = {};
 
-  var Fireball = Mario.Fireball = function(pos) {
+  var Fireball = (Mario.Fireball = function (pos) {
     this.hit = 0;
     this.standing = false;
 
     Mario.Entity.call(this, {
       pos: pos,
-      sprite: new Mario.Sprite('sprites/items.png', [96, 144], [8,8], 5, [0,1,2,3]),
-      hitbox: [0,0,8,8]
+      sprite: new Mario.Sprite(
+        "sprites/items.png",
+        [96, 144],
+        [8, 8],
+        5,
+        [0, 1, 2, 3],
+      ),
+      hitbox: [0, 0, 8, 8],
     });
-  }
+  });
 
   Mario.Util.inherits(Fireball, Mario.Entity);
 
-  Fireball.prototype.spawn = function(left) {
+  Fireball.prototype.spawn = function (left) {
     sounds.fireball.currentTime = 0;
     sounds.fireball.play();
     if (fireballs[0]) {
@@ -25,20 +30,20 @@
       this.idx = 0;
       fireballs[0] = this;
     }
-    this.vel[0] = (left ? -5 : 5);
+    this.vel[0] = left ? -5 : 5;
     this.standing = false;
     this.vel[1] = 0;
-  }
+  };
 
-  Fireball.prototype.render = function(ctx, vX, vY) {
+  Fireball.prototype.render = function (ctx, vX, vY) {
     this.sprite.render(ctx, this.pos[0], this.pos[1], vX, vY);
-  }
+  };
 
-  Fireball.prototype.update = function(dt) {
+  Fireball.prototype.update = function (dt) {
     if (this.hit == 1) {
       this.sprite.pos = [96, 160];
-      this.sprite.size = [16,16];
-      this.sprite.frames = [0,1,2];
+      this.sprite.size = [16, 16];
+      this.sprite.frames = [0, 1, 2];
       this.sprite.speed = 8;
       this.hit += 1;
       return;
@@ -67,13 +72,13 @@
       this.hit = 1;
     }
     this.sprite.update(dt);
-  }
+  };
 
-  Fireball.prototype.collideWall = function() {
+  Fireball.prototype.collideWall = function () {
     if (!this.hit) this.hit = 1;
-  }
+  };
 
-  Fireball.prototype.checkCollisions = function() {
+  Fireball.prototype.checkCollisions = function () {
     if (this.hit) return;
     var h = this.pos[1] % 16 < 8 ? 1 : 2;
     var w = this.pos[0] % 16 < 8 ? 1 : 2;
@@ -99,28 +104,39 @@
     }
 
     var that = this;
-    level.enemies.forEach(function(enemy){
-      if (enemy.flipping || enemy.pos[0] - vX > 336){ //stop checking once we get to far away dudes.
+    level.enemies.forEach(function (enemy) {
+      if (enemy.flipping || enemy.pos[0] - vX > 336) {
+        //stop checking once we get to far away dudes.
         return;
       } else {
         that.isCollideWith(enemy);
       }
     });
-  }
+  };
 
-  Fireball.prototype.isCollideWith = function(ent) {
+  Fireball.prototype.isCollideWith = function (ent) {
     //the first two elements of the hitbox array are an offset, so let's do this now.
     var hpos1 = [this.pos[0] + this.hitbox[0], this.pos[1] + this.hitbox[1]];
     var hpos2 = [ent.pos[0] + ent.hitbox[0], ent.pos[1] + ent.hitbox[1]];
 
     //if the hitboxes actually overlap
-    if (!(hpos1[0] > hpos2[0]+ent.hitbox[2] || (hpos1[0]+this.hitbox[2] < hpos2[0]))) {
-      if (!(hpos1[1] > hpos2[1]+ent.hitbox[3] || (hpos1[1]+this.hitbox[3] < hpos2[1]))) {
+    if (
+      !(
+        hpos1[0] > hpos2[0] + ent.hitbox[2] ||
+        hpos1[0] + this.hitbox[2] < hpos2[0]
+      )
+    ) {
+      if (
+        !(
+          hpos1[1] > hpos2[1] + ent.hitbox[3] ||
+          hpos1[1] + this.hitbox[3] < hpos2[1]
+        )
+      ) {
         this.hit = 1;
         ent.bump();
       }
     }
   };
 
-  Fireball.prototype.bump = function() {;}
+  Fireball.prototype.bump = function () {};
 })();

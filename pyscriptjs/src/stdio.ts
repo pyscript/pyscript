@@ -1,4 +1,4 @@
-import { createSingularWarning, escape } from "./utils";
+import { createSingularWarning, escape } from './utils';
 
 export interface Stdio {
     stdout_writeline: (msg: string) => void;
@@ -42,8 +42,7 @@ export class CaptureStdio implements Stdio {
  *  specified by ID. Used with "output" keyword.
  *
  */
-export class TargetedStdio implements Stdio{
-
+export class TargetedStdio implements Stdio {
     source_element: HTMLElement;
     source_attribute: string;
     capture_stdout: boolean;
@@ -66,31 +65,32 @@ export class TargetedStdio implements Stdio{
      *
      * @param msg The output to be written
      */
-    writeline_by_attribute(msg:string){
-            const target_id = this.source_element.getAttribute(this.source_attribute)
-            const target = document.getElementById(target_id)
-            if (target === null) { // No matching ID
-                createSingularWarning(`${this.source_attribute} = "${target_id}" does not match the id of any element on the page.`)
+    writeline_by_attribute(msg: string) {
+        const target_id = this.source_element.getAttribute(this.source_attribute);
+        const target = document.getElementById(target_id);
+        if (target === null) {
+            // No matching ID
+            createSingularWarning(
+                `${this.source_attribute} = "${target_id}" does not match the id of any element on the page.`,
+            );
+        } else {
+            msg = escape(msg).replace('\n', '<br>');
+            if (!msg.endsWith('<br/>') && !msg.endsWith('<br>')) {
+                msg = msg + '<br>';
             }
-            else {
-                msg = escape(msg).replace("\n", "<br>")
-                if (!msg.endsWith("<br/>") && !msg.endsWith("<br>")){
-                    msg = msg + "<br>"
-                }
-                target.innerHTML += msg
-            }
-    }
-
-    stdout_writeline (msg: string) {
-        if (this.capture_stdout){
-            this.writeline_by_attribute(msg)
+            target.innerHTML += msg;
         }
-
     }
 
-    stderr_writeline (msg: string) {
-        if (this.capture_stderr){
-            this.writeline_by_attribute(msg)
+    stdout_writeline(msg: string) {
+        if (this.capture_stdout) {
+            this.writeline_by_attribute(msg);
+        }
+    }
+
+    stderr_writeline(msg: string) {
+        if (this.capture_stderr) {
+            this.writeline_by_attribute(msg);
         }
     }
 }
@@ -109,9 +109,9 @@ export class StdioMultiplexer implements Stdio {
     }
 
     removeListener(obj: Stdio) {
-        const index = this._listeners.indexOf(obj)
-        if (index > -1){
-            this._listeners.splice(index, 1)
+        const index = this._listeners.indexOf(obj);
+        if (index > -1) {
+            this._listeners.splice(index, 1);
         }
     }
 

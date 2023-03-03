@@ -15,20 +15,16 @@ describe('getLogger', () => {
         console.info = jest.fn();
 
         const logger = getLogger('prefix1');
-        logger.info('hello world')
-        expect(console.info).toHaveBeenCalledWith(
-            '[prefix1] hello world'
-        )
+        logger.info('hello world');
+        expect(console.info).toHaveBeenCalledWith('[prefix1] hello world');
     });
 
     it('logger.info handles multiple args', () => {
         console.info = jest.fn();
 
         const logger = getLogger('prefix2');
-        logger.info('hello', 'world', 1, 2, 3)
-        expect(console.info).toHaveBeenCalledWith(
-            '[prefix2] hello', 'world', 1, 2, 3
-        )
+        logger.info('hello', 'world', 1, 2, 3);
+        expect(console.info).toHaveBeenCalledWith('[prefix2] hello', 'world', 1, 2, 3);
     });
 
     it('logger.{debug,warn,error} also works', () => {
@@ -43,15 +39,8 @@ describe('getLogger', () => {
         logger.error('this is an error');
 
         expect(console.info).not.toHaveBeenCalled();
-        expect(console.debug).toHaveBeenCalledWith(
-            '[prefix3] this is a debug'
-        )
-        expect(console.warn).toHaveBeenCalledWith(
-            '[prefix3] this is a warning'
-        )
-        expect(console.error).toHaveBeenCalledWith(
-            '[prefix3] this is an error'
-        )
+        expect(console.debug).toHaveBeenCalledWith('[prefix3] this is a debug');
+        expect(console.warn).toHaveBeenCalledWith('[prefix3] this is a warning');
+        expect(console.error).toHaveBeenCalledWith('[prefix3] this is an error');
     });
-
 });
