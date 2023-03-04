@@ -3,8 +3,9 @@ from unittest.mock import Mock
 
 import py_markdown
 import py_tutor
-import pyscript
 import pyscript_plugins_tester as ppt
+
+import pyscript
 
 TUTOR_SOURCE = """
 <py-config>

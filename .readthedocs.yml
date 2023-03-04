@@ -7,16 +7,16 @@ version: 2
 
 # Set the version of Python and other tools you might need
 build:
-  os: ubuntu-20.04
-  tools:
-    python: miniconda3-4.7
+    os: ubuntu-20.04
+    tools:
+        python: miniconda3-4.7
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
-  configuration: docs/conf.py
+    configuration: docs/conf.py
 
 conda:
-  environment: docs/environment.yml
+    environment: docs/environment.yml
 
 # If using Sphinx, optionally build your docs in additional formats such as PDF
 # formats:
@@ -24,5 +24,5 @@ conda:
 
 # Optionally declare the Python requirements required to build your docs
 python:
-  install:
-    - requirements: docs/requirements.txt
+    install:
+    -   requirements: docs/requirements.txt
