@@ -193,33 +193,37 @@ export class RemoteInterpreter extends Object {
      * @param path : the path in the filesystem
      * @param fetch_path : the path to be fetched
      *
-     * Given a file available at `fetch_path` URL (eg: `http://dummy.com/hi.py`),
-     * the function downloads the file and saves it to the `path` (eg: `a/b/c/foo.py`)
-     * on the FS.
+     * Given a file available at `fetch_path` URL (eg:
+     * `http://dummy.com/hi.py`), the function downloads the file and saves it
+     * to the `path` (eg: `a/b/c/foo.py`) on the FS.
      *
-     * Example usage:
-     * await loadFromFile(`a/b/c/foo.py`, `http://dummy.com/hi.py`)
+     * Example usage: await loadFromFile(`a/b/c/foo.py`,
+     * `http://dummy.com/hi.py`)
      *
      * Write content of `http://dummy.com/hi.py` to `a/b/c/foo.py`
      *
      * NOTE: The `path` parameter expects to have the `filename` in it i.e.
-     * `a/b/c/foo.py` is valid while `a/b/c` (i.e. only the folders) are incorrect.
+     * `a/b/c/foo.py` is valid while `a/b/c` (i.e. only the folders) are
+     * incorrect.
      *
-     * Also, the path shouldn't be relative i.e. cannot be like './a/b/c'
+     * The path will be resolved relative to the current working directory,
+     * which is initially `/home/pyodide`. So by default `a/b.py` will be placed
+     * in `/home/pyodide/a/b.py`, `../a/b.py` will be placed into `/home/a/b.py`
+     * and `/a/b.py` will be placed into `/a/b.py`.
      */
     async loadFromFile(path: string, fetch_path: string): Promise<void> {
-        const pathArr = path.split('/');
-        // pop out the filename
-        pathArr.pop();
-        const dirTree = pathArr.join('/');
-        this.interface.FS.mkdirTree(dirTree);
+        // @ts-ignore
+        path = this.interface._module.PATH_FS.resolve(path);
+        // @ts-ignore
+        const dir = this.interface._module.PATH.dirname(path);
+        this.interface.FS.mkdirTree(dir);
 
         // `robustFetch` checks for failures in getting a response
         const response = await robustFetch(fetch_path);
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
 
-        this.interface.FS.writeFile(path, data, {canOwn: true});
+        this.interface.FS.writeFile(path, data, { canOwn: true });
     }
 
     /**
