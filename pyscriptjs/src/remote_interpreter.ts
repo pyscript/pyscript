@@ -212,8 +212,10 @@ export class RemoteInterpreter extends Object {
      * and `/a/b.py` will be placed into `/a/b.py`.
      */
     async loadFromFile(path: string, fetch_path: string): Promise<void> {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         path = this.interface._module.PATH_FS.resolve(path);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const dir = this.interface._module.PATH.dirname(path);
         this.interface.FS.mkdirTree(dir);
