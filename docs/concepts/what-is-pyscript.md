@@ -12,7 +12,6 @@ Click **Preview** to see the rendered HTML.
 To try it in your browser, copy the code below into an online HTML editor like W3School's [Tryit Editor](https://www.w3schools.com/html/tryit.asp?filename=tryhtml_default_default), which allows you to modify, run, and even save your code. Watch the video below to see it in action!
 
 ```{youtube} ZtC7TCt_LhU
-
 ```
 
 ::::{tab-set}

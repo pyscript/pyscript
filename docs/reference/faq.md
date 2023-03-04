@@ -63,7 +63,7 @@ JavaScript is not only a different language from python, but a challenging langu
 
 Python is incredibly powerful, super intuitive, and easy to learn. By adding Python to your toolkit, you can use Numpy, SciPy, Pandas, and more, seamlessly. One tradeoff is longer download times, so it isn’t the right tool for everything—but where it is the right tool, it’s almost irreplaceable.
 
-Ultimately, PyScript will enable the use of a variety of languages, offer a standard set of components that is well linked to the REPLs, and allow you to do an introspection on the code base—you can have, for example, a _modifiable_ chart as a python object.
+Ultimately, PyScript will enable the use of a variety of languages, offer a standard set of components that is well linked to the REPLs, and allow you to do an introspection on the code base—you can have, for example, a *modifiable* chart as a python object.
 
 ## Will PyScript replace JavaScript?
 

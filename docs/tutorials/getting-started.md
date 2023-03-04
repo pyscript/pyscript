@@ -35,7 +35,9 @@ open an HTML by double-clicking it in your file explorer.
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
   <body>
-    <py-script>print('Hello, World!')</py-script>
+    <py-script>
+        print('Hello, World!')
+    </py-script>
   </body>
 </html>
 ```
@@ -52,11 +54,13 @@ Let's create a new file called `index.html` and add the following content:
 <html>
   <head>
     <title>Ice Cream Picker</title>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
-  <body></body>
+  <body>
+
+  </body>
 </html>
 ```
 
@@ -70,12 +74,16 @@ For this example, we will need to install `pandas` and `matplotlib`. We can inst
 <html>
   <head>
     <title>Ice Cream Picker</title>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
   <body>
-    <py-config>packages = ["matplotlib", "pandas"]</py-config>
+
+    <py-config>
+      packages = ["matplotlib", "pandas"]
+    </py-config>
+
   </body>
 </html>
 ```
@@ -86,16 +94,20 @@ Now that we have installed the needed libraries, we can import and explore the d
 
 You may want to read the [`<py-script>`](../reference/elements/py-script.md) and [`<py-repl>`](../reference/elements/py-repl.md) documentation for more information about these elements.
 
+
 ```html
 <html>
   <head>
     <title>Ice Cream Picker</title>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
   <body>
-    <py-config>packages = ["matplotlib", "pandas"]</py-config>
+
+    <py-config>
+      packages = ["matplotlib", "pandas"]
+    </py-config>
 
     <py-script>
       import pandas as pd
@@ -108,7 +120,9 @@ You may want to read the [`<py-script>`](../reference/elements/py-script.md) and
       ice_data = pd.read_csv(open_url(url))
     </py-script>
 
-    <py-repl> ice_data </py-repl>
+    <py-repl>
+      ice_data
+    </py-repl>
   </body>
 </html>
 ```
@@ -123,12 +137,15 @@ Now that we have the data, we can create the plot. We will use the `matplotlib` 
 <html>
   <head>
     <title>Ice Cream Picker</title>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
   <body>
-    <py-config>packages = ["matplotlib", "pandas"]</py-config>
+
+    <py-config>
+      packages = ["matplotlib", "pandas"]
+    </py-config>
 
     <py-script>
       import pandas as pd
@@ -152,7 +169,9 @@ Now that we have the data, we can create the plot. We will use the `matplotlib` 
       plot(ice_data)
     </py-script>
 
-    <py-repl> ice_data </py-repl>
+    <py-repl>
+      ice_data
+    </py-repl>
 
     <div id="graph-area"></div>
   </body>
@@ -167,12 +186,15 @@ Now that we have a way to explore the data using `py-repl` and a way to create t
 <html>
   <head>
     <title>Ice Cream Picker</title>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
   <body>
-    <py-config>packages = ["matplotlib", "pandas"]</py-config>
+
+    <py-config>
+      packages = ["matplotlib", "pandas"]
+    </py-config>
 
     <py-script>
       import js
@@ -218,25 +240,28 @@ Now that we have a way to explore the data using `py-repl` and a way to create t
           ele.addEventListener("change", ele_proxy)
 
       plot(ice_data)
+
     </py-script>
 
     <div id="input" style="margin: 20px;">
-      Select your 🍨 flavour: <br />
-      <input type="radio" id="all" name="flavour" value="ALL" />
+      Select your 🍨 flavour: <br/>
+      <input type="radio" id="all" name="flavour" value="ALL">
       <label for="all"> All 🍧</label>
-      <input type="radio" id="chocolate" name="flavour" value="COCOA" />
+      <input type="radio" id="chocolate" name="flavour" value="COCOA">
       <label for="chocolate"> Chocolate 🍫</label>
-      <input type="radio" id="cherrie" name="flavour" value="CHERRIES" />
+      <input type="radio" id="cherrie" name="flavour" value="CHERRIES">
       <label for="cherrie"> Cherries 🍒</label>
-      <input type="radio" id="berries" name="flavour" value="BERRY" />
+      <input type="radio" id="berries" name="flavour" value="BERRY">
       <label for="berries"> Berries 🍓</label>
-      <input type="radio" id="cheese" name="flavour" value="CHEESE" />
+      <input type="radio" id="cheese" name="flavour" value="CHEESE">
       <label for="cheese"> Cheese 🧀</label>
-      <input type="radio" id="peanut" name="flavour" value="PEANUT" />
+      <input type="radio" id="peanut" name="flavour" value="PEANUT">
       <label for="peanut"> Peanut 🥜</label>
     </div>
 
-    <py-repl> ice_data </py-repl>
+    <py-repl>
+      ice_data
+    </py-repl>
 
     <div id="graph-area"></div>
   </body>

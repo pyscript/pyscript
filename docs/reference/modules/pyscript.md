@@ -7,15 +7,9 @@ The module is exported to the browser as `pyscript`. The exports from this modul
 ## pyscript.version
 
 Once `pyscript.js` has loaded, the version of PyScript that is currently running can be accessed via `pyscript.version`.
-
 ```html
-<script
-  defer
-  onload="console.log(`${pyscript.version}`)"
-  src="https://pyscript.net/latest/pyscript.js"
-></script>
+<script defer onload="console.log(`${pyscript.version}`)" src="https://pyscript.net/latest/pyscript.js"></script>
 ```
-
 ```js
 //example result
 Object { year: 2022, month: 11, patch: 1, releaselevel: "dev" }
@@ -27,13 +21,13 @@ The Interpreter object which is responsible for executing Python code in the Bro
 
 The Interpreter object has the following attributes
 
-| attribute           | type                 | description                                                                     |
-| ------------------- | -------------------- | ------------------------------------------------------------------------------- |
-| **src**             | string               | The URL from which the current interpreter was fetched                          |
-| **interface**       | InterpreterInterface | A reference to the interpreter object itself                                    |
-| **globals**         | any                  | The globals dictionary of the interpreter, if applicable/accessible             |
-| **name (optional)** | string               | A user-designated name for the interpreter                                      |
-| **lang (optional)** | string               | A user-designation for the language the interpreter runs ('Python', 'C++', etc) |
+| attribute           | type                  | description                                                                     |
+|---------------------|-----------------------|---------------------------------------------------------------------------------|
+| **src**             | string                | The URL from which the current interpreter was fetched                          |
+| **interface**       | InterpreterInterface  | A reference to the interpreter object itself                                    |
+| **globals**         | any                   | The globals dictionary of the interpreter, if applicable/accessible             |
+| **name (optional)** | string                | A user-designated name for the interpreter                                      |
+| **lang (optional)** | string                | A user-designation for the language the interpreter runs ('Python', 'C++', etc) |
 
 ### pyscript.interpreter.src
 
@@ -48,13 +42,13 @@ For example, assuming we've loaded Pyodide, we can access the methods of the Pyo
 ```html
 <button onclick="logFromPython()">Click Me to Run Some Python</button>
 <script>
-  function logFromPython() {
-    pyscript.interpreter.interface.runPython(`
+    function logFromPython(){
+        pyscript.interpreter.interface.runPython(`
             animal = "Python"
             sound = "sss"
             console.warn(f"{animal}s go " + sound * 5)
-        `);
-  }
+        `)
+    }
 </script>
 ```
 
@@ -64,19 +58,16 @@ A proxy for the interpreter's `globals()` dictionary. For example:
 
 ```html
 <body>
-  <py-script>x = 42</py-script>
+    <py-script>x = 42</py-script>
 
-  <button onclick="showX()">Click Me to Get 'x' from Python</button>
-  <script>
-    function showX() {
-      console.log(
-        `In Python right now, x = ${pyscript.interpreter.globals.get("x")}`,
-      );
-    }
-  </script>
+    <button onclick="showX()">Click Me to Get 'x' from Python</button>
+    <script>
+        function showX(){
+            console.log(`In Python right now, x = ${pyscript.interpreter.globals.get('x')}`)
+        }
+    </script>
 </body>
 ```
-
 ### pyscript.interpreter.name
 
 A user-supplied string for the interpreter given at its creation. For user reference only - does not affect the operation of the interpreter or PyScript.
