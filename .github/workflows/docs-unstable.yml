@@ -30,6 +30,9 @@ jobs:
                 environment-file: docs/environment.yml
                 python-version: '3.9'
 
+        -   name: pip freeze
+            run: pip freeze
+
         -   name: Build
             shell: bash -l {0}
             run: |
