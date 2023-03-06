@@ -1,84 +1,91 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
+    <head>
+        <meta charset="utf-8" />
 
-    <title>Todo App</title>
+        <title>Todo App</title>
 
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
 
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <link rel="stylesheet" href="./assets/css/examples.css" />
-  </head>
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <link rel="stylesheet" href="./assets/css/examples.css" />
+    </head>
 
-  <body>
-    <nav class="navbar" style="background-color: #000000">
-      <div class="app-header">
-        <a href="/">
-          <img src="./logo.png" class="logo" />
-        </a>
-        <a class="title" href="" style="color: #f0ab3c"
-          >Pyscript Native TODO App</a
-        >
-      </div>
-    </nav>
-    <section class="pyscript">
-      <h1>To Do List</h1>
-      <py-tutor modules="utils.py;pylist.py">
-        <py-register-widget
-          src="./pylist.py"
-          name="py-list"
-          klass="PyList"
-        ></py-register-widget>
+    <body>
+        <nav class="navbar" style="background-color: #000000">
+            <div class="app-header">
+                <a href="/">
+                    <img src="./logo.png" class="logo" />
+                </a>
+                <a class="title" href="" style="color: #f0ab3c"
+                    >Pyscript Native TODO App</a
+                >
+            </div>
+        </nav>
+        <section class="pyscript">
+            <h1>To Do List</h1>
+            <py-tutor modules="utils.py;pylist.py">
+                <py-register-widget
+                    src="./pylist.py"
+                    name="py-list"
+                    klass="PyList"
+                ></py-register-widget>
 
-        <py-config>
-          plugins = [
-            "../build/plugins/python/py_tutor.py"
-          ]
-          [[fetch]]
-          files = ["./utils.py", "./pylist.py"]
-        </py-config>
+                <py-config>
+                    plugins = [
+                      "../build/plugins/python/py_tutor.py"
+                    ]
+                    [[fetch]]
+                    files = ["./utils.py", "./pylist.py"]
+                </py-config>
 
-        <py-script>
-          from js import document
-          from pyodide.ffi.wrappers import add_event_listener
+                <py-script>
+                    from js import document
+                    from pyodide.ffi.wrappers import add_event_listener
 
-          def add_task(*ags, **kws):
-            # create a new dictionary representing the new task
-            new_task_content = Element("new-task-content")
-            task = { "content": new_task_content.value,  "done": False, "created_at": dt.now() }
+                    def add_task(*ags, **kws):
+                      # create a new dictionary representing the new task
+                      new_task_content = Element("new-task-content")
+                      task = { "content": new_task_content.value,  "done": False, "created_at": dt.now() }
 
-            # add a new task to the list and tell it to use the `content` key to show in the UI
-            # and to use the key `done` to sync the task status with a checkbox element in the UI
-            myList.add(task)
+                      # add a new task to the list and tell it to use the `content` key to show in the UI
+                      # and to use the key `done` to sync the task status with a checkbox element in the UI
+                      myList.add(task)
 
-            # clear the inputbox element used to create the new task
-            new_task_content.clear()
+                      # clear the inputbox element used to create the new task
+                      new_task_content.clear()
 
-          def on_click(evt):
-            add_task()
+                    def on_click(evt):
+                      add_task()
 
-          def handle_keypress(evt):
-            if evt.key == "Enter":
-              add_task()
+                    def handle_keypress(evt):
+                      if evt.key == "Enter":
+                        add_task()
 
-          add_event_listener(
-            document.getElementById("new-task-content"),
-            "keypress",
-            handle_keypress
-          )
-        </py-script>
-        <div class="py-box">
-          <input id="new-task-content" />
-          <button py-click="add_task()" id="new-task-btn" class="py-button">
-            Add Task!
-          </button>
-        </div>
+                    add_event_listener(
+                      document.getElementById("new-task-content"),
+                      "keypress",
+                      handle_keypress
+                    )
+                </py-script>
+                <div class="py-box">
+                    <input id="new-task-content" />
+                    <button
+                        py-click="add_task()"
+                        id="new-task-btn"
+                        class="py-button"
+                    >
+                        Add Task!
+                    </button>
+                </div>
 
-        <py-list id="myList"></py-list>
-        <py-repl id="my-repl" auto-generate="true"> </py-repl>
-      </py-tutor>
-    </section>
-  </body>
+                <py-list id="myList"></py-list>
+                <py-repl id="my-repl" auto-generate="true"> </py-repl>
+            </py-tutor>
+        </section>
+    </body>
 </html>

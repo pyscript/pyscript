@@ -8,11 +8,11 @@ on:
         -   docs/**
 
 concurrency:
-  # Concurrency group that uses the workflow name and PR number if available
-  # or commit SHA as a fallback. If a new build is triggered under that
-  # concurrency group while a previous build is running it will be canceled.
-  # Repeated pushes to a PR will cancel all previous builds, while multiple
-  # merges to main will not cancel.
+    # Concurrency group that uses the workflow name and PR number if available
+    # or commit SHA as a fallback. If a new build is triggered under that
+    # concurrency group while a previous build is running it will be canceled.
+    # Repeated pushes to a PR will cancel all previous builds, while multiple
+    # merges to main will not cancel.
     group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
     cancel-in-progress: true
 
@@ -29,8 +29,8 @@ jobs:
         -   name: Checkout
             uses: actions/checkout@v3
             with:
-                persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
-                fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+                persist-credentials: false   # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+                fetch-depth: 0   # otherwise, there would be errors pushing refs to the destination repository.
 
         -   name: Setup
             uses: conda-incubator/setup-miniconda@v2
@@ -52,7 +52,7 @@ jobs:
                 name: pyscript-docs-review-${{ github.event.number }}
                 path: docs/_build/html/
 
-      # Deploy to S3
+            # Deploy to S3
         -   name: Configure AWS credentials
             uses: aws-actions/configure-aws-credentials@v1.6.1
             with:

@@ -1,70 +1,73 @@
 <html>
-  <head>
-    <title>Matplotlib</title>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/x-icon" href="./favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <link rel="stylesheet" href="./assets/css/examples.css" />
-  </head>
-  <body>
-    <nav class="navbar" style="background-color: #000000">
-      <div class="app-header">
-        <a href="/">
-          <img src="./logo.png" class="logo" />
-        </a>
-        <a class="title" href="" style="color: #f0ab3c">Matplotlib</a>
-      </div>
-    </nav>
-    <section class="pyscript">
-      <div id="mpl"></div>
+    <head>
+        <title>Matplotlib</title>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/x-icon" href="./favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <link rel="stylesheet" href="./assets/css/examples.css" />
+    </head>
+    <body>
+        <nav class="navbar" style="background-color: #000000">
+            <div class="app-header">
+                <a href="/">
+                    <img src="./logo.png" class="logo" />
+                </a>
+                <a class="title" href="" style="color: #f0ab3c">Matplotlib</a>
+            </div>
+        </nav>
+        <section class="pyscript">
+            <div id="mpl"></div>
 
-      <py-tutor>
-        <py-config>
-          packages = [
-            "matplotlib"
-          ]
-          plugins = [
-            "../build/plugins/python/py_tutor.py"
-          ]
-        </py-config>
+            <py-tutor>
+                <py-config>
+                    packages = [
+                      "matplotlib"
+                    ]
+                    plugins = [
+                      "../build/plugins/python/py_tutor.py"
+                    ]
+                </py-config>
 
-        <py-script>
-          import matplotlib.pyplot as plt
-          import matplotlib.tri as tri
-          import numpy as np
+                <py-script>
+                    import matplotlib.pyplot as plt
+                    import matplotlib.tri as tri
+                    import numpy as np
 
-          # First create the x and y coordinates of the points.
-          n_angles = 36
-          n_radii = 8
-          min_radius = 0.25
-          radii = np.linspace(min_radius, 0.95, n_radii)
+                    # First create the x and y coordinates of the points.
+                    n_angles = 36
+                    n_radii = 8
+                    min_radius = 0.25
+                    radii = np.linspace(min_radius, 0.95, n_radii)
 
-          angles = np.linspace(0, 2 * np.pi, n_angles, endpoint=False)
-          angles = np.repeat(angles[..., np.newaxis], n_radii, axis=1)
-          angles[:, 1::2] += np.pi / n_angles
+                    angles = np.linspace(0, 2 * np.pi, n_angles, endpoint=False)
+                    angles = np.repeat(angles[..., np.newaxis], n_radii, axis=1)
+                    angles[:, 1::2] += np.pi / n_angles
 
-          x = (radii * np.cos(angles)).flatten()
-          y = (radii * np.sin(angles)).flatten()
-          z = (np.cos(radii) * np.cos(3 * angles)).flatten()
+                    x = (radii * np.cos(angles)).flatten()
+                    y = (radii * np.sin(angles)).flatten()
+                    z = (np.cos(radii) * np.cos(3 * angles)).flatten()
 
-          # Create the Triangulation; no triangles so Delaunay triangulation created.
-          triang = tri.Triangulation(x, y)
+                    # Create the Triangulation; no triangles so Delaunay triangulation created.
+                    triang = tri.Triangulation(x, y)
 
-          # Mask off unwanted triangles.
-          triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1),
-                                   y[triang.triangles].mean(axis=1))
-                          < min_radius)
+                    # Mask off unwanted triangles.
+                    triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1),
+                                             y[triang.triangles].mean(axis=1))
+                                    < min_radius)
 
-          fig1, ax1 = plt.subplots()
-          ax1.set_aspect('equal')
-          tpc = ax1.tripcolor(triang, z, shading='flat')
-          fig1.colorbar(tpc)
-          ax1.set_title('tripcolor of Delaunay triangulation, flat shading')
+                    fig1, ax1 = plt.subplots()
+                    ax1.set_aspect('equal')
+                    tpc = ax1.tripcolor(triang, z, shading='flat')
+                    fig1.colorbar(tpc)
+                    ax1.set_title('tripcolor of Delaunay triangulation, flat shading')
 
-          display(fig1, target="mpl")
-        </py-script>
-      </py-tutor>
-    </section>
-  </body>
+                    display(fig1, target="mpl")
+                </py-script>
+            </py-tutor>
+        </section>
+    </body>
 </html>

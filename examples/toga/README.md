@@ -9,13 +9,13 @@ It can be served as a Single Page App from a static web server.
 1. Create and activate a virtual environment, and move into the `freedom`
    project directory:
 
-   $ python -m venv venv
-   $ . ./venv/bin/activate
-   $ cd freedom
+    $ python -m venv venv
+    $ . ./venv/bin/activate
+    $ cd freedom
 
 2. Install Briefcase:
 
-   $ pip install briefcase
+    $ pip install briefcase
 
 ## Web app
 
