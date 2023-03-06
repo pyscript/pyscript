@@ -37,12 +37,12 @@ repos:
         additional_dependencies:
         -   tomli
 
--   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.7.0
+-   repo: https://github.com/hoodmane/pyscript-prettier-precommit
+    rev: "v3.0.0-alpha.6"
     hooks:
-    -   id: pretty-format-yaml
-        args: [--autofix, --indent, '4']
-        exclude: .github/ISSUE_TEMPLATE/.*\.yml$
+    -   id: prettier
+        args: [--tab-width, "4"]
+
 
 -   repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.35.0
@@ -55,14 +55,3 @@ repos:
         -   typescript@4.8.4
         -   '@typescript-eslint/eslint-plugin@5.39.0'
         -   '@typescript-eslint/parser@5.39.0'
-
-# Commented out until mdformat-myst supports custom extensions
-# See https://github.com/executablebooks/mdformat-myst/pull/9
-# -   repo: https://github.com/executablebooks/mdformat
-#     rev: 0.7.14 # Use the ref you want to point at
-#     hooks:
-#     -   id: mdformat
-#         additional_dependencies:
-#         -   mdformat-gfm
-#         -   mdformat-myst
-#         -   mdformat-black
