@@ -105,7 +105,20 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
         const pyEvent = 'py-' + browserEvent;
         const userProvidedFunctionName = el.getAttribute(pyEvent);
 
-        el.addEventListener(browserEvent, (evt) => {
+        // TODO: this if statement is deprecated and should be removed on the 2nd version after 2022.12.1
+        const possibleDeprecatedPysEvent = 'pys-' + browserEvent;
+        if (possibleDeprecatedPysEvent === 'pys-onClick' || possibleDeprecatedPysEvent === 'pys-onKeyDown') {
+            const msg =
+                `The attribute 'pys-onClick' and 'pys-onKeyDown' are deprecated. Please 'py-click="myFunction()"' ` +
+                ` or 'py-keydown="myFunction()"' instead.`;
+            createDeprecationWarning(msg, msg);
+            const source = `
+            from pyodide.ffi import create_proxy
+            Element("${el.id}").element.addEventListener("${browserEvent}",  create_proxy(${userProvidedFunctionName}))
+            `;
+            // We meed to run the source code in a try/catch block, because
+            // the source code may contain a syntax error, which will cause
+            // the splashscreen to not be removed.
             try {
                 await interpreter.run(source);
             } catch (e) {
@@ -141,14 +154,13 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
                     throw new UserError(ErrorCode.GENERIC, "py-events take 0 or 1 arguments")
                     }
                 }
-            }
 
-            catch (err) {
-                // TODO: This should be an error - probably need to refactor
-                // this function into createSingularBanner
-                createSingularWarning(err);
-            }
-        });
+                catch (err) {
+                    // TODO: This should be an error - probably need to refactor
+                    // this function into createSingularBanner
+                    createSingularWarning(err);
+                }
+            });
     }
     // }
     // TODO: Should we actually map handlers in JS instead of Python?
