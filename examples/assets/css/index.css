@@ -1,74 +1,74 @@
 .example {
-  margin-bottom: 5rem;
+    margin-bottom: 5rem;
 }
 
 .example h2 {
-  /* color: #000000; */
-  font-family: "Inconsolata", monospace;
-  font-size: 2.25rem;
-  margin-bottom: 1rem;
+    /* color: #000000; */
+    font-family: "Inconsolata", monospace;
+    font-size: 2.25rem;
+    margin-bottom: 1rem;
 }
 
 .card {
-  height: 15rem;
-  background-color: var(--color-secondary);
-  padding: 1rem;
-  border-radius: 10px;
+    height: 15rem;
+    background-color: var(--color-secondary);
+    padding: 1rem;
+    border-radius: 10px;
 }
 
 .card:hover,
 .card:hover a,
 .card:hover a:visited,
 .card:hover h2 {
-  background-color: var(--color-primary);
-  color: #1d1d22;
+    background-color: var(--color-primary);
+    color: #1d1d22;
 }
 
 .card a h2 {
-  color: var(--color-primary);
-  margin: 0;
-  font-family: "Inconsolata", monospace;
-  font-size: 2.25rem;
+    color: var(--color-primary);
+    margin: 0;
+    font-family: "Inconsolata", monospace;
+    font-size: 2.25rem;
 }
 
 .card a p {
-  color: var(--text-color);
+    color: var(--text-color);
 }
 
 a .card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .card-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .card-content a,
 .card-content a:visited {
-  color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .container-card {
-  max-width: 1500px;
-  margin: 0 auto;
-  display: grid;
-  gap: 1rem;
+    max-width: 1500px;
+    margin: 0 auto;
+    display: grid;
+    gap: 1rem;
 }
 
 @media (min-width: 600px) {
-  .container-card {
-    grid-template-columns: repeat(2, 1fr);
-  }
+    .container-card {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (min-width: 900px) {
-  .container-card {
-    grid-template-columns: repeat(4, 1fr);
-  }
+    .container-card {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }

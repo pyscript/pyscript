@@ -15,7 +15,7 @@ jobs:
                 working-directory: examples
 
         steps:
-      # Deploy to S3
+            # Deploy to S3
         -   name: Checkout
             uses: actions/checkout@v3
         -   name: Configure AWS credentials
@@ -24,5 +24,5 @@ jobs:
                 aws-region: ${{ secrets.AWS_REGION }}
                 role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
         -   name: Sync to S3
-        # Sync outdated or new files, delete ones no longer in source
-            run: aws s3 sync --quiet --delete . s3://pyscript.net/examples/ # Sync directory, delete what is not in source
+              # Sync outdated or new files, delete ones no longer in source
+            run: aws s3 sync --quiet --delete . s3://pyscript.net/examples/   # Sync directory, delete what is not in source

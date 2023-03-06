@@ -16,8 +16,8 @@ jobs:
         -   name: Checkout
             uses: actions/checkout@v3
             with:
-                persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
-                fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+                persist-credentials: false   # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+                fetch-depth: 0   # otherwise, there would be errors pushing refs to the destination repository.
 
         -   name: Setup
             uses: conda-incubator/setup-miniconda@v2
@@ -39,7 +39,7 @@ jobs:
                 name: pyscript-docs-${{ github.ref_name }}
                 path: docs/_build/html/
 
-      # Deploy to S3
+            # Deploy to S3
         -   name: Configure AWS credentials
             uses: aws-actions/configure-aws-credentials@v1.6.1
             with:
@@ -52,11 +52,11 @@ jobs:
         -   name: Sync to S3
             run: aws s3 sync --quiet ./docs/_build/html/ s3://docs.pyscript.net/${{ github.ref_name }}/
 
-      # Make sure to remove the latest folder so we sync the full docs upon release
+            # Make sure to remove the latest folder so we sync the full docs upon release
         -   name: Delete latest directory
             run: aws s3 rm --recursive s3://docs.pyscript.net/latest/
 
-      # Note that the files are the same as above, but we want to have folders with
-      # /<tag name>/ AND /latest/ which latest will always point to the latest release
+            # Note that the files are the same as above, but we want to have folders with
+            # /<tag name>/ AND /latest/ which latest will always point to the latest release
         -   name: Sync to /latest
             run: aws s3 sync --quiet ./docs/_build/html/ s3://docs.pyscript.net/latest/

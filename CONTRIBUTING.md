@@ -4,17 +4,17 @@ Thank you for wanting to contribute to the PyScript project!
 
 ## Table of contents
 
-- [Code of Conduct](#code-of-conduct)
-- [Contributing](#contributing)
-  - [Reporting bugs](#reporting-bugs)
-  - [Reporting security issues](#reporting-security-issues)
-  - [Asking questions](#asking-questions)
-  - [Setting up your local environment and developing](#setting-up-your-local-environment-and-developing)
-  - [Places to start](#places-to-start)
-  - [Setting up your local environment and developing](#setting-up-your-local-environment-and-developing)
-- [License terms for contributions](#license-terms-for-contributions)
-- [Becoming a maintainer](#becoming-a-maintainer)
-- [Trademarks](#trademarks)
+-   [Code of Conduct](#code-of-conduct)
+-   [Contributing](#contributing)
+    -   [Reporting bugs](#reporting-bugs)
+    -   [Reporting security issues](#reporting-security-issues)
+    -   [Asking questions](#asking-questions)
+    -   [Setting up your local environment and developing](#setting-up-your-local-environment-and-developing)
+    -   [Places to start](#places-to-start)
+    -   [Setting up your local environment and developing](#setting-up-your-local-environment-and-developing)
+-   [License terms for contributions](#license-terms-for-contributions)
+-   [Becoming a maintainer](#becoming-a-maintainer)
+-   [Trademarks](#trademarks)
 
 # Code of Conduct
 
@@ -28,10 +28,10 @@ Bugs are tracked on the [project issues page](https://github.com/pyscript/pyscri
 
 ## Creating useful issues
 
-- Use a clear and descriptive title.
-- Describe the specific steps that reproduce the problem with as many details as possible so that someone can verify the issue.
-- Describe the behavior you observed, and the behavior you had expected.
-- Include screenshots if they help make the issue clear.
+-   Use a clear and descriptive title.
+-   Describe the specific steps that reproduce the problem with as many details as possible so that someone can verify the issue.
+-   Describe the behavior you observed, and the behavior you had expected.
+-   Include screenshots if they help make the issue clear.
 
 ## Reporting security issues
 
@@ -45,10 +45,10 @@ If you have questions about the project, using PyScript, or anything else, pleas
 
 If you would like to contribute to PyScript, but you aren't sure where to begin, here are some suggestions.
 
-- **Read over the existing documentation.** Are there things missing, or could they be clearer? Make some changes/additions to those documents.
-- **Review the open issues.** Are they clear? Can you reproduce them? You can add comments, clarifications, or additions to those issues. If you think you have an idea of how to address the issue, submit a fix!
-- **Look over the open pull requests.** Do you have comments or suggestions for the proposed changes? Add them.
-- **Check out the examples.** Is there a use case that would be good to have sample code for? Create an example for it.
+-   **Read over the existing documentation.** Are there things missing, or could they be clearer? Make some changes/additions to those documents.
+-   **Review the open issues.** Are they clear? Can you reproduce them? You can add comments, clarifications, or additions to those issues. If you think you have an idea of how to address the issue, submit a fix!
+-   **Look over the open pull requests.** Do you have comments or suggestions for the proposed changes? Add them.
+-   **Check out the examples.** Is there a use case that would be good to have sample code for? Create an example for it.
 
 ## Setting up your local environment and developing
 

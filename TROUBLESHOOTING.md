@@ -4,7 +4,7 @@ This page is meant for troubleshooting common problems with PyScript.
 
 ## Table of contents:
 
-- [Make Setup](#make-setup)
+-   [Make Setup](#make-setup)
 
 ## Make setup
 

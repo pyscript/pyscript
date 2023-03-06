@@ -1,64 +1,69 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>Simple Clock Demo</title>
+        <title>Simple Clock Demo</title>
 
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
 
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <link rel="stylesheet" href="./assets/css/examples.css" />
-  </head>
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <link rel="stylesheet" href="./assets/css/examples.css" />
+    </head>
 
-  <body>
-    <nav class="navbar" style="background-color: #000000">
-      <div class="app-header">
-        <a href="/">
-          <img src="./logo.png" class="logo" />
-        </a>
-        <a class="title" href="" style="color: #f0ab3c">Simple Clock</a>
-      </div>
-    </nav>
-    <section class="pyscript">
-      <div class="font-mono">start time: <label id="outputDiv"></label></div>
-      <div id="outputDiv2" class="font-mono"></div>
-      <div id="outputDiv3" class="font-mono"></div>
+    <body>
+        <nav class="navbar" style="background-color: #000000">
+            <div class="app-header">
+                <a href="/">
+                    <img src="./logo.png" class="logo" />
+                </a>
+                <a class="title" href="" style="color: #f0ab3c">Simple Clock</a>
+            </div>
+        </nav>
+        <section class="pyscript">
+            <div class="font-mono">
+                start time: <label id="outputDiv"></label>
+            </div>
+            <div id="outputDiv2" class="font-mono"></div>
+            <div id="outputDiv3" class="font-mono"></div>
 
-      <py-tutor modules="utils.py">
-        <py-config>
-          plugins = [
-            "../build/plugins/python/py_tutor.py"
-          ]
-          [[fetch]]
-          files = ["./utils.py"]
-        </py-config>
-        <py-script>
-          import utils
-          display(utils.now())
-        </py-script>
+            <py-tutor modules="utils.py">
+                <py-config>
+                    plugins = [
+                      "../build/plugins/python/py_tutor.py"
+                    ]
+                    [[fetch]]
+                    files = ["./utils.py"]
+                </py-config>
+                <py-script>
+                    import utils
+                    display(utils.now())
+                </py-script>
 
-        <py-script>
-          from utils import now
-          import asyncio
+                <py-script>
+                    from utils import now
+                    import asyncio
 
-          async def foo():
-            while True:
-              await asyncio.sleep(1)
-              output = now()
-              Element("outputDiv2").write(output)
+                    async def foo():
+                      while True:
+                        await asyncio.sleep(1)
+                        output = now()
+                        Element("outputDiv2").write(output)
 
-              out3 = Element("outputDiv3")
-              if output[-1] in ["0", "4", "8"]:
-                out3.write("It's espresso time!")
-              else:
-                out3.clear()
+                        out3 = Element("outputDiv3")
+                        if output[-1] in ["0", "4", "8"]:
+                          out3.write("It's espresso time!")
+                        else:
+                          out3.clear()
 
-          pyscript.run_until_complete(foo())
-        </py-script>
-      </py-tutor>
-    </section>
-  </body>
+                    pyscript.run_until_complete(foo())
+                </py-script>
+            </py-tutor>
+        </section>
+    </body>
 </html>

@@ -1,36 +1,39 @@
 <html>
-  <head>
-    <title>Antigravity</title>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/x-icon" href="./favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <link rel="stylesheet" href="./assets/css/examples.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-  </head>
-  <body>
-    <nav class="navbar" style="background-color: #000000">
-      <div class="app-header">
-        <a href="/">
-          <img src="./logo.png" class="logo" />
-        </a>
-        <a class="title" href="" style="color: #f0ab3c">Antigravity</a>
-      </div>
-    </nav>
-    <py-tutor modules="antigravity.py">
-      <section class="pyscript">
-        <py-config>
-          plugins = [
-            "../build/plugins/python/py_tutor.py"
-          ]
-          [[fetch]]
-          files = ["./antigravity.py"]
-        </py-config>
-        <b>Based on xkcd: antigravity https://xkcd.com/353/.</b>
-        <py-script>
-          import antigravity
-          antigravity.fly()
-        </py-script>
-      </section>
-    </py-tutor>
-  </body>
+    <head>
+        <title>Antigravity</title>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/x-icon" href="./favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
+        <link rel="stylesheet" href="./assets/css/examples.css" />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    </head>
+    <body>
+        <nav class="navbar" style="background-color: #000000">
+            <div class="app-header">
+                <a href="/">
+                    <img src="./logo.png" class="logo" />
+                </a>
+                <a class="title" href="" style="color: #f0ab3c">Antigravity</a>
+            </div>
+        </nav>
+        <py-tutor modules="antigravity.py">
+            <section class="pyscript">
+                <py-config>
+                    plugins = [
+                      "../build/plugins/python/py_tutor.py"
+                    ]
+                    [[fetch]]
+                    files = ["./antigravity.py"]
+                </py-config>
+                <b>Based on xkcd: antigravity https://xkcd.com/353/.</b>
+                <py-script>
+                    import antigravity
+                    antigravity.fly()
+                </py-script>
+            </section>
+        </py-tutor>
+    </body>
 </html>
