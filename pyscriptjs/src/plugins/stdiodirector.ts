@@ -1,9 +1,9 @@
-import { Plugin } from "../plugin";
-import { TargetedStdio, StdioMultiplexer } from "../stdio";
-import { make_PyScript } from "../components/pyscript";
-import { InterpreterClient } from "../interpreter_client";
+import { Plugin } from '../plugin';
+import { TargetedStdio, StdioMultiplexer } from '../stdio';
+import { make_PyScript } from '../components/pyscript';
+import { InterpreterClient } from '../interpreter_client';
 
-type PyScriptTag =  InstanceType<ReturnType<typeof make_PyScript>>;
+type PyScriptTag = InstanceType<ReturnType<typeof make_PyScript>>;
 
 /**
  * The StdioDirector plugin captures the output to Python's sys.stdio and
@@ -17,8 +17,8 @@ export class StdioDirector extends Plugin {
     _stdioMultiplexer: StdioMultiplexer;
 
     constructor(stdio: StdioMultiplexer) {
-        super()
-        this._stdioMultiplexer = stdio
+        super();
+        this._stdioMultiplexer = stdio;
     }
 
     /** Prior to a <py-script> tag being evaluated, if that tag itself has
@@ -27,30 +27,35 @@ export class StdioDirector extends Plugin {
      * with that ID for the duration of the evaluation.
      *
      */
-    beforePyScriptExec(options: {interpreter: InterpreterClient, src: string, pyScriptTag: PyScriptTag}): void {
-        if (options.pyScriptTag.hasAttribute("output")){
-            const targeted_io = new TargetedStdio(options.pyScriptTag, "output", true, true)
-            options.pyScriptTag.stdout_manager = targeted_io
-            this._stdioMultiplexer.addListener(targeted_io)
+    beforePyScriptExec(options: { interpreter: InterpreterClient; src: string; pyScriptTag: PyScriptTag }): void {
+        if (options.pyScriptTag.hasAttribute('output')) {
+            const targeted_io = new TargetedStdio(options.pyScriptTag, 'output', true, true);
+            options.pyScriptTag.stdout_manager = targeted_io;
+            this._stdioMultiplexer.addListener(targeted_io);
         }
-        if (options.pyScriptTag.hasAttribute("stderr")){
-            const targeted_io = new TargetedStdio(options.pyScriptTag, "stderr", false, true)
-            options.pyScriptTag.stderr_manager = targeted_io
-            this._stdioMultiplexer.addListener(targeted_io)
+        if (options.pyScriptTag.hasAttribute('stderr')) {
+            const targeted_io = new TargetedStdio(options.pyScriptTag, 'stderr', false, true);
+            options.pyScriptTag.stderr_manager = targeted_io;
+            this._stdioMultiplexer.addListener(targeted_io);
         }
     }
 
     /** After a <py-script> tag is evaluated, if that tag has a 'stdout_manager'
      *  (presumably TargetedStdio, or some other future IO handler), it is removed.
      */
-    afterPyScriptExec(options: {interpreter: InterpreterClient, src: string, pyScriptTag: PyScriptTag, result: any}): void {
-        if (options.pyScriptTag.stdout_manager != null){
-            this._stdioMultiplexer.removeListener(options.pyScriptTag.stdout_manager)
-            options.pyScriptTag.stdout_manager = null
+    afterPyScriptExec(options: {
+        interpreter: InterpreterClient;
+        src: string;
+        pyScriptTag: PyScriptTag;
+        result: any;
+    }): void {
+        if (options.pyScriptTag.stdout_manager != null) {
+            this._stdioMultiplexer.removeListener(options.pyScriptTag.stdout_manager);
+            options.pyScriptTag.stdout_manager = null;
         }
-        if (options.pyScriptTag.stderr_manager != null){
-            this._stdioMultiplexer.removeListener(options.pyScriptTag.stderr_manager)
-            options.pyScriptTag.stderr_manager = null
+        if (options.pyScriptTag.stderr_manager != null) {
+            this._stdioMultiplexer.removeListener(options.pyScriptTag.stderr_manager);
+            options.pyScriptTag.stderr_manager = null;
         }
     }
 }

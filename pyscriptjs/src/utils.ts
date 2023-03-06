@@ -1,4 +1,4 @@
-import { _createAlertBanner } from "./exceptions"
+import { _createAlertBanner } from './exceptions';
 
 export function addClasses(element: HTMLElement, classes: string[]) {
     for (const entry of classes) {
@@ -127,11 +127,11 @@ export function createLock() {
      * @private
      */
     async function acquireLock() {
-      const old_lock = _lock;
-      let releaseLock: () => void;
-      _lock = new Promise((resolve) => (releaseLock = resolve));
-      await old_lock;
-      return releaseLock;
+        const old_lock = _lock;
+        let releaseLock: () => void;
+        _lock = new Promise(resolve => (releaseLock = resolve));
+        await old_lock;
+        return releaseLock;
     }
     return acquireLock;
-  }
+}

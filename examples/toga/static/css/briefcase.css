@@ -1,15 +1,13 @@
-
 /* Unset the overly generic pyscript .label style */
 #app-placeholder .label {
-    margin-top: inherit;
-    color: inherit;
-    text-align: inherit;
-    width: inherit;
-    display: inherit;
-    color: inherit;
-    font-size: inherit;
-    margin-top: inherit;
-
+  margin-top: inherit;
+  color: inherit;
+  text-align: inherit;
+  width: inherit;
+  display: inherit;
+  color: inherit;
+  font-size: inherit;
+  margin-top: inherit;
 }
 
 /*******************************************************************
@@ -23,15 +21,15 @@
  *******************************************************/
 
 main.toga.window {
-    margin-top: 5em;
-    display: flex;
-    flex-direction: column;
+  margin-top: 5em;
+  display: flex;
+  flex-direction: column;
 }
 
 div.toga.box {
-    display: flex;
+  display: flex;
 }
 
 span.toga.label {
-    white-space: nowrap;
+  white-space: nowrap;
 }

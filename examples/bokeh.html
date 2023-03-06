@@ -1,63 +1,79 @@
-<html><head>
+<html>
+  <head>
     <title>Bokeh Example</title>
-    <meta charset="iso-8859-1">
-    <link rel="icon" type="image/x-icon" href="./favicon.png">
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.0.3.min.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-gl-3.0.3.min.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.0.3.min.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.0.3.min.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-mathjax-3.0.3.min.js"></script>
+    <meta charset="iso-8859-1" />
+    <link rel="icon" type="image/x-icon" href="./favicon.png" />
+    <script
+      type="text/javascript"
+      src="https://cdn.bokeh.org/bokeh/release/bokeh-3.0.3.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.bokeh.org/bokeh/release/bokeh-gl-3.0.3.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.0.3.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.0.3.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.bokeh.org/bokeh/release/bokeh-mathjax-3.0.3.min.js"
+    ></script>
 
     <script type="text/javascript">
-        Bokeh.set_log_level("info");
+      Bokeh.set_log_level("info");
     </script>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
 
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <link rel="stylesheet" href="./assets/css/examples.css" />
-    </head>
-    <body>
-      <nav class="navbar" style="background-color: #000000;">
-        <div class="app-header">
-          <a href="/">
-            <img src="./logo.png" class="logo">
-          </a>
-          <a class="title" href="" style="color: #f0ab3c;">Bokeh Example</a>
-        </div>
-      </nav>
-      <py-tutor>
-        <section class="pyscript">
-            <div id="myplot"></div>
+  </head>
+  <body>
+    <nav class="navbar" style="background-color: #000000">
+      <div class="app-header">
+        <a href="/">
+          <img src="./logo.png" class="logo" />
+        </a>
+        <a class="title" href="" style="color: #f0ab3c">Bokeh Example</a>
+      </div>
+    </nav>
+    <py-tutor>
+      <section class="pyscript">
+        <div id="myplot"></div>
 
-            <py-config>
-              packages = [
-                "pandas",
-                "bokeh",
-                "xyzservices"
-              ]
-              plugins = [
-                "../build/plugins/python/py_tutor.py"
-              ]
-            </py-config>
+        <py-config>
+          packages = [
+            "pandas",
+            "bokeh",
+            "xyzservices"
+          ]
+          plugins = [
+            "../build/plugins/python/py_tutor.py"
+          ]
+        </py-config>
 
         <py-script id="main">
-    import json
-    import pyodide
+          import json
+          import pyodide
 
-    from js import Bokeh, console, JSON
+          from js import Bokeh, console, JSON
 
-    from bokeh.embed import json_item
-    from bokeh.plotting import figure
-    from bokeh.resources import CDN
+          from bokeh.embed import json_item
+          from bokeh.plotting import figure
+          from bokeh.resources import CDN
 
-    # create a new plot with default tools, using figure
-    p = figure(width=400, height=400)
+          # create a new plot with default tools, using figure
+          p = figure(width=400, height=400)
 
-    # add a circle renderer with x and y coordinates, size, color, and alpha
-    p.circle([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], size=15, line_color="navy", fill_color="orange", fill_alpha=0.5)
-    p_json = json.dumps(json_item(p, "myplot"))
+          # add a circle renderer with x and y coordinates, size, color, and alpha
+          p.circle([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], size=15, line_color="navy", fill_color="orange", fill_alpha=0.5)
+          p_json = json.dumps(json_item(p, "myplot"))
 
-    Bokeh.embed.embed_item(JSON.parse(p_json))
+          Bokeh.embed.embed_item(JSON.parse(p_json))
         </py-script>
       </section>
     </py-tutor>

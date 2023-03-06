@@ -1,34 +1,35 @@
 /* py-config - not a component */
 py-config {
-    display: none
+    display: none;
 }
 /* py-{el} - components not defined */
 py-script:not(:defined) {
-    display: none
+    display: none;
 }
 
 py-repl:not(:defined) {
-    display: none
+    display: none;
 }
 
 py-title:not(:defined) {
-    display: none
+    display: none;
 }
 
 py-inputbox:not(:defined) {
-    display: none
+    display: none;
 }
 
 py-button:not(:defined) {
-    display: none
+    display: none;
 }
 
 py-box:not(:defined) {
-    display: none
+    display: none;
 }
 
 html {
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+        Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     line-height: 1.5;
 }
 
@@ -110,7 +111,7 @@ html {
 /* Pop-up second layer end */
 .alert-banner {
     position: relative;
-    padding: .5rem 1.5rem .5rem .5rem;
+    padding: 0.5rem 1.5rem 0.5rem 0.5rem;
     margin: 5px 0;
 }
 
@@ -118,8 +119,8 @@ html {
     margin: 0;
 }
 
-.py-error{
-    background-color: #FFE9E8;
+.py-error {
+    background-color: #ffe9e8;
     border: solid;
     border-color: #f0625f;
     color: #9d041c;
@@ -132,24 +133,24 @@ html {
     color: #794700;
 }
 
-.alert-banner.py-error>#alert-close-button {
+.alert-banner.py-error > #alert-close-button {
     color: #9d041c;
 }
 
-.alert-banner.py-warning>#alert-close-button {
-    color: #794700
+.alert-banner.py-warning > #alert-close-button {
+    color: #794700;
 }
 
 #alert-close-button {
-position: absolute;
-right: .5rem;
-top: .5rem;
-cursor: pointer;
-background: transparent;
-border: none;
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    cursor: pointer;
+    background: transparent;
+    border: none;
 }
 
-.py-box{
+.py-box {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -168,10 +169,7 @@ border: none;
     border-color: rgba(209, 213, 219, var(--tw-border-opacity));
     border-width: 1px;
     position: relative;
-    --tw-ring-inset: var(--tw-empty,
-            /*!*/
-            /*!*/
-        );
+    --tw-ring-inset: var(--tw-empty, /*!*/ /*!*/);
     --tw-ring-offset-width: 0px;
     --tw-ring-offset-color: #fff;
     --tw-ring-color: rgba(59, 130, 246, 0.5);
@@ -183,7 +181,7 @@ border: none;
     box-sizing: border-box;
     border-width: 1px;
     border-style: solid;
-    border-color: rgb(209, 213, 219)
+    border-color: rgb(209, 213, 219);
 }
 
 .editor-box:hover button {

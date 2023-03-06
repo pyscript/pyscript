@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -9,18 +9,18 @@
   </head>
   <body>
     <py-script>
-        import js
-        import asyncio
-        for i in range(3):
-            js.console.log('A', i)
-            await asyncio.sleep(0.1)
+      import js
+      import asyncio
+      for i in range(3):
+          js.console.log('A', i)
+          await asyncio.sleep(0.1)
     </py-script>
     <py-script>
-        import js
-        import asyncio
-        for i in range(3):
-            js.console.log('B', i)
-            await asyncio.sleep(0.1)
+      import js
+      import asyncio
+      for i in range(3):
+          js.console.log('B', i)
+          await asyncio.sleep(0.1)
     </py-script>
   </body>
 </html>

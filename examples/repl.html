@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -13,18 +13,18 @@
   </head>
 
   <body>
-    <nav class="navbar" style="background-color: #000000;">
+    <nav class="navbar" style="background-color: #000000">
       <div class="app-header">
         <a href="/">
-          <img src="./logo.png" class="logo">
+          <img src="./logo.png" class="logo" />
         </a>
-        <a class="title" href="" style="color: #f0ab3c;">PyScript REPL</a>
+        <a class="title" href="" style="color: #f0ab3c">PyScript REPL</a>
       </div>
     </nav>
     <section class="pyscript">
       <h1><b>PyScript REPL</b></h1>
       Tip: press Shift-ENTER to evaluate a cell
-      <br>
+      <br />
       <py-tutor modules="antigravity.py">
         <py-config>
           plugins = [
@@ -33,10 +33,10 @@
           [[fetch]]
           files = ["./antigravity.py"]
         </py-config>
-        <div style="margin-right: 3rem;">
+        <div style="margin-right: 3rem">
           <py-repl id="my-repl" auto-generate="true"> </py-repl>
         </div>
       </py-tutor>
-   </section>
+    </section>
   </body>
 </html>
