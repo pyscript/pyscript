@@ -158,6 +158,7 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
                 catch (err) {
                     // TODO: This should be an error - probably need to refactor
                     // this function into createSingularBanner similar to createSingularWarning(err);
+                    // tracked in issue #1253
                     displayPyException(err, el.parentElement);
                 }
             });
