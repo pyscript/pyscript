@@ -216,7 +216,7 @@ def get_current_display_target():
 get_current_display_target._id = None
 
 
-def when(event=None, id=None):
+def when(event=None, id=None, *args, **kwargs):
     """
     Decorates a function and passes py-* events to the decorated function
     The events might or not be an argument of the decorated function
