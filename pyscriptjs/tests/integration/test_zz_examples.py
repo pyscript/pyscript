@@ -52,7 +52,7 @@ class TestExamples(PyScriptTest):
             else:
                 time.sleep(1)
         else:
-            assert False, "Espresso time not found :("
+            raise AssertionError("Espresso time not found :(")
         self.assert_no_banners()
         self.check_tutor_generated_code()
 

@@ -219,7 +219,10 @@ class PyScriptTest:
         If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
-        pred = lambda msg: msg.text == text
+
+        def pred(msg):
+            return msg.text == text
+
         try:
             with self.page.expect_console_message(pred, timeout=timeout):
                 pass
