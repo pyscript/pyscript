@@ -6,7 +6,7 @@ The `<py-script>` element lets you execute multi-line Python scripts both inline
 
 | attribute | type   | default | description                  |
 |-----------|--------|---------|------------------------------|
-| **src**   | url    |         | Url of a python source file. |
+| **src**   | url    |         | You don't need to add long python code in py-script, you can provide url of the python source file in the py-script tag with the `src` attribute. When a Python file is referred with the `src` attribute it is executed, and then added to the namespace where it was referred. |
 | **output**| string |         | The id of a DOM element to route `sys.stdout` and `stderr` to, in addition to sending it to the `<py-terminal>`|
 | **stderr**| string |         | The id of a DOM element to route just `sys.stderr` to, in addition to sending it to the `<py-terminal>`|
 
