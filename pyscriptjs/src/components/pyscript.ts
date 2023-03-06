@@ -1,5 +1,4 @@
 import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
-import type { Interpreter } from '../interpreter';
 import { getLogger } from '../logger';
 import { pyExec, displayPyException } from '../pyexec';
 import { _createAlertBanner, UserError, ErrorCode } from '../exceptions';
@@ -96,7 +95,7 @@ export async function initHandlers(interpreter: InterpreterClient) {
 
 /** Initializes an element with the given py-on* attribute and its handler */
 async function createElementsWithEventListeners(interpreter: InterpreterClient, pyAttribute: string) {
-    const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
+    const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[py-${browserEvent}]`);
     for (const el of matches) {
         // If the element doesn't have an id, let's add one automatically
         if (el.id.length === 0) {
@@ -125,43 +124,39 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
                 logger.error((e as Error).message);
             }
         } else {
-            el.addEventListener(event, (evt) => {
-                void (async () => {
-                try {
-                    const pyEval = await interpreter.globals.get('eval') //do i need globals here
-                    const pyCallable = await interpreter.globals.get('callable')
-                    const pyDictClass = await interpreter.globals.get('dict')
+            el.addEventListener(browserEvent, (evt) => {
+                    try {
+                        const pyEval = interpreter.globals.get('eval') //do i need globals here
+                        const pyCallable = interpreter.globals.get('callable')
+                        const pyDictClass = interpreter.globals.get('dict')
 
-                    const localsDict = pyDictClass()
-                    localsDict.set('event', evt)
+                        const localsDict = pyDictClass()
+                        localsDict.set('event', evt)
 
-                    const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict)
-                    const isCallable = pyCallable(evalResult)
-                    
-                    if (isCallable) {
-                        const pyInspectModule = await interpreter.interface.pyimport('inspect')
-                        const params = pyInspectModule.signature(evalResult).parameters
-                   
-
-                    if (params.length == 0) {
-                        evalResult();
+                        const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict)
+                        const isCallable = pyCallable(evalResult)
+                        
+                        if (isCallable) {
+                            const pyInspectModule = interpreter._remote.interface.pyimport('inspect')
+                            const params = pyInspectModule.signature(evalResult).parameters
+                            if (params.length == 0) {
+                                evalResult();
+                            }
+                            // Functions that receive an event attribute
+                            else if (params.length == 1) {
+                                evalResult(evt);
+                            } else {
+                                throw new UserError(ErrorCode.GENERIC, "py-events take 0 or 1 arguments")
+                            }
+                        }
                     }
-                    // Functions that receive an event attribute
-                    else if (params.length == 1) {
-                        evalResult(evt);
+                    catch (err) {
+                        // TODO: This should be an error - probably need to refactor
+                        // this function into createSingularBanner similar to createSingularWarning(err);
+                        // tracked in issue #1253
+                        displayPyException(err, el.parentElement);
                     }
-                else {
-                    throw new UserError(ErrorCode.GENERIC, "py-events take 0 or 1 arguments")
-                    }
-                }
-
-                catch (err) {
-                    // TODO: This should be an error - probably need to refactor
-                    // this function into createSingularBanner similar to createSingularWarning(err);
-                    // tracked in issue #1253
-                    displayPyException(err, el.parentElement);
-                }
-            });
+                });
         }
     }
     // }
