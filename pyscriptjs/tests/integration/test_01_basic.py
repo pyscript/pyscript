@@ -333,7 +333,7 @@ class TestBasic(PyScriptTest):
     def test_py_attribute_without_id(self):
         self.pyscript_run(
             """
-            <button py-click="myfunc()">Click me</button>
+            <button py-click="myfunc">Click me</button>
             <py-script>
                 def myfunc():
                     print("hello world!")
