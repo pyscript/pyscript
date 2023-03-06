@@ -1,7 +1,7 @@
 name: Test Report
 on:
   workflow_run:
-    workflows: ["[CI] Build Unstable"]
+    workflows: ["\[CI\] Build Unstable"]
     types:
       - completed
 jobs:

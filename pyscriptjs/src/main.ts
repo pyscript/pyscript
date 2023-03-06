@@ -248,6 +248,7 @@ export class PyScriptApp {
         // initialized. But we could easily do it in JS in parallel with the
         // download/startup of pyodide.
         const [paths, fetchPaths] = calculatePaths(this.config.fetch);
+        logger.info('Paths to write: ', paths);
         logger.info('Paths to fetch: ', fetchPaths);
         for (let i = 0; i < paths.length; i++) {
             logger.info(`  fetching path: ${fetchPaths[i]}`);
@@ -332,8 +333,7 @@ export class PyScriptApp {
         const pathArr = filePath.split('/');
         const filename = pathArr.pop();
         // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
-        const destPath = `./${filename}`;
-        await interpreter._remote.loadFromFile(destPath, filePath);
+        await interpreter._remote.loadFromFile(filename, filePath);
 
         //refresh module cache before trying to import module files into interpreter
         interpreter._remote.invalidate_module_path_cache();
