@@ -2,14 +2,14 @@
 
 This tutorial will show you how to interact with an API using the [Requests](https://requests.readthedocs.io/en/master/) library. Requests is a popular library, but it doesn't work out of the box with Pyscript. We will use the [pyodide-http](https://github.com/koenvo/pyodide-http) library to patch the Requests library, so it works with Pyscript.
 
- We will use the [JSON Placeholder API](https://jsonplaceholder.typicode.com/), a free fake API that returns fake data.
+We will use the [JSON Placeholder API](https://jsonplaceholder.typicode.com/), a free fake API that returns fake data.
 
 ## Development Setup
 
 Let's build the base HTML page to add our `py-config` and `py-script` tags in the next steps.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -17,11 +17,13 @@ Let's build the base HTML page to add our `py-config` and `py-script` tags in th
 
         <title>Requests Tutorial</title>
 
-        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
         <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     </head>
-    <body>
-    </body>
+    <body></body>
 </html>
 ```
 
@@ -30,7 +32,7 @@ Let's build the base HTML page to add our `py-config` and `py-script` tags in th
 In this step, we will install the dependencies we need to use the Requests library. We will use the `py-config` tag to specify the dependencies we need to install.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -38,13 +40,14 @@ In this step, we will install the dependencies we need to use the Requests libra
 
         <title>Requests Tutorial</title>
 
-        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
         <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     </head>
     <body>
-      <py-config>
-        packages = ["requests", "pyodide-http"]
-      </py-config>
+        <py-config>packages = ["requests", "pyodide-http"]</py-config>
     </body>
 </html>
 ```
@@ -83,7 +86,7 @@ Now that we have installed the dependencies, we need to patch the Requests libra
 Finally, let's make a request to the JSON Placeholder API to confirm that everything is working.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -91,25 +94,26 @@ Finally, let's make a request to the JSON Placeholder API to confirm that everyt
 
         <title>Requests Tutorial</title>
 
-        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
         <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     </head>
     <body>
-      <py-config>
-        packages = ["requests", "pyodide-http"]
-      </py-config>
+        <py-config>packages = ["requests", "pyodide-http"]</py-config>
 
-      <py-script>
-        import requests
-        import pyodide_http
+        <py-script>
+            import requests
+            import pyodide_http
 
-        # Patch the Requests library so it works with Pyscript
-        pyodide_http.patch()
+            # Patch the Requests library so it works with Pyscript
+            pyodide_http.patch()
 
-        # Make a request to the JSON Placeholder API
-        response = requests.get("https://jsonplaceholder.typicode.com/todos")
-        print(response.json())
-      </py-script>
+            # Make a request to the JSON Placeholder API
+            response = requests.get("https://jsonplaceholder.typicode.com/todos")
+            print(response.json())
+        </py-script>
     </body>
 </html>
 ```

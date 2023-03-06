@@ -9,7 +9,7 @@ The `<py-config>` element should be placed within the `<body>` element.
 ## Attributes
 
 | attribute | type   | default | description                                                                                             |
-|-----------|--------|---------|---------------------------------------------------------------------------------------------------------|
+| --------- | ------ | ------- | ------------------------------------------------------------------------------------------------------- |
 | **type**  | string | "toml"  | Syntax type of the `<py-config>`. Value can be `json` or `toml`. Default: "toml" if type is unspecifed. |
 | **src**   | url    |         | Source url to an external configuration file.                                                           |
 
@@ -17,7 +17,7 @@ The `<py-config>` element should be placed within the `<body>` element.
 
 ### Defining an inline config
 
-- `<py-config>` using TOML (default)
+-   `<py-config>` using TOML (default)
 
 ```{note}
 Reminder: when using TOML, any Arrays of Tables defined with double-brackets (like `[[interpreters]]` and `[[fetch]]` must come after individual keys (like `plugins = ...` and `packages=...`)
@@ -25,40 +25,41 @@ Reminder: when using TOML, any Arrays of Tables defined with double-brackets (li
 
 ```html
 <py-config>
-  [splashscreen]
-  autoclose = true
+    [splashscreen]
+    autoclose = true
 
-  [[interpreters]]
-  src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
-  name = "pyodide-0.21.2"
-  lang = "python"
+    [[interpreters]]
+    src = "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js"
+    name = "pyodide-0.21.2"
+    lang = "python"
 </py-config>
 ```
 
-- `<py-config>` using JSON via `type` attribute
+-   `<py-config>` using JSON via `type` attribute
 
 ```html
 <py-config type="json">
-  {
-    "splashscreen": {
-      "autoclose": true
-    },
-    "interpreters": [{
-      "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
-      "name": "pyodide-0.21.2",
-      "lang": "python"
-    }]
-  }
+    {
+      "splashscreen": {
+        "autoclose": true
+      },
+      "interpreters": [{
+        "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
+        "name": "pyodide-0.21.2",
+        "lang": "python"
+      }]
+    }
 </py-config>
 ```
 
 ### Defining a file based config
 
-- Use of the `src` attribute
+-   Use of the `src` attribute
 
 ```html
 <py-config src="./custom.toml"></py-config>
 ```
+
 where `custom.toml` contains
 
 ```toml
@@ -71,23 +72,26 @@ name = "pyodide-0.21.2"
 lang = "python"
 ```
 
-- JSON using the `type` and `src` attribute
+-   JSON using the `type` and `src` attribute
 
 ```html
 <py-config type="json" src="./custom.json"></py-config>
 ```
+
 where `custom.json` contains
 
 ```json
 {
-  "splashscreen": {
-    "autoclose": true,
-  },
-  "interpreters": [{
-    "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
-    "name": "pyodide-0.21.2",
-    "lang": "python"
-  }]
+    "splashscreen": {
+        "autoclose": true
+    },
+    "interpreters": [
+        {
+            "src": "https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js",
+            "name": "pyodide-0.21.2",
+            "lang": "python"
+        }
+    ]
 }
 ```
 
@@ -97,8 +101,8 @@ One can also use both i.e pass the config from `src` attribute as well as specif
 
 ```html
 <py-config src="./custom.toml">
-  [[fetch]]
-  files = ["./utils.py"]
+    [[fetch]]
+    files = ["./utils.py"]
 </py-config>
 ```
 
@@ -106,11 +110,11 @@ This can also be done via JSON using the `type` attribute.
 
 ```html
 <py-config type="json" src="./custom.json">
-  {
-    "fetch": [{
-      "files": ["./utils.py"]
-    }]
-  }
+    {
+      "fetch": [{
+        "files": ["./utils.py"]
+      }]
+    }
 </py-config>
 ```
 
@@ -133,7 +137,7 @@ NOTICE that only pure python packages from PyPI will work and packages with C de
 
 ```html
 <py-config>
-  packages = ["./static/wheels/travertino-0.1.3-py3-none-any.whl"]
+    packages = ["./static/wheels/travertino-0.1.3-py3-none-any.whl"]
 </py-config>
 ```
 
@@ -141,9 +145,9 @@ OR in JSON like
 
 ```html
 <py-config type="json">
-  {
-    "packages": ["./static/wheels/travertino-0.1.3-py3-none-any.whl"]
-  }
+    {
+      "packages": ["./static/wheels/travertino-0.1.3-py3-none-any.whl"]
+    }
 </py-config>
 ```
 
@@ -153,32 +157,34 @@ If there's enough popular demand, the pyodide team will likely work on supportin
 
 For example, NumPy and Matplotlib are available. Notice here we're using `display(fig, target="plot")`, which takes the graph and displays it in the element with the id `plot`.
 
-
 ```html
 <html>
     <head>
-      <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-      <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     </head>
 
-  <body>
-    <h1>Let's plot random numbers</h1>
-    <div id="plot"></div>
-    <py-config type="json">
-        {
-          "packages": ["numpy", "matplotlib"]
-        }
-    </py-config>
-    <py-script>
-      import matplotlib.pyplot as plt
-      import numpy as np
-      x = np.random.randn(1000)
-      y = np.random.randn(1000)
-      fig, ax = plt.subplots()
-      ax.scatter(x, y)
-      display(fig, target="plot")
-    </py-script>
-  </body>
+    <body>
+        <h1>Let's plot random numbers</h1>
+        <div id="plot"></div>
+        <py-config type="json">
+            {
+              "packages": ["numpy", "matplotlib"]
+            }
+        </py-config>
+        <py-script>
+            import matplotlib.pyplot as plt
+            import numpy as np
+            x = np.random.randn(1000)
+            y = np.random.randn(1000)
+            fig, ax = plt.subplots()
+            ax.scatter(x, y)
+            display(fig, target="plot")
+        </py-script>
+    </body>
 </html>
 ```
 
@@ -204,28 +210,31 @@ more details.
 ```html
 <html>
     <head>
-      <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-      <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     </head>
 
-  <body>
-    <h1>Let's plot random numbers</h1>
-    <div id="plot"></div>
-    <py-config type="toml">
-        packages = ["numpy", "matplotlib"]
+    <body>
+        <h1>Let's plot random numbers</h1>
+        <div id="plot"></div>
+        <py-config type="toml">
+            packages = ["numpy", "matplotlib"]
 
-        [[fetch]]
-        files = ["./data.py"]
-    </py-config>
-    <py-script>
-      import matplotlib.pyplot as plt
-      from data import make_x_and_y
-      x, y = make_x_and_y(n=1000)
-      fig, ax = plt.subplots()
-      ax.scatter(x, y)
-      display(fig, target="plot")
-    </py-script>
-  </body>
+            [[fetch]]
+            files = ["./data.py"]
+        </py-config>
+        <py-script>
+            import matplotlib.pyplot as plt
+            from data import make_x_and_y
+            x, y = make_x_and_y(n=1000)
+            fig, ax = plt.subplots()
+            ax.scatter(x, y)
+            display(fig, target="plot")
+        </py-script>
+    </body>
 </html>
 ```
 
@@ -247,18 +256,18 @@ The following optional values are supported by `<py-config>`:
 | `fetch` | List of Stuff to fetch | Local Python modules OR resources from the internet are to be specified here using a Fetch Configuration, described below. The default value is an empty list. |
 | `plugins` | List of Plugins | List of Plugins are to be specified here. The default value is an empty list. |
 | `interpreters` | List of Interpreters| List of Interpreter configurations, described below. The default value contains a single Pyodide based interpreter. **Note:** Currently, only a single interpreter is supported. |
-| `runtimes`  {bdg-warning-line}`Deprecated`  | List of Runtimes | This value is deprecated, please use `interpreters`. List of runtime configurations, described below. The default value contains a single Pyodide based interpreter. |
+| `runtimes` {bdg-warning-line}`Deprecated` | List of Runtimes | This value is deprecated, please use `interpreters`. List of runtime configurations, described below. The default value contains a single Pyodide based interpreter. |
 
 ### <a name="fetch">Fetch</a>
 
 A fetch configuration consists of the following:
 
-| Value        | Type            | Description                                     |
-|--------------|-----------------|-------------------------------------------------|
-| `from`       | string          | Base URL for the resource to be fetched.        |
-| `to_folder`  | string          | Name of the folder to create in the filesystem. |
-| `to_file`    | string          | Name of the target to create in the filesystem. |
-| `files`      | List of strings | List of files to be downloaded.                 |
+| Value       | Type            | Description                                     |
+| ----------- | --------------- | ----------------------------------------------- |
+| `from`      | string          | Base URL for the resource to be fetched.        |
+| `to_folder` | string          | Name of the folder to create in the filesystem. |
+| `to_file`   | string          | Name of the target to create in the filesystem. |
+| `files`     | List of strings | List of files to be downloaded.                 |
 
 The parameters `to_file` and `files` shouldn't be supplied together.
 
@@ -266,19 +275,19 @@ The parameters `to_file` and `files` shouldn't be supplied together.
 
 The `fetch` mechanism works in the following manner:
 
-- If both `files` and `to_file` parameters are supplied: Error!
-- `from` defaults to an empty string i.e. `""` to denote relative URLs of the serving directory
-- `to_folder` defaults to `.` i.e. the current working directory of the filesystem
-- If `files` is specified
-  - for each `file` present in the `files` array
-    - the `sourcePath` is calculated as `from + file`
-    - the `destination` is calculated as `to_folder + file`
-      - thus, the object is downloaded from `sourcePath` to `destination`
-- Else i.e. `files` is NOT specified
-  - If `to_file` is specified
-    - the object is downloaded from `from` to `to_folder + to_file`
-  - Otherwise, calculate the `filename` at the end of `from` i.e. the part after last `/`
-    - the object is downloaded from `from` to `to_folder + filename at the end of 'from'`
+-   If both `files` and `to_file` parameters are supplied: Error!
+-   `from` defaults to an empty string i.e. `""` to denote relative URLs of the serving directory
+-   `to_folder` defaults to `.` i.e. the current working directory of the filesystem
+-   If `files` is specified
+    -   for each `file` present in the `files` array
+        -   the `sourcePath` is calculated as `from + file`
+        -   the `destination` is calculated as `to_folder + file`
+            -   thus, the object is downloaded from `sourcePath` to `destination`
+-   Else i.e. `files` is NOT specified
+    -   If `to_file` is specified
+        -   the object is downloaded from `from` to `to_folder + to_file`
+    -   Otherwise, calculate the `filename` at the end of `from` i.e. the part after last `/`
+        -   the object is downloaded from `from` to `to_folder + filename at the end of 'from'`
 
 Learn more about `fetch` on PyScript [here](https://jeff.glass/post/whats-new-pyscript-2022-12-1)
 
@@ -445,22 +454,22 @@ content/
 
 An interpreter configuration consists of the following:
 
-| Value  | Type              | Description |
-|--------|-------------------|-------------|
-| `src`  | string (Required) | URL to the interpreter source. |
-| `name` | string            | Name of the interpreter. This field can be any string and is to be used by the application author for their own customization purposes |
+| Value  | Type              | Description                                                                                                                                                                             |
+| ------ | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src`  | string (Required) | URL to the interpreter source.                                                                                                                                                          |
+| `name` | string            | Name of the interpreter. This field can be any string and is to be used by the application author for their own customization purposes                                                  |
 | `lang` | string            | Programming language supported by the interpreter. This field can be used by the application author to provide clarification. It currently has no implications on how PyScript behaves. |
 
 #### Example
 
-- The default interpreter is `pyodide`, another version of which can be specified as following
+-   The default interpreter is `pyodide`, another version of which can be specified as following
 
 ```html
 <py-config>
-  [[interpreters]]
-  src = "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
-  name = "pyodide-0.20.0"
-  lang = "python"
+    [[interpreters]]
+    src = "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"
+    name = "pyodide-0.20.0"
+    lang = "python"
 </py-config>
 ```
 
@@ -475,18 +484,16 @@ Besides the above schema, a user can also supply any extra keys and values that 
 For example, a valid config could also be with the snippet below:
 
 ```html
-<py-config type="toml">
-  magic = "unicorn"
-</py-config>
+<py-config type="toml">magic = "unicorn"</py-config>
 ```
 
 OR in JSON like
 
 ```html
 <py-config type="json">
-  {
-    "magic": "unicorn"
-  }
+    {
+      "magic": "unicorn"
+    }
 </py-config>
 ```
 

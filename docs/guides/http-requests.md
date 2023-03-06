@@ -15,9 +15,10 @@ from `PyScript` using Python, since currently, the common tools such as `request
 The `fetch` API is a modern way to make HTTP requests. It is available in all modern browsers, and in Pyodide.
 
 Although there are two ways to use `fetch`:
-1) using `JavaScript` from `PyScript`
-2) using Pyodide's Python wrapper,
-`pyodide.http.pyfetch`
+
+1. using `JavaScript` from `PyScript`
+2. using Pyodide's Python wrapper,
+   `pyodide.http.pyfetch`
 
 This example will only show how to use the Python wrapper. Still, the
 [fetch documentation](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters) is a useful reference, as its
@@ -36,6 +37,7 @@ for dealing with the response, such as `json()` or `status`. See the
 for more information.
 
 # Example
+
 We will make async HTTP requests to [JSONPlaceholder](https://jsonplaceholder.typicode.com/)'s fake API using `pyfetch`.
 First we write a helper function in pure Python that makes a request and returns the response. This function
 makes it easier to make specific types of requests with the most common parameters.
@@ -70,6 +72,7 @@ async def request(url: str, method: str = "GET", body: Optional[str] = None,
     response = await pyfetch(url, **kwargs)
     return response
 ```
+
 This function is a wrapper for `pyfetch`, which is a wrapper for the `fetch` API. It is a coroutine function,
 so it must be awaited. It also has type hints, which are not required, but are useful for IDEs and other tools.
 The basic idea is that the `PyScript` will import and call this function, then await the response. Therefore,
@@ -87,80 +90,88 @@ the actual Python code for HTTP requests, which is wrapped in `<py-script>` tags
 concluding html code.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>GET, POST, PUT, DELETE example</title>
+        <title>GET, POST, PUT, DELETE example</title>
 
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
 
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <py-config>
-      [[fetch]]
-      files = ["/request.py"]
-    </py-config>
-  </head>
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <py-config>
+            [[fetch]]
+            files = ["/request.py"]
+        </py-config>
+    </head>
 
-  <body><p>
-    Hello world request example! <br>
-    Here is the output of your request:
-    </p>
-    <py-script>
-        import asyncio
-        import json
-        from request import request  # import our request function.
-
-        async def main():
-            baseurl = "https://jsonplaceholder.typicode.com"
-
-            # GET
-            headers = {"Content-type": "application/json"}
-            response = await request(f"{baseurl}/posts/2", method="GET", headers=headers)
-            print(f"GET request=> status:{response.status}, json:{await response.json()}")
-
-            # POST
-            body = json.dumps({"title": "test_title", "body": "test body", "userId": 1})
-            new_post = await request(f"{baseurl}/posts", body=body, method="POST", headers=headers)
-            print(f"POST request=> status:{new_post.status}, json:{await new_post.json()}")
-
-            # PUT
-            body = json.dumps({"id": 1, "title": "test_title", "body": "test body", "userId": 2})
-            new_post = await request(f"{baseurl}/posts/1", body=body, method="PUT", headers=headers)
-            print(f"PUT request=> status:{new_post.status}, json:{await new_post.json()}")
-
-            # DELETE
-            new_post = await request(f"{baseurl}/posts/1", method="DELETE", headers=headers)
-            print(f"DELETE request=> status:{new_post.status}, json:{await new_post.json()}")
-
-        asyncio.ensure_future(main())
-    </py-script>
-
-    <div>
-    <p>
-        You can also use other methods. See fetch documentation: <br>
-        https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters
-    </p>
-    </div>
-    <div>
+    <body>
         <p>
-        See pyodide documentation for what to do with a FetchResponse object: <br>
-        https://pyodide.org/en/stable/usage/api/python-api.html#pyodide.http.FetchResponse
+            Hello world request example! <br />
+            Here is the output of your request:
         </p>
-    </div>
-  </body>
+        <py-script>
+            import asyncio
+            import json
+            from request import request  # import our request function.
+
+            async def main():
+                baseurl = "https://jsonplaceholder.typicode.com"
+
+                # GET
+                headers = {"Content-type": "application/json"}
+                response = await request(f"{baseurl}/posts/2", method="GET", headers=headers)
+                print(f"GET request=> status:{response.status}, json:{await response.json()}")
+
+                # POST
+                body = json.dumps({"title": "test_title", "body": "test body", "userId": 1})
+                new_post = await request(f"{baseurl}/posts", body=body, method="POST", headers=headers)
+                print(f"POST request=> status:{new_post.status}, json:{await new_post.json()}")
+
+                # PUT
+                body = json.dumps({"id": 1, "title": "test_title", "body": "test body", "userId": 2})
+                new_post = await request(f"{baseurl}/posts/1", body=body, method="PUT", headers=headers)
+                print(f"PUT request=> status:{new_post.status}, json:{await new_post.json()}")
+
+                # DELETE
+                new_post = await request(f"{baseurl}/posts/1", method="DELETE", headers=headers)
+                print(f"DELETE request=> status:{new_post.status}, json:{await new_post.json()}")
+
+            asyncio.ensure_future(main())
+        </py-script>
+
+        <div>
+            <p>
+                You can also use other methods. See fetch documentation: <br />
+                https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters
+            </p>
+        </div>
+        <div>
+            <p>
+                See pyodide documentation for what to do with a FetchResponse
+                object: <br />
+                https://pyodide.org/en/stable/usage/api/python-api.html#pyodide.http.FetchResponse
+            </p>
+        </div>
+    </body>
 </html>
 ```
 
 ## Explanation
+
 ### `py-config` tag for importing our Python code
+
 The very first thing to notice is the `py-config` tag. This tag is used to import Python files into the `PyScript`.
 In this case, we are importing the `request.py` file, which contains the `request` function we wrote above.
 
 ### `py-script` tag for making async HTTP requests.
+
 Next, the `py-script` tag contains the actual Python code where we import `asyncio` and `json`,
 which are required or helpful for the `request` function.
 The `# GET`, `# POST`, `# PUT`, `# DELETE` blocks show examples of how to use the `request` function to make basic
@@ -169,6 +180,7 @@ HTTP requests. The `await` keyword is required not only for the `request` functi
 faster ones.
 
 ### HTTP Requests
+
 HTTP requests are a very common way to communicate with a server. They are used for everything from getting data from
 a database, to sending emails, to authorization, and more. Due to safety concerns, files loaded from the
 local file system are not accessible by `PyScript`. Therefore, the proper way to load data into `PyScript` is also
@@ -183,31 +195,38 @@ HTTP requests are defined by standards-setting bodies in [RFC 1945](https://www.
 [RFC 9110](https://www.rfc-editor.org/info/rfc9110).
 
 # Conclusion
+
 This tutorial demonstrates how to make HTTP requests using `pyfetch` and the `FetchResponse` objects. Importing Python
 code/files into the `PyScript` using the `py-config` tag is also covered.
 
 Although a simple example, the principals here can be used to create complex web applications inside of `PyScript`,
 or load data into `PyScript` for use by an application, all served as a static HTML page, which is pretty amazing!
 
-
 # API Quick Reference
+
 ## pyodide.http.pyfetch
+
 ### Usage
+
 ```python
 await pyodide.http.pyfetch(url: str, **kwargs: Any) -> FetchResponse
 ```
+
 Use `pyfetch` to make HTTP requests in `PyScript`. This is a wrapper around the `fetch` API. Returns a `FetchResponse`.
 
-- [`pyfetch` Docs.](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.pyfetch)
+-   [`pyfetch` Docs.](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.pyfetch)
 
 ## pyodide.http.FetchResponse
+
 ### Usage
+
 ```python
 response: pyodide.http.FetchResponse = await <pyfetch call>
 status = response.status
 json = await response.json()
 ```
+
 Class for handling HTTP responses. This is a wrapper around the `JavaScript` fetch `Response`. Contains common (async)
 methods and properties for handling HTTP responses, such as `json()`, `url`, `status`, `headers`, etc.
 
-- [`FetchResponse` Docs.](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.FetchResponse)
+-   [`FetchResponse` Docs.](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.FetchResponse)

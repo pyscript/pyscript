@@ -9,9 +9,7 @@ Pyscript plugins are currently under active development. The API is likely to go
 You can add your custom plugins to the `<py-config>` tag on your page. For example:
 
 ```html
-<py-config>
-    plugins = ["http://example.com/hello-world.py"]
-</py-config>
+<py-config>plugins = ["http://example.com/hello-world.py"]</py-config>
 ```
 
 Currently, only single files with the extension `.py` and `.js` files can be used as plugins.
@@ -45,22 +43,23 @@ class PyHelloWorld:
 Let's now create our `index.html` page and add the plugin.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
 
         <title>Python Plugin</title>
 
-        <link rel="stylesheet" href="https://pyscript.net/unstable/pyscript.css" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/unstable/pyscript.css"
+        />
         <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
     </head>
 
     <body>
-        <py-config>
-            plugins = ["./hello-world.py"]
-        </py-config>
+        <py-config>plugins = ["./hello-world.py"]</py-config>
     </body>
 </html>
 ```
@@ -92,7 +91,7 @@ class PyHelloWorld:
 Now that we have registered our custom element, we can use the custom tag `<py-hello-world>` to add our plugin to the page.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -100,14 +99,15 @@ Now that we have registered our custom element, we can use the custom tag `<py-h
 
         <title>Python Plugin</title>
 
-        <link rel="stylesheet" href="https://pyscript.net/unstable/pyscript.css" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/unstable/pyscript.css"
+        />
         <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
     </head>
 
     <body>
-        <py-config>
-            plugins = ["./hello-world.py"]
-        </py-config>
+        <py-config>plugins = ["./hello-world.py"]</py-config>
 
         <py-hello-world></py-hello-world>
     </body>
@@ -132,9 +132,9 @@ Let's create a simple plugin that will add the text "Hello World" to the page. W
 
 ```js
 export default class HelloWorldPlugin {
- afterStartup(runtime) {
- // Code goes here
- }
+    afterStartup(runtime) {
+        // Code goes here
+    }
 }
 ```
 
@@ -153,7 +153,7 @@ export default class HelloWorldPlugin {
 Finally, we need to add the plugin to our page's `<py-config>` tag.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -161,14 +161,15 @@ Finally, we need to add the plugin to our page's `<py-config>` tag.
 
         <title>Javascript Plugin</title>
 
-        <link rel="stylesheet" href="https://pyscript.net/unstable/pyscript.css" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/unstable/pyscript.css"
+        />
         <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
     </head>
 
     <body>
-        <py-config>
-            plugins = ["./hello-world.js"]
-        </py-config>
+        <py-config>plugins = ["./hello-world.js"]</py-config>
     </body>
 </html>
 ```
@@ -190,7 +191,6 @@ Because we are using a local file, you must start a live server. Otherwise, Pysc
 As you can see, we could build all our plugin logic inside the `afterStartup` method. You may also want to create a custom html element for your plugin. Let's see how we can do that.
 
 First, we need to create a custom html element. Let's start by creating our `PyHelloWorld` class that extends the `HTMLElement` class.
-
 
 ```js
 class PyHelloWorld extends HTMLElement {
@@ -214,7 +214,7 @@ export default class HelloWorldPlugin {
         customElements.define("py-hello-world", PyHelloWorld);
 
         // Add the custom element to the page so we can see it
-        const elem = document.createElement('py-hello-world');
+        const elem = document.createElement("py-hello-world");
         document.body.append(elem);
     }
 }

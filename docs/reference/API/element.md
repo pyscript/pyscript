@@ -4,49 +4,43 @@ The `Element` API is a helpful way to create and manipulate elements in the DOM.
 
 ## Methods and Properties
 
-| Property | Description                             |
-|----------|-----------------------------------------|
+| Property    | Description                            |
+| ----------- | -------------------------------------- |
 | `element`   | Returns the element with the given ID. |
 | `id`        | Returns the element's ID.              |
-| `value`    | Returns the element's value.           |
+| `value`     | Returns the element's value.           |
 | `innerHtml` | Returns the element's inner HTML.      |
 
-
-
-| Method               | Description                            |
-|----------------------|--------------------------------------------------------------|
-| `write`                | Writes `value` to element and handles various mime types. `append` defaults to `False`, if set to true, it will create a child element.          |
-| `clear`                | Clears the element's value or content. |
-| `select`               | Select element from `query` which uses [Document.querySelector()](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector).    |
-| `clone`                | Clones the with `new_id` if provided and `to` element if provided.                   |
-| `remove_class`         | Removes one or more class name from the element.    |
-| `add_class`            | Adds one  or more class name to the element.    |
+| Method         | Description                                                                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `write`        | Writes `value` to element and handles various mime types. `append` defaults to `False`, if set to true, it will create a child element.     |
+| `clear`        | Clears the element's value or content.                                                                                                      |
+| `select`       | Select element from `query` which uses [Document.querySelector()](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector). |
+| `clone`        | Clones the with `new_id` if provided and `to` element if provided.                                                                          |
+| `remove_class` | Removes one or more class name from the element.                                                                                            |
+| `add_class`    | Adds one or more class name to the element.                                                                                                 |
 
 ## Element.element
 
 | Parameter | Default | Type |
-|-----------|---------|------|
+| --------- | ------- | ---- |
 |           |         |      |
 
 The `element` property returns the DOM element with the given ID.
 
 ```html
-    from pyscript import Element
-
-    my_div = Element('my-div')
-    print(my_div.element)
+from pyscript import Element my_div = Element('my-div') print(my_div.element)
 ```
 
 ## Element.id
 
 | Parameter | Default | Type |
-|-----------|---------|------|
+| --------- | ------- | ---- |
 |           |         |      |
 
 Return the element's ID.
 
 ```html
-
 <div id="my-div"></div>
 
 <py-script>
@@ -60,7 +54,7 @@ Return the element's ID.
 ## Element.value
 
 | Parameter | Default | Type |
-|-----------|---------|------|
+| --------- | ------- | ---- |
 |           |         |      |
 
 Return the element's value.
@@ -79,7 +73,7 @@ Return the element's value.
 ## Element.innerHtml
 
 | Parameter | Default | Type |
-|-----------|---------|------|
+| --------- | ------- | ---- |
 |           |         |      |
 
 Return the element's inner HTML.
@@ -93,32 +87,32 @@ Return the element's inner HTML.
     from pyscript import Element
 
     my_innerHtml = Element('my-innerHtml')
-    print(my_innerHtml.innerHtml) # prints <b> hello world </b>
+    print(my_innerHtml.innerHtml) # prints<b> hello world </b>
 </py-script>
 ```
 
 ## Element.write
 
-| Parameter   | Default | Type                        |
-|-------------|---------|-----------------------------|
-| `value`     |         |  `str` or `__mime_type__`   |
-| `append`    | False   | `bool`                      |
+| Parameter | Default | Type                     |
+| --------- | ------- | ------------------------ |
+| `value`   |         | `str` or `__mime_type__` |
+| `append`  | False   | `bool`                   |
 
 Writes `value` to element and handles various mime types. This method also contains a `append` parameter, which defaults to `False`.
 
 Currently, these are the MIME types that are supported when rendering content using this method
 
-| Method              | Inferred MIME type     |
-|---------------------|------------------------|
-| `__repr__`          | text/plain             |
-| `_repr_html_`       | text/html              |
-| `_repr_svg_`        | image/svg+xml          |
-| `_repr_png_`        | image/png*             |
-| `_repr_pdf_`        | application/pdf        |
-| `_repr_jpeg_`       | image/jpeg*            |
-| `_repr_json_`       | application/json       |
-| `_repr_javascript_` | application/javascript*|
-| `savefig`           | image/png              |
+| Method              | Inferred MIME type       |
+| ------------------- | ------------------------ |
+| `__repr__`          | text/plain               |
+| `_repr_html_`       | text/html                |
+| `_repr_svg_`        | image/svg+xml            |
+| `_repr_png_`        | image/png\*              |
+| `_repr_pdf_`        | application/pdf          |
+| `_repr_jpeg_`       | image/jpeg\*             |
+| `_repr_json_`       | application/json         |
+| `_repr_javascript_` | application/javascript\* |
+| `savefig`           | image/png                |
 
 ```html
 <div id="foo"></div>
@@ -149,7 +143,7 @@ If we set `append` to `True`, it will create a child element using a `div`.
 ## Element.clear
 
 | Parameter | Default | Type |
-|-----------|---------|------|
+| --------- | ------- | ---- |
 |           |         |      |
 
 Clears the element's value or content. For example, we can clear the value of an input element.
@@ -195,17 +189,15 @@ Select element from `query`, it will look into the main Element if `from_content
 
 ## Element.clone
 
-| Parameter   | Default | Type      |
-|-------------|---------|-----------|
-| `new_id`    | None    | `str`     |
-| `to`        | None    | `Element` |
+| Parameter | Default | Type      |
+| --------- | ------- | --------- |
+| `new_id`  | None    | `str`     |
+| `to`      | None    | `Element` |
 
 Clones the element to a new element. You can provide `new_id` to set a different id to the cloned element. You can also use a `to` element to append the cloned element to.
 
 ```html
-<div id="foo">
-    HI!
-</div>
+<div id="foo">HI!</div>
 
 <py-script>
     from pyscript import Element
@@ -232,12 +224,8 @@ It's always a good idea to pass a new id to the element you are cloning to avoid
 You can also clone an element into another element.
 
 ```html
-<div id="bond">
-    Bond
-</div>
-<div id="james">
-    James
-</div>
+<div id="bond">Bond</div>
+<div id="james">James</div>
 <py-script>
     from pyscript import Element
 
@@ -250,9 +238,9 @@ You can also clone an element into another element.
 
 ## Element.remove_class
 
-| Parameter   | Default | Type                  |
-|-------------|---------|-----------------------|
-| `classname` | None    | `str` or `List[str]`  |
+| Parameter   | Default | Type                 |
+| ----------- | ------- | -------------------- |
+| `classname` | None    | `str` or `List[str]` |
 
 Removes one or more class names from the element.
 
@@ -280,14 +268,18 @@ You can also remove multiple classes by passing a list of strings.
 
 ## Element.add_class
 
-| Parameter   | Default | Type                  |
-|-------------|---------|-----------------------|
-| `classname` | None    | `str` or `List[str]`  |
+| Parameter   | Default | Type                 |
+| ----------- | ------- | -------------------- |
+| `classname` | None    | `str` or `List[str]` |
 
 Adds one or more class names to the element.
 
 ```html
-<style> .red { color: red; } </style>
+<style>
+    .red {
+        color: red;
+    }
+</style>
 <div id="foo">Hi!</div>
 <py-script>
     from pyscript import Element
@@ -299,7 +291,14 @@ Adds one or more class names to the element.
 You can also add multiple classes at once by passing a list of strings.
 
 ```html
-<style> .red { color: red; } .bold { font-weight: bold; } </style>
+<style>
+    .red {
+        color: red;
+    }
+    .bold {
+        font-weight: bold;
+    }
+</style>
 <div id="foo">Hi!</div>
 <py-script>
     from pyscript import Element

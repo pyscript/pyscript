@@ -14,8 +14,8 @@ Exponentially expand accessibility and use cases for Python by enabling Python i
 
 We are fully leaning into the idea that the browser is the most ubiquitous VM by using Python to build a graphical, programmable operating system on top of the browser to make and share applications. Harness the full power of canvas, webGL, WASI, and even in-browser support for P2P and CRDTs for serverless data sharing and collaboration.
 
-- [PyCon US 2022 Keynote with Peter Wang](https://anaconda.cloud/pyscript-pycon2022-peter-wang-keynote)
-- [Example demos from Keynote](https://pyscript.net/examples/index.html)
+-   [PyCon US 2022 Keynote with Peter Wang](https://anaconda.cloud/pyscript-pycon2022-peter-wang-keynote)
+-   [Example demos from Keynote](https://pyscript.net/examples/index.html)
 
 ## What is PyScript?
 
@@ -23,17 +23,17 @@ PyScript is a framework that allows users to create rich Python applications in 
 
 What is PyScript? Well, here are some of the core components:
 
-- Python in the browser: Enable drop-in content, external file hosting, and application hosting without the reliance on server-side configuration
+-   Python in the browser: Enable drop-in content, external file hosting, and application hosting without the reliance on server-side configuration
 
-- Python ecosystem: Run many popular packages of Python and the scientific stack (such as numpy, pandas, scikit-learn, and more)
+-   Python ecosystem: Run many popular packages of Python and the scientific stack (such as numpy, pandas, scikit-learn, and more)
 
-- Python with JavaScript: Bi-directional communication between Python and Javascript objects and namespaces
+-   Python with JavaScript: Bi-directional communication between Python and Javascript objects and namespaces
 
-- Environment management: Allow users to define what packages and files to include for the page code to run
+-   Environment management: Allow users to define what packages and files to include for the page code to run
 
-- Visual application development: Use readily available curated UI components, such as buttons, containers, text boxes, and more
+-   Visual application development: Use readily available curated UI components, such as buttons, containers, text boxes, and more
 
-- Flexible framework: A flexible framework that can be leveraged to create and share new pluggable and extensible components directly in Python
+-   Flexible framework: A flexible framework that can be leveraged to create and share new pluggable and extensible components directly in Python
 
 All that to say... PyScript is just HTML, only a bit (okay, maybe a lot) more powerful, thanks to the rich and accessible ecosystem of Python libraries.
 
@@ -43,11 +43,11 @@ In short, our mission is to enable programming for the 99%.
 
 Leveraging Python in HTML is literally as simple as adding a few lines of code to your page. The best place to learn more, get started, and stay updated on all things PyScript is [Pyscript.net](http://pyscript.net/). Additional shareable resources below:
 
-- [PyScript Repo](https://github.com/pyscript/pyscript)
-- [PyScript Announcement Blog](https://www.anaconda.com/blog/pyscript-python-in-the-browser)
-- [PyScript Technical Blog](https://engineering.anaconda.com/2022/04/welcome-pyscript.html)
-- [PyScript Nucleus Project](https://anaconda.cloud/s/pyscript)
-- [PyScript Documentation](https://docs.pyscript.net/)
+-   [PyScript Repo](https://github.com/pyscript/pyscript)
+-   [PyScript Announcement Blog](https://www.anaconda.com/blog/pyscript-python-in-the-browser)
+-   [PyScript Technical Blog](https://engineering.anaconda.com/2022/04/welcome-pyscript.html)
+-   [PyScript Nucleus Project](https://anaconda.cloud/s/pyscript)
+-   [PyScript Documentation](https://docs.pyscript.net/)
 
 ## Why isn't this going to be as terrible as PHP?
 
@@ -63,15 +63,15 @@ JavaScript is not only a different language from python, but a challenging langu
 
 Python is incredibly powerful, super intuitive, and easy to learn. By adding Python to your toolkit, you can use Numpy, SciPy, Pandas, and more, seamlessly. One tradeoff is longer download times, so it isn’t the right tool for everything—but where it is the right tool, it’s almost irreplaceable.
 
-Ultimately, PyScript will enable the use of a variety of languages, offer a standard set of components that is well linked to the REPLs, and allow you to do an introspection on the code base—you can have, for example, a *modifiable* chart as a python object.
+Ultimately, PyScript will enable the use of a variety of languages, offer a standard set of components that is well linked to the REPLs, and allow you to do an introspection on the code base—you can have, for example, a _modifiable_ chart as a python object.
 
 ## Will PyScript replace JavaScript?
 
 No. PyScript allows Python to leverage HTML, CSS, and JavaScript conventions to build elegant UIs and address general web application building, packaging, distribution, and deployment challenges (a huge pain). We expect the popularity and adoption of HTML, CSS, and JavaScript to rise alongside Python, ultimately making the web a more friendly and hackable place for everyone. That said, we do believe:
 
-- PyScript will displace some use cases that people have to rely on Javascript for now
-- PyScript will heavily leverage and interface with existing powerful, feature-full JS libraries, as appropriate
-- PyScript will open up web programming to tens of millions of people who would otherwise not have touched JavaScript; so in this way, it will outpace JavaScript
+-   PyScript will displace some use cases that people have to rely on Javascript for now
+-   PyScript will heavily leverage and interface with existing powerful, feature-full JS libraries, as appropriate
+-   PyScript will open up web programming to tens of millions of people who would otherwise not have touched JavaScript; so in this way, it will outpace JavaScript
 
 But none of these above scenarios lead to a situation where "PyScript replaces all existing JavaScript." Just as Python itself didn't replace C, C++, or Java. But, it did take a LOT of market share for new use cases where those languages would otherwise have been used.
 
