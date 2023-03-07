@@ -126,6 +126,9 @@ class PyScriptTest:
         page.on("console", self._on_console)
         page.on("pageerror", self._on_pageerror)
 
+    def run_js(self, code):
+        self.page.evaluate("""(async () => {%s})();""" % code)
+
     def teardown_method(self):
         # we call check_js_errors on teardown: this means that if there are still
         # non-cleared errors, the test will fail. If you expect errors in your

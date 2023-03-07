@@ -37,7 +37,7 @@ export class InterpreterClient extends Object {
     async initializeRemote(): Promise<void> {
         await this._unwrapped_remote.loadInterpreter(this.config, this.stdio);
         // await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
-        this.globals = await this._remote.globals as PyProxyDict;
+        this.globals = this._remote.globals as PyProxyDict;
     }
 
     /**
