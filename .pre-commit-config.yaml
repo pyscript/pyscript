@@ -3,66 +3,54 @@
 
 default_stages: [commit]
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-    -   id: check-builtin-literals
-    -   id: check-case-conflict
-    -   id: check-docstring-first
-    -   id: check-executables-have-shebangs
-    -   id: check-json
-        exclude: tsconfig.json
-    -   id: check-toml
-    -   id: check-xml
-    -   id: check-yaml
-    -   id: detect-private-key
-    -   id: end-of-file-fixer
-        exclude: \.min\.js$
-    -   id: trailing-whitespace
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.4.0
+      hooks:
+          - id: check-builtin-literals
+          - id: check-case-conflict
+          - id: check-docstring-first
+          - id: check-executables-have-shebangs
+          - id: check-json
+            exclude: tsconfig.json
+          - id: check-toml
+          - id: check-xml
+          - id: check-yaml
+          - id: detect-private-key
+          - id: end-of-file-fixer
+            exclude: \.min\.js$
+          - id: trailing-whitespace
 
--   repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.247
-    hooks:
-    -   id: ruff
+    - repo: https://github.com/charliermarsh/ruff-pre-commit
+      rev: v0.0.247
+      hooks:
+          - id: ruff
 
--   repo: https://github.com/psf/black
-    rev: 23.1.0
-    hooks:
-    -   id: black
+    - repo: https://github.com/psf/black
+      rev: 23.1.0
+      hooks:
+          - id: black
 
--   repo: https://github.com/codespell-project/codespell
-    rev: v2.2.2
-    hooks:
-    -   id: codespell  # See 'pyproject.toml' for args
-        additional_dependencies:
-        -   tomli
+    - repo: https://github.com/codespell-project/codespell
+      rev: v2.2.2
+      hooks:
+          - id: codespell # See 'pyproject.toml' for args
+            additional_dependencies:
+                - tomli
 
--   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.7.0
-    hooks:
-    -   id: pretty-format-yaml
-        args: [--autofix, --indent, '4']
-        exclude: .github/ISSUE_TEMPLATE/.*\.yml$
+    - repo: https://github.com/hoodmane/pyscript-prettier-precommit
+      rev: "v3.0.0-alpha.6"
+      hooks:
+          - id: prettier
+            args: [--tab-width, "4"]
 
--   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.35.0
-    hooks:
-    -   id: eslint
-        files: pyscriptjs/src/.*\.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
-        types: [file]
-        additional_dependencies:
-        -   eslint@8.25.0
-        -   typescript@4.8.4
-        -   '@typescript-eslint/eslint-plugin@5.39.0'
-        -   '@typescript-eslint/parser@5.39.0'
-
-# Commented out until mdformat-myst supports custom extensions
-# See https://github.com/executablebooks/mdformat-myst/pull/9
-# -   repo: https://github.com/executablebooks/mdformat
-#     rev: 0.7.14 # Use the ref you want to point at
-#     hooks:
-#     -   id: mdformat
-#         additional_dependencies:
-#         -   mdformat-gfm
-#         -   mdformat-myst
-#         -   mdformat-black
+    - repo: https://github.com/pre-commit/mirrors-eslint
+      rev: v8.35.0
+      hooks:
+          - id: eslint
+            files: pyscriptjs/src/.*\.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
+            types: [file]
+            additional_dependencies:
+                - eslint@8.25.0
+                - typescript@4.8.4
+                - "@typescript-eslint/eslint-plugin@5.39.0"
+                - "@typescript-eslint/parser@5.39.0"
