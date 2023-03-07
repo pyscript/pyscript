@@ -15,10 +15,12 @@ class TestInterpreterAccess(PyScriptTest):
             """
         )
 
-        self.run_js("""
+        self.run_js(
+            """
         console.log(`x is ${await pyscript.interpreter.globals.get('x')}`);
         console.log(`py_func() returns ${await (await pyscript.interpreter.globals.get('py_func'))()}`);
-        """);
+        """
+        )
 
         assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-2:] == [
@@ -30,10 +32,12 @@ class TestInterpreterAccess(PyScriptTest):
         """Test running Python code from js via pyscript.interpreter"""
         self.pyscript_run("")
 
-        self.run_js("""
+        self.run_js(
+            """
         const interface = pyscript.interpreter._remote.interface;
         await interface.runPython('print("Interpreter Ran This")');
-        """)
+        """
+        )
 
         expected_message = "Interpreter Ran This"
         assert self.console.log.lines[0] == self.PY_COMPLETE
@@ -46,10 +50,12 @@ class TestInterpreterAccess(PyScriptTest):
         """Test running Python code from js via pyscript.runtime"""
         self.pyscript_run("")
 
-        self.run_js("""
+        self.run_js(
+            """
         const interface = pyscript.runtime._remote.interpreter;
         await interface.runPython('print("Interpreter Ran This")');
-        """)
+        """
+        )
 
         expected_message = "Interpreter Ran This"
         assert self.console.log.lines[0] == self.PY_COMPLETE
@@ -70,10 +76,12 @@ class TestInterpreterAccess(PyScriptTest):
             """
         )
 
-        self.run_js("""
+        self.run_js(
+            """
         console.log(`x is ${await pyscript.interpreter.globals.get('x')}`);
         console.log(`py_func() returns ${await (await pyscript.interpreter.globals.get('py_func'))()}`);
-        """)
+        """
+        )
 
         assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-2:] == [

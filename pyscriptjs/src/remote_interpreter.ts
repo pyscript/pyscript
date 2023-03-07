@@ -276,10 +276,10 @@ export class RemoteInterpreter extends Object {
         this.interface.FS.writeFile(path, content, { encoding: 'utf8' });
     }
 
-    async setHandler(func_name: any,handler: any): Promise<void> {
+    async setHandler(func_name: any, handler: any): Promise<void> {
         const pyscript_module = this.interface.pyimport('pyscript');
         pyscript_module[func_name] = async (...args: any[]) => {
             await handler(...args); // wrapper ensures task is scheduled
-        }
+        };
     }
 }

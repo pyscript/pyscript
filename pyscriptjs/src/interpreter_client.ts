@@ -12,7 +12,6 @@ InterpreterClient class is responsible to request code execution
 (among other things) from a `RemoteInterpreter`
 */
 export class InterpreterClient extends Object {
-
     _remote: Synclink.Remote<RemoteInterpreter>;
     _unwrapped_remote: RemoteInterpreter;
     config: AppConfig;
@@ -22,7 +21,12 @@ export class InterpreterClient extends Object {
     globals: PyProxyDict;
     stdio: Stdio;
 
-    constructor(config: AppConfig, stdio: Stdio, remote: Synclink.Remote<RemoteInterpreter>, unwrapped_remote: RemoteInterpreter) {
+    constructor(
+        config: AppConfig,
+        stdio: Stdio,
+        remote: Synclink.Remote<RemoteInterpreter>,
+        unwrapped_remote: RemoteInterpreter,
+    ) {
         super();
         this.config = config;
         this._remote = remote;

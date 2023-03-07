@@ -48,6 +48,7 @@ class TestPyRepl(PyScriptTest):
         src = py_repl.inner_text()
         assert "print('hello from py-repl')" in src
         py_repl.locator("button").click()
+        self.page.wait_for_selector("py-terminal")
         assert self.console.log.lines[-1] == "hello from py-repl"
 
     def test_execute_code_typed_by_the_user(self):
@@ -59,6 +60,7 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.type('print("hello")')
         py_repl.locator("button").click()
+        self.page.wait_for_selector("py-terminal")
         assert self.console.log.lines[-1] == "hello"
 
     def test_execute_on_shift_enter(self):
@@ -166,6 +168,7 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
+        self.page.wait_for_selector(".py-error")
         #
         # check that we sent the traceback to the console
         tb_lines = self.console.error.lines[-1].splitlines()

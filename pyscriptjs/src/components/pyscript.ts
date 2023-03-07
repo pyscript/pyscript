@@ -23,6 +23,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
              *
              * Concurrent access to the multiple py-script tags is thus avoided.
              */
+            app.incrementNumPendingTags();
             let releaseLock: () => void;
             try {
                 releaseLock = await app.tagExecutionLock();
@@ -46,6 +47,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                 /* eslint-enable @typescript-eslint/no-unsafe-assignment */
             } finally {
                 releaseLock();
+                app.decrementNumPendingTags();
             }
         }
 

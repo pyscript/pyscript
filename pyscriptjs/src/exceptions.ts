@@ -29,18 +29,18 @@ export enum ErrorCode {
 }
 
 export class UserError extends Error {
-  messageType: MessageType;
-  errorCode: ErrorCode;
-  $$isUserError: boolean;
+    messageType: MessageType;
+    errorCode: ErrorCode;
+    $$isUserError: boolean;
 
-  constructor(errorCode: ErrorCode, message: string, t: MessageType = "text") {
-    super(message);
-    this.errorCode = errorCode;
-    this.name = "UserError";
-    this.messageType = t;
-    this.message = `(${errorCode}): ${message}`;
-    this.$$isUserError = true;
-  }
+    constructor(errorCode: ErrorCode, message: string, t: MessageType = 'text') {
+        super(message);
+        this.errorCode = errorCode;
+        this.name = 'UserError';
+        this.messageType = t;
+        this.message = `(${errorCode}): ${message}`;
+        this.$$isUserError = true;
+    }
 }
 
 export class FetchError extends UserError {
