@@ -114,7 +114,7 @@ export function createSingularWarning(msg: string, sentinelText: string | null =
     //Todo: we may want to log this warning to the console as well, each time the
     //Banner is called
     //Todo: The singular banner probably needs a count of how many times it would have appeared,
-    //So it's obvious when new errors are occuring, and how many
+    //So it's obvious when new errors are occurring, and how many
 }
 
 /**

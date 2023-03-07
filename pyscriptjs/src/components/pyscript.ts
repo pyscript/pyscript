@@ -126,7 +126,7 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
         } else {
             el.addEventListener(browserEvent, (evt) => {
                     try {
-                        const pyEval = interpreter.globals.get('eval') //do i need globals here
+                        const pyEval = interpreter.globals.get('eval')
                         const pyCallable = interpreter.globals.get('callable')
                         const pyDictClass = interpreter.globals.get('dict')
 
@@ -135,7 +135,7 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
 
                         const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict)
                         const isCallable = pyCallable(evalResult)
-                        
+
                         if (isCallable) {
                             const pyInspectModule = interpreter._remote.interface.pyimport('inspect')
                             const params = pyInspectModule.signature(evalResult).parameters
@@ -192,5 +192,5 @@ export async function mountElements(interpreter: InterpreterClient) {
         const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
         source += `\n${mountName} = Element("${el.id}")`;
     }
-    interpreter.run(source);
+    await interpreter.run(source);
 }

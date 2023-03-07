@@ -240,6 +240,7 @@ class TestPlugin(PyScriptTest):
         assert unavailable_called == {method: False for method in hooks_unavailable}
 
         # TODO: It'd be actually better to check that the events get called in order
+
     @prepare_test(
         "exec_test_logger",
         PYSCRIPT_HOOKS_PLUGIN_CODE,

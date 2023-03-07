@@ -20,12 +20,10 @@ from pyodide.webloop import WebLoop
 try:
     from pyodide.code import eval_code
     from pyodide.ffi import JsProxy, create_once_callable, create_proxy
+    from pyodide.ffi.wrappers import add_event_listener
 except ImportError:
     from pyodide import JsProxy, create_once_callable, create_proxy, eval_code
 
-
-import pyodide
-from pyodide.ffi.wrappers import add_event_listener
 
 loop = asyncio.get_event_loop()
 
@@ -223,13 +221,17 @@ def when(event=None, id=None):
     """
 
     def decorator(func):
+        print("☠️")
         element = js.document.getElementById(id)
+        print(element)
         sig = inspect.signature(func)
 
         # Function doesn't receive events
         if not sig.parameters:
+
             def wrapper(*args, **kwargs):
                 func()
+
             add_event_listener(element, event, wrapper)
         else:
             add_event_listener(element, event, func)
