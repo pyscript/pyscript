@@ -195,11 +195,13 @@ class TestPyRepl(PyScriptTest):
         first_py_repl = self.page.get_by_text("first")
         first_py_repl.click()
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-0-repl-output")
         assert self.page.inner_text("#py-internal-0-repl-output") == "first"
 
         second_py_repl = self.page.get_by_text("second")
         second_py_repl.click()
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-1-repl-output")
         assert self.page.inner_text("#py-internal-1-repl-output") == "second"
 
     def test_python_exception_after_previous_output(self):
@@ -312,14 +314,18 @@ class TestPyRepl(PyScriptTest):
         second_py_repl = self.page.get_by_text("root second")
         second_py_repl.click()
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-1-repl-output")
         self.page.keyboard.type("display('second children')")
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-1-1-repl-output")
 
         first_py_repl = self.page.get_by_text("root first")
         first_py_repl.click()
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-0-repl-output")
         self.page.keyboard.type("display('first children')")
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-0-1-repl-output")
 
         assert self.page.inner_text("#py-internal-1-1-repl-output") == "second children"
         assert self.page.inner_text("#py-internal-0-1-repl-output") == "first children"
