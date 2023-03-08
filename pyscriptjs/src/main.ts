@@ -4,7 +4,7 @@ import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import { InterpreterClient } from './interpreter_client';
 import { version } from './version';
-import { PluginManager, define_custom_element } from './plugin';
+import { PluginManager, define_custom_element, Plugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { getLogger } from './logger';
 import { showWarning, globalExport, createLock } from './utils';

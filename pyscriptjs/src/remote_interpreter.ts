@@ -161,6 +161,7 @@ export class RemoteInterpreter extends Object {
                 errorCallback: messageCallback,
             });
         } else {
+            // @ts-ignore
             await this.interface.loadPackage(names, messageCallback, messageCallback);
         }
     }
