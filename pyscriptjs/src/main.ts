@@ -16,6 +16,7 @@ import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
+import type { PyProxy } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript/__init__.py';
@@ -218,6 +219,7 @@ export class PyScriptApp {
         const pyscript_module = interpreter._remote.interface.pyimport('pyscript');
         pyscript_module.define_custom_element = define_custom_element;
         pyscript_module.showWarning = showWarning;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         pyscript_module._set_version_info(version);
         pyscript_module.destroy();
 
@@ -303,7 +305,7 @@ export class PyScriptApp {
         const blobFile = new File([pluginBlob], 'plugin.js', { type: 'text/javascript' });
         const fileUrl = URL.createObjectURL(blobFile);
 
-        const module = await import(fileUrl);
+        const module = (await import(fileUrl)) as { default: { new (): Plugin } };
         // Note: We have to put module.default in a variable
         // because we have seen weird behaviour when doing
         // new module.default() directly.
@@ -346,7 +348,7 @@ export class PyScriptApp {
         //       interpreter API level and allow each one to implement it in its own way
         const module = interpreter._remote.interface.pyimport(modulename);
         if (typeof module.plugin !== 'undefined') {
-            const py_plugin = module.plugin;
+            const py_plugin = module.plugin as PyProxy & { init(app: PyScriptApp): void };
             py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);
         } else {
