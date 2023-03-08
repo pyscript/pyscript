@@ -15,6 +15,7 @@
         "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch"
     },
     "devDependencies": {
+        "@iarna/toml": "^2.2.5",
         "@jest/globals": "29.1.2",
         "@rollup/plugin-commonjs": "22.0.2",
         "@rollup/plugin-legacy": "2.2.0",
@@ -38,7 +39,6 @@
         "rollup-plugin-serve": "2.0.1",
         "rollup-plugin-string": "3.0.0",
         "rollup-plugin-terser": "7.0.2",
-        "toml": "^3.0.0",
         "ts-jest": "29.0.3",
         "tslib": "2.4.0",
         "typescript": "4.8.4"
