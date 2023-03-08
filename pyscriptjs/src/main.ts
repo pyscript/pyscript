@@ -21,6 +21,8 @@ import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 import pyscript from './python/pyscript/__init__.py';
 import { robustFetch } from './fetch';
 
+declare const pyscript_package: { dirs: string[]; files: [string, string] };
+
 const logger = getLogger('pyscript/main');
 
 /* High-level overview of the lifecycle of a PyScript App:
@@ -207,9 +209,13 @@ export class PyScriptApp {
         // compatible with the old behavior.
         logger.info('importing pyscript');
 
-        // Save and load pyscript.py from FS
-        interpreter._remote.interface.FS.mkdirTree('/home/pyodide/pyscript');
-        interpreter._remote.interface.FS.writeFile('pyscript/__init__.py', pyscript);
+        // Write pyscript package into file system
+        for (let dir of pyscript_package.dirs) {
+            interpreter._remote.interface.FS.mkdir('/home/pyodide/' + dir);
+        }
+        for (let [path, value] of pyscript_package.files) {
+            interpreter._remote.interface.FS.writeFile('/home/pyodide/' + path, value);
+        }
         //Refresh the module cache so Python consistently finds pyscript module
         interpreter._remote.invalidate_module_path_cache();
 

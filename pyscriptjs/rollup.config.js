@@ -7,6 +7,31 @@ import css from 'rollup-plugin-css-only';
 import serve from 'rollup-plugin-serve';
 import { string } from 'rollup-plugin-string';
 import copy from 'rollup-plugin-copy';
+import * as fs from 'fs';
+import * as path from 'path';
+
+function directoryManifest(root, dir = '.', result = { dirs: [], files: [] }) {
+    const curdir = path.join(root, dir);
+    const dirObj = fs.opendirSync(curdir);
+    try {
+        let d;
+        while ((d = dirObj.readSync())) {
+            const entry = path.join(dir, d.name);
+            if (d.isDirectory()) {
+                if (d.name === '__pycache__') {
+                    continue;
+                }
+                result.dirs.push(entry);
+                directoryManifest(root, entry, result);
+            } else if (d.isFile()) {
+                result.files.push([entry, fs.readFileSync(path.join(root, entry), { encoding: 'utf-8' })]);
+            }
+        }
+        return result;
+    } finally {
+        dirObj.close();
+    }
+}
 
 const production = !process.env.ROLLUP_WATCH || process.env.NODE_ENV === 'production';
 
@@ -23,29 +48,30 @@ if (!production) {
 
 export default {
     input: 'src/main.ts',
-    output: [
-        {
-            file: 'build/pyscript.js',
-            format: 'iife',
-            sourcemap: true,
-            inlineDynamicImports: true,
-            name: 'pyscript',
-        },
-        {
-            file: 'build/pyscript.min.js',
-            format: 'iife',
-            sourcemap: true,
-            inlineDynamicImports: true,
-            name: 'pyscript',
-            plugins: [terser()],
-        },
-    ],
+    output: [{ minify: true }, { minify: false }].map(({ minify }) => ({
+        file: `build/pyscript${minify ? '.min' : ''}.js`,
+        format: 'iife',
+        sourcemap: !production,
+        inlineDynamicImports: true,
+        name: 'pyscript',
+        plugins: [
+            terser({
+                compress: {
+                    defaults: minify,
+                    dead_code: true,
+                    global_defs: {
+                        pyscript_package: directoryManifest('./src/python'),
+                    },
+                },
+                mangle: minify,
+                format: {
+                    beautify: !minify,
+                },
+            }),
+        ],
+    })),
     plugins: [
         css({ output: 'pyscript.css' }),
-        // Bundle all the Python files into the output file
-        string({
-            include: './src/**/*.py',
-        }),
         legacy({ 'src/toml.js': 'toml' }),
         resolve({
             browser: true,
@@ -57,7 +83,6 @@ export default {
         }),
         // This will make sure that examples will always get the latest build folder
         copy(copy_targets),
-        // production && terser(),
         !production &&
             serve({
                 port: 8080,
