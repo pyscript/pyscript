@@ -6,7 +6,7 @@ import { UserError, ErrorCode } from './exceptions';
 
 const logger = getLogger('py-config');
 
-export interface AppConfig extends Record<string, any> {
+export interface AppConfig {
     name?: string;
     description?: string;
     version?: string;
@@ -42,11 +42,11 @@ export type PyScriptMetadata = {
     time?: string;
 };
 
-const allKeys = {
+const allKeys = Object.entries({
     string: ['name', 'description', 'version', 'type', 'author_name', 'author_email', 'license'],
     number: ['schema_version'],
     array: ['runtimes', 'interpreters', 'packages', 'fetch', 'plugins'],
-};
+});
 
 export const defaultConfig: AppConfig = {
     schema_version: 1,
@@ -106,6 +106,7 @@ function fillUserData(inputConfig: AppConfig, resultConfig: AppConfig): AppConfi
     for (const key in inputConfig) {
         // fill in all extra keys ignored by the validator
         if (!(key in defaultConfig)) {
+            // eslint-disable-next-line
             resultConfig[key] = inputConfig[key];
         }
     }
@@ -122,13 +123,14 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
     } else {
         let merged: AppConfig = {};
 
-        for (const keyType in allKeys) {
-            const keys: string[] = allKeys[keyType];
+        for (const [keyType, keys] of allKeys) {
             keys.forEach(function (item: string) {
                 if (keyType === 'boolean') {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     merged[item] =
                         typeof inlineConfig[item] !== 'undefined' ? inlineConfig[item] : externalConfig[item];
                 } else {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     merged[item] = inlineConfig[item] || externalConfig[item];
                 }
             });
@@ -143,7 +145,7 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
     }
 }
 
-function parseConfig(configText: string, configType = 'toml') {
+function parseConfig(configText: string, configType = 'toml'): AppConfig {
     if (configType === 'toml') {
         try {
             // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
@@ -153,8 +155,9 @@ function parseConfig(configText: string, configType = 'toml') {
                     `The config supplied: ${configText} is an invalid TOML and cannot be parsed`,
                 );
             }
-            return toml.parse(configText);
-        } catch (err) {
+            return toml.parse(configText) as AppConfig;
+        } catch (e) {
+            const err = e as Error;
             const errMessage: string = err.toString();
             throw new UserError(
                 ErrorCode.BAD_CONFIG,
@@ -163,8 +166,9 @@ function parseConfig(configText: string, configType = 'toml') {
         }
     } else if (configType === 'json') {
         try {
-            return JSON.parse(configText);
-        } catch (err) {
+            return JSON.parse(configText) as AppConfig;
+        } catch (e) {
+            const err = e as Error;
             const errMessage: string = err.toString();
             throw new UserError(
                 ErrorCode.BAD_CONFIG,
@@ -184,17 +188,17 @@ function validateConfig(configText: string, configType = 'toml') {
 
     const finalConfig: AppConfig = {};
 
-    for (const keyType in allKeys) {
-        const keys: string[] = allKeys[keyType];
+    for (const [keyType, keys] of allKeys) {
         keys.forEach(function (item: string) {
             if (validateParamInConfig(item, keyType, config)) {
                 if (item === 'interpreters') {
                     finalConfig[item] = [];
-                    const interpreters = config[item] as InterpreterConfig[];
+                    const interpreters = config[item];
                     interpreters.forEach(function (eachInterpreter: InterpreterConfig) {
                         const interpreterConfig: InterpreterConfig = {};
                         for (const eachInterpreterParam in eachInterpreter) {
                             if (validateParamInConfig(eachInterpreterParam, 'string', eachInterpreter)) {
+                                // eslint-disable-next-line
                                 interpreterConfig[eachInterpreterParam] = eachInterpreter[eachInterpreterParam];
                             }
                         }
@@ -213,11 +217,12 @@ function validateConfig(configText: string, configType = 'toml') {
                         '',
                     );
                     finalConfig['interpreters'] = [];
-                    const interpreters = config[item] as InterpreterConfig[];
+                    const interpreters = config[item];
                     interpreters.forEach(function (eachInterpreter: InterpreterConfig) {
                         const interpreterConfig: InterpreterConfig = {};
                         for (const eachInterpreterParam in eachInterpreter) {
                             if (validateParamInConfig(eachInterpreterParam, 'string', eachInterpreter)) {
+                                // eslint-disable-next-line
                                 interpreterConfig[eachInterpreterParam] = eachInterpreter[eachInterpreterParam];
                             }
                         }
@@ -225,18 +230,20 @@ function validateConfig(configText: string, configType = 'toml') {
                     });
                 } else if (item === 'fetch') {
                     finalConfig[item] = [];
-                    const fetchList = config[item] as FetchConfig[];
+                    const fetchList = config[item];
                     fetchList.forEach(function (eachFetch: FetchConfig) {
                         const eachFetchConfig: FetchConfig = {};
                         for (const eachFetchConfigParam in eachFetch) {
                             const targetType = eachFetchConfigParam === 'files' ? 'array' : 'string';
                             if (validateParamInConfig(eachFetchConfigParam, targetType, eachFetch)) {
+                                // eslint-disable-next-line
                                 eachFetchConfig[eachFetchConfigParam] = eachFetch[eachFetchConfigParam];
                             }
                         }
                         finalConfig[item].push(eachFetchConfig);
                     });
                 } else {
+                    // eslint-disable-next-line
                     finalConfig[item] = config[item];
                 }
             }

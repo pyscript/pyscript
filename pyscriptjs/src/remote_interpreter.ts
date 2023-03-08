@@ -11,9 +11,22 @@ const logger = getLogger('pyscript/pyodide');
 export type InterpreterInterface = PyodideInterface | null;
 
 interface Micropip extends PyProxy {
-    install: (packageName: string | string[]) => Promise<void>;
-    destroy: () => void;
+    install(packageName: string | string[]): Promise<void>;
 }
+
+type FSInterface = {
+    writeFile(path: string, data: Uint8Array | string, options?: { canOwn: boolean }): void;
+    mkdirTree(path: string): void;
+    mkdir(path: string): void;
+};
+
+type PATHFSInterface = {
+    resolve(path: string): string;
+};
+
+type PATHInterface = {
+    dirname(path: string): string;
+};
 
 /*
 RemoteInterpreter class is responsible to process requests from the
@@ -33,6 +46,10 @@ such as MicroPython.
 export class RemoteInterpreter extends Object {
     src: string;
     interface: InterpreterInterface;
+    FS: FSInterface;
+    PATH: PATHInterface;
+    PATH_FS: PATHFSInterface;
+
     globals: PyProxy;
     // TODO: Remove this once `runtimes` is removed!
     interpreter: InterpreterInterface;
@@ -74,6 +91,12 @@ export class RemoteInterpreter extends Object {
             },
             fullStdLib: false,
         });
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this.FS = this.interface.FS;
+        // eslint-disable-next-line
+        this.PATH = (this.interface as any)._module.PATH;
+        // eslint-disable-next-line
+        this.PATH_FS = (this.interface as any)._module.PATH_FS;
 
         // TODO: Remove this once `runtimes` is removed!
         this.interpreter = this.interface;
@@ -131,14 +154,14 @@ export class RemoteInterpreter extends Object {
         // but one of our tests tries to use a locally downloaded older version of pyodide
         // for which the signature of `loadPackage` accepts the above params as args i.e.
         // the call uses `logger.info.bind(logger), logger.info.bind(logger)`.
-        const pyodide_version = (await this.run("import sys; sys.modules['pyodide'].__version__")).result.toString();
-        if (pyodide_version.startsWith('0.22')) {
+        const messageCallback = logger.info.bind(logger) as typeof logger.info;
+        if (this.interpreter.version.startsWith('0.22')) {
             await this.interface.loadPackage(names, {
-                messageCallback: logger.info.bind(logger),
-                errorCallback: logger.info.bind(logger),
+                messageCallback,
+                errorCallback: messageCallback,
             });
         } else {
-            await this.interface.loadPackage(names, logger.info.bind(logger), logger.info.bind(logger));
+            await this.interface.loadPackage(names, messageCallback, messageCallback);
         }
     }
 
@@ -157,8 +180,15 @@ export class RemoteInterpreter extends Object {
             try {
                 await micropip.install(package_name);
                 micropip.destroy();
-            } catch (e) {
-                let exceptionMessage = `Unable to install package(s) '` + package_name + `'.`;
+            } catch (err) {
+                const e = err as Error;
+                let fmt_names: string;
+                if (Array.isArray(package_name)) {
+                    fmt_names = package_name.join(', ');
+                } else {
+                    fmt_names = package_name;
+                }
+                let exceptionMessage = `Unable to install package(s) '${fmt_names}'.`;
 
                 // If we can't fetch `package_name` micropip.install throws a huge
                 // Python traceback in `e.message` this logic is to handle the
@@ -166,9 +196,8 @@ export class RemoteInterpreter extends Object {
                 // huge traceback.
                 if (e.message.includes("Can't find a pure Python 3 wheel")) {
                     exceptionMessage +=
-                        ` Reason: Can't find a pure Python 3 Wheel for package(s) '` +
-                        package_name +
-                        `'. See: https://pyodide.org/en/stable/usage/faq.html#micropip-can-t-find-a-pure-python-wheel ` +
+                        ` Reason: Can't find a pure Python 3 Wheel for package(s) '${fmt_names}'.` +
+                        `See: https://pyodide.org/en/stable/usage/faq.html#micropip-can-t-find-a-pure-python-wheel ` +
                         `for more information.`;
                 } else if (e.message.includes("Can't fetch metadata")) {
                     exceptionMessage +=
@@ -176,7 +205,7 @@ export class RemoteInterpreter extends Object {
                         'Please make sure you have entered a correct package name.';
                 } else {
                     exceptionMessage +=
-                        ` Reason: ${e.message as string}. Please open an issue at ` +
+                        ` Reason: ${e.message}. Please open an issue at ` +
                         `https://github.com/pyscript/pyscript/issues/new if you require help or ` +
                         `you think it's a bug.`;
                 }
@@ -214,18 +243,18 @@ export class RemoteInterpreter extends Object {
     async loadFromFile(path: string, fetch_path: string): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        path = this.interface._module.PATH_FS.resolve(path);
+        path = this.PATH_FS.resolve(path);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const dir = this.interface._module.PATH.dirname(path);
-        this.interface.FS.mkdirTree(dir);
+        const dir: string = this.PATH.dirname(path);
+        this.FS.mkdirTree(dir);
 
         // `robustFetch` checks for failures in getting a response
         const response = await robustFetch(fetch_path);
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
 
-        this.interface.FS.writeFile(path, data, { canOwn: true });
+        this.FS.writeFile(path, data, { canOwn: true });
     }
 
     /**
@@ -233,7 +262,7 @@ export class RemoteInterpreter extends Object {
      * caches to the underlying interface
      */
     invalidate_module_path_cache(): void {
-        const importlib = this.interface.pyimport('importlib');
+        const importlib = this.interface.pyimport('importlib') as PyProxy & { invalidate_caches(): void };
         importlib.invalidate_caches();
     }
 }
