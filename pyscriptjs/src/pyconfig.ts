@@ -1,4 +1,4 @@
-import toml from '../src/toml';
+import * as toml from 'toml';
 import { getLogger } from './logger';
 import { version } from './version';
 import { getAttribute, readTextFromPath, htmlDecode, createDeprecationWarning } from './utils';
