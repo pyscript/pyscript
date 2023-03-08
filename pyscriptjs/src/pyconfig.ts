@@ -156,6 +156,7 @@ function parseConfig(configText: string, configType = 'toml'): AppConfig {
             );
         }
         try {
+            // eslint-disable-next-line
             return toml.parse(configText) as AppConfig;
         } catch (e) {
             const err = e as Error;

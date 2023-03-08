@@ -49,6 +49,7 @@ repos:
           - id: eslint
             files: pyscriptjs/src/.*\.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
             types: [file]
+            args: [-c, pyscriptjs/.eslintrc.js]
             additional_dependencies:
                 - eslint@8.25.0
                 - typescript@4.8.4
