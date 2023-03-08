@@ -16,9 +16,6 @@ import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
-// eslint-disable-next-line
-// @ts-ignore
-import pyscript from './python/pyscript/__init__.py';
 import { robustFetch } from './fetch';
 
 declare const pyscript_package: { dirs: string[]; files: [string, string] };
