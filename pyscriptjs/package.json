@@ -15,7 +15,6 @@
         "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch"
     },
     "devDependencies": {
-        "@iarna/toml": "^2.2.5",
         "@jest/globals": "29.1.2",
         "@rollup/plugin-commonjs": "22.0.2",
         "@rollup/plugin-legacy": "2.2.0",
@@ -50,6 +49,7 @@
         "@codemirror/state": "6.1.2",
         "@codemirror/theme-one-dark": "6.1.0",
         "@codemirror/view": "6.3.0",
+        "@ltd/j-toml": "^1.38.0",
         "codemirror": "6.0.1"
     }
 }

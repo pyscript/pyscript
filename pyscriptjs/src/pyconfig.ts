@@ -1,4 +1,4 @@
-import * as toml from '@iarna/toml';
+import * as toml from '@ltd/j-toml';
 import { getLogger } from './logger';
 import { version } from './version';
 import { getAttribute, readTextFromPath, htmlDecode, createDeprecationWarning } from './utils';
