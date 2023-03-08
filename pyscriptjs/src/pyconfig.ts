@@ -6,7 +6,7 @@ import { UserError, ErrorCode } from './exceptions';
 
 const logger = getLogger('py-config');
 
-export interface AppConfig {
+export interface AppConfig extends Record<string, any> {
     name?: string;
     description?: string;
     version?: string;
