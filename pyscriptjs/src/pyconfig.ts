@@ -1,4 +1,4 @@
-import * as toml from 'toml';
+import * as toml from '@iarna/toml';
 import { getLogger } from './logger';
 import { version } from './version';
 import { getAttribute, readTextFromPath, htmlDecode, createDeprecationWarning } from './utils';
@@ -156,7 +156,6 @@ function parseConfig(configText: string, configType = 'toml') {
             return toml.parse(configText);
         } catch (err) {
             const errMessage: string = err.toString();
-            
 
             throw new UserError(
                 ErrorCode.BAD_CONFIG,
