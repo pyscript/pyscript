@@ -173,11 +173,10 @@ class TestConfig(PyScriptTest):
             wait_for_pyscript=False,
         )
         banner = self.page.wait_for_selector(".py-error")
-        assert "SyntaxError: Expected DoubleQuote" in self.console.error.text
+        assert "SyntaxError: Empty bare key" in self.console.error.text
         expected = (
             "(PY1000): The config supplied: [[ is an invalid TOML and cannot be parsed: "
-            "SyntaxError: Expected DoubleQuote, Whitespace, or [a-z], [A-Z], "
-            '[0-9], "-", "_" but "\\n" found.'
+            "SyntaxError: Empty bare key at line 1: [["
         )
         assert banner.inner_text() == expected
 
