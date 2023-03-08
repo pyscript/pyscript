@@ -5,7 +5,6 @@ import legacy from '@rollup/plugin-legacy';
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 import serve from 'rollup-plugin-serve';
-import { string } from 'rollup-plugin-string';
 import copy from 'rollup-plugin-copy';
 import * as fs from 'fs';
 import * as path from 'path';
