@@ -47,7 +47,7 @@ export class StdioDirector extends Plugin {
         interpreter: InterpreterClient;
         src: string;
         pyScriptTag: PyScriptTag;
-        result: any;
+        result: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     }): void {
         if (options.pyScriptTag.stdout_manager != null) {
             this._stdioMultiplexer.removeListener(options.pyScriptTag.stdout_manager);

@@ -23,7 +23,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
              *
              * Concurrent access to the multiple py-script tags is thus avoided.
              */
-            let releaseLock: any;
+            let releaseLock: () => void;
             try {
                 releaseLock = await app.tagExecutionLock();
                 ensureUniqueId(this);
@@ -35,6 +35,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                 this.innerHTML = '';
 
                 app.plugins.beforePyScriptExec({ interpreter: interpreter, src: pySrc, pyScriptTag: this });
+                /* eslint-disable @typescript-eslint/no-unsafe-assignment */
                 const result = (await pyExec(interpreter, pySrc, this)).result;
                 app.plugins.afterPyScriptExec({
                     interpreter: interpreter,
@@ -42,6 +43,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                     pyScriptTag: this,
                     result: result,
                 });
+                /* eslint-enable @typescript-eslint/no-unsafe-assignment */
             } finally {
                 releaseLock();
             }
@@ -53,7 +55,8 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                 try {
                     const response = await robustFetch(url);
                     return await response.text();
-                } catch (e) {
+                } catch (err) {
+                    const e = err as Error;
                     _createAlertBanner(e.message);
                     this.innerHTML = '';
                     throw e;
@@ -163,15 +166,15 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
 ]);
 
 /** Initialize all elements with py-* handlers attributes  */
-export function initHandlers(interpreter: InterpreterClient) {
+export async function initHandlers(interpreter: InterpreterClient) {
     logger.debug('Initializing py-* event handlers...');
     for (const pyAttribute of pyAttributeToEvent.keys()) {
-        createElementsWithEventListeners(interpreter, pyAttribute);
+        await createElementsWithEventListeners(interpreter, pyAttribute);
     }
 }
 
 /** Initializes an element with the given py-on* attribute and its handler */
-function createElementsWithEventListeners(interpreter: InterpreterClient, pyAttribute: string) {
+async function createElementsWithEventListeners(interpreter: InterpreterClient, pyAttribute: string) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
     for (const el of matches) {
         // If the element doesn't have an id, let's add one automatically!
@@ -195,7 +198,7 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, pyAttr
             // the source code may contain a syntax error, which will cause
             // the splashscreen to not be removed.
             try {
-                interpreter.run(source);
+                await interpreter.run(source);
             } catch (e) {
                 logger.error((e as Error).message);
             }
@@ -204,7 +207,8 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, pyAttr
                 void (async () => {
                     try {
                         await interpreter.run(handlerCode);
-                    } catch (err) {
+                    } catch (e) {
+                        const err = e as Error;
                         displayPyException(err, el.parentElement);
                     }
                 })();

@@ -6,6 +6,7 @@ import { UserError, ErrorCode } from './exceptions';
 
 const logger = getLogger('py-config');
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface AppConfig extends Record<string, any> {
     name?: string;
     description?: string;

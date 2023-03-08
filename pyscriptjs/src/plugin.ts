@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access,
+                  @typescript-eslint/no-unsafe-call,
+                  @typescript-eslint/no-explicit-any,
+                  @typescript-eslint/no-unsafe-assignment */
+
 import type { AppConfig } from './pyconfig';
 import type { UserError } from './exceptions';
 import { getLogger } from './logger';
@@ -20,7 +25,9 @@ export class Plugin {
      * This hook should **NOT** contain expensive operations, else it delays
      * the download of the python interpreter which is initiated later.
      */
-    configure(config: AppConfig) {}
+    configure(_config: AppConfig) {
+        /* empty */
+    }
 
     /** The preliminary initialization phase is complete and we are about to
      * download and launch the Python interpreter.
@@ -32,14 +39,18 @@ export class Plugin {
      * This hook should **NOT** contain expensive operations, else it delays
      * the download of the python interpreter which is initiated later.
      */
-    beforeLaunch(config: AppConfig) {}
+    beforeLaunch(_config: AppConfig) {
+        /* empty */
+    }
 
     /** The Python interpreter has been launched, the virtualenv has been
      * installed and we are ready to execute user code.
      *
      * The <py-script> tags will be executed after this hook.
      */
-    afterSetup(interpreter: InterpreterClient) {}
+    afterSetup(_interpreter: InterpreterClient) {
+        /* empty */
+    }
 
     /** The source of a <py-script>> tag has been fetched, and we're about
      * to evaluate that source using the provided interpreter.
@@ -48,7 +59,9 @@ export class Plugin {
      * @param options.src {string} The Python source code to be evaluated
      * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
      */
-    beforePyScriptExec(options: { interpreter: InterpreterClient; src: string; pyScriptTag: PyScriptTag }) {}
+    beforePyScriptExec(_options: { interpreter: InterpreterClient; src: string; pyScriptTag: PyScriptTag }) {
+        /* empty */
+    }
 
     /** The Python in a <py-script> has just been evaluated, but control
      * has not been ceded back to the JavaScript event loop yet
@@ -58,22 +71,28 @@ export class Plugin {
      * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
      * @param options.result The returned result of evaluating the Python (if any)
      */
-    afterPyScriptExec(options: {
+    afterPyScriptExec(_options: {
         interpreter: InterpreterClient;
         src: string;
         pyScriptTag: PyScriptTag;
         result: any;
-    }) {}
+    }) {
+        /* empty */
+    }
 
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and
      * the page is ready to accept user interactions.
      */
-    afterStartup(interpreter: InterpreterClient) {}
+    afterStartup(_interpreter: InterpreterClient) {
+        /* empty */
+    }
 
     /** Called when an UserError is raised
      */
-    onUserError(error: UserError) {}
+    onUserError(_error: UserError) {
+        /* empty */
+    }
 }
 
 export class PluginManager {

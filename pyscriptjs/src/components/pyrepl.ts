@@ -2,7 +2,7 @@ import { basicSetup, EditorView } from 'codemirror';
 import { python } from '@codemirror/lang-python';
 import { indentUnit } from '@codemirror/language';
 import { Compartment } from '@codemirror/state';
-import { keymap } from '@codemirror/view';
+import { keymap, Command } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 
@@ -68,8 +68,8 @@ export function make_PyRepl(interpreter: InterpreterClient) {
                 languageConf.of(python()),
                 keymap.of([
                     ...defaultKeymap,
-                    { key: 'Ctrl-Enter', run: this.execute.bind(this), preventDefault: true },
-                    { key: 'Shift-Enter', run: this.execute.bind(this), preventDefault: true },
+                    { key: 'Ctrl-Enter', run: this.execute.bind(this) as Command, preventDefault: true },
+                    { key: 'Shift-Enter', run: this.execute.bind(this) as Command, preventDefault: true },
                 ]),
             ];
 
@@ -134,7 +134,7 @@ export function make_PyRepl(interpreter: InterpreterClient) {
             runButton.id = 'runButton';
             runButton.className = 'absolute py-repl-run-button';
             runButton.innerHTML = RUNBUTTON;
-            runButton.addEventListener('click', this.execute.bind(this));
+            runButton.addEventListener('click', this.execute.bind(this) as (e: MouseEvent) => void);
             return runButton;
         }
 
@@ -166,6 +166,7 @@ export function make_PyRepl(interpreter: InterpreterClient) {
             outEl.innerHTML = '';
 
             // execute the python code
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const pyResult = (await pyExec(interpreter, pySrc, outEl)).result;
 
             // display the value of the last evaluated expression (REPL-style)

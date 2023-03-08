@@ -44,8 +44,8 @@ function getLogger(prefix: string): Logger {
 function _makeLogger(prefix: string): Logger {
     prefix = `[${prefix}] `;
 
-    function make(level: string) {
-        const out_fn = console[level].bind(console);
+    function make(level: 'info' | 'debug' | 'warn' | 'error') {
+        const out_fn = console[level].bind(console) as typeof console.log;
         function fn(fmt: string, ...args: unknown[]) {
             out_fn(prefix + fmt, ...args);
         }

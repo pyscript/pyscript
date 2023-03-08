@@ -161,7 +161,7 @@ export class RemoteInterpreter extends Object {
                 errorCallback: messageCallback,
             });
         } else {
-            // @ts-ignore
+            // @ts-expect-error Types don't include this deprecated call signature
             await this.interface.loadPackage(names, messageCallback, messageCallback);
         }
     }
@@ -242,11 +242,7 @@ export class RemoteInterpreter extends Object {
      * and `/a/b.py` will be placed into `/a/b.py`.
      */
     async loadFromFile(path: string, fetch_path: string): Promise<void> {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         path = this.PATH_FS.resolve(path);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         const dir: string = this.PATH.dirname(path);
         this.FS.mkdirTree(dir);
 

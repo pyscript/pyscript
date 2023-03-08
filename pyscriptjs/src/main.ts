@@ -191,7 +191,7 @@ export class PyScriptApp {
         // lifecycle (8)
         createCustomElements(interpreter);
 
-        initHandlers(interpreter);
+        await initHandlers(interpreter);
 
         // NOTE: interpreter message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
@@ -209,8 +209,8 @@ export class PyScriptApp {
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS
-        interpreter._remote.interface.FS.mkdirTree('/home/pyodide/pyscript');
-        interpreter._remote.interface.FS.writeFile('pyscript/__init__.py', pyscript);
+        interpreter._remote.FS.mkdirTree('/home/pyodide/pyscript');
+        interpreter._remote.FS.writeFile('pyscript/__init__.py', pyscript as string);
         //Refresh the module cache so Python consistently finds pyscript module
         interpreter._remote.invalidate_module_path_cache();
 
