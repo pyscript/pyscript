@@ -1,0 +1,4 @@
+ISSUE_TEMPLATE
+*.min.*
+package-lock.json
+docs

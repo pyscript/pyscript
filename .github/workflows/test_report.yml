@@ -3,14 +3,14 @@ on:
     workflow_run:
         workflows: ['\[CI\] Build Unstable']
         types:
-        -   completed
+            - completed
 jobs:
     report:
         runs-on: ubuntu-latest
         steps:
-        -   uses: dorny/test-reporter@v1.6.0
-            with:
-                artifact: test_results
-                name: Test reports
-                path: '*.xml'
-                reporter: java-junit
+            - uses: dorny/test-reporter@v1.6.0
+              with:
+                  artifact: test_results
+                  name: Test reports
+                  path: "*.xml"
+                  reporter: java-junit
