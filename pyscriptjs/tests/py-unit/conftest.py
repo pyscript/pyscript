@@ -1,17 +1,17 @@
 """All data required for testing examples"""
-import pathlib
 import sys
+from pathlib import Path
 
 import pytest
 
-# current working directory
-base_path = pathlib.Path().absolute()
+pyscriptjs = Path(__file__).parents[2]
+
 # add pyscript folder to path
-python_source = base_path / "src" / "python"
+python_source = pyscriptjs / "src" / "python"
 sys.path.append(str(python_source))
 
 # add Python plugins folder to path
-python_plugins_source = base_path / "src" / "plugins" / "python"
+python_plugins_source = pyscriptjs / "src" / "plugins" / "python"
 sys.path.append(str(python_plugins_source))
 
 # patch pyscript module where needed
