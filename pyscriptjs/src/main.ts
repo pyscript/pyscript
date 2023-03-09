@@ -99,9 +99,9 @@ export class PyScriptApp {
     // config, file not found in fetch, etc.), we can throw UserError(). It is
     // responsibility of main() to catch it and show it to the user in a
     // proper way (e.g. by using a banner at the top of the page).
-    main() {
+    async main() {
         try {
-            this._realMain();
+            await this._realMain();
         } catch (error) {
             this._handleUserErrorMaybe(error);
         }
@@ -121,7 +121,7 @@ export class PyScriptApp {
     async _handleUserErrorMaybe(error) {
         if (error.$$isUserError) {
             _createAlertBanner(error.message, 'error', error.messageType);
-            this.plugins.onUserError(error);
+            await this.plugins.onUserError(error);
         } else {
             throw error;
         }
@@ -130,11 +130,11 @@ export class PyScriptApp {
     // ============ lifecycle ============
 
     // lifecycle (1)
-    _realMain() {
+    async _realMain() {
         this.loadConfig();
-        this.plugins.configure(this.config);
+        await this.plugins.configure(this.config);
         this.plugins.beforeLaunch(this.config);
-        this.loadInterpreter();
+        await this.loadInterpreter();
     }
 
     // lifecycle (2)
@@ -218,7 +218,7 @@ export class PyScriptApp {
         await mountElements(interpreter);
 
         // lifecycle (6.5)
-        this.plugins.afterSetup(interpreter);
+        await this.plugins.afterSetup(interpreter);
 
         //Refresh module cache in case plugins have modified the filesystem
         await interpreter._remote.invalidate_module_path_cache();
@@ -236,7 +236,7 @@ export class PyScriptApp {
         // pyscript initialization has complete. If you change it, you need to
         // change it also in tests/integration/support.py
         this.logStatus('Startup complete');
-        this.plugins.afterStartup(interpreter);
+        await this.plugins.afterStartup(interpreter);
         logger.info('PyScript page fully initialized');
     }
 
@@ -425,7 +425,7 @@ globalExport('pyscript_get_config', pyscript_get_config);
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
-globalApp.main();
+void globalApp.main();
 
 export { version };
 export const interpreter = globalApp.interpreter;

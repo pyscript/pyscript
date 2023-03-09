@@ -226,13 +226,18 @@ class TestPlugin(PyScriptTest):
 
         # EXPECT it to log the correct logs for the events it intercepts
         log_lines = self.console.log.lines
-        for method in hooks_available:
-            assert log_lines.count(f"{method} called") == 1
+        num_calls = {
+            method: log_lines.count(f"{method} called") for method in hooks_available
+        }
+        expected_calls = {method: 1 for method in hooks_available}
+        assert num_calls == expected_calls
 
         # EXPECT it to NOT be called (hence not log anything) the events that happen
         # before it's ready, hence is not called
-        for method in hooks_unavailable:
-            assert f"{method} called" not in log_lines
+        unavailable_called = {
+            method: f"{method} called" in log_lines for method in hooks_unavailable
+        }
+        assert unavailable_called == {method: False for method in hooks_unavailable}
 
         # TODO: It'd be actually better to check that the events get called in order
 
