@@ -7,7 +7,7 @@ on:
         paths:
             - pyscriptjs/**
             - examples/**
-            - .github/workflows/build-latest.yml # Test that workflow works when changed
+            - .github/workflows/build-unstable.yml # Test that workflow works when changed
 
     pull_request: # Run on any PR that modifies files under pyscriptjs/ and examples/
         branches:
