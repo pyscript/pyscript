@@ -21,9 +21,10 @@ repos:
           - id: trailing-whitespace
 
     - repo: https://github.com/charliermarsh/ruff-pre-commit
-      rev: v0.0.247
+      rev: v0.0.254
       hooks:
           - id: ruff
+            args: [--fix]
 
     - repo: https://github.com/psf/black
       rev: 23.1.0

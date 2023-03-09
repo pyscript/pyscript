@@ -158,9 +158,7 @@ function parseConfig(configText: string, configType = 'toml'): AppConfig {
         try {
             // eslint-disable-next-line
             return toml.parse(configText) as AppConfig;
-        } catch (e) {
-            console.log("changed this file");
-            const err = e as Error;
+        } catch (err) {
             const errMessage: string = err.toString();
 
             throw new UserError(
