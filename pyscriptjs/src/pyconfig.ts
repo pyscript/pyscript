@@ -6,6 +6,7 @@ import { UserError, ErrorCode } from './exceptions';
 
 const logger = getLogger('py-config');
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface AppConfig extends Record<string, any> {
     name?: string;
     description?: string;
@@ -155,8 +156,10 @@ function parseConfig(configText: string, configType = 'toml'): AppConfig {
             );
         }
         try {
+            // eslint-disable-next-line
             return toml.parse(configText) as AppConfig;
-        } catch (err) {
+        } catch (e) {
+            const err = e as Error;
             const errMessage: string = err.toString();
 
             throw new UserError(

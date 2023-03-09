@@ -16,7 +16,7 @@ export class PyTerminalPlugin extends Plugin {
         this.app = app;
     }
 
-    configure(config: AppConfig) {
+    configure(config: AppConfig & { terminal?: boolean | 'auto' }) {
         // validate the terminal config and handle default values
         const t = config.terminal;
         if (t !== undefined && t !== true && t !== false && t !== 'auto') {
@@ -32,7 +32,7 @@ export class PyTerminalPlugin extends Plugin {
         }
     }
 
-    beforeLaunch(config: AppConfig) {
+    beforeLaunch(config: AppConfig & { terminal?: boolean | 'auto' }) {
         // if config.terminal is "yes" or "auto", let's add a <py-terminal> to
         // the document, unless it's already present.
         const t = config.terminal;
@@ -46,7 +46,7 @@ export class PyTerminalPlugin extends Plugin {
         }
     }
 
-    afterSetup(interpreter: InterpreterClient) {
+    afterSetup(_interpreter: InterpreterClient) {
         // the Python interpreter has been initialized and we are ready to
         // execute user code:
         //

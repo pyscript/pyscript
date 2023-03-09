@@ -190,7 +190,7 @@ export class PyScriptApp {
         // lifecycle (8)
         createCustomElements(interpreter);
 
-        initHandlers(interpreter);
+        await initHandlers(interpreter);
 
         // NOTE: interpreter message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to

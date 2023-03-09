@@ -22,7 +22,9 @@ export class SplashscreenPlugin extends Plugin {
     autoclose: boolean;
     enabled: boolean;
 
-    configure(config: AppConfig) {
+    configure(
+        config: AppConfig & { splashscreen?: { autoclose?: boolean; enabled?: boolean }; autoclose_loader?: boolean },
+    ) {
         // the officially supported setting is config.splashscreen.autoclose,
         // but we still also support the old config.autoclose_loader (with a
         // deprecation warning)
@@ -40,7 +42,7 @@ export class SplashscreenPlugin extends Plugin {
         }
     }
 
-    beforeLaunch(config: AppConfig) {
+    beforeLaunch(_config: AppConfig) {
         if (!this.enabled) {
             return;
         }
@@ -50,18 +52,18 @@ export class SplashscreenPlugin extends Plugin {
         this.elem = <PySplashscreen>document.createElement('py-splashscreen');
         document.body.append(this.elem);
         document.addEventListener('py-status-message', (e: CustomEvent) => {
-            const msg = e.detail;
+            const msg = e.detail as string;
             this.elem.log(msg);
         });
     }
 
-    afterStartup(interpreter: InterpreterClient) {
+    afterStartup(_interpreter: InterpreterClient) {
         if (this.autoclose && this.enabled) {
             this.elem.close();
         }
     }
 
-    onUserError(error: UserError) {
+    onUserError(_error: UserError) {
         if (this.elem !== undefined && this.enabled) {
             // Remove the splashscreen so users can see the banner better
             this.elem.close();
