@@ -1,7 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
-import legacy from '@rollup/plugin-legacy';
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 import serve from 'rollup-plugin-serve';
@@ -71,7 +70,6 @@ export default {
     })),
     plugins: [
         css({ output: 'pyscript.css' }),
-        legacy({ 'src/toml.js': 'toml' }),
         resolve({
             browser: true,
         }),

@@ -1,4 +1,4 @@
-import toml from '../src/toml';
+import toml from 'toml-j0.4';
 import { getLogger } from './logger';
 import { version } from './version';
 import { getAttribute, readTextFromPath, htmlDecode, createDeprecationWarning } from './utils';
@@ -147,18 +147,18 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
 
 function parseConfig(configText: string, configType = 'toml'): AppConfig {
     if (configType === 'toml') {
+        // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
+        if (configText.trim()[0] === '{') {
+            throw new UserError(
+                ErrorCode.BAD_CONFIG,
+                `The config supplied: ${configText} is an invalid TOML and cannot be parsed`,
+            );
+        }
         try {
-            // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
-            if (configText.trim()[0] === '{') {
-                throw new UserError(
-                    ErrorCode.BAD_CONFIG,
-                    `The config supplied: ${configText} is an invalid TOML and cannot be parsed`,
-                );
-            }
             return toml.parse(configText) as AppConfig;
-        } catch (e) {
-            const err = e as Error;
+        } catch (err) {
             const errMessage: string = err.toString();
+
             throw new UserError(
                 ErrorCode.BAD_CONFIG,
                 `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`,
