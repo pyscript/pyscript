@@ -87,6 +87,10 @@ jobs:
             run:
                 working-directory: pyscriptjs
         steps:
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
             - name: Install node
               uses: actions/setup-node@v3
               with:
