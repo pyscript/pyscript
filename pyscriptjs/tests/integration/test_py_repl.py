@@ -145,9 +145,9 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
-        assert out_div.all_inner_texts()[0] == "hello world"
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "hello world"
         #
         # clear the editor, write new code, execute
         self._replace(py_repl, "display('another output')")
