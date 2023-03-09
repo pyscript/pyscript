@@ -87,7 +87,6 @@ jobs:
             run:
                 working-directory: pyscriptjs
         steps:
-        steps:
             - name: Checkout
               uses: actions/checkout@v3
 
