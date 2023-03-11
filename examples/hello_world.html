@@ -25,22 +25,20 @@
             </div>
         </nav>
 
-        <py-tutor>
-            <py-config>
-                plugins = [
-                  "../build/plugins/python/py_tutor.py"
-                ]
-            </py-config>
+        <py-config>
+            plugins = [
+              "../build/plugins/python/py_tutor.py"
+            ]
+        </py-config>
 
-            <section class="pyscript">
-                Hello world! <br />
-                This is the current date and time, as computed by Python:
-                <py-script>
-                    from datetime import datetime
-                    now = datetime.now()
-                    display(now.strftime("%m/%d/%Y, %H:%M:%S"))
-                </py-script>
-            </section>
-        </py-tutor>
+        <section class="pyscript">
+            Hello world! <br />
+            This is the current date and time, as computed by Python:
+            <py-script>
+                from datetime import datetime
+                now = datetime.now()
+                display(now.strftime("%m/%d/%Y, %H:%M:%S"))
+            </py-script>
+        </section>
     </body>
 </html>
