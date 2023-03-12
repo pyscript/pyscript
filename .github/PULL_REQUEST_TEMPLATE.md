@@ -8,6 +8,6 @@ List the changes done to fix a bug or introducing a new feature.
 
 ## Checklist
 
-- [ ] All tests pass locally
-- [ ] I have updated `docs/changelog.md`
-- [ ] I have created documentation for this(if applicable)
+-   [ ] All tests pass locally
+-   [ ] I have updated `docs/changelog.md`
+-   [ ] I have created documentation for this(if applicable)
