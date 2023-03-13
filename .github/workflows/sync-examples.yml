@@ -3,6 +3,7 @@ name: "[CI] Sync Examples"
 on:
     release:
         types: [published]
+    workflow_dispatch:
 
 jobs:
     build:
