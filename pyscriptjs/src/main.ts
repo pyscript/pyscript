@@ -4,7 +4,7 @@ import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import { InterpreterClient } from './interpreter_client';
 import { version } from './version';
-import { PluginManager, define_custom_element } from './plugin';
+import { PluginManager, define_custom_element, Plugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { getLogger } from './logger';
 import { showWarning, globalExport, createLock } from './utils';
@@ -16,6 +16,7 @@ import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
+import type { PyProxy } from 'pyodide';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript/__init__.py';
@@ -190,7 +191,7 @@ export class PyScriptApp {
         // lifecycle (8)
         createCustomElements(interpreter);
 
-        initHandlers(interpreter);
+        await initHandlers(interpreter);
 
         // NOTE: interpreter message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
@@ -208,8 +209,8 @@ export class PyScriptApp {
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS
-        interpreter._remote.interface.FS.mkdirTree('/home/pyodide/pyscript');
-        interpreter._remote.interface.FS.writeFile('pyscript/__init__.py', pyscript);
+        interpreter._remote.FS.mkdirTree('/home/pyodide/pyscript');
+        interpreter._remote.FS.writeFile('pyscript/__init__.py', pyscript as string);
         //Refresh the module cache so Python consistently finds pyscript module
         interpreter._remote.invalidate_module_path_cache();
 
@@ -218,6 +219,7 @@ export class PyScriptApp {
         const pyscript_module = interpreter._remote.interface.pyimport('pyscript');
         pyscript_module.define_custom_element = define_custom_element;
         pyscript_module.showWarning = showWarning;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         pyscript_module._set_version_info(version);
         pyscript_module.destroy();
 
@@ -303,7 +305,7 @@ export class PyScriptApp {
         const blobFile = new File([pluginBlob], 'plugin.js', { type: 'text/javascript' });
         const fileUrl = URL.createObjectURL(blobFile);
 
-        const module = await import(fileUrl);
+        const module = (await import(fileUrl)) as { default: { new (): Plugin } };
         // Note: We have to put module.default in a variable
         // because we have seen weird behaviour when doing
         // new module.default() directly.
@@ -346,7 +348,7 @@ export class PyScriptApp {
         //       interpreter API level and allow each one to implement it in its own way
         const module = interpreter._remote.interface.pyimport(modulename);
         if (typeof module.plugin !== 'undefined') {
-            const py_plugin = module.plugin;
+            const py_plugin = module.plugin as PyProxy & { init(app: PyScriptApp): void };
             py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);
         } else {

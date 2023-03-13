@@ -25,7 +25,8 @@ export class ImportmapPlugin extends Plugin {
             const importmap: ImportMapType = (() => {
                 try {
                     return JSON.parse(node.textContent) as ImportMapType;
-                } catch (error) {
+                } catch (e) {
+                    const error = e as Error;
                     showWarning('Failed to parse import map: ' + error.message);
                 }
             })();

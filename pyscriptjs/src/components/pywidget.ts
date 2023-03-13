@@ -1,4 +1,4 @@
-import type { PyProxy } from 'pyodide';
+import type { PyProxy, PyProxyCallable } from 'pyodide';
 import { getLogger } from '../logger';
 import { robustFetch } from '../fetch';
 import { InterpreterClient } from '../interpreter_client';
@@ -13,8 +13,8 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
         name: string = name;
         klass: string = klass;
         code: string = code;
-        proxy: PyProxy;
-        proxyClass: any;
+        proxy: PyProxy & { connect(): void };
+        proxyClass: PyProxyCallable;
 
         constructor() {
             super();
@@ -28,8 +28,8 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
 
         async connectedCallback() {
             await interpreter.runButDontRaise(this.code);
-            this.proxyClass = interpreter.globals.get(this.klass);
-            this.proxy = this.proxyClass(this);
+            this.proxyClass = interpreter.globals.get(this.klass) as PyProxyCallable;
+            this.proxy = this.proxyClass(this) as PyProxy & { connect(): void };
             this.proxy.connect();
             this.registerWidget();
         }
@@ -39,9 +39,8 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
             interpreter.globals.set(this.id, this.proxy);
         }
     }
-    /* eslint-disable @typescript-eslint/no-unused-vars */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const xPyWidget = customElements.define(name, CustomWidget);
-    /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
 export function make_PyWidget(interpreter: InterpreterClient) {

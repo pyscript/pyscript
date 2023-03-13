@@ -117,7 +117,7 @@ export function createSingularWarning(msg: string, sentinelText: string | null =
  * @returns A new asynchronous lock
  * @private
  */
-export function createLock() {
+export function createLock(): () => Promise<() => void> {
     // This is a promise that is resolved when the lock is open, not resolved when lock is held.
     let _lock = Promise.resolve();
 

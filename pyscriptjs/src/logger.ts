@@ -27,7 +27,7 @@ interface Logger {
     debug(message: string, ...args: unknown[]): void;
     info(message: string, ...args: unknown[]): void;
     warn(message: string, ...args: unknown[]): void;
-    error(message: string, ...args: unknown[]): void;
+    error(message: string | Error, ...args: unknown[]): void;
 }
 
 const _cache = new Map<string, Logger>();
@@ -44,8 +44,8 @@ function getLogger(prefix: string): Logger {
 function _makeLogger(prefix: string): Logger {
     prefix = `[${prefix}] `;
 
-    function make(level: string) {
-        const out_fn = console[level].bind(console);
+    function make(level: 'info' | 'debug' | 'warn' | 'error') {
+        const out_fn = console[level].bind(console) as typeof console.log;
         function fn(fmt: string, ...args: unknown[]) {
             out_fn(prefix + fmt, ...args);
         }

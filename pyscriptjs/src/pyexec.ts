@@ -2,12 +2,20 @@ import { getLogger } from './logger';
 import { ensureUniqueId } from './utils';
 import { UserError, ErrorCode } from './exceptions';
 import { InterpreterClient } from './interpreter_client';
+import type { PyProxy, PyProxyCallable } from 'pyodide';
 
 const logger = getLogger('pyexec');
 
-export async function pyExec(interpreter: InterpreterClient, pysrc: string, outElem: HTMLElement) {
-    //This is pyscript.py
-    const pyscript_py = interpreter._remote.interface.pyimport('pyscript');
+export async function pyExec(
+    interpreter: InterpreterClient,
+    pysrc: string,
+    outElem: HTMLElement,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<{ result: any }> {
+    const pyscript_py = interpreter._remote.interface.pyimport('pyscript') as PyProxy & {
+        set_current_display_target(id: string): void;
+        uses_top_level_await(code: string): boolean;
+    };
     ensureUniqueId(outElem);
     pyscript_py.set_current_display_target(outElem.id);
     try {
@@ -23,7 +31,8 @@ export async function pyExec(interpreter: InterpreterClient, pysrc: string, outE
                 );
             }
             return await interpreter.run(pysrc);
-        } catch (err) {
+        } catch (e) {
+            const err = e as Error;
             // XXX: currently we display exceptions in the same position as
             // the output. But we probably need a better way to do that,
             // e.g. allowing plugins to intercept exceptions and display them
@@ -44,15 +53,17 @@ export async function pyExec(interpreter: InterpreterClient, pysrc: string, outE
  *     pyDisplay(interpreter, obj);
  *     pyDisplay(interpreter, obj, { target: targetID });
  */
-export function pyDisplay(interpreter: InterpreterClient, obj: any, kwargs: object) {
-    const display = interpreter.globals.get('display');
-    if (kwargs === undefined) display(obj);
-    else {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function pyDisplay(interpreter: InterpreterClient, obj: any, kwargs: { [k: string]: any } = {}) {
+    const display = interpreter.globals.get('display') as PyProxyCallable;
+    try {
         display.callKwargs(obj, kwargs);
+    } finally {
+        display.destroy();
     }
 }
 
-export function displayPyException(err: any, errElem: HTMLElement) {
+export function displayPyException(err: Error, errElem: HTMLElement) {
     //addClasses(errElem, ['py-error'])
     const pre = document.createElement('pre');
     pre.className = 'py-error';
@@ -65,8 +76,8 @@ export function displayPyException(err: any, errElem: HTMLElement) {
     } else {
         // this is very likely a normal JS exception. The best we can do is to
         // display it as is.
-        logger.error('Non-python exception:\n' + err);
-        pre.innerText = err;
+        logger.error('Non-python exception:\n' + err.toString());
+        pre.innerText = err.toString();
     }
     errElem.appendChild(pre);
 }
