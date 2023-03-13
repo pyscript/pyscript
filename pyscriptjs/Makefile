@@ -37,9 +37,6 @@ setup:
 	make check-node
 	make check-npm
 	npm install
-	# toml-j0.4 left out its types from the npm dist
-	# See https://github.com/jakwings/toml-j0.4/pull/8
-	cd node_modules/toml-j0.4 && wget https://raw.githubusercontent.com/jakwings/toml-j0.4/v1.1.1/toml.d.ts
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
 	$(CONDA_EXE) install -c anaconda pytest -y

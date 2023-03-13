@@ -49,7 +49,7 @@
         "@codemirror/state": "6.1.2",
         "@codemirror/theme-one-dark": "6.1.0",
         "@codemirror/view": "6.3.0",
-        "codemirror": "6.0.1",
-        "toml-j0.4": "^1.1.1"
+        "@hoodmane/toml-j0.4": "^1.1.2",
+        "codemirror": "6.0.1"
     }
 }
