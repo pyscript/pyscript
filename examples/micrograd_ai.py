@@ -26,7 +26,7 @@ def print_div(o):
 
 # All code is wrapped in this run_all function so it optionally executed (called)
 # from pyscript when a button is pressed.
-def micrograd_demo(*args, **kwargs):
+def micrograd_demo(*args, **kwargs):  # noqa: PLR0915
     """
     Runs the micrograd demo.
 

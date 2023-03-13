@@ -16,6 +16,7 @@ builtins = [
     "pyscript",
 ]
 ignore = [
+    "PLR2004",
     "S101",
     "S113",
 ]
@@ -26,6 +27,7 @@ select = [
     "E",
     "F",
     "I",
+    "PL",
     "S",
     "UP",
     "W",
