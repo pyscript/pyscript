@@ -78,9 +78,10 @@ def pytest_configure(config):
             - cd tests/integration; pytest
         """
         pytest.fail(msg)
-    elif config.option.dev:
-        config.option.headed = True
-        config.option.no_fake_server = True
+    else:
+        if config.option.dev:
+            config.option.headed = True
+            config.option.no_fake_server = True
 
 
 @pytest.fixture(scope="session")

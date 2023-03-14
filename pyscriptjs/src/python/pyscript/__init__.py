@@ -79,8 +79,8 @@ def _set_version_info(version_from_interpreter: str):
             YYYY.MM.m(m).releaselevel
             Year, Month, and Minor should be integers; releaselevel can be any string
     """
-    global __version__  # noqa: PLW0603
-    global version_info  # noqa: PLW0603
+    global __version__
+    global version_info
 
     __version__ = version_from_interpreter
 
