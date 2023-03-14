@@ -104,7 +104,6 @@ class TestEventHandler(PyScriptTest):
         console_text = self.console.all.lines
         assert "Got event with target [object HTMLButtonElement]" in console_text
 
-
     def test_instance_method_when_without_event(self):
         self.pyscript_run(
             """

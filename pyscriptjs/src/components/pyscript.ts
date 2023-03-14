@@ -104,7 +104,7 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
         const pyEvent = 'py-' + browserEvent;
         const userProvidedFunctionName = el.getAttribute(pyEvent);
 
-        // TODO: this if statement is deprecated and should be removed on the 2nd version after 2022.12.1
+        // TODO: this if statement is deprecated and should be removed in version coming after 2023.03.1
         const possibleDeprecatedPysEvent = 'pys-' + browserEvent;
         if (possibleDeprecatedPysEvent === 'pys-onClick' || possibleDeprecatedPysEvent === 'pys-onKeyDown') {
             const msg =
@@ -115,7 +115,7 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
             from pyodide.ffi import create_proxy
             Element("${el.id}").element.addEventListener("${browserEvent}",  create_proxy(${userProvidedFunctionName}))
             `;
-            // We meed to run the source code in a try/catch block, because
+            // We need to run the source code in a try/catch block, because
             // the source code may contain a syntax error, which will cause
             // the splashscreen to not be removed.
             try {
@@ -123,7 +123,8 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
             } catch (e) {
                 logger.error((e as Error).message);
             }
-        } else {
+        }
+        else {
             el.addEventListener(browserEvent, (evt) => {
                     try {
                         const pyEval = interpreter.globals.get('eval')
