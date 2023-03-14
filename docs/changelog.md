@@ -1,5 +1,14 @@
 # Release Notes
 
+2023.XX.X
+=========
+
+Features
+--------
+
+- Added a `docked` field and attribute for the `<py-terminal>` custom element, enabled by default when the terminal is in `auto` mode, and able to dock the terminal at the bottom of the page with auto scroll on new code execution.
+
+
 2023.01.1
 =========
 
