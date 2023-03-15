@@ -12,7 +12,7 @@ export async function pyExec(
     outElem: HTMLElement,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<{ result: any }> {
-    const pyscript_py = await interpreter.pyimport('pyscript') as PyProxy & {
+    const pyscript_py = (await interpreter.pyimport('pyscript')) as PyProxy & {
         set_current_display_target(id: string): void;
         uses_top_level_await(code: string): boolean;
     };
@@ -55,7 +55,7 @@ export async function pyExec(
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function pyDisplay(interpreter: InterpreterClient, obj: any, kwargs: { [k: string]: any } = {}) {
-    const display = await interpreter.globals.get('display') as PyProxyCallable;
+    const display = (await interpreter.globals.get('display')) as PyProxyCallable;
     try {
         await display.callKwargs(obj, kwargs);
     } finally {

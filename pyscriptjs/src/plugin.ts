@@ -179,7 +179,8 @@ export class PluginManager {
     async beforePyScriptExec(options: { interpreter: InterpreterClient; src: string; pyScriptTag: PyScriptTag }) {
         for (const p of this._plugins) p.beforePyScriptExec?.(options);
 
-        for (const p of this._pythonPlugins) await p.beforePyScriptExec(options.interpreter, options.src, options.pyScriptTag);
+        for (const p of this._pythonPlugins)
+            await p.beforePyScriptExec(options.interpreter, options.src, options.pyScriptTag);
     }
 
     async afterPyScriptExec(options: {
@@ -190,7 +191,8 @@ export class PluginManager {
     }) {
         for (const p of this._plugins) p.afterPyScriptExec?.(options);
 
-        for (const p of this._pythonPlugins) await p.afterPyScriptExec(options.interpreter, options.src, options.pyScriptTag, options.result);
+        for (const p of this._pythonPlugins)
+            await p.afterPyScriptExec(options.interpreter, options.src, options.pyScriptTag, options.result);
     }
 
     async beforePyReplExec(options: { interpreter: InterpreterClient; src: string; outEl: HTMLElement; pyReplTag: any }) {
