@@ -60,12 +60,12 @@ from js import console
 
 class ExecTestLogger(Plugin):
 
-    def beforePyScriptExec(self, interpreter, src, pyScriptTag):
+    async def beforePyScriptExec(self, interpreter, src, pyScriptTag):
         console.log(f'beforePyScriptExec called')
         console.log(f'before_src:{src}')
         console.log(f'before_id:{pyScriptTag.id}')
 
-    def afterPyScriptExec(self, interpreter, src, pyScriptTag, result):
+    async def afterPyScriptExec(self, interpreter, src, pyScriptTag, result):
         console.log(f'afterPyScriptExec called')
         console.log(f'after_src:{src}')
         console.log(f'after_id:{pyScriptTag.id}')

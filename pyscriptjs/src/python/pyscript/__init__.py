@@ -496,6 +496,24 @@ class Plugin:
     def init(self, app):
         self.app = app
 
+    def configure(self, config):
+        pass
+
+    def afterSetup(self, interpreter):
+        pass
+
+    def afterStartup(self, interpreter):
+        pass
+
+    def beforePyScriptExec(self, interpreter, src, pyScriptTag):
+        pass
+
+    def afterPyScriptExec(self, interpreter, src, pyScriptTag, result):
+        pass
+
+    def onUserError(self, error):
+        pass
+
     def register_custom_element(self, tag):
         """
         Decorator to register a new custom element as part of a Plugin and associate
