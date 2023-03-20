@@ -46,52 +46,14 @@ repos:
           - id: prettier
             args: [--tab-width, "4"]
 
--   repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
-    hooks:
-    -   id: flake8  # See 'setup.cfg' for args
-        additional_dependencies: [flake8-bugbear, flake8-comprehensions]
-
--   repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-    -   id: isort
-        name: isort (python)
-        args: [--profile, black]
-
--   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.6.0
-    hooks:
-    -   id: pretty-format-yaml
-        args: [--autofix, --indent, '4']
-        exclude: .github/ISSUE_TEMPLATE/.*\.yml$
-
--   repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
-    hooks:
-    -   id: pyupgrade
-        args:
-        -   --py310-plus
-
--   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.33.0
-    hooks:
-    -   id: eslint
-        files: pyscriptjs/src/.*\.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
-        types: [file]
-        additional_dependencies:
-        -   eslint@8.25.0
-        -   typescript@4.8.4
-        -   '@typescript-eslint/eslint-plugin@5.39.0'
-        -   '@typescript-eslint/parser@5.39.0'
-
-# Commented out until mdformat-myst supports custom extensions
-# See https://github.com/executablebooks/mdformat-myst/pull/9
-# -   repo: https://github.com/executablebooks/mdformat
-#     rev: 0.7.14 # Use the ref you want to point at
-#     hooks:
-#     -   id: mdformat
-#         additional_dependencies:
-#         -   mdformat-gfm
-#         -   mdformat-myst
-#         -   mdformat-black
+    - repo: https://github.com/pre-commit/mirrors-eslint
+      rev: v8.35.0
+      hooks:
+          - id: eslint
+            files: pyscriptjs/src/.*\.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
+            types: [file]
+            additional_dependencies:
+                - eslint@8.25.0
+                - typescript@4.8.4
+                - "@typescript-eslint/eslint-plugin@5.39.0"
+                - "@typescript-eslint/parser@5.39.0"

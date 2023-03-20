@@ -88,7 +88,9 @@ export class Plugin {
      * @param options.outEl The element that the result of the REPL evaluation will be output to.
      * @param options.pyReplTag The <py-repl> HTML tag the originated the evaluation
      */
-    beforePyReplExec(options: {interpreter: InterpreterClient, src: string, outEl: HTMLElement, pyReplTag: any}){}
+    beforePyReplExec(options: { interpreter: InterpreterClient; src: string; outEl: HTMLElement; pyReplTag: any }) {
+        /* empty */
+    }
 
     /**
      *
@@ -98,7 +100,15 @@ export class Plugin {
      * @param options.pyReplTag  The <py-repl> HTML tag the originated the evaluation
      * @param options.result The result of evaluating the Python (if any)
      */
-    afterPyReplExec(options: {interpreter: InterpreterClient, src: string, outEl: HTMLElement, pyReplTag: HTMLElement, result: any}){}
+    afterPyReplExec(options: {
+        interpreter: InterpreterClient;
+        src: string;
+        outEl: HTMLElement;
+        pyReplTag: HTMLElement;
+        result: any;
+    }) {
+        /* empty */
+    }
 
     /** Startup complete. The interpreter is initialized and ready, user
      * scripts have been executed: the main initialization logic ends here and

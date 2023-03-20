@@ -566,3 +566,30 @@ class TestPyRepl(PyScriptTest):
         )
         alert_banner = self.page.locator(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
+
+    def test_multiple_repls_mixed_display_order(self):
+        """
+        Displaying several outputs that don't obey the order in which the original
+        repl displays were created using the auto_generate attr
+        """
+        self.pyscript_run(
+            """
+            <py-repl auto-generate="true" data-testid=="first"> display("root first") </py-repl>
+            <py-repl auto-generate="true" data-testid=="second"> display("root second") </py-repl>
+            """
+        )
+
+        second_py_repl = self.page.get_by_text("root second")
+        second_py_repl.click()
+        self.page.keyboard.press("Shift+Enter")
+        self.page.keyboard.type("display('second children')")
+        self.page.keyboard.press("Shift+Enter")
+
+        first_py_repl = self.page.get_by_text("root first")
+        first_py_repl.click()
+        self.page.keyboard.press("Shift+Enter")
+        self.page.keyboard.type("display('first children')")
+        self.page.keyboard.press("Shift+Enter")
+
+        assert self.page.inner_text("#py-internal-1-1-repl-output") == "second children"
+        assert self.page.inner_text("#py-internal-0-1-repl-output") == "first children"
