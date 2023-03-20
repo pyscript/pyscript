@@ -21,7 +21,6 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
 
            this             <py-repl>
            boxDiv               <div class='py-repl-box'>
-           editorLabel              <label>...</label>
            editorDiv                <div class="py-repl-editor"></div>
            outDiv                   <div class="py-repl-output"></div>
                                 </div>
@@ -35,6 +34,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
 
         connectedCallback() {
             ensureUniqueId(this);
+
             if (!this.hasAttribute('exec-id')) {
                 this.setAttribute('exec-id', '0');
             }
@@ -86,10 +86,8 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
             boxDiv.className = 'py-repl-box';
 
             const editorDiv = this.makeEditorDiv();
-            const editorLabel = this.makeLabel('Python Script Area', editorDiv);
             this.outDiv = this.makeOutDiv();
 
-            boxDiv.append(editorLabel);
             boxDiv.appendChild(editorDiv);
             boxDiv.appendChild(this.outDiv);
 
@@ -98,35 +96,21 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
 
         makeEditorDiv(): HTMLElement {
             const editorDiv = document.createElement('div');
-            editorDiv.id = 'code-editor';
             editorDiv.className = 'py-repl-editor';
+            editorDiv.setAttribute('aria-label', 'Python Script Area');
             editorDiv.appendChild(this.editor.dom);
 
             const runButton = this.makeRunButton();
-            const runLabel = this.makeLabel('Python Script Run Button', runButton);
-            editorDiv.appendChild(runLabel);
             editorDiv.appendChild(runButton);
 
             return editorDiv;
         }
 
-        makeLabel(text: string, elementFor: HTMLElement): HTMLElement {
-            ensureUniqueId(elementFor);
-            const lbl = document.createElement('label');
-            lbl.innerHTML = text;
-            lbl.htmlFor = elementFor.id;
-            // XXX this should be a CSS class
-            // Styles that we use to hide the labels whilst also keeping it accessible for screen readers
-            const labelStyle = 'overflow:hidden; display:block; width:1px; height:1px';
-            lbl.setAttribute('style', labelStyle);
-            return lbl;
-        }
-
         makeRunButton(): HTMLElement {
             const runButton = document.createElement('button');
-            runButton.id = 'runButton';
             runButton.className = 'absolute py-repl-run-button';
             runButton.innerHTML = RUNBUTTON;
+            runButton.setAttribute('aria-label', 'Python Script Run Button');
             runButton.addEventListener('click', this.execute.bind(this) as (e: MouseEvent) => void);
             return runButton;
         }
@@ -170,15 +154,8 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
         // should be the default.
         autogenerateMaybe(): void {
             if (this.hasAttribute('auto-generate')) {
-                const root = this.getAttribute('root');
-                const allPyRepls = document.querySelectorAll(`py-repl[root='${root}'][exec-id]`);
+                const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
                 const lastRepl = allPyRepls[allPyRepls.length - 1];
-
-                // get out if no Repl is found instead of throwing an error
-                if (lastRepl === null) return;
-
-                this.removeAttribute('auto-generate');
-
                 const lastExecId = lastRepl.getAttribute('exec-id');
                 const nextExecId = parseInt(lastExecId) + 1;
 
