@@ -1,3 +1,4 @@
+import { InterpreterClient } from '../interpreter_client';
 import type { PyScriptApp } from '../main';
 import { InterpreterClient } from '../interpreter_client';
 import { make_PyRepl } from './pyrepl';

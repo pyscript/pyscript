@@ -189,6 +189,7 @@ export class PyScriptApp {
 
         this.logStatus('Initializing web components...');
         // lifecycle (8)
+
         
         //Takes a runtime and a reference to the PyScriptApp (to access plugins)
         createCustomElements(interpreter, this);

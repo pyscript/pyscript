@@ -12,6 +12,7 @@ import { getLogger } from '../logger';
 import { InterpreterClient } from '../interpreter_client';
 import type { PyScriptApp } from '../main';
 import { Stdio } from '../stdio';
+import { PyScriptApp } from '../main';
 
 const logger = getLogger('py-repl');
 const RUNBUTTON = `<svg style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>`;
@@ -156,7 +157,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
          */
         async execute(): Promise<void> {
             const pySrc = this.getPySrc();
-            const outEl = this.outDiv
+            const outEl = this.outDiv;
 
             // execute the python code
             app.plugins.beforePyReplExec({InterpreterClient: interpreter, src: pySrc, outEl: outEl, pyReplTag: this});
@@ -183,7 +184,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
                 const newPyRepl = document.createElement('py-repl');
 
                 //Attributes to be copied from old REPL to auto-generated REPL
-                for (const attribute of ['root', 'output-mode', 'output', 'stderr']){
+                for (const attribute of ['root', 'output-mode', 'output', 'stderr']) {
                     const attr = getAttribute(this, attribute);
                     if (attr) {
                         newPyRepl.setAttribute(attribute, attr);
