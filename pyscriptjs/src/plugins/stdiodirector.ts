@@ -92,10 +92,8 @@ export class StdioDirector extends Plugin {
     }
 
     afterPyReplExec(options: {interpreter: any, src: any, outEl: any, pyReplTag: any, result: any}): void {
-        // display the value of the last evaluated expression (REPL-style)
+        // display the value of the last-evaluated expression in the REPL
         if (options.result !== undefined) {
-
-
             const outputId: string | undefined =  options.pyReplTag.getAttribute("output")
             if (outputId) {
                 // 'output' attribute also used as location to send

@@ -55,7 +55,7 @@ export class Plugin {
     /** The source of a <py-script>> tag has been fetched, and we're about
      * to evaluate that source using the provided interpreter.
      *
-     * @param options.interpreter The Interpreter object that will be used to evaluated the Python source code
+     * @param options.interpreter The Interpreter object that will be used to evaluate the Python source code
      * @param options.src {string} The Python source code to be evaluated
      * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
      */
@@ -66,7 +66,7 @@ export class Plugin {
     /** The Python in a <py-script> has just been evaluated, but control
      * has not been ceded back to the JavaScript event loop yet
      *
-     * @param options.interpreter The Interpreter object that will be used to evaluated the Python source code
+     * @param options.interpreter The Interpreter object that will be used to evaluate the Python source code
      * @param options.src {string} The Python source code to be evaluated
      * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
      * @param options.result The returned result of evaluating the Python (if any)
@@ -81,9 +81,9 @@ export class Plugin {
     }
 
     /** The source of the <py-repl> tag has been fetched and its output-element determined;
-     * we're about to evaluate the source using the provided runtime
+     * we're about to evaluate the source using the provided interpreter
      *
-     * @param options.interpreter The Runtime object that will be used to evaluated the Python source code
+     * @param options.interpreter The interpreter object that will be used to evaluated the Python source code
      * @param options.src {string} The Python source code to be evaluated
      * @param options.outEl The element that the result of the REPL evaluation will be output to.
      * @param options.pyReplTag The <py-repl> HTML tag the originated the evaluation
@@ -92,7 +92,7 @@ export class Plugin {
 
     /**
      *
-     * @param options.interpreter  The Runtime object that will be used to evaluated the Python source code
+     * @param options.interpreter  The interpreter object that will be used to evaluated the Python source code
      * @param options.src  {string} The Python source code to be evaluated
      * @param options.outEl  The element that the result of the REPL evaluation will be output to.
      * @param options.pyReplTag  The <py-repl> HTML tag the originated the evaluation
