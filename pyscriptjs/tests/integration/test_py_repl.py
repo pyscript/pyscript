@@ -1,3 +1,5 @@
+import platform
+
 from .support import PyScriptTest, wait_for_render
 
 
@@ -8,7 +10,11 @@ class TestPyRepl(PyScriptTest):
         WARNING: this assumes that the textbox has already the focus
         """
         # clear the editor, write new code
-        self.page.keyboard.press("Control+A")
+        if 'macOS' in platform.platform():
+            self.page.keyboard.press("Meta+A")
+        else:
+            self.page.keyboard.press("Control+A")
+
         self.page.keyboard.press("Backspace")
         self.page.keyboard.type(newcode)
 
@@ -110,7 +116,7 @@ class TestPyRepl(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <py-repl  auto-generate="true">
+            <py-repl>
                 display('hello world')
             </py-repl>
             """
@@ -124,7 +130,7 @@ class TestPyRepl(PyScriptTest):
         self._replace(py_repl, "display('another output')")
         self.page.keyboard.press("Shift+Enter")
         print
-        assert out_div.all_inner_texts()[1] == "another output"
+        assert out_div.all_inner_texts()[0] == "another output"
 
     def test_python_exception(self):
         """
@@ -175,7 +181,7 @@ class TestPyRepl(PyScriptTest):
     def test_python_exception_after_previous_output(self):
         self.pyscript_run(
             """
-            <py-repl auto-generate="true">
+            <py-repl>
                 display('hello world')
             </py-repl>
             """
@@ -188,8 +194,8 @@ class TestPyRepl(PyScriptTest):
         # clear the editor, write new code, execute
         self._replace(py_repl, "0/0")
         self.page.keyboard.press("Shift+Enter")
-        assert "hello world" not in out_div.all_inner_texts()[1]
-        assert "ZeroDivisionError" in out_div.all_inner_texts()[1]
+        assert "hello world" not in out_div.all_inner_texts()[0]
+        assert "ZeroDivisionError" in out_div.all_inner_texts()[0]
 
     def test_hide_previous_error_after_successful_run(self):
         """
@@ -199,7 +205,7 @@ class TestPyRepl(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <py-repl  auto-generate="true">
+            <py-repl>
                 raise Exception('this is an error')
             </py-repl>
             """
@@ -211,7 +217,7 @@ class TestPyRepl(PyScriptTest):
         #
         self._replace(py_repl, "display('hello')")
         self.page.keyboard.press("Shift+Enter")
-        assert out_div.all_inner_texts()[1] == "hello"
+        assert out_div.all_inner_texts()[0] == "hello"
 
     def test_output_attribute(self):
         self.pyscript_run(
