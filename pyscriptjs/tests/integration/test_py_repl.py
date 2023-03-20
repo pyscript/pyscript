@@ -10,7 +10,7 @@ class TestPyRepl(PyScriptTest):
         WARNING: this assumes that the textbox has already the focus
         """
         # clear the editor, write new code
-        if 'macOS' in platform.platform():
+        if "macOS" in platform.platform():
             self.page.keyboard.press("Meta+A")
         else:
             self.page.keyboard.press("Control+A")
