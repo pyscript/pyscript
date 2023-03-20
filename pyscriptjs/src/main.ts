@@ -397,7 +397,9 @@ export class PyScriptApp {
         // TODO: This is very specific to Pyodide API and will not work for other interpreters,
         //       when we add support for other interpreters we will need to move this to the
         //       interpreter API level and allow each one to implement it in its own way
-        const module = await interpreter.pyimport(modulename);
+
+        // eventually replace with interpreter.pyimport(modulename);
+        const module = interpreter._unwrapped_remote.pyimport(modulename);
         if (typeof (await module.plugin) !== 'undefined') {
             const py_plugin = module.plugin as PyProxy & { init(app: PyScriptApp): void };
             py_plugin.init(this);

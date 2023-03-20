@@ -14,7 +14,7 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
         klass: string = klass;
         code: string = code;
         proxy: PyProxy & { connect(): void };
-        proxyClass: PyProxyCallable;
+        proxyClass: any;
 
         constructor() {
             super();
@@ -28,8 +28,8 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
 
         async connectedCallback() {
             await interpreter.runButDontRaise(this.code);
-            this.proxyClass = (await interpreter.globals.get(this.klass)) as PyProxyCallable;
-            this.proxy = this.proxyClass(this) as PyProxy & { connect(): void };
+            this.proxyClass = await interpreter.globals.get(this.klass);
+            this.proxy = await this.proxyClass(this) as PyProxy & { connect(): void };
             this.proxy.connect();
             this.registerWidget();
         }
