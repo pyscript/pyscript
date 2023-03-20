@@ -6,7 +6,7 @@ import { keymap, Command } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 
-import { getAttribute, ensureUniqueId, htmlDecode } from '../utils';
+import { ensureUniqueId, htmlDecode } from '../utils';
 import { pyExec } from '../pyexec';
 import { getLogger } from '../logger';
 import { InterpreterClient } from '../interpreter_client';
@@ -20,8 +20,6 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
     /* High level structure of py-repl DOM, and the corresponding JS names.
 
            this             <py-repl>
-           shadow               #shadow-root
-                                    <slot></slot>
            boxDiv               <div class='py-repl-box'>
            editorLabel              <label>...</label>
            editorDiv                <div class="py-repl-editor"></div>
@@ -30,22 +28,13 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
                             </py-repl>
     */
     class PyRepl extends HTMLElement {
-        shadow: ShadowRoot;
         outDiv: HTMLElement;
         editor: EditorView;
         stdout_manager: Stdio | null;
         stderr_manager: Stdio | null;
 
-        constructor() {
-            super();
-        }
-
         connectedCallback() {
             ensureUniqueId(this);
-            this.shadow = this.attachShadow({ mode: 'open' });
-            const slot = document.createElement('slot');
-            this.shadow.appendChild(slot);
-
             if (!this.hasAttribute('exec-id')) {
                 this.setAttribute('exec-id', '0');
             }
@@ -77,7 +66,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
                 ]),
             ];
 
-            if (getAttribute(this, 'theme') === 'dark') {
+            if (this.getAttribute('theme') === 'dark') {
                 extensions.push(oneDarkTheme);
             }
 
@@ -161,13 +150,13 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
             // execute the python code
             app.plugins.beforePyReplExec({ interpreter: interpreter, src: pySrc, outEl: outEl, pyReplTag: this });
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const pyResult = (await pyExec(interpreter, pySrc, outEl)).result;
+            const { result } = await pyExec(interpreter, pySrc, outEl);
             app.plugins.afterPyReplExec({
                 interpreter: interpreter,
                 src: pySrc,
                 outEl: outEl,
                 pyReplTag: this,
-                result: pyResult, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+                result, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
             });
 
             this.autogenerateMaybe();
@@ -181,8 +170,15 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
         // should be the default.
         autogenerateMaybe(): void {
             if (this.hasAttribute('auto-generate')) {
-                const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
+                const root = this.getAttribute('root');
+                const allPyRepls = document.querySelectorAll(`py-repl[root='${root}'][exec-id]`);
                 const lastRepl = allPyRepls[allPyRepls.length - 1];
+
+                // get out if no Repl is found instead of throwing an error
+                if (lastRepl === null) return;
+
+                this.removeAttribute('auto-generate');
+
                 const lastExecId = lastRepl.getAttribute('exec-id');
                 const nextExecId = parseInt(lastExecId) + 1;
 
@@ -190,7 +186,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
 
                 //Attributes to be copied from old REPL to auto-generated REPL
                 for (const attribute of ['root', 'output-mode', 'output', 'stderr']) {
-                    const attr = getAttribute(this, attribute);
+                    const attr = this.getAttribute(attribute);
                     if (attr) {
                         newPyRepl.setAttribute(attribute, attr);
                     }
