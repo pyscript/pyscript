@@ -127,12 +127,15 @@ class PyScriptTest:
         page.on("pageerror", self._on_pageerror)
 
     def run_js(self, code):
-        self.page.evaluate("""(async () => {
+        self.page.evaluate(
+            """(async () => {
             try {%s}
             catch(e) {
                 console.error(e);
             }
-            })();""" % code)
+            })();"""
+            % code
+        )
 
     def teardown_method(self):
         # we call check_js_errors on teardown: this means that if there are still
