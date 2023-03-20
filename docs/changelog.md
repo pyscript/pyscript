@@ -8,6 +8,7 @@ Features
 
 - Added a `docked` field and attribute for the `<py-terminal>` custom element, enabled by default when the terminal is in `auto` mode, and able to dock the terminal at the bottom of the page with auto scroll on new code execution.
 
+
 Bug fixes
 ---------
 
@@ -17,6 +18,8 @@ Enhancements
 ------------
 
 - Py-REPL tests now run on both osx and non osx OSs
+- migrated from *rollup* to *esbuild* to create artifacts
+- updated `@codemirror` dependency to its latest
 
 2023.01.1
 =========

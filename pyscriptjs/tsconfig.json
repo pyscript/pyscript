@@ -12,6 +12,7 @@
         "strict": false,
         "esModuleInterop": true,
         "skipLibCheck": true,
+        "isolatedModules": true,
         "forceConsistentCasingInFileNames": true,
         "lib": ["es2017", "dom", "DOM.Iterable"]
     }
