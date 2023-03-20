@@ -69,9 +69,15 @@ More concretely:
   - PyScriptApp.afterInterpreterLoad() implements all the points >= 5.
 */
 
+export let interpreter;
+// TODO: This is for backwards compatibility, it should be removed
+// when we finish the deprecation cycle of `runtime`
+export let runtime;
+
 export class PyScriptApp {
     config: AppConfig;
     interpreter: InterpreterClient;
+    readyPromise: Promise<void>;
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
@@ -135,6 +141,10 @@ export class PyScriptApp {
         await this.plugins.configure(this.config);
         this.plugins.beforeLaunch(this.config);
         await this.loadInterpreter();
+        interpreter = this.interpreter;
+        // TODO: This is for backwards compatibility, it should be removed
+        // when we finish the deprecation cycle of `runtime`
+        runtime = this.interpreter;
     }
 
     // lifecycle (2)
@@ -428,10 +438,6 @@ globalExport('pyscript_get_config', pyscript_get_config);
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
-void globalApp.main();
+globalApp.readyPromise = globalApp.main();
 
 export { version };
-export const interpreter = globalApp.interpreter;
-// TODO: This is for backwards compatibility, it should be removed
-// when we finish the deprecation cycle of `runtime`
-export const runtime = globalApp.interpreter;
