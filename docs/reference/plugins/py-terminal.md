@@ -4,7 +4,9 @@ This is one of the core plugins in PyScript, which is active by default. With it
 
 ## Configuration
 
-You can control how `<py-terminal>` behaves by setting the value of the  `terminal` configuration in your `<py-config>`.
+You can control how `<py-terminal>` behaves by setting the value of the `terminal` configuration in your `<py-config>`, together with the `docked` one.
+
+For the **terminal** field, these are the values:
 
 | value | description |
 |-------|-------------|
@@ -12,11 +14,25 @@ You can control how `<py-terminal>` behaves by setting the value of the  `termin
 | `true` | Automatically add a `<py-terminal>` to the page |
 | `"auto"` | This is the default. Automatically add a `<py-terminal auto>`, to the page. The terminal is initially hidden and automatically shown as soon as something writes to `stdout` and/or `stderr` |
 
+For the **docked** field, these are the values:
+
+| value | description |
+|-------|-------------|
+| `false` | Don't dock `<py-terminal>` to the page |
+| `true` | Automatically dock a `<py-terminal>` to the page |
+| `"docked"` | This is the default. Automatically add a `<py-terminal docked>`, to the page. The terminal, once visible, is automatically shown at the bottom of the page, covering the width of such page |
+
+Please note that **docked** mode is currently used as default only when `terminal="auto"`, or *terminal* default, is used.
+
+In all other cases it's up to the user decide if a terminal should be docked or not.
+
+
 ### Examples
 
 ```html
 <py-config>
     terminal = true
+    docked = false
 </py-config>
 
 <py-script>

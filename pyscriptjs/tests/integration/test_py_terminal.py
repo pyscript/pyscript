@@ -131,3 +131,18 @@ class TestPyTerminal(PyScriptTest):
         )
         term = self.page.locator("py-terminal")
         assert term.count() == 0
+
+    def test_config_docked(self):
+        """
+        config.docked == "docked" is also the default: a <py-terminal auto docked> is
+        automatically added to the page
+        """
+        self.pyscript_run(
+            """
+            <button id="my-button" py-onClick="print('hello world')">Click me</button>
+            """
+        )
+        term = self.page.locator("py-terminal")
+        self.page.locator("button").click()
+        expect(term).to_be_visible()
+        assert term.get_attribute("docked") == ""
