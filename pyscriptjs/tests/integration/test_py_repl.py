@@ -148,11 +148,9 @@ class TestPyRepl(PyScriptTest):
         self.page.keyboard.press("Shift+Enter")
         out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert out_div.inner_text() == "hello world"
-        #
         # clear the editor, write new code, execute
         self._replace(py_repl, "display('another output')")
         self.page.keyboard.press("Shift+Enter")
-        print
         assert out_div.inner_text() == "another output"
 
     def test_python_exception(self):
