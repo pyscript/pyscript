@@ -5,11 +5,15 @@ import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
 
-type AppConfigStyle = AppConfig & { terminal?: boolean | 'auto'; docked?: boolean | 'docked'; xterm?: boolean };
+type AppConfigStyle = AppConfig & {
+    terminal?: boolean | 'auto';
+    docked?: boolean | 'docked';
+    xterm?: boolean | 'xterm';
+};
 
 const logger = getLogger('py-terminal');
 
-const validate = (config: AppConfigStyle, name: string, default_: string | null) => {
+const validate = (config: AppConfigStyle, name: string, default_: string) => {
     const value = config[name] as undefined | boolean | string;
     if (value !== undefined && value !== true && value !== false && default_ !== null && value !== default_) {
         const got = JSON.stringify(value);
@@ -27,6 +31,8 @@ const validate = (config: AppConfigStyle, name: string, default_: string | null)
     }
     if (value === undefined) {
         config[name] = default_;
+        //THIS IS A HACK AND WILL BE IMPROVED
+        if (name == 'xterm') config[name] = false;
     }
 };
 
@@ -58,14 +64,16 @@ export class PyTerminalPlugin extends Plugin {
     beforeLaunch(config: AppConfigStyle) {
         // if config.terminal is "yes" or "auto", let's add a <py-terminal> to
         // the document, unless it's already present.
-        const { terminal: t, docked: d } = config;
+        const { terminal: t, docked: d, xterm: x } = config;
         const auto = t === true || t === 'auto';
         const docked = d === true || d === 'docked';
+        const xterm = x === true || x === 'xterm';
         if (auto && document.querySelector('py-terminal') === null) {
             logger.info('No <py-terminal> found, adding one');
             const termElem = document.createElement('py-terminal');
             if (auto) termElem.setAttribute('auto', '');
             if (docked) termElem.setAttribute('docked', '');
+            if (xterm) termElem.setAttribute('xterm', '');
             document.body.appendChild(termElem);
         }
     }
@@ -87,7 +95,7 @@ export class PyTerminalPlugin extends Plugin {
         //
         //   4. (in the future we might want to add an option to start the
         //      capture earlier, but I don't think it's important now).
-        const PyTerminal = make_PyTerminal_pre(this.app);
+        const PyTerminal = _interpreter.config.xterm ? make_PyTerminal_xterm(this.app) : make_PyTerminal_pre(this.app);
         customElements.define('py-terminal', PyTerminal);
     }
 }
@@ -160,4 +168,43 @@ function make_PyTerminal_pre(app: PyScriptApp) {
     }
 
     return PyTerminalPre;
+}
+
+function make_PyTerminal_xterm(app: PyScriptApp) {
+    /** The <py-terminal> custom element, which automatically register a stdio
+     *  listener to capture and display stdout/stderr
+     */
+    class PyTerminalXterm extends PyTerminalBaseClass {
+        outElem: HTMLDivElement;
+
+        connectedCallback() {
+            // should we use a shadowRoot instead? It looks unnecessarily
+            // complicated to me, but I'm not really sure about the
+            // implications
+            this.outElem = document.createElement('div');
+            //this.outElem.className = 'py-terminal';
+            this.appendChild(this.outElem);
+
+            this.setupPosition(app);
+        }
+
+        // implementation of the Stdio interface
+        stdout_writeline(msg: string) {
+            this.outElem.innerText += msg + '\n';
+            if (this.isDocked()) {
+                this.scrollTop = this.scrollHeight;
+            }
+            if (this.autoShowOnNextLine) {
+                this.classList.remove('py-terminal-hidden');
+                this.autoShowOnNextLine = false;
+            }
+        }
+
+        stderr_writeline(msg: string) {
+            this.stdout_writeline(msg);
+        }
+        // end of the Stdio interface
+    }
+
+    return PyTerminalXterm;
 }
