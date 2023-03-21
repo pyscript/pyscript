@@ -11,8 +11,8 @@ describe('Test withUserErrorHandler', () => {
             this.myRealMain = myRealMain;
         }
 
-        _realMain() {
-            this.myRealMain();
+        async _realMain() {
+            await this.myRealMain();
         }
     }
 

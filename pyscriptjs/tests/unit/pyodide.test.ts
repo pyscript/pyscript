@@ -2,6 +2,7 @@ import type { AppConfig } from '../../src/pyconfig';
 import { InterpreterClient } from '../../src/interpreter_client';
 import { RemoteInterpreter } from '../../src/remote_interpreter';
 import { CaptureStdio } from '../../src/stdio';
+import * as Synclink from 'synclink';
 
 import { TextEncoder, TextDecoder } from 'util';
 global.TextEncoder = TextEncoder;
@@ -11,8 +12,20 @@ describe('RemoteInterpreter', () => {
     let interpreter: InterpreterClient;
     let stdio: CaptureStdio = new CaptureStdio();
     beforeAll(async () => {
-        const config: AppConfig = { interpreters: [{ src: '../pyscriptjs/node_modules/pyodide/pyodide.js' }] };
-        interpreter = new InterpreterClient(config, stdio);
+        const SRC = '../pyscriptjs/node_modules/pyodide/pyodide.js';
+        const config: AppConfig = { interpreters: [{ src: SRC }] };
+        const remote_interpreter = new RemoteInterpreter(SRC);
+        const { port1, port2 } = new MessageChannel();
+        port1.start();
+        port2.start();
+        Synclink.expose(remote_interpreter, port2);
+        const wrapped_remote_interpreter = Synclink.wrap(port1);
+        interpreter = new InterpreterClient(
+            config,
+            stdio,
+            wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
+            remote_interpreter,
+        );
 
         /**
          * Since import { loadPyodide } from 'pyodide';
