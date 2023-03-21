@@ -153,7 +153,7 @@ class TestPyRepl(PyScriptTest):
         self._replace(py_repl, "display('another output')")
         self.page.keyboard.press("Shift+Enter")
         print
-        assert out_div.all_inner_texts()[0] == "another output"
+        assert out_div.inner_text() == "another output"
 
     def test_python_exception(self):
         """
