@@ -31,8 +31,6 @@ const validate = (config: AppConfigStyle, name: string, default_: string) => {
     }
     if (value === undefined) {
         config[name] = default_;
-        //THIS IS A HACK AND WILL BE IMPROVED
-        if (name == 'xterm') config[name] = false;
     }
 };
 
@@ -170,33 +168,70 @@ function make_PyTerminal_pre(app: PyScriptApp) {
     return PyTerminalPre;
 }
 
+//TODO import types for xterm js; install as dev dependency and import
+
 function make_PyTerminal_xterm(app: PyScriptApp) {
     /** The <py-terminal> custom element, which automatically register a stdio
      *  listener to capture and display stdout/stderr
      */
     class PyTerminalXterm extends PyTerminalBaseClass {
         outElem: HTMLDivElement;
+        moduleResolved: boolean;
+        term;
+        cachedStdOut: Array<string>;
+        cachedStdErr: Array<string>;
 
-        connectedCallback() {
-            // should we use a shadowRoot instead? It looks unnecessarily
-            // complicated to me, but I'm not really sure about the
-            // implications
+        constructor() {
+            super();
+            this.moduleResolved = false;
+            this.cachedStdOut = [];
+            this.cachedStdErr = [];
+        }
+
+        async connectedCallback() {
             this.outElem = document.createElement('div');
             //this.outElem.className = 'py-terminal';
             this.appendChild(this.outElem);
 
             this.setupPosition(app);
+
+            //Need to fix this
+            // eslint-disable-next-line
+            // @ts-ignore
+            await import('https://cdn.jsdelivr.net/npm/xterm@5.1.0/lib/xterm.js');
+            const cssTag = document.createElement('link');
+            cssTag.type = 'text/css';
+            cssTag.rel = 'stylesheet';
+            cssTag.href = 'https://cdn.jsdelivr.net/npm/xterm@5.1.0/css/xterm.css';
+            document.head.appendChild(cssTag);
+
+            // eslint-disable-next-line
+            this.term = new globalThis.Terminal();
+            this.term.open(this);
+            console.log(this.term);
+
+            this.moduleResolved = true;
+
+            this.cachedStdOut.forEach(this.stdout_writeline, this);
+            this.cachedStdErr.forEach(this.stderr_writeline, this);
         }
 
         // implementation of the Stdio interface
         stdout_writeline(msg: string) {
-            this.outElem.innerText += msg + '\n';
-            if (this.isDocked()) {
-                this.scrollTop = this.scrollHeight;
-            }
-            if (this.autoShowOnNextLine) {
-                this.classList.remove('py-terminal-hidden');
-                this.autoShowOnNextLine = false;
+            if (this.moduleResolved) {
+                console.log(`Writing ${msg} to xterm`);
+                this.term.writeln(msg);
+                //this.outElem.innerText += msg + '\n';
+
+                if (this.isDocked()) {
+                    this.scrollTop = this.scrollHeight;
+                }
+                if (this.autoShowOnNextLine) {
+                    this.classList.remove('py-terminal-hidden');
+                    this.autoShowOnNextLine = false;
+                }
+            } else {
+                this.cachedStdOut.push(msg);
             }
         }
 
