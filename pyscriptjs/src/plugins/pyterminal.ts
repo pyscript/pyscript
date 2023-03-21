@@ -87,18 +87,48 @@ export class PyTerminalPlugin extends Plugin {
         //
         //   4. (in the future we might want to add an option to start the
         //      capture earlier, but I don't think it's important now).
-        const PyTerminal = make_PyTerminal(this.app);
+        const PyTerminal = make_PyTerminal_pre(this.app);
         customElements.define('py-terminal', PyTerminal);
     }
 }
 
-function make_PyTerminal(app: PyScriptApp) {
+abstract class PyTerminalBaseClass extends HTMLElement implements Stdio {
+    autoShowOnNextLine: boolean;
+
+    isAuto() {
+        return this.hasAttribute('auto');
+    }
+
+    isDocked() {
+        return this.hasAttribute('docked');
+    }
+
+    setupPosition(app: PyScriptApp) {
+        if (this.isAuto()) {
+            this.classList.add('py-terminal-hidden');
+            this.autoShowOnNextLine = true;
+        } else {
+            this.autoShowOnNextLine = false;
+        }
+
+        if (this.isDocked()) {
+            this.classList.add('py-terminal-docked');
+        }
+
+        logger.info('Registering stdio listener');
+        app.registerStdioListener(this);
+    }
+
+    abstract stdout_writeline(msg: string): void;
+    abstract stderr_writeline(msg: string): void;
+}
+
+function make_PyTerminal_pre(app: PyScriptApp) {
     /** The <py-terminal> custom element, which automatically register a stdio
      *  listener to capture and display stdout/stderr
      */
-    class PyTerminal extends HTMLElement implements Stdio {
+    class PyTerminalPre extends PyTerminalBaseClass {
         outElem: HTMLElement;
-        autoShowOnNextLine: boolean;
 
         connectedCallback() {
             // should we use a shadowRoot instead? It looks unnecessarily
@@ -108,27 +138,7 @@ function make_PyTerminal(app: PyScriptApp) {
             this.outElem.className = 'py-terminal';
             this.appendChild(this.outElem);
 
-            if (this.isAuto()) {
-                this.classList.add('py-terminal-hidden');
-                this.autoShowOnNextLine = true;
-            } else {
-                this.autoShowOnNextLine = false;
-            }
-
-            if (this.isDocked()) {
-                this.classList.add('py-terminal-docked');
-            }
-
-            logger.info('Registering stdio listener');
-            app.registerStdioListener(this);
-        }
-
-        isAuto() {
-            return this.hasAttribute('auto');
-        }
-
-        isDocked() {
-            return this.hasAttribute('docked');
+            this.setupPosition(app);
         }
 
         // implementation of the Stdio interface
@@ -149,5 +159,5 @@ function make_PyTerminal(app: PyScriptApp) {
         // end of the Stdio interface
     }
 
-    return PyTerminal;
+    return PyTerminalPre;
 }
