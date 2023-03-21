@@ -1,6 +1,6 @@
 import platform
 
-from .support import PyScriptTest, wait_for_render
+from .support import PyScriptTest
 
 
 class TestPyRepl(PyScriptTest):
