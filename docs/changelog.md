@@ -1,7 +1,7 @@
 # Release Notes
 
 2023.XX.X
-========= 
+=========
 
 Features
 --------
