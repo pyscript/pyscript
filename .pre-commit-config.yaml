@@ -23,7 +23,7 @@ repos:
           - id: trailing-whitespace
 
     - repo: https://github.com/charliermarsh/ruff-pre-commit
-      rev: v0.0.254
+      rev: v0.0.257
       hooks:
           - id: ruff
             args: [--fix]
@@ -34,7 +34,7 @@ repos:
           - id: black
 
     - repo: https://github.com/codespell-project/codespell
-      rev: v2.2.2
+      rev: v2.2.4
       hooks:
           - id: codespell # See 'pyproject.toml' for args
             additional_dependencies:
@@ -47,7 +47,7 @@ repos:
             args: [--tab-width, "4"]
 
     - repo: https://github.com/pre-commit/mirrors-eslint
-      rev: v8.35.0
+      rev: v8.36.0
       hooks:
           - id: eslint
             files: pyscriptjs/src/.*\.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
