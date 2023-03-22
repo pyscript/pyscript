@@ -6,8 +6,8 @@ import { keymap, Command } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 
-import { getAttribute, ensureUniqueId, htmlDecode, createSingularWarning } from '../utils';
-import { pyExec, pyDisplay } from '../pyexec';
+import { getAttribute, ensureUniqueId, htmlDecode } from '../utils';
+import { pyExec } from '../pyexec';
 import { getLogger } from '../logger';
 import { InterpreterClient } from '../interpreter_client';
 import type { PyScriptApp } from '../main';
