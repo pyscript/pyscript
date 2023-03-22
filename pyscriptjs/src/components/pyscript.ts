@@ -104,39 +104,29 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, browse
     const localsDict = pyDictClass()
 
     for (const el of matches) {
-        console.log('🌈?? el:', el)
+        console.log('🌈 ?? el:', el)
         // If the element doesn't have an id, let's add one automatically
         if (el.id.length === 0) {
             ensureUniqueId(el);
         }
 
         if (el.getAttributeNames().find(s => s.includes('code'))) {
-            console.log('element ☠️ code')
             const pyEvent = 'py-' + browserEvent + '-code';
             const userProvidedFunctionName = el.getAttribute(pyEvent);
             el.addEventListener(browserEvent, (evt) => {
                 try {
-                    console.log('🦊 userProvidedFunctionName:', userProvidedFunctionName)
+                    console.log('py-code eval')
+                    console.log('🦊 TSside: userProvidedFunctionName:', userProvidedFunctionName)
                     const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict)
+                    const fun = interpreter.globals.get(userProvidedFunctionName)
                     const isCallable = pyCallable(evalResult)
                     localsDict.set('event', evt)
 
+                    console.log('🦊 TSside: is it callable ☀️', isCallable)
                     if (isCallable) {
                         console.log('isCallable inside the code stuff')
                         throw new UserError(ErrorCode.GENERIC, "The code provided to 'py-[event]-code' was the name of a Callable. Did you mean to use 'py-[event]?")
                     }
-                    // const isCallable = pyCallable(evalResult)
-                    //
-                    // if (isCallable) {
-                    // }
-                    // else {
-                    //     console.log('else twice?')
-                        // pyEval(userProvidedFunctionName, interpreter.globals, localsDict);
-                        // // Functions that receive an event attribute
-                        // else if (params.length == 1) {
-                        //     evalResult(evt);
-                        // }
-                    // }
                 }
                 catch (err) {
                     // TODO: This should be an error - probably need to refactor
@@ -147,7 +137,6 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, browse
             });
         }
         else {
-            console.log('element 🍑 thats not code')
             const pyEvent = 'py-' + browserEvent;
             const userProvidedFunctionName = el.getAttribute(pyEvent);
 
@@ -173,13 +162,13 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, browse
             } else {
                 el.addEventListener(browserEvent, (evt) => {
                     try {
-                        console.log('also bein eval here')
+                        console.log('py-event eval')
                         const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict)
                         const isCallable = pyCallable(evalResult)
                         localsDict.set('event', evt)
 
+                        console.log('🦊 TSside: is it callable ☀️', isCallable)
                         if (isCallable) {
-                            console.log('is callable 🌨️')
                             const pyInspectModule = interpreter._remote.interface.pyimport('inspect')
                             const params = pyInspectModule.signature(evalResult).parameters
 

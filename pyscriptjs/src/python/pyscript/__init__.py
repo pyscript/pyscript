@@ -225,17 +225,23 @@ def when(event=None, id=None):
         element = js.document.getElementById(id)
         print(element)
         sig = inspect.signature(func)
+        print(f'Pythonside:  {func.__name__} callable when enters deco? {callable(func)}',)
 
         # Function doesn't receive events
         if not sig.parameters:
-
+            print(f'Pythonside: {func.__name__} callable when no params? {callable(func)}',)
             def wrapper(*args, **kwargs):
                 func()
-
-            add_event_listener(element, event, wrapper)
+            proxy = create_proxy(wrapper)
+            element.addEventListener(event, cast(wrapper, proxy))
+            print(f'Pythonside: {func.__name__} callable when no params && after proxied? {callable(proxy)}',)
+            # add_event_listener(element, event, wrapper)
         else:
-            add_event_listener(element, event, func)
-
+            print(f'Pythonside: is {func.__name__} callable when yes params? {callable(func)}',)
+            proxy = create_proxy(func)
+            element.addEventListener(event, func)
+            # add_event_listener(element, event, func)
+            print(f'Pythonside:  {func.__name__} callable when yes params? after add_event_listener {callable(func)}',)
     return decorator
 
 

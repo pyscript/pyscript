@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>PyScript Hello World</title>
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="../build/pyscript.css" />
+    <link rel="stylesheet" href="./assets/css/examples.css" />
+    <script defer src="../build/pyscript.js"></script>
+  </head>
+
+<br><button py-click-code="missuse_no_event_no_dec" id="1">missuse_no_event_no_dec py-click-code</button><br>
+
+<br><button py-click="no_event_no_dec" id="2">no_event_no_dec py-click</button><br>
+
+<br><button py-click="no_event_dec" id="3">no_event_dec py-click</button><br>
+
+<br><button py-click-code="missuse_no_event_dec" id="4">missuse_no_event_dec py-click-code</button><br>
+
+<!-- the reason why this prints is bc of the way we eval it to try to figure it out if it's callable or not
+it always runs it with the eval() function
+we need to find a new way of evaluating? -->
+<br><button py-click="print('should error: this is a py-click misuse')" id="5">missuse_non_callable_no_dec py-click</button><br>
+
+<br><button py-click-code="print('should work: this is a good use of py-click-code')" id="6">non_callable_no_dec py-click-code</button><br>
+
+<py-script>
+def no_event_no_dec():
+    print(f"should work: I've clicked no_event_no_dec, and it ran with no arguements")
+
+def missuse_no_event_no_dec():
+    print(f"should error: I've clicked no_event_no_dec, and it ran with no arguements")
+
+from pyscript import when
+
+@when("click", id="3")
+def no_event_dec():
+    print(f"should work: I've clicked no_event_dec, and it ran with no arguements")
+
+@when("click", id="4")
+def missuse_no_event_dec():
+    print(f"should error: I've clicked no_event_dec, and it ran with no arguements")
+
+</py-script>
+
+
+
+</html>
+
