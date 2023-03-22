@@ -1,4 +1,4 @@
-# Guides
+# How-to guides
 
 Welcome to the how-to documentation section for PyScript. If you've already
 gained some experience with PyScript before and just need practical guides
@@ -16,7 +16,5 @@ caption: 'Contents:'
 ---
 passing-objects
 http-requests
-asyncio
-custom-plugins
 event-handlers
 ```
