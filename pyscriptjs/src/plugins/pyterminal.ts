@@ -4,6 +4,7 @@ import { Plugin, validateConfigParameterFromArray } from '../plugin';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
+import { Terminal } from 'xterm';
 
 type AppConfigStyle = AppConfig & {
     terminal?: boolean | 'auto';
@@ -177,7 +178,7 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
     class PyTerminalXterm extends PyTerminalBaseClass {
         outElem: HTMLDivElement;
         moduleResolved: boolean;
-        term;
+        term: Terminal;
         cachedStdOut: Array<string>;
         cachedStdErr: Array<string>;
 
@@ -195,7 +196,6 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
 
             this.setupPosition(app);
 
-            //Need to fix this
             // eslint-disable-next-line
             // @ts-ignore
             await import('https://cdn.jsdelivr.net/npm/xterm@5.1.0/lib/xterm.js');
@@ -212,8 +212,8 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
 
             this.moduleResolved = true;
 
-            this.cachedStdOut.forEach(this.stdout_writeline, this);
-            this.cachedStdErr.forEach(this.stderr_writeline, this);
+            this.cachedStdOut.forEach((value: string): void => this.stdout_writeline(value));
+            this.cachedStdErr.forEach((value: string): void => this.stderr_writeline(value));
         }
 
         // implementation of the Stdio interface

@@ -38,6 +38,7 @@
         "synclink": "0.2.4",
         "ts-jest": "29.0.3",
         "tslib": "2.4.0",
-        "typescript": "5.0.4"
+        "typescript": "5.0.4",
+        "xterm": "^5.1.0"
     }
 }
