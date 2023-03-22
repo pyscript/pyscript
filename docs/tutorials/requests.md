@@ -72,7 +72,7 @@ Now that we have installed the dependencies, we need to patch the Requests libra
 
       <py-script>
         import pyodide_http
-        pyodide_http.patch()
+        pyodide_http.patch_all()
       </py-script>
     </body>
 </html
@@ -104,7 +104,7 @@ Finally, let's make a request to the JSON Placeholder API to confirm that everyt
         import pyodide_http
 
         # Patch the Requests library so it works with Pyscript
-        pyodide_http.patch()
+        pyodide_http.patch_all()
 
         # Make a request to the JSON Placeholder API
         response = requests.get("https://jsonplaceholder.typicode.com/todos")
