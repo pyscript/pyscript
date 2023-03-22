@@ -143,3 +143,34 @@ class TestPyTerminal(PyScriptTest):
         self.page.locator("button").click()
         expect(term).to_be_visible()
         assert term.get_attribute("docked") == ""
+
+    def test_xterm(self):
+        # This is not actually the final test - it is a workspace for
+        # experimenting with different Python terminal libraries
+        self.pyscript_run(
+            """
+            import rich
+            from rich import print as richprint
+            #from rich import pretty
+            from rich.console import Console as RichConsole
+
+            import os
+            import termcolor
+
+            og_print = print
+            rich._console = RichConsole(color_system="256")
+
+            con = RichConsole(color_system="256")
+
+            #pretty.install()
+
+            richprint("Hello, [bold magenta]Printing[/bold magenta]!", ":vampire:")
+            richprint(f"An object: {[1,2,3,4]}")
+            con.print("Via ", "con.print()", style="bold red")
+
+            os.environ['FORCE_COLOR'] = "True"
+            og_print(termcolor.colored("What about termcolor?", "blue"))
+            """
+        )
+
+        assert True
