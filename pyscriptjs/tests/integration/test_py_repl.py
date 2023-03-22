@@ -1,5 +1,4 @@
 import platform
-import pytest
 
 from .support import PyScriptTest, wait_for_render
 

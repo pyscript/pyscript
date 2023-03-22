@@ -2,9 +2,9 @@ import { Plugin } from '../plugin';
 import { TargetedStdio, StdioMultiplexer } from '../stdio';
 import { make_PyScript } from '../components/pyscript';
 import { InterpreterClient } from '../interpreter_client';
-import { createSingularWarning } from '../utils'
-import { pyDisplay } from '../pyexec'
-import { make_PyScript } from "../components/pyscript";
+import { createSingularWarning } from '../utils';
+import { pyDisplay } from '../pyexec';
+import { make_PyScript } from '../components/pyscript';
 import { make_PyRepl } from '../components/pyrepl';
 
 type PyScriptTag = InstanceType<ReturnType<typeof make_PyScript>>;

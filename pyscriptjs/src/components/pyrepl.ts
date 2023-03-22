@@ -6,8 +6,8 @@ import { keymap, Command } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 
-import { getAttribute, ensureUniqueId, htmlDecode} from '../utils';
-import { pyExec} from '../pyexec';
+import { getAttribute, ensureUniqueId, htmlDecode } from '../utils';
+import { pyExec } from '../pyexec';
 import { getLogger } from '../logger';
 import { InterpreterClient } from '../interpreter_client';
 import type { PyScriptApp } from '../main';
@@ -160,10 +160,16 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
             const outEl = this.outDiv;
 
             // execute the python code
-            app.plugins.beforePyReplExec({InterpreterClient: interpreter, src: pySrc, outEl: outEl, pyReplTag: this});
+            app.plugins.beforePyReplExec({ InterpreterClient: interpreter, src: pySrc, outEl: outEl, pyReplTag: this });
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const pyResult = (await pyExec(interpreter, pySrc, outEl)).result;
-            app.plugins.afterPyReplExec({InterpreterClient: interpreter, src: pySrc, outEl: outEl, pyReplTag: this, result: pyResult});
+            app.plugins.afterPyReplExec({
+                InterpreterClient: interpreter,
+                src: pySrc,
+                outEl: outEl,
+                pyReplTag: this,
+                result: pyResult,
+            });
 
             this.autogenerateMaybe();
         }
