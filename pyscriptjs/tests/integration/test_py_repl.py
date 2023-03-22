@@ -1,5 +1,4 @@
 import platform
-import pytest
 
 from .support import PyScriptTest, wait_for_render
 
@@ -321,6 +320,7 @@ class TestPyRepl(PyScriptTest):
 
         assert self.page.inner_text("#py-internal-1-1-repl-output") == "second children"
         assert self.page.inner_text("#py-internal-0-1-repl-output") == "first children"
+
     def test_repl_output_attribute(self):
         # Test that output attribute sends stdout to the element
         # with the given ID, but not display()
