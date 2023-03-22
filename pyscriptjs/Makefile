@@ -58,6 +58,9 @@ dev:
 build:
 	npm run build
 
+build-fast:
+	node esbuild.js
+
 examples:
 	mkdir -p ./examples
 	cp -r ../examples/* ./examples
