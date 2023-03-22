@@ -31,6 +31,8 @@ Enhancements
 ------------
 
 - Py-REPL tests now run on both osx and non osx OSs
+- migrated from *rollup* to *esbuild* to create artifacts
+- updated `@codemirror` dependency to its latest
 
 2023.01.1
 =========
