@@ -50,8 +50,12 @@ If you have questions about the project, using PyScript, or anything else, pleas
 
 ## Places to start
 
-If you would like to contribute to PyScript, but you aren't sure where to begin, here are some suggestions.
+If you would like to contribute to PyScript, but you aren't sure where to begin, here are some suggestions:
 
+- **Read over the existing documentation.** Are there things missing, or could they be clearer? Make some changes/additions to those documents.
+- **Review the open issues.** Are they clear? Can you reproduce them? You can add comments, clarifications, or additions to those issues. If you think you have an idea of how to address the issue, submit a fix!
+- **Look over the open pull requests.** Do you have comments or suggestions for the proposed changes? Add them.
+- **Check out the examples.** Is there a use case that would be good to have sample code for? Create an example for it.
 
 ## Setting up your local environment and developing
 
