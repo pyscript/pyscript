@@ -148,7 +148,7 @@ export class PyScriptApp {
         this.logStatus(`Downloading ${interpreter_cfg.name}...`);
 
         // download pyodide by using a <script> tag. Once it's ready, the
-        // "load" event will be fired and the exeuction logic will continue.
+        // "load" event will be fired and the execution logic will continue.
         // Note that the load event is fired asynchronously and thus any
         // exception which is throw inside the event handler is *NOT* caught
         // by the try/catch inside main(): that's why we need to .catch() it
