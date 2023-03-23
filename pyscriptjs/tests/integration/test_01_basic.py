@@ -43,27 +43,6 @@ class TestBasic(PyScriptTest):
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
 
-    # moved before `test_python_exception_in_event_handler`
-    # in order, fails if runs after
-    def test_dynamically_add_py_script_tag(self):
-        self.pyscript_run(
-            """
-            <script>
-                function addPyScriptTag() {
-                    let tag = document.createElement('py-script');
-                    tag.innerHTML = "print('hello world')";
-                    document.body.appendChild(tag);
-                }
-            </script>
-            <button onclick="addPyScriptTag()">Click me</button>
-            """
-        )
-        self.page.locator("button").click()
-        self.page.locator("py-script")  # wait until <py-script> appears
-
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-        assert self.console.log.lines[-1] == "hello world"
-
     def test_python_exception_in_event_handler(self):
         self.pyscript_run(
             """
@@ -182,6 +161,25 @@ class TestBasic(PyScriptTest):
 
         alert_banner = self.page.wait_for_selector(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
+
+    def test_dynamically_add_py_script_tag(self):
+        self.pyscript_run(
+            """
+            <script>
+                function addPyScriptTag() {
+                    let tag = document.createElement('py-script');
+                    tag.innerHTML = "print('hello world')";
+                    document.body.appendChild(tag);
+                }
+            </script>
+            <button onclick="addPyScriptTag()">Click me</button>
+            """
+        )
+        self.page.locator("button").click()
+
+        self.page.wait_for_selector("py-terminal")
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-1] == "hello world"
 
     def test_py_script_src_attribute(self):
         self.writefile("foo.py", "print('hello from foo')")
