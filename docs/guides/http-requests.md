@@ -35,7 +35,8 @@ for dealing with the response, such as `json()` or `status`. See the
 [FetchResponse documentation](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.FetchResponse)
 for more information.
 
-# Example
+## Example
+
 We will make async HTTP requests to [JSONPlaceholder](https://jsonplaceholder.typicode.com/)'s fake API using `pyfetch`.
 First we write a helper function in pure Python that makes a request and returns the response. This function
 makes it easier to make specific types of requests with the most common parameters.
@@ -70,6 +71,7 @@ async def request(url: str, method: str = "GET", body: Optional[str] = None,
     response = await pyfetch(url, **kwargs)
     return response
 ```
+
 This function is a wrapper for `pyfetch`, which is a wrapper for the `fetch` API. It is a coroutine function,
 so it must be awaited. It also has type hints, which are not required, but are useful for IDEs and other tools.
 The basic idea is that the `PyScript` will import and call this function, then await the response. Therefore,
@@ -160,7 +162,8 @@ concluding html code.
 The very first thing to notice is the `py-config` tag. This tag is used to import Python files into the `PyScript`.
 In this case, we are importing the `request.py` file, which contains the `request` function we wrote above.
 
-### `py-script` tag for making async HTTP requests.
+### `py-script` tag for making async HTTP requests
+
 Next, the `py-script` tag contains the actual Python code where we import `asyncio` and `json`,
 which are required or helpful for the `request` function.
 The `# GET`, `# POST`, `# PUT`, `# DELETE` blocks show examples of how to use the `request` function to make basic
@@ -169,6 +172,7 @@ HTTP requests. The `await` keyword is required not only for the `request` functi
 faster ones.
 
 ### HTTP Requests
+
 HTTP requests are a very common way to communicate with a server. They are used for everything from getting data from
 a database, to sending emails, to authorization, and more. Due to safety concerns, files loaded from the
 local file system are not accessible by `PyScript`. Therefore, the proper way to load data into `PyScript` is also
@@ -182,31 +186,38 @@ function or to `pyfetch`. See the
 HTTP requests are defined by standards-setting bodies in [RFC 1945](https://www.rfc-editor.org/info/rfc1945) and
 [RFC 9110](https://www.rfc-editor.org/info/rfc9110).
 
-# Conclusion
+## Conclusion
+
 This tutorial demonstrates how to make HTTP requests using `pyfetch` and the `FetchResponse` objects. Importing Python
 code/files into the `PyScript` using the `py-config` tag is also covered.
 
 Although a simple example, the principals here can be used to create complex web applications inside of `PyScript`,
 or load data into `PyScript` for use by an application, all served as a static HTML page, which is pretty amazing!
 
+## API Quick Reference
 
-# API Quick Reference
 ## pyodide.http.pyfetch
-### Usage
+
+### pyfetch Usage
+
 ```python
 await pyodide.http.pyfetch(url: str, **kwargs: Any) -> FetchResponse
 ```
+
 Use `pyfetch` to make HTTP requests in `PyScript`. This is a wrapper around the `fetch` API. Returns a `FetchResponse`.
 
 - [`pyfetch` Docs.](https://pyodide.org/en/stable/usage/api/python-api/http.html#pyodide.http.pyfetch)
 
 ## pyodide.http.FetchResponse
-### Usage
+
+### FetchResponse Usage
+
 ```python
 response: pyodide.http.FetchResponse = await <pyfetch call>
 status = response.status
 json = await response.json()
 ```
+
 Class for handling HTTP responses. This is a wrapper around the `JavaScript` fetch `Response`. Contains common (async)
 methods and properties for handling HTTP responses, such as `json()`, `url`, `status`, `headers`, etc.
 

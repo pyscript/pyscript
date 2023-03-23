@@ -18,4 +18,5 @@ passing-objects
 http-requests
 asyncio
 custom-plugins
+event-handlers
 ```
