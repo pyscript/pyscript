@@ -4,7 +4,9 @@ import { Plugin, validateConfigParameterFromArray } from '../plugin';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
-import { Terminal } from 'xterm';
+import { Terminal as TerminalType } from 'xterm';
+import { WebLinksAddon as WebLinksAddonType } from 'xterm-addon-web-links';
+import { FitAddon as FitAddonType } from 'xterm-addon-fit';
 
 type AppConfigStyle = AppConfig & {
     terminal?: boolean | 'auto';
@@ -169,7 +171,9 @@ function make_PyTerminal_pre(app: PyScriptApp) {
     return PyTerminalPre;
 }
 
-//TODO import types for xterm js; install as dev dependency and import
+declare const Terminal: typeof TerminalType;
+declare const WebLinksAddon: typeof WebLinksAddonType;
+declare const FitAddon: typeof FitAddonType;
 
 function make_PyTerminal_xterm(app: PyScriptApp) {
     /** The <py-terminal> custom element, which automatically register a stdio
@@ -178,7 +182,7 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
     class PyTerminalXterm extends PyTerminalBaseClass {
         outElem: HTMLDivElement;
         moduleResolved: boolean;
-        term: Terminal;
+        term: TerminalType;
         cachedStdOut: Array<string>;
         cachedStdErr: Array<string>;
 
@@ -187,6 +191,10 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
             this.moduleResolved = false;
             this.cachedStdOut = [];
             this.cachedStdErr = [];
+
+            //Required to make xterm appear properly
+            this.style.width = '100%';
+            this.style.height = '100%';
         }
 
         async connectedCallback() {
@@ -198,22 +206,46 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
 
             // eslint-disable-next-line
             // @ts-ignore
-            await import('https://cdn.jsdelivr.net/npm/xterm@5.1.0/lib/xterm.js');
-            const cssTag = document.createElement('link');
-            cssTag.type = 'text/css';
-            cssTag.rel = 'stylesheet';
-            cssTag.href = 'https://cdn.jsdelivr.net/npm/xterm@5.1.0/css/xterm.css';
-            document.head.appendChild(cssTag);
+            if (globalThis.Terminal == undefined) {
+                //xterm module proper
+                //eslint-disable-next-line
+                //@ts-ignore
+                await import('https://cdn.jsdelivr.net/npm/xterm@5.1.0/lib/xterm.js');
+                //Things formatted 'like URLs' are clickable links
+                //eslint-disable-next-line
+                //@ts-ignore
+                await import('https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.8.0/lib/xterm-addon-web-links.js');
+                //Auto-fit terminal to container size
+                //eslint-disable-next-line
+                //@ts-ignore
+                await import('https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.7.0/lib/xterm-addon-fit.js');
 
-            // eslint-disable-next-line
-            this.term = new globalThis.Terminal();
-            this.term.open(this);
-            console.log(this.term);
+                const cssTag = document.createElement('link');
+                cssTag.type = 'text/css';
+                cssTag.rel = 'stylesheet';
+                cssTag.href = 'https://cdn.jsdelivr.net/npm/xterm@5.1.0/css/xterm.css';
+                document.head.appendChild(cssTag);
 
-            this.moduleResolved = true;
+                //Create xterm, add addons
+                this.term = new Terminal();
 
-            this.cachedStdOut.forEach((value: string): void => this.stdout_writeline(value));
-            this.cachedStdErr.forEach((value: string): void => this.stderr_writeline(value));
+                this.term.loadAddon(new WebLinksAddon());
+
+                const fitter = new FitAddon();
+                this.term.loadAddon(fitter);
+
+                this.term.open(this);
+                fitter.fit();
+                this.onresize = () => fitter.fit();
+
+                this.moduleResolved = true;
+
+                //Write out any messages output while xterm was loading
+                this.cachedStdOut.forEach((value: string): void => this.stdout_writeline(value));
+                this.cachedStdErr.forEach((value: string): void => this.stderr_writeline(value));
+            } else {
+                this.moduleResolved = true;
+            }
         }
 
         // implementation of the Stdio interface
@@ -231,6 +263,7 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
                     this.autoShowOnNextLine = false;
                 }
             } else {
+                //if xtermjs not loaded, cache messages
                 this.cachedStdOut.push(msg);
             }
         }

@@ -39,6 +39,8 @@
         "ts-jest": "29.0.3",
         "tslib": "2.4.0",
         "typescript": "5.0.4",
-        "xterm": "^5.1.0"
+        "xterm": "^5.1.0",
+        "xterm-addon-fit": "^0.7.0",
+        "xterm-addon-web-links": "^0.8.0"
     }
 }
