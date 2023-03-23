@@ -6,8 +6,21 @@
 Features
 --------
 
+
+### &lt;py-terminal&gt;
 - Added a `docked` field and attribute for the `<py-terminal>` custom element, enabled by default when the terminal is in `auto` mode, and able to dock the terminal at the bottom of the page with auto scroll on new code execution.
 
+### &lt;py-script&gt;
+- Restored the `output` attribute of `py-script` tags to route `sys.stdout` to a DOM element with the given ID. ([#1063](https://github.com/pyscript/pyscript/pull/1063))
+- Added a `stderr` attribute of `py-script` tags to route `sys.stderr` to a DOM element with the given ID. ([#1063](https://github.com/pyscript/pyscript/pull/1063))
+
+### &lt;py-repl&gt;
+- The `output` attribute of `py-repl` tags now specifies the id of the DOM element that `sys.stdout`, `sys.stderr`, and the results of a REPL execution are written to. It no longer affects the location of calls to `display()`
+- Added a `stderr` attribute of `py-repl` tags to route `sys.stderr` to a DOM element with the given ID. ([#1106](https://github.com/pyscript/pyscript/pull/1106))
+- Resored the `output-mode` attribute of `py-repl` tags. If `output-mode` == 'append', the DOM element where output is printed is _not_ cleared before writing new results.
+
+### Plugins
+- Plugins may now implement the `beforePyReplExec()` and `afterPyReplExec()` hooks, which are called immediately before and after code in a `py-repl` tag is executed. ([#1106](https://github.com/pyscript/pyscript/pull/1106))
 
 Bug fixes
 ---------
@@ -24,11 +37,9 @@ Enhancements
 2023.01.1
 =========
 
+
 Features
 --------
-
-- Restored the `output` attribute of &lt;py-script&gt; tags to route `sys.stdout` to a DOM element with the given ID. ([#1063](https://github.com/pyscript/pyscript/pull/1063))
-- Added a `stderr` attribute of &lt;py-script&gt; tags to route `sys.stderr` to a DOM element with the given ID. ([#1063](https://github.com/pyscript/pyscript/pull/1063))
 
 Bug fixes
 ---------
@@ -39,6 +50,7 @@ Bug fixes
 
 Enhancements
 ------------
+
 - When adding a `py-` attribute to an element but didn't added an `id` attribute, PyScript will now generate a random ID for the element instead of throwing an error which caused the splash screen to not shutdown. ([#1122](https://github.com/pyscript/pyscript/pull/1122))
 - You can now disable the splashscreen by setting `enabled = false` in your `py-config` under the `[splashscreen]` configuration section. ([#1138](https://github.com/pyscript/pyscript/pull/1138))
 
