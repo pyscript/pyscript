@@ -2,6 +2,7 @@
 #   Check out the docs at: https://pre-commit.com/
 ci:
     skip: [eslint]
+    autoupdate_schedule: monthly
 
 default_stages: [commit]
 repos:
