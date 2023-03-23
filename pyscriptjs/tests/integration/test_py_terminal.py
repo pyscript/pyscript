@@ -149,10 +149,14 @@ class TestPyTerminal(PyScriptTest):
         # experimenting with different Python terminal libraries
         self.pyscript_run(
             """
+            print("\x1b[33mThis is in color\x1b[0m")
+            print("https://www.google.com")
+
             import rich
             from rich import print as richprint
             #from rich import pretty
             from rich.console import Console as RichConsole
+            from rich.__main__ import make_test_card
 
             import os
             import termcolor
@@ -160,7 +164,7 @@ class TestPyTerminal(PyScriptTest):
             og_print = print
             rich._console = RichConsole(color_system="256")
 
-            con = RichConsole(color_system="256")
+            con = RichConsole(color_system="256", width=80)
 
             #pretty.install()
 
@@ -170,6 +174,7 @@ class TestPyTerminal(PyScriptTest):
 
             os.environ['FORCE_COLOR'] = "True"
             og_print(termcolor.colored("What about termcolor?", "blue"))
+            con.print(make_test_card())
             """
         )
 

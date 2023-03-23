@@ -227,11 +227,11 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
                 document.head.appendChild(cssTag);
 
                 //Create xterm, add addons
-                this.term = new Terminal();
+                this.term = new Terminal({ cols: 80 });
 
-                this.term.loadAddon(new WebLinksAddon());
+                this.term.loadAddon(new WebLinksAddon.WebLinksAddon());
 
-                const fitter = new FitAddon();
+                const fitter = new FitAddon.FitAddon();
                 this.term.loadAddon(fitter);
 
                 this.term.open(this);
