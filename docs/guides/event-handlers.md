@@ -19,6 +19,7 @@ The value of the attribute contains python code which will be executed when the 
 <py-script>
     def say_hello_no_param():
         print("Hello!")
+
     def say_hello_with_param(name):
         print("Hello " + name + "!")
 </py-script>
