@@ -702,3 +702,75 @@ def _install_deprecated_globals_2022_12_1(ns):
         "Please use <code>pyscript</code> instead."
     )
     ns["PyScript"] = DeprecatedGlobal("PyScript", PyScript, message)
+
+
+import asyncio
+from pyodide.webloop import WebLoop
+
+
+import asyncio
+import contextvars
+from collections.abc import Callable
+from typing import Any
+from js import setTimeout
+from pyodide.ffi import create_once_callable
+
+
+class PyscriptWebLoop(WebLoop):
+    def __init__(self):
+        super().__init__()
+        self.ready = False
+        self.deferred_handles = []
+    
+    def call_later(  # type: ignore[override]
+        self,
+        delay: float,
+        callback: Callable[..., Any],
+        *args: Any,
+        context: contextvars.Context | None = None,
+    ) -> asyncio.Handle:
+        """Arrange for a callback to be called at a given time.
+        Return a Handle: an opaque object with a cancel() method that
+        can be used to cancel the call.
+        The delay can be an int or float, expressed in seconds.  It is
+        always relative to the current time.
+        Each callback will be called exactly once.  If two callbacks
+        are scheduled for exactly the same time, it undefined which
+        will be called first.
+        Any positional arguments after the callback will be passed to
+        the callback when it is called.
+        This uses `setTimeout(callback, delay)`
+        """
+        if delay < 0:
+            raise ValueError("Can't schedule in the past")
+        h = asyncio.Handle(callback, args, self, context=context)
+
+        def run_handle():
+            if h.cancelled():
+                return
+            try:
+                h._run()
+            except SystemExit as e:
+                if self._system_exit_handler:
+                    self._system_exit_handler(e.code)
+                else:
+                    raise
+            except KeyboardInterrupt:
+                if self._keyboard_interrupt_handler:
+                    self._keyboard_interrupt_handler()
+                else:
+                    raise
+        if self.ready:
+            setTimeout(create_once_callable(run_handle), delay * 1000)
+        else:
+            self.deferred_handles.append((run_handle, delay))
+        return h
+
+    def start_(self):
+        for [run_handle, delay] in self.deferred_handles:
+            setTimeout(create_once_callable(run_handle), delay * 1000)
+        self.ready = True
+        self.deferred_handles = []
+
+
+asyncio.set_event_loop(PyscriptWebLoop())
