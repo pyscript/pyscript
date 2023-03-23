@@ -511,6 +511,12 @@ class Plugin:
     def afterPyScriptExec(self, interpreter, src, pyScriptTag, result):
         pass
 
+    def beforePyReplExec(self, interpreter, src, outEl, pyReplTag):
+        pass
+
+    def afterPyReplExec(self, interpreter, src, outEl, pyReplTag, result):
+        pass
+
     def onUserError(self, error):
         pass
 
