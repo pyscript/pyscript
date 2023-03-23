@@ -148,7 +148,7 @@ export class PyScriptApp {
         this.logStatus(`Downloading ${interpreter_cfg.name}...`);
 
         // download pyodide by using a <script> tag. Once it's ready, the
-        // "load" event will be fired and the exeuction logic will continue.
+        // "load" event will be fired and the execution logic will continue.
         // Note that the load event is fired asynchronously and thus any
         // exception which is throw inside the event handler is *NOT* caught
         // by the try/catch inside main(): that's why we need to .catch() it
@@ -189,8 +189,9 @@ export class PyScriptApp {
 
         this.logStatus('Initializing web components...');
         // lifecycle (8)
-        createCustomElements(interpreter);
 
+        //Takes a runtime and a reference to the PyScriptApp (to access plugins)
+        createCustomElements(interpreter, this);
         await initHandlers(interpreter);
 
         // NOTE: interpreter message is used by integration tests to know that
