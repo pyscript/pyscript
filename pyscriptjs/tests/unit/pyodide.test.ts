@@ -60,7 +60,7 @@ describe('RemoteInterpreter', () => {
     });
 
     it('should check if interpreter is an instance of RemoteInterpreter', async () => {
-        expect(interpreter._remote).toBeInstanceOf(RemoteInterpreter);
+        expect(interpreter._unwrapped_remote).toBeInstanceOf(RemoteInterpreter);
     });
 
     it('should check if interpreter can run python code asynchronously', async () => {
@@ -74,9 +74,11 @@ describe('RemoteInterpreter', () => {
     });
 
     it('should check if interpreter is able to load a package', async () => {
-        await interpreter._remote.loadPackage('numpy');
+        stdio.reset();
+        await interpreter._unwrapped_remote.loadPackage('numpy');
         await interpreter.run('import numpy as np');
         await interpreter.run('x = np.ones((10,))');
-        expect(interpreter.globals.get('x').toJs()).toBeInstanceOf(Float64Array);
+        await interpreter.run('print(x)');
+        expect(stdio.captured_stdout).toBe('[1. 1. 1. 1. 1. 1. 1. 1. 1. 1.]\n');
     });
 });

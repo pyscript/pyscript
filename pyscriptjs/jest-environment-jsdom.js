@@ -1,6 +1,8 @@
 'use strict';
 
 const { TextEncoder, TextDecoder } = require('util');
+const { MessageChannel } = require('node:worker_threads');
+
 const { default: $JSDOMEnvironment, TestEnvironment } = require('jest-environment-jsdom');
 
 Object.defineProperty(exports, '__esModule', {
@@ -15,6 +17,9 @@ class JSDOMEnvironment extends $JSDOMEnvironment {
     }
     if (!global.TextDecoder) {
       global.TextDecoder = TextDecoder;
+    }
+    if (!global.MessageChannel) {
+      global.MessageChannel = MessageChannel;
     }
   }
 }
