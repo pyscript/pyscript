@@ -419,7 +419,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
         this.decrementNumPendingTags();
         await this.scriptTagsPromise;
         // todo: don't pollute namespace...
-        this.interpreter.run("import asyncio; asyncio.get_event_loop().start_()")
+        this.interpreter.run('import asyncio; asyncio.get_event_loop().start_()');
     }
 
     // ================= registraton API ====================

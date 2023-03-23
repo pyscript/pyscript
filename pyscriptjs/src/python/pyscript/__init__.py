@@ -705,15 +705,13 @@ def _install_deprecated_globals_2022_12_1(ns):
 
 
 import asyncio
-from pyodide.webloop import WebLoop
-
-
-import asyncio
 import contextvars
 from collections.abc import Callable
 from typing import Any
+
 from js import setTimeout
 from pyodide.ffi import create_once_callable
+from pyodide.webloop import WebLoop
 
 
 class PyscriptWebLoop(WebLoop):
@@ -721,7 +719,7 @@ class PyscriptWebLoop(WebLoop):
         super().__init__()
         self.ready = False
         self.deferred_handles = []
-    
+
     def call_later(  # type: ignore[override]
         self,
         delay: float,
@@ -760,6 +758,7 @@ class PyscriptWebLoop(WebLoop):
                     self._keyboard_interrupt_handler()
                 else:
                     raise
+
         if self.ready:
             setTimeout(create_once_callable(run_handle), delay * 1000)
         else:
