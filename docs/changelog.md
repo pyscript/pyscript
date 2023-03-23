@@ -3,6 +3,7 @@
 2023.XX.X
 =========
 
+
 Features
 --------
 
@@ -34,7 +35,7 @@ Enhancements
 - migrated from *rollup* to *esbuild* to create artifacts
 - updated `@codemirror` dependency to its latest
 
-2023.01.1
+2023.03.1
 =========
 
 
