@@ -24,9 +24,8 @@ class TestPyRepl(PyScriptTest):
             <py-repl></py-repl>
             """
         )
-        py_repl = self.page.query_selector("py-repl")
+        py_repl = self.page.query_selector("py-repl .py-repl-box")
         assert py_repl
-        assert "Python" in py_repl.inner_text()
 
     def test_execute_preloaded_source(self):
         """
@@ -69,7 +68,7 @@ class TestPyRepl(PyScriptTest):
             </py-repl>
             """
         )
-        self.page.wait_for_selector("#runButton")
+        self.page.wait_for_selector("py-repl .py-repl-run-button")
         self.page.keyboard.press("Shift+Enter")
         wait_for_render(self.page, "*", "hello world")
 
