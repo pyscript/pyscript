@@ -109,7 +109,7 @@ export class PyScriptApp {
         try {
             await this._realMain();
         } catch (error) {
-            this._handleUserErrorMaybe(error);
+            await this._handleUserErrorMaybe(error);
         }
     }
 

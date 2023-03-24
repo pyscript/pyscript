@@ -21,48 +21,49 @@ describe('Test withUserErrorHandler', () => {
         document.body.innerHTML = `<div>Hello World</div>`;
     });
 
-    it("userError doesn't stop execution", () => {
+    it("userError doesn't stop execution", async () => {
         function myRealMain() {
             throw new UserError(ErrorCode.GENERIC, 'Computer says no');
         }
 
         const app = new MyApp(myRealMain);
-        app.main();
+        await app.main();
         const banners = document.getElementsByClassName('alert-banner');
         expect(banners.length).toBe(1);
         expect(banners[0].innerHTML).toBe('(PY0000): Computer says no');
     });
 
-    it('userError escapes by default', () => {
+    it('userError escapes by default', async () => {
         function myRealMain() {
             throw new UserError(ErrorCode.GENERIC, 'hello <br>');
         }
 
         const app = new MyApp(myRealMain);
-        app.main();
+        await app.main();
         const banners = document.getElementsByClassName('alert-banner');
         expect(banners.length).toBe(1);
         expect(banners[0].innerHTML).toBe('(PY0000): hello &lt;br&gt;');
     });
 
-    it("userError messageType=html don't escape", () => {
+    it("userError messageType=html don't escape", async () => {
         function myRealMain() {
             throw new UserError(ErrorCode.GENERIC, 'hello <br>', 'html');
         }
 
         const app = new MyApp(myRealMain);
-        app.main();
+        await app.main();
         const banners = document.getElementsByClassName('alert-banner');
         expect(banners.length).toBe(1);
         expect(banners[0].innerHTML).toBe('(PY0000): hello <br>');
     });
 
-    it('any other exception should stop execution and raise', () => {
+    it('any other exception should stop execution and raise', async () => {
         function myRealMain() {
             throw new Error('Explosions!');
         }
 
         const app = new MyApp(myRealMain);
-        expect(() => app.main()).toThrow(new Error('Explosions!'));
+        expect.assertions(1);
+        await expect(async () => await app.main()).resolves.toThrow(new Error('Explosions!'));
     });
 });
