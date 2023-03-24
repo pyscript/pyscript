@@ -3,6 +3,7 @@
 2023.XX.X
 =========
 
+
 Features
 --------
 
@@ -33,6 +34,11 @@ Enhancements
 - Py-REPL tests now run on both osx and non osx OSs
 - migrated from *rollup* to *esbuild* to create artifacts
 - updated `@codemirror` dependency to its latest
+
+Docs
+----
+
+- Add docs for event handlers
 
 2023.01.1
 =========

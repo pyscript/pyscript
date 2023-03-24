@@ -299,7 +299,7 @@ class TestExamples(PyScriptTest):
         wait_for_render(self.page, "*", "<py-repl.*?>")
 
         self.page.locator("py-repl").type("display('Hello, World!')")
-        self.page.locator("#runButton").click()
+        self.page.locator("py-repl .py-repl-run-button").click()
 
         assert (
             self.page.locator("#my-repl-repl-output").text_content() == "Hello, World!"
@@ -322,7 +322,7 @@ class TestExamples(PyScriptTest):
         wait_for_render(self.page, "*", "<py-repl.*?>")
         # confirm we can import utils and run one command
         self.page.locator("py-repl").type("import utils\ndisplay(utils.now())")
-        self.page.wait_for_selector("#runButton").click()
+        self.page.wait_for_selector("py-repl .py-repl-run-button").click()
         # Make sure the output is in the page
         self.page.wait_for_selector("#my-repl-1")
         # utils.now returns current date time
