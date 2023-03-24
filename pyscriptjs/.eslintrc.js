@@ -16,7 +16,7 @@ module.exports = {
         browser: true,
     },
     plugins: ['@typescript-eslint'],
-    ignorePatterns: ['node_modules'],
+    ignorePatterns: ['node_modules', 'src/interpreter_worker/*'],
     rules: {
         // ts-ignore is already an explicit override, no need to have a second lint
         '@typescript-eslint/ban-ts-comment': 'off',

@@ -1,1 +1,1 @@
-console.log('hello from the interpreter worker');
+console.log('hello from the interpreter worker!');
