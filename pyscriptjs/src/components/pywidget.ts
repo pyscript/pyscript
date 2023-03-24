@@ -1,4 +1,4 @@
-import type { PyProxy, PyProxyCallable } from 'pyodide';
+import type { PyProxy } from 'pyodide';
 import { getLogger } from '../logger';
 import { robustFetch } from '../fetch';
 import { InterpreterClient } from '../interpreter_client';
