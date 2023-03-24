@@ -207,20 +207,19 @@ export class PyScriptApp {
 
         this.logStatus(`Downloading ${interpreter_cfg.name}...`);
 
-        // download pyodide by using a <script> tag. Once it's ready, the
-        // "load" event will be fired and the execution logic will continue.
-        // Note that the load event is fired asynchronously and thus any
-        // exception which is throw inside the event handler is *NOT* caught
-        // by the try/catch inside main(): that's why we need to .catch() it
-        // explicitly and call _handleUserErrorMaybe also there.
-        const script = document.createElement('script'); // create a script DOM node
-        script.src = await this.interpreter._remote.src;
-        script.addEventListener('load', () => {
-            this.afterInterpreterLoad(this.interpreter).catch(async error => {
-                await this._handleUserErrorMaybe(error);
-            });
-        });
-        document.head.appendChild(script);
+        /* Dynamically download and import pyodide: the import() puts a
+           loadPyodide() function into globalThis, which is later called by
+           RemoteInterpreter.
+
+           This is suboptimal: ideally, we would like to import() a module
+           which exports loadPyodide(), but this plays badly with workers
+           because at the moment of writing (2023-03-24) Firefox does not
+           support ES modules in workers:
+           https://caniuse.com/mdn-api_worker_worker_ecmascript_modules
+        */
+        const interpreterURL = await this.interpreter._remote.src;
+        await import(interpreterURL);
+        await this.afterInterpreterLoad(this.interpreter);
     }
 
     // lifecycle (5)
