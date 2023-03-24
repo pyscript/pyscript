@@ -4,10 +4,6 @@ import { RemoteInterpreter } from '../../src/remote_interpreter';
 import { CaptureStdio } from '../../src/stdio';
 import * as Synclink from 'synclink';
 
-import { TextEncoder, TextDecoder } from 'util';
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
-
 describe('RemoteInterpreter', () => {
     let interpreter: InterpreterClient;
     let stdio: CaptureStdio = new CaptureStdio();
