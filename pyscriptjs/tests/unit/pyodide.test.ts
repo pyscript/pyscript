@@ -3,7 +3,7 @@ import { InterpreterClient } from '../../src/interpreter_client';
 import { RemoteInterpreter } from '../../src/remote_interpreter';
 import { CaptureStdio } from '../../src/stdio';
 import * as Synclink from 'synclink';
-import { afterAll } from '@jest/globals';
+import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
 
 describe('RemoteInterpreter', () => {
     let interpreter: InterpreterClient;
