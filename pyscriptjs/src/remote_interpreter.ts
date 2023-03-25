@@ -272,14 +272,6 @@ export class RemoteInterpreter extends Object {
         return Synclink.proxy(this.interface.pyimport(mod_name));
     }
 
-    mkdirTree(path: string) {
-        this.FS.mkdirTree(path);
-    }
-
-    writeFile(path: string, content: string) {
-        this.FS.writeFile(path, content, { encoding: 'utf8' });
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setHandler(func_name: string, handler: any): void {
         const pyscript_module = this.interface.pyimport('pyscript');

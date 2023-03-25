@@ -17,12 +17,17 @@ import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 import type { PyProxy } from 'pyodide';
-import * as Synclink from 'synclink';
-// eslint-disable-next-line
-// @ts-ignore
-import pyscript from './python/pyscript/__init__.py';
-import { robustFetch } from './fetch';
 import { RemoteInterpreter } from './remote_interpreter';
+import { robustFetch } from './fetch';
+import * as Synclink from 'synclink';
+
+// pyscript_package is injected from src/python by bundlePyscriptPythonPlugin in
+// esbuild.js
+
+// @ts-ignore
+import python_package from 'pyscript_python_package.esbuild_injected.json';
+
+declare const python_package: { dirs: string[]; files: [string, string] };
 
 const logger = getLogger('pyscript/main');
 
@@ -268,9 +273,13 @@ export class PyScriptApp {
         // compatible with the old behavior.
         logger.info('importing pyscript');
 
-        // Save and load pyscript.py from FS
-        await interpreter.mkdirTree('/home/pyodide/pyscript');
-        await interpreter.writeFile('pyscript/__init__.py', pyscript as string);
+        // Write pyscript package into file system
+        for (const dir of python_package.dirs) {
+            await interpreter._remote.FS.mkdir('/home/pyodide/' + dir);
+        }
+        for (const [path, value] of python_package.files) {
+            await interpreter._remote.FS.writeFile('/home/pyodide/' + path, value);
+        }
         //Refresh the module cache so Python consistently finds pyscript module
         await interpreter._remote.invalidate_module_path_cache();
 

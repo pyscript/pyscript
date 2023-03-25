@@ -75,11 +75,11 @@ export class InterpreterClient extends Object {
         return this._remote.pyimport(mod_name);
     }
 
-    async mkdirTree(path: string) {
-        await this._remote.mkdirTree(path);
+    async mkdir(path: string) {
+        await this._remote.FS.mkdir(path);
     }
 
     async writeFile(path: string, content: string) {
-        await this._remote.writeFile(path, content);
+        await this._remote.FS.writeFile(path, content, { encoding: 'utf8' });
     }
 }
