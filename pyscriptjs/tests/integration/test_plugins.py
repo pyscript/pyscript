@@ -87,7 +87,7 @@ console.warn("This is in pyrepl hooks file")
 
 class PyReplTestLogger(Plugin):
 
-    def beforePyReplExec(self, interpreter, outEl, src, pyReplTag):
+    def beforePyReplExec(self, interpreter, src, outEl, pyReplTag):
         console.log(f'beforePyReplExec called')
         console.log(f'before_src:{src}')
         console.log(f'before_id:{pyReplTag.id}')
@@ -265,7 +265,6 @@ class TestPlugin(PyScriptTest):
         assert "after_id:pyid" in log_lines
         assert "result:2" in log_lines
 
-    @pytest.mark.xfail(reason="fails after introducing synclink, fix me soon!")
     @prepare_test(
         "pyrepl_test_logger",
         PYREPL_HOOKS_PLUGIN_CODE,
@@ -274,6 +273,8 @@ class TestPlugin(PyScriptTest):
     def test_pyrepl_exec_hooks(self):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
+        # allow afterPyReplExec to also finish before the test finishes
+        self.page.wait_for_timeout(1000)
 
         log_lines: list[str] = self.console.log.lines
 

@@ -90,8 +90,8 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
-        out_div = py_repl.locator("div.py-repl-output")
-        assert out_div.all_inner_texts()[0] == "hello world"
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "hello world"
 
     def test_show_last_expression(self):
         """
@@ -128,8 +128,8 @@ class TestPyRepl(PyScriptTest):
         out_div = py_repl.locator("div.py-repl-output")
         assert out_div.all_inner_texts()[0] == ""
 
-        out_div = self.page.locator("#repl-target")
-        assert out_div.all_inner_texts()[0] == "42"
+        out_div = self.page.wait_for_selector("#repl-target")
+        assert out_div.inner_text() == "42"
 
     def test_run_clears_previous_output(self):
         """
@@ -150,6 +150,8 @@ class TestPyRepl(PyScriptTest):
         # clear the editor, write new code, execute
         self._replace(py_repl, "display('another output')")
         self.page.keyboard.press("Shift+Enter")
+        # test runner can be too fast, the line below should wait for output to change
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert out_div.inner_text() == "another output"
 
     def test_python_exception(self):
@@ -210,15 +212,15 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
-        assert out_div.all_inner_texts()[0] == "hello world"
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "hello world"
         #
         # clear the editor, write new code, execute
         self._replace(py_repl, "0/0")
         self.page.keyboard.press("Shift+Enter")
-        assert "hello world" not in out_div.all_inner_texts()[0]
-        assert "ZeroDivisionError" in out_div.all_inner_texts()[0]
+        assert "hello world" not in out_div.inner_text()
+        assert "ZeroDivisionError" in out_div.inner_text()
 
     def test_hide_previous_error_after_successful_run(self):
         """
@@ -492,8 +494,8 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
 
-        assert self.page.locator("#stdout-div").text_content() == "one.two."
-        assert self.page.locator("#stderr-div").text_content() == "one."
+        assert self.page.wait_for_selector("#stdout-div").inner_text() == "one.\ntwo.\n"
+        assert self.page.wait_for_selector("#stderr-div").inner_text() == "one.\n"
         self.assert_no_banners()
 
     def test_repl_output_attribute_change(self):

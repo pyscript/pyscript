@@ -300,7 +300,7 @@ class TestExamples(PyScriptTest):
 
         self.page.locator("py-repl").type("display('Hello, World!')")
         self.page.locator("py-repl .py-repl-run-button").click()
-
+        self.page.wait_for_selector("#my-repl-repl-output")
         assert (
             self.page.locator("#my-repl-repl-output").text_content() == "Hello, World!"
         )
