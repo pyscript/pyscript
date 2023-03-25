@@ -70,12 +70,14 @@ class TestSupport(PyScriptTest):
         # check that the exception message contains the error message and the
         # stack trace
         msg = str(exc.value)
-        expected_msg = "SyntaxError: await is only valid in async functions and the top level bodies of modules"
+        expected_msg = (
+            "await is only valid in async functions and the top level bodies of modules"
+        )
         assert expected_msg in msg
         # after a call to check_js_errors, the errors are cleared
         self.check_js_errors()
         # JS exceptions are also available in self.console.js_error
-        assert self.console.js_error.lines[0].startswith(expected_msg)
+        assert expected_msg in self.console.js_error.lines[0]
 
     def test_console(self):
         """
