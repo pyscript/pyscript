@@ -415,11 +415,11 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
 
-        assert self.page.locator("#first").text_content() == "first."
+        assert self.page.wait_for_selector("#first").inner_text() == "first."
 
         second_repl = self.page.locator("py-repl#second-repl")
         second_repl.locator("button").click()
-        assert self.page.locator("#second").text_content() == "second."
+        assert self.page.wait_for_selector("#second").inner_text() == "second."
 
     def test_repl_output_id_errors(self):
         self.pyscript_run(
