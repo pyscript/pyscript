@@ -127,6 +127,9 @@ class PyScriptTest:
         page.on("pageerror", self._on_pageerror)
 
     def run_js(self, code):
+        """
+        allows top level await to be present in the `code` parameter
+        """
         self.page.evaluate(
             """(async () => {
             try {%s}

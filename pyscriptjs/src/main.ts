@@ -26,14 +26,18 @@ import { RemoteInterpreter } from './remote_interpreter';
 
 const logger = getLogger('pyscript/main');
 
-const old_val = Synclink.transferHandlers.get('throw').serialize;
-function new_val({ value }) {
-    const result = old_val({ value });
+/**
+ * Monkey patching the error transfer handler to preserve the `$$isUserError`
+ * marker so as to detect `UserError` subclasses in the error handling code.
+ */
+const old_error_transfer_handler = Synclink.transferHandlers.get('throw').serialize;
+function new_error_transfer_handler({ value }) {
+    const result = old_error_transfer_handler({ value });
     // @ts-ignore
     result[0].value.$$isUserError = value.$$isUserError;
     return result;
 }
-Synclink.transferHandlers.get('throw').serialize = new_val;
+Synclink.transferHandlers.get('throw').serialize = new_error_transfer_handler;
 
 /* High-level overview of the lifecycle of a PyScript App:
 
@@ -416,7 +420,10 @@ modules must contain a "plugin" attribute. For more information check the plugin
         this.PyScript = make_PyScript(interpreter, this);
         customElements.define('py-script', this.PyScript);
         this.incrementNumPendingTags();
-        this.decrementNumPendingTags();
+        if (this.numPendingTags > 0)
+        {
+            this.decrementNumPendingTags();
+        }
         await this.scriptTagsPromise;
     }
 

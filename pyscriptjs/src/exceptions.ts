@@ -31,6 +31,10 @@ export enum ErrorCode {
 export class UserError extends Error {
     messageType: MessageType;
     errorCode: ErrorCode;
+    /**
+     * `isinstance` doesn't work correctly across multiple realms.
+     * Hence, `$$isUserError` flag / marker is used to identify a `UserError`.
+     */
     $$isUserError: boolean;
 
     constructor(errorCode: ErrorCode, message: string, t: MessageType = 'text') {
