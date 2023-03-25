@@ -53,9 +53,9 @@ describe('RemoteInterpreter', () => {
     });
 
     afterAll(async () => {
-        port1.close()
-        port2.close()
-    })
+        port1.close();
+        port2.close();
+    });
 
     it('should check if interpreter is an instance of abstract Interpreter', async () => {
         expect(interpreter).toBeInstanceOf(InterpreterClient);
