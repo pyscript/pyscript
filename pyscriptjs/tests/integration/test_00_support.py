@@ -33,7 +33,8 @@ class TestSupport(PyScriptTest):
         assert "<h1>Hello world</h1>" in content
 
     def test_await_with_run_js(self):
-        self.run_js("""
+        self.run_js(
+            """
           function resolveAfter2Seconds(x) {
             return new Promise((resolve) => {
               setTimeout(() => {
@@ -44,7 +45,8 @@ class TestSupport(PyScriptTest):
 
           const x = await resolveAfter2Seconds(10);
           console.log(x);
-        """)
+        """
+        )
 
         assert self.console.log.lines[-1] == "10"
 

@@ -47,8 +47,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                 /* eslint-enable @typescript-eslint/no-unsafe-assignment */
             } finally {
                 releaseLock();
-                if (app.numPendingTags > 0)
-                {
+                if (app.numPendingTags > 0) {
                     app.decrementNumPendingTags();
                 }
             }

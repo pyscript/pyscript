@@ -420,8 +420,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
         this.PyScript = make_PyScript(interpreter, this);
         customElements.define('py-script', this.PyScript);
         this.incrementNumPendingTags();
-        if (this.numPendingTags > 0)
-        {
+        if (this.numPendingTags > 0) {
             this.decrementNumPendingTags();
         }
         await this.scriptTagsPromise;
