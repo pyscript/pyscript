@@ -14,6 +14,7 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
         klass: string = klass;
         code: string = code;
         proxy: PyProxy & { connect(): void };
+        // eslint-disable-next-line no-use-before-define
         proxyClass: any;
 
         constructor() {
@@ -28,7 +29,9 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
 
         async connectedCallback() {
             await interpreter.runButDontRaise(this.code);
+            // eslint-disable-next-line no-use-before-define
             this.proxyClass = await interpreter.globals.get(this.klass);
+            // eslint-disable-next-line no-use-before-define
             this.proxy = (await this.proxyClass(this)) as PyProxy & { connect(): void };
             this.proxy.connect();
             this.registerWidget();
