@@ -4,9 +4,9 @@ import { Plugin, validateConfigParameterFromArray } from '../plugin';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
-import { Terminal as TerminalType } from 'xterm';
-import { WebLinksAddon as WebLinksAddonType } from 'xterm-addon-web-links';
-import { FitAddon as FitAddonType } from 'xterm-addon-fit';
+import type { Terminal as TerminalType } from 'xterm';
+import type { WebLinksAddon as WebLinksAddonType } from 'xterm-addon-web-links';
+import type { FitAddon as FitAddonType } from 'xterm-addon-fit';
 
 type AppConfigStyle = AppConfig & {
     terminal?: boolean | 'auto';
@@ -172,8 +172,8 @@ function make_PyTerminal_pre(app: PyScriptApp) {
 }
 
 declare const Terminal: typeof TerminalType;
-declare const WebLinksAddon: typeof WebLinksAddonType;
-declare const FitAddon: typeof FitAddonType;
+declare const WebLinksAddon: { WebLinksAddon: typeof WebLinksAddonType };
+declare const FitAddon: { FitAddon: typeof FitAddonType };
 
 function make_PyTerminal_xterm(app: PyScriptApp) {
     /** The <py-terminal> custom element, which automatically register a stdio
