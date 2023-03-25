@@ -3,15 +3,16 @@ import { InterpreterClient } from '../../src/interpreter_client';
 import { RemoteInterpreter } from '../../src/remote_interpreter';
 import { CaptureStdio } from '../../src/stdio';
 import * as Synclink from 'synclink';
+import { afterAll } from '@jest/globals';
 
 describe('RemoteInterpreter', () => {
     let interpreter: InterpreterClient;
     let stdio: CaptureStdio = new CaptureStdio();
+    const { port1, port2 } = new MessageChannel();
     beforeAll(async () => {
         const SRC = '../pyscriptjs/node_modules/pyodide/pyodide.js';
         const config: AppConfig = { interpreters: [{ src: SRC }] };
         const remote_interpreter = new RemoteInterpreter(SRC);
-        const { port1, port2 } = new MessageChannel();
         port1.start();
         port2.start();
         Synclink.expose(remote_interpreter, port2);
@@ -50,6 +51,11 @@ describe('RemoteInterpreter', () => {
             pyodideSpec.loadPyodide(Object.assign({ indexURL: '../pyscriptjs/node_modules/pyodide/' }, options));
         await interpreter.initializeRemote();
     });
+
+    afterAll(async () => {
+        port1.close()
+        port2.close()
+    })
 
     it('should check if interpreter is an instance of abstract Interpreter', async () => {
         expect(interpreter).toBeInstanceOf(InterpreterClient);
