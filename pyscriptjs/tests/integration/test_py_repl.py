@@ -107,8 +107,8 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
-        out_div = py_repl.locator("div.py-repl-output")
-        assert out_div.all_inner_texts()[0] == "42"
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "42"
 
     def test_show_last_expression_with_output(self):
         """
@@ -344,11 +344,11 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
 
-        target = self.page.locator("#repl-target")
-        assert "print from py-repl" in target.text_content()
+        target = self.page.wait_for_selector("#repl-target")
+        assert "print from py-repl" in target.inner_text()
 
-        out_div = py_repl.locator("div.py-repl-output")
-        assert out_div.all_inner_texts()[0] == "display from py-repl"
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "display from py-repl"
 
         self.assert_no_banners()
 
@@ -523,14 +523,14 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
 
-        assert self.page.locator("#first").text_content() == "one."
-        assert self.page.locator("#second").text_content() == "two."
+        assert self.page.wait_for_selector("#first").inner_text() == "one.\n"
+        assert self.page.wait_for_selector("#second").inner_text() == "two.\n"
 
         expected_alert_banner_msg = (
             'output = "third" does not match the id of any element on the page.'
         )
 
-        alert_banner = self.page.locator(".alert-banner")
+        alert_banner = self.page.wait_for_selector(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
 
     def test_repl_output_element_id_change(self):
