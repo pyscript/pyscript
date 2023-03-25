@@ -94,13 +94,13 @@ export class StdioDirector extends Plugin {
         }
     }
 
-    afterPyReplExec(options: {
+    async afterPyReplExec(options: {
         interpreter: InterpreterClient;
         src: string;
         outEl: HTMLElement;
         pyReplTag: InstanceType<ReturnType<typeof make_PyRepl>>;
         result: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-    }): void {
+    }): Promise<void> {
         // display the value of the last-evaluated expression in the REPL
         if (options.result !== undefined) {
             const outputId: string | undefined = options.pyReplTag.getAttribute('output');
@@ -108,14 +108,14 @@ export class StdioDirector extends Plugin {
                 // 'output' attribute also used as location to send
                 // result of REPL
                 if (document.getElementById(outputId)) {
-                    pyDisplay(options.interpreter, options.result, { target: outputId });
+                    await pyDisplay(options.interpreter, options.result, { target: outputId });
                 } else {
                     //no matching element on page
                     createSingularWarning(`output = "${outputId}" does not match the id of any element on the page.`);
                 }
             } else {
                 // 'otuput atribuite not provided
-                pyDisplay(options.interpreter, options.result, { target: options.outEl.id });
+                await pyDisplay(options.interpreter, options.result, { target: options.outEl.id });
             }
         }
 
