@@ -242,6 +242,8 @@ class TestPyRepl(PyScriptTest):
         #
         self._replace(py_repl, "display('hello')")
         self.page.keyboard.press("Shift+Enter")
+        # test runner can be too fast, the line below should wait for output to change
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert out_div.inner_text() == "hello"
 
     def test_output_attribute_does_not_exist(self):
@@ -414,11 +416,11 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
 
-        assert self.page.wait_for_selector("#first").inner_text() == "first."
+        assert self.page.wait_for_selector("#first").inner_text() == "first.\n"
 
         second_repl = self.page.locator("py-repl#second-repl")
         second_repl.locator("button").click()
-        assert self.page.wait_for_selector("#second").inner_text() == "second."
+        assert self.page.wait_for_selector("#second").inner_text() == "second.\n"
 
     def test_repl_output_id_errors(self):
         self.pyscript_run(
