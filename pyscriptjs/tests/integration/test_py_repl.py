@@ -236,13 +236,13 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
-        assert "this is an error" in out_div.all_inner_texts()[0]
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert "this is an error" in out_div.inner_text()
         #
         self._replace(py_repl, "display('hello')")
         self.page.keyboard.press("Shift+Enter")
-        assert out_div.all_inner_texts()[0] == "hello"
+        assert out_div.inner_text() == "hello"
 
     def test_output_attribute_does_not_exist(self):
         """
@@ -259,10 +259,9 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
 
-        banner = self.page.query_selector_all(".py-warning")
-        assert len(banner) == 1
+        banner = self.page.wait_for_selector(".py-warning")
 
-        banner_content = banner[0].inner_text()
+        banner_content = banner.inner_text()
         expected = (
             'output = "I-dont-exist" does not match the id of any element on the page.'
         )
@@ -438,10 +437,9 @@ class TestPyRepl(PyScriptTest):
         for repl in py_repls:
             repl.query_selector_all("button")[0].click()
 
-        banner = self.page.query_selector_all(".py-warning")
-        assert len(banner) == 1
+        banner = self.page.wait_for_selector(".py-warning")
 
-        banner_content = banner[0].inner_text()
+        banner_content = banner.inner_text()
         expected = (
             'output = "not-on-page" does not match the id of any element on the page.'
         )
@@ -466,10 +464,9 @@ class TestPyRepl(PyScriptTest):
         for repl in py_repls:
             repl.query_selector_all("button")[0].click()
 
-        banner = self.page.query_selector_all(".py-warning")
-        assert len(banner) == 1
+        banner = self.page.wait_for_selector(".py-warning")
 
-        banner_content = banner[0].inner_text()
+        banner_content = banner.inner_text()
         expected = (
             'stderr = "not-on-page" does not match the id of any element on the page.'
         )
@@ -567,10 +564,10 @@ class TestPyRepl(PyScriptTest):
         py_repl.locator("button").click()
 
         # Note the ID of the div has changed by the time of this assert
-        assert self.page.locator("#third").text_content() == "one.three."
+        assert self.page.wait_for_selector("#third").inner_text() == "one.\nthree.\n"
 
         expected_alert_banner_msg = (
             'output = "first" does not match the id of any element on the page.'
         )
-        alert_banner = self.page.locator(".alert-banner")
+        alert_banner = self.page.wait_for_selector(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
