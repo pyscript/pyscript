@@ -40,7 +40,7 @@ class TestPyMarkdown:
         console_mock.log.assert_called_with("configuration received: just a config")
 
         py_markdown.plugin.afterStartup(interpreter)
-        console_mock.log.assert_called_with("interpreter received: just an interpreter")
+        console_mock.log.assert_called_with("interpreter received:", "just an interpreter")
 
 
 class TestPyTutor:
