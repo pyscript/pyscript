@@ -1,5 +1,3 @@
-import pytest
-
 from .support import PyScriptTest
 
 # Source code of a simple plugin that creates a Custom Element for testing purposes
