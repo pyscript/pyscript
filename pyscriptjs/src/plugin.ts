@@ -189,13 +189,13 @@ export class PluginManager {
     }
 
     beforePyReplExec(options: { interpreter: InterpreterClient; src: string; outEl: HTMLElement; pyReplTag: any }) {
-        for (const p of this._plugins) p.beforePyReplExec(options);
+        for (const p of this._plugins) p.beforePyReplExec?.(options);
 
         for (const p of this._pythonPlugins) p.beforePyReplExec?.callKwargs(options);
     }
 
     afterPyReplExec(options: { interpreter: InterpreterClient; src: string; outEl; pyReplTag; result }) {
-        for (const p of this._plugins) p.afterPyReplExec(options);
+        for (const p of this._plugins) p.afterPyReplExec?.(options);
 
         for (const p of this._pythonPlugins) p.afterPyReplExec?.callKwargs(options);
     }
