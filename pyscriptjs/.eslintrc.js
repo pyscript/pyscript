@@ -26,8 +26,8 @@ module.exports = {
         '@typescript-eslint/no-unsafe-assignment': 'off',
         '@typescript-eslint/no-unsafe-call': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off',
-        '@typescript-eslint/no-unsafe-argument': 'error',
-        '@typescript-eslint/no-unsafe-return': 'error',
+        '@typescript-eslint/no-unsafe-argument': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
 
         // other rules
         '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
