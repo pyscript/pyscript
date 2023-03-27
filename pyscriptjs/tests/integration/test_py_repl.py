@@ -219,6 +219,8 @@ class TestPyRepl(PyScriptTest):
         # clear the editor, write new code, execute
         self._replace(py_repl, "0/0")
         self.page.keyboard.press("Shift+Enter")
+        # test runner can be too fast, the line below should wait for output to change
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert "hello world" not in out_div.inner_text()
         assert "ZeroDivisionError" in out_div.inner_text()
 

@@ -74,7 +74,7 @@ export class InterpreterClient extends Object {
     }
 
     async pyimport(mod_name: string): Promise<PyProxy> {
-        return await this._remote.pyimport(mod_name);
+        return this._remote.pyimport(mod_name);
     }
 
     async mkdirTree(path: string) {
