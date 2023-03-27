@@ -1,18 +1,28 @@
 import type { AppConfig } from '../../src/pyconfig';
 import { InterpreterClient } from '../../src/interpreter_client';
-import { RemoteInterpreter } from '../../src/remote_interpreter';
 import { CaptureStdio } from '../../src/stdio';
 import * as Synclink from 'synclink';
-import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
+import { describe, beforeAll, afterAll, it, expect, jest } from '@jest/globals';
+import { readFileSync } from 'fs';
+import { dirname, join } from 'node:path';
+import type { RemoteInterpreter } from '../../src/remote_interpreter';
+
+const __dirname = dirname(new URL(import.meta.url).pathname);
 
 describe('RemoteInterpreter', () => {
     let interpreter: InterpreterClient;
     let stdio: CaptureStdio = new CaptureStdio();
+    let RemoteInterpreter;
     const { port1, port2 } = new MessageChannel();
     beforeAll(async () => {
         const SRC = '../pyscriptjs/node_modules/pyodide/pyodide.js';
         const config: AppConfig = { interpreters: [{ src: SRC }] };
+        jest.unstable_mockModule('./python/pyscript/__init__.py', () => ({
+            default: readFileSync(join(__dirname, '../../src/python/pyscript/__init__.py')),
+        }));
+        ({ RemoteInterpreter } = await import('../../src/remote_interpreter'));
         const remote_interpreter = new RemoteInterpreter(SRC);
+
         port1.start();
         port2.start();
         Synclink.expose(remote_interpreter, port2);

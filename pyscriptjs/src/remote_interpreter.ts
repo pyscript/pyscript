@@ -6,6 +6,9 @@ import { robustFetch } from './fetch';
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy, PyProxyDict } from 'pyodide';
 import type { ProxyMarked } from 'synclink';
 import * as Synclink from 'synclink';
+// eslint-disable-next-line
+// @ts-ignore
+import pyscript from './python/pyscript/__init__.py';
 
 declare const loadPyodide: typeof loadPyodideDeclaration;
 const logger = getLogger('pyscript/pyodide');
@@ -30,6 +33,13 @@ type PATHInterface = {
     dirname(path: string): string;
 } & ProxyMarked;
 
+type PyScriptPyInterface = ProxyMarked & {
+    _set_version_info(ver: string): void;
+    uses_top_level_await(code: string): boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _run_pyscript(code: string, id?: string): { result: any };
+};
+
 /*
 RemoteInterpreter class is responsible to process requests from the
 `InterpreterClient` class -- these can be requests for installation of
@@ -51,6 +61,7 @@ export class RemoteInterpreter extends Object {
     FS: FSInterface;
     PATH: PATHInterface;
     PATH_FS: PATHFSInterface;
+    pyscript_py: PyScriptPyInterface;
 
     globals: PyProxyDict & ProxyMarked;
     // TODO: Remove this once `runtimes` is removed!
@@ -106,39 +117,22 @@ export class RemoteInterpreter extends Object {
         // TODO: Remove this once `runtimes` is removed!
         this.interpreter = this.interface;
 
+        this.FS.mkdirTree('/home/pyodide/pyscript');
+        this.FS.writeFile('pyscript/__init__.py', pyscript as string);
+        //Refresh the module cache so Python consistently finds pyscript module
+        this.invalidate_module_path_cache();
+
         this.globals = Synclink.proxy(this.interface.globals as PyProxyDict);
+        logger.info('importing pyscript');
+        this.pyscript_py = Synclink.proxy(this.interface.pyimport('pyscript')) as PyProxy & typeof this.pyscript_py;
 
         if (config.packages) {
             logger.info('Found packages in configuration to install. Loading micropip...');
             await this.loadPackage('micropip');
         }
         logger.info('pyodide loaded and initialized');
-        await this.run('print("Python initialization complete")');
+        this.pyscript_py._run_pyscript('print("Python initialization complete")');
     }
-
-    /* eslint-disable */
-    async run(code: string): Promise<{ result: any }> {
-        /**
-         * eslint wants `await` keyword to be used i.e.
-         * { result: await this.interface.runPython(code) }
-         * However, `await` is not a no-op (no-operation) i.e.
-         * `await 42` is NOT the same as `42` i.e. if the awaited
-         * thing is not a promise, it is wrapped inside a promise and
-         * that promise is awaited. Thus, it changes the execution order.
-         * See https://stackoverflow.com/questions/55262996/does-awaiting-a-non-promise-have-any-detectable-effect
-         * Thus, `eslint` is disabled for this block / snippet.
-         */
-
-        /**
-         * The output of `runPython` is wrapped inside an object
-         * since an object is not thennable and avoids return of
-         * a coroutine directly. This is so we do not `await` the results
-         * of the underlying python execution, even if it's an
-         * awaitable object (Future, Task, etc.)
-         */
-        return { result: this.interface.runPython(code) };
-    }
-    /* eslint-enable */
 
     /**
      * delegates the registration of JS modules to

@@ -50,8 +50,8 @@ export class InterpreterClient extends Object {
      * Python exceptions are turned into JS exceptions.
      * */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async run(code: string): Promise<{ result: any }> {
-        return await this._remote.run(code);
+    async run(code: string, id?: string): Promise<{ result: any }> {
+        return this._remote.pyscript_py._run_pyscript(code, id);
     }
 
     /**

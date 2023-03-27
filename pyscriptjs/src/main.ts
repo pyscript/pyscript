@@ -18,9 +18,6 @@ import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 import type { PyProxy } from 'pyodide';
 import * as Synclink from 'synclink';
-// eslint-disable-next-line
-// @ts-ignore
-import pyscript from './python/pyscript/__init__.py';
 import { robustFetch } from './fetch';
 import { RemoteInterpreter } from './remote_interpreter';
 
@@ -266,13 +263,6 @@ export class PyScriptApp {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
-        logger.info('importing pyscript');
-
-        // Save and load pyscript.py from FS
-        await interpreter.mkdirTree('/home/pyodide/pyscript');
-        await interpreter.writeFile('pyscript/__init__.py', pyscript as string);
-        //Refresh the module cache so Python consistently finds pyscript module
-        await interpreter._remote.invalidate_module_path_cache();
 
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
@@ -281,11 +271,7 @@ export class PyScriptApp {
         // await interpreter._remote.setHandler('showWarning', Synclink.proxy(showWarning));
         interpreter._unwrapped_remote.setHandler('define_custom_element', define_custom_element);
         interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
-        const pyscript_module = (await interpreter.pyimport('pyscript')) as Synclink.Remote<
-            PyProxy & { _set_version_info(string): void }
-        >;
-        await pyscript_module._set_version_info(version);
-        await pyscript_module.destroy();
+        await interpreter._remote.pyscript_py._set_version_info(version);
 
         // import some carefully selected names into the global namespace
         await interpreter.run(`
