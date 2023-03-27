@@ -211,7 +211,13 @@ export class PluginManager {
         for (const p of this._plugins) p.afterPyReplExec?.(options);
 
         for (const p of this._pythonPlugins)
-            await p.afterPyReplExec?.(options.interpreter, options.src, options.outEl, options.pyReplTag, options.result);
+            await p.afterPyReplExec?.(
+                options.interpreter,
+                options.src,
+                options.outEl,
+                options.pyReplTag,
+                options.result,
+            );
     }
 
     async onUserError(error: UserError) {
