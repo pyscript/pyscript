@@ -42,7 +42,6 @@ export class InterpreterClient extends Object {
         await this._unwrapped_remote.loadInterpreter(this.config, this.stdio);
         // await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
         // @ts-ignore
-        // eslint-disable-next-line no-use-before-define
         this.globals = this._remote.globals as PyProxyDict;
     }
 
