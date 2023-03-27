@@ -39,6 +39,7 @@
         "@codemirror/theme-one-dark": "^6.1.1",
         "@codemirror/view": "^6.9.3",
         "@hoodmane/toml-j0.4": "^1.1.2",
-        "codemirror": "^6.0.1"
+        "codemirror": "6.0.1",
+        "synclink": "^0.1.1"
     }
 }

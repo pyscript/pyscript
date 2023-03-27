@@ -60,12 +60,12 @@ from js import console
 
 class ExecTestLogger(Plugin):
 
-    def beforePyScriptExec(self, interpreter, src, pyScriptTag):
+    async def beforePyScriptExec(self, interpreter, src, pyScriptTag):
         console.log(f'beforePyScriptExec called')
         console.log(f'before_src:{src}')
         console.log(f'before_id:{pyScriptTag.id}')
 
-    def afterPyScriptExec(self, interpreter, src, pyScriptTag, result):
+    async def afterPyScriptExec(self, interpreter, src, pyScriptTag, result):
         console.log(f'afterPyScriptExec called')
         console.log(f'after_src:{src}')
         console.log(f'after_id:{pyScriptTag.id}')
@@ -85,7 +85,7 @@ console.warn("This is in pyrepl hooks file")
 
 class PyReplTestLogger(Plugin):
 
-    def beforePyReplExec(self, interpreter, outEl, src, pyReplTag):
+    def beforePyReplExec(self, interpreter, src, outEl, pyReplTag):
         console.log(f'beforePyReplExec called')
         console.log(f'before_src:{src}')
         console.log(f'before_id:{pyReplTag.id}')
@@ -226,13 +226,18 @@ class TestPlugin(PyScriptTest):
 
         # EXPECT it to log the correct logs for the events it intercepts
         log_lines = self.console.log.lines
-        for method in hooks_available:
-            assert log_lines.count(f"{method} called") == 1
+        num_calls = {
+            method: log_lines.count(f"{method} called") for method in hooks_available
+        }
+        expected_calls = {method: 1 for method in hooks_available}
+        assert num_calls == expected_calls
 
         # EXPECT it to NOT be called (hence not log anything) the events that happen
         # before it's ready, hence is not called
-        for method in hooks_unavailable:
-            assert f"{method} called" not in log_lines
+        unavailable_called = {
+            method: f"{method} called" in log_lines for method in hooks_unavailable
+        }
+        assert unavailable_called == {method: False for method in hooks_unavailable}
 
         # TODO: It'd be actually better to check that the events get called in order
 
@@ -266,6 +271,8 @@ class TestPlugin(PyScriptTest):
     def test_pyrepl_exec_hooks(self):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
+        # allow afterPyReplExec to also finish before the test finishes
+        self.wait_for_console("result:2")
 
         log_lines: list[str] = self.console.log.lines
 

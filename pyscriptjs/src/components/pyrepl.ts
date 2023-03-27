@@ -132,10 +132,10 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
             const outEl = this.outDiv;
 
             // execute the python code
-            app.plugins.beforePyReplExec({ interpreter: interpreter, src: pySrc, outEl: outEl, pyReplTag: this });
+            await app.plugins.beforePyReplExec({ interpreter: interpreter, src: pySrc, outEl: outEl, pyReplTag: this });
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const { result } = await pyExec(interpreter, pySrc, outEl);
-            app.plugins.afterPyReplExec({
+            await app.plugins.afterPyReplExec({
                 interpreter: interpreter,
                 src: pySrc,
                 outEl: outEl,

@@ -2,7 +2,8 @@ import { getLogger } from './logger';
 import { ensureUniqueId } from './utils';
 import { UserError, ErrorCode } from './exceptions';
 import { InterpreterClient } from './interpreter_client';
-import type { PyProxy, PyProxyCallable } from 'pyodide';
+import type { PyProxyCallable, PyProxy } from 'pyodide';
+import type { Remote } from 'synclink';
 
 const logger = getLogger('pyexec');
 
@@ -12,15 +13,17 @@ export async function pyExec(
     outElem: HTMLElement,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<{ result: any }> {
-    const pyscript_py = interpreter._remote.interface.pyimport('pyscript') as PyProxy & {
-        set_current_display_target(id: string): void;
-        uses_top_level_await(code: string): boolean;
-    };
+    const pyscript_py = (await interpreter.pyimport('pyscript')) as Remote<
+        PyProxy & {
+            set_current_display_target(id: string): void;
+            uses_top_level_await(code: string): boolean;
+        }
+    >;
     ensureUniqueId(outElem);
-    pyscript_py.set_current_display_target(outElem.id);
+    await pyscript_py.set_current_display_target(outElem.id);
     try {
         try {
-            if (pyscript_py.uses_top_level_await(pysrc)) {
+            if (await pyscript_py.uses_top_level_await(pysrc)) {
                 throw new UserError(
                     ErrorCode.TOP_LEVEL_AWAIT,
                     'The use of top-level "await", "async for", and ' +
@@ -41,8 +44,8 @@ export async function pyExec(
             return { result: undefined };
         }
     } finally {
-        pyscript_py.set_current_display_target(undefined);
-        pyscript_py.destroy();
+        await pyscript_py.set_current_display_target(undefined);
+        await pyscript_py.destroy();
     }
 }
 
@@ -54,10 +57,10 @@ export async function pyExec(
  *     pyDisplay(interpreter, obj, { target: targetID });
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function pyDisplay(interpreter: InterpreterClient, obj: any, kwargs: { [k: string]: any } = {}) {
-    const display = interpreter.globals.get('display') as PyProxyCallable;
+export async function pyDisplay(interpreter: InterpreterClient, obj: any, kwargs: { [k: string]: any } = {}) {
+    const display = (await interpreter.globals.get('display')) as PyProxyCallable;
     try {
-        display.callKwargs(obj, kwargs);
+        await display.callKwargs(obj, kwargs);
     } finally {
         display.destroy();
     }

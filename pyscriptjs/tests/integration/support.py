@@ -126,6 +126,20 @@ class PyScriptTest:
         page.on("console", self._on_console)
         page.on("pageerror", self._on_pageerror)
 
+    def run_js(self, code):
+        """
+        allows top level await to be present in the `code` parameter
+        """
+        self.page.evaluate(
+            """(async () => {
+            try {%s}
+            catch(e) {
+                console.error(e);
+            }
+            })();"""
+            % code
+        )
+
     def teardown_method(self):
         # we call check_js_errors on teardown: this means that if there are still
         # non-cleared errors, the test will fail. If you expect errors in your

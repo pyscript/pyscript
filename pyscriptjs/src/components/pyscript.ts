@@ -23,6 +23,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
              *
              * Concurrent access to the multiple py-script tags is thus avoided.
              */
+            app.incrementPendingTags();
             let releaseLock: () => void;
             try {
                 releaseLock = await app.tagExecutionLock();
@@ -34,10 +35,10 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                 const pySrc = await this.getPySrc();
                 this.innerHTML = '';
 
-                app.plugins.beforePyScriptExec({ interpreter: interpreter, src: pySrc, pyScriptTag: this });
+                await app.plugins.beforePyScriptExec({ interpreter: interpreter, src: pySrc, pyScriptTag: this });
                 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
                 const result = (await pyExec(interpreter, pySrc, this)).result;
-                app.plugins.afterPyScriptExec({
+                await app.plugins.afterPyScriptExec({
                     interpreter: interpreter,
                     src: pySrc,
                     pyScriptTag: this,
@@ -46,6 +47,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                 /* eslint-enable @typescript-eslint/no-unsafe-assignment */
             } finally {
                 releaseLock();
+                app.decrementPendingTags();
             }
         }
 

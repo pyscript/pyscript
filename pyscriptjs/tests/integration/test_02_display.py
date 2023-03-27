@@ -1,11 +1,13 @@
 import base64
 import html
 import io
+import os
 import re
 
+import numpy as np
 from PIL import Image
 
-from .support import PyScriptTest
+from .support import PyScriptTest, wait_for_render
 
 
 class TestOutput(PyScriptTest):
@@ -298,19 +300,30 @@ class TestOutput(PyScriptTest):
     def test_image_display(self):
         self.pyscript_run(
             """
-                <py-config> packages = [  "matplotlib"] </py-config>
+                <py-config> packages = ["matplotlib"] </py-config>
                 <py-script>
                     import matplotlib.pyplot as plt
                     xpoints = [3, 6, 9]
                     ypoints = [1, 2, 3]
                     plt.plot(xpoints, ypoints)
-                    plt.show()
+                    display(plt)
                 </py-script>
             """
         )
-        inner_html = self.page.content()
-        pattern = r'<style id="matplotlib-figure-styles">'
-        assert re.search(pattern, inner_html)
+        wait_for_render(self.page, "*", "<img src=['\"]data:image")
+        test = self.page.wait_for_selector("img")
+        img_src = test.get_attribute("src").replace(
+            "data:image/png;charset=utf-8;base64,", ""
+        )
+        img_data = np.asarray(Image.open(io.BytesIO(base64.b64decode(img_src))))
+        with Image.open(
+            os.path.join(os.path.dirname(__file__), "test_assets", "line_plot.png"),
+        ) as image:
+            ref_data = np.asarray(image)
+
+        deviation = np.mean(np.abs(img_data - ref_data))
+        assert deviation == 0.0
+        self.assert_no_banners()
 
     def test_empty_HTML_and_console_output(self):
         self.pyscript_run(

@@ -1,6 +1,6 @@
 import platform
 
-from .support import PyScriptTest, wait_for_render
+from .support import PyScriptTest
 
 
 class TestPyRepl(PyScriptTest):
@@ -47,6 +47,7 @@ class TestPyRepl(PyScriptTest):
         src = py_repl.inner_text()
         assert "print('hello from py-repl')" in src
         py_repl.locator("button").click()
+        self.page.wait_for_selector("py-terminal")
         assert self.console.log.lines[-1] == "hello from py-repl"
 
     def test_execute_code_typed_by_the_user(self):
@@ -58,6 +59,7 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.type('print("hello")')
         py_repl.locator("button").click()
+        self.page.wait_for_selector("py-terminal")
         assert self.console.log.lines[-1] == "hello"
 
     def test_execute_on_shift_enter(self):
@@ -70,7 +72,7 @@ class TestPyRepl(PyScriptTest):
         )
         self.page.wait_for_selector("py-repl .py-repl-run-button")
         self.page.keyboard.press("Shift+Enter")
-        wait_for_render(self.page, "*", "hello world")
+        self.page.wait_for_selector("py-terminal")
 
         assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "hello world"
@@ -88,8 +90,8 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
-        out_div = py_repl.locator("div.py-repl-output")
-        assert out_div.all_inner_texts()[0] == "hello world"
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "hello world"
 
     def test_show_last_expression(self):
         """
@@ -105,8 +107,8 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
-        out_div = py_repl.locator("div.py-repl-output")
-        assert out_div.all_inner_texts()[0] == "42"
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "42"
 
     def test_show_last_expression_with_output(self):
         """
@@ -126,8 +128,8 @@ class TestPyRepl(PyScriptTest):
         out_div = py_repl.locator("div.py-repl-output")
         assert out_div.all_inner_texts()[0] == ""
 
-        out_div = self.page.locator("#repl-target")
-        assert out_div.all_inner_texts()[0] == "42"
+        out_div = self.page.wait_for_selector("#repl-target")
+        assert out_div.inner_text() == "42"
 
     def test_run_clears_previous_output(self):
         """
@@ -142,15 +144,15 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
-        assert out_div.all_inner_texts()[0] == "hello world"
-        #
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "hello world"
         # clear the editor, write new code, execute
         self._replace(py_repl, "display('another output')")
         self.page.keyboard.press("Shift+Enter")
-        print
-        assert out_div.all_inner_texts()[0] == "another output"
+        # test runner can be too fast, the line below should wait for output to change
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "another output"
 
     def test_python_exception(self):
         """
@@ -165,6 +167,7 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
+        self.page.wait_for_selector(".py-error")
         #
         # check that we sent the traceback to the console
         tb_lines = self.console.error.lines[-1].splitlines()
@@ -191,11 +194,13 @@ class TestPyRepl(PyScriptTest):
         first_py_repl = self.page.get_by_text("first")
         first_py_repl.click()
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-0-repl-output")
         assert self.page.inner_text("#py-internal-0-repl-output") == "first"
 
         second_py_repl = self.page.get_by_text("second")
         second_py_repl.click()
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-1-repl-output")
         assert self.page.inner_text("#py-internal-1-repl-output") == "second"
 
     def test_python_exception_after_previous_output(self):
@@ -207,15 +212,17 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
-        assert out_div.all_inner_texts()[0] == "hello world"
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "hello world"
         #
         # clear the editor, write new code, execute
         self._replace(py_repl, "0/0")
         self.page.keyboard.press("Shift+Enter")
-        assert "hello world" not in out_div.all_inner_texts()[0]
-        assert "ZeroDivisionError" in out_div.all_inner_texts()[0]
+        # test runner can be too fast, the line below should wait for output to change
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert "hello world" not in out_div.inner_text()
+        assert "ZeroDivisionError" in out_div.inner_text()
 
     def test_hide_previous_error_after_successful_run(self):
         """
@@ -231,13 +238,15 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        out_div = py_repl.locator("div.py-repl-output")
         self.page.keyboard.press("Shift+Enter")
-        assert "this is an error" in out_div.all_inner_texts()[0]
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert "this is an error" in out_div.inner_text()
         #
         self._replace(py_repl, "display('hello')")
         self.page.keyboard.press("Shift+Enter")
-        assert out_div.all_inner_texts()[0] == "hello"
+        # test runner can be too fast, the line below should wait for output to change
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "hello"
 
     def test_output_attribute_does_not_exist(self):
         """
@@ -254,10 +263,9 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
 
-        banner = self.page.query_selector_all(".py-warning")
-        assert len(banner) == 1
+        banner = self.page.wait_for_selector(".py-warning")
 
-        banner_content = banner[0].inner_text()
+        banner_content = banner.inner_text()
         expected = (
             'output = "I-dont-exist" does not match the id of any element on the page.'
         )
@@ -308,14 +316,18 @@ class TestPyRepl(PyScriptTest):
         second_py_repl = self.page.get_by_text("root second")
         second_py_repl.click()
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-1-repl-output")
         self.page.keyboard.type("display('second children')")
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-1-1-repl-output")
 
         first_py_repl = self.page.get_by_text("root first")
         first_py_repl.click()
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-0-repl-output")
         self.page.keyboard.type("display('first children')")
         self.page.keyboard.press("Shift+Enter")
+        self.page.wait_for_selector("#py-internal-0-1-repl-output")
 
         assert self.page.inner_text("#py-internal-1-1-repl-output") == "second children"
         assert self.page.inner_text("#py-internal-0-1-repl-output") == "first children"
@@ -337,11 +349,11 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
 
-        target = self.page.locator("#repl-target")
-        assert "print from py-repl" in target.text_content()
+        target = self.page.wait_for_selector("#repl-target")
+        assert "print from py-repl" in target.inner_text()
 
-        out_div = py_repl.locator("div.py-repl-output")
-        assert out_div.all_inner_texts()[0] == "display from py-repl"
+        out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
+        assert out_div.inner_text() == "display from py-repl"
 
         self.assert_no_banners()
 
@@ -406,11 +418,11 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
 
-        assert self.page.locator("#first").text_content() == "first."
+        assert self.page.wait_for_selector("#first").inner_text() == "first.\n"
 
         second_repl = self.page.locator("py-repl#second-repl")
         second_repl.locator("button").click()
-        assert self.page.locator("#second").text_content() == "second."
+        assert self.page.wait_for_selector("#second").inner_text() == "second.\n"
 
     def test_repl_output_id_errors(self):
         self.pyscript_run(
@@ -429,10 +441,9 @@ class TestPyRepl(PyScriptTest):
         for repl in py_repls:
             repl.query_selector_all("button")[0].click()
 
-        banner = self.page.query_selector_all(".py-warning")
-        assert len(banner) == 1
+        banner = self.page.wait_for_selector(".py-warning")
 
-        banner_content = banner[0].inner_text()
+        banner_content = banner.inner_text()
         expected = (
             'output = "not-on-page" does not match the id of any element on the page.'
         )
@@ -457,10 +468,9 @@ class TestPyRepl(PyScriptTest):
         for repl in py_repls:
             repl.query_selector_all("button")[0].click()
 
-        banner = self.page.query_selector_all(".py-warning")
-        assert len(banner) == 1
+        banner = self.page.wait_for_selector(".py-warning")
 
-        banner_content = banner[0].inner_text()
+        banner_content = banner.inner_text()
         expected = (
             'stderr = "not-on-page" does not match the id of any element on the page.'
         )
@@ -485,8 +495,8 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
 
-        assert self.page.locator("#stdout-div").text_content() == "one.two."
-        assert self.page.locator("#stderr-div").text_content() == "one."
+        assert self.page.wait_for_selector("#stdout-div").inner_text() == "one.\ntwo.\n"
+        assert self.page.wait_for_selector("#stderr-div").inner_text() == "one.\n"
         self.assert_no_banners()
 
     def test_repl_output_attribute_change(self):
@@ -516,14 +526,14 @@ class TestPyRepl(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
 
-        assert self.page.locator("#first").text_content() == "one."
-        assert self.page.locator("#second").text_content() == "two."
+        assert self.page.wait_for_selector("#first").inner_text() == "one.\n"
+        assert self.page.wait_for_selector("#second").inner_text() == "two.\n"
 
         expected_alert_banner_msg = (
             'output = "third" does not match the id of any element on the page.'
         )
 
-        alert_banner = self.page.locator(".alert-banner")
+        alert_banner = self.page.wait_for_selector(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
 
     def test_repl_output_element_id_change(self):
@@ -558,10 +568,10 @@ class TestPyRepl(PyScriptTest):
         py_repl.locator("button").click()
 
         # Note the ID of the div has changed by the time of this assert
-        assert self.page.locator("#third").text_content() == "one.three."
+        assert self.page.wait_for_selector("#third").inner_text() == "one.\nthree.\n"
 
         expected_alert_banner_msg = (
             'output = "first" does not match the id of any element on the page.'
         )
-        alert_banner = self.page.locator(".alert-banner")
+        alert_banner = self.page.wait_for_selector(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
