@@ -201,17 +201,17 @@ export class PluginManager {
         outEl: HTMLElement;
         pyReplTag: any;
     }) {
-        for (const p of this._plugins) p.beforePyReplExec(options);
+        for (const p of this._plugins) p.beforePyReplExec?.(options);
 
         for (const p of this._pythonPlugins)
-            await p.beforePyReplExec(options.interpreter, options.src, options.outEl, options.pyReplTag);
+            await p.beforePyReplExec?.(options.interpreter, options.src, options.outEl, options.pyReplTag);
     }
 
     async afterPyReplExec(options: { interpreter: InterpreterClient; src: string; outEl; pyReplTag; result }) {
-        for (const p of this._plugins) p.afterPyReplExec(options);
+        for (const p of this._plugins) p.afterPyReplExec?.(options);
 
         for (const p of this._pythonPlugins)
-            await p.afterPyReplExec(options.interpreter, options.src, options.outEl, options.pyReplTag, options.result);
+            await p.afterPyReplExec?.(options.interpreter, options.src, options.outEl, options.pyReplTag, options.result);
     }
 
     async onUserError(error: UserError) {
