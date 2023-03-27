@@ -275,8 +275,8 @@ export class PyScriptApp {
         // eventually replace the setHandler calls with interpreter._remote.setHandler i.e. the ones mentioned below
         // await interpreter._remote.setHandler('define_custom_element', Synclink.proxy(define_custom_element));
         // await interpreter._remote.setHandler('showWarning', Synclink.proxy(showWarning));
-        await interpreter._unwrapped_remote.setHandler('define_custom_element', define_custom_element);
-        await interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
+        interpreter._unwrapped_remote.setHandler('define_custom_element', define_custom_element);
+        interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
         await pyscript_module._set_version_info(version);
         pyscript_module.destroy();
 

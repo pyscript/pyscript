@@ -2,7 +2,7 @@ import { getLogger } from './logger';
 import { ensureUniqueId } from './utils';
 import { UserError, ErrorCode } from './exceptions';
 import { InterpreterClient } from './interpreter_client';
-import type { PyProxy, PyProxyCallable } from 'pyodide';
+import type { PyProxyCallable } from 'pyodide';
 
 const logger = getLogger('pyexec');
 
@@ -12,7 +12,7 @@ export async function pyExec(
     outElem: HTMLElement,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<{ result: any }> {
-    const pyscript_py = (await interpreter.pyimport('pyscript')) as PyProxy & {
+    const pyscript_py = (await interpreter.pyimport('pyscript')) as any & {
         set_current_display_target(id: string): void;
         uses_top_level_await(code: string): boolean;
     };
