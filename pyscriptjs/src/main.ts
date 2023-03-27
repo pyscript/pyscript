@@ -122,8 +122,7 @@ export class PyScriptApp {
     }
 
     decrementNumPendingTags() {
-        if (this.numPendingTags > 0)
-        {
+        if (this.numPendingTags > 0) {
             this.numPendingTags -= 1;
         }
         if (this.numPendingTags === 0) {
