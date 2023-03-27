@@ -86,7 +86,7 @@ export class PyScriptApp {
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
     tagExecutionLock: () => Promise<() => void>; // this is used to ensure that py-script tags are executed sequentially
-    numPendingTags: number;
+    _numPendingTags: number;
     scriptTagsPromise: Promise<void>;
     resolvedScriptTags: () => void;
 
@@ -100,7 +100,7 @@ export class PyScriptApp {
 
         this.plugins.add(new StdioDirector(this._stdioMultiplexer));
         this.tagExecutionLock = createLock();
-        this.numPendingTags = 0;
+        this._numPendingTags = 0;
         this.scriptTagsPromise = new Promise(res => (this.resolvedScriptTags = res));
     }
 
@@ -117,15 +117,15 @@ export class PyScriptApp {
         }
     }
 
-    incrementNumPendingTags() {
-        this.numPendingTags += 1;
+    incrementPendingTags() {
+        this._numPendingTags += 1;
     }
 
-    decrementNumPendingTags() {
-        if (this.numPendingTags > 0) {
-            this.numPendingTags -= 1;
+    decrementPendingTags() {
+        if (this._numPendingTags > 0) {
+            this._numPendingTags -= 1;
         }
-        if (this.numPendingTags === 0) {
+        if (this._numPendingTags === 0) {
             this.resolvedScriptTags();
         }
     }
@@ -421,8 +421,8 @@ modules must contain a "plugin" attribute. For more information check the plugin
         // make_PyScript takes an interpreter and a PyScriptApp as arguments
         this.PyScript = make_PyScript(interpreter, this);
         customElements.define('py-script', this.PyScript);
-        this.incrementNumPendingTags();
-        this.decrementNumPendingTags();
+        this.incrementPendingTags();
+        this.decrementPendingTags();
         await this.scriptTagsPromise;
     }
 
