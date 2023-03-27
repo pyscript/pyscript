@@ -17,11 +17,13 @@ class TestInterpreterAccess(PyScriptTest):
 
         self.run_js(
             """
-        console.log(`x is ${await pyscript.interpreter.globals.get('x')}`);
-        console.log(`py_func() returns ${await (await pyscript.interpreter.globals.get('py_func'))()}`);
-        """
+            const x = await pyscript.interpreter.globals.get('x');
+            const py_func = await pyscript.interpreter.globals.get('py_func');
+            const py_func_res = await py_func();
+            console.log(`x is ${x}`);
+            console.log(`py_func() returns ${py_func_res}`);
+            """
         )
-
         assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-2:] == [
             "x is 1",
@@ -34,9 +36,9 @@ class TestInterpreterAccess(PyScriptTest):
 
         self.run_js(
             """
-        const interface = pyscript.interpreter._remote.interface;
-        await interface.runPython('print("Interpreter Ran This")');
-        """
+            const interface = pyscript.interpreter._remote.interface;
+            await interface.runPython('print("Interpreter Ran This")');
+            """
         )
 
         expected_message = "Interpreter Ran This"
@@ -52,9 +54,9 @@ class TestInterpreterAccess(PyScriptTest):
 
         self.run_js(
             """
-        const interface = pyscript.runtime._remote.interpreter;
-        await interface.runPython('print("Interpreter Ran This")');
-        """
+            const interface = pyscript.runtime._remote.interpreter;
+            await interface.runPython('print("Interpreter Ran This")');
+            """
         )
 
         expected_message = "Interpreter Ran This"
@@ -78,9 +80,12 @@ class TestInterpreterAccess(PyScriptTest):
 
         self.run_js(
             """
-        console.log(`x is ${await pyscript.interpreter.globals.get('x')}`);
-        console.log(`py_func() returns ${await (await pyscript.interpreter.globals.get('py_func'))()}`);
-        """
+            const x = await pyscript.interpreter.globals.get('x');
+            const py_func = await pyscript.interpreter.globals.get('py_func');
+            const py_func_res = await py_func();
+            console.log(`x is ${x}`);
+            console.log(`py_func() returns ${py_func_res}`);
+            """
         )
 
         assert self.console.log.lines[0] == self.PY_COMPLETE

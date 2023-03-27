@@ -20,7 +20,7 @@ ignore = [
     "S101",
     "S113",
 ]
-line-length = 105
+line-length = 100
 select = [
     "B",
     "C9",
