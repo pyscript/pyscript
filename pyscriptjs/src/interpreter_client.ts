@@ -1,6 +1,6 @@
 import type { AppConfig } from './pyconfig';
 import { RemoteInterpreter } from './remote_interpreter';
-import type { PyProxyDict, PyProxy } from 'pyodide';
+import type { PyProxy } from 'pyodide';
 import { getLogger } from './logger';
 import type { Stdio } from './stdio';
 import * as Synclink from 'synclink';
@@ -18,7 +18,7 @@ export class InterpreterClient extends Object {
     /**
      * global symbols table for the underlying interface.
      * */
-    globals: PyProxyDict;
+    globals: any;
     stdio: Stdio;
 
     constructor(
@@ -41,8 +41,7 @@ export class InterpreterClient extends Object {
     async initializeRemote(): Promise<void> {
         await this._unwrapped_remote.loadInterpreter(this.config, this.stdio);
         // await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
-        // @ts-ignore
-        this.globals = this._remote.globals as PyProxyDict;
+        this.globals = this._remote.globals;
     }
 
     /**
