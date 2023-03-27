@@ -84,16 +84,18 @@ export class RemoteInterpreter extends Object {
      * path.
      */
     async loadInterpreter(config: AppConfig, stdio: Stdio): Promise<void> {
-        this.interface = Synclink.proxy(await loadPyodide({
-            stdout: (msg: string) => {
-                // TODO: add syncify when moved to worker
-                stdio.stdout_writeline(msg);
-            },
-            stderr: (msg: string) => {
-                stdio.stderr_writeline(msg);
-            },
-            fullStdLib: false,
-        }));
+        this.interface = Synclink.proxy(
+            await loadPyodide({
+                stdout: (msg: string) => {
+                    // TODO: add syncify when moved to worker
+                    stdio.stdout_writeline(msg);
+                },
+                stderr: (msg: string) => {
+                    stdio.stderr_writeline(msg);
+                },
+                fullStdLib: false,
+            }),
+        );
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.FS = this.interface.FS;
         // eslint-disable-next-line
