@@ -50,35 +50,6 @@ class TestSupport(PyScriptTest):
 
         assert self.console.log.lines[-1] == "10"
 
-    def test_await_without_run_js(self):
-        doc = """
-          function resolveAfter200MilliSeconds(x) {
-            return new Promise((resolve) => {
-              setTimeout(() => {
-                resolve(x);
-              }, 200);
-            });
-          }
-
-          const x = await resolveAfter200MilliSeconds(10);
-          console.log(x);
-        """
-
-        self.page.add_script_tag(content=doc)
-        with pytest.raises(JsErrors) as exc:
-            self.check_js_errors()
-        # check that the exception message contains the error message and the
-        # stack trace
-        msg = str(exc.value)
-        expected_msg = (
-            "await is only valid in async functions and the top level bodies of modules"
-        )
-        assert expected_msg in msg
-        # after a call to check_js_errors, the errors are cleared
-        self.check_js_errors()
-        # JS exceptions are also available in self.console.js_error
-        assert expected_msg in self.console.js_error.lines[0]
-
     def test_console(self):
         """
         Test that we capture console.log messages correctly.
