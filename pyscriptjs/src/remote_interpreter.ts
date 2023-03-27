@@ -3,12 +3,14 @@ import { getLogger } from './logger';
 import { Stdio } from './stdio';
 import { InstallError, ErrorCode } from './exceptions';
 import { robustFetch } from './fetch';
-import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy } from 'pyodide';
+import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy, PyProxyDict } from 'pyodide';
+import type { ProxyMarked } from 'synclink';
+import * as Synclink from 'synclink';
 
 declare const loadPyodide: typeof loadPyodideDeclaration;
 const logger = getLogger('pyscript/pyodide');
 
-export type InterpreterInterface = PyodideInterface | null;
+export type InterpreterInterface = (PyodideInterface & ProxyMarked) | null;
 
 interface Micropip extends PyProxy {
     install(packageName: string | string[]): Promise<void>;
@@ -18,15 +20,15 @@ type FSInterface = {
     writeFile(path: string, data: Uint8Array | string, options?: { canOwn: boolean }): void;
     mkdirTree(path: string): void;
     mkdir(path: string): void;
-};
+} & ProxyMarked;
 
 type PATHFSInterface = {
     resolve(path: string): string;
-};
+} & ProxyMarked;
 
 type PATHInterface = {
     dirname(path: string): string;
-};
+} & ProxyMarked;
 
 /*
 RemoteInterpreter class is responsible to process requests from the
@@ -50,9 +52,9 @@ export class RemoteInterpreter extends Object {
     PATH: PATHInterface;
     PATH_FS: PATHFSInterface;
 
-    globals: PyProxy;
+    globals: PyProxyDict & ProxyMarked;
     // TODO: Remove this once `runtimes` is removed!
-    interpreter: InterpreterInterface;
+    interpreter: InterpreterInterface & ProxyMarked;
 
     constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js') {
         super();
@@ -82,7 +84,7 @@ export class RemoteInterpreter extends Object {
      * path.
      */
     async loadInterpreter(config: AppConfig, stdio: Stdio): Promise<void> {
-        this.interface = await loadPyodide({
+        this.interface = Synclink.proxy(await loadPyodide({
             stdout: (msg: string) => {
                 // TODO: add syncify when moved to worker
                 stdio.stdout_writeline(msg);
@@ -91,7 +93,7 @@ export class RemoteInterpreter extends Object {
                 stdio.stderr_writeline(msg);
             },
             fullStdLib: false,
-        });
+        }));
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.FS = this.interface.FS;
         // eslint-disable-next-line
@@ -102,7 +104,7 @@ export class RemoteInterpreter extends Object {
         // TODO: Remove this once `runtimes` is removed!
         this.interpreter = this.interface;
 
-        this.globals = this.interface.globals;
+        this.globals = Synclink.proxy(this.interface.globals as PyProxyDict);
 
         if (config.packages) {
             logger.info('Found packages in configuration to install. Loading micropip...');

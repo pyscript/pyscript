@@ -1,6 +1,6 @@
 import type { AppConfig } from './pyconfig';
 import { RemoteInterpreter } from './remote_interpreter';
-import type { PyProxy } from 'pyodide';
+import type { PyProxyDict, PyProxy } from 'pyodide';
 import { getLogger } from './logger';
 import type { Stdio } from './stdio';
 import * as Synclink from 'synclink';
@@ -18,7 +18,7 @@ export class InterpreterClient extends Object {
     /**
      * global symbols table for the underlying interface.
      * */
-    globals: any;
+    globals: Synclink.Remote<PyProxyDict>;
     stdio: Stdio;
 
     constructor(
