@@ -227,7 +227,7 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
                 document.head.appendChild(cssTag);
 
                 //Create xterm, add addons
-                this.term = new Terminal({ cols: 80 });
+                this.term = new Terminal({ screenReaderMode: true, cols: 80 });
 
                 this.term.loadAddon(new WebLinksAddon.WebLinksAddon());
 
