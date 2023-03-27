@@ -61,6 +61,11 @@ build:
 build-fast:
 	node esbuild.js
 
+# use the following rule to do all the checks done by precommit: in
+# particular, use this if you want to run eslint.
+precommit-check:
+	pre-commit run --all-files
+
 examples:
 	mkdir -p ./examples
 	cp -r ../examples/* ./examples
