@@ -30,14 +30,17 @@ const logger = getLogger('pyscript/main');
  * Monkey patching the error transfer handler to preserve the `$$isUserError`
  * marker so as to detect `UserError` subclasses in the error handling code.
  */
-const old_error_transfer_handler = Synclink.transferHandlers.get('throw').serialize;
-function new_error_transfer_handler({ value }) {
+const throwHandler = Synclink.transferHandlers.get('throw') as Synclink.TransferHandler<
+    { value: unknown },
+    { value: { $$isUserError: boolean } }
+>;
+const old_error_transfer_handler = throwHandler.serialize.bind(throwHandler) as typeof throwHandler.serialize;
+function new_error_transfer_handler({ value }: { value: { $$isUserError: boolean } }) {
     const result = old_error_transfer_handler({ value });
-    // @ts-ignore
     result[0].value.$$isUserError = value.$$isUserError;
     return result;
 }
-Synclink.transferHandlers.get('throw').serialize = new_error_transfer_handler;
+throwHandler.serialize = new_error_transfer_handler;
 
 /* High-level overview of the lifecycle of a PyScript App:
 
@@ -131,10 +134,12 @@ export class PyScriptApp {
         }
     }
 
-    async _handleUserErrorMaybe(error) {
-        if (error.$$isUserError) {
-            _createAlertBanner(error.message, 'error', error.messageType);
-            await this.plugins.onUserError(error);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async _handleUserErrorMaybe(error: any) {
+        const e = error as UserError;
+        if (e && e.$$isUserError) {
+            _createAlertBanner(e.message, 'error', e.messageType);
+            await this.plugins.onUserError(e);
         } else {
             throw error;
         }
@@ -272,14 +277,16 @@ export class PyScriptApp {
 
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
-        const pyscript_module = await interpreter.pyimport('pyscript');
         // eventually replace the setHandler calls with interpreter._remote.setHandler i.e. the ones mentioned below
         // await interpreter._remote.setHandler('define_custom_element', Synclink.proxy(define_custom_element));
         // await interpreter._remote.setHandler('showWarning', Synclink.proxy(showWarning));
         interpreter._unwrapped_remote.setHandler('define_custom_element', define_custom_element);
         interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
+        const pyscript_module = (await interpreter.pyimport('pyscript')) as Synclink.Remote<
+            PyProxy & { _set_version_info(string): void }
+        >;
         await pyscript_module._set_version_info(version);
-        pyscript_module.destroy();
+        await pyscript_module.destroy();
 
         // import some carefully selected names into the global namespace
         await interpreter.run(`

@@ -2,7 +2,8 @@ import { getLogger } from './logger';
 import { ensureUniqueId } from './utils';
 import { UserError, ErrorCode } from './exceptions';
 import { InterpreterClient } from './interpreter_client';
-import type { PyProxyCallable } from 'pyodide';
+import type { PyProxyCallable, PyProxy } from 'pyodide';
+import type { Remote } from 'synclink';
 
 const logger = getLogger('pyexec');
 
@@ -12,10 +13,12 @@ export async function pyExec(
     outElem: HTMLElement,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<{ result: any }> {
-    const pyscript_py = (await interpreter.pyimport('pyscript')) as any & {
-        set_current_display_target(id: string): void;
-        uses_top_level_await(code: string): boolean;
-    };
+    const pyscript_py = (await interpreter.pyimport('pyscript')) as Remote<
+        PyProxy & {
+            set_current_display_target(id: string): void;
+            uses_top_level_await(code: string): boolean;
+        }
+    >;
     ensureUniqueId(outElem);
     await pyscript_py.set_current_display_target(outElem.id);
     try {
@@ -42,7 +45,7 @@ export async function pyExec(
         }
     } finally {
         await pyscript_py.set_current_display_target(undefined);
-        pyscript_py.destroy();
+        await pyscript_py.destroy();
     }
 }
 

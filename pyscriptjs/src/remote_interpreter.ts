@@ -17,7 +17,7 @@ interface Micropip extends PyProxy {
 }
 
 type FSInterface = {
-    writeFile(path: string, data: Uint8Array | string, options?: { canOwn: boolean }): void;
+    writeFile(path: string, data: Uint8Array | string, options?: { canOwn?: boolean; encoding?: string }): void;
     mkdirTree(path: string): void;
     mkdir(path: string): void;
 } & ProxyMarked;
@@ -268,22 +268,22 @@ export class RemoteInterpreter extends Object {
         importlib.invalidate_caches();
     }
 
-    pyimport(mod_name: string): PyProxy {
-        return this.interface.pyimport(mod_name);
+    pyimport(mod_name: string): PyProxy & Synclink.ProxyMarked {
+        return Synclink.proxy(this.interface.pyimport(mod_name));
     }
 
     mkdirTree(path: string) {
-        this.interface.FS.mkdirTree(path);
+        this.FS.mkdirTree(path);
     }
 
     writeFile(path: string, content: string) {
-        this.interface.FS.writeFile(path, content, { encoding: 'utf8' });
+        this.FS.writeFile(path, content, { encoding: 'utf8' });
     }
 
-    setHandler(func_name: any, handler: any): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setHandler(func_name: string, handler: any): void {
         const pyscript_module = this.interface.pyimport('pyscript');
-        pyscript_module[func_name] = async (...args: any[]) => {
-            await handler(...args); // wrapper ensures task is scheduled
-        };
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        pyscript_module[func_name] = handler;
     }
 }

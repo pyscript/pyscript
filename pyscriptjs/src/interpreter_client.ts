@@ -71,7 +71,7 @@ export class InterpreterClient extends Object {
         return result;
     }
 
-    async pyimport(mod_name: string): Promise<PyProxy> {
+    async pyimport(mod_name: string): Promise<Synclink.Remote<PyProxy>> {
         return this._remote.pyimport(mod_name);
     }
 
