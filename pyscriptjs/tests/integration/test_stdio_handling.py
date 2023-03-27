@@ -1,5 +1,3 @@
-import pytest
-
 from .support import PyScriptTest
 
 
@@ -100,7 +98,7 @@ class TestOutputHandling(PyScriptTest):
 
         self.assert_no_banners()
 
-    @pytest.mark.xfail(reason="fails after introducing synclink, fix me soon!")
+    # @pytest.mark.xfail(reason="fails after introducing synclink, fix me soon!")
     def test_targeted_stdio_async(self):
         # Test the behavior of stdio capture in async contexts
         self.pyscript_run(
@@ -110,8 +108,9 @@ class TestOutputHandling(PyScriptTest):
                 import js
 
                 async def coro(value, delay):
-                    print(value)
+                    print(value+"1")
                     await asyncio.sleep(delay)
+                    print(value+"2")
                     js.console.log(f"DONE {value}")
             </py-script>
 
@@ -130,7 +129,8 @@ class TestOutputHandling(PyScriptTest):
                 asyncio.ensure_future(coro("third", 0))
             </py-script>
 
-            <py-script output="third">
+            <div id="final"></div>
+            <py-script output="final">
                 asyncio.ensure_future(coro("DONE", 3))
             </py-script>
             """
@@ -142,14 +142,19 @@ class TestOutputHandling(PyScriptTest):
         # stdout to element
         assert self.page.locator("#first").text_content() == ""
 
-        # py-script tags with output parameter not expected to send
-        # std to element in coroutine
-        assert self.page.locator("#second").text_content() == ""
-        assert self.page.locator("#third").text_content() == ""
+        # py-script tags with output parameter should be able to send all
+        # writes to stdout to the expected DOM element, up to the first
+        # await of a Future in Python
+        assert self.page.locator("#second").text_content() == "second1"
+
+        # In Python, asyncio.sleep(0) does not create a Future object; it
+        # only yields to the next cycle of the (Python) event loop. So
+        # asyncio.sleep(0) does not get awaited by await pyExec
+        # See https://github.com/python/cpython/blob/2cdc5189a6bc3157fddd814662bde99ecfd77529/Lib/asyncio/tasks.py#L598-L624
+        assert self.page.locator("#third").text_content() == "third1third2"
 
         self.assert_no_banners()
 
-    @pytest.mark.xfail(reason="fails after introducing synclink, fix me soon!")
     def test_targeted_stdio_interleaved(self):
         # Test that synchronous writes to stdout are placed correctly, even
         # While interleaved with scheduling coroutines in the same tag
