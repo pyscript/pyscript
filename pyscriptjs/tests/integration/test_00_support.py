@@ -35,15 +35,15 @@ class TestSupport(PyScriptTest):
     def test_await_with_run_js(self):
         self.run_js(
             """
-          function resolveAfter2Seconds(x) {
+          function resolveAfter200MilliSeconds(x) {
             return new Promise((resolve) => {
               setTimeout(() => {
                 resolve(x);
-              }, 2000);
+              }, 200);
             });
           }
 
-          const x = await resolveAfter2Seconds(10);
+          const x = await resolveAfter200MilliSeconds(10);
           console.log(x);
         """
         )
@@ -52,15 +52,15 @@ class TestSupport(PyScriptTest):
 
     def test_await_without_run_js(self):
         doc = """
-          function resolveAfter2Seconds(x) {
+          function resolveAfter200MilliSeconds(x) {
             return new Promise((resolve) => {
               setTimeout(() => {
                 resolve(x);
-              }, 2000);
+              }, 200);
             });
           }
 
-          const x = await resolveAfter2Seconds(10);
+          const x = await resolveAfter200MilliSeconds(10);
           console.log(x);
         """
 
