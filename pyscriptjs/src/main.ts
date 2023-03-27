@@ -122,9 +122,10 @@ export class PyScriptApp {
     }
 
     decrementPendingTags() {
-        if (this._numPendingTags > 0) {
-            this._numPendingTags -= 1;
+        if (this._numPendingTags <= 0) {
+            throw new Error('INTERNAL ERROR: assertion _numPendingTags > 0 failed');
         }
+        this._numPendingTags -= 1;
         if (this._numPendingTags === 0) {
             this.resolvedScriptTags();
         }

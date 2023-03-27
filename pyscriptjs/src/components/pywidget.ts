@@ -31,12 +31,12 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
             this.proxyClass = await interpreter.globals.get(this.klass);
             this.proxy = (await this.proxyClass(this)) as PyProxy & { connect(): void };
             this.proxy.connect();
-            this.registerWidget();
+            await this.registerWidget();
         }
 
-        registerWidget() {
+        async registerWidget() {
             logger.info('new widget registered:', this.name);
-            interpreter.globals.set(this.id, this.proxy);
+            await interpreter.globals.set(this.id, this.proxy);
         }
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
