@@ -272,7 +272,7 @@ class TestPlugin(PyScriptTest):
         py_repl = self.page.locator("py-repl")
         py_repl.locator("button").click()
         # allow afterPyReplExec to also finish before the test finishes
-        self.page.wait_for_timeout(1000)
+        self.wait_for_console("result:2")
 
         log_lines: list[str] = self.console.log.lines
 
