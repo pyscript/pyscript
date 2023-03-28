@@ -15,6 +15,7 @@ dependencies:
     - numpy
     - markdown
     - pip:
+          - pyodide_py==0.22
           - playwright
           - pytest-playwright
           - pytest-xdist
