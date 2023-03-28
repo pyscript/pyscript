@@ -3,11 +3,8 @@ import { InterpreterClient } from '../../src/interpreter_client';
 import { CaptureStdio } from '../../src/stdio';
 import * as Synclink from 'synclink';
 import { describe, beforeAll, afterAll, it, expect, jest } from '@jest/globals';
-import { readFileSync } from 'fs';
-import { dirname, join } from 'node:path';
+import { dirname } from 'node:path';
 import type { RemoteInterpreter } from '../../src/remote_interpreter';
-
-const __dirname = dirname(new URL(import.meta.url).pathname);
 
 describe('RemoteInterpreter', () => {
     let interpreter: InterpreterClient;
@@ -17,9 +14,6 @@ describe('RemoteInterpreter', () => {
     beforeAll(async () => {
         const SRC = '../pyscriptjs/node_modules/pyodide/pyodide.js';
         const config: AppConfig = { interpreters: [{ src: SRC }] };
-        jest.unstable_mockModule('./python/pyscript/__init__.py', () => ({
-            default: readFileSync(join(__dirname, '../../src/python/pyscript/__init__.py')),
-        }));
         ({ RemoteInterpreter } = await import('../../src/remote_interpreter'));
         const remote_interpreter = new RemoteInterpreter(SRC);
 
