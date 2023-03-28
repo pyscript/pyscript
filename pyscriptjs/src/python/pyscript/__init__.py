@@ -13,9 +13,9 @@ import js
 
 try:
     from pyodide.code import eval_code
-    from pyodide.ffi import create_proxy
+    from pyodide.ffi import create_proxy, JsProxy
 except ImportError:
-    from pyodide import create_proxy, eval_code
+    from pyodide import create_proxy, eval_code, JsProxy
 
 
 loop = asyncio.get_event_loop()
@@ -709,12 +709,31 @@ def _install_deprecated_globals_2022_12_1(ns):
     ns["PyScript"] = DeprecatedGlobal("PyScript", PyScript, message)
 
 
-def _run_pyscript(code, id=None):
+
+def _run_pyscript(code: str, id: str = None) -> JsProxy:
+    """Execute user code inside context managers.
+
+    Uses the __main__ global namespace.
+
+    The output is wrapped inside a JavaScript object since an object is not
+    thenable. This is so we do not accidentally `await` the result of the python
+    execution, even if it's awaitable (Future, Task, etc.)
+
+    Parameters
+    ----------
+    code :
+       The code to run
+
+    id :
+       The id for the default display target (or None if no default display target).
+
+    Returns
+    -------
+        A Js Object of the form {result: the_result}
+    """
     import __main__
 
     with _display_target(id):
         result = eval_code(code, globals=__main__.__dict__)
-    # The output of `runPython` is wrapped inside an dict since a dict is not
-    # thenable. This is so we do not accidentally `await` the result of theß
-    # python execution, even if it's awaitable (Future, Task, etc.)
+
     return js.Object.new(result=result)
