@@ -15,8 +15,10 @@ dependencies:
     - numpy
     - markdown
     - pip:
-          - pyodide_py==0.22
-          - micropip==0.2.2
           - playwright
           - pytest-playwright
           - pytest-xdist
+          # We need Pyodide and micropip so we can import them in our Python
+          # unit tests
+          - pyodide_py==0.22
+          - micropip==0.2.2
