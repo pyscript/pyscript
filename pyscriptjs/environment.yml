@@ -3,7 +3,7 @@ channels:
     - conda-forge
     - microsoft
 dependencies:
-    - python=3.9
+    - python=3.11
     - pip
     - pytest=7
     - nodejs=16
