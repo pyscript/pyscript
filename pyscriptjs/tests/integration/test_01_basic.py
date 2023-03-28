@@ -192,16 +192,15 @@ class TestBasic(PyScriptTest):
         assert self.console.log.lines[-1] == "hello from foo"
 
     def test_py_script_src_not_found(self):
-        self.pyscript_run(
-            """
-            <py-script src="foo.py"></py-script>
-            """
-        )
+        with pytest.raises(JsErrors) as exc:
+            self.pyscript_run(
+                """
+                <py-script src="foo.py"></py-script>
+                """
+            )
         assert self.PY_COMPLETE in self.console.log.lines
 
         assert "Failed to load resource" in self.console.error.lines[0]
-        with pytest.raises(JsErrors) as exc:
-            self.check_js_errors()
 
         error_msgs = str(exc.value)
 
