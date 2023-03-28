@@ -172,8 +172,8 @@ function make_PyTerminal_pre(app: PyScriptApp) {
 }
 
 declare const Terminal: typeof TerminalType;
-declare const WebLinksAddonModule: { WebLinksAddon: typeof WebLinksAddonType };
-declare const FitAddonModule: { FitAddon: typeof FitAddonType };
+declare const WebLinksAddon: { WebLinksAddon: typeof WebLinksAddonType };
+declare const FitAddon: { FitAddon: typeof FitAddonType };
 
 function make_PyTerminal_xterm(app: PyScriptApp) {
     /** The <py-terminal> custom element, which automatically register a stdio
@@ -229,9 +229,9 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
                 //Create xterm, add addons
                 this.term = new Terminal({ screenReaderMode: true, cols: 80 });
 
-                this.term.loadAddon(new WebLinksAddonModule.WebLinksAddon());
+                this.term.loadAddon(new WebLinksAddon.WebLinksAddon());
 
-                const fitter = new FitAddonModule.FitAddon();
+                const fitter = new FitAddon.FitAddon();
                 this.term.loadAddon(fitter);
 
                 this.term.open(this);
