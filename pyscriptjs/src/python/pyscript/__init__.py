@@ -12,11 +12,11 @@ from textwrap import dedent
 import js
 
 try:
+    from pyodide.code import eval_code
     from pyodide.ffi import create_proxy
 except ImportError:
-    from pyodide import create_proxy
+    from pyodide import create_proxy, eval_code
 
-from pyodide.code import eval_code
 
 loop = asyncio.get_event_loop()
 
