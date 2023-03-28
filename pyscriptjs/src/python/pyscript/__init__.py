@@ -717,7 +717,9 @@ def _install_deprecated_globals_2022_12_1(ns):
 
 class _PyscriptWebLoop(WebLoop):
     def __init__(self):
+        orig_loop = asyncio.get_event_loop()
         super().__init__()
+        asyncio._set_running_loop(orig_loop)
         self.ready = False
         self.deferred_handles = []
 
@@ -767,6 +769,7 @@ class _PyscriptWebLoop(WebLoop):
         return h
 
     def start_(self):
+        asyncio._set_running_loop(self)
         t = self.time()
         for [run_handle, delay] in self.deferred_handles:
             delay = delay - t
@@ -777,13 +780,11 @@ class _PyscriptWebLoop(WebLoop):
         self.deferred_handles = []
 
 
-def _init_loop():
-    global _LOOP
-    orig_loop = asyncio.get_event_loop()
-    _LOOP = _PyscriptWebLoop()
-    asyncio._set_running_loop(orig_loop)
+_LOOP = _PyscriptWebLoop()
 
-_init_loop()
+
+def _start_loop():
+    _LOOP.start_()
 
 
 @contextmanager
@@ -794,10 +795,6 @@ def _pyscript_event_loop():
         yield
     finally:
         asyncio._set_running_loop(orig_loop)
-
-
-def _start_loop():
-    _LOOP.start_()
 
 
 def _run_pyscript(code: str, id: str = None) -> JsProxy:
