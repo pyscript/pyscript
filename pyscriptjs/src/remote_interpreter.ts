@@ -37,6 +37,7 @@ type PyScriptPyModule = ProxyMarked & {
     uses_top_level_await(code: string): boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     _run_pyscript(code: string, display_target_id?: string): { result: any };
+    _start_loop(): void;
 };
 
 /*

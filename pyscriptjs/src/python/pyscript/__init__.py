@@ -1,15 +1,21 @@
 import ast
 import asyncio
 import base64
+import contextvars
 import html
 import io
 import re
 import time
 from collections import namedtuple
+from collections.abc import Callable
 from contextlib import contextmanager
 from textwrap import dedent
+from typing import Any
 
 import js
+from js import setTimeout
+from pyodide.ffi import create_once_callable
+from pyodide.webloop import WebLoop
 
 try:
     from pyodide.code import eval_code
@@ -709,6 +715,85 @@ def _install_deprecated_globals_2022_12_1(ns):
     ns["PyScript"] = DeprecatedGlobal("PyScript", PyScript, message)
 
 
+class _PyscriptWebLoop(WebLoop):
+    def __init__(self):
+        super().__init__()
+        self.ready = False
+        self.deferred_handles = []
+
+    def call_later(  # type: ignore[override]
+        self,
+        delay: float,
+        callback: Callable[..., Any],
+        *args: Any,
+        context: contextvars.Context | None = None,
+    ) -> asyncio.Handle:
+        """Arrange for a callback to be called at a given time.
+        Return a Handle: an opaque object with a cancel() method that
+        can be used to cancel the call.
+        The delay can be an int or float, expressed in seconds.  It is
+        always relative to the current time.
+        Each callback will be called exactly once.  If two callbacks
+        are scheduled for exactly the same time, it undefined which
+        will be called first.
+        Any positional arguments after the callback will be passed to
+        the callback when it is called.
+        This uses `setTimeout(callback, delay)`
+        """
+        if delay < 0:
+            raise ValueError("Can't schedule in the past")
+        h = asyncio.Handle(callback, args, self, context=context)
+
+        def run_handle():
+            if h.cancelled():
+                return
+            try:
+                h._run()
+            except SystemExit as e:
+                if self._system_exit_handler:
+                    self._system_exit_handler(e.code)
+                else:
+                    raise
+            except KeyboardInterrupt:
+                if self._keyboard_interrupt_handler:
+                    self._keyboard_interrupt_handler()
+                else:
+                    raise
+
+        if self.ready:
+            setTimeout(create_once_callable(run_handle), delay * 1000)
+        else:
+            self.deferred_handles.append((run_handle, self.time() + delay))
+        return h
+
+    def start_(self):
+        t = self.time()
+        for [run_handle, delay] in self.deferred_handles:
+            delay = delay - t
+            if delay < 0:
+                delay = 0
+            setTimeout(create_once_callable(run_handle), delay * 1000)
+        self.ready = True
+        self.deferred_handles = []
+
+
+_LOOP = _PyscriptWebLoop()
+
+
+@contextmanager
+def _pyscript_event_loop():
+    orig_loop = asyncio.get_event_loop()
+    asyncio.set_event_loop(_LOOP)
+    try:
+        yield
+    finally:
+        asyncio.set_event_loop(orig_loop)
+
+
+def _start_loop():
+    _LOOP.start_()
+
+
 def _run_pyscript(code: str, id: str = None) -> JsProxy:
     """Execute user code inside context managers.
 
@@ -732,7 +817,7 @@ def _run_pyscript(code: str, id: str = None) -> JsProxy:
     """
     import __main__
 
-    with _display_target(id):
+    with _display_target(id), _pyscript_event_loop():
         result = eval_code(code, globals=__main__.__dict__)
 
     return js.Object.new(result=result)
