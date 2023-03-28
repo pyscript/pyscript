@@ -14,14 +14,13 @@ from typing import Any
 
 import js
 from js import setTimeout
-from pyodide.ffi import create_once_callable
 from pyodide.webloop import WebLoop
 
 try:
     from pyodide.code import eval_code
-    from pyodide.ffi import JsProxy, create_proxy
+    from pyodide.ffi import JsProxy, create_proxy, create_once_callable
 except ImportError:
-    from pyodide import JsProxy, create_proxy, eval_code
+    from pyodide import JsProxy, create_proxy, eval_code, create_once_callable
 
 
 loop = asyncio.get_event_loop()
