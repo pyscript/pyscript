@@ -777,7 +777,13 @@ class _PyscriptWebLoop(WebLoop):
         self.deferred_handles = []
 
 
-_LOOP = _PyscriptWebLoop()
+def _init_loop():
+    global _LOOP
+    orig_loop = asyncio.get_event_loop()
+    _LOOP = _PyscriptWebLoop()
+    asyncio._set_running_loop(orig_loop)
+
+_init_loop()
 
 
 @contextmanager
