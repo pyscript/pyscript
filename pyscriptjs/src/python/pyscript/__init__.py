@@ -789,11 +789,11 @@ _init_loop()
 @contextmanager
 def _pyscript_event_loop():
     orig_loop = asyncio.get_event_loop()
-    asyncio.set_event_loop(_LOOP)
+    asyncio._set_running_loop(_LOOP)
     try:
         yield
     finally:
-        asyncio.set_event_loop(orig_loop)
+        asyncio._set_running_loop(orig_loop)
 
 
 def _start_loop():
