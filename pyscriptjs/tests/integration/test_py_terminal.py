@@ -144,38 +144,71 @@ class TestPyTerminal(PyScriptTest):
         expect(term).to_be_visible()
         assert term.get_attribute("docked") == ""
 
-    def test_xterm(self):
+    def test_xterm_function(self):
         # This is not actually the final test - it is a workspace for
         # experimenting with different Python terminal libraries
         self.pyscript_run(
             """
-            print("\x1b[33mThis is in color\x1b[0m")
-            print("https://www.google.com")
-
-            import rich
-            from rich import print as richprint
-            #from rich import pretty
-            from rich.console import Console as RichConsole
-            from rich.__main__ import make_test_card
-
-            import os
-            import termcolor
-
-            og_print = print
-            rich._console = RichConsole(color_system="256")
-
-            con = RichConsole(color_system="256", width=80)
-
-            #pretty.install()
-
-            richprint("Hello, [bold magenta]Printing[/bold magenta]!", ":vampire:")
-            richprint(f"An object: {[1,2,3,4]}")
-            con.print("Via ", "con.print()", style="bold red")
-
-            os.environ['FORCE_COLOR'] = "True"
-            og_print(termcolor.colored("What about termcolor?", "blue"))
-            con.print(make_test_card())
+            <py-config>
+                xterm = true
+            </py-config>
+            <py-script>
+                print("\x1b[33mYellow\x1b[0m")
+                print("https://www.example.com")
+            </py-script>
             """
         )
+
+        first_line = self.page.locator(".xterm-fg-3").nth(0)  # first line of output
+        expect(first_line).to_have_css(
+            "color", "rgb(196, 160, 0)"
+        )  # check if it's yellow
+
+        # Hover over last character in second line
+        rows = self.page.locator(".xterm-rows")
+        second_line = rows.locator("div").nth(1)
+        last_char = second_line.locator("span").nth(-1)
+        last_char.hover()
+        # It should turn into an underlined link
+        expect(last_char).to_have_css(
+            "text-decoration", "underline solid rgb(255, 255, 255)"
+        )
+
+        # Click the link
+        with self.page.expect_event("popup") as page_info:
+            last_char.click()
+
+        # Once navigation is done, we should have a new page at the right URL
+        popup = page_info.value
+        popup.wait_for_load_state("networkidle")
+        assert (
+            "https://www.example.com" in popup.url
+        )  # Trailing '/' may or may not be present depending on browser?
+
+        """
+        import rich
+        from rich import print as richprint
+        #from rich import pretty
+        from rich.console import Console as RichConsole
+        from rich.__main__ import make_test_card
+
+        import os
+        import termcolor
+
+        og_print = print
+        rich._console = RichConsole(color_system="256")
+
+        con = RichConsole(color_system="256", width=80)
+
+        #pretty.install()
+
+        richprint("Hello, [bold magenta]Printing[/bold magenta]!", ":vampire:")
+        richprint(f"An object: {[1,2,3,4]}")
+        con.print("Via ", "con.print()", style="bold red")
+
+        os.environ['FORCE_COLOR'] = "True"
+        og_print(termcolor.colored("What about termcolor?", "blue"))
+        con.print(make_test_card())
+        """
 
         assert True
