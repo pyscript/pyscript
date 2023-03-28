@@ -13,9 +13,9 @@ import js
 
 try:
     from pyodide.code import eval_code
-    from pyodide.ffi import create_proxy, JsProxy
+    from pyodide.ffi import JsProxy, create_proxy
 except ImportError:
-    from pyodide import create_proxy, eval_code, JsProxy
+    from pyodide import JsProxy, create_proxy, eval_code
 
 
 loop = asyncio.get_event_loop()
@@ -707,7 +707,6 @@ def _install_deprecated_globals_2022_12_1(ns):
         "Please use <code>pyscript</code> instead."
     )
     ns["PyScript"] = DeprecatedGlobal("PyScript", PyScript, message)
-
 
 
 def _run_pyscript(code: str, id: str = None) -> JsProxy:
