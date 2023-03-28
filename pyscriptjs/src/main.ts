@@ -438,6 +438,10 @@ globalExport('pyscript_get_config', pyscript_get_config);
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
-globalApp.readyPromise = globalApp.main();
+
+// This top level execution causes trouble in jest
+if (typeof jest === 'undefined') {
+    globalApp.readyPromise = globalApp.main();
+}
 
 export { version };
