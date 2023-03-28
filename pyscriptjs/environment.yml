@@ -16,6 +16,7 @@ dependencies:
     - markdown
     - pip:
           - pyodide_py==0.22
+          - micropip==0.2.2
           - playwright
           - pytest-playwright
           - pytest-xdist
