@@ -5,7 +5,7 @@ This page will guide you through getting started with PyScript.
 ## Development setup
 
 PyScript does not require any development environment other
-then a web browser (we recommend using [Chrome](https://www.google.com/chrome/)) and a text editor, even though using your [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment) of choice might be convenient.
+than a web browser (we recommend using [Chrome](https://www.google.com/chrome/)) and a text editor, even though using your [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment) of choice might be convenient.
 
 If you're using [VSCode](https://code.visualstudio.com/), the
 [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
@@ -249,8 +249,8 @@ Now that we have a way to explore the data using `py-repl` and a way to create t
       <label for="all"> All 🍧</label>
       <input type="radio" id="chocolate" name="flavour" value="COCOA">
       <label for="chocolate"> Chocolate 🍫</label>
-      <input type="radio" id="cherrie" name="flavour" value="CHERRIES">
-      <label for="cherrie"> Cherries 🍒</label>
+      <input type="radio" id="cherry" name="flavour" value="CHERRIES">
+      <label for="cherry"> Cherries 🍒</label>
       <input type="radio" id="berries" name="flavour" value="BERRY">
       <label for="berries"> Berries 🍓</label>
       <input type="radio" id="cheese" name="flavour" value="CHEESE">

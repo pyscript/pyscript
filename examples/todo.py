@@ -10,7 +10,7 @@ task_list = Element("list-tasks-container")
 new_task_content = Element("new-task-content")
 
 
-def add_task(*ags, **kws):
+def add_task(*args, **kws):
     # ignore empty task
     if not new_task_content.element.value:
         return None

@@ -17,12 +17,30 @@ import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 import type { PyProxy } from 'pyodide';
+import * as Synclink from 'synclink';
 // eslint-disable-next-line
 // @ts-ignore
 import pyscript from './python/pyscript/__init__.py';
 import { robustFetch } from './fetch';
+import { RemoteInterpreter } from './remote_interpreter';
 
 const logger = getLogger('pyscript/main');
+
+/**
+ * Monkey patching the error transfer handler to preserve the `$$isUserError`
+ * marker so as to detect `UserError` subclasses in the error handling code.
+ */
+const throwHandler = Synclink.transferHandlers.get('throw') as Synclink.TransferHandler<
+    { value: unknown },
+    { value: { $$isUserError: boolean } }
+>;
+const old_error_transfer_handler = throwHandler.serialize.bind(throwHandler) as typeof throwHandler.serialize;
+function new_error_transfer_handler({ value }: { value: { $$isUserError: boolean } }) {
+    const result = old_error_transfer_handler({ value });
+    result[0].value.$$isUserError = value.$$isUserError;
+    return result;
+}
+throwHandler.serialize = new_error_transfer_handler;
 
 /* High-level overview of the lifecycle of a PyScript App:
 
@@ -58,13 +76,22 @@ More concretely:
   - PyScriptApp.afterInterpreterLoad() implements all the points >= 5.
 */
 
+export let interpreter;
+// TODO: This is for backwards compatibility, it should be removed
+// when we finish the deprecation cycle of `runtime`
+export let runtime;
+
 export class PyScriptApp {
     config: AppConfig;
     interpreter: InterpreterClient;
+    readyPromise: Promise<void>;
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
-    tagExecutionLock: ReturnType<typeof createLock>; // this is used to ensure that py-script tags are executed sequentially
+    tagExecutionLock: () => Promise<() => void>; // this is used to ensure that py-script tags are executed sequentially
+    _numPendingTags: number;
+    scriptTagsPromise: Promise<void>;
+    resolvedScriptTags: () => void;
 
     constructor() {
         // initialize the builtin plugins
@@ -76,6 +103,8 @@ export class PyScriptApp {
 
         this.plugins.add(new StdioDirector(this._stdioMultiplexer));
         this.tagExecutionLock = createLock();
+        this._numPendingTags = 0;
+        this.scriptTagsPromise = new Promise(res => (this.resolvedScriptTags = res));
     }
 
     // Error handling logic: if during the execution we encounter an error
@@ -83,18 +112,34 @@ export class PyScriptApp {
     // config, file not found in fetch, etc.), we can throw UserError(). It is
     // responsibility of main() to catch it and show it to the user in a
     // proper way (e.g. by using a banner at the top of the page).
-    main() {
+    async main() {
         try {
-            this._realMain();
+            await this._realMain();
         } catch (error) {
-            this._handleUserErrorMaybe(error);
+            await this._handleUserErrorMaybe(error);
         }
     }
 
-    _handleUserErrorMaybe(error) {
-        if (error instanceof UserError) {
-            _createAlertBanner(error.message, 'error', error.messageType);
-            this.plugins.onUserError(error);
+    incrementPendingTags() {
+        this._numPendingTags += 1;
+    }
+
+    decrementPendingTags() {
+        if (this._numPendingTags <= 0) {
+            throw new Error('INTERNAL ERROR: assertion _numPendingTags > 0 failed');
+        }
+        this._numPendingTags -= 1;
+        if (this._numPendingTags === 0) {
+            this.resolvedScriptTags();
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async _handleUserErrorMaybe(error: any) {
+        const e = error as UserError;
+        if (e && e.$$isUserError) {
+            _createAlertBanner(e.message, 'error', e.messageType);
+            await this.plugins.onUserError(e);
         } else {
             throw error;
         }
@@ -103,11 +148,15 @@ export class PyScriptApp {
     // ============ lifecycle ============
 
     // lifecycle (1)
-    _realMain() {
+    async _realMain() {
         this.loadConfig();
-        this.plugins.configure(this.config);
+        await this.plugins.configure(this.config);
         this.plugins.beforeLaunch(this.config);
-        this.loadInterpreter();
+        await this.loadInterpreter();
+        interpreter = this.interpreter;
+        // TODO: This is for backwards compatibility, it should be removed
+        // when we finish the deprecation cycle of `runtime`
+        runtime = this.interpreter;
     }
 
     // lifecycle (2)
@@ -131,7 +180,7 @@ export class PyScriptApp {
     }
 
     // lifecycle (4)
-    loadInterpreter() {
+    async loadInterpreter() {
         logger.info('Initializing interpreter');
         if (this.config.interpreters.length == 0) {
             throw new UserError(ErrorCode.BAD_CONFIG, 'Fatal error: config.interpreter is empty');
@@ -143,24 +192,34 @@ export class PyScriptApp {
 
         const interpreter_cfg = this.config.interpreters[0];
 
-        this.interpreter = new InterpreterClient(this.config, this._stdioMultiplexer);
+        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
+        const { port1, port2 } = new MessageChannel();
+        port1.start();
+        port2.start();
+        Synclink.expose(remote_interpreter, port2);
+        const wrapped_remote_interpreter = Synclink.wrap(port1);
+        this.interpreter = new InterpreterClient(
+            this.config,
+            this._stdioMultiplexer,
+            wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
+            remote_interpreter,
+        );
 
         this.logStatus(`Downloading ${interpreter_cfg.name}...`);
 
-        // download pyodide by using a <script> tag. Once it's ready, the
-        // "load" event will be fired and the exeuction logic will continue.
-        // Note that the load event is fired asynchronously and thus any
-        // exception which is throw inside the event handler is *NOT* caught
-        // by the try/catch inside main(): that's why we need to .catch() it
-        // explicitly and call _handleUserErrorMaybe also there.
-        const script = document.createElement('script'); // create a script DOM node
-        script.src = this.interpreter._remote.src;
-        script.addEventListener('load', () => {
-            this.afterInterpreterLoad(this.interpreter).catch(error => {
-                this._handleUserErrorMaybe(error);
-            });
-        });
-        document.head.appendChild(script);
+        /* Dynamically download and import pyodide: the import() puts a
+           loadPyodide() function into globalThis, which is later called by
+           RemoteInterpreter.
+
+           This is suboptimal: ideally, we would like to import() a module
+           which exports loadPyodide(), but this plays badly with workers
+           because at the moment of writing (2023-03-24) Firefox does not
+           support ES modules in workers:
+           https://caniuse.com/mdn-api_worker_worker_ecmascript_modules
+        */
+        const interpreterURL = await this.interpreter._remote.src;
+        await import(interpreterURL);
+        await this.afterInterpreterLoad(this.interpreter);
     }
 
     // lifecycle (5)
@@ -180,24 +239,25 @@ export class PyScriptApp {
         await mountElements(interpreter);
 
         // lifecycle (6.5)
-        this.plugins.afterSetup(interpreter);
+        await this.plugins.afterSetup(interpreter);
 
         //Refresh module cache in case plugins have modified the filesystem
-        interpreter._remote.invalidate_module_path_cache();
+        await interpreter._remote.invalidate_module_path_cache();
         this.logStatus('Executing <py-script> tags...');
-        this.executeScripts(interpreter);
+        await this.executeScripts(interpreter);
 
         this.logStatus('Initializing web components...');
         // lifecycle (8)
-        createCustomElements(interpreter);
 
+        //Takes a runtime and a reference to the PyScriptApp (to access plugins)
+        createCustomElements(interpreter, this);
         await initHandlers(interpreter);
 
         // NOTE: interpreter message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
         // change it also in tests/integration/support.py
         this.logStatus('Startup complete');
-        this.plugins.afterStartup(interpreter);
+        await this.plugins.afterStartup(interpreter);
         logger.info('PyScript page fully initialized');
     }
 
@@ -209,19 +269,23 @@ export class PyScriptApp {
         logger.info('importing pyscript');
 
         // Save and load pyscript.py from FS
-        interpreter._remote.FS.mkdirTree('/home/pyodide/pyscript');
-        interpreter._remote.FS.writeFile('pyscript/__init__.py', pyscript as string);
+        await interpreter.mkdirTree('/home/pyodide/pyscript');
+        await interpreter.writeFile('pyscript/__init__.py', pyscript as string);
         //Refresh the module cache so Python consistently finds pyscript module
-        interpreter._remote.invalidate_module_path_cache();
+        await interpreter._remote.invalidate_module_path_cache();
 
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
-        const pyscript_module = interpreter._remote.interface.pyimport('pyscript');
-        pyscript_module.define_custom_element = define_custom_element;
-        pyscript_module.showWarning = showWarning;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        pyscript_module._set_version_info(version);
-        pyscript_module.destroy();
+        // eventually replace the setHandler calls with interpreter._remote.setHandler i.e. the ones mentioned below
+        // await interpreter._remote.setHandler('define_custom_element', Synclink.proxy(define_custom_element));
+        // await interpreter._remote.setHandler('showWarning', Synclink.proxy(showWarning));
+        interpreter._unwrapped_remote.setHandler('define_custom_element', define_custom_element);
+        interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
+        const pyscript_module = (await interpreter.pyimport('pyscript')) as Synclink.Remote<
+            PyProxy & { _set_version_info(string): void }
+        >;
+        await pyscript_module._set_version_info(version);
+        await pyscript_module.destroy();
 
         // import some carefully selected names into the global namespace
         await interpreter.run(`
@@ -238,7 +302,7 @@ export class PyScriptApp {
         await this.fetchPaths(interpreter);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
-        interpreter._remote.invalidate_module_path_cache();
+        await interpreter._remote.invalidate_module_path_cache();
         // Finally load plugins
         await this.fetchUserPlugins(interpreter);
     }
@@ -338,7 +402,7 @@ export class PyScriptApp {
         await interpreter._remote.loadFromFile(filename, filePath);
 
         //refresh module cache before trying to import module files into interpreter
-        interpreter._remote.invalidate_module_path_cache();
+        await interpreter._remote.invalidate_module_path_cache();
 
         const modulename = filePath.replace(/^.*[\\/]/, '').replace('.py', '');
 
@@ -346,8 +410,10 @@ export class PyScriptApp {
         // TODO: This is very specific to Pyodide API and will not work for other interpreters,
         //       when we add support for other interpreters we will need to move this to the
         //       interpreter API level and allow each one to implement it in its own way
-        const module = interpreter._remote.interface.pyimport(modulename);
-        if (typeof module.plugin !== 'undefined') {
+
+        // eventually replace with interpreter.pyimport(modulename);
+        const module = interpreter._unwrapped_remote.pyimport(modulename);
+        if (typeof (await module.plugin) !== 'undefined') {
             const py_plugin = module.plugin as PyProxy & { init(app: PyScriptApp): void };
             py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);
@@ -358,10 +424,13 @@ modules must contain a "plugin" attribute. For more information check the plugin
     }
 
     // lifecycle (7)
-    executeScripts(interpreter: InterpreterClient) {
+    async executeScripts(interpreter: InterpreterClient) {
         // make_PyScript takes an interpreter and a PyScriptApp as arguments
         this.PyScript = make_PyScript(interpreter, this);
         customElements.define('py-script', this.PyScript);
+        this.incrementPendingTags();
+        this.decrementPendingTags();
+        await this.scriptTagsPromise;
     }
 
     // ================= registraton API ====================
@@ -384,10 +453,6 @@ globalExport('pyscript_get_config', pyscript_get_config);
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
-globalApp.main();
+globalApp.readyPromise = globalApp.main();
 
 export { version };
-export const interpreter = globalApp.interpreter;
-// TODO: This is for backwards compatibility, it should be removed
-// when we finish the deprecation cycle of `runtime`
-export const runtime = globalApp.interpreter;

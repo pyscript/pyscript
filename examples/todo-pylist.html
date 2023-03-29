@@ -47,7 +47,7 @@
                     from js import document
                     from pyodide.ffi.wrappers import add_event_listener
 
-                    def add_task(*ags, **kws):
+                    def add_task(*args, **kws):
                       # create a new dictionary representing the new task
                       new_task_content = Element("new-task-content")
                       task = { "content": new_task_content.value,  "done": False, "created_at": dt.now() }

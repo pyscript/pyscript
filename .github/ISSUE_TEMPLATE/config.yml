@@ -1,4 +1,4 @@
-blank_issues_enabled: false
+blank_issues_enabled: true
 contact_links:
   - name: Feature Proposals
     url: https://github.com/pyscript/pyscript/discussions/new?category=proposals

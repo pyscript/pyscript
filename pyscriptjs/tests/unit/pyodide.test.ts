@@ -2,17 +2,27 @@ import type { AppConfig } from '../../src/pyconfig';
 import { InterpreterClient } from '../../src/interpreter_client';
 import { RemoteInterpreter } from '../../src/remote_interpreter';
 import { CaptureStdio } from '../../src/stdio';
-
-import { TextEncoder, TextDecoder } from 'util';
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
+import * as Synclink from 'synclink';
+import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
 
 describe('RemoteInterpreter', () => {
     let interpreter: InterpreterClient;
     let stdio: CaptureStdio = new CaptureStdio();
+    const { port1, port2 } = new MessageChannel();
     beforeAll(async () => {
-        const config: AppConfig = { interpreters: [{ src: '../pyscriptjs/node_modules/pyodide/pyodide.js' }] };
-        interpreter = new InterpreterClient(config, stdio);
+        const SRC = '../pyscriptjs/node_modules/pyodide/pyodide.js';
+        const config: AppConfig = { interpreters: [{ src: SRC }] };
+        const remote_interpreter = new RemoteInterpreter(SRC);
+        port1.start();
+        port2.start();
+        Synclink.expose(remote_interpreter, port2);
+        const wrapped_remote_interpreter = Synclink.wrap(port1);
+        interpreter = new InterpreterClient(
+            config,
+            stdio,
+            wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
+            remote_interpreter,
+        );
 
         /**
          * Since import { loadPyodide } from 'pyodide';
@@ -42,12 +52,17 @@ describe('RemoteInterpreter', () => {
         await interpreter.initializeRemote();
     });
 
+    afterAll(async () => {
+        port1.close();
+        port2.close();
+    });
+
     it('should check if interpreter is an instance of abstract Interpreter', async () => {
         expect(interpreter).toBeInstanceOf(InterpreterClient);
     });
 
     it('should check if interpreter is an instance of RemoteInterpreter', async () => {
-        expect(interpreter._remote).toBeInstanceOf(RemoteInterpreter);
+        expect(interpreter._unwrapped_remote).toBeInstanceOf(RemoteInterpreter);
     });
 
     it('should check if interpreter can run python code asynchronously', async () => {
@@ -61,9 +76,11 @@ describe('RemoteInterpreter', () => {
     });
 
     it('should check if interpreter is able to load a package', async () => {
-        await interpreter._remote.loadPackage('numpy');
+        stdio.reset();
+        await interpreter._unwrapped_remote.loadPackage('numpy');
         await interpreter.run('import numpy as np');
         await interpreter.run('x = np.ones((10,))');
-        expect(interpreter.globals.get('x').toJs()).toBeInstanceOf(Float64Array);
+        await interpreter.run('print(x)');
+        expect(stdio.captured_stdout).toBe('[1. 1. 1. 1. 1. 1. 1. 1. 1. 1.]\n');
     });
 });

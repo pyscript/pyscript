@@ -54,18 +54,18 @@ plugin = TestLogger()
 
 # Source of script that defines a plugin with only beforePyScriptExec and
 # afterPyScriptExec methods
-EXEC_HOOKS_PLUGIN_CODE = """
+PYSCRIPT_HOOKS_PLUGIN_CODE = """
 from pyscript import Plugin
 from js import console
 
 class ExecTestLogger(Plugin):
 
-    def beforePyScriptExec(self, interpreter, src, pyScriptTag):
+    async def beforePyScriptExec(self, interpreter, src, pyScriptTag):
         console.log(f'beforePyScriptExec called')
         console.log(f'before_src:{src}')
         console.log(f'before_id:{pyScriptTag.id}')
 
-    def afterPyScriptExec(self, interpreter, src, pyScriptTag, result):
+    async def afterPyScriptExec(self, interpreter, src, pyScriptTag, result):
         console.log(f'afterPyScriptExec called')
         console.log(f'after_src:{src}')
         console.log(f'after_id:{pyScriptTag.id}')
@@ -73,6 +73,31 @@ class ExecTestLogger(Plugin):
 
 
 plugin = ExecTestLogger()
+"""
+
+# Source of script that defines a plugin with only beforePyScriptExec and
+# afterPyScriptExec methods
+PYREPL_HOOKS_PLUGIN_CODE = """
+from pyscript import Plugin
+from js import console
+
+console.warn("This is in pyrepl hooks file")
+
+class PyReplTestLogger(Plugin):
+
+    def beforePyReplExec(self, interpreter, src, outEl, pyReplTag):
+        console.log(f'beforePyReplExec called')
+        console.log(f'before_src:{src}')
+        console.log(f'before_id:{pyReplTag.id}')
+
+    def afterPyReplExec(self, interpreter, src, outEl, pyReplTag, result):
+        console.log(f'afterPyReplExec called')
+        console.log(f'after_src:{src}')
+        console.log(f'after_id:{pyReplTag.id}')
+        console.log(f'result:{result}')
+
+
+plugin = PyReplTestLogger()
 """
 
 # Source of a script that doesn't call define a `plugin` attribute
@@ -195,23 +220,30 @@ class TestPlugin(PyScriptTest):
             "beforeLaunch",
             "beforePyScriptExec",
             "afterPyScriptExec",
+            "beforePyReplExec",
+            "afterPyReplExec",
         ]
 
         # EXPECT it to log the correct logs for the events it intercepts
         log_lines = self.console.log.lines
-        for method in hooks_available:
-            assert log_lines.count(f"{method} called") == 1
+        num_calls = {
+            method: log_lines.count(f"{method} called") for method in hooks_available
+        }
+        expected_calls = {method: 1 for method in hooks_available}
+        assert num_calls == expected_calls
 
         # EXPECT it to NOT be called (hence not log anything) the events that happen
         # before it's ready, hence is not called
-        for method in hooks_unavailable:
-            assert f"{method} called" not in log_lines
+        unavailable_called = {
+            method: f"{method} called" in log_lines for method in hooks_unavailable
+        }
+        assert unavailable_called == {method: False for method in hooks_unavailable}
 
         # TODO: It'd be actually better to check that the events get called in order
 
     @prepare_test(
         "exec_test_logger",
-        EXEC_HOOKS_PLUGIN_CODE,
+        PYSCRIPT_HOOKS_PLUGIN_CODE,
         template=HTML_TEMPLATE_NO_TAG + "\n<py-script id='pyid'>x=2; x</py-script>",
     )
     def test_pyscript_exec_hooks(self):
@@ -222,6 +254,30 @@ class TestPlugin(PyScriptTest):
 
         assert "beforePyScriptExec called" in log_lines
         assert "afterPyScriptExec called" in log_lines
+
+        # These could be made better with a utility function that found log lines
+        # that match a filter function, or start with something
+        assert "before_src:x=2; x" in log_lines
+        assert "before_id:pyid" in log_lines
+        assert "after_src:x=2; x" in log_lines
+        assert "after_id:pyid" in log_lines
+        assert "result:2" in log_lines
+
+    @prepare_test(
+        "pyrepl_test_logger",
+        PYREPL_HOOKS_PLUGIN_CODE,
+        template=HTML_TEMPLATE_NO_TAG + "\n<py-repl id='pyid'>x=2; x</py-repl>",
+    )
+    def test_pyrepl_exec_hooks(self):
+        py_repl = self.page.locator("py-repl")
+        py_repl.locator("button").click()
+        # allow afterPyReplExec to also finish before the test finishes
+        self.wait_for_console("result:2")
+
+        log_lines: list[str] = self.console.log.lines
+
+        assert "beforePyReplExec called" in log_lines
+        assert "afterPyReplExec called" in log_lines
 
         # These could be made better with a utility function that found log lines
         # that match a filter function, or start with something

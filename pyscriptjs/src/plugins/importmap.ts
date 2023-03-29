@@ -47,7 +47,7 @@ export class ImportmapPlugin extends Plugin {
                 }
 
                 logger.info('Registering JS module', name);
-                interpreter._remote.registerJsModule(name, exports);
+                await interpreter._remote.registerJsModule(name, exports);
             }
         }
     }

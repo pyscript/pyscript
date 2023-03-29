@@ -55,7 +55,7 @@ export class Plugin {
     /** The source of a <py-script>> tag has been fetched, and we're about
      * to evaluate that source using the provided interpreter.
      *
-     * @param options.interpreter The Interpreter object that will be used to evaluated the Python source code
+     * @param options.interpreter The Interpreter object that will be used to evaluate the Python source code
      * @param options.src {string} The Python source code to be evaluated
      * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
      */
@@ -66,7 +66,7 @@ export class Plugin {
     /** The Python in a <py-script> has just been evaluated, but control
      * has not been ceded back to the JavaScript event loop yet
      *
-     * @param options.interpreter The Interpreter object that will be used to evaluated the Python source code
+     * @param options.interpreter The Interpreter object that will be used to evaluate the Python source code
      * @param options.src {string} The Python source code to be evaluated
      * @param options.pyScriptTag The <py-script> HTML tag that originated the evaluation
      * @param options.result The returned result of evaluating the Python (if any)
@@ -75,6 +75,36 @@ export class Plugin {
         interpreter: InterpreterClient;
         src: string;
         pyScriptTag: PyScriptTag;
+        result: any;
+    }) {
+        /* empty */
+    }
+
+    /** The source of the <py-repl> tag has been fetched and its output-element determined;
+     * we're about to evaluate the source using the provided interpreter
+     *
+     * @param options.interpreter The interpreter object that will be used to evaluated the Python source code
+     * @param options.src {string} The Python source code to be evaluated
+     * @param options.outEl The element that the result of the REPL evaluation will be output to.
+     * @param options.pyReplTag The <py-repl> HTML tag the originated the evaluation
+     */
+    beforePyReplExec(options: { interpreter: InterpreterClient; src: string; outEl: HTMLElement; pyReplTag: any }) {
+        /* empty */
+    }
+
+    /**
+     *
+     * @param options.interpreter  The interpreter object that will be used to evaluated the Python source code
+     * @param options.src  {string} The Python source code to be evaluated
+     * @param options.outEl  The element that the result of the REPL evaluation will be output to.
+     * @param options.pyReplTag  The <py-repl> HTML tag the originated the evaluation
+     * @param options.result The result of evaluating the Python (if any)
+     */
+    afterPyReplExec(options: {
+        interpreter: InterpreterClient;
+        src: string;
+        outEl: HTMLElement;
+        pyReplTag: HTMLElement;
         result: any;
     }) {
         /* empty */
@@ -112,10 +142,10 @@ export class PluginManager {
         this._pythonPlugins.push(plugin);
     }
 
-    configure(config: AppConfig) {
+    async configure(config: AppConfig) {
         for (const p of this._plugins) p.configure?.(config);
 
-        for (const p of this._pythonPlugins) p.configure?.(config);
+        for (const p of this._pythonPlugins) await p.configure?.(config);
     }
 
     beforeLaunch(config: AppConfig) {
@@ -128,7 +158,7 @@ export class PluginManager {
         }
     }
 
-    afterSetup(interpreter: InterpreterClient) {
+    async afterSetup(interpreter: InterpreterClient) {
         for (const p of this._plugins) {
             try {
                 p.afterSetup?.(interpreter);
@@ -137,31 +167,63 @@ export class PluginManager {
             }
         }
 
-        for (const p of this._pythonPlugins) p.afterSetup?.(interpreter);
+        for (const p of this._pythonPlugins) await p.afterSetup?.(interpreter);
     }
 
-    afterStartup(interpreter: InterpreterClient) {
+    async afterStartup(interpreter: InterpreterClient) {
         for (const p of this._plugins) p.afterStartup?.(interpreter);
 
-        for (const p of this._pythonPlugins) p.afterStartup?.(interpreter);
+        for (const p of this._pythonPlugins) await p.afterStartup?.(interpreter);
     }
 
-    beforePyScriptExec(options: { interpreter: InterpreterClient; src: string; pyScriptTag: PyScriptTag }) {
+    async beforePyScriptExec(options: { interpreter: InterpreterClient; src: string; pyScriptTag: PyScriptTag }) {
         for (const p of this._plugins) p.beforePyScriptExec?.(options);
 
-        for (const p of this._pythonPlugins) p.beforePyScriptExec?.callKwargs(options);
+        for (const p of this._pythonPlugins)
+            await p.beforePyScriptExec(options.interpreter, options.src, options.pyScriptTag);
     }
 
-    afterPyScriptExec(options: { interpreter: InterpreterClient; src: string; pyScriptTag: PyScriptTag; result: any }) {
+    async afterPyScriptExec(options: {
+        interpreter: InterpreterClient;
+        src: string;
+        pyScriptTag: PyScriptTag;
+        result: any;
+    }) {
         for (const p of this._plugins) p.afterPyScriptExec?.(options);
 
-        for (const p of this._pythonPlugins) p.afterPyScriptExec?.callKwargs(options);
+        for (const p of this._pythonPlugins)
+            await p.afterPyScriptExec(options.interpreter, options.src, options.pyScriptTag, options.result);
     }
 
-    onUserError(error: UserError) {
+    async beforePyReplExec(options: {
+        interpreter: InterpreterClient;
+        src: string;
+        outEl: HTMLElement;
+        pyReplTag: any;
+    }) {
+        for (const p of this._plugins) p.beforePyReplExec?.(options);
+
+        for (const p of this._pythonPlugins)
+            await p.beforePyReplExec?.(options.interpreter, options.src, options.outEl, options.pyReplTag);
+    }
+
+    async afterPyReplExec(options: { interpreter: InterpreterClient; src: string; outEl; pyReplTag; result }) {
+        for (const p of this._plugins) p.afterPyReplExec?.(options);
+
+        for (const p of this._pythonPlugins)
+            await p.afterPyReplExec?.(
+                options.interpreter,
+                options.src,
+                options.outEl,
+                options.pyReplTag,
+                options.result,
+            );
+    }
+
+    async onUserError(error: UserError) {
         for (const p of this._plugins) p.onUserError?.(error);
 
-        for (const p of this._pythonPlugins) p.onUserError?.(error);
+        for (const p of this._pythonPlugins) await p.onUserError?.(error);
     }
 }
 

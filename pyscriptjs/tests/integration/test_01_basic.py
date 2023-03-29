@@ -176,8 +176,8 @@ class TestBasic(PyScriptTest):
             """
         )
         self.page.locator("button").click()
-        self.page.locator("py-script")  # wait until <py-script> appears
 
+        self.page.wait_for_selector("py-terminal")
         assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "hello world"
 
