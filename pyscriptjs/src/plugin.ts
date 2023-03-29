@@ -309,13 +309,13 @@ export function validateConfigParameter<AppConfig>(
     name: string,
     options: ReturnType<typeof checkedConfigOption>,
 ) {
-    const value = config[name];
+    const value = config[name] as BaseConfigObject;
     if (value !== undefined && !options.possible_values.includes(value)) {
         const got = JSON.stringify(value);
         throw new UserError(
             ErrorCode.BAD_CONFIG,
             `Invalid value for config.${name}: the only accepted` +
-                `values are: ${options.possible_values}, got "${got}".`,
+                `values are: [${options.possible_values.join(',')}], got "${got}".`,
         );
     }
     if (value === undefined) {
