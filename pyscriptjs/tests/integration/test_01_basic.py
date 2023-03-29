@@ -10,6 +10,18 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
+                import js
+                js.console.log('hello pyscript')
+            </py-script>
+            """
+        )
+        assert self.console.log.lines[0] == self.PY_COMPLETE
+        assert self.console.log.lines[-1] == "hello pyscript"
+
+    def test_print(self):
+        self.pyscript_run(
+            """
+            <py-script>
                 print('hello pyscript')
             </py-script>
             """
