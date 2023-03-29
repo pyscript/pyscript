@@ -297,6 +297,34 @@ export function checkedConfigOption<F extends BaseConfigObject, D extends F>(val
     return value;
 }
 
+// //////////////////
+// Working on making an interface for a user to pass their own validation function here;
+// this work is not yet complete
+
+interface FunctionConfigOption<F extends (B: BaseConfigObject) => boolean, D extends Parameters<F>[number]> {
+    validator: F;
+    hint: string;
+    default: D;
+}
+
+export function FunctionCheckedConfigOption<
+    F extends (B: BaseConfigObject) => boolean,
+    D extends Parameters<F>[number],
+>(value: FunctionConfigOption<F, D>) {
+    return value;
+}
+
+export function member_of(values: Array<BaseConfigObject>) {
+    return {
+        validator: (valueFromConfig: BaseConfigObject) => values.includes(valueFromConfig),
+        hint: `The only accepted values are: ${values.map(item => JSON.stringify(item)).join(', ')}]`,
+    };
+}
+
+//const test_options = FunctionCheckedConfigOption({ validator: (s: string) => false, hint: 'foo', default: 'foo' });
+
+////////
+
 /**
  * Validate that parameter the user provided to py-config is one of the acceptable values;
  * if not, throw an error explaining the bad value
