@@ -283,7 +283,7 @@ type BaseConfigObject = string | boolean | number | object;
  * const terminal_settings: ConfigOption<[true, false, 'auto'][number], 'auto'>
  *      = {possible_values: [true, false, 'auto'], default:'auto'}
  *
- * The possible values are constained to be of type BaseConfigObject (above),
+ * The possible values are constrained to be of type BaseConfigObject (above),
  * i.e. if we want to validate more types of things, BaseConfigObject
  * will need to be extended
  */
