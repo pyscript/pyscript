@@ -226,11 +226,11 @@ export class RemoteInterpreter extends Object {
     /**
      *
      * @param path : the path in the filesystem
-     * @param fetch_path : the path to be fetched
+     * @param url : the url to be fetched
      *
-     * Given a file available at `fetch_path` URL (eg:
-     * `http://dummy.com/hi.py`), the function downloads the file and saves it
-     * to the `path` (eg: `a/b/c/foo.py`) on the FS.
+     * Given a file available at `url` URL (eg: `http://dummy.com/hi.py`), the
+     * function downloads the file and saves it to the `path` (eg:
+     * `a/b/c/foo.py`) on the FS.
      *
      * Example usage: await loadFromFile(`a/b/c/foo.py`,
      * `http://dummy.com/hi.py`)
@@ -246,13 +246,13 @@ export class RemoteInterpreter extends Object {
      * in `/home/pyodide/a/b.py`, `../a/b.py` will be placed into `/home/a/b.py`
      * and `/a/b.py` will be placed into `/a/b.py`.
      */
-    async loadFromFile(path: string, fetch_path: string): Promise<void> {
+    async loadFileFromURL(path: string, url: string): Promise<void> {
         path = this.PATH_FS.resolve(path);
         const dir: string = this.PATH.dirname(path);
         this.FS.mkdirTree(dir);
 
         // `robustFetch` checks for failures in getting a response
-        const response = await robustFetch(fetch_path);
+        const response = await robustFetch(url);
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
 
