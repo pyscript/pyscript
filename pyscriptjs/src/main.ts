@@ -1,4 +1,4 @@
-cimport './styles/pyscript_base.css';
+import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
