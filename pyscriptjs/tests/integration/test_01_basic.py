@@ -355,7 +355,7 @@ class TestBasic(PyScriptTest):
         )
         banner = self.page.locator(".alert-banner")
         expected_message = (
-            'The "py-mount" attribute is deprecated.'
+            'The "py-mount" attribute is deprecated. '
             + "Please add references to HTML Elements manually in your script."
         )
         assert banner.inner_text() == expected_message
