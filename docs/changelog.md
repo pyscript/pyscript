@@ -53,7 +53,7 @@ Bug fixes
 - Fixed an issue where `pyscript` would not be available when using the minified version of PyScript. ([#1054](https://github.com/pyscript/pyscript/pull/1054))
 - Fixed missing closing tag when rendering an image with `display`. ([#1058](https://github.com/pyscript/pyscript/pull/1058))
 - Fixed a bug where Python plugins methods were being executed twice. ([#1064](https://github.com/pyscript/pyscript/pull/1064))
-- Fixed a bug where upon clicking a button attached to event, there are repetitive error messages displayed ([#1253](https://github.com/pyscript/pyscript/issues/1253))
+- Fixed a bug where upon clicking a button attached to event, there are repetitive error messages displayed ([#1327](https://github.com/pyscript/pyscript/pull/1327))
 
 Enhancements
 ------------
