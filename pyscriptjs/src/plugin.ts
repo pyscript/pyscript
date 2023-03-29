@@ -267,43 +267,49 @@ export function define_custom_element(tag: string, pyElementClass: PyElementClas
     customElements.define(tag, ProxyCustomElement);
 }
 
-// Members of py-config in plug that we want to validate must be one of these types; 
+// Members of py-config in plug that we want to validate must be one of these types;
 // see next comment for more detail
-type BaseConfigObject = string | boolean | number | object
+type BaseConfigObject = string | boolean | number | object;
 
 /* The following interface (ConfigOption) and function (checkedConfigOption)
  * work together to ensure that the default value for ConfigOptions objects
  * settings objects must be one of the members of the array of possible values.
- * 
+ *
  * checkedConfigOption allows us to create the configuration options objects with
  * correct typing without having to duplicate all the parameters.
  * I.e, the following would also work, from a types perspective, but all the values
  * have to be entered twice for each type:
- * 
- * const terminal_settings: ConfigOption<[true, false, 'auto'][number], 'auto'> 
+ *
+ * const terminal_settings: ConfigOption<[true, false, 'auto'][number], 'auto'>
  *      = {possible_values: [true, false, 'auto'], default:'auto'}
- * 
+ *
  * The possible values are constained to be of type BaseConfigObject (above),
  * i.e. if we want to validate more types of things, BaseConfigObject
  * will need to be extended
  */
 
-interface ConfigOption<F extends BaseConfigObject, D extends F>{
-    possible_values: ReadonlyArray<F>
-    default: D
+interface ConfigOption<F extends BaseConfigObject, D extends F> {
+    possible_values: ReadonlyArray<F>;
+    default: D;
 }
 
-export function checkedConfigOption<F extends BaseConfigObject, D extends F>(value: ConfigOption<F, D>){return value}
+export function checkedConfigOption<F extends BaseConfigObject, D extends F>(value: ConfigOption<F, D>) {
+    return value;
+}
 
 /**
- * Validate that parameter the user provided to py-config is one of the acceptable values; 
+ * Validate that parameter the user provided to py-config is one of the acceptable values;
  * if not, throw an error explaining the bad value
  * @param config - The (extended) AppConfig object from py-config
  * @param {string} name - The name of the key in py-config to be checked
  * @param {possible_vlaues: Array.<BaseConfigObject>, default: BaseConfigObject} options - An object of the specified type, enumerating the acceptable values for this configuration object and the default value
  */
-export function validateConfigParameter<AppConfig> (config: AppConfig, name: string, options: ReturnType<typeof checkedConfigOption>) {
-    const value = config[name]
+export function validateConfigParameter<AppConfig>(
+    config: AppConfig,
+    name: string,
+    options: ReturnType<typeof checkedConfigOption>,
+) {
+    const value = config[name];
     if (value !== undefined && !options.possible_values.includes(value)) {
         const got = JSON.stringify(value);
         throw new UserError(
@@ -315,4 +321,4 @@ export function validateConfigParameter<AppConfig> (config: AppConfig, name: str
     if (value === undefined) {
         config[name] = options.default;
     }
-};
+}

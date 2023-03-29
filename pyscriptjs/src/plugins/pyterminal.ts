@@ -1,6 +1,6 @@
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
-import { Plugin, checkedConfigOption, validateConfigParameter} from '../plugin';
+import { Plugin, checkedConfigOption, validateConfigParameter } from '../plugin';
 import { UserError, ErrorCode } from '../exceptions';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
@@ -9,13 +9,13 @@ import { InterpreterClient } from '../interpreter_client';
 const logger = getLogger('py-terminal');
 
 // Configuration options for this plugin go here:
-const terminal_settings = checkedConfigOption({possible_values: [true, false, 'auto'], default: 'auto'})
-const docked_settings = checkedConfigOption({possible_values: [true, false, 'docked'], default: 'docked'})
+const terminal_settings = checkedConfigOption({ possible_values: [true, false, 'auto'], default: 'auto' });
+const docked_settings = checkedConfigOption({ possible_values: [true, false, 'docked'], default: 'docked' });
 
-type AppConfigStyle = AppConfig & { 
-    terminal?: typeof terminal_settings.possible_values[number],
-    docked?: typeof docked_settings.possible_values[number]
-    };
+type AppConfigStyle = AppConfig & {
+    terminal?: (typeof terminal_settings.possible_values)[number];
+    docked?: (typeof docked_settings.possible_values)[number];
+};
 
 export class PyTerminalPlugin extends Plugin {
     app: PyScriptApp;
