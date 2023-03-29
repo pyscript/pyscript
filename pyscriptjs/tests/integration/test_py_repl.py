@@ -634,7 +634,7 @@ class TestPyRepl(PyScriptTest):
             <div id="replOutput4"></div>
             """)
         errorMsg = (
-            "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            "(PY0404): Fetching from URL ./loadReplSrc4.py failed with error 404 (Not Found). Are your filename and path correct?"
         )
         assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.error.lines[-1] == errorMsg
