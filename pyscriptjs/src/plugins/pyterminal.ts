@@ -1,29 +1,21 @@
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
-import { Plugin } from '../plugin';
+import { Plugin, checkedConfigOption, validateConfigParameter} from '../plugin';
 import { UserError, ErrorCode } from '../exceptions';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
 
-type AppConfigStyle = AppConfig & { terminal?: boolean | 'auto'; docked?: boolean | 'docked' };
-
 const logger = getLogger('py-terminal');
 
-const validate = (config: AppConfigStyle, name: string, default_: string) => {
-    const value = config[name] as undefined | boolean | string;
-    if (value !== undefined && value !== true && value !== false && value !== default_) {
-        const got = JSON.stringify(value);
-        throw new UserError(
-            ErrorCode.BAD_CONFIG,
-            `Invalid value for config.${name}: the only accepted` +
-                `values are true, false and "${default_}", got "${got}".`,
-        );
-    }
-    if (value === undefined) {
-        config[name] = default_;
-    }
-};
+// Configuration options for this plugin go here:
+const terminal_settings = checkedConfigOption({possible_values: [true, false, 'auto'], default: 'auto'})
+const docked_settings = checkedConfigOption({possible_values: [true, false, 'docked'], default: 'docked'})
+
+type AppConfigStyle = AppConfig & { 
+    terminal?: typeof terminal_settings.possible_values[number],
+    docked?: typeof docked_settings.possible_values[number]
+    };
 
 export class PyTerminalPlugin extends Plugin {
     app: PyScriptApp;
@@ -35,8 +27,8 @@ export class PyTerminalPlugin extends Plugin {
 
     configure(config: AppConfigStyle) {
         // validate the terminal config and handle default values
-        validate(config, 'terminal', 'auto');
-        validate(config, 'docked', 'docked');
+        validateConfigParameter(config, 'terminal', terminal_settings);
+        validateConfigParameter(config, 'docked', docked_settings);
     }
 
     beforeLaunch(config: AppConfigStyle) {
