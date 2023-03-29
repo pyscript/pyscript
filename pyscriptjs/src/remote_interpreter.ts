@@ -35,11 +35,11 @@ type PATHInterface = {
     dirname(path: string): string;
 } & ProxyMarked;
 
-type PyScriptPyInterface = ProxyMarked & {
+type PyScriptPyModule = ProxyMarked & {
     _set_version_info(ver: string): void;
     uses_top_level_await(code: string): boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    _run_pyscript(code: string, id?: string): { result: any };
+    _run_pyscript(code: string, display_target_id?: string): { result: any };
 };
 
 /*
@@ -63,7 +63,7 @@ export class RemoteInterpreter extends Object {
     FS: FSInterface;
     PATH: PATHInterface;
     PATH_FS: PATHFSInterface;
-    pyscript_py: PyScriptPyInterface;
+    pyscript_py: PyScriptPyModule;
 
     globals: PyProxyDict & ProxyMarked;
     // TODO: Remove this once `runtimes` is removed!
