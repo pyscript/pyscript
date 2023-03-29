@@ -237,6 +237,12 @@ export async function mountElements(interpreter: InterpreterClient) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
     logger.info(`py-mount: found ${matches.length} elements`);
 
+    if (matches.length > 0) {
+        const deprecationMessage =
+            'The "py-mount" attribute is deprecated. Please add references to HTML Elements manually in your script.';
+        createDeprecationWarning(deprecationMessage, 'py-mount');
+    }
+
     let source = '';
     for (const el of matches) {
         const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');

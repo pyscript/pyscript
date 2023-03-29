@@ -345,3 +345,16 @@ class TestBasic(PyScriptTest):
         btn.click()
         assert self.console.log.lines[-1] == "hello world!"
         assert self.console.error.lines == []
+
+    def test_py_mount_shows_deprecation_warning(self):
+        self.pyscript_run(
+            """
+            <div id="foo" py-mount></div>
+            """
+        )
+        banner = self.page.locator(".alert-banner")
+        expected_message = (
+            'The "py-mount" attribute is deprecated.'
+            + "Please add references to HTML Elements manually in your script."
+        )
+        assert banner.inner_text() == expected_message
