@@ -55,10 +55,12 @@ export class RemoteInterpreter extends Object {
     globals: PyProxyDict & ProxyMarked;
     // TODO: Remove this once `runtimes` is removed!
     interpreter: InterpreterInterface & ProxyMarked;
+    useWorker: boolean;
 
-    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js') {
+    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js', useWorker: false) {
         super();
         this.src = src;
+        this.useWorker = useWorker;
     }
 
     /**
@@ -84,18 +86,21 @@ export class RemoteInterpreter extends Object {
      * path.
      */
     async loadInterpreter(config: AppConfig, stdio: Stdio): Promise<void> {
+        const syncify_maybe = x => (this.useWorker ? x.syncify() : x);
         this.interface = Synclink.proxy(
             await loadPyodide({
                 stdout: (msg: string) => {
-                    // TODO: add syncify when moved to worker
-                    stdio.stdout_writeline(msg);
+                    syncify_maybe(stdio.stdout_writeline(msg));
                 },
                 stderr: (msg: string) => {
-                    stdio.stderr_writeline(msg);
+                    syncify_maybe(stdio.stderr_writeline(msg));
                 },
                 fullStdLib: false,
             }),
         );
+        if (this.useWorker) {
+            this.interface.registerComlink(Synclink);
+        }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.FS = this.interface.FS;
         // eslint-disable-next-line

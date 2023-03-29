@@ -196,35 +196,64 @@ export class PyScriptApp {
         }
 
         const interpreter_cfg = this.config.interpreters[0];
+        const useWorker = true;
 
-        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
-        const { port1, port2 } = new MessageChannel();
-        port1.start();
-        port2.start();
-        Synclink.expose(remote_interpreter, port2);
-        const wrapped_remote_interpreter = Synclink.wrap(port1);
-        this.interpreter = new InterpreterClient(
-            this.config,
-            this._stdioMultiplexer,
-            wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
-            remote_interpreter,
-        );
+        if (useWorker) {
+            // XXX what is the best way to specify a robust URL? I want to
+            // load a sibling of the current file (i.e. pyscript.js), but I
+            // don't know how to specify that.
+            const worker = new Worker('build/interpreter_worker.js');
+            const worker_initialize: any = Synclink.wrap(worker);
+            const wrapped_remote_interpreter = await worker_initialize(interpreter_cfg);
+            const remote_interpreter = undefined; // this is _unwrapped_remote
 
-        this.logStatus(`Downloading ${interpreter_cfg.name}...`);
+            this.interpreter = new InterpreterClient(
+                useWorker,
+                this.config,
+                this._stdioMultiplexer,
+                wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
+                remote_interpreter,
+            );
 
-        /* Dynamically download and import pyodide: the import() puts a
-           loadPyodide() function into globalThis, which is later called by
-           RemoteInterpreter.
+            // this is automatically done by the worker
+            // this.logStatus(`Downloading ${interpreter_cfg.name}...`);
+            // const interpreterURL = await this.interpreter._remote.src;
+            // await import(interpreterURL);
 
-           This is suboptimal: ideally, we would like to import() a module
-           which exports loadPyodide(), but this plays badly with workers
-           because at the moment of writing (2023-03-24) Firefox does not
-           support ES modules in workers:
-           https://caniuse.com/mdn-api_worker_worker_ecmascript_modules
-        */
-        const interpreterURL = await this.interpreter._remote.src;
-        await import(interpreterURL);
-        await this.afterInterpreterLoad(this.interpreter);
+            await this.afterInterpreterLoad(this.interpreter);
+        } else {
+            // this is basically the equivalent to worker_initialize()
+            const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src, false);
+            const { port1, port2 } = new MessageChannel();
+            port1.start();
+            port2.start();
+            Synclink.expose(remote_interpreter, port2);
+            const wrapped_remote_interpreter = Synclink.wrap(port1);
+
+            this.logStatus(`Downloading ${interpreter_cfg.name}...`);
+            /* Dynamically download and import pyodide: the import() puts a
+               loadPyodide() function into globalThis, which is later called by
+               RemoteInterpreter.
+
+               This is suboptimal: ideally, we would like to import() a module
+               which exports loadPyodide(), but this plays badly with workers
+               because at the moment of writing (2023-03-24) Firefox does not
+               support ES modules in workers:
+               https://caniuse.com/mdn-api_worker_worker_ecmascript_modules
+            */
+            const interpreterURL = interpreter_cfg.src;
+            await import(interpreterURL);
+
+            this.interpreter = new InterpreterClient(
+                useWorker,
+                this.config,
+                this._stdioMultiplexer,
+                wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
+                remote_interpreter,
+            );
+
+            await this.afterInterpreterLoad(this.interpreter);
+        }
     }
 
     // lifecycle (5)
@@ -285,11 +314,15 @@ export class PyScriptApp {
 
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
-        // eventually replace the setHandler calls with interpreter._remote.setHandler i.e. the ones mentioned below
-        // await interpreter._remote.setHandler('define_custom_element', Synclink.proxy(define_custom_element));
-        // await interpreter._remote.setHandler('showWarning', Synclink.proxy(showWarning));
-        interpreter._unwrapped_remote.setHandler('define_custom_element', define_custom_element);
-        interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
+        if (interpreter.useWorker) {
+            // IMPLEMENT ME!
+            // await interpreter._remote.setHandler('define_custom_element', Synclink.proxy(define_custom_element));
+            // await interpreter._remote.setHandler('showWarning', Synclink.proxy(showWarning));
+        } else {
+            interpreter._unwrapped_remote.setHandler('define_custom_element', define_custom_element);
+            interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
+        }
+
         const pyscript_module = (await interpreter.pyimport('pyscript')) as Synclink.Remote<
             PyProxy & { _set_version_info(string): void }
         >;
@@ -297,12 +330,16 @@ export class PyScriptApp {
         await pyscript_module.destroy();
 
         // import some carefully selected names into the global namespace
-        await interpreter.run(`
-        import js
-        import pyscript
-        from pyscript import Element, display, HTML
-        pyscript._install_deprecated_globals_2022_12_1(globals())
-        `);
+        if (this.interpreter.useWorker) {
+            // FIXME
+        } else {
+            await interpreter.run(`
+            import js
+            import pyscript
+            from pyscript import Element, display, HTML
+            pyscript._install_deprecated_globals_2022_12_1(globals())
+            `);
+        }
 
         await Promise.all([this.installPackages(), this.fetchPaths(interpreter)]);
 

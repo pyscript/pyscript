@@ -12,6 +12,7 @@ InterpreterClient class is responsible to request code execution
 (among other things) from a `RemoteInterpreter`
 */
 export class InterpreterClient extends Object {
+    useWorker: boolean;
     _remote: Synclink.Remote<RemoteInterpreter>;
     _unwrapped_remote: RemoteInterpreter;
     config: AppConfig;
@@ -22,12 +23,17 @@ export class InterpreterClient extends Object {
     stdio: Stdio;
 
     constructor(
+        useWorker: boolean,
         config: AppConfig,
         stdio: Stdio,
         remote: Synclink.Remote<RemoteInterpreter>,
         unwrapped_remote: RemoteInterpreter,
     ) {
+        if (useWorker && unwrapped_remote !== undefined) {
+            throw new Error('AssertionError: cannot pass an unwrapped_remote ' + 'if useWorker === true');
+        }
         super();
+        this.useWorker = useWorker;
         this.config = config;
         this._remote = remote;
         this._unwrapped_remote = unwrapped_remote;
@@ -39,8 +45,11 @@ export class InterpreterClient extends Object {
      * interface.
      * */
     async initializeRemote(): Promise<void> {
-        await this._unwrapped_remote.loadInterpreter(this.config, this.stdio);
-        // await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
+        if (this.useWorker) {
+            await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
+        } else {
+            await this._unwrapped_remote.loadInterpreter(this.config, this.stdio);
+        }
         this.globals = this._remote.globals;
     }
 
