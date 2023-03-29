@@ -28,3 +28,11 @@ showWarning(`
     </p>
 `, "html")
 ```
+
+## Deprecation History
+
+This section tracks deprecations of specific features, both for historical record and to help the development team remember to actually remove deprecated features in future releases.
+
+|Attribute/Object/Functionality|Deprecated In|Removed In|
+|-|-|-|
+|`py-mount` attribute | (Release following 2023.03.1) | -|
