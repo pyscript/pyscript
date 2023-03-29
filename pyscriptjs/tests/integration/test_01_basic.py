@@ -347,6 +347,7 @@ class TestBasic(PyScriptTest):
         assert self.console.error.lines == []
 
     def test_py_mount_shows_deprecation_warning(self):
+        # last non-deprecated version: 2023.03.1
         self.pyscript_run(
             """
             <div id="foo" py-mount></div>

@@ -238,6 +238,7 @@ export async function mountElements(interpreter: InterpreterClient) {
     logger.info(`py-mount: found ${matches.length} elements`);
 
     if (matches.length > 0) {
+        //last non-deprecated version: 2023.03.1
         const deprecationMessage =
             'The "py-mount" attribute is deprecated. Please add references to HTML Elements manually in your script.';
         createDeprecationWarning(deprecationMessage, 'py-mount');
