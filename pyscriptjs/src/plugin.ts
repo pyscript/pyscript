@@ -314,8 +314,8 @@ export function validateConfigParameter<AppConfig>(
         const got = JSON.stringify(value);
         throw new UserError(
             ErrorCode.BAD_CONFIG,
-            `Invalid value for config.${name}: the only accepted` +
-                `values are: [${options.possible_values.join(',')}], got "${got}".`,
+            `Invalid value for config.${name}: the only accepted ` +
+                `values are: [${options.possible_values.map(item => JSON.stringify(item)).join(', ')}], got: ${got}.`,
         );
     }
     if (value === undefined) {
