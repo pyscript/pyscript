@@ -67,7 +67,7 @@ Documentation
 - Added reference documentation for the `py-splashscreen` plugin ([#1138](https://github.com/pyscript/pyscript/pull/1138))
 - Adds doc for installing tests ([#1156](https://github.com/pyscript/pyscript/pull/1156))
 - Adds docs for custom Pyscript attributes (`py-*`) that allow you to add event listeners to an element ([#1125](https://github.com/pyscript/pyscript/pull/1125))
-- Changed the command in "Development Process" from `make tests` to make test` ([#1332](https://github.com/pyscript/pyscript/pull/1332))
+- Changed the command in "Development Process" from `make tests` to `make test` ([#1332](https://github.com/pyscript/pyscript/pull/1332))
 
 Deprecations and Removals
 -------------------------
