@@ -7,10 +7,7 @@ import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy, 
 import type { ProxyMarked } from 'synclink';
 import * as Synclink from 'synclink';
 
-// @ts-ignore
-import python_package from 'pyscript_python_package.esbuild_injected.json';
-
-declare const python_package: { dirs: string[]; files: [string, string] };
+import { python_package } from './python_package';
 
 declare const loadPyodide: typeof loadPyodideDeclaration;
 const logger = getLogger('pyscript/pyodide');

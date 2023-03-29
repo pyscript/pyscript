@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
-import { readFileSync } from 'fs';
+import { directoryManifest } from '../../directoryManifest.mjs';
 
-jest.unstable_mockModule('./python/pyscript/__init__.py', () => ({
-    default: readFileSync('./src/python/pyscript/__init__.py'),
+jest.unstable_mockModule('../../src/python_package', async () => ({
+    python_package: await directoryManifest('./src/python/'),
 }));

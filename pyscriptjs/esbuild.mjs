@@ -1,8 +1,11 @@
-const { build } = require('esbuild');
-const { spawn } = require('child_process');
-const { join } = require('path');
-const { watchFile } = require('fs');
-const { cp, lstat, readdir, opendir, readFile } = require('fs/promises');
+import { build } from 'esbuild';
+import { spawn } from 'child_process';
+import { dirname, join } from 'path';
+import { watchFile } from 'fs';
+import { cp, lstat, readdir } from 'fs/promises';
+import { directoryManifest } from './directoryManifest.mjs';
+
+const __dirname = dirname(new URL(import.meta.url).pathname);
 
 const production = !process.env.NODE_WATCH || process.env.NODE_ENV === 'production';
 
@@ -13,44 +16,6 @@ const copy_targets = [
 
 if (!production) {
     copy_targets.push({ src: 'build/*', dest: 'examples/build' });
-}
-
-/**
- * List out everything in a directory, but skip __pycache__ directory. Used to
- * list out the directory paths and the [file path, file contents] pairs in the
- * Python package. All paths are relative to the directory we are listing. The
- * directories are sorted topologically so that a parent directory always
- * appears before its children.
- *
- * This is consumed in main.ts which calls mkdir for each directory and then
- * writeFile to create each file.
- *
- * @param {string} dir The path to the directory we want to list out
- * @returns {dirs: string[], files: [string, string][]}
- */
-async function directoryManifest(dir) {
-    const result = { dirs: [], files: [] };
-    await _directoryManifestHelper(dir, '.', result);
-    return result;
-}
-
-/**
- * Recursive helper function for directoryManifest
- */
-async function _directoryManifestHelper(root, dir, result) {
-    const dirObj = await opendir(join(root, dir));
-    for await (const d of dirObj) {
-        const entry = join(dir, d.name);
-        if (d.isDirectory()) {
-            if (d.name === '__pycache__') {
-                continue;
-            }
-            result.dirs.push(entry);
-            await _directoryManifestHelper(root, entry, result);
-        } else if (d.isFile()) {
-            result.files.push([entry, await readFile(join(root, entry), { encoding: 'utf-8' })]);
-        }
-    }
 }
 
 /**
