@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 dynamic = ["version"]
 
 [tool.codespell]
+ignore-words-list = "afterall"
 skip = "pyscriptjs/node_modules/*,*.js,*.json"
 
 [tool.ruff]
@@ -16,7 +17,6 @@ builtins = [
     "pyscript",
 ]
 ignore = [
-    "PLR2004",
     "S101",
     "S113",
 ]
@@ -27,7 +27,6 @@ select = [
     "E",
     "F",
     "I",
-    "PL",
     "S",
     "UP",
     "W",

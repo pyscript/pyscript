@@ -16,7 +16,7 @@ class MyPlugin(Plugin):
         console.log(f"configuration received: {config}")
 
     def afterStartup(self, interpreter):
-        console.log(f"interpreter received: {interpreter}")
+        console.log("interpreter received:", interpreter)
 
 
 plugin = MyPlugin("py-markdown")

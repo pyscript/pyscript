@@ -1,8 +1,9 @@
 import type { AppConfig } from './pyconfig';
 import { RemoteInterpreter } from './remote_interpreter';
-import type { PyProxyDict } from 'pyodide';
+import type { PyProxyDict, PyProxy } from 'pyodide';
 import { getLogger } from './logger';
 import type { Stdio } from './stdio';
+import * as Synclink from 'synclink';
 
 const logger = getLogger('pyscript/interpreter');
 
@@ -11,18 +12,25 @@ InterpreterClient class is responsible to request code execution
 (among other things) from a `RemoteInterpreter`
 */
 export class InterpreterClient extends Object {
-    _remote: RemoteInterpreter;
+    _remote: Synclink.Remote<RemoteInterpreter>;
+    _unwrapped_remote: RemoteInterpreter;
     config: AppConfig;
     /**
      * global symbols table for the underlying interface.
      * */
-    globals: PyProxyDict;
+    globals: Synclink.Remote<PyProxyDict>;
     stdio: Stdio;
 
-    constructor(config: AppConfig, stdio: Stdio) {
+    constructor(
+        config: AppConfig,
+        stdio: Stdio,
+        remote: Synclink.Remote<RemoteInterpreter>,
+        unwrapped_remote: RemoteInterpreter,
+    ) {
         super();
         this.config = config;
-        this._remote = new RemoteInterpreter(this.config.interpreters[0].src);
+        this._remote = remote;
+        this._unwrapped_remote = unwrapped_remote;
         this.stdio = stdio;
     }
 
@@ -31,8 +39,9 @@ export class InterpreterClient extends Object {
      * interface.
      * */
     async initializeRemote(): Promise<void> {
-        await this._remote.loadInterpreter(this.config, this.stdio);
-        this.globals = this._remote.globals as PyProxyDict;
+        await this._unwrapped_remote.loadInterpreter(this.config, this.stdio);
+        // await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
+        this.globals = this._remote.globals;
     }
 
     /**
@@ -60,5 +69,17 @@ export class InterpreterClient extends Object {
             logger.error('Error:', error);
         }
         return result;
+    }
+
+    async pyimport(mod_name: string): Promise<Synclink.Remote<PyProxy>> {
+        return this._remote.pyimport(mod_name);
+    }
+
+    async mkdirTree(path: string) {
+        await this._remote.mkdirTree(path);
+    }
+
+    async writeFile(path: string, content: string) {
+        await this._remote.writeFile(path, content);
     }
 }

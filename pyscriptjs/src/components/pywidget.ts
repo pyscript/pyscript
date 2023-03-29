@@ -2,6 +2,7 @@ import type { PyProxy, PyProxyCallable } from 'pyodide';
 import { getLogger } from '../logger';
 import { robustFetch } from '../fetch';
 import { InterpreterClient } from '../interpreter_client';
+import type { Remote } from 'synclink';
 
 const logger = getLogger('py-register-widget');
 
@@ -13,8 +14,8 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
         name: string = name;
         klass: string = klass;
         code: string = code;
-        proxy: PyProxy & { connect(): void };
-        proxyClass: PyProxyCallable;
+        proxy: Remote<PyProxy & { connect(): void }>;
+        proxyClass: Remote<PyProxyCallable>;
 
         constructor() {
             super();
@@ -28,15 +29,15 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
 
         async connectedCallback() {
             await interpreter.runButDontRaise(this.code);
-            this.proxyClass = interpreter.globals.get(this.klass) as PyProxyCallable;
-            this.proxy = this.proxyClass(this) as PyProxy & { connect(): void };
-            this.proxy.connect();
-            this.registerWidget();
+            this.proxyClass = (await interpreter.globals.get(this.klass)) as Remote<PyProxyCallable>;
+            this.proxy = (await this.proxyClass(this)) as Remote<PyProxy & { connect(): void }>;
+            await this.proxy.connect();
+            await this.registerWidget();
         }
 
-        registerWidget() {
+        async registerWidget() {
             logger.info('new widget registered:', this.name);
-            interpreter.globals.set(this.id, this.proxy);
+            await interpreter.globals.set(this.id, this.proxy);
         }
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

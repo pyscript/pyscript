@@ -330,3 +330,20 @@ textarea {
 .py-terminal-hidden {
     display: none;
 }
+
+/* avoid changing the page layout when the terminal is docked and hidden */
+html:has(py-terminal[docked]:not(py-terminal[docked].py-terminal-hidden)) {
+    padding-bottom: 40vh;
+}
+
+py-terminal[docked] {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    max-height: 40vh;
+    overflow: auto;
+}
+
+py-terminal[docked] .py-terminal {
+    margin: 0;
+}

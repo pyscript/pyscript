@@ -4,14 +4,21 @@ Thank you for wanting to contribute to the PyScript project!
 
 ## Table of contents
 
+-   [Contributing to PyScript](#contributing-to-pyscript)
+    -   [Table of contents](#table-of-contents)
 -   [Code of Conduct](#code-of-conduct)
 -   [Contributing](#contributing)
     -   [Reporting bugs](#reporting-bugs)
+    -   [Creating useful issues](#creating-useful-issues)
     -   [Reporting security issues](#reporting-security-issues)
     -   [Asking questions](#asking-questions)
     -   [Setting up your local environment and developing](#setting-up-your-local-environment-and-developing)
+    -   [Developing](#developing)
+    -   [Rebasing changes](#rebasing-changes)
+    -   [Building the docs](#building-the-docs)
     -   [Places to start](#places-to-start)
     -   [Setting up your local environment and developing](#setting-up-your-local-environment-and-developing)
+    -   [Submitting a change](#submitting-a-change)
 -   [License terms for contributions](#license-terms-for-contributions)
 -   [Becoming a maintainer](#becoming-a-maintainer)
 -   [Trademarks](#trademarks)
@@ -43,7 +50,7 @@ If you have questions about the project, using PyScript, or anything else, pleas
 
 ## Places to start
 
-If you would like to contribute to PyScript, but you aren't sure where to begin, here are some suggestions.
+If you would like to contribute to PyScript, but you aren't sure where to begin, here are some suggestions:
 
 -   **Read over the existing documentation.** Are there things missing, or could they be clearer? Make some changes/additions to those documents.
 -   **Review the open issues.** Are they clear? Can you reproduce them? You can add comments, clarifications, or additions to those issues. If you think you have an idea of how to address the issue, submit a fix!
