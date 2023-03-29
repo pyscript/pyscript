@@ -67,17 +67,26 @@ export function displayPyException(err: Error, errElem: HTMLElement) {
     //addClasses(errElem, ['py-error'])
     const pre = document.createElement('pre');
     pre.className = 'py-error';
-
-    if (err.name === 'PythonError') {
-        // err.message contains the python-level traceback (i.e. a string
-        // starting with: "Traceback (most recent call last) ..."
-        logger.error('Python exception:\n' + err.message);
-        pre.innerText = err.message;
-    } else {
-        // this is very likely a normal JS exception. The best we can do is to
-        // display it as is.
-        logger.error('Non-python exception:\n' + err.toString());
-        pre.innerText = err.toString();
+    let errorCount = 0;
+    const errorMsg = err.name === 'PythonError' ? err.message : err.toString()
+    const pyErrorElements = document.getElementsByClassName('py-error');
+    for(let pyErrorElement of pyErrorElements) {
+        if ((pyErrorElement as HTMLElement).innerText.includes(errorMsg)) {
+            errorCount++;
+        }
+    }   
+    if (errorCount === 0) {
+        if (err.name === 'PythonError') {
+            // err.message contains the python-level traceback (i.e. a string
+            // starting with: "Traceback (most recent call last) ..."
+            logger.error('Python exception:\n' + err.message);
+            pre.innerText = err.message;
+        } else {
+            // this is very likely a normal JS exception. The best we can do is to
+            // display it as is.
+            logger.error('Non-python exception:\n' + err.toString());
+            pre.innerText = err.toString();
+        }
+        errElem.appendChild(pre);
     }
-    errElem.appendChild(pre);
 }
