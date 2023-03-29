@@ -41,7 +41,7 @@ git checkout -b <your branch name>
 * Run tests before pushing the changes
 
 ```
-make tests
+make test
 ```
 
 To learn more about tests please refer to the session [Quick guide to pytest](## Quick guide to pytest).
