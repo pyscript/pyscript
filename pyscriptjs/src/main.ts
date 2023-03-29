@@ -139,7 +139,6 @@ export class PyScriptApp {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async _handleUserErrorMaybe(error: any) {
         const e = error as UserError;
         if (e && e.$$isUserError) {

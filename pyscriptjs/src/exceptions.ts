@@ -69,7 +69,6 @@ export function _createAlertBanner(
     messageType: MessageType = 'text',
     logMessage = true,
 ) {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     switch (`log-${level}-${logMessage}`) {
         case 'log-error-true':
             console.error(message);

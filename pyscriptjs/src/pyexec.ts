@@ -11,7 +11,6 @@ export async function pyExec(
     interpreter: InterpreterClient,
     pysrc: string,
     outElem: HTMLElement,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<{ result: any }> {
     const pyscript_py = (await interpreter.pyimport('pyscript')) as Remote<
         PyProxy & {
@@ -56,7 +55,6 @@ export async function pyExec(
  *     pyDisplay(interpreter, obj);
  *     pyDisplay(interpreter, obj, { target: targetID });
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function pyDisplay(interpreter: InterpreterClient, obj: any, kwargs: { [k: string]: any } = {}) {
     const display = (await interpreter.globals.get('display')) as PyProxyCallable;
     try {

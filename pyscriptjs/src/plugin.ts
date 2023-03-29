@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access,
-                  @typescript-eslint/no-unsafe-call,
-                  @typescript-eslint/no-explicit-any,
-                  @typescript-eslint/no-unsafe-assignment */
-
 import type { AppConfig } from './pyconfig';
 import type { UserError } from './exceptions';
 import { getLogger } from './logger';
@@ -125,9 +120,20 @@ export class Plugin {
     }
 }
 
+type PythonPlugin = {
+    configure?: (config: AppConfig) => Promise<void>;
+    afterSetup?: (interpreter: InterpreterClient) => Promise<void>;
+    afterStartup?: (interpreter: InterpreterClient) => Promise<void>;
+    beforePyScriptExec?: { callKwargs: (options: any) => Promise<void> };
+    afterPyScriptExec?: { callKwargs: (options: any) => Promise<void> };
+    beforePyReplExec?: { callKwargs: (options: any) => Promise<void> };
+    afterPyReplExec?: { callKwargs: (options: any) => Promise<void> };
+    onUserError?: (error: UserError) => Promise<void>;
+};
+
 export class PluginManager {
     _plugins: Plugin[];
-    _pythonPlugins: any[];
+    _pythonPlugins: PythonPlugin[];
 
     constructor() {
         this._plugins = [];
@@ -138,7 +144,7 @@ export class PluginManager {
         for (const p of plugins) this._plugins.push(p);
     }
 
-    addPythonPlugin(plugin: any) {
+    addPythonPlugin(plugin: PythonPlugin) {
         this._pythonPlugins.push(plugin);
     }
 
@@ -179,8 +185,7 @@ export class PluginManager {
     async beforePyScriptExec(options: { interpreter: InterpreterClient; src: string; pyScriptTag: PyScriptTag }) {
         for (const p of this._plugins) p.beforePyScriptExec?.(options);
 
-        for (const p of this._pythonPlugins)
-            await p.beforePyScriptExec(options.interpreter, options.src, options.pyScriptTag);
+        for (const p of this._pythonPlugins) await p.beforePyScriptExec.callKwargs(options);
     }
 
     async afterPyScriptExec(options: {
@@ -191,8 +196,7 @@ export class PluginManager {
     }) {
         for (const p of this._plugins) p.afterPyScriptExec?.(options);
 
-        for (const p of this._pythonPlugins)
-            await p.afterPyScriptExec(options.interpreter, options.src, options.pyScriptTag, options.result);
+        for (const p of this._pythonPlugins) await p.afterPyScriptExec.callKwargs(options);
     }
 
     async beforePyReplExec(options: {
@@ -203,21 +207,13 @@ export class PluginManager {
     }) {
         for (const p of this._plugins) p.beforePyReplExec?.(options);
 
-        for (const p of this._pythonPlugins)
-            await p.beforePyReplExec?.(options.interpreter, options.src, options.outEl, options.pyReplTag);
+        for (const p of this._pythonPlugins) await p.beforePyReplExec?.callKwargs(options);
     }
 
     async afterPyReplExec(options: { interpreter: InterpreterClient; src: string; outEl; pyReplTag; result }) {
         for (const p of this._plugins) p.afterPyReplExec?.(options);
 
-        for (const p of this._pythonPlugins)
-            await p.afterPyReplExec?.(
-                options.interpreter,
-                options.src,
-                options.outEl,
-                options.pyReplTag,
-                options.result,
-            );
+        for (const p of this._pythonPlugins) await p.afterPyReplExec?.callKwargs(options);
     }
 
     async onUserError(error: UserError) {
@@ -226,6 +222,9 @@ export class PluginManager {
         for (const p of this._pythonPlugins) await p.onUserError?.(error);
     }
 }
+
+type PyElementInstance = { connect(): void };
+type PyElementClass = (htmlElement: HTMLElement) => PyElementInstance;
 
 /**
  * Defines a new CustomElement (via customElement.defines) with `tag`,
@@ -238,12 +237,12 @@ export class PluginManager {
  *                        received by the newly created CustomElement will be
  *                        delegated to that instance.
  */
-export function define_custom_element(tag: string, pyPluginClass: any): any {
+export function define_custom_element(tag: string, pyElementClass: PyElementClass): any {
     logger.info(`creating plugin: ${tag}`);
     class ProxyCustomElement extends HTMLElement {
         shadow: ShadowRoot;
         wrapper: HTMLElement;
-        pyPluginInstance: any;
+        pyElementInstance: PyElementInstance;
         originalInnerHTML: string;
 
         constructor() {
@@ -254,11 +253,11 @@ export function define_custom_element(tag: string, pyPluginClass: any): any {
             this.wrapper = document.createElement('slot');
             this.shadow.appendChild(this.wrapper);
             this.originalInnerHTML = this.innerHTML;
-            this.pyPluginInstance = pyPluginClass(this);
+            this.pyElementInstance = pyElementClass(this);
         }
 
         connectedCallback() {
-            const innerHTML = this.pyPluginInstance.connect();
+            const innerHTML = this.pyElementInstance.connect();
             if (typeof innerHTML === 'string') this.innerHTML = innerHTML;
         }
     }

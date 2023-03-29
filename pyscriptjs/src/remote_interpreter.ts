@@ -96,11 +96,10 @@ export class RemoteInterpreter extends Object {
                 fullStdLib: false,
             }),
         );
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.FS = this.interface.FS;
-        // eslint-disable-next-line
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         this.PATH = (this.interface as any)._module.PATH;
-        // eslint-disable-next-line
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         this.PATH_FS = (this.interface as any)._module.PATH_FS;
 
         // TODO: Remove this once `runtimes` is removed!
@@ -113,11 +112,10 @@ export class RemoteInterpreter extends Object {
             await this.loadPackage('micropip');
         }
         logger.info('pyodide loaded and initialized');
-        await this.run('print("Python initialization complete")');
+        this.run('print("Python initialization complete")');
     }
 
-    /* eslint-disable */
-    async run(code: string): Promise<{ result: any }> {
+    run(code: string): { result: any } {
         /**
          * eslint wants `await` keyword to be used i.e.
          * { result: await this.interface.runPython(code) }
@@ -138,7 +136,6 @@ export class RemoteInterpreter extends Object {
          */
         return { result: this.interface.runPython(code) };
     }
-    /* eslint-enable */
 
     /**
      * delegates the registration of JS modules to
@@ -272,10 +269,8 @@ export class RemoteInterpreter extends Object {
         return Synclink.proxy(this.interface.pyimport(mod_name));
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setHandler(func_name: string, handler: any): void {
         const pyscript_module = this.interface.pyimport('pyscript');
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         pyscript_module[func_name] = handler;
     }
 }
