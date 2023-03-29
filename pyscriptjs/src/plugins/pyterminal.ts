@@ -1,6 +1,6 @@
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
-import { Plugin, checkedConfigOption, validateConfigParameter} from '../plugin';
+import { Plugin, checkedConfigOption, validateConfigParameter } from '../plugin';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
