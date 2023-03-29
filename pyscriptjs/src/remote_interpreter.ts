@@ -6,9 +6,11 @@ import { robustFetch } from './fetch';
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy, PyProxyDict } from 'pyodide';
 import type { ProxyMarked } from 'synclink';
 import * as Synclink from 'synclink';
-// eslint-disable-next-line
+
 // @ts-ignore
-import pyscript from './python/pyscript/__init__.py';
+import python_package from 'pyscript_python_package.esbuild_injected.json';
+
+declare const python_package: { dirs: string[]; files: [string, string] };
 
 declare const loadPyodide: typeof loadPyodideDeclaration;
 const logger = getLogger('pyscript/pyodide');
@@ -117,8 +119,13 @@ export class RemoteInterpreter extends Object {
         // TODO: Remove this once `runtimes` is removed!
         this.interpreter = this.interface;
 
-        this.FS.mkdirTree('/home/pyodide/pyscript');
-        this.FS.writeFile('pyscript/__init__.py', pyscript as string);
+        // Write pyscript package into file system
+        for (const dir of python_package.dirs) {
+            this.FS.mkdir('/home/pyodide/' + dir);
+        }
+        for (const [path, value] of python_package.files) {
+            this.FS.writeFile('/home/pyodide/' + path, value);
+        }
         //Refresh the module cache so Python consistently finds pyscript module
         this.invalidate_module_path_cache();
 
@@ -220,11 +227,11 @@ export class RemoteInterpreter extends Object {
     /**
      *
      * @param path : the path in the filesystem
-     * @param fetch_path : the path to be fetched
+     * @param url : the url to be fetched
      *
-     * Given a file available at `fetch_path` URL (eg:
-     * `http://dummy.com/hi.py`), the function downloads the file and saves it
-     * to the `path` (eg: `a/b/c/foo.py`) on the FS.
+     * Given a file available at `url` URL (eg: `http://dummy.com/hi.py`), the
+     * function downloads the file and saves it to the `path` (eg:
+     * `a/b/c/foo.py`) on the FS.
      *
      * Example usage: await loadFromFile(`a/b/c/foo.py`,
      * `http://dummy.com/hi.py`)
@@ -240,13 +247,13 @@ export class RemoteInterpreter extends Object {
      * in `/home/pyodide/a/b.py`, `../a/b.py` will be placed into `/home/a/b.py`
      * and `/a/b.py` will be placed into `/a/b.py`.
      */
-    async loadFromFile(path: string, fetch_path: string): Promise<void> {
+    async loadFileFromURL(path: string, url: string): Promise<void> {
         path = this.PATH_FS.resolve(path);
         const dir: string = this.PATH.dirname(path);
         this.FS.mkdirTree(dir);
 
         // `robustFetch` checks for failures in getting a response
-        const response = await robustFetch(fetch_path);
+        const response = await robustFetch(url);
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
 
@@ -264,14 +271,6 @@ export class RemoteInterpreter extends Object {
 
     pyimport(mod_name: string): PyProxy & Synclink.ProxyMarked {
         return Synclink.proxy(this.interface.pyimport(mod_name));
-    }
-
-    mkdirTree(path: string) {
-        this.FS.mkdirTree(path);
-    }
-
-    writeFile(path: string, content: string) {
-        this.FS.writeFile(path, content, { encoding: 'utf8' });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,4 +1,4 @@
-import './styles/pyscript_base.css';
+cimport './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
@@ -8,7 +8,7 @@ import { PluginManager, define_custom_element, Plugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { getLogger } from './logger';
 import { showWarning, globalExport, createLock } from './utils';
-import { calculatePaths } from './plugins/fetch';
+import { calculateFetchPaths } from './plugins/calculateFetchPaths';
 import { createCustomElements } from './components/elements';
 import { UserError, ErrorCode, _createAlertBanner } from './exceptions';
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
@@ -17,9 +17,9 @@ import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 import type { PyProxy } from 'pyodide';
-import * as Synclink from 'synclink';
-import { robustFetch } from './fetch';
 import { RemoteInterpreter } from './remote_interpreter';
+import { robustFetch } from './fetch';
+import * as Synclink from 'synclink';
 
 const logger = getLogger('pyscript/main');
 
@@ -281,11 +281,7 @@ export class PyScriptApp {
         pyscript._install_deprecated_globals_2022_12_1(globals())
         `);
 
-        if (this.config.packages) {
-            logger.info('Packages to install: ', this.config.packages);
-            await interpreter._remote.installPackage(this.config.packages);
-        }
-        await this.fetchPaths(interpreter);
+        await Promise.all([this.installPackages(), this.fetchPaths(interpreter)]);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
         await interpreter._remote.invalidate_module_path_cache();
@@ -293,22 +289,25 @@ export class PyScriptApp {
         await this.fetchUserPlugins(interpreter);
     }
 
-    async fetchPaths(interpreter: InterpreterClient) {
-        // XXX this can be VASTLY improved: for each path we need to fetch a
-        // URL and write to the virtual filesystem: pyodide.loadFromFile does
-        // it in Python, which means we need to have the interpreter
-        // initialized. But we could easily do it in JS in parallel with the
-        // download/startup of pyodide.
-        const [paths, fetchPaths] = calculatePaths(this.config.fetch);
-        logger.info('Paths to write: ', paths);
-        logger.info('Paths to fetch: ', fetchPaths);
-        for (let i = 0; i < paths.length; i++) {
-            logger.info(`  fetching path: ${fetchPaths[i]}`);
-
-            // Exceptions raised from here will create an alert banner
-            await interpreter._remote.loadFromFile(paths[i], fetchPaths[i]);
+    async installPackages() {
+        if (!this.config.packages) {
+            return;
         }
-        logger.info('All paths fetched');
+        logger.info('Packages to install: ', this.config.packages);
+        await this.interpreter._remote.installPackage(this.config.packages);
+    }
+
+    async fetchPaths(interpreter: InterpreterClient) {
+        // TODO: start fetching before interpreter initialization
+        const paths = calculateFetchPaths(this.config.fetch);
+        logger.info('Fetching urls:', paths.map(({ url }) => url).join(', '));
+        await Promise.all(
+            paths.map(async ({ path, url }) => {
+                await interpreter._remote.loadFileFromURL(path, url);
+                logger.info(`    Fetched ${url} ==> ${path}`);
+            }),
+        );
+        logger.info('Fetched all paths');
     }
 
     /**
@@ -385,7 +384,7 @@ export class PyScriptApp {
         const pathArr = filePath.split('/');
         const filename = pathArr.pop();
         // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
-        await interpreter._remote.loadFromFile(filename, filePath);
+        await interpreter._remote.loadFileFromURL(filename, filePath);
 
         //refresh module cache before trying to import module files into interpreter
         await interpreter._remote.invalidate_module_path_cache();

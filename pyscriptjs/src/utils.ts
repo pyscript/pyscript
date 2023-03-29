@@ -80,7 +80,7 @@ export function joinPaths(parts: string[], separator = '/') {
         .map(function (part) {
             return part.trim().replace(/(^[/]*|[/]*$)/g, '');
         })
-        .filter(p => p !== '')
+        .filter(p => p !== '' && p !== '.')
         .join(separator || '/');
     if (parts[0].startsWith('/')) {
         return '/' + res;
