@@ -1,3 +1,5 @@
+IF THIS HAS BEEN MERGED SOMETHING HAS GONE TERRIBLY WRONG
+
 # Getting started with PyScript
 
 This page will guide you through getting started with PyScript.
