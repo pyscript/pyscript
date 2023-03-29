@@ -68,13 +68,13 @@ export function displayPyException(err: Error, errElem: HTMLElement) {
     const pre = document.createElement('pre');
     pre.className = 'py-error';
     let errorCount = 0;
-    const errorMsg = err.name === 'PythonError' ? err.message : err.toString()
+    const errorMsg = err.name === 'PythonError' ? err.message : err.toString();
     const pyErrorElements = document.getElementsByClassName('py-error');
-    for(let pyErrorElement of pyErrorElements) {
+    for (const pyErrorElement of pyErrorElements) {
         if ((pyErrorElement as HTMLElement).innerText.includes(errorMsg)) {
             errorCount++;
         }
-    }   
+    }
     if (errorCount === 0) {
         if (err.name === 'PythonError') {
             // err.message contains the python-level traceback (i.e. a string
