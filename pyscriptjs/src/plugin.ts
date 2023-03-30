@@ -1,3 +1,4 @@
+import type { PyScriptApp } from './main';
 import type { AppConfig } from './pyconfig';
 import type { UserError } from './exceptions';
 import { getLogger } from './logger';
@@ -120,7 +121,8 @@ export class Plugin {
     }
 }
 
-type PythonPlugin = {
+export type PythonPlugin = {
+    init(app: PyScriptApp): void;
     configure?: (config: AppConfig) => Promise<void>;
     afterSetup?: (interpreter: InterpreterClient) => Promise<void>;
     afterStartup?: (interpreter: InterpreterClient) => Promise<void>;
