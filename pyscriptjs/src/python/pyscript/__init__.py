@@ -18,9 +18,9 @@ from pyodide.webloop import WebLoop
 
 try:
     from pyodide.code import eval_code
-    from pyodide.ffi import JsProxy, create_proxy, create_once_callable
+    from pyodide.ffi import JsProxy, create_once_callable, create_proxy
 except ImportError:
-    from pyodide import JsProxy, create_proxy, eval_code, create_once_callable
+    from pyodide import JsProxy, create_once_callable, create_proxy, eval_code
 
 
 loop = asyncio.get_event_loop()
