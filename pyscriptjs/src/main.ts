@@ -69,16 +69,6 @@ throwHandler.serialize = new_error_transfer_handler;
       user scripts
 
    8. initialize the rest of web components such as py-button, py-repl, etc.
-
-More concretely:
-
-  - Points 1-4 are implemented sequentially in PyScriptApp.main().
-
-  - PyScriptApp.loadInterpreter adds a <script> tag to the document to initiate
-    the download, and then adds an event listener for the 'load' event, which
-    in turns calls PyScriptApp.afterInterpreterLoad().
-
-  - PyScriptApp.afterInterpreterLoad() implements all the points >= 5.
 */
 
 export let interpreter;
