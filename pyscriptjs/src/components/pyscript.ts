@@ -36,7 +36,6 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                 this.innerHTML = '';
 
                 await app.plugins.beforePyScriptExec({ interpreter: interpreter, src: pySrc, pyScriptTag: this });
-                /* eslint-disable @typescript-eslint/no-unsafe-assignment */
                 const result = (await pyExec(interpreter, pySrc, this)).result;
                 await app.plugins.afterPyScriptExec({
                     interpreter: interpreter,
@@ -44,7 +43,6 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                     pyScriptTag: this,
                     result: result,
                 });
-                /* eslint-enable @typescript-eslint/no-unsafe-assignment */
             } finally {
                 releaseLock();
                 app.decrementPendingTags();

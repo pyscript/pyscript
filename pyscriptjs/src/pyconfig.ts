@@ -6,7 +6,6 @@ import { UserError, ErrorCode } from './exceptions';
 
 const logger = getLogger('py-config');
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface AppConfig extends Record<string, any> {
     name?: string;
     description?: string;
@@ -107,7 +106,6 @@ function fillUserData(inputConfig: AppConfig, resultConfig: AppConfig): AppConfi
     for (const key in inputConfig) {
         // fill in all extra keys ignored by the validator
         if (!(key in defaultConfig)) {
-            // eslint-disable-next-line
             resultConfig[key] = inputConfig[key];
         }
     }
@@ -127,11 +125,9 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
         for (const [keyType, keys] of allKeys) {
             keys.forEach(function (item: string) {
                 if (keyType === 'boolean') {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     merged[item] =
                         typeof inlineConfig[item] !== 'undefined' ? inlineConfig[item] : externalConfig[item];
                 } else {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     merged[item] = inlineConfig[item] || externalConfig[item];
                 }
             });
@@ -200,7 +196,6 @@ function validateConfig(configText: string, configType = 'toml') {
                         const interpreterConfig: InterpreterConfig = {};
                         for (const eachInterpreterParam in eachInterpreter) {
                             if (validateParamInConfig(eachInterpreterParam, 'string', eachInterpreter)) {
-                                // eslint-disable-next-line
                                 interpreterConfig[eachInterpreterParam] = eachInterpreter[eachInterpreterParam];
                             }
                         }
@@ -224,7 +219,6 @@ function validateConfig(configText: string, configType = 'toml') {
                         const interpreterConfig: InterpreterConfig = {};
                         for (const eachInterpreterParam in eachInterpreter) {
                             if (validateParamInConfig(eachInterpreterParam, 'string', eachInterpreter)) {
-                                // eslint-disable-next-line
                                 interpreterConfig[eachInterpreterParam] = eachInterpreter[eachInterpreterParam];
                             }
                         }
@@ -238,14 +232,12 @@ function validateConfig(configText: string, configType = 'toml') {
                         for (const eachFetchConfigParam in eachFetch) {
                             const targetType = eachFetchConfigParam === 'files' ? 'array' : 'string';
                             if (validateParamInConfig(eachFetchConfigParam, targetType, eachFetch)) {
-                                // eslint-disable-next-line
                                 eachFetchConfig[eachFetchConfigParam] = eachFetch[eachFetchConfigParam];
                             }
                         }
                         finalConfig[item].push(eachFetchConfig);
                     });
                 } else {
-                    // eslint-disable-next-line
                     finalConfig[item] = config[item];
                 }
             }

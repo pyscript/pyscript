@@ -4,7 +4,7 @@ import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import { InterpreterClient } from './interpreter_client';
 import { version } from './version';
-import { PluginManager, define_custom_element, Plugin } from './plugin';
+import { PluginManager, define_custom_element, Plugin, PythonPlugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { getLogger } from './logger';
 import { showWarning, globalExport, createLock } from './utils';
@@ -16,7 +16,6 @@ import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
-import type { PyProxy } from 'pyodide';
 import { RemoteInterpreter } from './remote_interpreter';
 import { robustFetch } from './fetch';
 import * as Synclink from 'synclink';
@@ -131,7 +130,6 @@ export class PyScriptApp {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async _handleUserErrorMaybe(error: any) {
         const e = error as UserError;
         if (e && e.$$isUserError) {
@@ -399,7 +397,7 @@ export class PyScriptApp {
         // eventually replace with interpreter.pyimport(modulename);
         const module = interpreter._unwrapped_remote.pyimport(modulename);
         if (typeof (await module.plugin) !== 'undefined') {
-            const py_plugin = module.plugin as PyProxy & { init(app: PyScriptApp): void };
+            const py_plugin = module.plugin as PythonPlugin;
             py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);
         } else {

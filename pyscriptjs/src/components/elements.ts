@@ -7,10 +7,8 @@ function createCustomElements(interpreter: InterpreterClient, app: PyScriptApp) 
     const PyWidget = make_PyWidget(interpreter);
     const PyRepl = make_PyRepl(interpreter, app);
 
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    const xPyRepl = customElements.define('py-repl', PyRepl);
-    const xPyWidget = customElements.define('py-register-widget', PyWidget);
-    /* eslint-enable @typescript-eslint/no-unused-vars */
+    customElements.define('py-repl', PyRepl);
+    customElements.define('py-register-widget', PyWidget);
 }
 
 export { createCustomElements };

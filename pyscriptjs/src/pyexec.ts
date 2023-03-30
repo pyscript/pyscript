@@ -10,7 +10,6 @@ export async function pyExec(
     interpreter: InterpreterClient,
     pysrc: string,
     outElem: HTMLElement,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<{ result: any }> {
     ensureUniqueId(outElem);
     if (await interpreter._remote.pyscript_py.uses_top_level_await(pysrc)) {
@@ -46,7 +45,6 @@ export async function pyExec(
  *     pyDisplay(interpreter, obj);
  *     pyDisplay(interpreter, obj, { target: targetID });
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function pyDisplay(interpreter: InterpreterClient, obj: any, kwargs: { [k: string]: any } = {}) {
     const display = (await interpreter.globals.get('display')) as PyProxyCallable;
     try {
