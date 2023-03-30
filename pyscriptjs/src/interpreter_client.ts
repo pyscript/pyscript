@@ -45,13 +45,23 @@ export class InterpreterClient extends Object {
     }
 
     /**
-     * delegates the code to be run to the underlying interface of
-     * the remote interpreter.
-     * Python exceptions are turned into JS exceptions.
-     * */
+     * Run user Python code. See also the _run_pyscript docstring.
+     *
+     * The result is wrapped in an object to avoid accidentally awaiting a
+     * Python Task or Future returned as the result of the computation.
+     *
+     * @param code the code to run
+     * @param id The id for the default display target (or undefined if no
+     * default display target).
+     * @returns Either:
+     * 1. An Object of the form {result: the_result} if the result is
+     *    serializable (or transferable), or
+     * 2. a Synclink Proxy wrapping an object of this if the result is not
+     *    serializable.
+     */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async run(code: string): Promise<{ result: any }> {
-        return await this._remote.run(code);
+    async run(code: string, id?: string): Promise<{ result: any }> {
+        return this._remote.pyscript_py._run_pyscript(code, id);
     }
 
     /**
@@ -75,11 +85,11 @@ export class InterpreterClient extends Object {
         return this._remote.pyimport(mod_name);
     }
 
-    async mkdirTree(path: string) {
-        await this._remote.mkdirTree(path);
+    async mkdir(path: string) {
+        await this._remote.FS.mkdir(path);
     }
 
     async writeFile(path: string, content: string) {
-        await this._remote.writeFile(path, content);
+        await this._remote.FS.writeFile(path, content, { encoding: 'utf8' });
     }
 }

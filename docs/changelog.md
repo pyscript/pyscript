@@ -7,6 +7,8 @@
 Features
 --------
 
+- The `py-mount` attribute on HTML elements has been deprecated, and will be removed in a future release.
+
 
 ### &lt;py-terminal&gt;
 - Added a `docked` field and attribute for the `<py-terminal>` custom element, enabled by default when the terminal is in `auto` mode, and able to dock the terminal at the bottom of the page with auto scroll on new code execution.

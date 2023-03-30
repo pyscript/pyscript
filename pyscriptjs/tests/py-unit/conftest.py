@@ -6,10 +6,6 @@ import pytest
 
 pyscriptjs = Path(__file__).parents[2]
 
-import pytest  # noqa
-
-pyscriptjs = Path(__file__).parents[2]
-
 # add pyscript folder to path
 python_source = pyscriptjs / "src" / "python"
 sys.path.append(str(python_source))
@@ -17,6 +13,7 @@ sys.path.append(str(python_source))
 # add Python plugins folder to path
 python_plugins_source = pyscriptjs / "src" / "plugins" / "python"
 sys.path.append(str(python_plugins_source))
+
 
 # patch pyscript module where needed
 import pyscript  # noqa: E402

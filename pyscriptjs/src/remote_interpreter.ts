@@ -7,6 +7,8 @@ import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy, 
 import type { ProxyMarked } from 'synclink';
 import * as Synclink from 'synclink';
 
+import { python_package } from './python_package';
+
 declare const loadPyodide: typeof loadPyodideDeclaration;
 const logger = getLogger('pyscript/pyodide');
 
@@ -30,6 +32,13 @@ type PATHInterface = {
     dirname(path: string): string;
 } & ProxyMarked;
 
+type PyScriptPyModule = ProxyMarked & {
+    _set_version_info(ver: string): void;
+    uses_top_level_await(code: string): boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _run_pyscript(code: string, display_target_id?: string): { result: any };
+};
+
 /*
 RemoteInterpreter class is responsible to process requests from the
 `InterpreterClient` class -- these can be requests for installation of
@@ -51,6 +60,7 @@ export class RemoteInterpreter extends Object {
     FS: FSInterface;
     PATH: PATHInterface;
     PATH_FS: PATHFSInterface;
+    pyscript_py: PyScriptPyModule;
 
     globals: PyProxyDict & ProxyMarked;
     // TODO: Remove this once `runtimes` is removed!
@@ -106,39 +116,27 @@ export class RemoteInterpreter extends Object {
         // TODO: Remove this once `runtimes` is removed!
         this.interpreter = this.interface;
 
+        // Write pyscript package into file system
+        for (const dir of python_package.dirs) {
+            this.FS.mkdir('/home/pyodide/' + dir);
+        }
+        for (const [path, value] of python_package.files) {
+            this.FS.writeFile('/home/pyodide/' + path, value);
+        }
+        //Refresh the module cache so Python consistently finds pyscript module
+        this.invalidate_module_path_cache();
+
         this.globals = Synclink.proxy(this.interface.globals as PyProxyDict);
+        logger.info('importing pyscript');
+        this.pyscript_py = Synclink.proxy(this.interface.pyimport('pyscript')) as PyProxy & typeof this.pyscript_py;
 
         if (config.packages) {
             logger.info('Found packages in configuration to install. Loading micropip...');
             await this.loadPackage('micropip');
         }
         logger.info('pyodide loaded and initialized');
-        await this.run('print("Python initialization complete")');
+        this.pyscript_py._run_pyscript('print("Python initialization complete")');
     }
-
-    /* eslint-disable */
-    async run(code: string): Promise<{ result: any }> {
-        /**
-         * eslint wants `await` keyword to be used i.e.
-         * { result: await this.interface.runPython(code) }
-         * However, `await` is not a no-op (no-operation) i.e.
-         * `await 42` is NOT the same as `42` i.e. if the awaited
-         * thing is not a promise, it is wrapped inside a promise and
-         * that promise is awaited. Thus, it changes the execution order.
-         * See https://stackoverflow.com/questions/55262996/does-awaiting-a-non-promise-have-any-detectable-effect
-         * Thus, `eslint` is disabled for this block / snippet.
-         */
-
-        /**
-         * The output of `runPython` is wrapped inside an object
-         * since an object is not thennable and avoids return of
-         * a coroutine directly. This is so we do not `await` the results
-         * of the underlying python execution, even if it's an
-         * awaitable object (Future, Task, etc.)
-         */
-        return { result: this.interface.runPython(code) };
-    }
-    /* eslint-enable */
 
     /**
      * delegates the registration of JS modules to
@@ -226,11 +224,11 @@ export class RemoteInterpreter extends Object {
     /**
      *
      * @param path : the path in the filesystem
-     * @param fetch_path : the path to be fetched
+     * @param url : the url to be fetched
      *
-     * Given a file available at `fetch_path` URL (eg:
-     * `http://dummy.com/hi.py`), the function downloads the file and saves it
-     * to the `path` (eg: `a/b/c/foo.py`) on the FS.
+     * Given a file available at `url` URL (eg: `http://dummy.com/hi.py`), the
+     * function downloads the file and saves it to the `path` (eg:
+     * `a/b/c/foo.py`) on the FS.
      *
      * Example usage: await loadFromFile(`a/b/c/foo.py`,
      * `http://dummy.com/hi.py`)
@@ -246,13 +244,13 @@ export class RemoteInterpreter extends Object {
      * in `/home/pyodide/a/b.py`, `../a/b.py` will be placed into `/home/a/b.py`
      * and `/a/b.py` will be placed into `/a/b.py`.
      */
-    async loadFromFile(path: string, fetch_path: string): Promise<void> {
+    async loadFileFromURL(path: string, url: string): Promise<void> {
         path = this.PATH_FS.resolve(path);
         const dir: string = this.PATH.dirname(path);
         this.FS.mkdirTree(dir);
 
         // `robustFetch` checks for failures in getting a response
-        const response = await robustFetch(fetch_path);
+        const response = await robustFetch(url);
         const buffer = await response.arrayBuffer();
         const data = new Uint8Array(buffer);
 
@@ -270,14 +268,6 @@ export class RemoteInterpreter extends Object {
 
     pyimport(mod_name: string): PyProxy & Synclink.ProxyMarked {
         return Synclink.proxy(this.interface.pyimport(mod_name));
-    }
-
-    mkdirTree(path: string) {
-        this.FS.mkdirTree(path);
-    }
-
-    writeFile(path: string, content: string) {
-        this.FS.writeFile(path, content, { encoding: 'utf8' });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

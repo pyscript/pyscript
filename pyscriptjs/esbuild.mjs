@@ -1,8 +1,11 @@
-const { build } = require('esbuild');
-const { spawn } = require('child_process');
-const { join } = require('path');
-const { watchFile } = require('fs');
-const { cp, lstat, readdir } = require('fs/promises');
+import { build } from 'esbuild';
+import { spawn } from 'child_process';
+import { dirname, join } from 'path';
+import { watchFile } from 'fs';
+import { cp, lstat, readdir } from 'fs/promises';
+import { directoryManifest } from './directoryManifest.mjs';
+
+const __dirname = dirname(new URL(import.meta.url).pathname);
 
 const production = !process.env.NODE_WATCH || process.env.NODE_ENV === 'production';
 
@@ -15,12 +18,46 @@ if (!production) {
     copy_targets.push({ src: 'build/*', dest: 'examples/build' });
 }
 
+/**
+ * An esbuild plugin that injects the Pyscript Python package.
+ *
+ * It uses onResolve to attach our custom namespace to the import and then uses
+ * onLoad to inject the file contents.
+ */
+function bundlePyscriptPythonPlugin() {
+    const namespace = 'bundlePyscriptPythonPlugin';
+    return {
+        name: namespace,
+        setup(build) {
+            // Resolve the pyscript_package to our custom namespace
+            // The path doesn't really matter, but we need a separate namespace
+            // or else the file system resolver will raise an error.
+            build.onResolve({ filter: /^pyscript_python_package.esbuild_injected.json$/ }, args => {
+                return { path: 'dummy', namespace };
+            });
+            // Inject our manifest as JSON contents, and use the JSON loader.
+            // Also tell esbuild to watch the files & directories we've listed
+            // for updates.
+            build.onLoad({ filter: /^dummy$/, namespace }, async args => {
+                const manifest = await directoryManifest('./src/python');
+                return {
+                    contents: JSON.stringify(manifest),
+                    loader: 'json',
+                    watchFiles: manifest.files.map(([k, v]) => k),
+                    watchDirs: manifest.dirs,
+                };
+            });
+        },
+    };
+}
+
 const pyScriptConfig = {
     entryPoints: ['src/main.ts'],
     loader: { '.py': 'text' },
     bundle: true,
     format: 'iife',
     globalName: 'pyscript',
+    plugins: [bundlePyscriptPythonPlugin()],
 };
 
 const copyPath = (source, dest, ...rest) => cp(join(__dirname, source), join(__dirname, dest), ...rest);

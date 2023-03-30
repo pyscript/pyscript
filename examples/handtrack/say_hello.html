@@ -11,16 +11,19 @@
             rel="stylesheet"
             href="https://pyscript.net/latest/pyscript.css"
         />
-
-        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <script defer src="../../pyscriptjs/build/pyscript.js"></script>
+        <!-- <script defer src="https://pyscript.net/latest/pyscript.js"></script> -->
     </head>
 
     <body>
         <py-script>
-            from js import handTrack, requestAnimationFrame
+            from js import handTrack, requestAnimationFrame, console
             from pyodide import create_once_callable
             import asyncio
 
+            update_note = Element("update-note")
+            canvas = Element("canvas")
+            video = Element("myvideo")
             context = canvas.element.getContext("2d")
 
             isVideo = False
@@ -33,7 +36,7 @@
               "scoreThreshold": 0.6, # confidence threshold for predictions.
             }
 
-            def toggle_video(evt):
+            def toggle_video():
               global isVideo
               if (not isVideo):
                 update_note.write("Starting video")
@@ -124,13 +127,11 @@
             >
                 Next Image
             </button>
-            <div id="update-note" py-mount class="updatenote mt10">
-                loading model ..
-            </div>
+            <div id="update-note" class="updatenote mt10">loading model ..</div>
         </div>
         <div>
             <video autoplay="autoplay" id="myvideo" py-mount="video"></video>
-            <canvas id="canvas" py-mount class="border canvasbox"></canvas>
+            <canvas id="canvas" class="border canvasbox"></canvas>
         </div>
         <script src="lib/handtrack.min.js"></script>
     </body>
