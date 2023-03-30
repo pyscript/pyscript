@@ -3,51 +3,54 @@ import textwrap
 from unittest.mock import Mock
 
 import pyscript
+from pyscript import HTML, Element, _html
+from pyscript._deprecated_globals import DeprecatedGlobal
+from pyscript._internal import set_version_info, uses_top_level_await
+from pyscript._mime import format_mime
 
 
 class TestElement:
     def test_id_is_correct(self):
-        el = pyscript.Element("something")
+        el = Element("something")
         assert el.id == "something"
 
     def test_element(self, monkeypatch):
-        el = pyscript.Element("something")
-        js_mock = Mock()
-        js_mock.document = Mock()
+        el = Element("something")
+        document = Mock()
         call_result = "some_result"
-        js_mock.document.querySelector = Mock(return_value=call_result)
-        monkeypatch.setattr(pyscript, "js", js_mock)
+        document.querySelector = Mock(return_value=call_result)
+        monkeypatch.setattr(_html, "document", document)
         assert not el._element
         real_element = el.element
         assert real_element
-        assert js_mock.document.querySelector.call_count == 1
-        js_mock.document.querySelector.assert_called_with("#something")
+        assert document.querySelector.call_count == 1
+        document.querySelector.assert_called_with("#something")
         assert real_element == call_result
 
 
 def test_format_mime_str():
     obj = "just a string"
-    out, mime = pyscript.format_mime(obj)
+    out, mime = format_mime(obj)
     assert out == obj
     assert mime == "text/plain"
 
 
 def test_format_mime_str_escaping():
     obj = "<p>hello</p>"
-    out, mime = pyscript.format_mime(obj)
+    out, mime = format_mime(obj)
     assert out == "&lt;p&gt;hello&lt;/p&gt;"
     assert mime == "text/plain"
 
 
 def test_format_mime_repr_escaping():
-    out, mime = pyscript.format_mime(sys)
+    out, mime = format_mime(sys)
     assert out == "&lt;module 'sys' (built-in)&gt;"
     assert mime == "text/plain"
 
 
 def test_format_mime_HTML():
-    obj = pyscript.HTML("<p>hello</p>")
-    out, mime = pyscript.format_mime(obj)
+    obj = HTML("<p>hello</p>")
+    out, mime = format_mime(obj)
     assert out == "<p>hello</p>"
     assert mime == "text/html"
 
@@ -55,7 +58,7 @@ def test_format_mime_HTML():
 def test_uses_top_level_await():
     # Basic Case
     src = "x = 1"
-    assert pyscript.uses_top_level_await(src) is False
+    assert uses_top_level_await(src) is False
 
     # Comments are not top-level await
     src = textwrap.dedent(
@@ -64,7 +67,7 @@ def test_uses_top_level_await():
         """
     )
 
-    assert pyscript.uses_top_level_await(src) is False
+    assert uses_top_level_await(src) is False
 
     # Top-level-await cases
     src = textwrap.dedent(
@@ -74,7 +77,7 @@ def test_uses_top_level_await():
         await foo
         """
     )
-    assert pyscript.uses_top_level_await(src) is True
+    assert uses_top_level_await(src) is True
 
     src = textwrap.dedent(
         """
@@ -82,7 +85,7 @@ def test_uses_top_level_await():
             pass
         """
     )
-    assert pyscript.uses_top_level_await(src) is True
+    assert uses_top_level_await(src) is True
 
     src = textwrap.dedent(
         """
@@ -90,7 +93,7 @@ def test_uses_top_level_await():
             pass
         """
     )
-    assert pyscript.uses_top_level_await(src) is True
+    assert uses_top_level_await(src) is True
 
     # Acceptable await/async for/async with cases
     src = textwrap.dedent(
@@ -99,7 +102,7 @@ def test_uses_top_level_await():
             await foo()
         """
     )
-    assert pyscript.uses_top_level_await(src) is False
+    assert uses_top_level_await(src) is False
 
     src = textwrap.dedent(
         """
@@ -108,7 +111,7 @@ def test_uses_top_level_await():
                 pass
         """
     )
-    assert pyscript.uses_top_level_await(src) is False
+    assert uses_top_level_await(src) is False
 
     src = textwrap.dedent(
         """
@@ -117,12 +120,12 @@ def test_uses_top_level_await():
                 pass
         """
     )
-    assert pyscript.uses_top_level_await(src) is False
+    assert uses_top_level_await(src) is False
 
 
 def test_set_version_info():
     version_string = "1234.56.78.ABCD"
-    pyscript._set_version_info(version_string)
+    set_version_info(version_string)
     assert pyscript.__version__ == version_string
     assert pyscript.version_info == (1234, 56, 78, "ABCD")
     #
@@ -131,7 +134,7 @@ def test_set_version_info():
     assert pyscript.PyScript.version_info == pyscript.version_info
 
 
-class MyDeprecatedGlobal(pyscript.DeprecatedGlobal):
+class MyDeprecatedGlobal(DeprecatedGlobal):
     """
     A subclass of DeprecatedGlobal, for tests.
 

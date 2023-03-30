@@ -1,4 +1,6 @@
 import type { AppConfig } from './pyconfig';
+import { showWarning } from './utils';
+import { define_custom_element } from './plugin';
 import { RemoteInterpreter } from './remote_interpreter';
 import type { PyProxyDict, PyProxy } from 'pyodide';
 import { getLogger } from './logger';
@@ -39,7 +41,8 @@ export class InterpreterClient extends Object {
      * interface.
      * */
     async initializeRemote(): Promise<void> {
-        await this._unwrapped_remote.loadInterpreter(this.config, this.stdio);
+        const internal_js_mod = { define_custom_element, showWarning };
+        await this._unwrapped_remote.loadInterpreter(this.config, this.stdio, internal_js_mod);
         // await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
         this.globals = this._remote.globals;
     }
@@ -60,7 +63,7 @@ export class InterpreterClient extends Object {
      *    serializable.
      */
     async run(code: string, id?: string): Promise<{ result: any }> {
-        return this._remote.pyscript_py._run_pyscript(code, id);
+        return this._remote.pyscript_internal.run_pyscript(code, id);
     }
 
     /**

@@ -256,9 +256,9 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
-                import pyscript
-                pyscript.showWarning("hello")
-                pyscript.showWarning("world")
+                from _pyscript_js import showWarning
+                showWarning("hello")
+                showWarning("world")
             </py-script>
             """
         )

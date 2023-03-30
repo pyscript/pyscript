@@ -1,6 +1,7 @@
 import html
 
-from pyscript import Plugin, js
+import js
+from pyscript import Plugin
 
 js.console.warn(
     "WARNING: This plugin is still in a very experimental phase and will likely change"
