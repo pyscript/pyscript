@@ -6,14 +6,17 @@ import io
 import re
 import time
 from collections import namedtuple
+from contextlib import contextmanager
 from textwrap import dedent
 
 import js
 
 try:
-    from pyodide.ffi import create_proxy
+    from pyodide.code import eval_code
+    from pyodide.ffi import JsProxy, create_proxy
 except ImportError:
-    from pyodide import create_proxy
+    from pyodide import JsProxy, create_proxy, eval_code
+
 
 loop = asyncio.get_event_loop()
 
@@ -188,8 +191,13 @@ def write(element_id, value, append=False, exec_id=0):
     )
 
 
-def set_current_display_target(target_id):
+@contextmanager
+def _display_target(target_id):
     get_current_display_target._id = target_id
+    try:
+        yield
+    finally:
+        get_current_display_target._id = None
 
 
 def get_current_display_target():
@@ -200,17 +208,14 @@ get_current_display_target._id = None
 
 
 def display(*values, target=None, append=True):
-    default_target = get_current_display_target()
-    if default_target is None and target is None:
+    if target is None:
+        target = get_current_display_target()
+    if target is None:
         raise Exception(
             "Implicit target not allowed here. Please use display(..., target=...)"
         )
-    if target is not None:
-        for v in values:
-            Element(target).write(v, append=append)
-    else:
-        for v in values:
-            Element(default_target).write(v, append=append)
+    for v in values:
+        Element(target).write(v, append=append)
 
 
 class Element:
@@ -702,3 +707,32 @@ def _install_deprecated_globals_2022_12_1(ns):
         "Please use <code>pyscript</code> instead."
     )
     ns["PyScript"] = DeprecatedGlobal("PyScript", PyScript, message)
+
+
+def _run_pyscript(code: str, id: str = None) -> JsProxy:
+    """Execute user code inside context managers.
+
+    Uses the __main__ global namespace.
+
+    The output is wrapped inside a JavaScript object since an object is not
+    thenable. This is so we do not accidentally `await` the result of the python
+    execution, even if it's awaitable (Future, Task, etc.)
+
+    Parameters
+    ----------
+    code :
+       The code to run
+
+    id :
+       The id for the default display target (or None if no default display target).
+
+    Returns
+    -------
+        A Js Object of the form {result: the_result}
+    """
+    import __main__
+
+    with _display_target(id):
+        result = eval_code(code, globals=__main__.__dict__)
+
+    return js.Object.new(result=result)

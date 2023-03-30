@@ -21,14 +21,6 @@ import { RemoteInterpreter } from './remote_interpreter';
 import { robustFetch } from './fetch';
 import * as Synclink from 'synclink';
 
-// pyscript_package is injected from src/python by bundlePyscriptPythonPlugin in
-// esbuild.js
-
-// @ts-ignore
-import python_package from 'pyscript_python_package.esbuild_injected.json';
-
-declare const python_package: { dirs: string[]; files: [string, string] };
-
 const logger = getLogger('pyscript/main');
 
 /**
@@ -270,17 +262,6 @@ export class PyScriptApp {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
-        logger.info('importing pyscript');
-
-        // Write pyscript package into file system
-        for (const dir of python_package.dirs) {
-            await interpreter._remote.FS.mkdir('/home/pyodide/' + dir);
-        }
-        for (const [path, value] of python_package.files) {
-            await interpreter._remote.FS.writeFile('/home/pyodide/' + path, value);
-        }
-        //Refresh the module cache so Python consistently finds pyscript module
-        await interpreter._remote.invalidate_module_path_cache();
 
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
@@ -289,11 +270,7 @@ export class PyScriptApp {
         // await interpreter._remote.setHandler('showWarning', Synclink.proxy(showWarning));
         interpreter._unwrapped_remote.setHandler('define_custom_element', define_custom_element);
         interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
-        const pyscript_module = (await interpreter.pyimport('pyscript')) as Synclink.Remote<
-            PyProxy & { _set_version_info(string): void }
-        >;
-        await pyscript_module._set_version_info(version);
-        await pyscript_module.destroy();
+        await interpreter._remote.pyscript_py._set_version_info(version);
 
         // import some carefully selected names into the global namespace
         await interpreter.run(`

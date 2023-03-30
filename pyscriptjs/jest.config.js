@@ -1,6 +1,7 @@
 //jest.config.js
 module.exports = {
     preset: 'ts-jest',
+    setupFilesAfterEnv: ['./tests/unit/setup.ts'],
     testEnvironment: './jest-environment-jsdom.js',
     extensionsToTreatAsEsm: ['.ts'],
     transform: {
