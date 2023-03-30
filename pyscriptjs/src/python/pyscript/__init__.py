@@ -714,7 +714,6 @@ def _install_deprecated_globals_2022_12_1(ns):
     ns["PyScript"] = DeprecatedGlobal("PyScript", PyScript, message)
 
 
-
 class _PyscriptWebLoop(WebLoop):
     def __init__(self):
         super().__init__()
@@ -729,8 +728,8 @@ class _PyscriptWebLoop(WebLoop):
         *args: Any,
         context: contextvars.Context | None = None,
     ) -> asyncio.Handle:
-        """Based on call_later from Pyodide's webloop 
-        
+        """Based on call_later from Pyodide's webloop
+
         With some unneeded stuff removed and a mechanism for deferring tasks
         scheduled from user code.
         """
@@ -761,11 +760,11 @@ class _PyscriptWebLoop(WebLoop):
         self._deferred_handles = []
 
 
-
 def _install_pyscript_loop():
     global _LOOP
     _LOOP = _PyscriptWebLoop()
     asyncio.set_event_loop(_LOOP)
+
 
 def _schedule_deferred_tasks():
     _LOOP._schedule_deferred_tasks()
