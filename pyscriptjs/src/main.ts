@@ -414,7 +414,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
         this.incrementPendingTags();
         this.decrementPendingTags();
         await this.scriptTagsPromise;
-        await this.interpreter._remote.pyscript_py._start_loop();
+        await this.interpreter._remote.pyscript_py._schedule_deferred_tasks();
     }
 
     // ================= registraton API ====================

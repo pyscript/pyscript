@@ -37,7 +37,7 @@ type PyScriptPyModule = ProxyMarked & {
     uses_top_level_await(code: string): boolean;
     _run_pyscript(code: string, display_target_id?: string): { result: any };
     _install_pyscript_loop(): void;
-    _start_loop(): void;
+    _schedule_deferred_tasks(): void;
 };
 
 /*
