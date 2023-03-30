@@ -78,9 +78,9 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
                 if (!response.ok) {
                     return;
                 }
-                const parentElement = this.querySelector("div[class='cm-content']");
-                const {lastElementChild} = parentElement;
-                parentElement.replaceChildren(lastElementChild);
+                const cmcontentElement = this.querySelector("div[class='cm-content']");
+                const {lastElementChild} = cmcontentElement;
+                cmcontentElement.replaceChildren(lastElementChild);
                 lastElementChild.textContent = await response.text();
                 logger.info(`loading code from ${this.src} to repl...success`);
             } catch (err) {

@@ -21,7 +21,7 @@ Features
 - The `output` attribute of `py-repl` tags now specifies the id of the DOM element that `sys.stdout`, `sys.stderr`, and the results of a REPL execution are written to. It no longer affects the location of calls to `display()`
 - Added a `stderr` attribute of `py-repl` tags to route `sys.stderr` to a DOM element with the given ID. ([#1106](https://github.com/pyscript/pyscript/pull/1106))
 - Resored the `output-mode` attribute of `py-repl` tags. If `output-mode` == 'append', the DOM element where output is printed is _not_ cleared before writing new results.
-- Load code from the attribute src of py-repl and preload it into the corresponding py-repl tag by use the attribute `str` in your `py-repl` tag([#1292]([load code from the attr src of py-repl by chenchen100 · Pull Request #1292 · pyscript/pyscript (github.com)](https://github.com/pyscript/pyscript/pull/1292)))
+- Load code from the attribute src of py-repl and preload it into the corresponding py-repl tag by use the attribute `str` in your `py-repl` tag([#1292](https://github.com/pyscript/pyscript/pull/1292))
 
 ### Plugins
 - Plugins may now implement the `beforePyReplExec()` and `afterPyReplExec()` hooks, which are called immediately before and after code in a `py-repl` tag is executed. ([#1106](https://github.com/pyscript/pyscript/pull/1106))
