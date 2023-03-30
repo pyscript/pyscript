@@ -6,7 +6,6 @@ import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
 import type { Terminal as TerminalType } from 'xterm';
 import type { WebLinksAddon as WebLinksAddonType } from 'xterm-addon-web-links';
-import type { FitAddon as FitAddonType } from 'xterm-addon-fit';
 
 type AppConfigStyle = AppConfig & {
     terminal?: boolean | 'auto';
@@ -173,7 +172,6 @@ function make_PyTerminal_pre(app: PyScriptApp) {
 
 declare const Terminal: typeof TerminalType;
 declare const WebLinksAddon: { WebLinksAddon: typeof WebLinksAddonType };
-declare const FitAddon: { FitAddon: typeof FitAddonType };
 
 function make_PyTerminal_xterm(app: PyScriptApp) {
     /** The <py-terminal> custom element, which automatically register a stdio
@@ -215,10 +213,6 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
                 //eslint-disable-next-line
                 //@ts-ignore
                 await import('https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.8.0/lib/xterm-addon-web-links.js');
-                //Auto-fit terminal to container size
-                //eslint-disable-next-line
-                //@ts-ignore
-                await import('https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.7.0/lib/xterm-addon-fit.js');
 
                 const cssTag = document.createElement('link');
                 cssTag.type = 'text/css';
@@ -228,15 +222,8 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
 
                 //Create xterm, add addons
                 this.term = new Terminal({ screenReaderMode: true, cols: 80 });
-
                 this.term.loadAddon(new WebLinksAddon.WebLinksAddon());
-
-                const fitter = new FitAddon.FitAddon();
-                this.term.loadAddon(fitter);
-
                 this.term.open(this);
-                fitter.fit();
-                this.onresize = () => fitter.fit();
 
                 this.moduleResolved = true;
 
