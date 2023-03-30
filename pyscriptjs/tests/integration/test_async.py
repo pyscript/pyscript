@@ -1,5 +1,3 @@
-import pytest
-
 from .support import PyScriptTest
 
 
@@ -124,7 +122,6 @@ class TestAsync(PyScriptTest):
         inner_text = self.page.inner_text("html")
         assert "A0\nA1\nB0\nB1" in inner_text
 
-    @pytest.mark.xfail(reason="fails after introducing synclink, fix me soon!")
     def test_async_display_untargeted(self):
         self.pyscript_run(
             """
@@ -151,7 +148,6 @@ class TestAsync(PyScriptTest):
             == "Implicit target not allowed here. Please use display(..., target=...)"
         )
 
-    @pytest.mark.xfail(reason="fails after introducing synclink, fix me soon!")
     def test_sync_and_async_order(self):
         """
         The order of execution is defined as follows:

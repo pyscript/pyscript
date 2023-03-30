@@ -3,3 +3,4 @@ from unittest.mock import Mock
 
 document = Mock()
 console = Mock()
+setTimeout = Mock()

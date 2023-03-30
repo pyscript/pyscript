@@ -35,8 +35,9 @@ type PATHInterface = {
 type PyScriptPyModule = ProxyMarked & {
     _set_version_info(ver: string): void;
     uses_top_level_await(code: string): boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     _run_pyscript(code: string, display_target_id?: string): { result: any };
+    _install_pyscript_loop(): void;
+    _schedule_deferred_tasks(): void;
 };
 
 /*
@@ -128,6 +129,7 @@ export class RemoteInterpreter extends Object {
         this.globals = Synclink.proxy(this.interface.globals as PyProxyDict);
         logger.info('importing pyscript');
         this.pyscript_py = Synclink.proxy(this.interface.pyimport('pyscript')) as PyProxy & typeof this.pyscript_py;
+        this.pyscript_py._install_pyscript_loop();
 
         if (config.packages) {
             logger.info('Found packages in configuration to install. Loading micropip...');
