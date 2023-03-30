@@ -50,7 +50,7 @@ export class StdioDirector extends Plugin {
         interpreter: InterpreterClient;
         src: string;
         pyScriptTag: PyScriptTag;
-        result: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        result: any;
     }): void {
         if (options.pyScriptTag.stdout_manager != null) {
             this._stdioMultiplexer.removeListener(options.pyScriptTag.stdout_manager);
@@ -99,7 +99,7 @@ export class StdioDirector extends Plugin {
         src: string;
         outEl: HTMLElement;
         pyReplTag: InstanceType<ReturnType<typeof make_PyRepl>>;
-        result: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        result: any;
     }): Promise<void> {
         // display the value of the last-evaluated expression in the REPL
         if (options.result !== undefined) {

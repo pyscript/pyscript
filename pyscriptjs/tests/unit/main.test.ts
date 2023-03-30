@@ -1,12 +1,7 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, beforeEach, expect } from '@jest/globals';
+import { UserError, ErrorCode } from '../../src/exceptions';
+import { PyScriptApp } from '../../src/main';
 
-describe('Placeholder', () => {
-    it('this is a placeholder, we need to fix and re-enable the commented out tests', () => {
-        expect(true).toBe(true);
-    });
-});
-
-/*
 describe('Test withUserErrorHandler', () => {
     class MyApp extends PyScriptApp {
         myRealMain: any;
@@ -17,7 +12,7 @@ describe('Test withUserErrorHandler', () => {
         }
 
         async _realMain() {
-            await this.myRealMain();
+            this.myRealMain();
         }
     }
 
@@ -68,8 +63,6 @@ describe('Test withUserErrorHandler', () => {
         }
 
         const app = new MyApp(myRealMain);
-        expect.assertions(1);
-        await expect(async () => await app.main()).resolves.toThrow(new Error('Explosions!'));
+        expect(app.main()).rejects.toThrow(new Error('Explosions!'));
     });
 });
-*/

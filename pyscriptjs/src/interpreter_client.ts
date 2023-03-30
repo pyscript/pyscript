@@ -59,7 +59,6 @@ export class InterpreterClient extends Object {
      * 2. a Synclink Proxy wrapping an object of this if the result is not
      *    serializable.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async run(code: string, id?: string): Promise<{ result: any }> {
         return this._remote.pyscript_py._run_pyscript(code, id);
     }

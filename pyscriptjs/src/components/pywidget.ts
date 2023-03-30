@@ -40,8 +40,7 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
             await interpreter.globals.set(this.id, this.proxy);
         }
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const xPyWidget = customElements.define(name, CustomWidget);
+    customElements.define(name, CustomWidget);
 }
 
 export function make_PyWidget(interpreter: InterpreterClient) {
