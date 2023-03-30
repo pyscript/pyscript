@@ -582,10 +582,9 @@ class TestPyRepl(PyScriptTest):
             """
             <py-repl id="py-repl1" output="replOutput1" src="./loadReplSrc1.py"></py-repl>
             <div id="replOutput1"></div>
-            """)
-        successMsg = (
-            '[py-repl] loading code from ./loadReplSrc1.py to repl...success'
+            """
         )
+        successMsg = "[py-repl] loading code from ./loadReplSrc1.py to repl...success"
         assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.info.lines[-1] == successMsg
 
@@ -607,11 +606,10 @@ class TestPyRepl(PyScriptTest):
                 target_tag.setAttribute("src", "./loadReplSrc3.py")
             </py-repl>
             <div id="replOutput3"></div>
-            """)
-
-        successMsg1 = (
-            '[py-repl] loading code from ./loadReplSrc2.py to repl...success'
+            """
         )
+
+        successMsg1 = "[py-repl] loading code from ./loadReplSrc2.py to repl...success"
         assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.info.lines[-1] == successMsg1
 
@@ -622,9 +620,7 @@ class TestPyRepl(PyScriptTest):
         self.page.wait_for_selector("py-terminal")
         assert self.console.log.lines[-1] == "3"
 
-        successMsg2 = (
-            '[py-repl] loading code from ./loadReplSrc3.py to repl...success'
-        )
+        successMsg2 = "[py-repl] loading code from ./loadReplSrc3.py to repl...success"
         assert self.console.info.lines[-1] == successMsg2
 
     def test_repl_src_path_that_do_not_exist(self):
@@ -632,7 +628,8 @@ class TestPyRepl(PyScriptTest):
             """
             <py-repl id="py-repl4" output="replOutput4" src="./loadReplSrc4.py"></py-repl>
             <div id="replOutput4"></div>
-            """)
+            """
+        )
         errorMsg = (
             "(PY0404): Fetching from URL ./loadReplSrc4.py "
             "failed with error 404 (Not Found). "
