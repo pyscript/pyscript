@@ -16,7 +16,6 @@ import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
-import type { PyProxy } from 'pyodide';
 import { RemoteInterpreter } from './remote_interpreter';
 import { robustFetch } from './fetch';
 import * as Synclink from 'synclink';
