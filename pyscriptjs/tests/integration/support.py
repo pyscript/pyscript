@@ -50,8 +50,12 @@ class PyScriptTest:
     # available to all tests so that it's easiert to check.
     PY_COMPLETE = "Python initialization complete"
 
+    @pytest.fixture(params=["main", "worker"])
+    def execution_thread(self, request):
+        return request.param
+
     @pytest.fixture()
-    def init(self, request, tmpdir, logger, page):
+    def init(self, request, tmpdir, logger, page, execution_thread):
         """
         Fixture to automatically initialize all the tests in this class and its
         subclasses.
@@ -73,6 +77,7 @@ class PyScriptTest:
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
         self.logger = logger
+        self.execution_thread = execution_thread
 
         if request.config.option.no_fake_server:
             # use a real HTTP server. Note that as soon as we request the
@@ -291,6 +296,9 @@ class PyScriptTest:
               {extra_head}
           </head>
           <body>
+            <py-config>
+              execution_thread = "{self.execution_thread}"
+            </py-config>
             {snippet}
           </body>
         </html>

@@ -18,6 +18,21 @@ class TestBasic(PyScriptTest):
         assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "hello pyscript"
 
+    def test_execution_thread(self):
+        self.pyscript_run(
+            """
+            <!-- we don't really need anything here, we just want to check that
+                 pyscript starts -->
+            """
+        )
+        assert self.execution_thread in ("main", "worker")
+        if self.execution_thread == "main":
+            where = "the main thread"
+        elif self.execution_thread == "worker":
+            where = "a web worker"
+        expected = f"[pyscript/main] Starting the interpreter in {where}"
+        assert expected in self.console.info.lines
+
     def test_print(self):
         self.pyscript_run(
             """

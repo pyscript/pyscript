@@ -23,6 +23,7 @@ export interface AppConfig extends Record<string, any> {
     fetch?: FetchConfig[];
     plugins?: string[];
     pyscript?: PyScriptMetadata;
+    execution_thread?: string; // "main" or "worker"
 }
 
 export type FetchConfig = {
@@ -44,7 +45,7 @@ export type PyScriptMetadata = {
 };
 
 const allKeys = Object.entries({
-    string: ['name', 'description', 'version', 'type', 'author_name', 'author_email', 'license'],
+    string: ['name', 'description', 'version', 'type', 'author_name', 'author_email', 'license', 'execution_thread'],
     number: ['schema_version'],
     array: ['runtimes', 'interpreters', 'packages', 'fetch', 'plugins'],
 });
@@ -64,6 +65,7 @@ export const defaultConfig: AppConfig = {
     packages: [],
     fetch: [],
     plugins: [],
+    execution_thread: 'main',
 };
 
 export function loadConfigFromElement(el: Element): AppConfig {
@@ -244,6 +246,15 @@ function validateConfig(configText: string, configType = 'toml') {
                         }
                         finalConfig[item].push(eachFetchConfig);
                     });
+                } else if (item == 'execution_thread') {
+                    const value = config[item];
+                    if (value !== 'main' && value !== 'worker') {
+                        throw new UserError(
+                            ErrorCode.BAD_CONFIG,
+                            `"${value}" is not a valid value for the property "execution_thread". The only valid values are "main" and "worker"`,
+                        );
+                    }
+                    finalConfig[item] = value;
                 } else {
                     // eslint-disable-next-line
                     finalConfig[item] = config[item];

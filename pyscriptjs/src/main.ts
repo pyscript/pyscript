@@ -186,9 +186,10 @@ export class PyScriptApp {
         }
 
         const interpreter_cfg = this.config.interpreters[0];
-        const useWorker = true;
+        const useWorker = this.config.execution_thread == 'worker';
 
         if (useWorker) {
+            logger.info('Starting the interpreter in a web worker');
             // XXX what is the best way to specify a robust URL? I want to
             // load a sibling of the current file (i.e. pyscript.js), but I
             // don't know how to specify that.
@@ -212,6 +213,7 @@ export class PyScriptApp {
 
             await this.afterInterpreterLoad(this.interpreter);
         } else {
+            logger.info('Starting the interpreter in the main thread');
             // this is basically the equivalent to worker_initialize()
             const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src, false);
             const { port1, port2 } = new MessageChannel();
