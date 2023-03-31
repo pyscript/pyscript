@@ -66,7 +66,7 @@ export class RemoteInterpreter extends Object {
     PATH_FS: PATHFSInterface;
     pyscript_internal: PyScriptInternalModule;
     _needsMicropip: boolean;
-    _micropipInstalledPromise: Promise<void>
+    _micropipInstalledPromise: Promise<void>;
 
     globals: PyProxyDict & ProxyMarked;
     // TODO: Remove this once `runtimes` is removed!
@@ -141,6 +141,7 @@ export class RemoteInterpreter extends Object {
 
         // if all packages are in the lock file, we don't need micropip.
         // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         this._needsMicropip = !config.packages.every(pkg => pkg in this.interface._api.repodata_packages);
 
         if (this._needsMicropip) {
@@ -200,12 +201,15 @@ export class RemoteInterpreter extends Object {
         if (package_name.length === 0) {
             return;
         }
+        const packages = Array.isArray(package_name) ? package_name : [package_name];
+        const fmt_names = packages.join(', ');
         if (!this._needsMicropip) {
-            await this.interpreter.loadPackage(package_name);
-            return
+            logger.info(`loadPackage ${fmt_names}`);
+            await this.interpreter.loadPackage(packages);
+            return;
         }
 
-        logger.info(`micropip install ${package_name.toString()}`);
+        logger.info(`micropip install ${fmt_names}`);
         await this._micropipInstalledPromise;
         const micropip = this.interface.pyimport('micropip') as Micropip;
         try {
@@ -213,12 +217,6 @@ export class RemoteInterpreter extends Object {
             micropip.destroy();
         } catch (err) {
             const e = err as Error;
-            let fmt_names: string;
-            if (Array.isArray(package_name)) {
-                fmt_names = package_name.join(', ');
-            } else {
-                fmt_names = package_name;
-            }
             let exceptionMessage = `Unable to install package(s) '${fmt_names}'.`;
 
             // If we can't fetch `package_name` micropip.install throws a huge
@@ -232,8 +230,7 @@ export class RemoteInterpreter extends Object {
                     `for more information.`;
             } else if (e.message.includes("Can't fetch metadata")) {
                 exceptionMessage +=
-                    ' Unable to find package in PyPI. ' +
-                    'Please make sure you have entered a correct package name.';
+                    ' Unable to find package in PyPI. ' + 'Please make sure you have entered a correct package name.';
             } else {
                 exceptionMessage +=
                     ` Reason: ${e.message}. Please open an issue at ` +
@@ -246,16 +243,6 @@ export class RemoteInterpreter extends Object {
             throw new InstallError(ErrorCode.MICROPIP_INSTALL_ERROR, exceptionMessage);
         }
     }
-
-
-    async installPackages(packages) {
-        if (!packages) {
-            return;
-        }
-        logger.info('Packages to install: ', this.config.packages);
-        await this.interpreter._remote.installPackage(this.config.packages);
-    }
-
 
     /**
      *
