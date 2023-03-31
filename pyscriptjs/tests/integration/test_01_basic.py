@@ -127,7 +127,7 @@ class TestBasic(PyScriptTest):
             "Loading asciitree",  # printed by pyodide
             "Loaded asciitree",  # printed by pyodide
             "hello asciitree",  # printed by us
-            "micropip installed: false"
+            "micropip installed: false",
         ]
 
     def test_non_existent_package(self):
