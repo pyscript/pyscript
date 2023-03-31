@@ -69,7 +69,7 @@ const esbuild = async () => {
     await Promise.all([
         build({
             ...pyScriptConfig,
-            sourcemap: false,
+            sourcemap: true,
             minify: false,
             outfile: 'build/pyscript.js',
         }),
