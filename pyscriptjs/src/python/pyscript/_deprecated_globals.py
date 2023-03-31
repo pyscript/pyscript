@@ -77,7 +77,6 @@ class DeprecatedGlobalModule(DeprecatedGlobal):
         return super().__getattr__(attr)
 
 
-
 def deprecate(name, obj, instead):
     message = f"Direct usage of <code>{name}</code> is deprecated. " + instead
     main_dict[name] = DeprecatedGlobal(name, obj, message)

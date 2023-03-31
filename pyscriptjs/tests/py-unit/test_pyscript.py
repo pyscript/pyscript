@@ -215,6 +215,7 @@ class TestDeprecatedGlobal:
 
     def test_module(self):
         import sys
+
         assert "uu" not in sys.modules
         uu = MyDeprecatedGlobalModule("uu")
         assert uu.warnings == []
