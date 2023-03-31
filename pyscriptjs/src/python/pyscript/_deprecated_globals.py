@@ -66,7 +66,10 @@ class DeprecatedGlobal:
 
 class DeprecatedGlobalModule(DeprecatedGlobal):
     def __init__(self, name):
-        message = f"Direct usage of <code>{name}</code> is deprecated. Please use <code>import {name}</code> instead."
+        message = (
+            f"Direct usage of <code>{name}</code> is deprecated. "
+            f"Please use <code>import {name}</code> instead."
+        )
         super().__init__(name, None, message)
         del self._obj
 
