@@ -17,7 +17,59 @@ ROOT = py.path.local(__file__).dirpath("..", "..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
 
 
+def params_with_marks(params):
+    """
+    Small helper to automatically apply to each param a pytest.mark with the
+    same name of the param itself. E.g.:
+
+        params_with_marks(['aaa', 'bbb'])
+
+    is equivalent to:
+
+        [pytest.param('aaa', marks=pytest.mark.aaa),
+         pytest.param('bbb', marks=pytest.mark.bbb)]
+
+    This makes it possible to use 'pytest -m aaa' to run ONLY the tests which
+    uses the param 'aaa'.
+    """
+    return [pytest.param(name, marks=getattr(pytest.mark, name)) for name in params]
+
+
+def with_execution_thread(*values):
+    """
+    Class decorator to override config.execution_thread.
+
+    By default, we run each test twice:
+      - execution_tread = 'main'
+      - execution_tread = 'worker'
+
+    If you want to execute certain tests with only one specific values of
+    execution_tread, you can use this class decorator. For example:
+
+    @with_execution_thread('main')
+    class TestOnlyMainThread:
+        ...
+
+    @with_execution_thread('worker')
+    class TestOnlyWorker:
+        ...
+    """
+    for value in values:
+        assert value in ("main", "worker")
+
+    @pytest.fixture(params=params_with_marks(values))
+    def execution_thread(self, request):
+        return request.param
+
+    def with_execution_thread_decorator(cls):
+        cls.execution_thread = execution_thread
+        return cls
+
+    return with_execution_thread_decorator
+
+
 @pytest.mark.usefixtures("init")
+@with_execution_thread("main", "worker")
 class PyScriptTest:
     """
     Base class to write PyScript integration tests, based on playwright.
@@ -49,10 +101,6 @@ class PyScriptTest:
     # Pyodide always print()s this message upon initialization. Make it
     # available to all tests so that it's easiert to check.
     PY_COMPLETE = "Python initialization complete"
-
-    @pytest.fixture(params=["main", "worker"])
-    def execution_thread(self, request):
-        return request.param
 
     @pytest.fixture()
     def init(self, request, tmpdir, logger, page, execution_thread):

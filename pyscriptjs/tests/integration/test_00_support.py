@@ -4,9 +4,10 @@ import textwrap
 import pytest
 from playwright import sync_api
 
-from .support import JsErrors, JsErrorsDidNotRaise, PyScriptTest
+from .support import JsErrors, JsErrorsDidNotRaise, PyScriptTest, with_execution_thread
 
 
+@with_execution_thread("main")
 class TestSupport(PyScriptTest):
     """
     These are NOT tests about PyScript.
