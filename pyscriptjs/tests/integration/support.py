@@ -87,7 +87,7 @@ class PyScriptTest:
             self.is_fake_server = False
         else:
             # use the internal playwright routing
-            self.http_server = "http://fake_server"
+            self.http_server = "https://fake_server"
             self.router = SmartRouter(
                 "fake_server",
                 cache=request.config.cache,
@@ -740,7 +740,11 @@ class SmartRouter:
             assert url.path[0] == "/"
             relative_path = url.path[1:]
             if os.path.exists(relative_path):
-                route.fulfill(status=200, path=relative_path)
+                headers = {
+                    "Cross-Origin-Embedder-Policy": "require-corp",
+                    "Cross-Origin-Opener-Policy": "same-origin",
+                }
+                route.fulfill(status=200, headers=headers, path=relative_path)
             else:
                 route.fulfill(status=404)
             return
