@@ -118,9 +118,6 @@ class PyScriptTest:
     def init_page(self, page):
         self.page = page
 
-        # set default timeout to 60000 millliseconds from 30000
-        page.set_default_timeout(60000)
-
         self.console = ConsoleMessageCollection(self.logger)
         self._js_errors = []
         page.on("console", self._on_console)
