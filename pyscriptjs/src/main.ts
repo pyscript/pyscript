@@ -260,21 +260,22 @@ export class PyScriptApp {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
-        await Promise.all([this.installPackages(), this.fetchPaths(interpreter)]);
+        await Promise.all([this.installPackages(this.config.packages), this.fetchPaths(interpreter)]);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
         await interpreter._remote.invalidate_module_path_cache();
         // Finally load plugins
         await this.fetchUserPlugins(interpreter);
     }
-
-    async installPackages() {
-        if (!this.config.packages) {
+    
+    async installPackages(packages) {
+        if (packages.length === 0) {
             return;
         }
         logger.info('Packages to install: ', this.config.packages);
         await this.interpreter._remote.installPackage(this.config.packages);
     }
+
 
     async fetchPaths(interpreter: InterpreterClient) {
         // TODO: start fetching before interpreter initialization

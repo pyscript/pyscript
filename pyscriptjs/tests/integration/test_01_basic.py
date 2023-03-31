@@ -112,17 +112,22 @@ class TestBasic(PyScriptTest):
             </py-config>
             <py-script>
                 import js
+                import importlib.metadata
                 import asciitree
                 js.console.log('hello', asciitree.__name__)
+                # We don't need micropip for asciitree since it is in the lock file.
+                # Check that we didn't install it.
+                js.console.log("micropip installed:", "micropip" in (d.name for d in importlib.metadata.distributions()))
             </py-script>
             """
         )
 
         assert self.console.log.lines[0] == self.PY_COMPLETE
-        assert self.console.log.lines[-3:] == [
+        assert self.console.log.lines[-4:] == [
             "Loading asciitree",  # printed by pyodide
             "Loaded asciitree",  # printed by pyodide
             "hello asciitree",  # printed by us
+            "micropip installed: false"
         ]
 
     def test_non_existent_package(self):

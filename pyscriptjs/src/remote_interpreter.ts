@@ -65,6 +65,8 @@ export class RemoteInterpreter extends Object {
     PATH: PATHInterface;
     PATH_FS: PATHFSInterface;
     pyscript_internal: PyScriptInternalModule;
+    _needsMicropip: boolean;
+    _micropipInstalledPromise: Promise<void>
 
     globals: PyProxyDict & ProxyMarked;
     // TODO: Remove this once `runtimes` is removed!
@@ -137,9 +139,13 @@ export class RemoteInterpreter extends Object {
         this.pyscript_internal.set_version_info(version);
         this.pyscript_internal.install_pyscript_loop();
 
-        if (config.packages) {
-            logger.info('Found packages in configuration to install. Loading micropip...');
-            await this.loadPackage('micropip');
+        // if all packages are in the lock file, we don't need micropip.
+        // @ts-ignore
+        this._needsMicropip = !config.packages.every(pkg => pkg in this.interface._api.repodata_packages);
+
+        if (this._needsMicropip) {
+            logger.info('Loading micropip...');
+            this._micropipInstalledPromise = this.loadPackage('micropip');
         }
         // import some carefully selected names into the global namespace
         this.interface.runPython(`
@@ -185,56 +191,71 @@ export class RemoteInterpreter extends Object {
     }
 
     /**
-     * delegates the installation of packages
-     * (using a package manager, which can be specific to
-     * the interface) to the underlying interface.
+     * delegates the installation of packages (using a package manager, which
+     * can be specific to the interface) to the underlying interface.
      *
      * For Pyodide, we use `micropip`
      * */
     async installPackage(package_name: string | string[]): Promise<void> {
-        if (package_name.length > 0) {
-            logger.info(`micropip install ${package_name.toString()}`);
+        if (package_name.length === 0) {
+            return;
+        }
+        if (!this._needsMicropip) {
+            await this.interpreter.loadPackage(package_name);
+            return
+        }
 
-            const micropip = this.interface.pyimport('micropip') as Micropip;
-            try {
-                await micropip.install(package_name);
-                micropip.destroy();
-            } catch (err) {
-                const e = err as Error;
-                let fmt_names: string;
-                if (Array.isArray(package_name)) {
-                    fmt_names = package_name.join(', ');
-                } else {
-                    fmt_names = package_name;
-                }
-                let exceptionMessage = `Unable to install package(s) '${fmt_names}'.`;
-
-                // If we can't fetch `package_name` micropip.install throws a huge
-                // Python traceback in `e.message` this logic is to handle the
-                // error and throw a more sensible error message instead of the
-                // huge traceback.
-                if (e.message.includes("Can't find a pure Python 3 wheel")) {
-                    exceptionMessage +=
-                        ` Reason: Can't find a pure Python 3 Wheel for package(s) '${fmt_names}'.` +
-                        `See: https://pyodide.org/en/stable/usage/faq.html#micropip-can-t-find-a-pure-python-wheel ` +
-                        `for more information.`;
-                } else if (e.message.includes("Can't fetch metadata")) {
-                    exceptionMessage +=
-                        ' Unable to find package in PyPI. ' +
-                        'Please make sure you have entered a correct package name.';
-                } else {
-                    exceptionMessage +=
-                        ` Reason: ${e.message}. Please open an issue at ` +
-                        `https://github.com/pyscript/pyscript/issues/new if you require help or ` +
-                        `you think it's a bug.`;
-                }
-
-                logger.error(e);
-
-                throw new InstallError(ErrorCode.MICROPIP_INSTALL_ERROR, exceptionMessage);
+        logger.info(`micropip install ${package_name.toString()}`);
+        await this._micropipInstalledPromise;
+        const micropip = this.interface.pyimport('micropip') as Micropip;
+        try {
+            await micropip.install(package_name);
+            micropip.destroy();
+        } catch (err) {
+            const e = err as Error;
+            let fmt_names: string;
+            if (Array.isArray(package_name)) {
+                fmt_names = package_name.join(', ');
+            } else {
+                fmt_names = package_name;
             }
+            let exceptionMessage = `Unable to install package(s) '${fmt_names}'.`;
+
+            // If we can't fetch `package_name` micropip.install throws a huge
+            // Python traceback in `e.message` this logic is to handle the
+            // error and throw a more sensible error message instead of the
+            // huge traceback.
+            if (e.message.includes("Can't find a pure Python 3 wheel")) {
+                exceptionMessage +=
+                    ` Reason: Can't find a pure Python 3 Wheel for package(s) '${fmt_names}'.` +
+                    `See: https://pyodide.org/en/stable/usage/faq.html#micropip-can-t-find-a-pure-python-wheel ` +
+                    `for more information.`;
+            } else if (e.message.includes("Can't fetch metadata")) {
+                exceptionMessage +=
+                    ' Unable to find package in PyPI. ' +
+                    'Please make sure you have entered a correct package name.';
+            } else {
+                exceptionMessage +=
+                    ` Reason: ${e.message}. Please open an issue at ` +
+                    `https://github.com/pyscript/pyscript/issues/new if you require help or ` +
+                    `you think it's a bug.`;
+            }
+
+            logger.error(e);
+
+            throw new InstallError(ErrorCode.MICROPIP_INSTALL_ERROR, exceptionMessage);
         }
     }
+
+
+    async installPackages(packages) {
+        if (!packages) {
+            return;
+        }
+        logger.info('Packages to install: ', this.config.packages);
+        await this.interpreter._remote.installPackage(this.config.packages);
+    }
+
 
     /**
      *
