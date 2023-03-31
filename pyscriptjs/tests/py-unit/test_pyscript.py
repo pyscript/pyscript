@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pyscript
 from pyscript import HTML, Element, _html
-from pyscript._deprecated_globals import DeprecatedGlobal
+from pyscript._deprecated_globals import DeprecatedGlobal, DeprecatedGlobalModule
 from pyscript._internal import set_version_info, uses_top_level_await
 from pyscript._mime import format_mime
 
@@ -150,6 +150,10 @@ class MyDeprecatedGlobal(DeprecatedGlobal):
         self.warnings.append(message)
 
 
+class MyDeprecatedGlobalModule(DeprecatedGlobalModule, MyDeprecatedGlobal):
+    pass
+
+
 class TestDeprecatedGlobal:
     def test_repr(self):
         glob = MyDeprecatedGlobal("foo", None, "my message")
@@ -208,3 +212,13 @@ class TestDeprecatedGlobal:
         glob["a"] = 100
         assert glob.warnings == ["this is my warning"]
         assert glob["a"] == 100
+
+    def test_module(self):
+        import sys
+        assert "uu" not in sys.modules
+        uu = MyDeprecatedGlobalModule("uu")
+        assert uu.warnings == []
+        assert "uu" not in sys.modules
+        uu.encode
+        assert "uu" in sys.modules
+        assert len(uu.warnings) == 1

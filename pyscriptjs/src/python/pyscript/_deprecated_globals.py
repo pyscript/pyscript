@@ -23,13 +23,13 @@ class DeprecatedGlobal:
     """
 
     def __init__(self, name, obj, message):
-        self.__name = name
-        self.__obj = obj
+        self._name = name
+        self._obj = obj
         self.__message = message
         self.__warning_already_shown = False
 
     def __repr__(self):
-        return f"<DeprecatedGlobal({self.__name!r})>"
+        return f"<DeprecatedGlobal({self._name!r})>"
 
     def _show_warning(self, message):
         """
@@ -45,23 +45,37 @@ class DeprecatedGlobal:
 
     def __getattr__(self, attr):
         self._show_warning_maybe()
-        return getattr(self.__obj, attr)
+        return getattr(self._obj, attr)
 
     def __call__(self, *args, **kwargs):
         self._show_warning_maybe()
-        return self.__obj(*args, **kwargs)
+        return self._obj(*args, **kwargs)
 
     def __iter__(self):
         self._show_warning_maybe()
-        return iter(self.__obj)
+        return iter(self._obj)
 
     def __getitem__(self, key):
         self._show_warning_maybe()
-        return self.__obj[key]
+        return self._obj[key]
 
     def __setitem__(self, key, value):
         self._show_warning_maybe()
-        self.__obj[key] = value
+        self._obj[key] = value
+
+
+class DeprecatedGlobalModule(DeprecatedGlobal):
+    def __init__(self, name):
+        message = f"Direct usage of <code>{name}</code> is deprecated. Please use <code>import {name}</code> instead."
+        super().__init__(name, None, message)
+        del self._obj
+
+    def __getattr__(self, attr):
+        if attr == "_obj":
+            self._obj = __import__(self._name)
+            return self._obj
+        return super().__getattr__(attr)
+
 
 
 def deprecate(name, obj, instead):
@@ -125,8 +139,7 @@ def deprecate_stdlib_modules():
         "micropip",
     ]
     for name in stdlib_names:
-        obj = __import__(name)
-        deprecate(name, obj, f"Please use <code>import {name}</code> instead.")
+        main_dict[name] = DeprecatedGlobalModule(name)
 
 
 def install_deprecated_globals_2022_12_1():
