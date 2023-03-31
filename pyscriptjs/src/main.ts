@@ -213,23 +213,14 @@ export class PyScriptApp {
         */
         const interpreterURL = await this.interpreter._remote.src;
         await import(interpreterURL);
-        await this.afterInterpreterLoad(this.interpreter);
-    }
 
-    // lifecycle (5)
-    // See the overview comment above for an explanation of how we jump from
-    // point (4) to point (5).
-    //
-    // Invariant: this.config is set and available.
-    async afterInterpreterLoad(interpreter: InterpreterClient): Promise<void> {
-        console.assert(this.config !== undefined);
-
+        const interpreter = this.interpreter;
         this.logStatus('Python startup...');
         await this.interpreter.initializeRemote();
         this.logStatus('Python ready!');
-
         this.logStatus('Setting up virtual environment...');
         await this.setupVirtualEnv(interpreter);
+
         await mountElements(interpreter);
 
         // lifecycle (6.5)
@@ -260,22 +251,12 @@ export class PyScriptApp {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
-        await Promise.all([this.installPackages(this.config.packages), this.fetchPaths(interpreter)]);
+        await this.fetchPaths(interpreter);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
-        await interpreter._remote.invalidate_module_path_cache();
         // Finally load plugins
         await this.fetchUserPlugins(interpreter);
     }
-    
-    async installPackages(packages) {
-        if (packages.length === 0) {
-            return;
-        }
-        logger.info('Packages to install: ', this.config.packages);
-        await this.interpreter._remote.installPackage(this.config.packages);
-    }
-
 
     async fetchPaths(interpreter: InterpreterClient) {
         // TODO: start fetching before interpreter initialization
