@@ -208,21 +208,17 @@ If you want to clear the cache, you can use the special option
 `--clear-http-cache`:
 
 ```
-$ pytest --clear-http-cache
+$ pytest tests/integration --clear-http-cache
 ...
 -------------------- SmartRouter HTTP cache --------------------
 Requests found in the cache:
-     https://raw.githubusercontent.com/pyscript/pyscript/main/README.md
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/repodata.json
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.asm.js
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/micropip-0.1-py3-none-any.whl
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.asm.data
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.asm.wasm
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide_py.tar
+     https://example.net
+     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/micropip-0.3.0-py3-none-any.whl
      https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyparsing-3.0.9-py3-none-any.whl
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/distutils.tar
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/packaging-21.3-py3-none-any.whl
+     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/python_stdlib.zip
+     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.asm.js
+     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.asm.wasm
+     ...
 Cache cleared
 ```
 
