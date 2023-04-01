@@ -7,6 +7,7 @@
 Features
 --------
 
+- The default version of Pyodide is now `0.23.0`. See the [Pyodide Changelog](https://pyodide.org/en/stable/project/changelog.html#version-0-23-0) for a detailed list of changes.
 - The `py-mount` attribute on HTML elements has been deprecated, and will be removed in a future release.
 
 
