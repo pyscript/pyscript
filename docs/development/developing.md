@@ -146,8 +146,8 @@ $ pytest test_01_basic.py -k test_pyscript_hello -s
 [  0.00 page.goto       ] pyscript_hello.html
 [  0.01 request         ] 200 - fake_server - http://fake_server/pyscript_hello.html
 ...
-[  0.17 console.info    ] [py-loader] Downloading pyodide-0.23.0...
-[  0.18 request         ] 200 - CACHED - https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js
+[  0.17 console.info    ] [py-loader] Downloading pyodide-x.y.z...
+[  0.18 request         ] 200 - CACHED - https://cdn.jsdelivr.net/pyodide/vx.y.z/full/pyodide.js
 ...
 [  3.59 console.info    ] [pyscript/main] PyScript page fully initialized
 [  3.60 console.log     ] hello pyscript
@@ -206,21 +206,6 @@ If you want to temporarily disable the cache, the easiest thing is to use
 
 If you want to clear the cache, you can use the special option
 `--clear-http-cache`:
-
-```
-$ pytest tests/integration --clear-http-cache
-...
--------------------- SmartRouter HTTP cache --------------------
-Requests found in the cache:
-     https://example.net
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/micropip-0.3.0-py3-none-any.whl
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyparsing-3.0.9-py3-none-any.whl
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/python_stdlib.zip
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.asm.js
-     https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.asm.wasm
-     ...
-Cache cleared
-```
 
 **NOTE**: this works only if you are inside `tests/integration`, or if you
 explicitly specify `tests/integration` from the command line. This is due to

@@ -20,5 +20,5 @@ dependencies:
           - pytest-xdist
           # We need Pyodide and micropip so we can import them in our Python
           # unit tests
-          - pyodide_py==0.23
+          - pyodide_py==0.23.0
           - micropip==0.2.2

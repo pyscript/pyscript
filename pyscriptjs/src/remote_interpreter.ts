@@ -152,13 +152,13 @@ export class RemoteInterpreter extends Object {
      * */
     async loadPackage(names: string | string[]): Promise<void> {
         logger.info(`pyodide.loadPackage: ${names.toString()}`);
-        // the new way in v0.22.1 is to pass it as a dict of options i.e.
+        // the new way in v0.22.1 and later is to pass it as a dict of options i.e.
         // { messageCallback: logger.info.bind(logger), errorCallback: logger.info.bind(logger) }
         // but one of our tests tries to use a locally downloaded older version of pyodide
         // for which the signature of `loadPackage` accepts the above params as args i.e.
         // the call uses `logger.info.bind(logger), logger.info.bind(logger)`.
         const messageCallback = logger.info.bind(logger) as typeof logger.info;
-        if (this.interpreter.version.startsWith('0.22') || this.interpreter.version.startsWith('0.23')) {
+        if (Number(this.interpreter.version.split('.')[1]) >= 22) {
             await this.interface.loadPackage(names, {
                 messageCallback,
                 errorCallback: messageCallback,

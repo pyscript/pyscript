@@ -66,9 +66,9 @@ class TestConfig(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "config name: app with external config"
 
-    # The default pyodide version is 0.23.0 as of writing
-    # this test which is newer than the one we are loading below
-    # (after downloading locally) -- which is 0.20.0
+    # The default pyodide version is newer than
+    # the one we are loading below (after downloading locally)
+    # which is 0.20.0
 
     # The test checks if loading a different interpreter is possible
     # and that too from a locally downloaded file without needing

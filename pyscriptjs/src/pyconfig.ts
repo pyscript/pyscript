@@ -53,8 +53,8 @@ export const defaultConfig: AppConfig = {
     type: 'app',
     interpreters: [
         {
-            src: 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js',
-            name: 'pyodide-0.22.1',
+            src: 'https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js',
+            name: 'pyodide-0.23.0',
             lang: 'python',
         },
     ],
