@@ -67,7 +67,7 @@ export class RemoteInterpreter extends Object {
     // TODO: Remove this once `runtimes` is removed!
     interpreter: InterpreterInterface & ProxyMarked;
 
-    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js') {
+    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js') {
         super();
         this.src = src;
     }
@@ -86,10 +86,9 @@ export class RemoteInterpreter extends Object {
      *
      * This is because, if it's used, loadPyodide
      * behaves mischievously i.e. it tries to load
-     * `pyodide.asm.js` and `pyodide_py.tar` but
-     * with paths that are wrong such as:
+     * additional files but with paths that are wrong such as:
      *
-     * http://127.0.0.1:8080/build/pyodide_py.tar
+     * http://127.0.0.1:8080/build/...
      * which results in a 404 since `build` doesn't
      * contain these files and is clearly the wrong
      * path.
@@ -159,7 +158,7 @@ export class RemoteInterpreter extends Object {
         // for which the signature of `loadPackage` accepts the above params as args i.e.
         // the call uses `logger.info.bind(logger), logger.info.bind(logger)`.
         const messageCallback = logger.info.bind(logger) as typeof logger.info;
-        if (this.interpreter.version.startsWith('0.22')) {
+        if (this.interpreter.version.startsWith('0.22') || this.interpreter.version.startsWith('0.23')) {
             await this.interface.loadPackage(names, {
                 messageCallback,
                 errorCallback: messageCallback,
