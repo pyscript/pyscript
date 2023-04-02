@@ -25,7 +25,7 @@ To get started, let's create a new `index.html` file and import `pyscript.js`.
 </html>
 ```
 
-We are using the pyodide CDN to setup our interpreter, but you can also download the files from [the pyodide GitHub release](https://github.com/pyodide/pyodide/releases/tag/0.23.0), unzip them and use the `pyodide.js` file as your interpreter.
+We are using the pyodide CDN to setup our interpreter, but you can also download the files from [the pyodide GitHub releases](https://github.com/pyodide/pyodide/releases/), unzip them and use the `pyodide.js` file as your interpreter.
 
 ## Setting the interpreter
 
