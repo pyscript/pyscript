@@ -267,26 +267,25 @@ export function define_custom_element(tag: string, pyElementClass: PyElementClas
     customElements.define(tag, ProxyCustomElement);
 }
 
-// Members of py-config in plug that we want to validate must be one of these types;
-// see next comment for more detail
-type BaseConfigObject = string | boolean | number | object;
+// Members of py-config in plug that we want to validate must be one of these types
+type BaseConfigObject = string | boolean | number;
 
 /**
  * Validate that parameter the user provided to py-config conforms to the specified validation function;
- * if not, throw an error explaining the bad value
+ * if not, throw an error explaining the bad value.
+ * This is the most generic validation function; other validation functions for common situations follow
  * @param options.config - The (extended) AppConfig object from py-config
  * @param {string} options.name - The name of the key in py-config to be checked
  * @param {(b:BaseConfigObject) => boolean} options.validator - the validation function used to test the user-supplied value
  * @param {BaseConfigObject} options.defaultValue - The default value for this parameter, if none is provided
  * @param {string} [options.hintMessage] - The message to show in a user error if the supplied value isn't valid
  */
-export function validateConfigParameter<AppConfig>(options: {
+export function validateConfigParameter(options: {
     config: AppConfig;
     name: string;
     validator: (b: BaseConfigObject) => boolean;
     defaultValue: BaseConfigObject;
     hintMessage?: string;
-    //options: ReturnType<typeof checkedConfigOption>,
 }) {
     //Validate that the default value is acceptable, at runtime
     if (!options.validator(options.defaultValue)) {
@@ -310,8 +309,8 @@ export function validateConfigParameter<AppConfig>(options: {
 }
 
 /**
- * Validate that parameter the user provided to py-config is one of the acceptable values;
- * if not, throw an error explaining the bad value
+ * Validate that parameter the user provided to py-config is one of the acceptable values in
+ * the given Array; if not, throw an error explaining the bad value
  * @param options.config - The (extended) AppConfig object from py-config
  * @param {string} options.name - The name of the key in py-config to be checked
  * @param {Array<BaseConfigObject>} options.possibleValues: The acceptable values for this parameter
