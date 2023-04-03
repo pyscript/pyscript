@@ -272,11 +272,13 @@ export function define_custom_element(tag: string, pyElementClass: PyElementClas
 type BaseConfigObject = string | boolean | number | object;
 
 /**
- * Validate that parameter the user provided to py-config is one of the acceptable values;
+ * Validate that parameter the user provided to py-config conforms to the specified validation function;
  * if not, throw an error explaining the bad value
- * @param config - The (extended) AppConfig object from py-config
- * @param {string} name - The name of the key in py-config to be checked
- * @param {possible_vlaues: Array<BaseConfigObject>, default: BaseConfigObject} options - An object of the specified type, enumerating the acceptable values for this configuration object and the default value
+ * @param options.config - The (extended) AppConfig object from py-config
+ * @param {string} options.name - The name of the key in py-config to be checked
+ * @param {(b:BaseConfigObject) => boolean} options.validator - the validation function used to test the user-supplied value
+ * @param {BaseConfigObject} options.defaultValue - The default value for this parameter, if none is provided
+ * @param {string} [options.hintMessage] - The message to show in a user error if the supplied value isn't valid
  */
 export function validateConfigParameter<AppConfig>(options: {
     config: AppConfig;
@@ -307,6 +309,14 @@ export function validateConfigParameter<AppConfig>(options: {
     }
 }
 
+/**
+ * Validate that parameter the user provided to py-config is one of the acceptable values;
+ * if not, throw an error explaining the bad value
+ * @param options.config - The (extended) AppConfig object from py-config
+ * @param {string} options.name - The name of the key in py-config to be checked
+ * @param {Array<BaseConfigObject>} options.possibleValues: The acceptable values for this parameter
+ * @param {BaseConfigObject} options.defaultValue: The default value for this parameter, if none is provided
+ */
 export function validateConfigParameterFromArray(options: {
     config: AppConfig;
     name: string;
