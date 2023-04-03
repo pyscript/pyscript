@@ -118,7 +118,6 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, browse
                     console.log('py-code eval')
                     console.log('🦊 TSside: userProvidedFunctionName:', userProvidedFunctionName)
                     const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict)
-                    const fun = interpreter.globals.get(userProvidedFunctionName)
                     const isCallable = pyCallable(evalResult)
                     localsDict.set('event', evt)
 
@@ -140,59 +139,38 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, browse
             const pyEvent = 'py-' + browserEvent;
             const userProvidedFunctionName = el.getAttribute(pyEvent);
 
-            // TODO: this if statement is deprecated and should be removed in version coming after 2023.03.1
-            const possibleDeprecatedPysEvent = 'pys-' + browserEvent;
-            if (possibleDeprecatedPysEvent === 'pys-onClick' || possibleDeprecatedPysEvent === 'pys-onKeyDown') {
-                const msg =
-                    `The attribute 'pys-onClick' and 'pys-onKeyDown' are deprecated. Please 'py-click="myFunction()"' ` +
-                    ` or 'py-keydown="myFunction()"' instead.`;
-                createDeprecationWarning(msg, msg);
-                const source = `
-                from pyodide.ffi import create_proxy
-                Element("${el.id}").element.addEventListener("${browserEvent}",  create_proxy(${userProvidedFunctionName}))
-                `;
-                // We need to run the source code in a try/catch block, because
-                // the source code may contain a syntax error, which will cause
-                // the splashscreen to not be removed.
+            el.addEventListener(browserEvent, (evt) => {
                 try {
-                    interpreter.run(source);
-                } catch (e) {
-                    logger.error((e as Error).message);
-                }
-            } else {
-                el.addEventListener(browserEvent, (evt) => {
-                    try {
-                        console.log('py-event eval')
-                        const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict)
-                        const isCallable = pyCallable(evalResult)
-                        localsDict.set('event', evt)
+                    console.log('py-event eval')
+                    const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict)
+                    const isCallable = pyCallable(evalResult)
+                    localsDict.set('event', evt)
 
-                        console.log('🦊 TSside: is it callable ☀️', isCallable)
-                        if (isCallable) {
-                            const pyInspectModule = interpreter._remote.interface.pyimport('inspect')
-                            const params = pyInspectModule.signature(evalResult).parameters
+                    console.log('🦊 TSside: is it callable ☀️', isCallable)
+                    if (isCallable) {
+                        const pyInspectModule = interpreter._remote.interface.pyimport('inspect')
+                        const params = pyInspectModule.signature(evalResult).parameters
 
-                            if (params.length == 0) {
-                                evalResult();
-                            }
-                            // Functions that receive an event attribute
-                            else if (params.length == 1) {
-                                evalResult(evt);
-                            } else {
-                                throw new UserError(ErrorCode.GENERIC, "'py-[event]' take 0 or 1 arguments")
-                            }
+                        if (params.length == 0) {
+                            evalResult();
                         }
-                        else {
-                            throw new UserError(ErrorCode.GENERIC, "The code provided to 'py-[event]' should be the name of a function or Callable. To run an expression as code, use 'py-[event]-code'")
+                        // Functions that receive an event attribute
+                        else if (params.length == 1) {
+                            evalResult(evt);
+                        } else {
+                            throw new UserError(ErrorCode.GENERIC, "'py-[event]' take 0 or 1 arguments")
                         }
-                    } catch (err) {
-                        // TODO: This should be an error - probably need to refactor
-                        // this function into createSingularBanner similar to createSingularWarning(err);
-                        // tracked in issue #1253
-                        displayPyException(err, el.parentElement);
                     }
-                });
-            }
+                    else {
+                        throw new UserError(ErrorCode.GENERIC, "The code provided to 'py-[event]' should be the name of a function or Callable. To run an expression as code, use 'py-[event]-code'")
+                    }
+                } catch (err) {
+                    // TODO: This should be an error - probably need to refactor
+                    // this function into createSingularBanner similar to createSingularWarning(err);
+                    // tracked in issue #1253
+                    displayPyException(err, el.parentElement);
+                }
+            });
         }
     }
     // }
