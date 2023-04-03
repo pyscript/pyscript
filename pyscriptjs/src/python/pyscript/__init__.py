@@ -242,6 +242,7 @@ def when(event=None, id=None):
             element.addEventListener(event, func)
             # add_event_listener(element, event, func)
             print(f'Pythonside:  {func.__name__} callable when yes params? after add_event_listener {callable(func)}',)
+        return func
     return decorator
 
 
