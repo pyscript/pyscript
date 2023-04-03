@@ -271,82 +271,58 @@ export function define_custom_element(tag: string, pyElementClass: PyElementClas
 // see next comment for more detail
 type BaseConfigObject = string | boolean | number | object;
 
-/* The following interface (ConfigOption) and function (checkedConfigOption)
- * work together to ensure that the default value for ConfigOptions objects
- * settings objects must be one of the members of the array of possible values.
- *
- * checkedConfigOption allows us to create the configuration options objects with
- * correct typing without having to duplicate all the parameters.
- * I.e, the following would also work, from a types perspective, but all the values
- * have to be entered twice for each type:
- *
- * const terminal_settings: ConfigOption<[true, false, 'auto'][number], 'auto'>
- *      = {possible_values: [true, false, 'auto'], default:'auto'}
- *
- * The possible values are constrained to be of type BaseConfigObject (above),
- * i.e. if we want to validate more types of things, BaseConfigObject
- * will need to be extended
- */
-
-interface ConfigOption<F extends BaseConfigObject, D extends F> {
-    possible_values: ReadonlyArray<F>;
-    default: D;
-}
-
-export function checkedConfigOption<F extends BaseConfigObject, D extends F>(value: ConfigOption<F, D>) {
-    return value;
-}
-
-// //////////////////
-// Working on making an interface for a user to pass their own validation function here;
-// this work is not yet complete
-
-interface FunctionConfigOption<F extends (B: BaseConfigObject) => boolean, D extends Parameters<F>[number]> {
-    validator: F;
-    hint: string;
-    default: D;
-}
-
-export function FunctionCheckedConfigOption<
-    F extends (B: BaseConfigObject) => boolean,
-    D extends Parameters<F>[number],
->(value: FunctionConfigOption<F, D>) {
-    return value;
-}
-
-export function member_of(values: Array<BaseConfigObject>) {
-    return {
-        validator: (valueFromConfig: BaseConfigObject) => values.includes(valueFromConfig),
-        hint: `The only accepted values are: ${values.map(item => JSON.stringify(item)).join(', ')}]`,
-    };
-}
-
-//const test_options = FunctionCheckedConfigOption({ validator: (s: string) => false, hint: 'foo', default: 'foo' });
-
-////////
-
 /**
  * Validate that parameter the user provided to py-config is one of the acceptable values;
  * if not, throw an error explaining the bad value
  * @param config - The (extended) AppConfig object from py-config
  * @param {string} name - The name of the key in py-config to be checked
- * @param {possible_vlaues: Array.<BaseConfigObject>, default: BaseConfigObject} options - An object of the specified type, enumerating the acceptable values for this configuration object and the default value
+ * @param {possible_vlaues: Array<BaseConfigObject>, default: BaseConfigObject} options - An object of the specified type, enumerating the acceptable values for this configuration object and the default value
  */
-export function validateConfigParameter<AppConfig>(
-    config: AppConfig,
-    name: string,
-    options: ReturnType<typeof checkedConfigOption>,
-) {
-    const value = config[name] as BaseConfigObject;
-    if (value !== undefined && !options.possible_values.includes(value)) {
-        const got = JSON.stringify(value);
-        throw new UserError(
-            ErrorCode.BAD_CONFIG,
-            `Invalid value for config.${name}: the only accepted ` +
-                `values are: [${options.possible_values.map(item => JSON.stringify(item)).join(', ')}], got: ${got}.`,
+export function validateConfigParameter<AppConfig>(options: {
+    config: AppConfig;
+    name: string;
+    validator: (b: BaseConfigObject) => boolean;
+    defaultValue: BaseConfigObject;
+    hintMessage?: string;
+    //options: ReturnType<typeof checkedConfigOption>,
+}) {
+    //Validate that the default value is acceptable, at runtime
+    if (!options.validator(options.defaultValue)) {
+        throw Error(
+            `Default value ${JSON.stringify(options.defaultValue)} for ${options.name} is not a valid argument, ` +
+                `according to the provided validator function. ${options.hintMessage ? options.hintMessage : ''}`,
         );
     }
-    if (value === undefined) {
-        config[name] = options.default;
+
+    const value = options.config[options.name] as BaseConfigObject;
+    if (value !== undefined && !options.validator(value)) {
+        //Use default hint message if none is provided:
+        const hintOutput = `Invalid value ${JSON.stringify(value)} for config.${options.name}. ${
+            options.hintMessage ? options.hintMessage : ''
+        }`;
+        throw new UserError(ErrorCode.BAD_CONFIG, hintOutput);
     }
+    if (value === undefined) {
+        options.config[options.name] = options.defaultValue;
+    }
+}
+
+export function validateConfigParameterFromArray(options: {
+    config: AppConfig;
+    name: string;
+    possibleValues: Array<BaseConfigObject>;
+    defaultValue: BaseConfigObject;
+}) {
+    const validator = (b: BaseConfigObject) => options.possibleValues.includes(b);
+    const hint = `The only accepted values are: [${options.possibleValues
+        .map(item => JSON.stringify(item))
+        .join(', ')}]`;
+
+    validateConfigParameter({
+        config: options.config,
+        name: options.name,
+        validator: validator,
+        defaultValue: options.defaultValue,
+        hintMessage: hint,
+    });
 }

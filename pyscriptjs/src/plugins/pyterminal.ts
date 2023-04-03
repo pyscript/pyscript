@@ -1,6 +1,6 @@
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
-import { Plugin, checkedConfigOption, validateConfigParameter } from '../plugin';
+import { Plugin, validateConfigParameterFromArray } from '../plugin';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
@@ -8,12 +8,12 @@ import { InterpreterClient } from '../interpreter_client';
 const logger = getLogger('py-terminal');
 
 // Configuration options for this plugin go here:
-const terminal_settings = checkedConfigOption({ possible_values: [true, false, 'auto'], default: 'auto' });
-const docked_settings = checkedConfigOption({ possible_values: [true, false, 'docked'], default: 'docked' });
+//const terminal_settings = checkedConfigOption({ possible_values: [true, false, 'auto'], default: 'auto' });
+//const docked_settings = checkedConfigOption({ possible_values: [true, false, 'docked'], default: 'docked' });
 
 type AppConfigStyle = AppConfig & {
-    terminal?: (typeof terminal_settings.possible_values)[number];
-    docked?: (typeof docked_settings.possible_values)[number];
+    terminal?: string | boolean; //(typeof terminal_settings.possible_values)[number];
+    docked?: string | boolean; //(typeof docked_settings.possible_values)[number];
 };
 
 export class PyTerminalPlugin extends Plugin {
@@ -26,8 +26,18 @@ export class PyTerminalPlugin extends Plugin {
 
     configure(config: AppConfigStyle) {
         // validate the terminal config and handle default values
-        validateConfigParameter(config, 'terminal', terminal_settings);
-        validateConfigParameter(config, 'docked', docked_settings);
+        validateConfigParameterFromArray({
+            config: config,
+            name: 'terminal',
+            possibleValues: [true, false, 'auto'],
+            defaultValue: 'auto',
+        });
+        validateConfigParameterFromArray({
+            config: config,
+            name: 'docked',
+            possibleValues: [true, false, 'docked'],
+            defaultValue: 'docked',
+        });
     }
 
     beforeLaunch(config: AppConfigStyle) {
