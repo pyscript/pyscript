@@ -8,8 +8,8 @@ import { InterpreterClient } from '../interpreter_client';
 const logger = getLogger('py-terminal');
 
 type AppConfigStyle = AppConfig & {
-    terminal?: string | boolean; //(typeof terminal_settings.possible_values)[number];
-    docked?: string | boolean; //(typeof docked_settings.possible_values)[number];
+    terminal?: string | boolean;
+    docked?: string | boolean;
 };
 
 export class PyTerminalPlugin extends Plugin {
