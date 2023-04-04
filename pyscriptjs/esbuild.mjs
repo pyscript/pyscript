@@ -65,6 +65,7 @@ const interpreterWorkerConfig = {
     loader: { '.py': 'text' },
     bundle: true,
     format: 'iife',
+    plugins: [bundlePyscriptPythonPlugin()],
 };
 
 const copyPath = (source, dest, ...rest) => cp(join(__dirname, source), join(__dirname, dest), ...rest);
