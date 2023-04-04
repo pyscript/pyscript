@@ -72,7 +72,7 @@ class TestPyTerminal(PyScriptTest):
             """
             <py-terminal auto></py-terminal>
 
-            <button id="my-button" py-onClick="print('hello world')">Click me</button>
+            <button id="my-button" py-click="print('hello world')">Click me</button>
             """
         )
         term = self.page.locator("py-terminal")
@@ -88,7 +88,7 @@ class TestPyTerminal(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <button id="my-button" py-onClick="print('hello world')">Click me</button>
+            <button id="my-button" py-click="print('hello world')">Click me</button>
             """
         )
         term = self.page.locator("py-terminal")
@@ -139,7 +139,7 @@ class TestPyTerminal(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <button id="my-button" py-onClick="print('hello world')">Click me</button>
+            <button id="my-button" py-click="print('hello world')">Click me</button>
             """
         )
         term = self.page.locator("py-terminal")

@@ -72,11 +72,6 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
 
 /** Defines all possible py-on* and their corresponding event types  */
 const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
-    // Leaving pys-onClick and pys-onKeyDown for backward compatibility
-    ['pys-onClick', 'click'],
-    ['pys-onKeyDown', 'keydown'],
-    ['py-onClick', 'click'],
-    ['py-onKeyDown', 'keydown'],
     // Window Events
     ['py-afterprint', 'afterprint'],
     ['py-beforeprint', 'beforeprint'],
@@ -183,37 +178,16 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
         }
         const handlerCode = el.getAttribute(pyAttribute);
         const event = pyAttributeToEvent.get(pyAttribute);
-
-        if (pyAttribute === 'pys-onClick' || pyAttribute === 'pys-onKeyDown') {
-            const msg =
-                `The attribute 'pys-onClick' and 'pys-onKeyDown' are deprecated. Please 'py-click="myFunction()"' ` +
-                ` or 'py-keydown="myFunction()"' instead.`;
-            createDeprecationWarning(msg, msg);
-            const source = `
-            from pyodide.ffi import create_proxy
-            Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
-            `;
-
-            // We meed to run the source code in a try/catch block, because
-            // the source code may contain a syntax error, which will cause
-            // the splashscreen to not be removed.
-            try {
-                await interpreter.run(source);
-            } catch (e) {
-                logger.error((e as Error).message);
-            }
-        } else {
-            el.addEventListener(event, () => {
-                void (async () => {
-                    try {
-                        await interpreter.run(handlerCode);
-                    } catch (e) {
-                        const err = e as Error;
-                        displayPyException(err, el.parentElement);
-                    }
-                })();
-            });
-        }
+        el.addEventListener(event, () => {
+            void (async () => {
+                try {
+                    await interpreter.run(handlerCode);
+                } catch (e) {
+                    const err = e as Error;
+                    displayPyException(err, el.parentElement);
+                }
+            })();
+        });
         // TODO: Should we actually map handlers in JS instead of Python?
         // el.onclick = (evt: any) => {
         //   console.log("click");
@@ -224,7 +198,7 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
         //   }).then(() => {
         //     console.log("resolved")
         //   });
-        //   // let handlerCode = el.getAttribute('py-onClick');
+        //   // let handlerCode = el.getAttribute('py-click');
         //   // pyodide.runPython(handlerCode);
         // }
     }
