@@ -4,7 +4,7 @@ import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import { InterpreterClient } from './interpreter_client';
 import { version } from './version';
-import { PluginManager, define_custom_element, Plugin } from './plugin';
+import { PluginManager, define_custom_element, Plugin, PythonPlugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { getLogger } from './logger';
 import { showWarning, globalExport, createLock } from './utils';
@@ -16,18 +16,9 @@ import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
-import type { PyProxy } from 'pyodide';
 import { RemoteInterpreter } from './remote_interpreter';
 import { robustFetch } from './fetch';
 import * as Synclink from 'synclink';
-
-// pyscript_package is injected from src/python by bundlePyscriptPythonPlugin in
-// esbuild.js
-
-// @ts-ignore
-import python_package from 'pyscript_python_package.esbuild_injected.json';
-
-declare const python_package: { dirs: string[]; files: [string, string] };
 
 const logger = getLogger('pyscript/main');
 
@@ -129,7 +120,6 @@ export class PyScriptApp {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async _handleUserErrorMaybe(error: any) {
         const e = error as UserError;
         if (e && e.$$isUserError) {
@@ -292,17 +282,6 @@ export class PyScriptApp {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
-        logger.info('importing pyscript');
-
-        // Write pyscript package into file system
-        for (const dir of python_package.dirs) {
-            await interpreter._remote.FS.mkdir('/home/pyodide/' + dir);
-        }
-        for (const [path, value] of python_package.files) {
-            await interpreter._remote.FS.writeFile('/home/pyodide/' + path, value);
-        }
-        //Refresh the module cache so Python consistently finds pyscript module
-        await interpreter._remote.invalidate_module_path_cache();
 
         // inject `define_custom_element` and showWarning it into the PyScript
         // module scope
@@ -315,11 +294,7 @@ export class PyScriptApp {
             interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
         }
 
-        const pyscript_module = (await interpreter.pyimport('pyscript')) as Synclink.Remote<
-            PyProxy & { _set_version_info(string): void }
-        >;
-        await pyscript_module._set_version_info(version);
-        await pyscript_module.destroy();
+        await interpreter._remote.pyscript_py._set_version_info(version);
 
         // import some carefully selected names into the global namespace
         if (this.interpreter.useWorker) {
@@ -451,7 +426,7 @@ export class PyScriptApp {
         // eventually replace with interpreter.pyimport(modulename);
         const module = interpreter._unwrapped_remote.pyimport(modulename);
         if (typeof (await module.plugin) !== 'undefined') {
-            const py_plugin = module.plugin as PyProxy & { init(app: PyScriptApp): void };
+            const py_plugin = module.plugin as PythonPlugin;
             py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);
         } else {
@@ -468,6 +443,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
         this.incrementPendingTags();
         this.decrementPendingTags();
         await this.scriptTagsPromise;
+        await this.interpreter._remote.pyscript_py._schedule_deferred_tasks();
     }
 
     // ================= registraton API ====================
@@ -490,6 +466,10 @@ globalExport('pyscript_get_config', pyscript_get_config);
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
-globalApp.readyPromise = globalApp.main();
+
+// This top level execution causes trouble in jest
+if (typeof jest === 'undefined') {
+    globalApp.readyPromise = globalApp.main();
+}
 
 export { version };

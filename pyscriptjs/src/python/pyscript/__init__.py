@@ -1,19 +1,27 @@
 import ast
 import asyncio
 import base64
+import contextvars
 import html
 import io
 import re
 import time
 from collections import namedtuple
+from collections.abc import Callable
+from contextlib import contextmanager
 from textwrap import dedent
+from typing import Any
 
 import js
+from js import setTimeout
+from pyodide.webloop import WebLoop
 
 try:
-    from pyodide.ffi import create_proxy
+    from pyodide.code import eval_code
+    from pyodide.ffi import JsProxy, create_once_callable, create_proxy
 except ImportError:
-    from pyodide import create_proxy
+    from pyodide import JsProxy, create_once_callable, create_proxy, eval_code
+
 
 loop = asyncio.get_event_loop()
 
@@ -188,8 +196,13 @@ def write(element_id, value, append=False, exec_id=0):
     )
 
 
-def set_current_display_target(target_id):
+@contextmanager
+def _display_target(target_id):
     get_current_display_target._id = target_id
+    try:
+        yield
+    finally:
+        get_current_display_target._id = None
 
 
 def get_current_display_target():
@@ -200,17 +213,14 @@ get_current_display_target._id = None
 
 
 def display(*values, target=None, append=True):
-    default_target = get_current_display_target()
-    if default_target is None and target is None:
+    if target is None:
+        target = get_current_display_target()
+    if target is None:
         raise Exception(
             "Implicit target not allowed here. Please use display(..., target=...)"
         )
-    if target is not None:
-        for v in values:
-            Element(target).write(v, append=append)
-    else:
-        for v in values:
-            Element(default_target).write(v, append=append)
+    for v in values:
+        Element(target).write(v, append=append)
 
 
 class Element:
@@ -702,3 +712,97 @@ def _install_deprecated_globals_2022_12_1(ns):
         "Please use <code>pyscript</code> instead."
     )
     ns["PyScript"] = DeprecatedGlobal("PyScript", PyScript, message)
+
+
+class _PyscriptWebLoop(WebLoop):
+    def __init__(self):
+        super().__init__()
+        self._ready = False
+        self._usercode = False
+        self._deferred_handles = []
+
+    def call_later(
+        self,
+        delay: float,
+        callback: Callable[..., Any],
+        *args: Any,
+        context: contextvars.Context | None = None,
+    ) -> asyncio.Handle:
+        """Based on call_later from Pyodide's webloop
+
+        With some unneeded stuff removed and a mechanism for deferring tasks
+        scheduled from user code.
+        """
+        if delay < 0:
+            raise ValueError("Can't schedule in the past")
+        h = asyncio.Handle(callback, args, self, context=context)
+
+        def run_handle():
+            if h.cancelled():
+                return
+            h._run()
+
+        if self._ready or not self._usercode:
+            setTimeout(create_once_callable(run_handle), delay * 1000)
+        else:
+            self._deferred_handles.append((run_handle, self.time() + delay))
+        return h
+
+    def _schedule_deferred_tasks(self):
+        asyncio._set_running_loop(self)
+        t = self.time()
+        for [run_handle, delay] in self._deferred_handles:
+            delay = delay - t
+            if delay < 0:
+                delay = 0
+            setTimeout(create_once_callable(run_handle), delay * 1000)
+        self._ready = True
+        self._deferred_handles = []
+
+
+def _install_pyscript_loop():
+    global _LOOP
+    _LOOP = _PyscriptWebLoop()
+    asyncio.set_event_loop(_LOOP)
+
+
+def _schedule_deferred_tasks():
+    _LOOP._schedule_deferred_tasks()
+
+
+@contextmanager
+def _defer_user_asyncio():
+    _LOOP._usercode = True
+    try:
+        yield
+    finally:
+        _LOOP._usercode = False
+
+
+def _run_pyscript(code: str, id: str = None) -> JsProxy:
+    """Execute user code inside context managers.
+
+    Uses the __main__ global namespace.
+
+    The output is wrapped inside a JavaScript object since an object is not
+    thenable. This is so we do not accidentally `await` the result of the python
+    execution, even if it's awaitable (Future, Task, etc.)
+
+    Parameters
+    ----------
+    code :
+       The code to run
+
+    id :
+       The id for the default display target (or None if no default display target).
+
+    Returns
+    -------
+        A Js Object of the form {result: the_result}
+    """
+    import __main__
+
+    with _display_target(id), _defer_user_asyncio():
+        result = eval_code(code, globals=__main__.__dict__)
+
+    return js.Object.new(result=result)

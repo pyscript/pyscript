@@ -36,7 +36,6 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                 this.innerHTML = '';
 
                 await app.plugins.beforePyScriptExec({ interpreter: interpreter, src: pySrc, pyScriptTag: this });
-                /* eslint-disable @typescript-eslint/no-unsafe-assignment */
                 const result = (await pyExec(interpreter, pySrc, this)).result;
                 await app.plugins.afterPyScriptExec({
                     interpreter: interpreter,
@@ -44,7 +43,6 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                     pyScriptTag: this,
                     result: result,
                 });
-                /* eslint-enable @typescript-eslint/no-unsafe-assignment */
             } finally {
                 releaseLock();
                 app.decrementPendingTags();
@@ -236,6 +234,13 @@ async function createElementsWithEventListeners(interpreter: InterpreterClient, 
 export async function mountElements(interpreter: InterpreterClient) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
     logger.info(`py-mount: found ${matches.length} elements`);
+
+    if (matches.length > 0) {
+        //last non-deprecated version: 2023.03.1
+        const deprecationMessage =
+            'The "py-mount" attribute is deprecated. Please add references to HTML Elements manually in your script.';
+        createDeprecationWarning(deprecationMessage, 'py-mount');
+    }
 
     let source = '';
     for (const el of matches) {

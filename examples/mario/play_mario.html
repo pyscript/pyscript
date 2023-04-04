@@ -46,6 +46,9 @@
             from pyodide import create_once_callable
             import asyncio
 
+            update_note = Element("update-note")
+            canvas = Element("canvas")
+            video = Element("myvideo")
             context = canvas.element.getContext("2d")
 
             isVideo = False
@@ -60,7 +63,7 @@
               "scoreThreshold": 0.6, # confidence threshold for predictions.
             }
 
-            def toggle_video(evt):
+            def toggle_video():
               global isVideo
               player.jump()
 

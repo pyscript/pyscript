@@ -1,18 +1,26 @@
 import type { AppConfig } from '../../src/pyconfig';
 import { InterpreterClient } from '../../src/interpreter_client';
-import { RemoteInterpreter } from '../../src/remote_interpreter';
 import { CaptureStdio } from '../../src/stdio';
 import * as Synclink from 'synclink';
 import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
+// We can't import RemoteInterpreter at top level because we need to mock the
+// Python package in setup.ts
+// But we can import the types at top level.
+// TODO: is there a better way to handle this?
+import type { RemoteInterpreter } from '../../src/remote_interpreter';
 
 describe('RemoteInterpreter', () => {
     let interpreter: InterpreterClient;
     let stdio: CaptureStdio = new CaptureStdio();
+    let RemoteInterpreter;
     const { port1, port2 } = new MessageChannel();
     beforeAll(async () => {
         const SRC = '../pyscriptjs/node_modules/pyodide/pyodide.js';
         const config: AppConfig = { interpreters: [{ src: SRC }] };
+        // Dynamic import of RemoteInterpreter sees our mocked Python package.
+        ({ RemoteInterpreter } = await import('../../src/remote_interpreter'));
         const remote_interpreter = new RemoteInterpreter(SRC);
+
         port1.start();
         port2.start();
         Synclink.expose(remote_interpreter, port2);

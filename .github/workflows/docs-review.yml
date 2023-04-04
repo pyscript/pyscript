@@ -51,23 +51,3 @@ jobs:
               with:
                   name: pyscript-docs-review-${{ github.event.number }}
                   path: docs/_build/html/
-
-              # Deploy to S3
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v1.6.1
-              with:
-                  aws-region: ${{ secrets.AWS_REGION }}
-                  role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
-
-            - name: Copy redirect file
-              run: aws s3 cp --quiet ./docs/_build/html/_static/redirect.html s3://docs.pyscript.net/index.html
-
-            - name: Sync to S3
-              run: aws s3 sync --quiet ./docs/_build/html/ s3://docs.pyscript.net/review/${{ github.event.number }}/
-
-            - name: Adding step summary
-              run: |
-                  echo "### Review documentation" >> $GITHUB_STEP_SUMMARY
-                  echo "As with any pull request, you can find the rendered documentation version for pull request ${{ github.event.number }} here:"
-                  echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
-                  echo "https://docs.pyscript.net/review/${{ github.event.number }}/" >> $GITHUB_STEP_SUMMARY

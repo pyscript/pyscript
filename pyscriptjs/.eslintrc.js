@@ -35,5 +35,6 @@ module.exports = {
         '@typescript-eslint/no-floating-promises': 'error',
         '@typescript-eslint/restrict-plus-operands': 'error',
         '@typescript-eslint/no-empty-function': 'error',
+        '@typescript-eslint/restrict-template-expressions': ['error', { allowBoolean: true }],
     },
 };
