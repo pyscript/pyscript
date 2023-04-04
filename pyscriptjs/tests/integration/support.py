@@ -240,13 +240,13 @@ class PyScriptTest:
         try:
             t0 = time.time()
             while True:
-                elapsed_ms = (time.time() - t0) * 1000
-                if elapsed_ms > timeout:
-                    raise TimeoutError()
-                #
                 if text in self.console.all.lines:
                     # found it!
                     return
+                #
+                elapsed_ms = (time.time() - t0) * 1000
+                if elapsed_ms > timeout:
+                    raise TimeoutError()
                 #
                 self.page.wait_for_timeout(50)
         finally:
