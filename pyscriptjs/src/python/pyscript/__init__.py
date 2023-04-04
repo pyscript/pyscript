@@ -219,30 +219,22 @@ def when(event=None, id=None):
     Decorates a function and passes py-* events to the decorated function
     The events might or not be an argument of the decorated function
     """
-
     def decorator(func):
         print("☠️")
         element = js.document.getElementById(id)
         print(element)
         sig = inspect.signature(func)
-        print(f'Pythonside:  {func.__name__} callable when enters deco? {callable(func)}',)
 
         # Function doesn't receive events
         if not sig.parameters:
-            print(f'Pythonside: {func.__name__} callable when no params? {callable(func)}',)
             def wrapper(*args, **kwargs):
                 func()
             proxy = create_proxy(wrapper)
             element.addEventListener(event, cast(wrapper, proxy))
-            print(f'Pythonside: {func.__name__} callable when no params && after proxied? {callable(proxy)}',)
-            # add_event_listener(element, event, wrapper)
         else:
-            print(f'Pythonside: is {func.__name__} callable when yes params? {callable(func)}',)
             proxy = create_proxy(func)
-            element.addEventListener(event, func)
-            # add_event_listener(element, event, func)
-            print(f'Pythonside:  {func.__name__} callable when yes params? after add_event_listener {callable(func)}',)
-        return func
+            element.addEventListener(event, proxy)
+        return proxy
     return decorator
 
 
