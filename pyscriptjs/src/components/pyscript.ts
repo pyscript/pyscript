@@ -161,15 +161,15 @@ const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
 ]);
 
 /** Initialize all elements with py-* handlers attributes  */
-export async function initHandlers(interpreter: InterpreterClient) {
+export function initHandlers(interpreter: InterpreterClient) {
     logger.debug('Initializing py-* event handlers...');
     for (const pyAttribute of pyAttributeToEvent.keys()) {
-        await createElementsWithEventListeners(interpreter, pyAttribute);
+        createElementsWithEventListeners(interpreter, pyAttribute);
     }
 }
 
 /** Initializes an element with the given py-on* attribute and its handler */
-async function createElementsWithEventListeners(interpreter: InterpreterClient, pyAttribute: string) {
+function createElementsWithEventListeners(interpreter: InterpreterClient, pyAttribute: string) {
     const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
     for (const el of matches) {
         // If the element doesn't have an id, let's add one automatically!

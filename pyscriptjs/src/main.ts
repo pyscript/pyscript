@@ -246,7 +246,7 @@ export class PyScriptApp {
 
         //Takes a runtime and a reference to the PyScriptApp (to access plugins)
         createCustomElements(interpreter, this);
-        await initHandlers(interpreter);
+        initHandlers(interpreter);
 
         // NOTE: interpreter message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
