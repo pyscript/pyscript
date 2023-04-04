@@ -219,7 +219,7 @@ class PyScriptTest:
         url = f"{self.http_server}/{path}"
         self.page.goto(url, timeout=0)
 
-    def wait_for_console(self, text, *, timeout=30 * 1000, check_js_errors=True):
+    def wait_for_console(self, text, *, timeout=None, check_js_errors=True):
         """
         Wait until the given message appear in the console. If the message was
         already printed in the console, return immediately.
@@ -227,11 +227,13 @@ class PyScriptTest:
         Note: it must be the *exact* string as printed by e.g. console.log.
 
         timeout is expressed in milliseconds. If it's None, it will use
-        playwright's own default value, which is 30 seconds).
+        the same default as playwright, which is 30 seconds.
 
         If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
+        if timeout is None:
+            timeout = 30 * 1000
         # NOTE: we cannot use playwright's own page.expect_console_message(),
         # because if you call it AFTER the text has already been emitted, it
         # waits forever. Instead, we have to use our own custom logic.
