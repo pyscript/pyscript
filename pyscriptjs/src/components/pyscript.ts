@@ -71,19 +71,80 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
 }
 
 /** Defines all possible py-on* and their corresponding event types  */
-const browserEvents: Array<string> = new Array<string>("click", "keydown",
-    "afterprint", "beforeprint", "beforeunload", "error", "hashchange",
-    "load", "message", "offline", "online", "pagehide", "pageshow", "popstate",
-    "resize", "storage", "unload", "blur", "change", "contextmenu", "focus",
-    "input", "invalid", "reset", "search", "select", "submit", "keydown",
-    "keypress", "keyup", "dblclick", "mousedown", "mousemove", "mouseout",
-    "mouseover", "mouseup", "mousewheel", "wheel", "drag", "dragend",
-    "dragenter", "dragleave", "dragover", "dragstart", "drop", "scroll",
-    "copy", "cut", "paste", "abort", "canplay", "canplaythrough", "cuechange",
-    "durationchange", "emptied", "ended", "loadeddata", "loadedmetadata",
-    "loadstart", "pause", "play", "playing", "progress", "ratechange",
-    "seeked", "seeking", "stalled", "suspend", "timeupdate", "volumechange",
-    "waiting", "toggle");
+const browserEvents: Array<string> = new Array<string>(
+    'click',
+    'keydown',
+    'afterprint',
+    'beforeprint',
+    'beforeunload',
+    'error',
+    'hashchange',
+    'load',
+    'message',
+    'offline',
+    'online',
+    'pagehide',
+    'pageshow',
+    'popstate',
+    'resize',
+    'storage',
+    'unload',
+    'blur',
+    'change',
+    'contextmenu',
+    'focus',
+    'input',
+    'invalid',
+    'reset',
+    'search',
+    'select',
+    'submit',
+    'keydown',
+    'keypress',
+    'keyup',
+    'dblclick',
+    'mousedown',
+    'mousemove',
+    'mouseout',
+    'mouseover',
+    'mouseup',
+    'mousewheel',
+    'wheel',
+    'drag',
+    'dragend',
+    'dragenter',
+    'dragleave',
+    'dragover',
+    'dragstart',
+    'drop',
+    'scroll',
+    'copy',
+    'cut',
+    'paste',
+    'abort',
+    'canplay',
+    'canplaythrough',
+    'cuechange',
+    'durationchange',
+    'emptied',
+    'ended',
+    'loadeddata',
+    'loadedmetadata',
+    'loadstart',
+    'pause',
+    'play',
+    'playing',
+    'progress',
+    'ratechange',
+    'seeked',
+    'seeking',
+    'stalled',
+    'suspend',
+    'timeupdate',
+    'volumechange',
+    'waiting',
+    'toggle',
+);
 
 /** Initialize all elements with py-* handlers attributes  */
 export async function initHandlers(interpreter: InterpreterClient) {
@@ -95,12 +156,11 @@ export async function initHandlers(interpreter: InterpreterClient) {
 
 /** Initializes an element with the given py-on* attribute and its handler */
 function createElementsWithEventListeners(interpreter: InterpreterClient, browserEvent: string) {
+    const pyEval = interpreter.globals.get('eval');
+    const pyCallable = interpreter.globals.get('callable');
+    const pyDictClass = interpreter.globals.get('dict');
 
-    const pyEval = interpreter.globals.get('eval')
-    const pyCallable = interpreter.globals.get('callable')
-    const pyDictClass = interpreter.globals.get('dict')
-
-    const localsDict = pyDictClass()
+    const localsDict = pyDictClass();
 
     let matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[py-${browserEvent}]`);
     for (const el of matches) {
@@ -111,15 +171,15 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, browse
         const pyEvent = 'py-' + browserEvent;
         const userProvidedFunctionName = el.getAttribute(pyEvent);
 
-        el.addEventListener(browserEvent, (evt) => {
+        el.addEventListener(browserEvent, evt => {
             try {
-                const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict)
-                const isCallable = pyCallable(evalResult)
-                localsDict.set('event', evt)
+                const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict);
+                const isCallable = pyCallable(evalResult);
+                localsDict.set('event', evt);
 
                 if (isCallable) {
-                    const pyInspectModule = interpreter._remote.interface.pyimport('inspect')
-                    const params = pyInspectModule.signature(evalResult).parameters
+                    const pyInspectModule = interpreter._remote.interface.pyimport('inspect');
+                    const params = pyInspectModule.signature(evalResult).parameters;
 
                     if (params.length == 0) {
                         evalResult();
@@ -128,11 +188,13 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, browse
                     else if (params.length == 1) {
                         evalResult(evt);
                     } else {
-                        throw new UserError(ErrorCode.GENERIC, "'py-[event]' take 0 or 1 arguments")
+                        throw new UserError(ErrorCode.GENERIC, "'py-[event]' take 0 or 1 arguments");
                     }
-                }
-                else {
-                    throw new UserError(ErrorCode.GENERIC, "The code provided to 'py-[event]' should be the name of a function or Callable. To run an expression as code, use 'py-[event]-code'")
+                } else {
+                    throw new UserError(
+                        ErrorCode.GENERIC,
+                        "The code provided to 'py-[event]' should be the name of a function or Callable. To run an expression as code, use 'py-[event]-code'",
+                    );
                 }
             } catch (err) {
                 // TODO: This should be an error - probably need to refactor
@@ -147,17 +209,19 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, browse
     for (const el of matches) {
         const pyEvent = 'py-' + browserEvent + '-code';
         const userProvidedFunctionName = el.getAttribute(pyEvent);
-        el.addEventListener(browserEvent, (evt) => {
+        el.addEventListener(browserEvent, evt => {
             try {
-                const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict)
-                const isCallable = pyCallable(evalResult)
-                localsDict.set('event', evt)
+                const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict);
+                const isCallable = pyCallable(evalResult);
+                localsDict.set('event', evt);
 
                 if (isCallable) {
-                    throw new UserError(ErrorCode.GENERIC, "The code provided to 'py-[event]-code' was the name of a Callable. Did you mean to use 'py-[event]?")
+                    throw new UserError(
+                        ErrorCode.GENERIC,
+                        "The code provided to 'py-[event]-code' was the name of a Callable. Did you mean to use 'py-[event]?",
+                    );
                 }
-            }
-            catch (err) {
+            } catch (err) {
                 // TODO: This should be an error - probably need to refactor
                 // this function into createSingularBanner similar to createSingularWarning(err);
                 // tracked in issue #1253

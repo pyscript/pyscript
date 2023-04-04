@@ -110,7 +110,10 @@ class TestEventHandler(PyScriptTest):
         )
         self.page.locator("text=misuse_py_event").click()
         tb_lines = self.console.error.lines[-1].splitlines()
-        assert tb_lines[1] == "UserError: (PY0000): The code provided to 'py-[event]' should be the name of a function or Callable. To run an expression as code, use 'py-[event]-code'"
+        assert (
+            tb_lines[1]
+            == "UserError: (PY0000): The code provided to 'py-[event]' should be the name of a function or Callable. To run an expression as code, use 'py-[event]-code'"
+        )
 
     def test_run_code_in_py_click_code(self):
         self.pyscript_run(
@@ -131,7 +134,10 @@ class TestEventHandler(PyScriptTest):
                         print('This should fail')
                 </py-script>
             """
-            )
+        )
         self.page.locator("text=misuse_py_event").click()
         tb_lines = self.console.error.lines[-1].splitlines()
-        assert tb_lines[1] == "UserError: (PY0000): The code provided to 'py-[event]-code' was the name of a Callable. Did you mean to use 'py-[event]?"
+        assert (
+            tb_lines[1]
+            == "UserError: (PY0000): The code provided to 'py-[event]-code' was the name of a Callable. Did you mean to use 'py-[event]?"
+        )
