@@ -231,22 +231,24 @@ class PyScriptTest:
 
         If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
+
+        Return the elapsed time in ms.
         """
         if timeout is None:
-            timeout = 60 * 1000
+            timeout = 30 * 1000
         # NOTE: we cannot use playwright's own page.expect_console_message(),
         # because if you call it AFTER the text has already been emitted, it
         # waits forever. Instead, we have to use our own custom logic.
         try:
             t0 = time.time()
             while True:
-                if text in self.console.all.lines:
-                    # found it!
-                    return
-                #
                 elapsed_ms = (time.time() - t0) * 1000
                 if elapsed_ms > timeout:
-                    raise TimeoutError()
+                    raise TimeoutError(f"{elapsed_ms:.2f} ms")
+                #
+                if text in self.console.all.lines:
+                    # found it!
+                    return elapsed_ms
                 #
                 self.page.wait_for_timeout(50)
         finally:
@@ -269,16 +271,21 @@ class PyScriptTest:
         errors were raised during the waiting.
         """
         # this is printed by interpreter.ts:Interpreter.initialize
-        self.wait_for_console(
+        elapsed_ms = self.wait_for_console(
             "[pyscript/main] PyScript page fully initialized",
             timeout=timeout,
             check_js_errors=check_js_errors,
+        )
+        self.logger.log(
+            "wait_for_pyscript", f"Waited for {elapsed_ms/1000:.2f} s", color="yellow"
         )
         # We still don't know why this wait is necessary, but without it
         # events aren't being triggered in the tests.
         self.page.wait_for_timeout(100)
 
-    def pyscript_run(self, snippet, *, extra_head="", wait_for_pyscript=True):
+    def pyscript_run(
+        self, snippet, *, extra_head="", wait_for_pyscript=True, timeout=None
+    ):
         """
         Main entry point for pyscript tests.
 
@@ -304,11 +311,13 @@ class PyScriptTest:
           </body>
         </html>
         """
+        if not wait_for_pyscript and timeout is not None:
+            raise ValueError("Cannot set a timeout if wait_for_pyscript=False")
         filename = f"{self.testname}.html"
         self.writefile(filename, doc)
         self.goto(filename)
         if wait_for_pyscript:
-            self.wait_for_pyscript()
+            self.wait_for_pyscript(timeout=timeout)
 
     def iter_locator(self, loc):
         """
@@ -603,7 +612,7 @@ class Logger:
     def log(self, category, text, *, color=None):
         delta = time.time() - self.start_time
         text = self.colorize_prefix(text, color="teal")
-        line = f"[{delta:6.2f} {category:16}] {text}"
+        line = f"[{delta:6.2f} {category:17}] {text}"
         if color:
             line = Color.set(color, line)
         print(line)
