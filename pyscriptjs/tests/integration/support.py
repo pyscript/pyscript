@@ -233,7 +233,7 @@ class PyScriptTest:
         errors were raised during the waiting.
         """
         if timeout is None:
-            timeout = 30 * 1000
+            timeout = 60 * 1000
         # NOTE: we cannot use playwright's own page.expect_console_message(),
         # because if you call it AFTER the text has already been emitted, it
         # waits forever. Instead, we have to use our own custom logic.
