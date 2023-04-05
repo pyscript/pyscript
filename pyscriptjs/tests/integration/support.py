@@ -221,25 +221,36 @@ class PyScriptTest:
 
     def wait_for_console(self, text, *, timeout=None, check_js_errors=True):
         """
-        Wait until the given message appear in the console.
+        Wait until the given message appear in the console. If the message was
+        already printed in the console, return immediately.
 
         Note: it must be the *exact* string as printed by e.g. console.log.
-        If you need more control on the predicate (e.g. if you want to match a
-        substring), use self.page.expect_console_message directly.
 
         timeout is expressed in milliseconds. If it's None, it will use
-        playwright's own default value, which is 30 seconds).
+        the same default as playwright, which is 30 seconds.
 
         If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
+
+        Return the elapsed time in ms.
         """
-
-        def pred(msg):
-            return msg.text == text
-
+        if timeout is None:
+            timeout = 30 * 1000
+        # NOTE: we cannot use playwright's own page.expect_console_message(),
+        # because if you call it AFTER the text has already been emitted, it
+        # waits forever. Instead, we have to use our own custom logic.
         try:
-            with self.page.expect_console_message(pred, timeout=timeout):
-                pass
+            t0 = time.time()
+            while True:
+                elapsed_ms = (time.time() - t0) * 1000
+                if elapsed_ms > timeout:
+                    raise TimeoutError(f"{elapsed_ms:.2f} ms")
+                #
+                if text in self.console.all.lines:
+                    # found it!
+                    return elapsed_ms
+                #
+                self.page.wait_for_timeout(50)
         finally:
             # raise JsError if there were any javascript exception. Note that
             # this might happen also in case of a TimeoutError. In that case,
@@ -260,16 +271,21 @@ class PyScriptTest:
         errors were raised during the waiting.
         """
         # this is printed by interpreter.ts:Interpreter.initialize
-        self.wait_for_console(
+        elapsed_ms = self.wait_for_console(
             "[pyscript/main] PyScript page fully initialized",
             timeout=timeout,
             check_js_errors=check_js_errors,
+        )
+        self.logger.log(
+            "wait_for_pyscript", f"Waited for {elapsed_ms/1000:.2f} s", color="yellow"
         )
         # We still don't know why this wait is necessary, but without it
         # events aren't being triggered in the tests.
         self.page.wait_for_timeout(100)
 
-    def pyscript_run(self, snippet, *, extra_head="", wait_for_pyscript=True):
+    def pyscript_run(
+        self, snippet, *, extra_head="", wait_for_pyscript=True, timeout=None
+    ):
         """
         Main entry point for pyscript tests.
 
@@ -295,11 +311,13 @@ class PyScriptTest:
           </body>
         </html>
         """
+        if not wait_for_pyscript and timeout is not None:
+            raise ValueError("Cannot set a timeout if wait_for_pyscript=False")
         filename = f"{self.testname}.html"
         self.writefile(filename, doc)
         self.goto(filename)
         if wait_for_pyscript:
-            self.wait_for_pyscript()
+            self.wait_for_pyscript(timeout=timeout)
 
     def iter_locator(self, loc):
         """
@@ -594,7 +612,7 @@ class Logger:
     def log(self, category, text, *, color=None):
         delta = time.time() - self.start_time
         text = self.colorize_prefix(text, color="teal")
-        line = f"[{delta:6.2f} {category:16}] {text}"
+        line = f"[{delta:6.2f} {category:17}] {text}"
         if color:
             line = Color.set(color, line)
         print(line)
