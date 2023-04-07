@@ -1,4 +1,5 @@
 import dataclasses
+import functools
 import math
 import os
 import pdb
@@ -78,6 +79,31 @@ def with_execution_thread(*values):
         return cls
 
     return with_execution_thread_decorator
+
+
+def skip_worker(reason):
+    """
+    Decorator to skip a test if self.execution_thread == 'worker'
+    """
+    if callable(reason):
+        # this happens if you use @skip_worker instead of @skip_worker("bla bla bla")
+        raise Exception(
+            "You need to specify a reason for skipping, "
+            "please use: @skip_worker('...')"
+        )
+
+    #
+    def decorator(fn):
+        @functools.wraps(fn)
+        def decorated(self, *args):
+            if self.execution_thread == "worker":
+                pytest.skip(reason)
+            return fn(self, *args)
+
+        return decorated
+
+    #
+    return decorator
 
 
 @pytest.mark.usefixtures("init")

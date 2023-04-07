@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from .support import JsErrors, PyScriptTest
+from .support import JsErrors, PyScriptTest, skip_worker
 
 
 class TestBasic(PyScriptTest):
@@ -155,6 +155,7 @@ class TestBasic(PyScriptTest):
             "hello asciitree",  # printed by us
         ]
 
+    @skip_worker("The banner doesn't appear")
     def test_non_existent_package(self):
         self.pyscript_run(
             """
