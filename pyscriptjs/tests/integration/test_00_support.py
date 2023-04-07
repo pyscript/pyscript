@@ -184,9 +184,9 @@ class TestSupport(PyScriptTest):
             """
             JS errors found: 2
             Error: error 1
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             Error: error 2
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
@@ -215,9 +215,9 @@ class TestSupport(PyScriptTest):
             """
             JS errors found: 2
             Error: NOT expected 2
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             Error: NOT expected 4
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
@@ -244,9 +244,9 @@ class TestSupport(PyScriptTest):
             ---
             The following JS errors were raised but not expected:
             Error: error 1
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             Error: error 2
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
@@ -428,7 +428,7 @@ class TestSupport(PyScriptTest):
         self.router.clear_cache(URL)
         self.goto("mytest.html")
         assert self.router.requests == [
-            (200, "fake_server", "http://fake_server/mytest.html"),
+            (200, "fake_server", "https://fake_server/mytest.html"),
             (200, "NETWORK", URL),
         ]
         #
@@ -436,10 +436,10 @@ class TestSupport(PyScriptTest):
         self.goto("mytest.html")
         assert self.router.requests == [
             # 1st visit
-            (200, "fake_server", "http://fake_server/mytest.html"),
+            (200, "fake_server", "https://fake_server/mytest.html"),
             (200, "NETWORK", URL),
             # 2nd visit
-            (200, "fake_server", "http://fake_server/mytest.html"),
+            (200, "fake_server", "https://fake_server/mytest.html"),
             (200, "CACHED", URL),
         ]
 
