@@ -11,6 +11,7 @@ from dataclasses import dataclass
 
 import py
 import pytest
+import toml
 from playwright.sync_api import Error as PlaywrightError
 
 ROOT = py.path.local(__file__).dirpath("..", "..", "..")
@@ -336,6 +337,58 @@ class PyScriptTest:
         # events aren't being triggered in the tests.
         self.page.wait_for_timeout(100)
 
+    def _parse_py_config(self, doc):
+        configs = re.findall("<py-config>(.*?)</py-config>", doc, flags=re.DOTALL)
+        configs = [cfg.strip() for cfg in configs]
+        if len(configs) == 0:
+            return None
+        elif len(configs) == 1:
+            return toml.loads(configs[0])
+        else:
+            raise AssertionError("Too many <py-config>")
+
+    def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
+        # if snippet contains already a py-config, let's try to inject
+        # execution_thread automatically. Note that this works only for plain
+        # <py-config> with inline config: type="json" and src="..." are not
+        # supported by this logic, which should remain simple.
+        cfg = self._parse_py_config(snippet)
+        if cfg:
+            cfg["execution_thread"] = execution_thread
+            dumped_cfg = toml.dumps(cfg)
+            new_py_config = f"""
+            <py-config>
+                {dumped_cfg}
+            </py-config>
+            """
+            snippet = re.sub(
+                "<py-config>.*</py-config>", new_py_config, snippet, flags=re.DOTALL
+            )
+            py_config_maybe = ""  # no need for extra config, it's already in
+            # the snippet
+        else:
+            # we don't have any <py-config>, let's add one
+            py_config_maybe = f"""
+            <py-config>
+                execution_thread = "{self.execution_thread}"
+            </py-config>
+            """
+
+        doc = f"""
+        <html>
+          <head>
+              <link rel="stylesheet" href="{self.http_server}/build/pyscript.css" />
+              <script defer src="{self.http_server}/build/pyscript.js"></script>
+              {extra_head}
+          </head>
+          <body>
+            {py_config_maybe}
+            {snippet}
+          </body>
+        </html>
+        """
+        return doc
+
     def pyscript_run(
         self, snippet, *, extra_head="", wait_for_pyscript=True, timeout=None
     ):
@@ -352,21 +405,9 @@ class PyScriptTest:
           - open a playwright page for it
           - wait until pyscript has been fully loaded
         """
-        doc = f"""
-        <html>
-          <head>
-              <link rel="stylesheet" href="{self.http_server}/build/pyscript.css" />
-              <script defer src="{self.http_server}/build/pyscript.js"></script>
-              {extra_head}
-          </head>
-          <body>
-            <py-config>
-              execution_thread = "{self.execution_thread}"
-            </py-config>
-            {snippet}
-          </body>
-        </html>
-        """
+        doc = self._pyscript_format(
+            snippet, execution_thread=self.execution_thread, extra_head=extra_head
+        )
         if not wait_for_pyscript and timeout is not None:
             raise ValueError("Cannot set a timeout if wait_for_pyscript=False")
         filename = f"{self.testname}.html"
