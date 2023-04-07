@@ -54,13 +54,24 @@ def with_execution_thread(*values):
     @with_execution_thread('worker')
     class TestOnlyWorker:
         ...
-    """
-    for value in values:
-        assert value in ("main", "worker")
 
-    @pytest.fixture(params=params_with_marks(values))
-    def execution_thread(self, request):
-        return request.param
+    If you use @with_execution_thread(None), the logic to inject the
+    execution_tread config is disabled.
+    """
+
+    if values == (None,):
+
+        @pytest.fixture
+        def execution_thread(self, request):
+            return None
+
+    else:
+        for value in values:
+            assert value in ("main", "worker")
+
+            @pytest.fixture(params=params_with_marks(values))
+            def execution_thread(self, request):
+                return request.param
 
     def with_execution_thread_decorator(cls):
         cls.execution_thread = execution_thread
@@ -347,13 +358,22 @@ class PyScriptTest:
         else:
             raise AssertionError("Too many <py-config>")
 
-    def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
-        # if snippet contains already a py-config, let's try to inject
-        # execution_thread automatically. Note that this works only for plain
-        # <py-config> with inline config: type="json" and src="..." are not
-        # supported by this logic, which should remain simple.
+    def _inject_execution_thread_config(self, snippet, execution_thread):
+        """
+        If snippet contains already a py-config, let's try to inject
+        execution_thread automatically. Note that this works only for plain
+        <py-config> with inline config: type="json" and src="..." are not
+        supported by this logic, which should remain simple.
+        """
         cfg = self._parse_py_config(snippet)
-        if cfg:
+        if cfg is None:
+            # we don't have any <py-config>, let's add one
+            py_config_maybe = f"""
+            <py-config>
+                execution_thread = "{execution_thread}"
+            </py-config>
+            """
+        else:
             cfg["execution_thread"] = execution_thread
             dumped_cfg = toml.dumps(cfg)
             new_py_config = f"""
@@ -364,16 +384,18 @@ class PyScriptTest:
             snippet = re.sub(
                 "<py-config>.*</py-config>", new_py_config, snippet, flags=re.DOTALL
             )
-            py_config_maybe = ""  # no need for extra config, it's already in
-            # the snippet
-        else:
-            # we don't have any <py-config>, let's add one
-            py_config_maybe = f"""
-            <py-config>
-                execution_thread = "{self.execution_thread}"
-            </py-config>
-            """
+            # no need for extra config, it's already in the snippet
+            py_config_maybe = ""
+        #
+        return snippet, py_config_maybe
 
+    def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
+        if execution_thread is None:
+            py_config_maybe = ""
+        else:
+            snippet, py_config_maybe = self._inject_execution_thread_config(
+                snippet, execution_thread
+            )
         doc = f"""
         <html>
           <head>

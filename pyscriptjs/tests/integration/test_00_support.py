@@ -6,7 +6,7 @@ import pytest
 from .support import JsErrors, JsErrorsDidNotRaise, PyScriptTest, with_execution_thread
 
 
-@with_execution_thread("main")
+@with_execution_thread(None)
 class TestSupport(PyScriptTest):
     """
     These are NOT tests about PyScript.
