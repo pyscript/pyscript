@@ -284,12 +284,16 @@ class PyScriptTest:
         url = f"{self.http_server}/{path}"
         self.page.goto(url, timeout=0)
 
-    def wait_for_console(self, text, *, timeout=None, check_js_errors=True):
+    def wait_for_console(
+        self, text, *, match_substring=False, timeout=None, check_js_errors=True
+    ):
         """
         Wait until the given message appear in the console. If the message was
         already printed in the console, return immediately.
 
-        Note: it must be the *exact* string as printed by e.g. console.log.
+        By default "text" must be the *exact* string as printed by a single
+        call to e.g. console.log. If match_substring is True, it is enough
+        that the console contains the given text anywhere.
 
         timeout is expressed in milliseconds. If it's None, it will use
         the same default as playwright, which is 30 seconds.
@@ -299,6 +303,16 @@ class PyScriptTest:
 
         Return the elapsed time in ms.
         """
+        if match_substring:
+
+            def find_text():
+                return text in self.console.all.text
+
+        else:
+
+            def find_text():
+                return text in self.console.all.lines
+
         if timeout is None:
             timeout = 30 * 1000
         # NOTE: we cannot use playwright's own page.expect_console_message(),
@@ -311,7 +325,7 @@ class PyScriptTest:
                 if elapsed_ms > timeout:
                     raise TimeoutError(f"{elapsed_ms:.2f} ms")
                 #
-                if text in self.console.all.lines:
+                if find_text():
                     # found it!
                     return elapsed_ms
                 #

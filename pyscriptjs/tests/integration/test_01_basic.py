@@ -82,6 +82,9 @@ class TestBasic(PyScriptTest):
         )
 
         self.page.locator("button").click()
+        self.wait_for_console(
+            "Exception: this is an error inside handler", match_substring=True
+        )
 
         ## error in console
         tb_lines = self.console.error.lines[-1].splitlines()

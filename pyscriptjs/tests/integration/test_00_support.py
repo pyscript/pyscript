@@ -392,6 +392,24 @@ class TestSupport(PyScriptTest):
         # clear the errors, else the test fails at teardown
         self.clear_js_errors()
 
+    def test_wait_for_console_match_substring(self):
+        doc = """
+        <html>
+          <body>
+            <script>
+                console.log('Foo Bar Baz');
+            </script>
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        self.goto("mytest.html")
+        with pytest.raises(TimeoutError):
+            self.wait_for_console("Bar", timeout=200)
+        #
+        self.wait_for_console("Bar", timeout=200, match_substring=True)
+        assert self.console.log.lines[-1] == "Foo Bar Baz"
+
     def test_iter_locator(self):
         doc = """
         <html>
