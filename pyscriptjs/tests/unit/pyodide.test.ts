@@ -26,6 +26,7 @@ describe('RemoteInterpreter', () => {
         Synclink.expose(remote_interpreter, port2);
         const wrapped_remote_interpreter = Synclink.wrap(port1);
         interpreter = new InterpreterClient(
+            false,
             config,
             stdio,
             wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
