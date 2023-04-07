@@ -5,7 +5,7 @@ import tempfile
 import pytest
 import requests
 
-from .support import PyScriptTest
+from .support import PyScriptTest, with_execution_thread
 
 URL = "https://github.com/pyodide/pyodide/releases/download/0.20.0/pyodide-build-0.20.0.tar.bz2"
 TAR_NAME = "pyodide-build-0.20.0.tar.bz2"
@@ -30,6 +30,15 @@ def unzip(location, extract_to="."):
     file.extractall(path=extract_to)
 
 
+# Disable the main/worker dual testing, for two reasons:
+#
+#   1. the <py-config> logic happens before we start the worker, so there is
+#      no point in running these tests twice
+#
+#   2. the logic to inject execution_thread into <py-config> works only with
+#      plain <py-config> tags, but here we want to test all weird combinations
+#      of config
+@with_execution_thread(None)
 class TestConfig(PyScriptTest):
     def test_py_config_inline(self):
         self.pyscript_run(
