@@ -4,7 +4,7 @@ import { join } from 'path';
 import { watchFile } from 'fs';
 import { cp, lstat, readdir } from 'fs/promises';
 import { directoryManifest } from './directoryManifest.mjs';
-import { fileURLToPath } from 'url'
+import { fileURLToPath } from 'url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
