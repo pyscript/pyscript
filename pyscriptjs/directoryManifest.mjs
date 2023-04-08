@@ -38,7 +38,17 @@ async function _directoryManifestHelper(root, dir, result) {
             result.dirs.push(entry);
             await _directoryManifestHelper(root, entry, result);
         } else if (d.isFile()) {
-            result.files.push([entry, await readFile(join(root, entry), { encoding: 'utf-8' })]);
+            result.files.push([normalizePath(entry), await readFile(join(root, entry), {encoding: 'utf-8'})]);
         }
     }
+}
+
+/**
+ * Normalize paths under different operating systems to
+ * the correct path that will be used for src on browser.
+ * @param {string} path Original path
+ */
+function normalizePath(path) {
+    const normalizedPath = path.replace(/\\/g, '/');
+    return normalizedPath.replace(/\/\//g, '/');
 }

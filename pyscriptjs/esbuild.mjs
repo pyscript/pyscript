@@ -1,11 +1,12 @@
 import { build } from 'esbuild';
 import { spawn } from 'child_process';
-import { dirname, join } from 'path';
+import { join } from 'path';
 import { watchFile } from 'fs';
 import { cp, lstat, readdir } from 'fs/promises';
 import { directoryManifest } from './directoryManifest.mjs';
+import { fileURLToPath } from 'url'
 
-const __dirname = dirname(new URL(import.meta.url).pathname);
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 const production = !process.env.NODE_WATCH || process.env.NODE_ENV === 'production';
 
