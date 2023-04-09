@@ -19,6 +19,7 @@ import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 import { RemoteInterpreter } from './remote_interpreter';
 import { robustFetch } from './fetch';
 import * as Synclink from 'synclink';
+import { Message } from 'synclink/dist/types/protocol';
 
 const logger = getLogger('pyscript/main');
 
@@ -188,7 +189,7 @@ export class PyScriptApp {
         const interpreter_cfg = this.config.interpreters[0];
 
         const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
-        const { port1, port2 } = new MessageChannel();
+        const { port1, port2 } = (new Synclink.FakeMessageChannel()) as unknown as MessageChannel;
         port1.start();
         port2.start();
         Synclink.expose(remote_interpreter, port2);
