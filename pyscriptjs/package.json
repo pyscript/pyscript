@@ -4,7 +4,7 @@
     "scripts": {
         "build": "npm run tsc && node esbuild.mjs",
         "dev": "NODE_WATCH=1 node esbuild.mjs",
-        "tsc": "tsc",
+        "tsc": "tsc --noEmit",
         "format:check": "prettier --check './src/**/*.{mjs,js,html,ts}'",
         "format": "prettier --write './src/**/*.{mjs,js,html,ts}'",
         "lint": "eslint './src/**/*.{mjs,js,html,ts}'",
