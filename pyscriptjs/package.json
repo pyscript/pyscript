@@ -35,7 +35,7 @@
         "jest-environment-jsdom": "29.1.2",
         "prettier": "2.7.1",
         "pyodide": "0.22.1",
-        "synclink": "^0.2.2",
+        "synclink": "0.2.3",
         "ts-jest": "29.0.3",
         "tslib": "2.4.0",
         "typescript": "4.8.4"
