@@ -5,7 +5,6 @@ import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
 import type { Terminal as TerminalType } from 'xterm';
-import type { WebLinksAddon as WebLinksAddonType } from 'xterm-addon-web-links';
 
 type AppConfigStyle = AppConfig & {
     terminal?: boolean | 'auto';
@@ -171,7 +170,6 @@ function make_PyTerminal_pre(app: PyScriptApp) {
 }
 
 declare const Terminal: typeof TerminalType;
-declare const WebLinksAddon: { WebLinksAddon: typeof WebLinksAddonType };
 
 function make_PyTerminal_xterm(app: PyScriptApp) {
     /** The <py-terminal> custom element, which automatically register a stdio
@@ -222,7 +220,6 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
 
                 //Create xterm, add addons
                 this.term = new Terminal({ screenReaderMode: true, cols: 80 });
-                this.term.loadAddon(new WebLinksAddon.WebLinksAddon());
                 this.term.open(this);
 
                 this.moduleResolved = true;

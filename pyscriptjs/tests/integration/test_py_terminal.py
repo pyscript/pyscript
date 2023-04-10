@@ -154,61 +154,56 @@ class TestPyTerminal(PyScriptTest):
             </py-config>
             <py-script>
                 print("\x1b[33mYellow\x1b[0m")
-                print("https://www.example.com")
+                print("\x1b[4mUnderline\x1b[24m")
+                print("\x1b[1mBold\x1b[22m")
+                print("\x1b[3mItalic\x1b[23m")
+                print("done")
             </py-script>
             """
         )
+        self.wait_for_console("done")
 
-        first_line = self.page.locator(".xterm-fg-3").nth(0)  # first line of output
-        expect(first_line).to_have_css(
-            "color", "rgb(196, 160, 0)"
-        )  # check if it's yellow
-
-        # Hover over last character in second line
         rows = self.page.locator(".xterm-rows")
+
+        # The following use locator.evaluate() and getComputedStyle to get
+        # the computed CSS values; this tests that the lines are rendering
+        # properly in a better way than just testing whether they
+        # get the right css classes from xtermjs
+
+        # First line should be yellow
+        first_line = rows.locator("div").nth(0)
+        first_char = first_line.locator("span").nth(0)
+        color = first_char.evaluate(
+            "(element) => getComputedStyle(element).getPropertyValue('color')"
+        )
+        assert color == "rgb(196, 160, 0)"
+
+        # Second line should be underlined
         second_line = rows.locator("div").nth(1)
-        last_char = second_line.locator("span").nth(-1)
-        last_char.hover()
-        # It should turn into an underlined link
-        expect(last_char).to_have_css(
-            "text-decoration", "underline solid rgb(255, 255, 255)"
+        first_char = second_line.locator("span").nth(0)
+        text_decoration = first_char.evaluate(
+            "(element) => getComputedStyle(element).getPropertyValue('text-decoration')"
+        )
+        assert "underline" in text_decoration
+
+        # We'll make sure the 'bold' font weight is more than the
+        # default font weight without specifying a specific value
+        baseline_font_weight = first_char.evaluate(
+            "(element) => getComputedStyle(element).getPropertyValue('font-weight')"
         )
 
-        # Click the link
-        with self.page.expect_event("popup") as page_info:
-            last_char.click()
+        # Third line should be bold
+        third_line = rows.locator("div").nth(2)
+        first_char = third_line.locator("span").nth(0)
+        font_weight = first_char.evaluate(
+            "(element) => getComputedStyle(element).getPropertyValue('font-weight')"
+        )
+        assert int(font_weight) > int(baseline_font_weight)
 
-        # Once navigation is done, we should have a new page at the right URL
-        popup = page_info.value
-        popup.wait_for_load_state("networkidle")
-        assert (
-            "https://www.example.com" in popup.url
-        )  # Trailing '/' may or may not be present depending on browser?
-
-        """
-        import rich
-        from rich import print as richprint
-        #from rich import pretty
-        from rich.console import Console as RichConsole
-        from rich.__main__ import make_test_card
-
-        import os
-        import termcolor
-
-        og_print = print
-        rich._console = RichConsole(color_system="256")
-
-        con = RichConsole(color_system="256", width=80)
-
-        #pretty.install()
-
-        richprint("Hello, [bold magenta]Printing[/bold magenta]!", ":vampire:")
-        richprint(f"An object: {[1,2,3,4]}")
-        con.print("Via ", "con.print()", style="bold red")
-
-        os.environ['FORCE_COLOR'] = "True"
-        og_print(termcolor.colored("What about termcolor?", "blue"))
-        con.print(make_test_card())
-        """
-
-        assert True
+        # Fourth line should be italic
+        fourth_line = rows.locator("div").nth(3)
+        first_char = fourth_line.locator("span").nth(0)
+        font_style = first_char.evaluate(
+            "(element) => getComputedStyle(element).getPropertyValue('font-style')"
+        )
+        assert font_style == "italic"
