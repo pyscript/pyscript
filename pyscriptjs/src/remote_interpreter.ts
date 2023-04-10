@@ -94,15 +94,15 @@ export class RemoteInterpreter extends Object {
      * contain these files and is clearly the wrong
      * path.
      */
-    async loadInterpreter(config: AppConfig, stdio: Stdio): Promise<void> {
+    async loadInterpreter(config: AppConfig, stdio: Synclink.Remote<Stdio & ProxyMarked>): Promise<void> {
         this.interface = Synclink.proxy(
             await loadPyodide({
                 stdout: (msg: string) => {
                     // TODO: add syncify when moved to worker
-                    stdio.stdout_writeline(msg);
+                    stdio.stdout_writeline(msg).syncify();
                 },
                 stderr: (msg: string) => {
-                    stdio.stderr_writeline(msg);
+                    stdio.stderr_writeline(msg).syncify();
                 },
                 fullStdLib: false,
             }),
