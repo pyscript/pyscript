@@ -234,7 +234,9 @@ class PyScriptTest:
         self.logger.log("page.goto", path, color="yellow")
         url = f"{self.http_server_addr}/{path}"
         if self.headers != self.REQUIRED_HEADERS:
-            self.page.evaluate("console.error('PyScript needs CORS headers to be set.')")
+            self.page.evaluate(
+                "console.error('PyScript needs CORS headers to be set.')"
+            )
         self.page.goto(url, timeout=0)
 
     def wait_for_console(self, text, *, timeout=None, check_js_errors=True):
