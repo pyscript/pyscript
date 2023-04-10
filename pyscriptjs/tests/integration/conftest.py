@@ -164,7 +164,7 @@ def dev_server(logger):
             logger.log("http_server", fmt % args, color="blue")
 
     host, port = "localhost", 8080
-    base_url = f"https://{host}:{port}"
+    base_url = f"http://{host}:{port}"
 
     # serve_Run forever under thread
     server = HTTPServer((host, port), MyHTTPRequestHandler)
