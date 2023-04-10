@@ -78,9 +78,10 @@ class PyScriptTest:
         if request.config.option.no_fake_server:
             # use a real HTTP server. Note that as soon as we request the
             # fixture, the server automatically starts in its own thread.
-            self.dev_server, self.http_server_addr = request.getfixturevalue(
+            self.dev_server = request.getfixturevalue(
                 "dev_server"
             )
+            self.http_server_addr = self.dev_server.base_url
             self.router = None
         else:
             # use the internal playwright routing
@@ -129,9 +130,9 @@ class PyScriptTest:
 
     def disable_cors_headers(self):
         if self.dev_server is None:
-            self.router.use_cors = False
+            self.router.enable_cors_headers = False
         else:
-            self.dev_server.disable_cors()
+            self.dev_server.disable_cors_headers()
 
     def run_js(self, code):
         """
@@ -658,7 +659,7 @@ class SmartRouter:
         locally
     """
 
-    use_cors = True
+    enable_cors_headers = True
 
     @dataclass
     class CachedResponse:
@@ -740,7 +741,7 @@ class SmartRouter:
             self.log_request(200, "fake_server", full_url)
             assert url.path[0] == "/"
             relative_path = url.path[1:]
-            if self.use_cors:
+            if self.enable_cors_headers:
                 headers = {
                     "Cross-Origin-Embedder-Policy": "require-corp",
                     "Cross-Origin-Opener-Policy": "same-origin",

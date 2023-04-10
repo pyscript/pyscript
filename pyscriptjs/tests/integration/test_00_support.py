@@ -36,12 +36,12 @@ class TestSupport(PyScriptTest):
         self.disable_cors_headers()
         doc = """
         <html>
-          <script>console.log(typeof SharedArrayBuffer === "undefined")</script>
+          <script>console.log(crossOriginIsolated)</script>
         </html>
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        assert self.console.log.lines[-1] == "true"
+        assert self.console.log.lines[-1] == "false"
 
     def test_await_with_run_js(self):
         self.run_js(
