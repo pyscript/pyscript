@@ -45,8 +45,6 @@ To write compliant code, make sure to specify the target using the `target` para
 ```html
 <py-script>
     def display_hello():
-        # this fails because we don't have any implicit target
-        # from event handlers
         display('hello', target="helloDiv")
 </py-script>
 <div id="helloDiv"></div>
