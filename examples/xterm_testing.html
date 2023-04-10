@@ -1,24 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script defer src="../pyscriptjs/build/pyscript.js"></script>
-    <link rel="stylesheet" href="../pyscriptjs/build/pyscript.css">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <script defer src="../pyscriptjs/build/pyscript.js"></script>
+        <link rel="stylesheet" href="../pyscriptjs/build/pyscript.css" />
+    </head>
+    <body>
         <py-config>
             xterm = true
             packages = ['rich', 'termcolor']
         </py-config>
-        
+
         <py-script>
             print("\x1b[33mYellow\x1b[0m")
             print("https://www.example.com")
         </py-script>
         <py-script src="xterm.py"></py-script>
-    
-</body>
+    </body>
 </html>
