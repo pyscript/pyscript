@@ -77,7 +77,7 @@ class TestAsync(PyScriptTest):
         """
         )
         self.wait_for_console("b func done")
-        assert self.console.log.lines[1:] == [
+        assert self.console.log.lines == [
             "A 0",
             "B 0",
             "A 1",
