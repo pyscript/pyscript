@@ -355,7 +355,6 @@ class TestOutput(PyScriptTest):
         )
         inner_text = self.page.inner_text("py-script")
         assert inner_text == "this goes to the DOM"
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-2:] == [
             "print from python",
             "print from js",

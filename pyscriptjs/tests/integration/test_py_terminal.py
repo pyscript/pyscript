@@ -9,9 +9,6 @@ class TestPyTerminal(PyScriptTest):
         1. <py-terminal> should redirect stdout and stderr to the DOM
 
         2. they also go to the console as usual
-
-        3. note that the console also contains PY_COMPLETE, which is a pyodide
-           initialization message, but py-terminal doesn't. This is by design
         """
         self.pyscript_run(
             """

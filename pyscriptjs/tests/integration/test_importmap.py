@@ -36,7 +36,6 @@ class TestImportmap(PyScriptTest):
         )
         assert self.console.log.lines == [
             "hello from JS",
-            self.PY_COMPLETE,
             "hello from Python",
         ]
 
@@ -59,7 +58,6 @@ class TestImportmap(PyScriptTest):
 
         self.wait_for_pyscript()
         assert self.console.log.lines == [
-            self.PY_COMPLETE,
             "hello world",
         ]
         # this warning is shown by pyscript, when *we* try to parse the import

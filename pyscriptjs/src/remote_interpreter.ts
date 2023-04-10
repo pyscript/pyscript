@@ -136,7 +136,6 @@ export class RemoteInterpreter extends Object {
             await this.loadPackage('micropip');
         }
         logger.info('pyodide loaded and initialized');
-        this.pyscript_py._run_pyscript('print("Python initialization complete")');
     }
 
     /**
