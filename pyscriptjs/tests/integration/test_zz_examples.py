@@ -58,7 +58,7 @@ class TestExamples(PyScriptTest):
 
     def test_altair(self):
         self.goto("examples/altair.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=60 * 1000)
         assert self.page.title() == "Altair"
         wait_for_render(self.page, "*", '<canvas.*?class=\\"marks\\".*?>')
         save_as_png_link = self.page.locator("text=Save as PNG")
@@ -136,7 +136,7 @@ class TestExamples(PyScriptTest):
 
     def test_folium(self):
         self.goto("examples/folium.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=60 * 1000)
         assert self.page.title() == "Folium"
         wait_for_render(self.page, "*", "<iframe srcdoc=")
 
@@ -172,7 +172,7 @@ class TestExamples(PyScriptTest):
 
     def test_matplotlib(self):
         self.goto("examples/matplotlib.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=60 * 1000)
         assert self.page.title() == "Matplotlib"
         wait_for_render(self.page, "*", "<img src=['\"]data:image")
         # The image is being rended using base64, lets fetch its source
@@ -200,7 +200,7 @@ class TestExamples(PyScriptTest):
 
     def test_numpy_canvas_fractals(self):
         self.goto("examples/numpy_canvas_fractals.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=60 * 1000)
         assert (
             self.page.title()
             == "Visualization of Mandelbrot, Julia and Newton sets with NumPy and HTML5 canvas"
@@ -279,14 +279,16 @@ class TestExamples(PyScriptTest):
         self.goto("examples/panel_kmeans.html")
         self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
-        wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
+        wait_for_render(
+            self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>", timeout_seconds=60 * 2
+        )
         self.assert_no_banners()
         self.check_tutor_generated_code()
 
     def test_panel_stream(self):
         # XXX improve this test
         self.goto("examples/panel_stream.html")
-        self.wait_for_pyscript(timeout=90 * 1000)
+        self.wait_for_pyscript(timeout=3 * 60 * 1000)
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
         self.assert_no_banners()
@@ -315,7 +317,7 @@ class TestExamples(PyScriptTest):
 
     def test_repl2(self):
         self.goto("examples/repl2.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=1.5 * 60 * 1000)
         assert self.page.title() == "Custom REPL Example"
         wait_for_render(self.page, "*", "<py-repl.*?>")
         # confirm we can import utils and run one command

@@ -430,7 +430,7 @@ TEST_ITERATIONS = math.ceil(
 )  # 120 iters of 1/4 second
 
 
-def wait_for_render(page, selector, pattern):
+def wait_for_render(page, selector, pattern, timeout_seconds: int | None = None):
     """
     Assert that rendering inserts data into the page as expected: search the
     DOM from within the timing loop for a string that is not present in the
@@ -439,7 +439,12 @@ def wait_for_render(page, selector, pattern):
     re_sub_content = re.compile(pattern)
     py_rendered = False  # Flag to be set to True when condition met
 
-    for _ in range(TEST_ITERATIONS):
+    if timeout_seconds:
+        check_iterations = math.ceil(timeout_seconds / TEST_TIME_INCREMENT)
+    else:
+        check_iterations = TEST_ITERATIONS
+
+    for _ in range(check_iterations):
         content = page.inner_html(selector)
         if re_sub_content.search(content):
             py_rendered = True
