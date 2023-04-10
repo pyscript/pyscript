@@ -129,6 +129,7 @@ class HTTPServer(SuperHTTPServer):
     Ctrl +Only Thread remains dead when terminated with C.
     Keyboard Interrupt passes.
     """
+
     def __init__(self, host_and_port, handler_class):
         self.handler_class = handler_class
         super().__init__(host_and_port, handler_class)
@@ -149,6 +150,7 @@ class HTTPServer(SuperHTTPServer):
 def dev_server(logger):
     class MyHTTPRequestHandler(SimpleHTTPRequestHandler):
         use_cors = True
+
         def end_headers(self):
             self.send_my_headers()
             SimpleHTTPRequestHandler.end_headers(self)

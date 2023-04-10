@@ -78,7 +78,9 @@ class PyScriptTest:
         if request.config.option.no_fake_server:
             # use a real HTTP server. Note that as soon as we request the
             # fixture, the server automatically starts in its own thread.
-            self.dev_server, self.http_server_addr = request.getfixturevalue("dev_server")
+            self.dev_server, self.http_server_addr = request.getfixturevalue(
+                "dev_server"
+            )
             self.router = None
         else:
             # use the internal playwright routing
@@ -655,6 +657,7 @@ class SmartRouter:
       - it intercepts the requests to the network and cache the results
         locally
     """
+
     use_cors = True
 
     @dataclass
