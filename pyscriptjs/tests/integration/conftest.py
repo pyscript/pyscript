@@ -148,14 +148,22 @@ def dev_server(logger):
     class MyHTTPRequestHandler(SimpleHTTPRequestHandler):
         enable_cors_headers = True
 
+        @classmethod
+        def my_headers(cls):
+            if cls.enable_cors_headers:
+                return {
+                    "Cross-Origin-Embedder-Policy": "require-corp",
+                    "Cross-Origin-Opener-Policy": "same-origin",
+                }
+            return {}
+
         def end_headers(self):
             self.send_my_headers()
             SimpleHTTPRequestHandler.end_headers(self)
 
         def send_my_headers(self):
-            if self.enable_cors_headers:
-                self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
-                self.send_header("Cross-Origin-Opener-Policy", "same-origin")
+            for k, v in self.my_headers().items():
+                self.send_header(k, v)
 
         def log_message(self, fmt, *args):
             logger.log("http_server", fmt % args, color="blue")

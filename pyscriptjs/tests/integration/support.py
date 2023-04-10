@@ -49,6 +49,10 @@ class PyScriptTest:
     # Pyodide always print()s this message upon initialization. Make it
     # available to all tests so that it's easiert to check.
     PY_COMPLETE = "Python initialization complete"
+    REQUIRED_HEADERS = {
+        "Cross-Origin-Embedder-Policy": "require-corp",
+        "Cross-Origin-Opener-Policy": "same-origin",
+    }
 
     @pytest.fixture()
     def init(self, request, tmpdir, logger, page):
@@ -125,6 +129,12 @@ class PyScriptTest:
         self._js_errors = []
         page.on("console", self._on_console)
         page.on("pageerror", self._on_pageerror)
+
+    @property
+    def headers(self):
+        if self.dev_server is None:
+            return self.router.headers
+        return self.dev_server.RequestHandlerClass.my_headers()
 
     def disable_cors_headers(self):
         if self.dev_server is None:
@@ -223,6 +233,8 @@ class PyScriptTest:
         self.logger.reset()
         self.logger.log("page.goto", path, color="yellow")
         url = f"{self.http_server_addr}/{path}"
+        if self.headers != self.REQUIRED_HEADERS:
+            self.page.evaluate("console.error('PyScript needs CORS headers to be set.')")
         self.page.goto(url, timeout=0)
 
     def wait_for_console(self, text, *, timeout=None, check_js_errors=True):
@@ -657,8 +669,6 @@ class SmartRouter:
         locally
     """
 
-    enable_cors_headers = True
-
     @dataclass
     class CachedResponse:
         """
@@ -688,6 +698,16 @@ class SmartRouter:
         self.usepdb = usepdb
         self.page = None
         self.requests = []  # (status, kind, url)
+        self.enable_cors_headers = True
+
+    @property
+    def headers(self):
+        if self.enable_cors_headers:
+            return {
+                "Cross-Origin-Embedder-Policy": "require-corp",
+                "Cross-Origin-Opener-Policy": "same-origin",
+            }
+        return {}
 
     def install(self, page):
         """
@@ -739,17 +759,10 @@ class SmartRouter:
             self.log_request(200, "fake_server", full_url)
             assert url.path[0] == "/"
             relative_path = url.path[1:]
-            if self.enable_cors_headers:
-                headers = {
-                    "Cross-Origin-Embedder-Policy": "require-corp",
-                    "Cross-Origin-Opener-Policy": "same-origin",
-                }
-            else:
-                headers = {}
             if os.path.exists(relative_path):
-                route.fulfill(status=200, headers=headers, path=relative_path)
+                route.fulfill(status=200, headers=self.headers, path=relative_path)
             else:
-                route.fulfill(status=404, headers=headers)
+                route.fulfill(status=404, headers=self.headers)
             return
 
         # network requests might be cached

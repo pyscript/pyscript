@@ -41,6 +41,8 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
+        assert self.headers == {}
+        assert self.console.error.lines[-1] == "PyScript needs CORS headers to be set."
         assert self.console.log.lines[-1] == "false"
 
     def test_await_with_run_js(self):
