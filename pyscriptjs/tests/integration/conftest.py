@@ -129,6 +129,7 @@ class DevServer(SuperHTTPServer):
     Ctrl +Only Thread remains dead when terminated with C.
     Keyboard Interrupt passes.
     """
+
     def __init__(self, base_url, *args, **kwargs):
         self.base_url = base_url
         super().__init__(*args, **kwargs)

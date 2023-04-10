@@ -78,9 +78,7 @@ class PyScriptTest:
         if request.config.option.no_fake_server:
             # use a real HTTP server. Note that as soon as we request the
             # fixture, the server automatically starts in its own thread.
-            self.dev_server = request.getfixturevalue(
-                "dev_server"
-            )
+            self.dev_server = request.getfixturevalue("dev_server")
             self.http_server_addr = self.dev_server.base_url
             self.router = None
         else:
