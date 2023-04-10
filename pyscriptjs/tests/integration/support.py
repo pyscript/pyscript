@@ -73,16 +73,16 @@ class PyScriptTest:
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
         self.logger = logger
+        self.dev_server = None
 
         if request.config.option.no_fake_server:
             # use a real HTTP server. Note that as soon as we request the
             # fixture, the server automatically starts in its own thread.
-            self.http_server = request.getfixturevalue("http_server")
+            self.dev_server, self.http_server_addr = request.getfixturevalue("dev_server")
             self.router = None
-            self.is_fake_server = False
         else:
             # use the internal playwright routing
-            self.http_server = "http://fake_server"
+            self.http_server_addr = "https://fake_server"
             self.router = SmartRouter(
                 "fake_server",
                 cache=request.config.cache,
@@ -90,7 +90,6 @@ class PyScriptTest:
                 usepdb=request.config.option.usepdb,
             )
             self.router.install(page)
-            self.is_fake_server = True
         #
         self.init_page(page)
         #
@@ -125,6 +124,12 @@ class PyScriptTest:
         self._js_errors = []
         page.on("console", self._on_console)
         page.on("pageerror", self._on_pageerror)
+
+    def disable_cors_headers(self):
+        if self.dev_server is None:
+            self.router.use_cors = False
+        else:
+            self.dev_server.disable_cors()
 
     def run_js(self, code):
         """
@@ -216,7 +221,7 @@ class PyScriptTest:
     def goto(self, path):
         self.logger.reset()
         self.logger.log("page.goto", path, color="yellow")
-        url = f"{self.http_server}/{path}"
+        url = f"{self.http_server_addr}/{path}"
         self.page.goto(url, timeout=0)
 
     def wait_for_console(self, text, *, timeout=None, check_js_errors=True):
@@ -286,8 +291,8 @@ class PyScriptTest:
         doc = f"""
         <html>
           <head>
-              <link rel="stylesheet" href="{self.http_server}/build/pyscript.css" />
-              <script defer src="{self.http_server}/build/pyscript.js"></script>
+              <link rel="stylesheet" href="{self.http_server_addr}/build/pyscript.css" />
+              <script defer src="{self.http_server_addr}/build/pyscript.js"></script>
               {extra_head}
           </head>
           <body>
@@ -650,6 +655,7 @@ class SmartRouter:
       - it intercepts the requests to the network and cache the results
         locally
     """
+    use_cors = True
 
     @dataclass
     class CachedResponse:
@@ -731,10 +737,17 @@ class SmartRouter:
             self.log_request(200, "fake_server", full_url)
             assert url.path[0] == "/"
             relative_path = url.path[1:]
-            if os.path.exists(relative_path):
-                route.fulfill(status=200, path=relative_path)
+            if self.use_cors:
+                headers = {
+                    "Cross-Origin-Embedder-Policy": "require-corp",
+                    "Cross-Origin-Opener-Policy": "same-origin",
+                }
             else:
-                route.fulfill(status=404)
+                headers = {}
+            if os.path.exists(relative_path):
+                route.fulfill(status=200, headers=headers, path=relative_path)
+            else:
+                route.fulfill(status=404, headers=headers)
             return
 
         # network requests might be cached

@@ -129,6 +129,12 @@ class HTTPServer(SuperHTTPServer):
     Ctrl +Only Thread remains dead when terminated with C.
     Keyboard Interrupt passes.
     """
+    def __init__(self, host_and_port, handler_class):
+        self.handler_class = handler_class
+        super().__init__(host_and_port, handler_class)
+
+    def disable_cors(self):
+        self.handler_class.use_cors = False
 
     def run(self):
         try:
@@ -140,21 +146,23 @@ class HTTPServer(SuperHTTPServer):
 
 
 @pytest.fixture(scope="session")
-def http_server(logger):
+def dev_server(logger):
     class MyHTTPRequestHandler(SimpleHTTPRequestHandler):
+        use_cors = True
         def end_headers(self):
             self.send_my_headers()
             SimpleHTTPRequestHandler.end_headers(self)
 
         def send_my_headers(self):
-            self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
-            self.send_header("Cross-Origin-Opener-Policy", "same-origin")
+            if self.use_cors:
+                self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
+                self.send_header("Cross-Origin-Opener-Policy", "same-origin")
 
         def log_message(self, fmt, *args):
             logger.log("http_server", fmt % args, color="blue")
 
     host, port = "localhost", 8080
-    base_url = f"http://{host}:{port}"
+    base_url = f"https://{host}:{port}"
 
     # serve_Run forever under thread
     server = HTTPServer((host, port), MyHTTPRequestHandler)
@@ -162,7 +170,7 @@ def http_server(logger):
     thread = threading.Thread(None, server.run)
     thread.start()
 
-    yield base_url  # Transition to test here
+    yield server, base_url  # Transition to test here
 
     # End thread
     server.shutdown()
