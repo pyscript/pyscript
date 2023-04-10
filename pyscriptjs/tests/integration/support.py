@@ -132,7 +132,7 @@ class PyScriptTest:
         if self.dev_server is None:
             self.router.enable_cors_headers = False
         else:
-            self.dev_server.disable_cors_headers()
+            self.dev_server.RequestHandlerClass.enable_cors_headers = False
 
     def run_js(self, code):
         """

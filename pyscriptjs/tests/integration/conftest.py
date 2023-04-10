@@ -133,9 +133,6 @@ class DevServer(SuperHTTPServer):
         self.base_url = base_url
         super().__init__(*args, **kwargs)
 
-    def disable_cors_headers(self):
-        self.RequestHandlerClass.enable_cors_headers = False
-
     def run(self):
         try:
             self.serve_forever()
