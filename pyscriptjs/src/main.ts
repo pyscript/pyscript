@@ -165,9 +165,9 @@ export class PyScriptApp {
     }
 
     _get_base_url(): string {
-        const src = document.currentScript.src;
-        const slash = src.lastIndexOf('/');
-        return src.slice(0, slash);
+        const elem = document.currentScript as HTMLScriptElement;
+        const slash = elem.src.lastIndexOf('/');
+        return elem.src.slice(0, slash);
     }
 
     // lifecycle (4)
