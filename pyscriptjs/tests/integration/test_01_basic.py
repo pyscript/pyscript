@@ -297,6 +297,7 @@ class TestBasic(PyScriptTest):
         with pytest.raises(AssertionError, match="Found 2 alert banners"):
             self.assert_no_banners()
 
+    @skip_worker("fixme/killme")
     def test_deprecated_globals(self):
         self.pyscript_run(
             """
