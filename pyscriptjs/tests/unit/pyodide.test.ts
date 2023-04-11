@@ -13,7 +13,7 @@ describe('RemoteInterpreter', () => {
     let interpreter: InterpreterClient;
     let stdio: CaptureStdio = new CaptureStdio();
     let RemoteInterpreter;
-    const { port1, port2 } = new MessageChannel();
+    const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
     beforeAll(async () => {
         const SRC = '../pyscriptjs/node_modules/pyodide/pyodide.js';
         const config: AppConfig = { interpreters: [{ src: SRC }] };
