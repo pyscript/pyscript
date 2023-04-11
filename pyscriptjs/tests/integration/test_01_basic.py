@@ -15,8 +15,7 @@ class TestBasic(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-        assert self.console.log.lines[-1] == "hello pyscript"
+        assert self.console.log.lines == ["hello pyscript"]
 
     def test_execution_thread(self):
         self.pyscript_run(
