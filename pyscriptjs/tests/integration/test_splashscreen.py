@@ -36,7 +36,6 @@ class TestSplashscreen(PyScriptTest):
         expect(div).to_be_hidden()
         assert self.page.locator("py-locator").count() == 0
 
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert "hello pyscript" in self.console.log.lines
 
     def test_autoclose_false(self):
@@ -55,7 +54,6 @@ class TestSplashscreen(PyScriptTest):
         expect(div).to_be_visible()
         expect(div).to_contain_text("Python startup...")
         expect(div).to_contain_text("Startup complete")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert "hello pyscript" in self.console.log.lines
 
     def test_autoclose_loader_deprecated(self):
@@ -77,7 +75,6 @@ class TestSplashscreen(PyScriptTest):
         expect(div).to_be_visible()
         expect(div).to_contain_text("Python startup...")
         expect(div).to_contain_text("Startup complete")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert "hello pyscript" in self.console.log.lines
 
     @pytest.mark.skip(reason="pys-onClick is broken, we should kill it, see #1213")

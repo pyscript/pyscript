@@ -14,7 +14,6 @@ class TestBasic(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "hello pyscript"
 
     def test_python_exception(self):
@@ -26,7 +25,6 @@ class TestBasic(PyScriptTest):
             </py-script>
         """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert "hello pyscript" in self.console.log.lines
         # check that we sent the traceback to the console
         tb_lines = self.console.error.lines[-1].splitlines()
@@ -80,7 +78,6 @@ class TestBasic(PyScriptTest):
             <py-script>js.console.log('four')</py-script>
         """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-4:] == [
             "one",
             "two",
@@ -99,7 +96,6 @@ class TestBasic(PyScriptTest):
         """
         )
 
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-2:] == ["true false", "<div></div>"]
 
     def test_packages(self):
@@ -118,7 +114,6 @@ class TestBasic(PyScriptTest):
             """
         )
 
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-3:] == [
             "Loading asciitree",  # printed by pyodide
             "Loaded asciitree",  # printed by pyodide
@@ -178,7 +173,6 @@ class TestBasic(PyScriptTest):
         self.page.locator("button").click()
 
         self.page.wait_for_selector("py-terminal")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "hello world"
 
     def test_py_script_src_attribute(self):
@@ -188,7 +182,6 @@ class TestBasic(PyScriptTest):
             <py-script src="foo.py"></py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "hello from foo"
 
     def test_py_script_src_not_found(self):
@@ -198,8 +191,6 @@ class TestBasic(PyScriptTest):
                 <py-script src="foo.py"></py-script>
                 """
             )
-        assert self.PY_COMPLETE in self.console.log.lines
-
         assert "Failed to load resource" in self.console.error.lines[0]
 
         error_msgs = str(exc.value)
