@@ -6,13 +6,10 @@
 
 import { getLogger } from '../logger';
 import { RemoteInterpreter } from '../remote_interpreter';
+import * as Synclink from 'synclink';
 
 const logger = getLogger('worker');
-
 logger.info('Interpreter worker starting...');
-
-// XXX we should pin a version
-importScripts('https://cdn.jsdelivr.net/npm/synclink');
 
 async function worker_initialize(cfg) {
     const remote_interpreter = new RemoteInterpreter(cfg.src, true);
