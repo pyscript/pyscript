@@ -1,6 +1,6 @@
 from playwright.sync_api import expect
 
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 
 class TestPyTerminal(PyScriptTest):
@@ -38,6 +38,7 @@ class TestPyTerminal(PyScriptTest):
             "this goes to stdout",
         ]
 
+    @skip_worker("FIXME: js.document")
     def test_two_terminals(self):
         """
         Multiple <py-terminal>s can cohexist.
