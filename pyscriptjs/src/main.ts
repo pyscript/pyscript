@@ -299,15 +299,17 @@ export class PyScriptApp {
         }
 
         await interpreter._remote.pyscript_py._set_version_info(version);
-
         // import some carefully selected names into the global namespace
-        if (this.interpreter.useWorker) {
-            // FIXME
-        } else {
+        await interpreter.run(`
+        import js
+        import pyscript
+        from pyscript import Element, display, HTML
+        `);
+
+        if (!this.interpreter.useWorker) {
+            // XXX this doesn't work inside a worker because we don't support
+            // js.document (yet).
             await interpreter.run(`
-            import js
-            import pyscript
-            from pyscript import Element, display, HTML
             pyscript._install_deprecated_globals_2022_12_1(globals())
             `);
         }
