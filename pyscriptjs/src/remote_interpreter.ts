@@ -109,9 +109,7 @@ export class RemoteInterpreter extends Object {
                 fullStdLib: false,
             }),
         );
-        if (this.useWorker) {
-            this.interface.registerComlink(Synclink);
-        }
+        this.interface.registerComlink(Synclink);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.FS = this.interface.FS;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
