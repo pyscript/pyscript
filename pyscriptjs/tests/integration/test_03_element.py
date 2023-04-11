@@ -22,6 +22,7 @@ class TestElement(PyScriptTest):
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert "foo" in py_terminal.inner_text()
 
+    @skip_worker("FIXME: js.document")
     def test_element_value(self):
         """Test the element value"""
         self.pyscript_run(
@@ -40,6 +41,7 @@ class TestElement(PyScriptTest):
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert "bar" in py_terminal.inner_text()
 
+    @skip_worker("FIXME: js.document")
     def test_element_innerHtml(self):
         """Test the element innerHtml"""
         self.pyscript_run(
@@ -58,6 +60,7 @@ class TestElement(PyScriptTest):
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert "bar" in py_terminal.inner_text()
 
+    @skip_worker("FIXME: js.document")
     def test_element_write_no_append(self):
         """Test the element write"""
         self.pyscript_run(
@@ -76,6 +79,7 @@ class TestElement(PyScriptTest):
         div = self.page.wait_for_selector("#foo")
         assert "World!" in div.inner_text()
 
+    @skip_worker("FIXME: js.document")
     def test_element_write_append(self):
         """Test the element write"""
         self.pyscript_run(
@@ -97,6 +101,7 @@ class TestElement(PyScriptTest):
         # confirm that the second write was appended
         assert "Hello!<div>World!</div>" in parent_div.inner_html()
 
+    @skip_worker("FIXME: js.document")
     def test_element_clear_div(self):
         """Test the element clear"""
         self.pyscript_run(
@@ -114,6 +119,7 @@ class TestElement(PyScriptTest):
         div = self.page.locator("#foo")
         assert div.inner_text() == ""
 
+    @skip_worker("FIXME: js.document")
     def test_element_clear_input(self):
         """Test the element clear"""
         self.pyscript_run(
@@ -131,6 +137,7 @@ class TestElement(PyScriptTest):
         input = self.page.wait_for_selector("#foo")
         assert input.input_value() == ""
 
+    @skip_worker("FIXME: js.document")
     def test_element_select(self):
         """Test the element select"""
         self.pyscript_run(
@@ -150,6 +157,7 @@ class TestElement(PyScriptTest):
         select = self.page.wait_for_selector("#foo")
         assert select.inner_text() == "Bar"
 
+    @skip_worker("FIXME: js.document")
     def test_element_clone_no_id(self):
         """Test the element clone"""
         self.pyscript_run(
@@ -169,6 +177,7 @@ class TestElement(PyScriptTest):
         assert divs.first.inner_text() == "Hello!"
         assert divs.last.inner_text() == "Hello!"
 
+    @skip_worker("FIXME: js.document")
     def test_element_clone_with_id(self):
         """Test the element clone"""
         self.pyscript_run(
