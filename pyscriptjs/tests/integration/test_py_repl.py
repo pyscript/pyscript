@@ -94,7 +94,7 @@ class TestPyRepl(PyScriptTest):
         out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert out_div.inner_text() == "hello world"
 
-    @skip_worker("timeout")
+    @skip_worker("TIMEOUT")
     def test_show_last_expression(self):
         """
         Test that we display() the value of the last expression, as you would
@@ -112,7 +112,7 @@ class TestPyRepl(PyScriptTest):
         out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert out_div.inner_text() == "42"
 
-    @skip_worker("timeout")
+    @skip_worker("TIMEOUT")
     def test_show_last_expression_with_output(self):
         """
         Test that we display() the value of the last expression, as you would

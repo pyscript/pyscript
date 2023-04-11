@@ -155,7 +155,7 @@ class TestBasic(PyScriptTest):
             "hello asciitree",  # printed by us
         ]
 
-    @skip_worker("The banner doesn't appear")
+    @skip_worker("FIXME: the banner doesn't appear")
     def test_non_existent_package(self):
         self.pyscript_run(
             """
@@ -175,7 +175,7 @@ class TestBasic(PyScriptTest):
         alert_banner = self.page.wait_for_selector(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
 
-    @skip_worker("The banner doesn't appear")
+    @skip_worker("FIXME: the banner doesn't appear")
     def test_no_python_wheel(self):
         self.pyscript_run(
             """
