@@ -271,6 +271,7 @@ class TestBasic(PyScriptTest):
             is not None
         )
 
+    @skip_worker("FIXME: showWarning()")
     def test_assert_no_banners(self):
         """
         Test that the DOM doesn't contain error/warning banners
