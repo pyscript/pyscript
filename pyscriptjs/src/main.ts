@@ -164,6 +164,12 @@ export class PyScriptApp {
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
     }
 
+    _get_base_url(): string {
+        const src = document.currentScript.src;
+        const slash = src.lastIndexOf('/');
+        return src.slice(0, slash);
+    }
+
     // lifecycle (4)
     async loadInterpreter() {
         logger.info('Initializing interpreter');
@@ -180,10 +186,8 @@ export class PyScriptApp {
 
         if (useWorker) {
             logger.info('Starting the interpreter in a web worker');
-            // XXX what is the best way to specify a robust URL? I want to
-            // load a sibling of the current file (i.e. pyscript.js), but I
-            // don't know how to specify that.
-            const worker = new Worker('build/interpreter_worker.js');
+            const base_url = this._get_base_url();
+            const worker = new Worker(base_url + '/interpreter_worker.js');
             const worker_initialize: any = Synclink.wrap(worker);
             const wrapped_remote_interpreter = await worker_initialize(interpreter_cfg);
             const remote_interpreter = undefined; // this is _unwrapped_remote
