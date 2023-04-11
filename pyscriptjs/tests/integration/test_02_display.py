@@ -113,7 +113,7 @@ class TestOutput(PyScriptTest):
                     # from event handlers
                     display('hello world')
             </py-script>
-            <button id="my-button" py-onClick="display_hello()">Click me</button>
+            <button id="my-button" py-click="display_hello()">Click me</button>
         """
         )
         self.page.locator("text=Click me").click()
@@ -151,7 +151,7 @@ class TestOutput(PyScriptTest):
                 def display_hello():
                     display('hello', target='my-button')
             </py-script>
-            <button id="my-button" py-onClick="display_hello()">Click me</button>
+            <button id="my-button" py-click="display_hello()">Click me</button>
         """
         )
         self.page.locator("text=Click me").click()

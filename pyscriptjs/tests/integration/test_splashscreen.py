@@ -1,4 +1,3 @@
-import pytest
 from playwright.sync_api import expect
 
 from .support import PyScriptTest
@@ -76,26 +75,6 @@ class TestSplashscreen(PyScriptTest):
         expect(div).to_contain_text("Python startup...")
         expect(div).to_contain_text("Startup complete")
         assert "hello pyscript" in self.console.log.lines
-
-    @pytest.mark.skip(reason="pys-onClick is broken, we should kill it, see #1213")
-    def test_splashscreen_closes_on_error_with_pys_onClick(self):
-        self.pyscript_run(
-            """
-            <button id="submit-button" type="submit" pys-onClick="myFunc">OK</button>
-
-            <py-script>
-            from js import console
-
-            def myFunc(*args, **kwargs):
-                text = Element('test-input').element.value
-            Element('test-output').element.innerText = text
-
-            </py-script>
-            """,
-        )
-
-        assert self.page.locator("py-splashscreen").count() == 0
-        assert "Python exception" in self.console.error.text
 
     def test_splashscreen_disabled_option(self):
         self.pyscript_run(
