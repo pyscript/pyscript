@@ -370,7 +370,7 @@ class TestPlugin(PyScriptTest):
 
         expected_msg = (
             "(PY2000): Unable to load plugin from "
-            "'http://non-existent.blah/hello-world'. Plugins "
+            "'https://non-existent.blah/hello-world'. Plugins "
             "need to contain a file extension and be either a "
             "python or javascript file."
         )
