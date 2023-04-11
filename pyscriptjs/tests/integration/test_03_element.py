@@ -16,7 +16,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "foo"
 
         py_terminal = self.page.wait_for_selector("py-terminal")
@@ -35,7 +34,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "bar"
 
         py_terminal = self.page.wait_for_selector("py-terminal")
@@ -54,7 +52,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "<b>bar</b>"
 
         py_terminal = self.page.wait_for_selector("py-terminal")
@@ -74,8 +71,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         div = self.page.wait_for_selector("#foo")
         assert "World!" in div.inner_text()
 
@@ -93,8 +88,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         parent_div = self.page.wait_for_selector("#foo")
 
         assert "Hello!" in parent_div.inner_text()
@@ -114,8 +107,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         div = self.page.locator("#foo")
         assert div.inner_text() == ""
 
@@ -132,8 +123,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         input = self.page.wait_for_selector("#foo")
         assert input.input_value() == ""
 
@@ -152,8 +141,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         select = self.page.wait_for_selector("#foo")
         assert select.inner_text() == "Bar"
 
@@ -170,8 +157,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         divs = self.page.locator("#foo")
         assert divs.count() == 2
         assert divs.first.inner_text() == "Hello!"
@@ -190,8 +175,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         divs = self.page.locator("#foo")
         assert divs.count() == 1
         assert divs.inner_text() == "Hello!"
@@ -222,8 +205,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         bond_divs = self.page.locator("#bond")
         james_divs = self.page.locator("#james")
         bond_2_divs = self.page.locator("#bond-2")
@@ -249,8 +230,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         div = self.page.locator("#foo")
         assert div.get_attribute("class") == "baz"
 
@@ -267,8 +246,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         div = self.page.locator("#foo")
         assert div.get_attribute("class") == ""
 
@@ -286,8 +263,6 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         div = self.page.locator("#foo")
         assert div.get_attribute("class") == "red"
 
@@ -305,7 +280,5 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-
         div = self.page.locator("#foo")
         assert div.get_attribute("class") == "red bold"

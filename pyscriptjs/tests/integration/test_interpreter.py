@@ -24,7 +24,6 @@ class TestInterpreterAccess(PyScriptTest):
             console.log(`py_func() returns ${py_func_res}`);
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-2:] == [
             "x is 1",
             "py_func() returns 2",
@@ -42,7 +41,6 @@ class TestInterpreterAccess(PyScriptTest):
         )
 
         expected_message = "Interpreter Ran This"
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == expected_message
 
         py_terminal = self.page.wait_for_selector("py-terminal")
@@ -60,7 +58,6 @@ class TestInterpreterAccess(PyScriptTest):
         )
 
         expected_message = "Interpreter Ran This"
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == expected_message
 
         py_terminal = self.page.wait_for_selector("py-terminal")
@@ -88,7 +85,6 @@ class TestInterpreterAccess(PyScriptTest):
             """
         )
 
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-2:] == [
             "x is 1",
             "py_func() returns 2",

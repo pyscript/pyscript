@@ -120,7 +120,7 @@ class TestDisplay(PyScriptTest):
                     # from event handlers
                     display('hello world')
             </py-script>
-            <button id="my-button" py-onClick="display_hello()">Click me</button>
+            <button id="my-button" py-click="display_hello()">Click me</button>
         """
         )
         self.page.locator("text=Click me").click()
@@ -160,7 +160,7 @@ class TestDisplay(PyScriptTest):
                 def display_hello():
                     display('hello', target='my-button')
             </py-script>
-            <button id="my-button" py-onClick="display_hello()">Click me</button>
+            <button id="my-button" py-click="display_hello()">Click me</button>
         """
         )
         self.page.locator("text=Click me").click()
@@ -376,7 +376,6 @@ class TestDisplay(PyScriptTest):
         )
         inner_text = self.page.inner_text("py-script")
         assert inner_text == "this goes to the DOM"
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-2:] == [
             "print from python",
             "print from js",

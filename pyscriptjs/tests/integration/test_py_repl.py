@@ -74,7 +74,6 @@ class TestPyRepl(PyScriptTest):
         self.page.keyboard.press("Shift+Enter")
         self.page.wait_for_selector("py-terminal")
 
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "hello world"
 
         # Shift-enter should not add a newline to the editor
@@ -599,7 +598,6 @@ class TestPyRepl(PyScriptTest):
             """
         )
         successMsg = "[py-repl] loading code from ./loadReplSrc1.py to repl...success"
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.info.lines[-1] == successMsg
 
         py_repl = self.page.locator("py-repl")
@@ -625,7 +623,6 @@ class TestPyRepl(PyScriptTest):
         )
 
         successMsg1 = "[py-repl] loading code from ./loadReplSrc2.py to repl...success"
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.info.lines[-1] == successMsg1
 
         py_repl3 = self.page.locator("py-repl#py-repl3")
@@ -650,5 +647,4 @@ class TestPyRepl(PyScriptTest):
             "failed with error 404 (Not Found). "
             "Are your filename and path correct?"
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.error.lines[-1] == errorMsg

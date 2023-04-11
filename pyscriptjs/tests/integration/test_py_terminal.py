@@ -9,9 +9,6 @@ class TestPyTerminal(PyScriptTest):
         1. <py-terminal> should redirect stdout and stderr to the DOM
 
         2. they also go to the console as usual
-
-        3. note that the console also contains PY_COMPLETE, which is a pyodide
-           initialization message, but py-terminal doesn't. This is by design
         """
         self.pyscript_run(
             """
@@ -73,7 +70,7 @@ class TestPyTerminal(PyScriptTest):
             """
             <py-terminal auto></py-terminal>
 
-            <button id="my-button" py-onClick="print('hello world')">Click me</button>
+            <button id="my-button" py-click="print('hello world')">Click me</button>
             """
         )
         term = self.page.locator("py-terminal")
@@ -89,7 +86,7 @@ class TestPyTerminal(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <button id="my-button" py-onClick="print('hello world')">Click me</button>
+            <button id="my-button" py-click="print('hello world')">Click me</button>
             """
         )
         term = self.page.locator("py-terminal")
@@ -140,7 +137,7 @@ class TestPyTerminal(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <button id="my-button" py-onClick="print('hello world')">Click me</button>
+            <button id="my-button" py-click="print('hello world')">Click me</button>
             """
         )
         term = self.page.locator("py-terminal")

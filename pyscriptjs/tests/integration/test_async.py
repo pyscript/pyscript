@@ -20,13 +20,11 @@ class TestAsync(PyScriptTest):
     def test_asyncio_ensure_future(self):
         self.pyscript_run(self.coroutine_script.format(func="ensure_future"))
         self.wait_for_console("third")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-3:] == ["first", "second", "third"]
 
     def test_asyncio_create_task(self):
         self.pyscript_run(self.coroutine_script.format(func="create_task"))
         self.wait_for_console("third")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-3:] == ["first", "second", "third"]
 
     def test_asyncio_gather(self):
@@ -79,8 +77,7 @@ class TestAsync(PyScriptTest):
         """
         )
         self.wait_for_console("b func done")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-        assert self.console.log.lines[1:] == [
+        assert self.console.log.lines == [
             "A 0",
             "B 0",
             "A 1",
