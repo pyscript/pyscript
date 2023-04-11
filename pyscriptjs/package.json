@@ -25,8 +25,8 @@
         "@types/codemirror": "^5.60.5",
         "@types/jest": "29.1.2",
         "@types/node": "18.8.3",
-        "@typescript-eslint/eslint-plugin": "5.39.0",
-        "@typescript-eslint/parser": "5.39.0",
+        "@typescript-eslint/eslint-plugin": "5.58.0",
+        "@typescript-eslint/parser": "5.58.0",
         "codemirror": "6.0.1",
         "cross-env": "7.0.3",
         "esbuild": "0.17.12",
@@ -38,6 +38,6 @@
         "synclink": "0.2.4",
         "ts-jest": "29.0.3",
         "tslib": "2.4.0",
-        "typescript": "4.8.4"
+        "typescript": "5.0.4"
     }
 }
