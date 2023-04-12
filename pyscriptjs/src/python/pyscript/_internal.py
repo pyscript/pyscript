@@ -3,14 +3,14 @@ from collections import namedtuple
 from contextlib import contextmanager
 
 from js import Object
+from pyodide.code import eval_code
+from pyodide.ffi import JsProxy
 
-from ._deprecated_globals import install_deprecated_globals_2022_12_1
 from ._event_loop import (
     defer_user_asyncio,
     install_pyscript_loop,
     schedule_deferred_tasks,
 )
-from ._pyodide_compat import JsProxy, eval_code
 
 VersionInfo = namedtuple("version_info", ("year", "month", "minor", "releaselevel"))
 
@@ -117,5 +117,4 @@ __all__ = [
     "run_pyscript",
     "install_pyscript_loop",
     "schedule_deferred_tasks",
-    "install_deprecated_globals_2022_12_1",
 ]

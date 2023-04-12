@@ -5,9 +5,8 @@ from contextlib import contextmanager
 from typing import Any
 
 from js import setTimeout
+from pyodide.ffi import create_once_callable
 from pyodide.webloop import WebLoop
-
-from ._pyodide_compat import create_once_callable
 
 
 class PyscriptWebLoop(WebLoop):

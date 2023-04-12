@@ -41,8 +41,8 @@ export class InterpreterClient extends Object {
      * interface.
      * */
     async initializeRemote(): Promise<void> {
-        const internal_js_mod = { define_custom_element, showWarning };
-        await this._unwrapped_remote.loadInterpreter(this.config, this.stdio, internal_js_mod);
+        const _pyscript_js_main = { define_custom_element, showWarning };
+        await this._unwrapped_remote.loadInterpreter(this.config, this.stdio, _pyscript_js_main);
         // await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
         this.globals = this._remote.globals;
     }

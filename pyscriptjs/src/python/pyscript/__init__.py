@@ -1,3 +1,5 @@
+from _pyscript_js import showWarning
+
 from ._event_loop import LOOP as loop
 from ._event_loop import run_until_complete
 from ._html import (
@@ -18,25 +20,13 @@ __version__ = None
 version_info = None
 
 
-class PyScript:
-    """
-    This class is deprecated since 2022.12.1.
-
-    All its old functionalities are available as module-level functions. This
-    class should be killed eventually.
-    """
-
-    loop = loop
-    run_until_complete = staticmethod(run_until_complete)
-    write = staticmethod(write)
-
-
 def __getattr__(attr):
     if attr == "js":
         global js
         import js
         from _pyscript_js import showWarning
 
+        # Deprecated after 2023.03.1
         showWarning(
             "<code>pyscript.js</code> is deprecated, please use <code>import js</code> instead.",
             "html",
@@ -57,8 +47,8 @@ __all__ = [
     "PyListTemplate",
     "run_until_complete",
     "loop",
-    "PyScript",
     "Plugin",
     "__version__",
     "version_info",
+    "showWarning",
 ]

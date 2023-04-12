@@ -40,7 +40,6 @@ type PyScriptInternalModule = ProxyMarked & {
     install_pyscript_loop(): void;
     start_loop(): void;
     schedule_deferred_tasks(): void;
-    install_deprecated_globals_2022_12_1(): void;
 };
 
 /*
@@ -97,7 +96,7 @@ export class RemoteInterpreter extends Object {
      * contain these files and is clearly the wrong
      * path.
      */
-    async loadInterpreter(config: AppConfig, stdio: Stdio, internal_js_mod: object): Promise<void> {
+    async loadInterpreter(config: AppConfig, stdio: Stdio, _pyscript_js_main: object): Promise<void> {
         this.interface = Synclink.proxy(
             await loadPyodide({
                 stdout: (msg: string) => {
@@ -118,7 +117,7 @@ export class RemoteInterpreter extends Object {
 
         // TODO: Remove this once `runtimes` is removed!
         this.interpreter = this.interface;
-        this.interface.registerJsModule('_pyscript_js', internal_js_mod);
+        this.interface.registerJsModule('_pyscript_js', _pyscript_js_main);
 
         // Write pyscript package into file system
         for (const dir of python_package.dirs) {
@@ -147,7 +146,6 @@ export class RemoteInterpreter extends Object {
         import pyscript
         from pyscript import Element, display, HTML
         `);
-        this.pyscript_internal.install_deprecated_globals_2022_12_1();
 
         logger.info('pyodide loaded and initialized');
         this.pyscript_internal.run_pyscript('print("Python initialization complete")');

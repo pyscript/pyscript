@@ -1,7 +1,6 @@
 from _pyscript_js import define_custom_element
 from js import console
-
-from ._pyodide_compat import create_proxy
+from pyodide.ffi import create_proxy
 
 
 class Plugin:
