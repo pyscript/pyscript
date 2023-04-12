@@ -8,6 +8,7 @@ import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
 // But we can import the types at top level.
 // TODO: is there a better way to handle this?
 import type { RemoteInterpreter } from '../../src/remote_interpreter';
+import { initTransferHandlers } from '../../src/transfer_handlers';
 
 describe('RemoteInterpreter', () => {
     let interpreter: InterpreterClient;
@@ -15,6 +16,7 @@ describe('RemoteInterpreter', () => {
     let RemoteInterpreter;
     const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
     beforeAll(async () => {
+        initTransferHandlers();
         const SRC = '../pyscriptjs/node_modules/pyodide/pyodide.js';
         const config: AppConfig = { interpreters: [{ src: SRC }], packages: [] };
         // Dynamic import of RemoteInterpreter sees our mocked Python package.
