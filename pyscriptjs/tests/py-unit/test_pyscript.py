@@ -128,10 +128,6 @@ def test_set_version_info():
     set_version_info(version_string)
     assert pyscript.__version__ == version_string
     assert pyscript.version_info == (1234, 56, 78, "ABCD")
-    #
-    # for backwards compatibility, should be killed eventually
-    assert pyscript.PyScript.__version__ == pyscript.__version__
-    assert pyscript.PyScript.version_info == pyscript.version_info
 
 
 class MyDeprecatedGlobal(DeprecatedGlobal):
