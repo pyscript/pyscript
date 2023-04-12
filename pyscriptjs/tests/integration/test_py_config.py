@@ -115,7 +115,7 @@ class TestConfig(PyScriptTest):
                 {
                     "runtimes": [{
                         "src": "/pyodide/pyodide.js",
-                        "name": "pyodide-0.20.0",
+                        "name": "my-own-pyodide",
                         "lang": "python"
                     }]
                 }
@@ -130,9 +130,9 @@ class TestConfig(PyScriptTest):
         """,
         )
 
-        assert self.console.log.lines[-1] == "version 0.20.0"
+        assert self.console.log.lines[-1] == "version 0.22.0"
         version = self.page.locator("py-script").inner_text()
-        assert version == "0.20.0"
+        assert version == "0.22.0"
 
         deprecation_banner = self.page.wait_for_selector(".alert-banner")
         expected_message = (
