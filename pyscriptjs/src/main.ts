@@ -17,25 +17,12 @@ import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
 import { RemoteInterpreter } from './remote_interpreter';
 import { robustFetch } from './fetch';
+import { initTransferHandlers } from './transfer_handlers';
 import * as Synclink from 'synclink';
 
-const logger = getLogger('pyscript/main');
+initTransferHandlers();
 
-/**
- * Monkey patching the error transfer handler to preserve the `$$isUserError`
- * marker so as to detect `UserError` subclasses in the error handling code.
- */
-const throwHandler = Synclink.transferHandlers.get('throw') as Synclink.TransferHandler<
-    { value: unknown },
-    { value: { $$isUserError: boolean } }
->;
-const old_error_transfer_handler = throwHandler.serialize.bind(throwHandler) as typeof throwHandler.serialize;
-function new_error_transfer_handler({ value }: { value: { $$isUserError: boolean } }) {
-    const result = old_error_transfer_handler({ value });
-    result[0].value.$$isUserError = value.$$isUserError;
-    return result;
-}
-throwHandler.serialize = new_error_transfer_handler;
+const logger = getLogger('pyscript/main');
 
 /* High-level overview of the lifecycle of a PyScript App:
 

@@ -4,7 +4,9 @@ import type { PyProxyDict, PyProxy } from 'pyodide';
 import { getLogger } from './logger';
 import type { Stdio } from './stdio';
 import * as Synclink from 'synclink';
-
+import { showWarning } from './utils';
+import { define_custom_element } from './plugin';
+import { proxyValues } from './transfer_handlers';
 const logger = getLogger('pyscript/interpreter');
 
 /*
@@ -39,7 +41,8 @@ export class InterpreterClient extends Object {
      * interface.
      */
     async initializeRemote(): Promise<void> {
-        await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
+        const _pyscript_js_main = proxyValues({ define_custom_element, showWarning });
+        await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio), _pyscript_js_main);
         // await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
         this.globals = this._remote.globals;
     }

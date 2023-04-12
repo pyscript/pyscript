@@ -7,8 +7,7 @@ import { robustFetch } from './fetch';
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy, PyProxyDict } from 'pyodide';
 import type { ProxyMarked } from 'synclink';
 import * as Synclink from 'synclink';
-import { showWarning } from './utils';
-import { define_custom_element } from './plugin';
+import { autoSyncifyObject } from './transfer_handlers';
 
 import { python_package } from './python_package';
 
@@ -98,10 +97,11 @@ export class RemoteInterpreter extends Object {
      * contain these files and is clearly the wrong
      * path.
      */
-    async loadInterpreter(config: AppConfig, stdio: Synclink.Remote<Stdio & ProxyMarked>): Promise<void> {
-        // TODO: move this to "main thread"!
-        const _pyscript_js_main = { define_custom_element, showWarning };
-
+    async loadInterpreter(
+        config: AppConfig,
+        stdio: Synclink.Remote<Stdio & ProxyMarked>,
+        _pyscript_js_main: object,
+    ): Promise<void> {
         this.interface = Synclink.proxy(
             await loadPyodide({
                 stdout: (msg: string) => {
@@ -122,7 +122,7 @@ export class RemoteInterpreter extends Object {
 
         // TODO: Remove this once `runtimes` is removed!
         this.interpreter = this.interface;
-        this.interface.registerJsModule('_pyscript_js', _pyscript_js_main);
+        this.interface.registerJsModule('_pyscript_js', autoSyncifyObject(_pyscript_js_main));
 
         // Write pyscript package into file system
         for (const dir of python_package.dirs) {
