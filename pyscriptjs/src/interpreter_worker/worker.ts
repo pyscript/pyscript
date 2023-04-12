@@ -12,7 +12,7 @@ const logger = getLogger('worker');
 logger.info('Interpreter worker starting...');
 
 async function worker_initialize(cfg) {
-    const remote_interpreter = new RemoteInterpreter(cfg.src, true);
+    const remote_interpreter = new RemoteInterpreter(cfg.src);
     // this is the equivalent of await import(interpreterURL)
     logger.info(`Downloading ${cfg.name}...`); // XXX we should use logStatus
     importScripts(cfg.src);

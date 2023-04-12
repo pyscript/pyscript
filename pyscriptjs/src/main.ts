@@ -172,7 +172,7 @@ export class PyScriptApp {
     async _startInterpreter_main(interpreter_cfg: InterpreterConfig) {
         logger.info('Starting the interpreter in the main thread');
         // this is basically equivalent to worker_initialize()
-        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src, false);
+        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
         const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
         port1.start();
         port2.start();
@@ -217,20 +217,16 @@ export class PyScriptApp {
             showWarning('Multiple interpreters are not supported yet.<br />Only the first will be used', 'html');
         }
 
-        const interpreter_cfg = this.config.interpreters[0];
-        const useWorker = this.config.execution_thread == 'worker';
+        const cfg = this.config.interpreters[0];
         let x;
-
-        if (useWorker) {
-            x = await this._startInterpreter_worker(interpreter_cfg);
+        if (this.config.execution_thread == 'worker') {
+            x = await this._startInterpreter_worker(cfg);
         } else {
-            x = await this._startInterpreter_main(interpreter_cfg);
+            x = await this._startInterpreter_main(cfg);
         }
-
         const { remote_interpreter, wrapped_remote_interpreter } = x;
 
         this.interpreter = new InterpreterClient(
-            useWorker,
             this.config,
             this._stdioMultiplexer,
             wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,

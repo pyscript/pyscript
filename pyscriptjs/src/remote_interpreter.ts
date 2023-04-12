@@ -70,12 +70,10 @@ export class RemoteInterpreter extends Object {
     globals: PyProxyDict & ProxyMarked;
     // TODO: Remove this once `runtimes` is removed!
     interpreter: InterpreterInterface & ProxyMarked;
-    useWorker: boolean;
 
-    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js', useWorker: false) {
+    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js') {
         super();
         this.src = src;
-        this.useWorker = useWorker;
     }
 
     /**
