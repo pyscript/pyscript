@@ -45,11 +45,7 @@ export class InterpreterClient extends Object {
      * interface.
      * */
     async initializeRemote(): Promise<void> {
-        if (this.useWorker) {
-            await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
-        } else {
-            await this._unwrapped_remote.loadInterpreter(this.config, this.stdio);
-        }
+        await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
         this.globals = this._remote.globals;
     }
 
