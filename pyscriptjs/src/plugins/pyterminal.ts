@@ -67,9 +67,7 @@ export class PyTerminalPlugin extends Plugin {
         //   3. everything which was written to stdout BEFORE this moment will
         //      NOT be shown on the py-terminal; in particular, pyodide
         //      startup messages will not be shown (but they will go to the
-        //      console as usual). This is by design, else we would display
-        //      e.g. "Python initialization complete" on every page, which we
-        //      don't want.
+        //      console as usual).
         //
         //   4. (in the future we might want to add an option to start the
         //      capture earlier, but I don't think it's important now).

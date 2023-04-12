@@ -7,6 +7,8 @@ import { robustFetch } from './fetch';
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy, PyProxyDict } from 'pyodide';
 import type { ProxyMarked } from 'synclink';
 import * as Synclink from 'synclink';
+import { showWarning } from './utils';
+import { define_custom_element } from './plugin';
 
 import { python_package } from './python_package';
 
@@ -96,15 +98,18 @@ export class RemoteInterpreter extends Object {
      * contain these files and is clearly the wrong
      * path.
      */
-    async loadInterpreter(config: AppConfig, stdio: Stdio, _pyscript_js_main: object): Promise<void> {
+    async loadInterpreter(config: AppConfig, stdio: Synclink.Remote<Stdio & ProxyMarked>): Promise<void> {
+        // TODO: move this to "main thread"!
+        const _pyscript_js_main = { define_custom_element, showWarning };
+
         this.interface = Synclink.proxy(
             await loadPyodide({
                 stdout: (msg: string) => {
                     // TODO: add syncify when moved to worker
-                    stdio.stdout_writeline(msg);
+                    stdio.stdout_writeline(msg).syncify();
                 },
                 stderr: (msg: string) => {
-                    stdio.stderr_writeline(msg);
+                    stdio.stderr_writeline(msg).syncify();
                 },
                 fullStdLib: false,
             }),
@@ -148,7 +153,6 @@ export class RemoteInterpreter extends Object {
         `);
 
         logger.info('pyodide loaded and initialized');
-        this.pyscript_internal.run_pyscript('print("Python initialization complete")');
     }
 
     /**

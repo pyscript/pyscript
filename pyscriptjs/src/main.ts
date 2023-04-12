@@ -187,7 +187,7 @@ export class PyScriptApp {
         const interpreter_cfg = this.config.interpreters[0];
 
         const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
-        const { port1, port2 } = new MessageChannel();
+        const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
         port1.start();
         port2.start();
         Synclink.expose(remote_interpreter, port2);
@@ -245,7 +245,7 @@ export class PyScriptApp {
 
         //Takes a runtime and a reference to the PyScriptApp (to access plugins)
         createCustomElements(interpreter, this);
-        await initHandlers(interpreter);
+        initHandlers(interpreter);
 
         // NOTE: interpreter message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to

@@ -21,6 +21,7 @@ Features
 - The `output` attribute of `py-repl` tags now specifies the id of the DOM element that `sys.stdout`, `sys.stderr`, and the results of a REPL execution are written to. It no longer affects the location of calls to `display()`
 - Added a `stderr` attribute of `py-repl` tags to route `sys.stderr` to a DOM element with the given ID. ([#1106](https://github.com/pyscript/pyscript/pull/1106))
 - Resored the `output-mode` attribute of `py-repl` tags. If `output-mode` == 'append', the DOM element where output is printed is _not_ cleared before writing new results.
+- Load code from the attribute src of py-repl and preload it into the corresponding py-repl tag by use the attribute `str` in your `py-repl` tag([#1292](https://github.com/pyscript/pyscript/pull/1292))
 
 ### Plugins
 - Plugins may now implement the `beforePyReplExec()` and `afterPyReplExec()` hooks, which are called immediately before and after code in a `py-repl` tag is executed. ([#1106](https://github.com/pyscript/pyscript/pull/1106))
@@ -76,3 +77,4 @@ Deprecations and Removals
 - The py-config `runtimes` to specify an interpreter has been deprecated. The `interpreters` config should be used instead. ([#1082](https://github.com/pyscript/pyscript/pull/1082))
 - The attributes `pys-onClick` and `pys-onKeyDown` have been deprecated, but the warning was only shown in the console. An alert banner will now be shown on the page if the attributes are used. They will be removed in the next release. ([#1084](https://github.com/pyscript/pyscript/pull/1084))
 - The pyscript elements `py-button`, `py-inputbox`, `py-box` and `py-title` have now completed their deprecation cycle and have been removed. ([#1084](https://github.com/pyscript/pyscript/pull/1084))
+- The attributes `pys-onClick` and `pys-onKeyDown` have been removed. Use `py-click` and `py-keydown` instead ([#1361](https://github.com/pyscript/pyscript/pull/1361))

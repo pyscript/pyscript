@@ -35,7 +35,7 @@ Display will throw an exception if the target is not clear. E.g. the following c
         # from event handlers
         display('hello')
 </py-script>
-<button id="my-button" py-onClick="display_hello()">Click me</button>
+<button id="my-button" py-click="display_hello()">Click me</button>
 ```
 
 Because it's considered unclear if the `hello` string should be displayed underneath the `<py-script>` tag or the `<button>` tag.
@@ -45,12 +45,11 @@ To write compliant code, make sure to specify the target using the `target` para
 ```html
 <py-script>
     def display_hello():
-        # this fails because we don't have any implicit target
-        # from event handlers
+        # this works because we give an explicit target
         display('hello', target="helloDiv")
 </py-script>
 <div id="helloDiv"></div>
-<button id="my-button" py-onClick="display_hello()">Click me</button>
+<button id="my-button" py-click="display_hello()">Click me</button>
 ```
 
 #### Using matplotlib with display

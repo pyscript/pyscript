@@ -74,7 +74,6 @@ class TestPyRepl(PyScriptTest):
         self.page.keyboard.press("Shift+Enter")
         self.page.wait_for_selector("py-terminal")
 
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "hello world"
 
         # Shift-enter should not add a newline to the editor
@@ -575,3 +574,62 @@ class TestPyRepl(PyScriptTest):
         )
         alert_banner = self.page.wait_for_selector(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
+
+    def test_repl_load_content_from_src(self):
+        self.writefile("loadReplSrc1.py", "print('1')")
+        self.pyscript_run(
+            """
+            <py-repl id="py-repl1" output="replOutput1" src="./loadReplSrc1.py"></py-repl>
+            <div id="replOutput1"></div>
+            """
+        )
+        successMsg = "[py-repl] loading code from ./loadReplSrc1.py to repl...success"
+        assert self.console.info.lines[-1] == successMsg
+
+        py_repl = self.page.locator("py-repl")
+        code = py_repl.inner_text()
+        assert "print('1')" in code
+
+    def test_repl_src_change(self):
+        self.writefile("loadReplSrc2.py", "2")
+        self.writefile("loadReplSrc3.py", "print('3')")
+        self.pyscript_run(
+            """
+            <py-repl id="py-repl2" output="replOutput2" src="./loadReplSrc2.py"></py-repl>
+            <div id="replOutput2"></div>
+
+            <py-repl id="py-repl3" output="replOutput3">
+                import js
+                target_tag = js.document.getElementById("py-repl2")
+                target_tag.setAttribute("src", "./loadReplSrc3.py")
+            </py-repl>
+            <div id="replOutput3"></div>
+            """
+        )
+
+        successMsg1 = "[py-repl] loading code from ./loadReplSrc2.py to repl...success"
+        assert self.console.info.lines[-1] == successMsg1
+
+        py_repl3 = self.page.locator("py-repl#py-repl3")
+        py_repl3.locator("button").click()
+        py_repl2 = self.page.locator("py-repl#py-repl2")
+        py_repl2.locator("button").click()
+        self.page.wait_for_selector("py-terminal")
+        assert self.console.log.lines[-1] == "3"
+
+        successMsg2 = "[py-repl] loading code from ./loadReplSrc3.py to repl...success"
+        assert self.console.info.lines[-1] == successMsg2
+
+    def test_repl_src_path_that_do_not_exist(self):
+        self.pyscript_run(
+            """
+            <py-repl id="py-repl4" output="replOutput4" src="./loadReplSrc4.py"></py-repl>
+            <div id="replOutput4"></div>
+            """
+        )
+        errorMsg = (
+            "(PY0404): Fetching from URL ./loadReplSrc4.py "
+            "failed with error 404 (Not Found). "
+            "Are your filename and path correct?"
+        )
+        assert self.console.error.lines[-1] == errorMsg
