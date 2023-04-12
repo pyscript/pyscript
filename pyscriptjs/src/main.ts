@@ -185,6 +185,7 @@ export class PyScriptApp {
         const useWorker = this.config.execution_thread == 'worker';
 
         if (useWorker) {
+            logger.warn('execution_thread = "worker" is still VERY experimental, use it at your own risk');
             logger.info('Starting the interpreter in a web worker');
             const base_url = this._get_base_url();
             const worker = new Worker(base_url + '/interpreter_worker.js');
