@@ -279,44 +279,14 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
-                import pyscript
-                pyscript.showWarning("hello")
-                pyscript.showWarning("world")
+                from _pyscript_js import showWarning
+                showWarning("hello")
+                showWarning("world")
             </py-script>
             """
         )
         with pytest.raises(AssertionError, match="Found 2 alert banners"):
             self.assert_no_banners()
-
-    @skip_worker("fixme/killme")
-    def test_deprecated_globals(self):
-        self.pyscript_run(
-            """
-            <py-script>
-                # trigger various warnings
-                create("div", classes="a b c")
-                assert sys.__name__ == 'sys'
-                dedent("")
-                format_mime("")
-                assert MIME_RENDERERS['text/html'] is not None
-                console.log("hello")
-                PyScript.loop
-            </py-script>
-
-            <div id="mydiv"></div>
-            """
-        )
-        banner = self.page.locator(".py-warning")
-        messages = banner.all_inner_texts()
-        assert messages == [
-            "The PyScript object is deprecated. Please use pyscript instead.",
-            "Direct usage of console is deprecated. Please use js.console instead.",
-            "MIME_RENDERERS is deprecated. This is a private implementation detail of pyscript. You should not use it.",  # noqa: E501
-            "format_mime is deprecated. This is a private implementation detail of pyscript. You should not use it.",  # noqa: E501
-            "Direct usage of dedent is deprecated. Please use from textwrap import dedent instead.",
-            "Direct usage of sys is deprecated. Please use import sys instead.",
-            "Direct usage of create is deprecated. Please use pyscript.create instead.",
-        ]
 
     def test_getPySrc_returns_source_code(self):
         self.pyscript_run(

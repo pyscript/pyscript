@@ -3,8 +3,7 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import { InterpreterClient } from './interpreter_client';
-import { version } from './version';
-import { PluginManager, define_custom_element, Plugin, PythonPlugin } from './plugin';
+import { PluginManager, Plugin, PythonPlugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { getLogger } from './logger';
 import { showWarning, globalExport, createLock } from './utils';
@@ -287,34 +286,6 @@ export class PyScriptApp {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
-
-        // inject `define_custom_element` and showWarning it into the PyScript
-        // module scope
-        if (interpreter.useWorker) {
-            // IMPLEMENT ME!
-            // await interpreter._remote.setHandler('define_custom_element', Synclink.proxy(define_custom_element));
-            // await interpreter._remote.setHandler('showWarning', Synclink.proxy(showWarning));
-        } else {
-            interpreter._unwrapped_remote.setHandler('define_custom_element', define_custom_element);
-            interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
-        }
-
-        await interpreter._remote.pyscript_py._set_version_info(version);
-        // import some carefully selected names into the global namespace
-        await interpreter.run(`
-        import js
-        import pyscript
-        from pyscript import Element, display, HTML
-        `);
-
-        if (!this.interpreter.useWorker) {
-            // XXX this doesn't work inside a worker because we don't support
-            // js.document (yet).
-            await interpreter.run(`
-            pyscript._install_deprecated_globals_2022_12_1(globals())
-            `);
-        }
-
         await Promise.all([this.installPackages(), this.fetchPaths(interpreter)]);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
@@ -450,7 +421,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
         this.incrementPendingTags();
         this.decrementPendingTags();
         await this.scriptTagsPromise;
-        await this.interpreter._remote.pyscript_py._schedule_deferred_tasks();
+        await this.interpreter._remote.pyscript_internal.schedule_deferred_tasks();
     }
 
     // ================= registraton API ====================
@@ -479,4 +450,4 @@ if (typeof jest === 'undefined') {
     globalApp.readyPromise = globalApp.main();
 }
 
-export { version };
+export { version } from './version';

@@ -350,8 +350,8 @@ class TestDisplay(PyScriptTest):
             """
             <py-script>
                 print('print from python')
-                console.log('print from js')
-                console.error('error from js');
+                js.console.log('print from js')
+                js.console.error('error from js');
             </py-script>
         """
         )
@@ -369,8 +369,8 @@ class TestDisplay(PyScriptTest):
             <py-script>
                 display('this goes to the DOM')
                 print('print from python')
-                console.log('print from js')
-                console.error('error from js');
+                js.console.log('print from js')
+                js.console.error('error from js');
             </py-script>
         """
         )
