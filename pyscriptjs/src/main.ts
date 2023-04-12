@@ -1,7 +1,7 @@
 import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
-import type { AppConfig } from './pyconfig';
+import type { AppConfig, InterpreterConfig } from './pyconfig';
 import { InterpreterClient } from './interpreter_client';
 import { PluginManager, Plugin, PythonPlugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
@@ -169,6 +169,43 @@ export class PyScriptApp {
         return elem.src.slice(0, slash);
     }
 
+    async _startInterpreter_main(interpreter_cfg: InterpreterConfig) {
+        logger.info('Starting the interpreter in the main thread');
+        // this is basically equivalent to worker_initialize()
+        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src, false);
+        const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
+        port1.start();
+        port2.start();
+        Synclink.expose(remote_interpreter, port2);
+        const wrapped_remote_interpreter = Synclink.wrap(port1);
+
+        this.logStatus(`Downloading ${interpreter_cfg.name}...`);
+        /* Dynamically download and import pyodide: the import() puts a
+           loadPyodide() function into globalThis, which is later called by
+           RemoteInterpreter.
+
+           This is suboptimal: ideally, we would like to import() a module
+           which exports loadPyodide(), but this plays badly with workers
+           because at the moment of writing (2023-03-24) Firefox does not
+           support ES modules in workers:
+           https://caniuse.com/mdn-api_worker_worker_ecmascript_modules
+        */
+        const interpreterURL = interpreter_cfg.src;
+        await import(interpreterURL);
+        return { remote_interpreter, wrapped_remote_interpreter };
+    }
+
+    async _startInterpreter_worker(interpreter_cfg: InterpreterConfig) {
+        logger.warn('execution_thread = "worker" is still VERY experimental, use it at your own risk');
+        logger.info('Starting the interpreter in a web worker');
+        const base_url = this._get_base_url();
+        const worker = new Worker(base_url + '/interpreter_worker.js');
+        const worker_initialize: any = Synclink.wrap(worker);
+        const wrapped_remote_interpreter = await worker_initialize(interpreter_cfg);
+        const remote_interpreter = undefined; // this is _unwrapped_remote
+        return { remote_interpreter, wrapped_remote_interpreter };
+    }
+
     // lifecycle (4)
     async loadInterpreter() {
         logger.info('Initializing interpreter');
@@ -182,59 +219,24 @@ export class PyScriptApp {
 
         const interpreter_cfg = this.config.interpreters[0];
         const useWorker = this.config.execution_thread == 'worker';
+        let x;
 
         if (useWorker) {
-            logger.warn('execution_thread = "worker" is still VERY experimental, use it at your own risk');
-            logger.info('Starting the interpreter in a web worker');
-            const base_url = this._get_base_url();
-            const worker = new Worker(base_url + '/interpreter_worker.js');
-            const worker_initialize: any = Synclink.wrap(worker);
-            const wrapped_remote_interpreter = await worker_initialize(interpreter_cfg);
-            const remote_interpreter = undefined; // this is _unwrapped_remote
-
-            this.interpreter = new InterpreterClient(
-                useWorker,
-                this.config,
-                this._stdioMultiplexer,
-                wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
-                remote_interpreter,
-            );
-
-            await this.afterInterpreterLoad(this.interpreter);
+            x = await this._startInterpreter_worker(interpreter_cfg);
         } else {
-            logger.info('Starting the interpreter in the main thread');
-            // this is basically the equivalent to worker_initialize()
-            const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src, false);
-            const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
-            port1.start();
-            port2.start();
-            Synclink.expose(remote_interpreter, port2);
-            const wrapped_remote_interpreter = Synclink.wrap(port1);
-
-            this.logStatus(`Downloading ${interpreter_cfg.name}...`);
-            /* Dynamically download and import pyodide: the import() puts a
-               loadPyodide() function into globalThis, which is later called by
-               RemoteInterpreter.
-
-               This is suboptimal: ideally, we would like to import() a module
-               which exports loadPyodide(), but this plays badly with workers
-               because at the moment of writing (2023-03-24) Firefox does not
-               support ES modules in workers:
-               https://caniuse.com/mdn-api_worker_worker_ecmascript_modules
-            */
-            const interpreterURL = interpreter_cfg.src;
-            await import(interpreterURL);
-
-            this.interpreter = new InterpreterClient(
-                useWorker,
-                this.config,
-                this._stdioMultiplexer,
-                wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
-                remote_interpreter,
-            );
-
-            await this.afterInterpreterLoad(this.interpreter);
+            x = await this._startInterpreter_main(interpreter_cfg);
         }
+
+        const { remote_interpreter, wrapped_remote_interpreter } = x;
+
+        this.interpreter = new InterpreterClient(
+            useWorker,
+            this.config,
+            this._stdioMultiplexer,
+            wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
+            remote_interpreter,
+        );
+        await this.afterInterpreterLoad(this.interpreter);
     }
 
     // lifecycle (5)
