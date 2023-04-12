@@ -16,7 +16,6 @@ VersionInfo = namedtuple("version_info", ("year", "month", "minor", "releaseleve
 
 
 def set_version_info(version_from_interpreter: str):
-    from . import PyScript
     from . import __dict__ as pyscript_dict
 
     """Sets the __version__ and version_info properties from provided JSON data
@@ -39,10 +38,6 @@ def set_version_info(version_from_interpreter: str):
 
     pyscript_dict["__version__"] = version_from_interpreter
     pyscript_dict["version_info"] = version_info
-    # we ALSO set PyScript.__version__ and version_info for backwards
-    # compatibility. Should be killed eventually.
-    PyScript.__version__ = version_from_interpreter
-    PyScript.version_info = version_info
 
 
 class TopLevelAwaitFinder(ast.NodeVisitor):
