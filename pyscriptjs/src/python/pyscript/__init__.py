@@ -20,6 +20,7 @@ from pyodide.webloop import WebLoop
 try:
     from pyodide.code import eval_code
     from pyodide.ffi import JsProxy, create_once_callable, create_proxy
+    from pyodide.ffi.wrappers import cast
 except ImportError:
     from pyodide import JsProxy, create_once_callable, create_proxy, eval_code
 
@@ -218,26 +219,19 @@ def when(event=None, id=None):
     Decorates a function and passes py-* events to the decorated function
     The events might or not be an argument of the decorated function
     """
-
     def decorator(func):
-        print("☠️")
         element = js.document.getElementById(id)
-        print(element)
         sig = inspect.signature(func)
-
         # Function doesn't receive events
         if not sig.parameters:
-
             def wrapper(*args, **kwargs):
                 func()
-
             proxy = create_proxy(wrapper)
             element.addEventListener(event, cast(wrapper, proxy))
         else:
             proxy = create_proxy(func)
             element.addEventListener(event, proxy)
         return proxy
-
     return decorator
 
 
