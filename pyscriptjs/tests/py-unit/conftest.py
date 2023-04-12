@@ -16,10 +16,10 @@ sys.path.append(str(python_plugins_source))
 
 
 # patch pyscript module where needed
-import pyscript  # noqa: E402
 import pyscript_plugins_tester as ppt  # noqa: E402
+from pyscript import _plugin  # noqa: E402
 
-pyscript.define_custom_element = ppt.define_custom_element
+_plugin.define_custom_element = ppt.define_custom_element
 
 
 @pytest.fixture()

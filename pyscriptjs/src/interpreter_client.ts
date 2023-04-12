@@ -60,7 +60,7 @@ export class InterpreterClient extends Object {
      *    serializable.
      */
     async run(code: string, id?: string): Promise<{ result: any }> {
-        return this._remote.pyscript_py._run_pyscript(code, id);
+        return this._remote.pyscript_internal.run_pyscript(code, id);
     }
 
     /**

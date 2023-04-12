@@ -16,7 +16,7 @@ describe('RemoteInterpreter', () => {
     const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
     beforeAll(async () => {
         const SRC = '../pyscriptjs/node_modules/pyodide/pyodide.js';
-        const config: AppConfig = { interpreters: [{ src: SRC }] };
+        const config: AppConfig = { interpreters: [{ src: SRC }], packages: [] };
         // Dynamic import of RemoteInterpreter sees our mocked Python package.
         ({ RemoteInterpreter } = await import('../../src/remote_interpreter'));
         const remote_interpreter = new RemoteInterpreter(SRC);

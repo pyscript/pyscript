@@ -1,9 +1,9 @@
 import html
 from unittest.mock import Mock
 
+import js
 import py_markdown
 import py_tutor
-import pyscript
 import pyscript_plugins_tester as ppt
 
 TUTOR_SOURCE = """
@@ -52,7 +52,7 @@ class TestPyTutor:
         related prism assets have been added to the page head
         """
         # GIVEN a previous call to py_tutor.plugin.append_script_to_page
-        head = pyscript.js.document.head
+        head = js.document.head
 
         # EXPECT the head to contain a link element pointing to the prism.min.css
         links = head.getElementsByTagName("link")
@@ -76,7 +76,7 @@ class TestPyTutor:
         to the page body
         """
         # GIVEN a previous call to py_tutor.plugin.append_script_to_page
-        body = pyscript.js.document.body
+        body = js.document.body
 
         # EXPECT the body of the page to contain a script of type text/javascript
         #        and that contains the py_tutor.PAGE_SCRIPT script
@@ -108,7 +108,7 @@ class TestPyTutor:
         console.info.assert_any_call("Creating new code section element.")
 
         # EXPECT the page body to contain a section with the input source code
-        body = pyscript.js.document.body
+        body = js.document.body
         sections = body.getElementsByTagName("section")
         section = sections[0]
         assert "code" in section.classList._classes
