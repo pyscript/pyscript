@@ -2,7 +2,7 @@
 // 1. esbuild.mjs
 // 2. Jest setup.ts
 
-import { join } from 'path';
+import path, { join } from 'path';
 import { opendir, readFile } from 'fs/promises';
 
 /**
@@ -46,9 +46,8 @@ async function _directoryManifestHelper(root, dir, result) {
 /**
  * Normalize paths under different operating systems to
  * the correct path that will be used for src on browser.
- * @param {string} path Original path
+ * @param {string} originalPath
  */
-function normalizePath(path) {
-    const normalizedPath = path.replace(/\\/g, '/');
-    return normalizedPath.replace(/\/\//g, '/');
+function normalizePath(originalPath) {
+    return path.normalize(originalPath).replace(/\\/g, '/');
 }
