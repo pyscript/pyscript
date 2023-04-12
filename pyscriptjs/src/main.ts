@@ -200,11 +200,6 @@ export class PyScriptApp {
                 remote_interpreter,
             );
 
-            // this is automatically done by the worker
-            // this.logStatus(`Downloading ${interpreter_cfg.name}...`);
-            // const interpreterURL = await this.interpreter._remote.src;
-            // await import(interpreterURL);
-
             await this.afterInterpreterLoad(this.interpreter);
         } else {
             logger.info('Starting the interpreter in the main thread');
