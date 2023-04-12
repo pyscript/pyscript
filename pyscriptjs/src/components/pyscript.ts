@@ -155,10 +155,10 @@ export async function initHandlers(interpreter: InterpreterClient) {
 }
 
 /** Initializes an element with the given py-on* attribute and its handler */
-function createElementsWithEventListeners(interpreter: InterpreterClient, browserEvent: string) {
-    const pyEval = interpreter.globals.get('eval');
-    const pyCallable = interpreter.globals.get('callable');
-    const pyDictClass = interpreter.globals.get('dict');
+async function createElementsWithEventListeners(interpreter: InterpreterClient, browserEvent: string) {
+    const pyEval = await interpreter.globals.get('eval');
+    const pyCallable = await interpreter.globals.get('callable');
+    const pyDictClass = await interpreter.globals.get('dict');
 
     const localsDict = pyDictClass();
 
@@ -171,15 +171,16 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, browse
         const pyEvent = 'py-' + browserEvent;
         const userProvidedFunctionName = el.getAttribute(pyEvent);
 
-        el.addEventListener(browserEvent, evt => {
+        el.addEventListener(browserEvent, async evt => {
             try {
-                const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict);
-                const isCallable = pyCallable(evalResult);
-                localsDict.set('event', evt);
+                localsDict.event = evt;
 
-                if (isCallable) {
-                    const pyInspectModule = interpreter._remote.interface.pyimport('inspect');
-                    const params = pyInspectModule.signature(evalResult).parameters;
+                const evalResult = await pyEval(userProvidedFunctionName, interpreter.globals, localsDict);
+                const isCallable = pyCallable(evalResult);
+
+                if (await isCallable) {
+                    const pyInspectModule = await interpreter._remote.interface.pyimport('inspect')
+                    const params = await pyInspectModule.signature(evalResult).parameters;
 
                     if (params.length == 0) {
                         evalResult();
@@ -209,13 +210,15 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, browse
     for (const el of matches) {
         const pyEvent = 'py-' + browserEvent + '-code';
         const userProvidedFunctionName = el.getAttribute(pyEvent);
-        el.addEventListener(browserEvent, evt => {
-            try {
-                const evalResult = pyEval(userProvidedFunctionName, interpreter.globals, localsDict);
-                const isCallable = pyCallable(evalResult);
-                localsDict.set('event', evt);
 
-                if (isCallable) {
+        el.addEventListener(browserEvent, async evt => {
+            try {
+                localsDict.event = evt;
+
+                const evalResult = await pyEval(userProvidedFunctionName, interpreter.globals, localsDict);
+                const isCallable = await pyCallable(evalResult);
+
+                if (await isCallable) {
                     throw new UserError(
                         ErrorCode.GENERIC,
                         "The code provided to 'py-[event]-code' was the name of a Callable. Did you mean to use 'py-[event]?",
