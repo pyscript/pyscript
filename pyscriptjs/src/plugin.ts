@@ -1,6 +1,6 @@
 import type { PyScriptApp } from './main';
 import type { AppConfig } from './pyconfig';
-import type { UserError } from './exceptions';
+import { UserError, ErrorCode } from './exceptions';
 import { getLogger } from './logger';
 import { make_PyScript } from './components/pyscript';
 import { InterpreterClient } from './interpreter_client';
@@ -265,4 +265,75 @@ export function define_custom_element(tag: string, pyElementClass: PyElementClas
     }
 
     customElements.define(tag, ProxyCustomElement);
+}
+
+// Members of py-config in plug that we want to validate must be one of these types
+type BaseConfigObject = string | boolean | number | undefined;
+
+/**
+ * Validate that parameter the user provided to py-config conforms to the specified validation function;
+ * if not, throw an error explaining the bad value. If no value is provided, set the parameter
+ * to the provided default value
+ * This is the most generic validation function; other validation functions for common situations follow
+ * @param options.config - The (extended) AppConfig object from py-config
+ * @param {string} options.name - The name of the key in py-config to be checked
+ * @param {(b:BaseConfigObject) => boolean} options.validator - the validation function used to test the user-supplied value
+ * @param {BaseConfigObject} options.defaultValue - The default value for this parameter, if none is provided
+ * @param {string} [options.hintMessage] - The message to show in a user error if the supplied value isn't valid
+ */
+export function validateConfigParameter(options: {
+    config: AppConfig;
+    name: string;
+    validator: (b: BaseConfigObject) => boolean;
+    defaultValue: BaseConfigObject;
+    hintMessage?: string;
+}) {
+    //Validate that the default value is acceptable, at runtime
+    if (!options.validator(options.defaultValue)) {
+        throw Error(
+            `Default value ${JSON.stringify(options.defaultValue)} for ${options.name} is not a valid argument, ` +
+                `according to the provided validator function. ${options.hintMessage ? options.hintMessage : ''}`,
+        );
+    }
+
+    const value = options.config[options.name] as BaseConfigObject;
+    if (value !== undefined && !options.validator(value)) {
+        //Use default hint message if none is provided:
+        const hintOutput = `Invalid value ${JSON.stringify(value)} for config.${options.name}. ${
+            options.hintMessage ? options.hintMessage : ''
+        }`;
+        throw new UserError(ErrorCode.BAD_CONFIG, hintOutput);
+    }
+    if (value === undefined) {
+        options.config[options.name] = options.defaultValue;
+    }
+}
+
+/**
+ * Validate that parameter the user provided to py-config is one of the acceptable values in
+ * the given Array; if not, throw an error explaining the bad value. If no value is provided,
+ * set the parameter to the provided default value
+ * @param options.config - The (extended) AppConfig object from py-config
+ * @param {string} options.name - The name of the key in py-config to be checked
+ * @param {Array<BaseConfigObject>} options.possibleValues: The acceptable values for this parameter
+ * @param {BaseConfigObject} options.defaultValue: The default value for this parameter, if none is provided
+ */
+export function validateConfigParameterFromArray(options: {
+    config: AppConfig;
+    name: string;
+    possibleValues: Array<BaseConfigObject>;
+    defaultValue: BaseConfigObject;
+}) {
+    const validator = (b: BaseConfigObject) => options.possibleValues.includes(b);
+    const hint = `The only accepted values are: [${options.possibleValues
+        .map(item => JSON.stringify(item))
+        .join(', ')}]`;
+
+    validateConfigParameter({
+        config: options.config,
+        name: options.name,
+        validator: validator,
+        defaultValue: options.defaultValue,
+        hintMessage: hint,
+    });
 }
