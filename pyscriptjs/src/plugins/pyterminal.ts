@@ -4,6 +4,7 @@ import { Plugin, validateConfigParameterFromArray } from '../plugin';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
+import { UserError, ErrorCode } from '../exceptions';
 import type { Terminal as TerminalType } from 'xterm';
 
 type AppConfigStyle = AppConfig & {
