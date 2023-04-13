@@ -268,11 +268,12 @@ export function define_custom_element(tag: string, pyElementClass: PyElementClas
 }
 
 // Members of py-config in plug that we want to validate must be one of these types
-type BaseConfigObject = string | boolean | number;
+type BaseConfigObject = string | boolean | number | undefined;
 
 /**
  * Validate that parameter the user provided to py-config conforms to the specified validation function;
- * if not, throw an error explaining the bad value.
+ * if not, throw an error explaining the bad value. If no value is provided, set the parameter
+ * to the provided default value
  * This is the most generic validation function; other validation functions for common situations follow
  * @param options.config - The (extended) AppConfig object from py-config
  * @param {string} options.name - The name of the key in py-config to be checked
@@ -310,7 +311,8 @@ export function validateConfigParameter(options: {
 
 /**
  * Validate that parameter the user provided to py-config is one of the acceptable values in
- * the given Array; if not, throw an error explaining the bad value
+ * the given Array; if not, throw an error explaining the bad value. If no value is provided,
+ * set the parameter to the provided default value
  * @param options.config - The (extended) AppConfig object from py-config
  * @param {string} options.name - The name of the key in py-config to be checked
  * @param {Array<BaseConfigObject>} options.possibleValues: The acceptable values for this parameter
