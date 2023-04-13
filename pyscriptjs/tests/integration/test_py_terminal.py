@@ -164,6 +164,7 @@ class TestPyTerminal(PyScriptTest):
         self.wait_for_console("done")
 
         rows = self.page.locator(".xterm-rows")
+        rows.wait_for()
 
         # The following use locator.evaluate() and getComputedStyle to get
         # the computed CSS values; this tests that the lines are rendering
