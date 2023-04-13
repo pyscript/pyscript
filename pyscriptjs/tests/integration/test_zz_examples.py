@@ -102,7 +102,7 @@ class TestExamples(PyScriptTest):
     def test_bokeh(self):
         # XXX improve this test
         self.goto("examples/bokeh.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*?class="bk.*".*?>')
         self.assert_no_banners()
@@ -111,7 +111,7 @@ class TestExamples(PyScriptTest):
     def test_bokeh_interactive(self):
         # XXX improve this test
         self.goto("examples/bokeh_interactive.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Bokeh Example"
         wait_for_render(self.page, "*", '<div.*?class=\\"bk\\".*?>')
         self.assert_no_banners()
@@ -248,7 +248,7 @@ class TestExamples(PyScriptTest):
 
     def test_panel(self):
         self.goto("examples/panel.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Panel Example"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
         slider_title = self.page.wait_for_selector(".bk-slider-title")
@@ -268,7 +268,7 @@ class TestExamples(PyScriptTest):
     def test_panel_deckgl(self):
         # XXX improve this test
         self.goto("examples/panel_deckgl.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "PyScript/Panel DeckGL Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
         self.assert_no_banners()
@@ -277,7 +277,7 @@ class TestExamples(PyScriptTest):
     def test_panel_kmeans(self):
         # XXX improve this test
         self.goto("examples/panel_kmeans.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
         self.assert_no_banners()
@@ -286,7 +286,7 @@ class TestExamples(PyScriptTest):
     def test_panel_stream(self):
         # XXX improve this test
         self.goto("examples/panel_stream.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
         self.assert_no_banners()

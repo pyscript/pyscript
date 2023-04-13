@@ -1,27 +1,32 @@
 import os
 import tarfile
 import tempfile
+from pathlib import Path
 
 import pytest
 import requests
 
 from .support import PyScriptTest
 
-URL = "https://github.com/pyodide/pyodide/releases/download/0.20.0/pyodide-build-0.20.0.tar.bz2"
-TAR_NAME = "pyodide-build-0.20.0.tar.bz2"
-
 
 @pytest.fixture
-def tar_location(request):
-    val = request.config.cache.get("pyodide-0.20-tar", None)
+def pyodide_0_22_0_tar(request):
+    """
+    Fixture which returns a local copy of pyodide. It uses pytest-cache to
+    avoid re-downloading it between runs.
+    """
+    URL = "https://github.com/pyodide/pyodide/releases/download/0.22.0/pyodide-core-0.22.0.tar.bz2"
+    tar_name = Path(URL).name
+
+    val = request.config.cache.get(tar_name, None)
     if val is None:
         response = requests.get(URL, stream=True)
         TMP_DIR = tempfile.mkdtemp()
-        TMP_TAR_LOCATION = os.path.join(TMP_DIR, TAR_NAME)
+        TMP_TAR_LOCATION = os.path.join(TMP_DIR, tar_name)
         with open(TMP_TAR_LOCATION, "wb") as f:
             f.write(response.raw.read())
         val = TMP_TAR_LOCATION
-        request.config.cache.set("pyodide-0.20-tar", val)
+        request.config.cache.set(tar_name, val)
     return val
 
 
@@ -68,24 +73,20 @@ class TestConfig(PyScriptTest):
 
     # The default pyodide version is 0.22.1 as of writing
     # this test which is newer than the one we are loading below
-    # (after downloading locally) -- which is 0.20.0
+    # (after downloading locally) -- which is 0.22.0
 
     # The test checks if loading a different interpreter is possible
     # and that too from a locally downloaded file without needing
     # the use of explicit `indexURL` calculation.
-    def test_interpreter_config(self, tar_location):
-        unzip(
-            location=tar_location,
-            extract_to=self.tmpdir,
-        )
-
+    def test_interpreter_config(self, pyodide_0_22_0_tar):
+        unzip(pyodide_0_22_0_tar, extract_to=self.tmpdir)
         self.pyscript_run(
             """
             <py-config type="json">
                 {
                     "interpreters": [{
                         "src": "/pyodide/pyodide.js",
-                        "name": "pyodide-0.20.0",
+                        "name": "my-own-pyodide",
                         "lang": "python"
                     }]
                 }
@@ -100,23 +101,21 @@ class TestConfig(PyScriptTest):
         """,
         )
 
-        assert self.console.log.lines[-1] == "version 0.20.0"
+        assert self.console.log.lines[-1] == "version 0.22.0"
         version = self.page.locator("py-script").inner_text()
-        assert version == "0.20.0"
+        assert version == "0.22.0"
 
-    def test_runtime_still_works_but_shows_deprecation_warning(self, tar_location):
-        unzip(
-            location=tar_location,
-            extract_to=self.tmpdir,
-        )
-
+    def test_runtime_still_works_but_shows_deprecation_warning(
+        self, pyodide_0_22_0_tar
+    ):
+        unzip(pyodide_0_22_0_tar, extract_to=self.tmpdir)
         self.pyscript_run(
             """
             <py-config type="json">
                 {
                     "runtimes": [{
                         "src": "/pyodide/pyodide.js",
-                        "name": "pyodide-0.20.0",
+                        "name": "my-own-pyodide",
                         "lang": "python"
                     }]
                 }
@@ -131,9 +130,9 @@ class TestConfig(PyScriptTest):
         """,
         )
 
-        assert self.console.log.lines[-1] == "version 0.20.0"
+        assert self.console.log.lines[-1] == "version 0.22.0"
         version = self.page.locator("py-script").inner_text()
-        assert version == "0.20.0"
+        assert version == "0.22.0"
 
         deprecation_banner = self.page.wait_for_selector(".alert-banner")
         expected_message = (
@@ -270,7 +269,6 @@ class TestConfig(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-2:] == [
             "hello from A",
             "hello from B",
@@ -313,5 +311,4 @@ class TestConfig(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "hello from A"

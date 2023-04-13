@@ -1,6 +1,7 @@
 import xml.dom
 from xml.dom.minidom import Node  # nosec
 
+import js
 import pyscript
 
 
@@ -114,6 +115,6 @@ class Document(Node):
         self._el = impl.createDocument(None, "document", None)
 
 
-pyscript.js.document = doc = Document()
-pyscript.js.document.head = doc.createElement("head")
-pyscript.js.document.body = doc.createElement("body")
+js.document = doc = Document()
+js.document.head = doc.createElement("head")
+js.document.body = doc.createElement("body")

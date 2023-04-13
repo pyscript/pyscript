@@ -2,7 +2,6 @@ import re
 import textwrap
 
 import pytest
-from playwright import sync_api
 
 from .support import JsErrors, JsErrorsDidNotRaise, PyScriptTest
 
@@ -279,7 +278,7 @@ class TestSupport(PyScriptTest):
         # cleared
         self.check_js_errors()
 
-    def test_wait_for_console(self):
+    def test_wait_for_console_simple(self):
         """
         Test that self.wait_for_console actually waits.
         If it's buggy, the test will try to read self.console.log BEFORE the
@@ -298,10 +297,45 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        # we use a timeout of 500ms to give plenty of time to the page to
+        # we use a timeout of 200ms to give plenty of time to the page to
         # actually run the setTimeout callback
         self.wait_for_console("Page loaded!", timeout=200)
         assert self.console.log.lines[-1] == "Page loaded!"
+
+    def test_wait_for_console_timeout(self):
+        doc = """
+        <html>
+          <body>
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        self.goto("mytest.html")
+        with pytest.raises(TimeoutError):
+            self.wait_for_console("This text will never be printed", timeout=200)
+
+    def test_wait_for_console_dont_wait_if_already_emitted(self):
+        """
+        If the text is already on the console, wait_for_console() should return
+        immediately without waiting.
+        """
+        doc = """
+        <html>
+          <body>
+            <script>
+                console.log('Hello world')
+                console.log('Page loaded!');
+            </script>
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        self.goto("mytest.html")
+        self.wait_for_console("Page loaded!", timeout=200)
+        assert self.console.log.lines[-2] == "Hello world"
+        assert self.console.log.lines[-1] == "Page loaded!"
+        # the following call should return immediately without waiting
+        self.wait_for_console("Hello world", timeout=1)
 
     def test_wait_for_console_exception_1(self):
         """
@@ -329,12 +363,12 @@ class TestSupport(PyScriptTest):
         with pytest.raises(JsErrors) as exc:
             self.wait_for_console("Page loaded!", timeout=200)
         assert "this is an error" in str(exc.value)
-        assert isinstance(exc.value.__context__, sync_api.TimeoutError)
+        assert isinstance(exc.value.__context__, TimeoutError)
         #
         # if we use check_js_errors=False, the error are ignored, but we get the
         # Timeout anyway
         self.goto("mytest.html")
-        with pytest.raises(sync_api.TimeoutError):
+        with pytest.raises(TimeoutError):
             self.wait_for_console("Page loaded!", timeout=200, check_js_errors=False)
         # we still got a JsErrors, so we need to manually clear it, else the
         # test fails at teardown

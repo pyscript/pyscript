@@ -3,8 +3,7 @@ import './styles/pyscript_base.css';
 import { loadConfigFromElement } from './pyconfig';
 import type { AppConfig } from './pyconfig';
 import { InterpreterClient } from './interpreter_client';
-import { version } from './version';
-import { PluginManager, define_custom_element, Plugin, PythonPlugin } from './plugin';
+import { PluginManager, Plugin, PythonPlugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { getLogger } from './logger';
 import { showWarning, globalExport, createLock } from './utils';
@@ -188,7 +187,7 @@ export class PyScriptApp {
         const interpreter_cfg = this.config.interpreters[0];
 
         const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
-        const { port1, port2 } = new MessageChannel();
+        const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
         port1.start();
         port2.start();
         Synclink.expose(remote_interpreter, port2);
@@ -246,7 +245,7 @@ export class PyScriptApp {
 
         //Takes a runtime and a reference to the PyScriptApp (to access plugins)
         createCustomElements(interpreter, this);
-        await initHandlers(interpreter);
+        initHandlers(interpreter);
 
         // NOTE: interpreter message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
@@ -261,24 +260,6 @@ export class PyScriptApp {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
-
-        // inject `define_custom_element` and showWarning it into the PyScript
-        // module scope
-        // eventually replace the setHandler calls with interpreter._remote.setHandler i.e. the ones mentioned below
-        // await interpreter._remote.setHandler('define_custom_element', Synclink.proxy(define_custom_element));
-        // await interpreter._remote.setHandler('showWarning', Synclink.proxy(showWarning));
-        interpreter._unwrapped_remote.setHandler('define_custom_element', define_custom_element);
-        interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
-        await interpreter._remote.pyscript_py._set_version_info(version);
-
-        // import some carefully selected names into the global namespace
-        await interpreter.run(`
-        import js
-        import pyscript
-        from pyscript import Element, display, HTML
-        pyscript._install_deprecated_globals_2022_12_1(globals())
-        `);
-
         await Promise.all([this.installPackages(), this.fetchPaths(interpreter)]);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
@@ -414,7 +395,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
         this.incrementPendingTags();
         this.decrementPendingTags();
         await this.scriptTagsPromise;
-        await this.interpreter._remote.pyscript_py._schedule_deferred_tasks();
+        await this.interpreter._remote.pyscript_internal.schedule_deferred_tasks();
     }
 
     // ================= registraton API ====================
@@ -443,4 +424,4 @@ if (typeof jest === 'undefined') {
     globalApp.readyPromise = globalApp.main();
 }
 
-export { version };
+export { version } from './version';

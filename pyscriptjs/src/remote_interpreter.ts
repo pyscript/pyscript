@@ -1,4 +1,5 @@
 import type { AppConfig } from './pyconfig';
+import { version } from './version';
 import { getLogger } from './logger';
 import { Stdio } from './stdio';
 import { InstallError, ErrorCode } from './exceptions';
@@ -6,6 +7,8 @@ import { robustFetch } from './fetch';
 import type { loadPyodide as loadPyodideDeclaration, PyodideInterface, PyProxy, PyProxyDict } from 'pyodide';
 import type { ProxyMarked } from 'synclink';
 import * as Synclink from 'synclink';
+import { showWarning } from './utils';
+import { define_custom_element } from './plugin';
 
 import { python_package } from './python_package';
 
@@ -32,12 +35,13 @@ type PATHInterface = {
     dirname(path: string): string;
 } & ProxyMarked;
 
-type PyScriptPyModule = ProxyMarked & {
-    _set_version_info(ver: string): void;
+type PyScriptInternalModule = ProxyMarked & {
+    set_version_info(ver: string): void;
     uses_top_level_await(code: string): boolean;
-    _run_pyscript(code: string, display_target_id?: string): { result: any };
-    _install_pyscript_loop(): void;
-    _schedule_deferred_tasks(): void;
+    run_pyscript(code: string, display_target_id?: string): { result: any };
+    install_pyscript_loop(): void;
+    start_loop(): void;
+    schedule_deferred_tasks(): void;
 };
 
 /*
@@ -61,7 +65,7 @@ export class RemoteInterpreter extends Object {
     FS: FSInterface;
     PATH: PATHInterface;
     PATH_FS: PATHFSInterface;
-    pyscript_py: PyScriptPyModule;
+    pyscript_internal: PyScriptInternalModule;
 
     globals: PyProxyDict & ProxyMarked;
     // TODO: Remove this once `runtimes` is removed!
@@ -94,15 +98,18 @@ export class RemoteInterpreter extends Object {
      * contain these files and is clearly the wrong
      * path.
      */
-    async loadInterpreter(config: AppConfig, stdio: Stdio): Promise<void> {
+    async loadInterpreter(config: AppConfig, stdio: Synclink.Remote<Stdio & ProxyMarked>): Promise<void> {
+        // TODO: move this to "main thread"!
+        const _pyscript_js_main = { define_custom_element, showWarning };
+
         this.interface = Synclink.proxy(
             await loadPyodide({
                 stdout: (msg: string) => {
                     // TODO: add syncify when moved to worker
-                    stdio.stdout_writeline(msg);
+                    stdio.stdout_writeline(msg).syncify();
                 },
                 stderr: (msg: string) => {
-                    stdio.stderr_writeline(msg);
+                    stdio.stderr_writeline(msg).syncify();
                 },
                 fullStdLib: false,
             }),
@@ -115,6 +122,7 @@ export class RemoteInterpreter extends Object {
 
         // TODO: Remove this once `runtimes` is removed!
         this.interpreter = this.interface;
+        this.interface.registerJsModule('_pyscript_js', _pyscript_js_main);
 
         // Write pyscript package into file system
         for (const dir of python_package.dirs) {
@@ -128,15 +136,23 @@ export class RemoteInterpreter extends Object {
 
         this.globals = Synclink.proxy(this.interface.globals as PyProxyDict);
         logger.info('importing pyscript');
-        this.pyscript_py = Synclink.proxy(this.interface.pyimport('pyscript')) as PyProxy & typeof this.pyscript_py;
-        this.pyscript_py._install_pyscript_loop();
+        this.pyscript_internal = Synclink.proxy(this.interface.pyimport('pyscript._internal')) as PyProxy &
+            typeof this.pyscript_internal;
+        this.pyscript_internal.set_version_info(version);
+        this.pyscript_internal.install_pyscript_loop();
 
         if (config.packages) {
             logger.info('Found packages in configuration to install. Loading micropip...');
             await this.loadPackage('micropip');
         }
+        // import some carefully selected names into the global namespace
+        this.interface.runPython(`
+        import js
+        import pyscript
+        from pyscript import Element, display, HTML
+        `);
+
         logger.info('pyodide loaded and initialized');
-        this.pyscript_py._run_pyscript('print("Python initialization complete")');
     }
 
     /**
