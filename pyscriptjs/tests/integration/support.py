@@ -46,7 +46,7 @@ def with_execution_thread(*values):
       - execution_tread = 'worker'
 
     If you want to execute certain tests with only one specific values of
-    execution_tread, you can use this class decorator. For example:
+    execution_thread, you can use this class decorator. For example:
 
     @with_execution_thread('main')
     class TestOnlyMainThread:
