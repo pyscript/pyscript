@@ -164,6 +164,9 @@ export class PyScriptApp {
     }
 
     _get_base_url(): string {
+        // Note that this requires that pyscript is loaded via a <script>
+        // tag. If we want to allow loading via an ES6 module in the future,
+        // we need to think about some other strategy
         const elem = document.currentScript as HTMLScriptElement;
         const slash = elem.src.lastIndexOf('/');
         return elem.src.slice(0, slash);
