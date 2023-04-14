@@ -92,7 +92,6 @@ def skip_worker(reason):
             "please use: @skip_worker('...')"
         )
 
-    #
     def decorator(fn):
         @functools.wraps(fn)
         def decorated(self, *args):
@@ -102,7 +101,6 @@ def skip_worker(reason):
 
         return decorated
 
-    #
     return decorator
 
 
