@@ -57,7 +57,7 @@ def with_execution_thread(*values):
         ...
 
     If you use @with_execution_thread(None), the logic to inject the
-    execution_tread config is disabled.
+    execution_thread config is disabled.
     """
 
     if values == (None,):
