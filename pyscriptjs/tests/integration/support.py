@@ -42,8 +42,8 @@ def with_execution_thread(*values):
     Class decorator to override config.execution_thread.
 
     By default, we run each test twice:
-      - execution_tread = 'main'
-      - execution_tread = 'worker'
+      - execution_thread = 'main'
+      - execution_thread = 'worker'
 
     If you want to execute certain tests with only one specific values of
     execution_tread, you can use this class decorator. For example:
