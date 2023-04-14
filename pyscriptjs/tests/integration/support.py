@@ -394,7 +394,7 @@ class PyScriptTest:
 
     def _inject_execution_thread_config(self, snippet, execution_thread):
         """
-        If snippet contains already a py-config, let's try to inject
+        If snippet already contains a py-config, let's try to inject
         execution_thread automatically. Note that this works only for plain
         <py-config> with inline config: type="json" and src="..." are not
         supported by this logic, which should remain simple.
