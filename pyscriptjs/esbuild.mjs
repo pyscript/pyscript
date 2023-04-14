@@ -88,6 +88,7 @@ const esbuild = async () => {
             outfile: 'build/pyscript.min.js',
         }),
         // XXX I suppose we should also build a minified version
+        // TODO (HC): Simplify config a bit
         build({
             ...interpreterWorkerConfig,
             sourcemap: false,

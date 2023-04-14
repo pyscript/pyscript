@@ -1,8 +1,8 @@
 // XXX: what about code duplications?
-// I think that with the current build configuration, the code for logger,
+// With the current build configuration, the code for logger,
 // remote_interpreter and everything which is included from there is
-// bundled/fetched/executed twice, one in pyscript.js and one in
-// worker_interpreter.js. Is this true?
+// bundled/fetched/executed twice, once in pyscript.js and once in
+// worker_interpreter.js.
 
 import { getLogger } from '../logger';
 import { RemoteInterpreter } from '../remote_interpreter';

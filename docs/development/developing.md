@@ -190,7 +190,7 @@ $ pytest test_01_basic.py -k test_pyscript_hello -s --dev
 `--dev` implies `--headed --no-fake-server`. In addition, it also
 automatically open chrome dev tools.
 
-#### To run only mainthread or worker tests
+#### To run only main thread or worker tests
 
 By default, we run each test twice: one with `execution_thread = "main"` and
 one with `execution_thread = "worker"`. If you want to run only half of them,

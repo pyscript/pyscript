@@ -37,7 +37,7 @@ export class InterpreterClient extends Object {
     /**
      * initializes the remote interpreter, which further loads the underlying
      * interface.
-     * */
+     */
     async initializeRemote(): Promise<void> {
         await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
         this.globals = this._remote.globals;
