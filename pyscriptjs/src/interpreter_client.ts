@@ -40,7 +40,6 @@ export class InterpreterClient extends Object {
      */
     async initializeRemote(): Promise<void> {
         await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
-        // await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
         this.globals = this._remote.globals;
     }
 

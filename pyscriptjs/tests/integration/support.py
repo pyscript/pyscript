@@ -1,4 +1,5 @@
 import dataclasses
+import functools
 import math
 import os
 import pdb
@@ -11,13 +12,100 @@ from dataclasses import dataclass
 
 import py
 import pytest
+import toml
 from playwright.sync_api import Error as PlaywrightError
 
 ROOT = py.path.local(__file__).dirpath("..", "..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
 
 
+def params_with_marks(params):
+    """
+    Small helper to automatically apply to each param a pytest.mark with the
+    same name of the param itself. E.g.:
+
+        params_with_marks(['aaa', 'bbb'])
+
+    is equivalent to:
+
+        [pytest.param('aaa', marks=pytest.mark.aaa),
+         pytest.param('bbb', marks=pytest.mark.bbb)]
+
+    This makes it possible to use 'pytest -m aaa' to run ONLY the tests which
+    uses the param 'aaa'.
+    """
+    return [pytest.param(name, marks=getattr(pytest.mark, name)) for name in params]
+
+
+def with_execution_thread(*values):
+    """
+    Class decorator to override config.execution_thread.
+
+    By default, we run each test twice:
+      - execution_thread = 'main'
+      - execution_thread = 'worker'
+
+    If you want to execute certain tests with only one specific values of
+    execution_thread, you can use this class decorator. For example:
+
+    @with_execution_thread('main')
+    class TestOnlyMainThread:
+        ...
+
+    @with_execution_thread('worker')
+    class TestOnlyWorker:
+        ...
+
+    If you use @with_execution_thread(None), the logic to inject the
+    execution_thread config is disabled.
+    """
+
+    if values == (None,):
+
+        @pytest.fixture
+        def execution_thread(self, request):
+            return None
+
+    else:
+        for value in values:
+            assert value in ("main", "worker")
+
+            @pytest.fixture(params=params_with_marks(values))
+            def execution_thread(self, request):
+                return request.param
+
+    def with_execution_thread_decorator(cls):
+        cls.execution_thread = execution_thread
+        return cls
+
+    return with_execution_thread_decorator
+
+
+def skip_worker(reason):
+    """
+    Decorator to skip a test if self.execution_thread == 'worker'
+    """
+    if callable(reason):
+        # this happens if you use @skip_worker instead of @skip_worker("bla bla bla")
+        raise Exception(
+            "You need to specify a reason for skipping, "
+            "please use: @skip_worker('...')"
+        )
+
+    def decorator(fn):
+        @functools.wraps(fn)
+        def decorated(self, *args):
+            if self.execution_thread == "worker":
+                pytest.skip(reason)
+            return fn(self, *args)
+
+        return decorated
+
+    return decorator
+
+
 @pytest.mark.usefixtures("init")
+@with_execution_thread("main", "worker")
 class PyScriptTest:
     """
     Base class to write PyScript integration tests, based on playwright.
@@ -52,7 +140,7 @@ class PyScriptTest:
     }
 
     @pytest.fixture()
-    def init(self, request, tmpdir, logger, page):
+    def init(self, request, tmpdir, logger, page, execution_thread):
         """
         Fixture to automatically initialize all the tests in this class and its
         subclasses.
@@ -74,6 +162,7 @@ class PyScriptTest:
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
         self.logger = logger
+        self.execution_thread = execution_thread
         self.dev_server = None
 
         if request.config.option.no_fake_server:
@@ -236,12 +325,16 @@ class PyScriptTest:
             )
         self.page.goto(url, timeout=0)
 
-    def wait_for_console(self, text, *, timeout=None, check_js_errors=True):
+    def wait_for_console(
+        self, text, *, match_substring=False, timeout=None, check_js_errors=True
+    ):
         """
         Wait until the given message appear in the console. If the message was
         already printed in the console, return immediately.
 
-        Note: it must be the *exact* string as printed by e.g. console.log.
+        By default "text" must be the *exact* string as printed by a single
+        call to e.g. console.log. If match_substring is True, it is enough
+        that the console contains the given text anywhere.
 
         timeout is expressed in milliseconds. If it's None, it will use
         the same default as playwright, which is 30 seconds.
@@ -251,6 +344,16 @@ class PyScriptTest:
 
         Return the elapsed time in ms.
         """
+        if match_substring:
+
+            def find_text():
+                return text in self.console.all.text
+
+        else:
+
+            def find_text():
+                return text in self.console.all.lines
+
         if timeout is None:
             timeout = 30 * 1000
         # NOTE: we cannot use playwright's own page.expect_console_message(),
@@ -263,7 +366,7 @@ class PyScriptTest:
                 if elapsed_ms > timeout:
                     raise TimeoutError(f"{elapsed_ms:.2f} ms")
                 #
-                if text in self.console.all.lines:
+                if find_text():
                     # found it!
                     return elapsed_ms
                 #
@@ -300,6 +403,69 @@ class PyScriptTest:
         # events aren't being triggered in the tests.
         self.page.wait_for_timeout(100)
 
+    def _parse_py_config(self, doc):
+        configs = re.findall("<py-config>(.*?)</py-config>", doc, flags=re.DOTALL)
+        configs = [cfg.strip() for cfg in configs]
+        if len(configs) == 0:
+            return None
+        elif len(configs) == 1:
+            return toml.loads(configs[0])
+        else:
+            raise AssertionError("Too many <py-config>")
+
+    def _inject_execution_thread_config(self, snippet, execution_thread):
+        """
+        If snippet already contains a py-config, let's try to inject
+        execution_thread automatically. Note that this works only for plain
+        <py-config> with inline config: type="json" and src="..." are not
+        supported by this logic, which should remain simple.
+        """
+        cfg = self._parse_py_config(snippet)
+        if cfg is None:
+            # we don't have any <py-config>, let's add one
+            py_config_maybe = f"""
+            <py-config>
+                execution_thread = "{execution_thread}"
+            </py-config>
+            """
+        else:
+            cfg["execution_thread"] = execution_thread
+            dumped_cfg = toml.dumps(cfg)
+            new_py_config = f"""
+            <py-config>
+                {dumped_cfg}
+            </py-config>
+            """
+            snippet = re.sub(
+                "<py-config>.*</py-config>", new_py_config, snippet, flags=re.DOTALL
+            )
+            # no need for extra config, it's already in the snippet
+            py_config_maybe = ""
+        #
+        return snippet, py_config_maybe
+
+    def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
+        if execution_thread is None:
+            py_config_maybe = ""
+        else:
+            snippet, py_config_maybe = self._inject_execution_thread_config(
+                snippet, execution_thread
+            )
+        doc = f"""
+        <html>
+          <head>
+              <link rel="stylesheet" href="{self.http_server_addr}/build/pyscript.css" />
+              <script defer src="{self.http_server_addr}/build/pyscript.js"></script>
+              {extra_head}
+          </head>
+          <body>
+            {py_config_maybe}
+            {snippet}
+          </body>
+        </html>
+        """
+        return doc
+
     def pyscript_run(
         self, snippet, *, extra_head="", wait_for_pyscript=True, timeout=None
     ):
@@ -316,18 +482,9 @@ class PyScriptTest:
           - open a playwright page for it
           - wait until pyscript has been fully loaded
         """
-        doc = f"""
-        <html>
-          <head>
-              <link rel="stylesheet" href="{self.http_server_addr}/build/pyscript.css" />
-              <script defer src="{self.http_server_addr}/build/pyscript.js"></script>
-              {extra_head}
-          </head>
-          <body>
-            {snippet}
-          </body>
-        </html>
-        """
+        doc = self._pyscript_format(
+            snippet, execution_thread=self.execution_thread, extra_head=extra_head
+        )
         if not wait_for_pyscript and timeout is not None:
             raise ValueError("Cannot set a timeout if wait_for_pyscript=False")
         filename = f"{self.testname}.html"

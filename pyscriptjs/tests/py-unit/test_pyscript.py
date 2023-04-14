@@ -2,8 +2,9 @@ import sys
 import textwrap
 from unittest.mock import Mock
 
+import js
 import pyscript
-from pyscript import HTML, Element, _html
+from pyscript import HTML, Element
 from pyscript._deprecated_globals import DeprecatedGlobal
 from pyscript._internal import set_version_info, uses_top_level_await
 from pyscript._mime import format_mime
@@ -19,7 +20,7 @@ class TestElement:
         document = Mock()
         call_result = "some_result"
         document.querySelector = Mock(return_value=call_result)
-        monkeypatch.setattr(_html, "document", document)
+        monkeypatch.setattr(js, "document", document)
         assert not el._element
         real_element = el.element
         assert real_element

@@ -8,9 +8,10 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from .support import ROOT, PyScriptTest, wait_for_render
+from .support import ROOT, PyScriptTest, wait_for_render, with_execution_thread
 
 
+@with_execution_thread(None)
 @pytest.mark.usefixtures("chdir")
 class TestExamples(PyScriptTest):
     """

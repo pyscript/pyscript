@@ -35,5 +35,4 @@ glob:
 ---
 py-config-fetch
 py-config-interpreter
-writing-to-page
 ```

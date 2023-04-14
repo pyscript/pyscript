@@ -1,7 +1,7 @@
 import time
 from textwrap import dedent
 
-from js import console, document
+import js
 
 from . import _internal
 from ._mime import format_mime as _format_mime
@@ -22,7 +22,7 @@ class HTML:
 def write(element_id, value, append=False, exec_id=0):
     """Writes value to the element with id "element_id"""
     Element(element_id).write(value=value, append=append)
-    console.warn(
+    js.console.warn(
         dedent(
             """PyScript Deprecation Warning: PyScript.write is
     marked as deprecated and will be removed sometime soon. Please, use
@@ -55,7 +55,7 @@ class Element:
     def element(self):
         """Return the dom element"""
         if not self._element:
-            self._element = document.querySelector(f"#{self._id}")
+            self._element = js.document.querySelector(f"#{self._id}")
         return self._element
 
     @property
@@ -72,7 +72,7 @@ class Element:
             return
 
         if append:
-            child = document.createElement("div")
+            child = js.document.createElement("div")
             self.element.appendChild(child)
 
         if append and self.element.children:
@@ -81,7 +81,7 @@ class Element:
             out_element = self.element
 
         if mime_type in ("application/javascript", "text/html"):
-            script_element = document.createRange().createContextualFragment(html)
+            script_element = js.document.createRange().createContextualFragment(html)
             out_element.appendChild(script_element)
         else:
             out_element.innerHTML = html
@@ -102,7 +102,7 @@ class Element:
         if _el:
             return Element(_el.id, _el)
         else:
-            console.warn(f"WARNING: can't find element matching query {query}")
+            js.console.warn(f"WARNING: can't find element matching query {query}")
 
     def clone(self, new_id=None, to=None):
         if new_id is None:
@@ -142,7 +142,7 @@ def add_classes(element, class_list):
 
 
 def create(what, id_=None, classes=""):
-    element = document.createElement(what)
+    element = js.document.createElement(what)
     if id_:
         element.id = id_
     add_classes(element, classes)
@@ -256,7 +256,7 @@ class PyListTemplate:
             Element(new_id).element.onclick = foo
 
     def connect(self):
-        self.md = main_div = document.createElement("div")
+        self.md = main_div = js.document.createElement("div")
         main_div.id = self._id + "-list-tasks-container"
 
         if self.theme:
