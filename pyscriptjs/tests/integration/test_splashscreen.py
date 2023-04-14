@@ -1,6 +1,6 @@
 from playwright.sync_api import expect
 
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 
 class TestSplashscreen(PyScriptTest):
@@ -96,6 +96,7 @@ class TestSplashscreen(PyScriptTest):
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert py_terminal.inner_text() == "Hello pyscript!\n"
 
+    @skip_worker("FIXME: js.document")
     def test_splashscreen_custom_message(self):
         self.pyscript_run(
             """

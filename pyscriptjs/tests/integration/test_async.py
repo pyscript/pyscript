@@ -1,4 +1,4 @@
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 
 class TestAsync(PyScriptTest):
@@ -87,6 +87,7 @@ class TestAsync(PyScriptTest):
             "b func done",
         ]
 
+    @skip_worker("FIXME: display()")
     def test_multiple_async_multiple_display_targeted(self):
         self.pyscript_run(
             """
@@ -119,6 +120,7 @@ class TestAsync(PyScriptTest):
         inner_text = self.page.inner_text("html")
         assert "A0\nA1\nB0\nB1" in inner_text
 
+    @skip_worker("FIXME: display()")
     def test_async_display_untargeted(self):
         self.pyscript_run(
             """

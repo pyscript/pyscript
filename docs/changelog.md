@@ -26,6 +26,10 @@ Features
 ### Plugins
 - Plugins may now implement the `beforePyReplExec()` and `afterPyReplExec()` hooks, which are called immediately before and after code in a `py-repl` tag is executed. ([#1106](https://github.com/pyscript/pyscript/pull/1106))
 
+### Web worker support
+- introduced the new experimental `execution_thread` config option: if you set `execution_thread = "worker"`, the python interpreter runs inside a web worker
+- worker support is still **very** experimental: not everything works, use it at your own risk
+
 Bug fixes
 ---------
 
