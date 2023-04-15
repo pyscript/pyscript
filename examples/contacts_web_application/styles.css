@@ -1,0 +1,148 @@
+﻿body {
+    background-color: #F3F6F8 !important;
+}
+
+section.contacts-demo {
+    background-color: #F3F6F8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#output {
+    height: 0;
+}
+
+.number_template {
+    color: black;
+}
+
+.name_template {
+    color: black;
+}
+
+#contact_card_template {
+    color: pink;
+}
+
+section.contacts-inner {
+    display: flex;
+    flex-direction: row;
+}
+
+.contact_card {
+    height: 10%;
+}
+
+#contacts_list_grid {
+    margin: 10px;
+    background-color: #ededed;
+    overflow: scroll;
+    overflow-x: hidden;
+    max-height: 100%;
+    height: 100%;
+    border: 1px solid gray;
+}
+
+#search_area_div {
+    height: 300px;
+    background-color: #ededed;
+    border: 1px solid gray;
+    margin-bottom: 20px;
+}
+
+img {
+    flex: 1;
+    margin: 5%;
+    margin-left: 20%;
+}
+
+#first_div {
+    align-content: center;
+    margin: 1%;
+    flex: 1.25;
+}
+
+#welcome {
+    text-shadow: 5px 5px 10px #F3F6F8;
+}
+
+#first_p {
+    margin: 3.5%;
+    margin-left: 5%;
+    font-family: Tahoma, sans-serif;
+}
+
+.flexelement {
+    flex: 1;
+    padding: 2%;
+}
+
+
+
+#form {
+    margin-top: 7%;
+    height: 100%;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+    #form input[type=number] {
+        border: 1px solid white;
+        border-radius: 0.3em;
+        height: 12%;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+
+    #form button {
+        width: 100%;
+        height: 12%;
+        margin-bottom: 5px;
+        border: 0;
+    }
+
+header {
+    height: 100px;
+}
+
+footer {
+    height: 57px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: red;
+    color: white;
+    text-align: center;
+}
+
+header, footer {
+    background-color: #1A1A27;
+}
+
+#header_h1 {
+    padding-top: 2.2%;
+    margin-left: 40%;
+    font-weight: bold;
+    color: white;
+}
+
+label {
+    cursor: pointer;
+}
+
+#footer_p {
+    font-weight: bold;
+    font-size: 13px;
+    text-align: center;
+    color: white;
+    vertical-align: central;
+    padding: 1.2%;
+}
