@@ -399,7 +399,7 @@ export class PyScriptApp {
 
         // eventually replace with interpreter.pyimport(modulename);
         const module = interpreter._unwrapped_remote.pyimport(modulename);
-        if (typeof module.plugin !== 'undefined') {
+        if (typeof (await module.plugin) !== 'undefined') {
             const py_plugin = module.plugin as PythonPlugin;
             py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);
