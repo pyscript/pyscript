@@ -63,18 +63,13 @@ img {
 
 #first_div {
     align-content: center;
-    margin: 1%;
     flex: 1.25;
+    margin: 3.5%;
+    font-family: Tahoma, sans-serif;
 }
 
 #welcome {
     text-shadow: 5px 5px 10px #F3F6F8;
-}
-
-#first_p {
-    margin: 3.5%;
-    margin-left: 5%;
-    font-family: Tahoma, sans-serif;
 }
 
 .flexelement {
