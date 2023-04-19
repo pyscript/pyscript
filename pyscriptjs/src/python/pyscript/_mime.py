@@ -1,9 +1,13 @@
-# import base64
 import html
 import io
 import re
 
-from js import console
+try:
+    import base64
+except ImportError:
+    # micropython TODO: use js base64 encoding functions instead
+    pass
+
 
 MIME_METHODS = {
     "_repr_html_": "text/html",
@@ -44,7 +48,7 @@ def identity(value, meta):
 
 
 MIME_RENDERERS = {
-    "text/plain": identity,#html.escape,
+    "text/plain": html.escape,
     "text/html": identity,
     "image/png": lambda value, meta: render_image("image/png", value, meta),
     "image/jpeg": lambda value, meta: render_image("image/jpeg", value, meta),
@@ -86,7 +90,7 @@ def format_mime(obj):
         format_dict = mimebundle
 
     output, not_available = None, []
-    for method, mime_type in reversed(list(MIME_METHODS.items())):
+    for method, mime_type in MIME_METHODS.items():
         if mime_type in format_dict:
             output = format_dict[mime_type]
         else:
@@ -106,6 +110,4 @@ def format_mime(obj):
         output, meta = output
     else:
         meta = {}
-    print(mime_type, output, meta)
-    result = MIME_RENDERERS[mime_type](output, meta)
-    return result, mime_type
+    return MIME_RENDERERS[mime_type](output, meta), mime_typ
