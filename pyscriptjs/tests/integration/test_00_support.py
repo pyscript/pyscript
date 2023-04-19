@@ -536,12 +536,19 @@ class TestSupport(PyScriptTest):
             "hello": 42,
             "execution_thread": "main",
             "interpreters": [
-                {"src": "/path/to/my/micropython.js", "name": "other-micropython", "lang": "python"}
+                {
+                    "src": "/path/to/my/micropython.js",
+                    "name": "other-micropython",
+                    "lang": "python",
+                }
             ],
         }
         with pytest.raises(BaseException) as e:
-          doc = self._pyscript_format(
-              src, execution_thread="main", interpreter="pyodide"
-          )
+            doc = self._pyscript_format(
+                src, execution_thread="main", interpreter="pyodide"
+            )
         assert e.typename == "Skipped"
-        assert e.value.args[0] == "Config contains hard-coded interpreter not of type 'pyodide'"
+        assert (
+            e.value.args[0]
+            == "Config contains hard-coded interpreter not of type 'pyodide'"
+        )

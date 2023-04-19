@@ -476,7 +476,9 @@ class PyScriptTest:
             interpreter_ok = True
             src = cfg["interpreters"][0].get("src", "")
             if interpreter not in src:
-                pytest.skip(f"Config contains hard-coded interpreter not of type '{interpreter}'")
+                pytest.skip(
+                    f"Config contains hard-coded interpreter not of type '{interpreter}'"
+                )
         else:
             interpreter_ok = interpreter in ["pyodide", None]
 
@@ -499,7 +501,9 @@ class PyScriptTest:
         snippet = re.sub("<py-config>.*</py-config>", "", snippet, flags=re.DOTALL)
         return snippet, new_py_config
 
-    def _pyscript_format(self, snippet, *, execution_thread, interpreter, extra_head=""):
+    def _pyscript_format(
+        self, snippet, *, execution_thread, interpreter, extra_head=""
+    ):
         snippet, py_config_maybe = self._inject_execution_thread_config(
             snippet, execution_thread, interpreter
         )
@@ -535,7 +539,10 @@ class PyScriptTest:
           - wait until pyscript has been fully loaded
         """
         doc = self._pyscript_format(
-            snippet, execution_thread=self.execution_thread, interpreter=self.interpreter, extra_head=extra_head
+            snippet,
+            execution_thread=self.execution_thread,
+            interpreter=self.interpreter,
+            extra_head=extra_head,
         )
         if not wait_for_pyscript and timeout is not None:
             raise ValueError("Cannot set a timeout if wait_for_pyscript=False")

@@ -1,5 +1,6 @@
 from .support import PyScriptTest, skip_worker, with_interpreter
 
+
 # micropython has no asyncio module, so skip all asyncio-related tests
 @with_interpreter("pyodide")
 class TestAsync(PyScriptTest):
