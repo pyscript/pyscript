@@ -71,7 +71,7 @@ export class RemoteInterpreter extends Object {
     // TODO: Remove this once `runtimes` is removed!
     interpreter: InterpreterInterface & ProxyMarked;
 
-    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js') {
+    constructor(src = './micropython.js') {
         super();
         this.src = src;
     }
@@ -103,7 +103,7 @@ export class RemoteInterpreter extends Object {
         const _pyscript_js_main = { define_custom_element, showWarning };
 
         this.interface = Synclink.proxy(
-            await loadPyodide({
+            await loadMicroPython({
                 stdout: (msg: string) => {
                     stdio.stdout_writeline(msg).syncify();
                 },
@@ -116,6 +116,8 @@ export class RemoteInterpreter extends Object {
         this.interface.registerComlink(Synclink);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.FS = this.interface.FS;
+        this.FS.mkdirTree('/home/pyodide/');
+        this.interface.runPython("import sys; sys.path.append('/home/pyodide/')");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         this.PATH = (this.interface as any)._module.PATH;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -142,7 +144,7 @@ export class RemoteInterpreter extends Object {
         this.pyscript_internal.set_version_info(version);
         this.pyscript_internal.install_pyscript_loop();
 
-        if (config.packages) {
+        if (config.packages.length > 0) {
             logger.info('Found packages in configuration to install. Loading micropip...');
             await this.loadPackage('micropip');
         }

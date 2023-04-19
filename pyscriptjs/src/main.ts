@@ -175,7 +175,8 @@ export class PyScriptApp {
     async _startInterpreter_main(interpreter_cfg: InterpreterConfig) {
         logger.info('Starting the interpreter in the main thread');
         // this is basically equivalent to worker_initialize()
-        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
+        // const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
+        const remote_interpreter = new RemoteInterpreter('./micropython.js');
         const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
         port1.start();
         port2.start();
@@ -399,7 +400,7 @@ export class PyScriptApp {
 
         // eventually replace with interpreter.pyimport(modulename);
         const module = interpreter._unwrapped_remote.pyimport(modulename);
-        if (typeof (await module.plugin) !== 'undefined') {
+        if (typeof module.plugin !== 'undefined') {
             const py_plugin = module.plugin as PythonPlugin;
             py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);

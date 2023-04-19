@@ -1,10 +1,8 @@
-import ast
 from collections import namedtuple
 from contextlib import contextmanager
 
 from js import Object
 from pyodide.code import eval_code
-from pyodide.ffi import JsProxy
 
 from ._event_loop import (
     defer_user_asyncio,
@@ -40,28 +38,8 @@ def set_version_info(version_from_interpreter: str):
     pyscript_dict["version_info"] = version_info
 
 
-class TopLevelAwaitFinder(ast.NodeVisitor):
-    def is_source_top_level_await(self, source):
-        self.async_found = False
-        node = ast.parse(source)
-        self.generic_visit(node)
-        return self.async_found
-
-    def visit_Await(self, node):
-        self.async_found = True
-
-    def visit_AsyncFor(self, node):
-        self.async_found = True
-
-    def visit_AsyncWith(self, node):
-        self.async_found = True
-
-    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
-        pass  # Do not visit children of async function defs
-
-
 def uses_top_level_await(source: str) -> bool:
-    return TopLevelAwaitFinder().is_source_top_level_await(source)
+    return False
 
 
 DISPLAY_TARGET = None
@@ -77,7 +55,7 @@ def display_target(target_id):
         DISPLAY_TARGET = None
 
 
-def run_pyscript(code: str, id: str = None) -> JsProxy:
+def run_pyscript(code, id = None):
     """Execute user code inside context managers.
 
     Uses the __main__ global namespace.
@@ -101,9 +79,8 @@ def run_pyscript(code: str, id: str = None) -> JsProxy:
     import __main__
 
     with display_target(id), defer_user_asyncio():
-        result = eval_code(code, globals=__main__.__dict__)
-
-    return Object.new(result=result)
+        result = eval_code(code, __main__.__dict__)
+        return Object(result=result)
 
 
 __all__ = [

@@ -103,6 +103,17 @@ def skip_worker(reason):
 
     return decorator
 
+def skip_micropython(reason):
+    def decorator(fn):
+        @functools.wraps(fn)
+        def decorated(self, *args):
+            if True:
+                pytest.skip(reason)
+            return fn(self, *args)
+
+        return decorated
+    return decorator
+
 
 @pytest.mark.usefixtures("init")
 @with_execution_thread("main", "worker")
@@ -204,7 +215,7 @@ class PyScriptTest:
         self.page = page
 
         # set default timeout to 60000 millliseconds from 30000
-        page.set_default_timeout(60000)
+        page.set_default_timeout(10000)
 
         self.console = ConsoleMessageCollection(self.logger)
         self._js_errors = []

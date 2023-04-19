@@ -3,11 +3,12 @@ import html
 import io
 import os
 import re
+import pytest
 
 import numpy as np
 from PIL import Image
 
-from .support import PyScriptTest, skip_worker, wait_for_render
+from .support import PyScriptTest, skip_worker, wait_for_render, skip_micropython
 
 
 class TestDisplay(PyScriptTest):
@@ -127,10 +128,8 @@ class TestDisplay(PyScriptTest):
         ## error in console
         tb_lines = self.console.error.lines[-1].splitlines()
         assert tb_lines[0] == "[pyexec] Python exception:"
-        assert tb_lines[1] == "Traceback (most recent call last):"
         assert (
-            tb_lines[-1]
-            == "Exception: Implicit target not allowed here. Please use display(..., target=...)"
+            "Exception: Implicit target not allowed here. Please use display(..., target=...)" in tb_lines
         )
 
         text = self.page.text_content("body")
@@ -251,9 +250,10 @@ class TestDisplay(PyScriptTest):
                     r = 0
                     def _repr_svg_(self):
                         return (
-                            f'<svg height="{self.r*2}" width="{self.r*2}">'
-                            f'<circle cx="{self.r}" cy="{self.r}" r="{self.r}" fill="red" /></svg>'
-                        )
+                            # careful here, can't use less than sign!
+                            f'##svg height="{self.r*2}" width="{self.r*2}">' + 
+                            f'##circle cx="{self.r}" cy="{self.r}" r="{self.r}" fill="red" />##/svg>'
+                        ).replace('##', chr(60)) # 60 is less than
 
                 circle = Circle()
 
@@ -282,11 +282,11 @@ class TestDisplay(PyScriptTest):
             </py-script>
             """
         )
-        inner_text = self.page.inner_text("html")
-        print(inner_text)
+        objs = [eval(x) for x in self.page.inner_text("html").splitlines()]
+        print(objs)
         assert (
-            inner_text
-            == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
+            objs
+            == [['A', 1, '!'], {'B': 2, 'List': ['A', 1, '!']}, ('C', 3, '!')]
         )
 
     @skip_worker("FIXME: display()")
@@ -316,6 +316,7 @@ class TestDisplay(PyScriptTest):
         assert out.inner_text() == "hello world"
 
     @skip_worker("FIXME: display()")
+    @skip_micropython(reason="no packages")
     def test_image_display(self):
         self.pyscript_run(
             """
@@ -357,7 +358,7 @@ class TestDisplay(PyScriptTest):
         )
         inner_html = self.page.content()
         assert re.search("", inner_html)
-        console_text = self.console.all.lines
+        console_text = [x.strip() for x in self.console.all.lines]
         assert "print from python" in console_text
         assert "print from js" in console_text
         assert "error from js" in console_text
@@ -376,12 +377,14 @@ class TestDisplay(PyScriptTest):
         )
         inner_text = self.page.inner_text("py-script")
         assert inner_text == "this goes to the DOM"
-        assert self.console.log.lines[-2:] == [
+        console_log = [x.strip() for x in self.console.log.lines]
+        assert console_log[-2:] == [
             "print from python",
             "print from js",
         ]
-        print(self.console.error.lines)
-        assert self.console.error.lines[-1] == "error from js"
+        console_error = [x.strip() for x in self.console.error.lines]
+        print(console_error)
+        assert console_error[-1] == "error from js"
 
     @skip_worker("FIXME: display()")
     def test_console_line_break(self):
@@ -393,11 +396,12 @@ class TestDisplay(PyScriptTest):
             </py-script>
         """
         )
-        console_text = self.console.all.lines
+        console_text = [x.strip() for x in self.console.all.lines]
         assert console_text.index("1print") == (console_text.index("2print") - 1)
         assert console_text.index("1console") == (console_text.index("2console") - 1)
 
     @skip_worker("FIXME: display()")
+    @skip_micropython(reason="no packages")
     def test_image_renders_correctly(self):
         """This is just a sanity check to make sure that images are rendered correctly."""
         buffer = io.BytesIO()

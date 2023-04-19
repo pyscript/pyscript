@@ -13,12 +13,15 @@ class TestElement(PyScriptTest):
             from pyscript import Element
             el = Element("foo")
             print(el.id)
+            js.console.warn(el.id)
             </py-script>
             """
         )
-        assert self.console.log.lines[-1] == "foo"
+        assert self.console.log.lines[-1].strip() == "foo"
 
+        print("waiting")
         py_terminal = self.page.wait_for_selector("py-terminal")
+        print("found")
         assert "foo" in py_terminal.inner_text()
 
     @skip_worker("FIXME: js.document")
@@ -34,7 +37,7 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[-1] == "bar"
+        assert self.console.log.lines[-1].strip() == "bar"
 
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert "bar" in py_terminal.inner_text()
@@ -52,7 +55,7 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[-1] == "<b>bar</b>"
+        assert self.console.log.lines[-1].strip() == "<b>bar</b>"
 
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert "bar" in py_terminal.inner_text()

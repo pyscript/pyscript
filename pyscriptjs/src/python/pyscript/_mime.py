@@ -1,4 +1,4 @@
-import base64
+# import base64
 import html
 import io
 import re
@@ -6,7 +6,6 @@ import re
 from js import console
 
 MIME_METHODS = {
-    "__repr__": "text/plain",
     "_repr_html_": "text/html",
     "_repr_markdown_": "text/markdown",
     "_repr_svg_": "image/svg+xml",
@@ -45,7 +44,7 @@ def identity(value, meta):
 
 
 MIME_RENDERERS = {
-    "text/plain": html.escape,
+    "text/plain": identity,#html.escape,
     "text/html": identity,
     "image/png": lambda value, meta: render_image("image/png", value, meta),
     "image/jpeg": lambda value, meta: render_image("image/jpeg", value, meta),
@@ -87,7 +86,7 @@ def format_mime(obj):
         format_dict = mimebundle
 
     output, not_available = None, []
-    for method, mime_type in reversed(MIME_METHODS.items()):
+    for method, mime_type in reversed(list(MIME_METHODS.items())):
         if mime_type in format_dict:
             output = format_dict[mime_type]
         else:
@@ -95,19 +94,18 @@ def format_mime(obj):
 
         if output is None:
             continue
-        elif mime_type not in MIME_RENDERERS:
+        if mime_type not in MIME_RENDERERS:
             not_available.append(mime_type)
             continue
         break
     if output is None:
-        if not_available:
-            console.warn(
-                f"Rendered object requested unavailable MIME renderers: {not_available}"
-            )
-        output = repr(output)
+        output = repr(obj)
         mime_type = "text/plain"
+        return output, mime_type
     elif isinstance(output, tuple):
         output, meta = output
     else:
         meta = {}
-    return MIME_RENDERERS[mime_type](output, meta), mime_type
+    print(mime_type, output, meta)
+    result = MIME_RENDERERS[mime_type](output, meta)
+    return result, mime_type

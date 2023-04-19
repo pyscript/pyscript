@@ -1,5 +1,4 @@
 import time
-from textwrap import dedent
 
 import js
 
@@ -18,17 +17,6 @@ class HTML:
     def _repr_html_(self):
         return self._html
 
-
-def write(element_id, value, append=False, exec_id=0):
-    """Writes value to the element with id "element_id"""
-    Element(element_id).write(value=value, append=append)
-    js.console.warn(
-        dedent(
-            """PyScript Deprecation Warning: PyScript.write is
-    marked as deprecated and will be removed sometime soon. Please, use
-    Element(<id>).write instead."""
-        )
-    )
 
 
 def display(*values, target=None, append=True):
@@ -184,7 +172,7 @@ class PyItemTemplate(Element):
 
     def create(self):
         new_child = create("div", self._id, "py-li-element")
-        new_child._element.innerHTML = dedent(
+        new_child._element.innerHTML = (
             f"""
             <label id="{self._id}" for="flex items-center p-2 ">
               <input class="mr-2" type="checkbox" class="task-check">
@@ -262,6 +250,7 @@ class PyListTemplate:
         if self.theme:
             self.theme.theme_it(main_div)
 
+        console.log("connect", self.md)
         self.parent.appendChild(main_div)
 
     def add(self, *args, **kws):
@@ -276,7 +265,9 @@ class PyListTemplate:
         self.pre_child_append(child_elem)
         child_elem.pre_append()
         self._children.append(child_elem)
-        self.md.appendChild(child_elem.create().element)
+        a = child_elem.create().element
+        self.md.appendChild(a)
+        console.log("append child??", self.md, a)
         child_elem.post_append()
         self.child_appended(child_elem)
         return child_elem
