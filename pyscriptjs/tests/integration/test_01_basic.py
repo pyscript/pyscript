@@ -127,7 +127,7 @@ class TestBasic(PyScriptTest):
 
         assert self.console.log.lines[-2:] == ["true false", "<div></div>"]
 
-    @pytest.mark.skip(reason="no packages in micropython")
+    @skip_micropython(reason="no packages in micropython")
     def test_packages(self):
         self.pyscript_run(
             """
