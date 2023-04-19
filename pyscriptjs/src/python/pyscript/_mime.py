@@ -110,4 +110,4 @@ def format_mime(obj):
         output, meta = output
     else:
         meta = {}
-    return MIME_RENDERERS[mime_type](output, meta), mime_typ
+    return MIME_RENDERERS[mime_type](output, meta), mime_type

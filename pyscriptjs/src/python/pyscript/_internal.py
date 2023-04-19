@@ -10,6 +10,14 @@ from ._event_loop import (
     schedule_deferred_tasks,
 )
 
+try:
+    from ._top_level_await import uses_top_level_await
+except ImportError:
+    # micropython
+    def uses_top_level_await(source: str) -> bool:
+        return False
+
+
 VersionInfo = namedtuple("version_info", ("year", "month", "minor", "releaselevel"))
 
 
@@ -36,37 +44,6 @@ def set_version_info(version_from_interpreter: str):
 
     pyscript_dict["__version__"] = version_from_interpreter
     pyscript_dict["version_info"] = version_info
-
-
-try:
-    import ast
-
-    class TopLevelAwaitFinder(ast.NodeVisitor):
-        def is_source_top_level_await(self, source):
-            self.async_found = False
-            node = ast.parse(source)
-            self.generic_visit(node)
-            return self.async_found
-
-        def visit_Await(self, node):
-            self.async_found = True
-
-        def visit_AsyncFor(self, node):
-            self.async_found = True
-
-        def visit_AsyncWith(self, node):
-            self.async_found = True
-
-        def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
-            pass  # Do not visit children of async function defs
-
-    def uses_top_level_await(source: str) -> bool:
-        return TopLevelAwaitFinder().is_source_top_level_await(source)
-
-except ImportError:
-    # micropython
-    def uses_top_level_await(source: str) -> bool:
-        return False
 
 
 DISPLAY_TARGET = None

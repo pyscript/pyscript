@@ -246,21 +246,24 @@ class TestDisplay(PyScriptTest):
             """
             <div id="circle-div"></div>
             <py-script>
-                class Circle:
-                    r = 0
-                    def _repr_svg_(self):
-                        return (
-                            # careful here, can't use less than sign!
-                            f'##svg height="{self.r*2}" width="{self.r*2}">' +
-                            f'##circle cx="{self.r}" cy="{self.r}" r="{self.r}" fill="red" />##/svg>'
-                        ).replace('##', chr(60)) # 60 is less than
+            class Circle:
+              r = 0
+              def _repr_svg_(self):
+                return (
+                  # careful here, can't use less than sign!
+                  f'##svg height="{self.r*2}" width="{self.r*2}">'
+                  + f'##circle cx="{self.r}" cy="{self.r}" r="{self.r}" fill="red" />##/svg>'
+                ).replace(
+                  "##", chr(60) # 60 is less than
+                )
 
-                circle = Circle()
 
-                circle.r += 5
-                display(circle, target="circle-div", append=False)
-                circle.r += 5
-                display(circle, target="circle-div", append=False)
+            circle = Circle()
+
+            circle.r += 5
+            display(circle, target="circle-div", append=False)
+            circle.r += 5
+            display(circle, target="circle-div", append=False)
             </py-script>
         """
         )
