@@ -57,6 +57,7 @@ dev:
 
 build:
 	npm run build
+	cp micropython/* build
 
 build-fast:
 	node esbuild.mjs
@@ -73,7 +74,7 @@ examples:
 	find ./examples/toga -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../build/+g {} \;
 	find ./examples/webgl -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../../build/+g {} \;
 	find ./examples -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../build/+g {} \;
-	npm run build
+	make build
 	rm -rf ./examples/build
 	mkdir -p ./examples/build
 	cp -R ./build/* ./examples/build
