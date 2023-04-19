@@ -3,10 +3,17 @@ import textwrap
 
 import pytest
 
-from .support import JsErrors, JsErrorsDidNotRaise, PyScriptTest, with_execution_thread
+from .support import (
+    JsErrors,
+    JsErrorsDidNotRaise,
+    PyScriptTest,
+    with_execution_thread,
+    with_interpreter,
+)
 
 
 @with_execution_thread(None)
+@with_interpreter(None)
 class TestSupport(PyScriptTest):
     """
     These are NOT tests about PyScript.
@@ -475,9 +482,21 @@ class TestSupport(PyScriptTest):
         This is slightly different than other tests: it doesn't use playwright, it
         just tests that our own internal helper works
         """
-        doc = self._pyscript_format("<b>Hello</b>", execution_thread="main")
+        doc = self._pyscript_format(
+            "<b>Hello</b>", execution_thread="main", interpreter="pyodide"
+        )
         cfg = self._parse_py_config(doc)
         assert cfg == {"execution_thread": "main"}
+        doc = self._pyscript_format(
+            "<b>Hello</b>", execution_thread="main", interpreter="micropython"
+        )
+        cfg = self._parse_py_config(doc)
+        assert cfg == {
+            "execution_thread": "main",
+            "interpreters": [
+                {"src": "./micropython.js", "name": "micropython", "lang": "python"}
+            ],
+        }
 
     def test__pyscript_format_modify_existing_py_config(self):
         src = """
@@ -485,6 +504,44 @@ class TestSupport(PyScriptTest):
             hello = 42
         </py-config>
         """
-        doc = self._pyscript_format(src, execution_thread="main")
+        doc = self._pyscript_format(src, execution_thread="main", interpreter="pyodide")
         cfg = self._parse_py_config(doc)
-        assert cfg == {"execution_thread": "main", "hello": 42}
+        assert cfg == {"hello": 42, "execution_thread": "main"}
+        doc = self._pyscript_format(
+            src, execution_thread="main", interpreter="micropython"
+        )
+        cfg = self._parse_py_config(doc)
+        assert cfg == {
+            "hello": 42,
+            "execution_thread": "main",
+            "interpreters": [
+                {"src": "./micropython.js", "name": "micropython", "lang": "python"}
+            ],
+        }
+
+        src = """
+        <py-config>
+          hello = 42
+          [[interpreters]]
+            src = "/path/to/my/micropython.js"
+            name = "other-micropython"
+            lang = "python"
+        </py-config>
+        """
+        doc = self._pyscript_format(
+            src, execution_thread="main", interpreter="micropython"
+        )
+        cfg = self._parse_py_config(doc)
+        assert cfg == {
+            "hello": 42,
+            "execution_thread": "main",
+            "interpreters": [
+                {"src": "/path/to/my/micropython.js", "name": "other-micropython", "lang": "python"}
+            ],
+        }
+        with pytest.raises(BaseException) as e:
+          doc = self._pyscript_format(
+              src, execution_thread="main", interpreter="pyodide"
+          )
+        assert e.typename == "Skipped"
+        assert e.value.args[0] == "Config contains hard-coded interpreter not of type 'pyodide'"

@@ -458,7 +458,7 @@ class PyScriptTest:
         else:
             raise AssertionError("Too many <py-config>")
 
-    def _inject_execution_thread_config(self, snippet, execution_thread):
+    def _inject_execution_thread_config(self, snippet, execution_thread, interpreter):
         """
         If snippet already contains a py-config, let's try to inject
         execution_thread automatically. Note that this works only for plain
@@ -468,26 +468,25 @@ class PyScriptTest:
         cfg = self._parse_py_config(snippet)
 
         if (
-            self.interpreter
+            interpreter
             and cfg
             and "interpreters" in cfg
             and len(cfg["interpreters"]) == 1
         ):
             interpreter_ok = True
             src = cfg["interpreters"][0].get("src", "")
-            if self.interpreter not in src:
-                pytest.skip("blah!")
+            if interpreter not in src:
+                pytest.skip(f"Config contains hard-coded interpreter not of type '{interpreter}'")
         else:
-            interpreter_ok = self.interpreter in ["pyodide", None]
+            interpreter_ok = interpreter in ["pyodide", None]
 
-        if self.execution_thread:
+        if execution_thread:
             cfg["execution_thread"] = execution_thread
 
         if not interpreter_ok:
             cfg["interpreters"] = [
                 {"src": "./micropython.js", "name": "micropython", "lang": "python"}
             ]
-
         if not cfg:
             return snippet, ""
 
@@ -500,9 +499,9 @@ class PyScriptTest:
         snippet = re.sub("<py-config>.*</py-config>", "", snippet, flags=re.DOTALL)
         return snippet, new_py_config
 
-    def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
+    def _pyscript_format(self, snippet, *, execution_thread, interpreter, extra_head=""):
         snippet, py_config_maybe = self._inject_execution_thread_config(
-            snippet, execution_thread
+            snippet, execution_thread, interpreter
         )
         doc = f"""
         <html>
@@ -536,7 +535,7 @@ class PyScriptTest:
           - wait until pyscript has been fully loaded
         """
         doc = self._pyscript_format(
-            snippet, execution_thread=self.execution_thread, extra_head=extra_head
+            snippet, execution_thread=self.execution_thread, interpreter=self.interpreter, extra_head=extra_head
         )
         if not wait_for_pyscript and timeout is not None:
             raise ValueError("Cannot set a timeout if wait_for_pyscript=False")
