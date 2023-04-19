@@ -45,7 +45,7 @@ def test_format_mime_str_escaping():
 
 def test_format_mime_repr_escaping():
     out, mime = format_mime(sys)
-    assert out == "&lt;module 'sys' (built-in)&gt;"
+    assert out == "&lt;module &#x27;sys&#x27; (built-in)&gt;"
     assert mime == "text/plain"
 
 

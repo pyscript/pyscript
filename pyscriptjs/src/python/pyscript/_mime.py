@@ -103,7 +103,7 @@ def format_mime(obj):
             continue
         break
     if output is None:
-        output = repr(obj)
+        output = html.escape(repr(obj))
         mime_type = "text/plain"
         return output, mime_type
     elif isinstance(output, tuple):
