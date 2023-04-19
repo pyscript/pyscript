@@ -71,7 +71,7 @@ export class RemoteInterpreter extends Object {
     // TODO: Remove this once `runtimes` is removed!
     interpreter: InterpreterInterface & ProxyMarked;
 
-    constructor(src = './micropython.js') {
+    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js') {
         super();
         this.src = src;
     }
@@ -102,8 +102,10 @@ export class RemoteInterpreter extends Object {
         // TODO: move this to "main thread"!
         const _pyscript_js_main = { define_custom_element, showWarning };
 
+        // @ts-ignore
+        const loadInterpeter = typeof loadPyodide !== "undefined" ? loadPyodide : loadMicroPython;
         this.interface = Synclink.proxy(
-            await loadMicroPython({
+            await loadInterpeter({
                 stdout: (msg: string) => {
                     stdio.stdout_writeline(msg).syncify();
                 },
