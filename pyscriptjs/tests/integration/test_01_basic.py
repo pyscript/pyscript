@@ -206,10 +206,6 @@ class TestBasic(PyScriptTest):
         )
         self.page.locator("button").click()
 
-        import time
-
-        time.sleep(0.3)
-        # self.page.wait_for_selector("py-terminal")
         assert self.console.log.lines[-1] == "hello world"
 
     def test_py_script_src_attribute(self):
