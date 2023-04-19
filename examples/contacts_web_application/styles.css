@@ -1,14 +1,15 @@
 ﻿body {
-    background-color: #F3F6F8 !important;
+    background-color: #f3f6f8 !important;
 }
 
 section.contacts-demo {
-    background-color: #F3F6F8;
+    background-color: #f3f6f8;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     margin: 0;
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+        sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-size: 14px;
     line-height: 1.5;
 }
@@ -69,15 +70,13 @@ img {
 }
 
 #welcome {
-    text-shadow: 5px 5px 10px #F3F6F8;
+    text-shadow: 5px 5px 10px #f3f6f8;
 }
 
 .flexelement {
     flex: 1;
     padding: 2%;
 }
-
-
 
 #form {
     margin-top: 7%;
@@ -87,21 +86,20 @@ img {
     justify-content: center;
 }
 
-    #form input[type=number] {
-        border: 1px solid white;
-        border-radius: 0.3em;
-        height: 12%;
-        width: 100%;
-        margin-bottom: 5px;
-    }
+#form input[type="number"] {
+    border: 1px solid white;
+    border-radius: 0.3em;
+    height: 12%;
+    width: 100%;
+    margin-bottom: 5px;
+}
 
-
-    #form button {
-        width: 100%;
-        height: 12%;
-        margin-bottom: 5px;
-        border: 0;
-    }
+#form button {
+    width: 100%;
+    height: 12%;
+    margin-bottom: 5px;
+    border: 0;
+}
 
 header {
     height: 100px;
@@ -118,8 +116,9 @@ footer {
     text-align: center;
 }
 
-header, footer {
-    background-color: #1A1A27;
+header,
+footer {
+    background-color: #1a1a27;
 }
 
 #header_h1 {
