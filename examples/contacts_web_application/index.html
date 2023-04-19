@@ -2,133 +2,198 @@
     author's github': https://github.com/meg-1
     license: MIT
     tags: PyScript Contacts JavaScript Python Bootstrap Web Application -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Contact Book</title>
-    <link rel="icon" type="image/png" href="../../../favicon.png">
-    <link rel="stylesheet" href="styles.css" />
-    <script defer src="pyscript.js"></script>
-    <script defer src="contacts.js"></script>
-    <!--<script defer src="https://pyscript.net/latest/pyscript.js"></script>-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-          crossorigin="anonymous">
-</head>
-<body>
-    <section class="contacts-demo">
-        <section class="contacts-inner">
-
-            <div class="container-fluid h-100" style="height: 100vh !important;">
-                <div class="row">
-
-                    <div class="col-lg-6 col-sm-12">
-
-                        <div class="container-fluid row">
-                            <div class="col-md-8 col-sm-12">
-                                <div class="flexelement" id="first_div">
-                                    <h5 id="welcome">Welcome to the "PyScript Contacts Web Application"</h5>
-                                    <strong>"how does it work?"</strong>
-                                    <ul>
-                                        <li>enter a contact name and number in the form area</li>
-                                        <li>click the "save contact" button</li>
-                                        <li>you will see the contact appear in the "name" and "number" area</li>
-                                        <li>enter as many contacts as you wish</li>
-                                        <li>
-                                            after adding one or more contacts, you can enter a query in the "enter your query"
-                                            area. this area is used as a search box. you can enter contact names, and easily find
-                                            the contacts name and number combined!
-                                        </li>
-                                        <li>Have fun!</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-12">
-                                <div id="form">
-                                    <div>
-                                        <center><h5>Add Your Contacts</h5></center>
-                                        <label>
-                                            Contact Name
-                                            <input id="contact_name" type="text" style="color: black; min-height: 60px;"
-                                                   placeholder="Name" />
-                                        </label>
-                                        <br>
-                                        <br />
-
-                                        <label>
-                                            Phone Number
-                                            <input id="phone_number" type="text" style="color: black; min-height: 60px;"
-                                                   placeholder="Number" />
-                                        </label>
-                                        <br> <br />
-
-                                        <p id="output"></p>
-                                        <button py-click="contact_book()" id="save" disabled
-                                                style="min-height: 60px; background-color: #B0C7BD;
-                                    color: white; font-weight: bold; font-size: 18px;">
-                                            Save Contact
-                                        </button>
-
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Contact Book</title>
+        <link rel="icon" type="image/png" href="../../../favicon.png" />
+        <link rel="stylesheet" href="styles.css" />
+        <script defer src="pyscript.js"></script>
+        <script defer src="contacts.js"></script>
+        <!--<script defer src="https://pyscript.net/latest/pyscript.js"></script>-->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+            crossorigin="anonymous"
+        />
+    </head>
+    <body>
+        <section class="contacts-demo">
+            <section class="contacts-inner">
+                <div
+                    class="container-fluid h-100"
+                    style="height: 100vh !important"
+                >
+                    <div class="row">
+                        <div class="col-lg-6 col-sm-12">
+                            <div class="container-fluid row">
+                                <div class="col-md-8 col-sm-12">
+                                    <div class="flexelement" id="first_div">
+                                        <h5 id="welcome">
+                                            Welcome to the "PyScript Contacts
+                                            Web Application"
+                                        </h5>
+                                        <strong>"how does it work?"</strong>
+                                        <ul>
+                                            <li>
+                                                enter a contact name and number
+                                                in the form area
+                                            </li>
+                                            <li>
+                                                click the "save contact" button
+                                            </li>
+                                            <li>
+                                                you will see the contact appear
+                                                in the "name" and "number" area
+                                            </li>
+                                            <li>
+                                                enter as many contacts as you
+                                                wish
+                                            </li>
+                                            <li>
+                                                after adding one or more
+                                                contacts, you can enter a query
+                                                in the "enter your query" area.
+                                                this area is used as a search
+                                                box. you can enter contact
+                                                names, and easily find the
+                                                contacts name and number
+                                                combined!
+                                            </li>
+                                            <li>Have fun!</li>
+                                        </ul>
                                     </div>
-
                                 </div>
+                                <div class="col-md-4 col-sm-12">
+                                    <div id="form">
+                                        <div>
+                                            <center>
+                                                <h5>Add Your Contacts</h5>
+                                            </center>
+                                            <label>
+                                                Contact Name
+                                                <input
+                                                    id="contact_name"
+                                                    type="text"
+                                                    style="
+                                                        color: black;
+                                                        min-height: 60px;
+                                                    "
+                                                    placeholder="Name"
+                                                />
+                                            </label>
+                                            <br />
+                                            <br />
+
+                                            <label>
+                                                Phone Number
+                                                <input
+                                                    id="phone_number"
+                                                    type="text"
+                                                    style="
+                                                        color: black;
+                                                        min-height: 60px;
+                                                    "
+                                                    placeholder="Number"
+                                                />
+                                            </label>
+                                            <br />
+                                            <br />
+
+                                            <p id="output"></p>
+                                            <button
+                                                py-click="contact_book()"
+                                                id="save"
+                                                disabled
+                                                style="
+                                                    min-height: 60px;
+                                                    background-color: #b0c7bd;
+                                                    color: white;
+                                                    font-weight: bold;
+                                                    font-size: 18px;
+                                                "
+                                            >
+                                                Save Contact
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="search_area_div">
+                                <center>
+                                    <h5 style="padding: 10px">Search Box</h5>
+                                </center>
+                                <input
+                                    class="w-100"
+                                    type="text"
+                                    id="search_area"
+                                    placeholder="enter a contact name"
+                                />
+                                <div
+                                    id="contact_card_template"
+                                    class="row"
+                                    style="display: none"
+                                >
+                                    <div
+                                        class="col-6 name_template d-flex justify-content-center p-1"
+                                    ></div>
+
+                                    <div
+                                        class="col-6 number_template d-flex justify-content-center p-1"
+                                    ></div>
+                                </div>
+                                <div
+                                    id="found_contacts_list"
+                                    style="overflow: scroll; height: 280px"
+                                ></div>
                             </div>
                         </div>
 
-                        <div id="search_area_div">
-                            <center><h5 style="padding: 10px;">Search Box</h5></center>
-                            <input class="w-100" type="text" id="search_area"
-                                   placeholder="enter a contact name" />
-                            <div id="contact_card_template" class="row" style="display: none;">
-                                <div class="col-6 name_template d-flex justify-content-center p-1">
-                                </div>
-
-                                <div class="col-6 number_template d-flex justify-content-center p-1">
-
-                                </div>
-
-                            </div>
-                            <div id="found_contacts_list" style="overflow: scroll; height: 280px;">
+                        <div
+                            class="col-lg-6 col-sm-12 justify-content-center"
+                            style="height: 100vh !important"
+                        >
+                            <h1 class="d-flex justify-content-center">
+                                Contacts List
+                            </h1>
+                            <div
+                                class="row d-flex justify-content-center w-100"
+                                id="contacts_list_grid"
+                            >
+                                <h1
+                                    class="d-flex justify-content-center h-10 w-50 row"
+                                >
+                                    name
+                                </h1>
+                                <h1
+                                    class="d-flex justify-content-center h-10 w-50 row"
+                                >
+                                    number
+                                </h1>
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-lg-6 col-sm-12 justify-content-center"
-                         style="height: 100vh !important;">
-                        <h1 class="d-flex justify-content-center">Contacts List</h1>
-                        <div class="row d-flex justify-content-center w-100" id="contacts_list_grid">
-                            <h1 class="d-flex justify-content-center h-10 w-50 row ">name</h1>
-                            <h1 class="d-flex justify-content-center h-10 w-50 row">number</h1>
-                        </div>
-                    </div>
-
-
                 </div>
 
-            </div>
-
-
-            <py-config src="./py_config.toml"></py-config>
-            <py-script src="./contacts.py"></py-script>
-
+                <py-config src="./py_config.toml"></py-config>
+                <py-script src="./contacts.py"></py-script>
+            </section>
         </section>
-    </section>
 
-    <footer>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <p id="footer_p">
-                        Thank you for using the "PyScript Contacts Web Application",
-                        powered by PyScript!
-                    </p>
+        <footer>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <p id="footer_p">
+                            Thank you for using the "PyScript Contacts Web
+                            Application", powered by PyScript!
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-
-    </footer>
-
-</body>
-
+        </footer>
+    </body>
 </html>

@@ -9697,7 +9697,11 @@ var pyscript = (function (exports) {
             : 0,
         gecko,
         gecko_version: gecko
-            ? +/*@__PURE__*/ (/Firefox\/(\d+)/.exec(nav.userAgent) || [0, 0])[1]
+            ? +(
+                  /*@__PURE__*/ (/Firefox\/(\d+)/.exec(nav.userAgent) || [
+                      0, 0,
+                  ])[1]
+              )
             : 0,
         chrome: !!chrome,
         chrome_version: chrome ? +chrome[1] : 0,
@@ -9706,9 +9710,11 @@ var pyscript = (function (exports) {
         webkit,
         safari,
         webkit_version: webkit
-            ? +/*@__PURE__*/ (/\bAppleWebKit\/(\d+)/.exec(
-                  navigator.userAgent,
-              ) || [0, 0])[1]
+            ? +(
+                  /*@__PURE__*/ (/\bAppleWebKit\/(\d+)/.exec(
+                      navigator.userAgent,
+                  ) || [0, 0])[1]
+              )
             : 0,
         tabSize:
             doc.documentElement.style.tabSize != null
@@ -11468,7 +11474,7 @@ var pyscript = (function (exports) {
             return (
                 this.docChanged ||
                 (this.flags &
-                    (8 /* UpdateFlag.Geometry */ | 2) /* UpdateFlag.Height */) >
+                    (8 /* UpdateFlag.Geometry */ | 2)) /* UpdateFlag.Height */ >
                     0
             );
         }
@@ -14342,7 +14348,7 @@ var pyscript = (function (exports) {
                 nodes.length == 1 &&
                 (node instanceof HeightMapText ||
                     (node instanceof HeightMapGap &&
-                        node.flags & 4 /* Flag.SingleLine */)) &&
+                        node.flags & 4) /* Flag.SingleLine */) &&
                 Math.abs(this.length - node.length) < 10
             ) {
                 if (node instanceof HeightMapGap)
@@ -29283,7 +29289,7 @@ var pyscript = (function (exports) {
                             ? 1 /* Tp.Upper */
                             : ch != ch.toUpperCase()
                             ? 2 /* Tp.Lower */
-                            : 0 /* Tp.NonWord */;
+                            : 0; /* Tp.NonWord */
                 if (
                     !i ||
                     (type == 1 /* Tp.Upper */ && hasLower) ||
