@@ -1,6 +1,7 @@
-from .support import PyScriptTest, skip_micropython, skip_worker
+from .support import PyScriptTest, skip_worker, with_interpreter
 
-
+# micropython has no asyncio module, so skip all asyncio-related tests
+@with_interpreter("pyodide")
 class TestAsync(PyScriptTest):
     # ensure_future() and create_task() should behave similarly;
     # we'll use the same source code to test both
@@ -17,19 +18,16 @@ class TestAsync(PyScriptTest):
         </py-script>
         """
 
-    @skip_micropython("No asyncio")
     def test_asyncio_ensure_future(self):
         self.pyscript_run(self.coroutine_script.format(func="ensure_future"))
         self.wait_for_console("third")
         assert self.console.log.lines[-3:] == ["first", "second", "third"]
 
-    @skip_micropython("No asyncio")
     def test_asyncio_create_task(self):
         self.pyscript_run(self.coroutine_script.format(func="create_task"))
         self.wait_for_console("third")
         assert self.console.log.lines[-3:] == ["first", "second", "third"]
 
-    @skip_micropython("No asyncio")
     def test_asyncio_gather(self):
         self.pyscript_run(
             """
@@ -54,7 +52,6 @@ class TestAsync(PyScriptTest):
         self.wait_for_console("DONE")
         assert self.console.log.lines[-2:] == ["[3, 2, 1]", "DONE"]
 
-    @skip_micropython("No asyncio")
     def test_multiple_async(self):
         self.pyscript_run(
             """
@@ -92,7 +89,6 @@ class TestAsync(PyScriptTest):
         ]
 
     @skip_worker("FIXME: display()")
-    @skip_micropython("No asyncio")
     def test_multiple_async_multiple_display_targeted(self):
         self.pyscript_run(
             """
@@ -126,7 +122,6 @@ class TestAsync(PyScriptTest):
         assert "A0\nA1\nB0\nB1" in inner_text
 
     @skip_worker("FIXME: display()")
-    @skip_micropython("No asyncio")
     def test_async_display_untargeted(self):
         self.pyscript_run(
             """
@@ -153,7 +148,6 @@ class TestAsync(PyScriptTest):
             == "Implicit target not allowed here. Please use display(..., target=...)"
         )
 
-    @skip_micropython("No asyncio")
     def test_sync_and_async_order(self):
         """
         The order of execution is defined as follows:
