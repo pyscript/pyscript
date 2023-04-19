@@ -1,8 +1,8 @@
 import time
+from textwrap import dedent
 
 import js
 
-from textwrap import dedent
 from . import _internal
 from ._mime import format_mime as _format_mime
 
@@ -18,6 +18,7 @@ class HTML:
     def _repr_html_(self):
         return self._html
 
+
 def write(element_id, value, append=False, exec_id=0):
     """Writes value to the element with id "element_id"""
     Element(element_id).write(value=value, append=append)
@@ -28,7 +29,6 @@ def write(element_id, value, append=False, exec_id=0):
     Element(<id>).write instead."""
         )
     )
-
 
 
 def display(*values, target=None, append=True):

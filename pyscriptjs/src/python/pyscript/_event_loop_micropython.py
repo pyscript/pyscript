@@ -1,6 +1,5 @@
 from contextlib import contextmanager
 
-
 LOOP = None
 
 
@@ -15,6 +14,7 @@ def schedule_deferred_tasks():
 @contextmanager
 def defer_user_asyncio():
     yield
+
 
 def run_until_complete(*args):
     pass

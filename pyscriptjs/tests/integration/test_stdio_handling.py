@@ -1,4 +1,4 @@
-from .support import PyScriptTest, skip_worker, skip_micropython
+from .support import PyScriptTest, skip_micropython, skip_worker
 
 
 class TestOutputHandling(PyScriptTest):

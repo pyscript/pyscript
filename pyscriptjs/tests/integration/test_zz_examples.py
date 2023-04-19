@@ -8,7 +8,13 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from .support import ROOT, PyScriptTest, wait_for_render, with_execution_thread, skip_micropython
+from .support import (
+    ROOT,
+    PyScriptTest,
+    skip_micropython,
+    wait_for_render,
+    with_execution_thread,
+)
 
 
 @with_execution_thread(None)

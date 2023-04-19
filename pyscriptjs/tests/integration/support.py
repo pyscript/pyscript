@@ -124,6 +124,7 @@ def with_interpreter(*values):
 
     return with_interpreter_decorator
 
+
 def skip_worker(reason):
     """
     Decorator to skip a test if self.execution_thread == 'worker'
@@ -146,6 +147,7 @@ def skip_worker(reason):
 
     return decorator
 
+
 def skip_micropython(reason):
     if callable(reason):
         # this happens if you use @skip_worker instead of @skip_worker("bla bla bla")
@@ -153,7 +155,6 @@ def skip_micropython(reason):
             "You need to specify a reason for skipping, "
             "please use: @skip_worker('...')"
         )
-
 
     def decorator(fn):
         @functools.wraps(fn)
@@ -163,6 +164,7 @@ def skip_micropython(reason):
             return fn(self, *args)
 
         return decorated
+
     return decorator
 
 
@@ -465,19 +467,26 @@ class PyScriptTest:
         """
         cfg = self._parse_py_config(snippet)
 
-        if self.interpreter and cfg and "interpreters" in cfg and len(cfg["interpreters"]) == 1:
+        if (
+            self.interpreter
+            and cfg
+            and "interpreters" in cfg
+            and len(cfg["interpreters"]) == 1
+        ):
             interpreter_ok = True
             src = cfg["interpreters"][0].get("src", "")
             if self.interpreter not in src:
                 pytest.skip("blah!")
         else:
             interpreter_ok = self.interpreter in ["pyodide", None]
-        
+
         if self.execution_thread:
             cfg["execution_thread"] = execution_thread
 
         if not interpreter_ok:
-            cfg["interpreters"] = [{'src': './micropython.js', 'name': 'micropython', 'lang': 'python'}]
+            cfg["interpreters"] = [
+                {"src": "./micropython.js", "name": "micropython", "lang": "python"}
+            ]
 
         if not cfg:
             return snippet, ""
@@ -488,9 +497,7 @@ class PyScriptTest:
             {dumped_cfg}
         </py-config>
         """
-        snippet = re.sub(
-            "<py-config>.*</py-config>", "", snippet, flags=re.DOTALL
-        )
+        snippet = re.sub("<py-config>.*</py-config>", "", snippet, flags=re.DOTALL)
         return snippet, new_py_config
 
     def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):

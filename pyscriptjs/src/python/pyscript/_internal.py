@@ -40,6 +40,7 @@ def set_version_info(version_from_interpreter: str):
 
 try:
     import ast
+
     class TopLevelAwaitFinder(ast.NodeVisitor):
         def is_source_top_level_await(self, source):
             self.async_found = False
@@ -58,7 +59,6 @@ try:
 
         def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
             pass  # Do not visit children of async function defs
-
 
     def uses_top_level_await(source: str) -> bool:
         return TopLevelAwaitFinder().is_source_top_level_await(source)
@@ -82,7 +82,7 @@ def display_target(target_id):
         DISPLAY_TARGET = None
 
 
-def run_pyscript(code, id = None):
+def run_pyscript(code, id=None):
     """Execute user code inside context managers.
 
     Uses the __main__ global namespace.

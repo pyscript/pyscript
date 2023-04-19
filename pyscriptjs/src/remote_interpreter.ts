@@ -103,7 +103,7 @@ export class RemoteInterpreter extends Object {
         const _pyscript_js_main = { define_custom_element, showWarning };
 
         // @ts-ignore
-        const loadInterpeter = typeof loadPyodide !== "undefined" ? loadPyodide : loadMicroPython;
+        const loadInterpeter = typeof loadPyodide !== 'undefined' ? loadPyodide : loadMicroPython;
         this.interface = Synclink.proxy(
             await loadInterpeter({
                 stdout: (msg: string) => {

@@ -3,12 +3,11 @@ import html
 import io
 import os
 import re
-import pytest
 
 import numpy as np
 from PIL import Image
 
-from .support import PyScriptTest, skip_worker, wait_for_render, skip_micropython
+from .support import PyScriptTest, skip_micropython, skip_worker, wait_for_render
 
 
 class TestDisplay(PyScriptTest):
@@ -129,7 +128,8 @@ class TestDisplay(PyScriptTest):
         tb_lines = self.console.error.lines[-1].splitlines()
         assert tb_lines[0] == "[pyexec] Python exception:"
         assert (
-            "Exception: Implicit target not allowed here. Please use display(..., target=...)" in tb_lines
+            "Exception: Implicit target not allowed here. Please use display(..., target=...)"
+            in tb_lines
         )
 
         text = self.page.text_content("body")
@@ -251,7 +251,7 @@ class TestDisplay(PyScriptTest):
                     def _repr_svg_(self):
                         return (
                             # careful here, can't use less than sign!
-                            f'##svg height="{self.r*2}" width="{self.r*2}">' + 
+                            f'##svg height="{self.r*2}" width="{self.r*2}">' +
                             f'##circle cx="{self.r}" cy="{self.r}" r="{self.r}" fill="red" />##/svg>'
                         ).replace('##', chr(60)) # 60 is less than
 
@@ -284,10 +284,7 @@ class TestDisplay(PyScriptTest):
         )
         objs = [eval(x) for x in self.page.inner_text("html").splitlines()]
         print(objs)
-        assert (
-            objs
-            == [['A', 1, '!'], {'B': 2, 'List': ['A', 1, '!']}, ('C', 3, '!')]
-        )
+        assert objs == [["A", 1, "!"], {"B": 2, "List": ["A", 1, "!"]}, ("C", 3, "!")]
 
     @skip_worker("FIXME: display()")
     def test_display_should_escape(self):
@@ -383,7 +380,6 @@ class TestDisplay(PyScriptTest):
         ]
         print(self.console.error.lines)
         assert self.console.error.lines[-1] == "error from js"
-
 
     @skip_worker("FIXME: display()")
     def test_console_line_break(self):

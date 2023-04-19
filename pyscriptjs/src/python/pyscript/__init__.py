@@ -11,7 +11,7 @@ from ._html import (
     add_classes,
     create,
     display,
-    write
+    write,
 )
 from ._plugin import Plugin
 

@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import requests
 
-from .support import PyScriptTest, with_execution_thread, skip_micropython
+from .support import PyScriptTest, skip_micropython, with_execution_thread
 
 
 @pytest.fixture
