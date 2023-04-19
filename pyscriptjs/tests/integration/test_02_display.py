@@ -358,7 +358,7 @@ class TestDisplay(PyScriptTest):
         )
         inner_html = self.page.content()
         assert re.search("", inner_html)
-        console_text = [x.strip() for x in self.console.all.lines]
+        console_text = self.console.all.lines
         assert "print from python" in console_text
         assert "print from js" in console_text
         assert "error from js" in console_text
@@ -377,14 +377,13 @@ class TestDisplay(PyScriptTest):
         )
         inner_text = self.page.inner_text("py-script")
         assert inner_text == "this goes to the DOM"
-        console_log = [x.strip() for x in self.console.log.lines]
-        assert console_log[-2:] == [
+        assert self.console.log.lines[-2:] == [
             "print from python",
             "print from js",
         ]
-        console_error = [x.strip() for x in self.console.error.lines]
-        print(console_error)
-        assert console_error[-1] == "error from js"
+        print(self.console.error.lines)
+        assert self.console.error.lines[-1] == "error from js"
+
 
     @skip_worker("FIXME: display()")
     def test_console_line_break(self):
@@ -396,7 +395,7 @@ class TestDisplay(PyScriptTest):
             </py-script>
         """
         )
-        console_text = [x.strip() for x in self.console.all.lines]
+        console_text = self.console.all.lines
         assert console_text.index("1print") == (console_text.index("2print") - 1)
         assert console_text.index("1console") == (console_text.index("2console") - 1)
 

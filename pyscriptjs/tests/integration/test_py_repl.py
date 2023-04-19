@@ -1,6 +1,6 @@
 import platform
 
-from .support import PyScriptTest, skip_worker
+from .support import PyScriptTest, skip_worker, skip_micropython
 
 
 class TestPyRepl(PyScriptTest):
@@ -94,6 +94,7 @@ class TestPyRepl(PyScriptTest):
         assert out_div.inner_text() == "hello world"
 
     @skip_worker("TIMEOUT")
+    @skip_micropython("Currently no way to get last expression")
     def test_show_last_expression(self):
         """
         Test that we display() the value of the last expression, as you would
@@ -112,6 +113,7 @@ class TestPyRepl(PyScriptTest):
         assert out_div.inner_text() == "42"
 
     @skip_worker("TIMEOUT")
+    @skip_micropython("Currently no way to get last expression")
     def test_show_last_expression_with_output(self):
         """
         Test that we display() the value of the last expression, as you would
@@ -367,6 +369,7 @@ class TestPyRepl(PyScriptTest):
         self.assert_no_banners()
 
     @skip_worker("FIXME: js.document")
+    @skip_micropython("no async")
     def test_repl_output_display_async(self):
         # py-repls running async code are not expected to
         # send display to element element

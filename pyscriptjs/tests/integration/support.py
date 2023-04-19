@@ -70,9 +70,9 @@ def with_execution_thread(*values):
         for value in values:
             assert value in ("main", "worker")
 
-            @pytest.fixture(params=params_with_marks(values))
-            def execution_thread(self, request):
-                return request.param
+        @pytest.fixture(params=params_with_marks(values))
+        def execution_thread(self, request):
+            return request.param
 
     def with_execution_thread_decorator(cls):
         cls.execution_thread = execution_thread
@@ -80,6 +80,49 @@ def with_execution_thread(*values):
 
     return with_execution_thread_decorator
 
+
+def with_interpreter(*values):
+    """
+    Class decorator to override config.execution_thread.
+
+    By default, we run each test twice:
+      - execution_thread = 'main'
+      - execution_thread = 'worker'
+
+    If you want to execute certain tests with only one specific values of
+    execution_thread, you can use this class decorator. For example:
+
+    @with_interpreter('pyodide')
+    class TestOnlyPyodide:
+        ...
+
+    @with_interpreter('micropython')
+    class TestOnlyMicropython:
+        ...
+
+    If you use @with_interpreter(None), the logic to inject the
+    execution_thread config is disabled.
+    """
+
+    if values == (None,):
+
+        @pytest.fixture
+        def interpreter(self, request):
+            return None
+
+    else:
+        for value in values:
+            assert value in ("pyodide", "micropython")
+
+        @pytest.fixture(params=params_with_marks(values))
+        def interpreter(self, request):
+            return request.param
+
+    def with_interpreter_decorator(cls):
+        cls.interpreter = interpreter
+        return cls
+
+    return with_interpreter_decorator
 
 def skip_worker(reason):
     """
@@ -104,10 +147,18 @@ def skip_worker(reason):
     return decorator
 
 def skip_micropython(reason):
+    if callable(reason):
+        # this happens if you use @skip_worker instead of @skip_worker("bla bla bla")
+        raise Exception(
+            "You need to specify a reason for skipping, "
+            "please use: @skip_worker('...')"
+        )
+
+
     def decorator(fn):
         @functools.wraps(fn)
         def decorated(self, *args):
-            if True:
+            if self.interpreter == "micropython":
                 pytest.skip(reason)
             return fn(self, *args)
 
@@ -117,6 +168,7 @@ def skip_micropython(reason):
 
 @pytest.mark.usefixtures("init")
 @with_execution_thread("main", "worker")
+@with_interpreter("pyodide", "micropython")
 class PyScriptTest:
     """
     Base class to write PyScript integration tests, based on playwright.
@@ -146,7 +198,7 @@ class PyScriptTest:
     """
 
     @pytest.fixture()
-    def init(self, request, tmpdir, logger, page, execution_thread):
+    def init(self, request, tmpdir, logger, page, execution_thread, interpreter):
         """
         Fixture to automatically initialize all the tests in this class and its
         subclasses.
@@ -169,6 +221,7 @@ class PyScriptTest:
         self.tmpdir.chdir()
         self.logger = logger
         self.execution_thread = execution_thread
+        self.interpreter = interpreter
 
         if request.config.option.no_fake_server:
             # use a real HTTP server. Note that as soon as we request the
@@ -397,7 +450,7 @@ class PyScriptTest:
         configs = re.findall("<py-config>(.*?)</py-config>", doc, flags=re.DOTALL)
         configs = [cfg.strip() for cfg in configs]
         if len(configs) == 0:
-            return None
+            return {}
         elif len(configs) == 1:
             return toml.loads(configs[0])
         else:
@@ -411,36 +464,39 @@ class PyScriptTest:
         supported by this logic, which should remain simple.
         """
         cfg = self._parse_py_config(snippet)
-        if cfg is None:
-            # we don't have any <py-config>, let's add one
-            py_config_maybe = f"""
-            <py-config>
-                execution_thread = "{execution_thread}"
-            </py-config>
-            """
+
+        if self.interpreter and cfg and "interpreters" in cfg and len(cfg["interpreters"]) == 1:
+            interpreter_ok = True
+            src = cfg["interpreters"][0].get("src", "")
+            if self.interpreter not in src:
+                pytest.skip("blah!")
         else:
+            interpreter_ok = self.interpreter in ["pyodide", None]
+        
+        if self.execution_thread:
             cfg["execution_thread"] = execution_thread
-            dumped_cfg = toml.dumps(cfg)
-            new_py_config = f"""
-            <py-config>
-                {dumped_cfg}
-            </py-config>
-            """
-            snippet = re.sub(
-                "<py-config>.*</py-config>", new_py_config, snippet, flags=re.DOTALL
-            )
-            # no need for extra config, it's already in the snippet
-            py_config_maybe = ""
-        #
-        return snippet, py_config_maybe
+
+        if not interpreter_ok:
+            cfg["interpreters"] = [{'src': './micropython.js', 'name': 'micropython', 'lang': 'python'}]
+
+        if not cfg:
+            return snippet, ""
+
+        dumped_cfg = toml.dumps(cfg)
+        new_py_config = f"""
+        <py-config>
+            {dumped_cfg}
+        </py-config>
+        """
+        snippet = re.sub(
+            "<py-config>.*</py-config>", "", snippet, flags=re.DOTALL
+        )
+        return snippet, new_py_config
 
     def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
-        if execution_thread is None:
-            py_config_maybe = ""
-        else:
-            snippet, py_config_maybe = self._inject_execution_thread_config(
-                snippet, execution_thread
-            )
+        snippet, py_config_maybe = self._inject_execution_thread_config(
+            snippet, execution_thread
+        )
         doc = f"""
         <html>
           <head>

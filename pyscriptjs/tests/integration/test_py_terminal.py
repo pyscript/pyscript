@@ -4,7 +4,7 @@ from .support import PyScriptTest, skip_worker
 
 
 class TestPyTerminal(PyScriptTest):
-    def test_py_terminal(self):
+    def test_py_terminal1(self):
         """
         1. <py-terminal> should redirect stdout and stderr to the DOM
 

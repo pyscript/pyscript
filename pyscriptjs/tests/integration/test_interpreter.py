@@ -1,4 +1,4 @@
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_micropython
 
 
 class TestInterpreterAccess(PyScriptTest):
@@ -46,6 +46,7 @@ class TestInterpreterAccess(PyScriptTest):
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert py_terminal.text_content() == expected_message
 
+    @skip_micropython("don't care")
     def test_backward_compatibility_runtime_script_execution(self):
         """Test running Python code from js via pyscript.runtime"""
         self.pyscript_run("")

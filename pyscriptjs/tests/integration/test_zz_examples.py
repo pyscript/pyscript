@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from .support import ROOT, PyScriptTest, wait_for_render, with_execution_thread
+from .support import ROOT, PyScriptTest, wait_for_render, with_execution_thread, skip_micropython
 
 
 @with_execution_thread(None)
@@ -28,6 +28,7 @@ class TestExamples(PyScriptTest):
         # make sure that the http server serves from the right directory
         ROOT.join("pyscriptjs").chdir()
 
+    @skip_micropython("datetime")
     def test_hello_world(self):
         self.goto("examples/hello_world.html")
         self.wait_for_pyscript()
@@ -38,6 +39,7 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code()
 
+    @skip_micropython("datetime")
     def test_simple_clock(self):
         self.goto("examples/simple_clock.html")
         self.wait_for_pyscript()
@@ -57,6 +59,7 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code()
 
+    @skip_micropython("packages")
     def test_altair(self):
         self.goto("examples/altair.html")
         self.wait_for_pyscript()
@@ -100,6 +103,7 @@ class TestExamples(PyScriptTest):
         assert later_y_coord < starting_y_coord
         self.check_tutor_generated_code(modules_to_check=["antigravity.py"])
 
+    @skip_micropython("packages")
     def test_bokeh(self):
         # XXX improve this test
         self.goto("examples/bokeh.html")
@@ -109,6 +113,7 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code()
 
+    @skip_micropython("packages")
     def test_bokeh_interactive(self):
         # XXX improve this test
         self.goto("examples/bokeh_interactive.html")
@@ -119,6 +124,7 @@ class TestExamples(PyScriptTest):
         self.check_tutor_generated_code()
 
     @pytest.mark.skip("flaky, see issue 759")
+    @skip_micropython("to_py")
     def test_d3(self):
         self.goto("examples/d3.html")
         self.wait_for_pyscript()
@@ -135,6 +141,7 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code(modules_to_check=["d3.py"])
 
+    @skip_micropython("packages")
     def test_folium(self):
         self.goto("examples/folium.html")
         self.wait_for_pyscript()
@@ -171,6 +178,7 @@ class TestExamples(PyScriptTest):
         wait_for_render(self.page, "*", "<h1>Hello world!</h1>")
         self.check_tutor_generated_code()
 
+    @skip_micropython("packages")
     def test_matplotlib(self):
         self.goto("examples/matplotlib.html")
         self.wait_for_pyscript()
@@ -199,6 +207,7 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code()
 
+    @skip_micropython("packages")
     def test_numpy_canvas_fractals(self):
         self.goto("examples/numpy_canvas_fractals.html")
         self.wait_for_pyscript()
@@ -247,6 +256,7 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code()
 
+    @skip_micropython("packages")
     def test_panel(self):
         self.goto("examples/panel.html")
         self.wait_for_pyscript(timeout=90 * 1000)
@@ -266,6 +276,7 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code()
 
+    @skip_micropython("packages")
     def test_panel_deckgl(self):
         # XXX improve this test
         self.goto("examples/panel_deckgl.html")
@@ -275,6 +286,7 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code()
 
+    @skip_micropython("packages")
     def test_panel_kmeans(self):
         # XXX improve this test
         self.goto("examples/panel_kmeans.html")
@@ -284,6 +296,7 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code()
 
+    @skip_micropython("packages")
     def test_panel_stream(self):
         # XXX improve this test
         self.goto("examples/panel_stream.html")
@@ -331,6 +344,7 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code(modules_to_check=["antigravity.py"])
 
+    @skip_micropython("datetime")
     def test_todo(self):
         self.goto("examples/todo.html")
         self.wait_for_pyscript()
@@ -360,6 +374,7 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code(modules_to_check=["./utils.py", "./todo.py"])
 
+    @skip_micropython("datetime")
     @pytest.mark.xfail(reason="fails after introducing synclink, fix me soon!")
     def test_todo_pylist(self):
         # XXX improve this test
@@ -371,6 +386,7 @@ class TestExamples(PyScriptTest):
         self.check_tutor_generated_code(modules_to_check=["utils.py", "pylist.py"])
 
     @pytest.mark.xfail(reason="To be moved to collective and updated, see issue #686")
+    @skip_micropython("packages")
     def test_toga_freedom(self):
         self.goto("examples/toga/freedom.html")
         self.wait_for_pyscript()

@@ -1,10 +1,11 @@
 import re
 
-from .support import PyScriptTest, skip_worker
+from .support import PyScriptTest, skip_worker, skip_micropython
 
 
 class TestDocsSnippets(PyScriptTest):
     @skip_worker("FIXME: js.document")
+    @skip_micropython("datetime")
     def test_tutorials_py_click(self):
         self.pyscript_run(
             """
@@ -40,6 +41,7 @@ class TestDocsSnippets(PyScriptTest):
         assert re.search(pattern, current_time.inner_text())
         self.assert_no_banners()
 
+    @skip_micropython("missing pyodide features")
     def test_tutorials_requests(self):
         self.pyscript_run(
             """
@@ -192,6 +194,7 @@ class TestDocsSnippets(PyScriptTest):
         assert "I print things!" in py_terminal.inner_text()
         self.assert_no_banners()
 
+    @skip_micropython("no asyncio")
     def test_guides_asyncio(self):
         self.pyscript_run(
             """

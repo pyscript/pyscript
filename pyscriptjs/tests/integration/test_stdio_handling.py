@@ -1,4 +1,4 @@
-from .support import PyScriptTest, skip_worker
+from .support import PyScriptTest, skip_worker, skip_micropython
 
 
 class TestOutputHandling(PyScriptTest):
@@ -146,6 +146,7 @@ class TestOutputHandling(PyScriptTest):
 
         self.assert_no_banners()
 
+    @skip_micropython("asyncio")
     def test_targeted_stdio_interleaved(self):
         # Test that synchronous writes to stdout are placed correctly, even
         # While interleaved with scheduling coroutines in the same tag

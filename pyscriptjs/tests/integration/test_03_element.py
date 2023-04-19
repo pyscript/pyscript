@@ -17,7 +17,7 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[-1].strip() == "foo"
+        assert self.console.log.lines[-1] == "foo"
 
         print("waiting")
         py_terminal = self.page.wait_for_selector("py-terminal")
@@ -37,7 +37,7 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[-1].strip() == "bar"
+        assert self.console.log.lines[-1] == "bar"
 
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert "bar" in py_terminal.inner_text()
@@ -55,7 +55,7 @@ class TestElement(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[-1].strip() == "<b>bar</b>"
+        assert self.console.log.lines[-1] == "<b>bar</b>"
 
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert "bar" in py_terminal.inner_text()

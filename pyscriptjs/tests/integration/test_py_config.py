@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import requests
 
-from .support import PyScriptTest, with_execution_thread
+from .support import PyScriptTest, with_execution_thread, skip_micropython
 
 
 @pytest.fixture
@@ -114,6 +114,7 @@ class TestConfig(PyScriptTest):
         version = self.page.locator("py-script").inner_text()
         assert version == "0.22.0"
 
+    @skip_micropython(reason="don't care")
     def test_runtime_still_works_but_shows_deprecation_warning(
         self, pyodide_0_22_0_tar
     ):
