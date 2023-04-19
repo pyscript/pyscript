@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import requests
 
-from .support import PyScriptTest, skip_micropython, with_execution_thread
+from .support import PyScriptTest, skip_micropython, with_execution_thread, with_interpeter
 
 
 @pytest.fixture
@@ -44,6 +44,7 @@ def unzip(location, extract_to="."):
 #      plain <py-config> tags, but here we want to test all weird combinations
 #      of config
 @with_execution_thread(None)
+@with_interpeter(None)
 class TestConfig(PyScriptTest):
     def test_py_config_inline(self):
         self.pyscript_run(
