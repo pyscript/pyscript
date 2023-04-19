@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import requests
 
-from .support import PyScriptTest, skip_micropython, with_execution_thread, with_interpeter
+from .support import PyScriptTest, with_execution_thread, with_interpreter
 
 
 @pytest.fixture
@@ -44,7 +44,7 @@ def unzip(location, extract_to="."):
 #      plain <py-config> tags, but here we want to test all weird combinations
 #      of config
 @with_execution_thread(None)
-@with_interpeter(None)
+@with_interpreter(None)
 class TestConfig(PyScriptTest):
     def test_py_config_inline(self):
         self.pyscript_run(
@@ -115,7 +115,6 @@ class TestConfig(PyScriptTest):
         version = self.page.locator("py-script").inner_text()
         assert version == "0.22.0"
 
-    @skip_micropython(reason="don't care")
     def test_runtime_still_works_but_shows_deprecation_warning(
         self, pyodide_0_22_0_tar
     ):

@@ -465,6 +465,9 @@ class PyScriptTest:
         <py-config> with inline config: type="json" and src="..." are not
         supported by this logic, which should remain simple.
         """
+        if execution_thread is None and interpreter is None:
+            return snippet, ""
+
         cfg = self._parse_py_config(snippet)
 
         if (
