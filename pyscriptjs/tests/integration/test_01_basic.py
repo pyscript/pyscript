@@ -9,10 +9,10 @@ class TestBasic(PyScriptTest):
     def test_pyscript_hello(self):
         self.pyscript_run(
             """
-            <py-script>
+            <script type="py">
                 import js
                 js.console.log('hello pyscript')
-            </py-script>
+            </script>
             """
         )
         assert self.console.log.lines == ["hello pyscript"]
