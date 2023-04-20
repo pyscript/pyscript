@@ -8,7 +8,6 @@ const logger = getLogger('py-register-widget');
 
 function createWidget(interpreter: InterpreterClient, name: string, code: string, klass: string) {
     class CustomWidget extends HTMLElement {
-        shadow: ShadowRoot;
         wrapper: HTMLElement;
 
         name: string = name;
@@ -20,11 +19,8 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
         constructor() {
             super();
 
-            // attach shadow so we can preserve the element original innerHtml content
-            this.shadow = this.attachShadow({ mode: 'open' });
-
             this.wrapper = document.createElement('slot');
-            this.shadow.appendChild(this.wrapper);
+            this.attachShadow({ mode: 'open' }).appendChild(this.wrapper);
         }
 
         async connectedCallback() {
@@ -45,7 +41,6 @@ function createWidget(interpreter: InterpreterClient, name: string, code: string
 
 export function make_PyWidget(interpreter: InterpreterClient) {
     class PyWidget extends HTMLElement {
-        shadow: ShadowRoot;
         name: string;
         klass: string;
         outputElement: HTMLElement;
@@ -58,11 +53,8 @@ export function make_PyWidget(interpreter: InterpreterClient) {
         constructor() {
             super();
 
-            // attach shadow so we can preserve the element original innerHtml content
-            this.shadow = this.attachShadow({ mode: 'open' });
-
             this.wrapper = document.createElement('slot');
-            this.shadow.appendChild(this.wrapper);
+            this.attachShadow({ mode: 'open' }).appendChild(this.wrapper);
 
             this.addAttributes('src', 'name', 'klass');
         }
