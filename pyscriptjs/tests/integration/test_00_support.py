@@ -3,9 +3,10 @@ import textwrap
 
 import pytest
 
-from .support import JsErrors, JsErrorsDidNotRaise, PyScriptTest
+from .support import JsErrors, JsErrorsDidNotRaise, PyScriptTest, with_execution_thread
 
 
+@with_execution_thread(None)
 class TestSupport(PyScriptTest):
     """
     These are NOT tests about PyScript.
@@ -183,9 +184,9 @@ class TestSupport(PyScriptTest):
             """
             JS errors found: 2
             Error: error 1
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             Error: error 2
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
@@ -214,9 +215,9 @@ class TestSupport(PyScriptTest):
             """
             JS errors found: 2
             Error: NOT expected 2
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             Error: NOT expected 4
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
@@ -243,9 +244,9 @@ class TestSupport(PyScriptTest):
             ---
             The following JS errors were raised but not expected:
             Error: error 1
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             Error: error 2
-                at http://fake_server/mytest.html:.*
+                at https://fake_server/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
@@ -391,6 +392,24 @@ class TestSupport(PyScriptTest):
         # clear the errors, else the test fails at teardown
         self.clear_js_errors()
 
+    def test_wait_for_console_match_substring(self):
+        doc = """
+        <html>
+          <body>
+            <script>
+                console.log('Foo Bar Baz');
+            </script>
+          </body>
+        </html>
+        """
+        self.writefile("mytest.html", doc)
+        self.goto("mytest.html")
+        with pytest.raises(TimeoutError):
+            self.wait_for_console("Bar", timeout=200)
+        #
+        self.wait_for_console("Bar", timeout=200, match_substring=True)
+        assert self.console.log.lines[-1] == "Foo Bar Baz"
+
     def test_iter_locator(self):
         doc = """
         <html>
@@ -427,7 +446,7 @@ class TestSupport(PyScriptTest):
         self.router.clear_cache(URL)
         self.goto("mytest.html")
         assert self.router.requests == [
-            (200, "fake_server", "http://fake_server/mytest.html"),
+            (200, "fake_server", "https://fake_server/mytest.html"),
             (200, "NETWORK", URL),
         ]
         #
@@ -435,10 +454,10 @@ class TestSupport(PyScriptTest):
         self.goto("mytest.html")
         assert self.router.requests == [
             # 1st visit
-            (200, "fake_server", "http://fake_server/mytest.html"),
+            (200, "fake_server", "https://fake_server/mytest.html"),
             (200, "NETWORK", URL),
             # 2nd visit
-            (200, "fake_server", "http://fake_server/mytest.html"),
+            (200, "fake_server", "https://fake_server/mytest.html"),
             (200, "CACHED", URL),
         ]
 
@@ -450,3 +469,22 @@ class TestSupport(PyScriptTest):
         assert [
             "Failed to load resource: the server responded with a status of 404 (Not Found)"
         ] == self.console.all.lines
+
+    def test__pyscript_format_inject_execution_thread(self):
+        """
+        This is slightly different than other tests: it doesn't use playwright, it
+        just tests that our own internal helper works
+        """
+        doc = self._pyscript_format("<b>Hello</b>", execution_thread="main")
+        cfg = self._parse_py_config(doc)
+        assert cfg == {"execution_thread": "main"}
+
+    def test__pyscript_format_modify_existing_py_config(self):
+        src = """
+        <py-config>
+            hello = 42
+        </py-config>
+        """
+        doc = self._pyscript_format(src, execution_thread="main")
+        cfg = self._parse_py_config(doc)
+        assert cfg == {"execution_thread": "main", "hello": 42}

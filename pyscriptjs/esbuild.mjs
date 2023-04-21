@@ -61,6 +61,14 @@ const pyScriptConfig = {
     plugins: [bundlePyscriptPythonPlugin()],
 };
 
+const interpreterWorkerConfig = {
+    entryPoints: ['src/interpreter_worker/worker.ts'],
+    loader: { '.py': 'text' },
+    bundle: true,
+    format: 'iife',
+    plugins: [bundlePyscriptPythonPlugin()],
+};
+
 const copyPath = (source, dest, ...rest) => cp(join(__dirname, source), join(__dirname, dest), ...rest);
 
 const esbuild = async () => {
@@ -79,6 +87,14 @@ const esbuild = async () => {
             sourcemap: true,
             minify: true,
             outfile: 'build/pyscript.min.js',
+        }),
+        // XXX I suppose we should also build a minified version
+        // TODO (HC): Simplify config a bit
+        build({
+            ...interpreterWorkerConfig,
+            sourcemap: false,
+            minify: false,
+            outfile: 'build/interpreter_worker.js',
         }),
     ]);
 

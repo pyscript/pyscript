@@ -105,7 +105,6 @@ export class RemoteInterpreter extends Object {
         this.interface = Synclink.proxy(
             await loadPyodide({
                 stdout: (msg: string) => {
-                    // TODO: add syncify when moved to worker
                     stdio.stdout_writeline(msg).syncify();
                 },
                 stderr: (msg: string) => {
@@ -114,6 +113,8 @@ export class RemoteInterpreter extends Object {
                 fullStdLib: false,
             }),
         );
+        this.interface.registerComlink(Synclink);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.FS = this.interface.FS;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         this.PATH = (this.interface as any)._module.PATH;
