@@ -242,7 +242,6 @@ type PyElementClass = (htmlElement: HTMLElement) => PyElementInstance;
 export function define_custom_element(tag: string, pyElementClass: PyElementClass): any {
     logger.info(`creating plugin: ${tag}`);
     class ProxyCustomElement extends HTMLElement {
-        shadow: ShadowRoot;
         wrapper: HTMLElement;
         pyElementInstance: PyElementInstance;
         originalInnerHTML: string;
@@ -251,9 +250,8 @@ export function define_custom_element(tag: string, pyElementClass: PyElementClas
             logger.debug(`creating ${tag} plugin instance`);
             super();
 
-            this.shadow = this.attachShadow({ mode: 'open' });
             this.wrapper = document.createElement('slot');
-            this.shadow.appendChild(this.wrapper);
+            this.attachShadow({ mode: 'open' }).appendChild(this.wrapper);
             this.originalInnerHTML = this.innerHTML;
             this.pyElementInstance = pyElementClass(this);
         }
