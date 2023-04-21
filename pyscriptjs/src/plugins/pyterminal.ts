@@ -4,7 +4,6 @@ import { Plugin, validateConfigParameterFromArray } from '../plugin';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
-import { UserError, ErrorCode } from '../exceptions';
 import type { Terminal as TerminalType } from 'xterm';
 
 type AppConfigStyle = AppConfig & {
@@ -14,27 +13,6 @@ type AppConfigStyle = AppConfig & {
 };
 
 const logger = getLogger('py-terminal');
-
-const validate = (config: AppConfigStyle, name: string, default_: string) => {
-    const value = config[name] as undefined | boolean | string;
-    if (value !== undefined && value !== true && value !== false && default_ !== null && value !== default_) {
-        const got = JSON.stringify(value);
-
-        let msg: string;
-        if (default_ == null) {
-            msg = `Invalid value for config.${name}: the only accepted` + `values are true and false, got "${got}".`;
-        } else {
-            msg =
-                `Invalid value for config.${name}: the only accepted` +
-                `values are true, false and "${default_}", got "${got}".`;
-        }
-
-        throw new UserError(ErrorCode.BAD_CONFIG, msg);
-    }
-    if (value === undefined) {
-        config[name] = default_;
-    }
-};
 
 export class PyTerminalPlugin extends Plugin {
     app: PyScriptApp;
@@ -58,7 +36,12 @@ export class PyTerminalPlugin extends Plugin {
             possibleValues: [true, false, 'docked'],
             defaultValue: 'docked',
         });
-        validate(config, 'xterm', null);
+        validateConfigParameterFromArray({
+            config: config,
+            name: 'xterm',
+            possibleValues: [true, false, 'xterm'],
+            defaultValue: false,
+        });
     }
 
     beforeLaunch(config: AppConfigStyle) {
