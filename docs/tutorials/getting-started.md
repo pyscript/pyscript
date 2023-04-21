@@ -42,6 +42,10 @@ open an HTML by double-clicking it in your file explorer.
 </html>
 ```
 
+### Using a Local Server
+
+In some situations, your browser may forbid loading remote resources like `pyscript.js` and `pyscript.css` when you open an HTML file directly. When this is the case, you may see your Python code in the text of the webpage, and the [browser developer console](https://balsamiq.com/support/faqs/browserconsole/) may show an error like *"Cross origin requests are only supported for HTTP."* The fix for this is to use a [simple local server](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Tools_and_setup/set_up_a_local_testing_server) to make your html file available to the browser. If you have python installed on your system, running `python -m http.server 8080 --bind 127.0.0.1` will suffice.
+
 ## A more complex example
 
 Now that we know how you can create a simple 'Hello, World!' example, let's see a more complex example. This example will use the Demo created by [Cheuk Ting Ho](https://github.com/Cheukting). In this example, we will use more features from PyScript.
