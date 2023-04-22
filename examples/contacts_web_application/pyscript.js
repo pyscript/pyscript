@@ -14348,7 +14348,7 @@ var pyscript = (function (exports) {
                 nodes.length == 1 &&
                 (node instanceof HeightMapText ||
                     (node instanceof HeightMapGap &&
-                        node.flags & 4) /* Flag.SingleLine */) &&
+                        node.flags & 4)) /* Flag.SingleLine */ &&
                 Math.abs(this.length - node.length) < 10
             ) {
                 if (node instanceof HeightMapGap)
