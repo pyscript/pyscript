@@ -54,10 +54,10 @@ index-servers =
 #     local
 [pypi]
 repository: http://pypi.python.org/pypi
-### NOTE: comment our
+### NOTE: comment out private registry
 # [private]
-repository: http://privateregistry:8080/pypi
-username: myuser
+# repository: http://privateregistry:8080/pypi
+# username: myuser
 ```
 
 -   _~/.config/pip/pip.conf_ -- update to:
