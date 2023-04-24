@@ -43,38 +43,62 @@ npm run dev
 
 Now that node and npm have both been updated `make setup` should work, and you can continue [setting up your local environment](setting-up-environment.md) without problems (hopefully).
 
-
-## Setting up and building the docs
-
-To build the documentation locally first make sure you are in the `docs` directory.
-
-You'll need `make` and `conda` installed in your machine. The rest of the environment should be automatically download and created for you once you use the command:
-
-```
-make setup
-```
-
-Use `conda activate $environment_name` to activate your environment.
-
-To add new information to the documentation make sure you conform with PyScript's code of conduct and with the general principles of Diataxis. Don't worry about reading too much on it, just do your best to keep your contributions on the correct axis.
-
-Write your documentation files using [Markedly Structured Text](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html), which is very similar to vanilla Markdown but with some addons to create the documentation infrastructure.
-
-Once done, initialize a server to check your work:
-
-```
-make livehtml
-```
-
-Visible here: [http://127.0.0.1:8000](http://127.0.0.1:8000)
-
-## Setting up and building tests
+## Tests
 
 You'll need to install the following to have a functional test environment: `playwright`, `pytest-playwright`, `pillow`, `requests` and `numpy`.
 
 `pytest-playwright`is only available as a `pip` package so we recommend that you install `playwright` and `pytest` from `pip`.
 
 If you're interested to learn more about PyScript's testing framework, head over to the [development process](developing.md) page.
+
+## Documentation
+
+### Building the doc environment
+
+* cd into the `docs` directory
+
+```
+cd pyscript/docs
+```
+
+* The following command will download and create the environment for you:
+
+```
+make setup
+```
+
+* After the above is completed, it will print out the command for activating the environment using the following format:
+
+```
+conda activate <environment name>
+```
+
+### Contributing to the documentation
+
+* Before sending a pull request, we recommend that your documentation conforms with [PyScript's code of conduct](https://github.com/pyscript/governance/blob/main/CODE-OF-CONDUCT.md) and with the general principles of [Diataxis](https://diataxis.fr/). Don't worry about reading too much on it, just do your best to keep your contributions on the correct axis.
+
+* Write your documentation files using [Markedly Structured Text](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html). This is similar to Markdown but with some addons to create the documentation infrastructure.
+
+### Reviewing your work
+
+* Before sending a Pull Request, review your work by starting the documentation server. To do this, use the following command:
+
+```
+make livehtml
+```
+
+You can visit the documentation server by opening a browser and visiting [http://127.0.0.1:8000](http://127.0.0.1:8000).
+
+* Alternately, you can open a static documentation server using the following command:
+```
+make htmlserve
+```
+
+You can visit the documentation server by opening a browser and visiting [http://127.0.0.1:8080](http://127.0.0.1:8080).
+
+However, the above command will not automatically update any changes done after running this server. Any changes done will need the shutting down and restarting of the server.
+
+* To stop either server, press `ctrl+C` or `command+C` while the shell running the command is active.
 
 # PyScript Demonstrator
 
