@@ -46,6 +46,7 @@ Docs
 ----
 
 - Add docs for event handlers
+- Added troubleshooting for private PyPi registries
 
 2023.01.1
 =========
