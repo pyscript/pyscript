@@ -32,19 +32,6 @@ class TestSupport(PyScriptTest):
         content = self.page.content()
         assert "<h1>Hello world</h1>" in content
 
-    def test_no_cors_headers(self):
-        self.disable_cors_headers()
-        doc = """
-        <html>
-          <script>console.log(crossOriginIsolated)</script>
-        </html>
-        """
-        self.writefile("mytest.html", doc)
-        self.goto("mytest.html")
-        assert self.headers == {}
-        assert self.console.error.lines[-1] == "PyScript needs CORS headers to be set."
-        assert self.console.log.lines[-1] == "false"
-
     def test_await_with_run_js(self):
         self.run_js(
             """

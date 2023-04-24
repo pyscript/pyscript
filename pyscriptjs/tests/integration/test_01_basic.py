@@ -32,6 +32,28 @@ class TestBasic(PyScriptTest):
         expected = f"[pyscript/main] Starting the interpreter in {where}"
         assert expected in self.console.info.lines
 
+    def test_no_cors_headers(self):
+        self.disable_cors_headers()
+        self.pyscript_run(
+            """
+            <py-config>
+                magic = "unicorn"
+            </py-config>
+            """,
+            wait_for_pyscript=False,
+        )
+        assert self.headers == {}
+        if self.execution_thread == "worker":
+            expected_alert_banner_msg = (
+                '(PY1000): execution_thread is set to "worker" but the following '
+                "CORS headers are missing: "
+                '{"Cross-Origin-Embedder-Policy":"require-corp","Cross-Origin-Opener-Policy":"same-origin"}'
+            )
+            alert_banner = self.page.wait_for_selector(".alert-banner")
+            assert expected_alert_banner_msg in alert_banner.inner_text()
+        else:
+            self.assert_no_banners()
+
     def test_print(self):
         self.pyscript_run(
             """

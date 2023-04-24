@@ -134,11 +134,6 @@ class PyScriptTest:
         creates an HTML page to run the specified snippet.
     """
 
-    REQUIRED_HEADERS = {
-        "Cross-Origin-Embedder-Policy": "require-corp",
-        "Cross-Origin-Opener-Policy": "same-origin",
-    }
-
     @pytest.fixture()
     def init(self, request, tmpdir, logger, page, execution_thread):
         """
@@ -319,10 +314,6 @@ class PyScriptTest:
         self.logger.reset()
         self.logger.log("page.goto", path, color="yellow")
         url = f"{self.http_server_addr}/{path}"
-        if self.headers != self.REQUIRED_HEADERS:
-            self.page.evaluate(
-                "console.error('PyScript needs CORS headers to be set.')"
-            )
         self.page.goto(url, timeout=0)
 
     def wait_for_console(
