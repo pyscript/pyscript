@@ -8,10 +8,10 @@ The `<py-config>` element should be placed within the `<body>` element.
 
 ## Attributes
 
-| attribute | type   | default | description                                                                                             |
-|-----------|--------|---------|---------------------------------------------------------------------------------------------------------|
-| **type**  | string | "toml"  | Syntax type of the `<py-config>`. Value can be `json` or `toml`. Default: "toml" if type is unspecifed. |
-| **src**   | url    |         | Source url to an external configuration file.                                                           |
+| attribute | type   | default | description                                                                                              |
+|-----------|--------|---------|----------------------------------------------------------------------------------------------------------|
+| **type**  | string | "toml"  | Syntax type of the `<py-config>`. Value can be `json` or `toml`. Default: "toml" if type is unspecified. |
+| **src**   | url    |         | Source url to an external configuration file.                                                            |
 
 ## Examples
 
