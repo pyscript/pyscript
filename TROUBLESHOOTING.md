@@ -51,7 +51,7 @@ This can be resolved by replacing user-level preferences for PyPi regsitries in 
 [distutils]
 index-servers =
     pypi
-#     local
+#     private
 [pypi]
 repository: http://pypi.python.org/pypi
 ### NOTE: comment out private registry
