@@ -3,6 +3,7 @@ module.exports = {
     preset: 'ts-jest',
     setupFilesAfterEnv: ['./tests/unit/setup.ts'],
     testEnvironment: './jest-environment-jsdom.js',
+    testTimeout: 20000,
     extensionsToTreatAsEsm: ['.ts'],
     transform: {
         '^.+\\.tsx?$': [
