@@ -46,6 +46,7 @@ Docs
 ----
 
 - Add docs for event handlers
+- Updates requirements in dev setup guide
 
 2023.01.1
 =========
