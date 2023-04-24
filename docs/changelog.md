@@ -34,6 +34,7 @@ Bug fixes
 ---------
 
 - Fixes [#1280](https://github.com/pyscript/pyscript/issues/1280), which describes the errors on the PyRepl tests related to having auto-gen tags that shouldn't be there.
+- Added testTimeout parameter to jest.config.js to avoid erroneous unit test timeouts on certain platforms
 
 Enhancements
 ------------
