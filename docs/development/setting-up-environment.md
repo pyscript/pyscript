@@ -15,7 +15,16 @@ git clone https://github.com/<your username>/pyscript
 * With the following command, add the original project as your upstream. This will allow you to pull the latest changes.
 
 ```sh
+git remote add upstream https://github.com/pyscript/pyscript.git
+git pull upstream main
+```
+
+* If the above fails, try this alternative:
+
+```sh
+git remote remove upstream
 git remote add upstream git@github.com:pyscript/pyscript.git
+git pull upstream main
 ```
 
 ## Install the dependencies
@@ -32,11 +41,11 @@ We need to ensure that we have installed `nodejs` >= 16 and `make`, before we ca
 
 * Ensure that `make` is available on your system:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *Linux*. `make` is usually installed by default in most Linux distributions. In the case it is not installed, run the terminal command `sudo apt install make`.
+  * *Linux*. `make` is usually installed by default in most Linux distributions. In the case it is not installed, run the terminal command `sudo apt install make`.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *OS X*. Install Apple Developer Tools. `make` is included in this package.
+  * *OS X*. Install Apple Developer Tools. `make` is included in this package.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *Windows*. It is recommended to use either Windows Subsystem for Linux (WSL) or GNUWin32 for installing `make`. Instructions can be found [in this StackOverflow question](https://stackoverflow.com/questions/32127524/how-to-install-and-use-make-in-windows).
+  * *Windows*. It is recommended to use either Windows Subsystem for Linux (WSL) or GNUWin32 for installing `make`. Instructions can be found [in this StackOverflow question](https://stackoverflow.com/questions/32127524/how-to-install-and-use-make-in-windows).
 
 * The following command will download and install the rest of the PyScript dependencies:
 
@@ -44,7 +53,7 @@ We need to ensure that we have installed `nodejs` >= 16 and `make`, before we ca
 make setup
 ```
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: If `make setup` gives an error on an incompatible version for node or npm, please refer to [troubleshooting](https://github.com/pyscript/pyscript/blob/main/TROUBLESHOOTING.md).
+  * **NOTE**: If `make setup` gives an error on an incompatible version for node or npm, please refer to [troubleshooting](https://github.com/pyscript/pyscript/blob/main/TROUBLESHOOTING.md).
 
 ## Activating the environment
 
