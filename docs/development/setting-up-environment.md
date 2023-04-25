@@ -15,7 +15,16 @@ git clone https://github.com/<your username>/pyscript
 * With the following command, add the original project as your upstream. This will allow you to pull the latest changes.
 
 ```sh
+git remote add upstream https://github.com/pyscript/pyscript.git
+git pull upstream main
+```
+
+* If the above fails, try this alternative:
+
+```sh
+git remote remove upstream
 git remote add upstream git@github.com:pyscript/pyscript.git
+git pull upstream main
 ```
 
 ## Install the dependencies
@@ -32,11 +41,11 @@ We need to ensure that we have installed `nodejs` >= 16 and `make`, before we ca
 
 * Ensure that `make` is available on your system:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *Linux*. `make` is usually installed by default in most Linux distributions. In the case it is not installed, run the terminal command `sudo apt install make`.
+  * *Linux*. `make` is usually installed by default in most Linux distributions. In the case it is not installed, run the terminal command `sudo apt install make`.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *OS X*. Install Apple Developer Tools. `make` is included in this package.
+  * *OS X*. Install Apple Developer Tools. `make` is included in this package.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *Windows*. It is recommended to use either Windows Subsystem for Linux (WSL) or GNUWin32 for installing `make`. Instructions can be found [in this StackOverflow question](https://stackoverflow.com/questions/32127524/how-to-install-and-use-make-in-windows).
+  * *Windows*. It is recommended to use either Windows Subsystem for Linux (WSL) or GNUWin32 for installing `make`. Instructions can be found [in this StackOverflow question](https://stackoverflow.com/questions/32127524/how-to-install-and-use-make-in-windows).
 
 * The following command will download and install the rest of the PyScript dependencies:
 
@@ -44,7 +53,7 @@ We need to ensure that we have installed `nodejs` >= 16 and `make`, before we ca
 make setup
 ```
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: If `make setup` gives an error on an incompatible version for node or npm, please refer to [troubleshooting](https://github.com/pyscript/pyscript/blob/main/TROUBLESHOOTING.md).
+  * **NOTE**: If `make setup` gives an error on an incompatible version for node or npm, please refer to [troubleshooting](https://github.com/pyscript/pyscript/blob/main/TROUBLESHOOTING.md).
 
 ## Activating the environment
 
@@ -111,13 +120,55 @@ npm run dev
 
 * You can access the PyScript development server by visiting the following url in your browser: [http://localhost:8080](http://localhost:8080)
 
-# Running tests
+# Setting up the test environment
 
-You'll need to install the following to have a functional test environment: `playwright`, `pytest-playwright`, `pillow`, `requests` and `numpy`.
+A key to good development is to perform tests before sending a Pull Request for your changes.
 
-`pytest-playwright`is only available as a `pip` package so we recommend that you install `playwright` and `pytest` from `pip`.
+## Install the dependencies
 
-If you're interested to learn more about PyScript's testing framework, head over to the [development process](developing.md) page.
+* change directory into `pyscriptjs` using this command:
+
+```sh
+cd pyscript/pyscriptjs
+```
+
+* The following command will download the dependencies needed for running the tests:
+
+```
+make setup
+```
+
+  * If you are not using a conda environment, or wish to install the dependencies manually, here are the packages needed:
+    * `pillow`
+    * `requests`
+    * `numpy`
+    * `playwright`
+    * `pytest-playwright`. Note that this is only available as a `pip` package.
+
+## Activating the environment
+
+* After the above `make setup` command is completed, it will print out the command for activating the environment using the following format:
+
+```
+conda activate <environment name>
+```
+
+## Deactivating the environment
+
+* To deactivate the environment, use the following command:
+```
+conda deactivate
+```
+
+## Running the tests
+
+* After setting up the test environment and while the environment is activated, you can run the tests with the following command:
+
+```
+make test
+```
+
+For more information about PyScript's testing framework, head over to the [development process](developing.md) page.
 
 # Setting up your documentation environment
 
@@ -137,8 +188,8 @@ cd pyscript/docs
 make setup
 ```
 
+(activating-documentation-environment)=
 ## Activating the environment
-
 
 * After the above `make setup` command is completed, it will print out the command for activating the environment using the following format:
 
@@ -171,16 +222,17 @@ make livehtml
 
 You can visit the documentation server by opening a browser and visiting [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-* Alternately, you can open a static documentation server using the following command:
+* Alternately, you can open a static documentation server. Unlike the above, this will not automatically update any changes done after running this server. To see the changes done, you will need to manually stop and restart the server. To do this, use the following command:
+
 ```
 make htmlserve
 ```
 
 You can visit the documentation server by opening a browser and visiting [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
-However, the above command will not automatically update any changes done after running this server. Any changes done will need the shutting down and restarting of the server.
-
 * To stop either server, press `ctrl+C` or `command+C` while the shell running the command is active.
+
+* Note: If the above make commands failed, you need to activate the documentation environment first before running any of the commands. Refer to [Activating the environment](#activating-documentation-environment) section above.
 
 # PyScript Demonstrator
 
