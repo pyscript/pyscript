@@ -4,7 +4,7 @@ This is one of the core plugins in PyScript, which is active by default. With it
 
 ## Configuration
 
-You can control how `<py-terminal>` behaves by setting the value of the `terminal` configuration in your `<py-config>`, together with the `docked` one.
+You can control how `<py-terminal>` behaves by setting the values of the `terminal`, `docked`, and `xterm` fields in your configuration in your `<py-config>`.
 
 For the **terminal** field, these are the values:
 
@@ -25,6 +25,13 @@ For the **docked** field, these are the values:
 Please note that **docked** mode is currently used as default only when `terminal="auto"`, or *terminal* default, is used.
 
 In all other cases it's up to the user decide if a terminal should be docked or not.
+
+For the **xterm** field, these are the values:
+
+| value | description |
+|-------|-------------|
+| `false` | This is the default. The `<py-terminal>` is a simple `<pre>` tag with some CSS styling. |
+| `true` or `xterm` | The [xtermjs](http://xtermjs.org/) library is loaded and its Terminal object is used as the `<py-terminal>`. It's visibility and position are determined by the  `docked` and `auto` keys in the same way as the default `<py-terminal>` |
 
 
 ### Examples
