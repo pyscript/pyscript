@@ -46,7 +46,6 @@ Docs
 ----
 
 - Add docs for event handlers
-- Expanded "Setting up Environment" section to be more beginner friendly
 
 2023.01.1
 =========
