@@ -65,7 +65,8 @@ export class PyTerminalPlugin extends Plugin {
         // the Python interpreter has been initialized and we are ready to
         // execute user code:
         //
-        //   1. define the "py-terminal" custom element
+        //   1. define the "py-terminal" custom element, either a <pre> element
+        //      or using xterm.js
         //
         //   2. if there is a <py-terminal> tag on the page, it will register
         //      a Stdio listener just before the user code executes, ensuring
