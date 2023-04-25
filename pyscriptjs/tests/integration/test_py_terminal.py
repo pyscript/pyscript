@@ -162,10 +162,13 @@ class TestPyTerminal(PyScriptTest):
             </py-script>
             """
         )
-        self.wait_for_console("done")
+
+        # Wait for "done" to actually appear in the xterm; may be delayed,
+        # since xtermjs processes its input buffer in chunks
+        last_line = self.page.get_by_text("done")
+        last_line.wait_for()
 
         rows = self.page.locator(".xterm-rows")
-        rows.wait_for()
 
         # The following use locator.evaluate() and getComputedStyle to get
         # the computed CSS values; this tests that the lines are rendering
