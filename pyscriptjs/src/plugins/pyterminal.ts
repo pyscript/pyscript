@@ -192,10 +192,6 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
                 //eslint-disable-next-line
                 //@ts-ignore
                 await import('https://cdn.jsdelivr.net/npm/xterm@5.1.0/lib/xterm.js');
-                //Things formatted 'like URLs' are clickable links
-                //eslint-disable-next-line
-                //@ts-ignore
-                await import('https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.8.0/lib/xterm-addon-web-links.js');
 
                 const cssTag = document.createElement('link');
                 cssTag.type = 'text/css';
