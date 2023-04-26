@@ -1,80 +1,238 @@
 # Setting up your development environment
 
-* Fork the repository - [quicklink](https://github.com/pyscript/pyscript/fork)
+These steps will help you set up your development environment. We suggest completing each step before going to the next step, as some parts have dependencies on previous commands.
 
-* Clone your fork of the project
+## Prepare your repository
 
-```
+* Create a fork of the [PyScript github repository](https://github.com/pyscript/pyscript/fork) to your github.
+
+* In your development machine, clone your fork of PyScript. Use this command in your terminal.
+
+```sh
 git clone https://github.com/<your username>/pyscript
 ```
 
-* Add the original project as your upstream (this will allow you to pull the latest changes)
+* With the following command, add the original project as your upstream. This will allow you to pull the latest changes.
 
 ```sh
+git remote add upstream https://github.com/pyscript/pyscript.git
+git pull upstream main
+```
+
+* If the above fails, try this alternative:
+
+```sh
+git remote remove upstream
 git remote add upstream git@github.com:pyscript/pyscript.git
+git pull upstream main
 ```
 
-* cd into the `pyscriptjs` folder using the line below in your terminal (if your terminal is already in pyscript then use **cd pyscriptjs** instead)
+## Install the dependencies
 
-```
+* change directory into `pyscriptjs` using this command:
+
+```sh
 cd pyscript/pyscriptjs
 ```
 
-* Install the dependencies with the command below (you must have `nodejs` >=16 and `make`)
+We need to ensure that we have installed `nodejs` >= 16 and `make`, before we can continue.
+
+* Install `nodejs` with at least version 16. This can be downloaded at [https://nodejs.org](https://nodejs.org)
+
+* Ensure that `make` is available on your system:
+
+  * *Linux*. `make` is usually installed by default in most Linux distributions. In the case it is not installed, run the terminal command `sudo apt install make`.
+
+  * *OS X*. Install Apple Developer Tools. `make` is included in this package.
+
+  * *Windows*. It is recommended to use either Windows Subsystem for Linux (WSL) or GNUWin32 for installing `make`. Instructions can be found [in this StackOverflow question](https://stackoverflow.com/questions/32127524/how-to-install-and-use-make-in-windows).
+
+* The following command will download and install the rest of the PyScript dependencies:
 
 ```
 make setup
 ```
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: If `make setup` gives a node/npm version required  error then go to [troubleshooting](https://github.com/pyscript/pyscript/blob/main/TROUBLESHOOTING.md)
 
-* You can also run the examples locally by running the command below in your terminal
+  * **NOTE**: If `make setup` gives an error on an incompatible version for node or npm, please refer to [troubleshooting](https://github.com/pyscript/pyscript/blob/main/TROUBLESHOOTING.md).
+
+## Activating the environment
+
+* After the above `make setup` command is completed, it will print out the command for activating the environment using the following format. Use this to work on the development environment:
+
+```
+conda activate <environment name>
+```
+
+## Deactivating the environment
+
+* To deactivate the environment, use the following command:
+```
+conda deactivate
+```
+
+
+# Running PyScript examples server
+
+The examples server is used to view and edit the example files.
+
+* change directory into `pyscriptjs` using this command:
+
+```sh
+cd pyscript/pyscriptjs
+```
+
+* To build the examples, run this command:
 
 ```
 make examples
 ```
 
-* Run ***npm run dev*** to build and run the dev server. This will also watch for changes and rebuild when a file is saved.
+* To serve the examples, run this command:
+
+```sh
+python -m http.server 8080 --directory examples
+```
+
+* Alternately, you can also run this command if conda is not activated:
+
+```sh
+conda run -p <environment name> python -m http.server 8080 --directory examples
+```
+
+* You can access the examples server by visiting the following url in your browser: [http://localhost:8080](http://localhost:8080)
+
+
+# Running the PyScript development server
+
+The PyScript development server will regularly check for any changes in the src directory. If any changes were detected, the server will rebuild itself to reflect the changes. This is useful for development with PyScript.
+
+* change directory into `pyscriptjs` using this command:
+
+```sh
+cd pyscript/pyscriptjs
+```
+
+* Use the following command to build and run the PyScript dev server.
 
 ```
 npm run dev
 ```
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **NOTE**: To access your local build paste `http://localhost:8080` into your browser
 
+* You can access the PyScript development server by visiting the following url in your browser: [http://localhost:8080](http://localhost:8080)
 
-Now that node and npm have both been updated `make setup` should work, and you can continue [setting up your local environment](setting-up-environment.md) without problems (hopefully).
+# Setting up the test environment
 
+A key to good development is to perform tests before sending a Pull Request for your changes.
 
-## Setting up and building the docs
+## Install the dependencies
 
-To build the documentation locally first make sure you are in the `docs` directory.
+* change directory into `pyscriptjs` using this command:
 
-You'll need `make` and `conda` installed in your machine. The rest of the environment should be automatically download and created for you once you use the command:
+```sh
+cd pyscript/pyscriptjs
+```
+
+* The following command will download the dependencies needed for running the tests:
 
 ```
 make setup
 ```
 
-Use `conda activate $environment_name` to activate your environment.
+  * If you are not using a conda environment, or wish to install the dependencies manually, here are the packages needed:
+    * `pillow`
+    * `requests`
+    * `numpy`
+    * `playwright`
+    * `pytest-playwright`. Note that this is only available as a `pip` package.
 
-To add new information to the documentation make sure you conform with PyScript's code of conduct and with the general principles of Diataxis. Don't worry about reading too much on it, just do your best to keep your contributions on the correct axis.
+## Activating the environment
 
-Write your documentation files using [Markedly Structured Text](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html), which is very similar to vanilla Markdown but with some addons to create the documentation infrastructure.
+* After the above `make setup` command is completed, it will print out the command for activating the environment using the following format:
 
-Once done, initialize a server to check your work:
+```
+conda activate <environment name>
+```
+
+## Deactivating the environment
+
+* To deactivate the environment, use the following command:
+```
+conda deactivate
+```
+
+## Running the tests
+
+* After setting up the test environment and while the environment is activated, you can run the tests with the following command:
+
+```
+make test
+```
+
+For more information about PyScript's testing framework, head over to the [development process](developing.md) page.
+
+# Setting up your documentation environment
+
+The documentation environment is separate from the development environment. It is used for updating and reviewing the documentation before deployment.
+
+## Installing the dependencies
+
+* change directory into the `docs` using this command:
+
+```sh
+cd pyscript/docs
+```
+
+* The following command will download, install the dependencies, and create the environment for you:
+
+```
+make setup
+```
+
+(activating-documentation-environment)=
+## Activating the environment
+
+* After the above `make setup` command is completed, it will print out the command for activating the environment using the following format:
+
+```
+conda activate <docs environment name>
+```
+
+Note that the docs environment path is different from the developer's environment path.
+
+## Deactivating the environment
+
+* To deactivate the environment, use the following command:
+```
+conda deactivate
+```
+
+## Contributing to the documentation
+
+* Before sending a pull request, we recommend that your documentation conforms with [PyScript's code of conduct](https://github.com/pyscript/governance/blob/main/CODE-OF-CONDUCT.md) and with the general principles of [Diataxis](https://diataxis.fr/). Don't worry about reading too much on it, just do your best to keep your contributions on the correct axis.
+
+* Write your documentation files using [Markedly Structured Text](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html). This is similar to Markdown but with some addons to create the documentation infrastructure.
+
+## Reviewing your work
+
+* Before sending a Pull Request, review your work by starting the documentation server. To do this, use the following command:
 
 ```
 make livehtml
 ```
 
-Visible here: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+You can visit the documentation server by opening a browser and visiting [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-## Setting up and building tests
+* Alternately, you can open a static documentation server. Unlike the above, this will not automatically update any changes done after running this server. To see the changes done, you will need to manually stop and restart the server. To do this, use the following command:
 
-You'll need to install the following to have a functional test environment: `playwright`, `pytest-playwright`, `pillow`, `requests` and `numpy`.
+```
+make htmlserve
+```
 
-`pytest-playwright`is only available as a `pip` package so we recommend that you install `playwright` and `pytest` from `pip`.
+You can visit the documentation server by opening a browser and visiting [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
-If you're interested to learn more about PyScript's testing framework, head over to the [development process](developing.md) page.
+* To stop either server, press `ctrl+C` or `command+C` while the shell running the command is active.
+
+* Note: If the above make commands failed, you need to activate the documentation environment first before running any of the commands. Refer to [Activating the environment](#activating-documentation-environment) section above.
 
 # PyScript Demonstrator
 
