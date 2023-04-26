@@ -70,138 +70,52 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
     return PyScript;
 }
 
-/** Defines all possible py-on* and their corresponding event types  */
-const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
-    // Window Events
-    ['py-afterprint', 'afterprint'],
-    ['py-beforeprint', 'beforeprint'],
-    ['py-beforeunload', 'beforeunload'],
-    ['py-error', 'error'],
-    ['py-hashchange', 'hashchange'],
-    ['py-load', 'load'],
-    ['py-message', 'message'],
-    ['py-offline', 'offline'],
-    ['py-online', 'online'],
-    ['py-pagehide', 'pagehide'],
-    ['py-pageshow', 'pageshow'],
-    ['py-popstate', 'popstate'],
-    ['py-resize', 'resize'],
-    ['py-storage', 'storage'],
-    ['py-unload', 'unload'],
+// Differently from CSS selectors, XPath can crawl attributes by name and select
+// directly attribute nodes. This allows us to look for literally any `py-*` attribute.
+// TODO: could we just depend on basic-devtools module?
+// @see https://github.com/WebReflection/basic-devtools
+const $x = (path: string, root: Document | HTMLElement = document): (Node | Attr)[] => {
+    const expression = new XPathEvaluator().createExpression(path);
+    const xpath = expression.evaluate(root, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+    const result = [];
+    for (let i = 0, { snapshotLength } = xpath; i < snapshotLength; i++) {
+        result.push(xpath.snapshotItem(i));
+    }
+    return result;
+};
 
-    // Form Events
-    ['py-blur', 'blur'],
-    ['py-change', 'change'],
-    ['py-contextmenu', 'contextmenu'],
-    ['py-focus', 'focus'],
-    ['py-input', 'input'],
-    ['py-invalid', 'invalid'],
-    ['py-reset', 'reset'],
-    ['py-search', 'search'],
-    ['py-select', 'select'],
-    ['py-submit', 'submit'],
+/** A weak relation between an element and current interpreter */
+const elementInterpreter: WeakMap<Element, InterpreterClient> = new WeakMap();
 
-    // Keyboard Events
-    ['py-keydown', 'keydown'],
-    ['py-keypress', 'keypress'],
-    ['py-keyup', 'keyup'],
-
-    // Mouse Events
-    ['py-click', 'click'],
-    ['py-dblclick', 'dblclick'],
-    ['py-mousedown', 'mousedown'],
-    ['py-mousemove', 'mousemove'],
-    ['py-mouseout', 'mouseout'],
-    ['py-mouseover', 'mouseover'],
-    ['py-mouseup', 'mouseup'],
-    ['py-mousewheel', 'mousewheel'],
-    ['py-wheel', 'wheel'],
-
-    // Drag Events
-    ['py-drag', 'drag'],
-    ['py-dragend', 'dragend'],
-    ['py-dragenter', 'dragenter'],
-    ['py-dragleave', 'dragleave'],
-    ['py-dragover', 'dragover'],
-    ['py-dragstart', 'dragstart'],
-    ['py-drop', 'drop'],
-    ['py-scroll', 'scroll'],
-
-    // Clipboard Events
-    ['py-copy', 'copy'],
-    ['py-cut', 'cut'],
-    ['py-paste', 'paste'],
-
-    // Media Events
-    ['py-abort', 'abort'],
-    ['py-canplay', 'canplay'],
-    ['py-canplaythrough', 'canplaythrough'],
-    ['py-cuechange', 'cuechange'],
-    ['py-durationchange', 'durationchange'],
-    ['py-emptied', 'emptied'],
-    ['py-ended', 'ended'],
-    ['py-loadeddata', 'loadeddata'],
-    ['py-loadedmetadata', 'loadedmetadata'],
-    ['py-loadstart', 'loadstart'],
-    ['py-pause', 'pause'],
-    ['py-play', 'play'],
-    ['py-playing', 'playing'],
-    ['py-progress', 'progress'],
-    ['py-ratechange', 'ratechange'],
-    ['py-seeked', 'seeked'],
-    ['py-seeking', 'seeking'],
-    ['py-stalled', 'stalled'],
-    ['py-suspend', 'suspend'],
-    ['py-timeupdate', 'timeupdate'],
-    ['py-volumechange', 'volumechange'],
-    ['py-waiting', 'waiting'],
-
-    // Misc Events
-    ['py-toggle', 'toggle'],
-]);
-
-/** Initialize all elements with py-* handlers attributes  */
+/** Initialize all elements with py-* handlers attributes */
 export function initHandlers(interpreter: InterpreterClient) {
     logger.debug('Initializing py-* event handlers...');
-    for (const pyAttribute of pyAttributeToEvent.keys()) {
-        createElementsWithEventListeners(interpreter, pyAttribute);
+    for (const { name, ownerElement: el } of $x('//@*[starts-with(name(), "py-")]') as Attr[]) {
+        createElementsWithEventListeners(interpreter, el, name.slice(3));
     }
 }
 
-/** Initializes an element with the given py-on* attribute and its handler */
-function createElementsWithEventListeners(interpreter: InterpreterClient, pyAttribute: string) {
-    const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
-    for (const el of matches) {
-        // If the element doesn't have an id, let's add one automatically!
-        if (el.id.length === 0) {
-            ensureUniqueId(el);
-        }
-        const handlerCode = el.getAttribute(pyAttribute);
-        const event = pyAttributeToEvent.get(pyAttribute);
-        el.addEventListener(event, () => {
-            void (async () => {
-                try {
-                    await interpreter.run(handlerCode);
-                } catch (e) {
-                    const err = e as Error;
-                    displayPyException(err, el.parentElement);
-                }
-            })();
-        });
-        // TODO: Should we actually map handlers in JS instead of Python?
-        // el.onclick = (evt: any) => {
-        //   console.log("click");
-        //   new Promise((resolve, reject) => {
-        //     setTimeout(() => {
-        //       console.log('Inside')
-        //     }, 300);
-        //   }).then(() => {
-        //     console.log("resolved")
-        //   });
-        //   // let handlerCode = el.getAttribute('py-click');
-        //   // pyodide.runPython(handlerCode);
-        // }
+/** An always same listeners to reduce RAM and enable future runtime changes via MO */
+const pyScriptListener = async ({ type, currentTarget: el }) => {
+    try {
+        const interpreter = elementInterpreter.get(el);
+        await interpreter.run(el.getAttribute(`py-${type as string}`));
+    } catch (e) {
+        const err = e as Error;
+        displayPyException(err, el.parentElement);
     }
+};
+
+/** Weakly relate an element with an interpreter and then add the listener's type */
+function createElementsWithEventListeners(interpreter: InterpreterClient, el: Element, type: string) {
+    // If the element doesn't have an id, let's add one automatically!
+    if (el.id.length === 0) {
+        ensureUniqueId(el as HTMLElement);
+    }
+    elementInterpreter.set(el, interpreter);
+    // Note: this is *NOT* a misused-promise, this is how async events work.
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    el.addEventListener(type, pyScriptListener);
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
