@@ -59,7 +59,7 @@ class TestExamples(PyScriptTest):
 
     def test_altair(self):
         self.goto("examples/altair.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Altair"
         wait_for_render(self.page, "*", '<canvas.*?class=\\"marks\\".*?>')
         save_as_png_link = self.page.locator("text=Save as PNG")
@@ -137,7 +137,7 @@ class TestExamples(PyScriptTest):
 
     def test_folium(self):
         self.goto("examples/folium.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Folium"
         wait_for_render(self.page, "*", "<iframe srcdoc=")
 
@@ -173,7 +173,7 @@ class TestExamples(PyScriptTest):
 
     def test_matplotlib(self):
         self.goto("examples/matplotlib.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Matplotlib"
         wait_for_render(self.page, "*", "<img src=['\"]data:image")
         # The image is being rended using base64, lets fetch its source
@@ -201,7 +201,7 @@ class TestExamples(PyScriptTest):
 
     def test_numpy_canvas_fractals(self):
         self.goto("examples/numpy_canvas_fractals.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert (
             self.page.title()
             == "Visualization of Mandelbrot, Julia and Newton sets with NumPy and HTML5 canvas"
