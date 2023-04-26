@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+        <title>PyScript Rock Paper Scissors - Basic</title>
+
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
+        <link rel="stylesheet" href="./assets/css/examples.css" />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    </head>
+
+    <body>
+        <nav class="navbar" style="background-color: #000000">
+            <div class="app-header">
+                <a href="/">
+                    <img src="./logo.png" class="logo" />
+                </a>
+                <a class="title" href="" style="color: #f0ab3c"
+                    >Rock Paper Scissors - Basic</a
+                >
+            </div>
+        </nav>
+
+        Instructions: The game is called <em>Rock-Paper-Scissors</em>. To play,
+        click on a button below.
+
+        <br />
+
+        The computer will then randomly select a move to play against you.
+
+        <br /><br />
+
+        <em>Rock</em> beats <em>Scissors</em><br />
+        <em>Scissors</em> beats <em>Paper</em><br />
+        <em>Paper</em> beats <em>Rock</em><br />
+        If both players does the same move, the results will be a tie.
+
+        <hr />
+
+        <center>
+            Select your move:
+
+            <button py-click="update(0)" id="get-time">Rock 🪨</button>
+            <button py-click="update(1)" id="get-time">Paper 📖</button>
+            <button py-click="update(2)" id="get-time">Scissors ✂</button>
+
+            <br />
+            <br />
+
+            <table border="1px solid" cellpadding="10">
+                <tr>
+                    <td width="300px" align="center">
+                        <p id="p1_move_output"></p>
+                    </td>
+                    <td width="300px" align="center">
+                        <p id="p2_move_output"></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><p id="results" align="center"></p></td>
+                </tr>
+            </table>
+
+            <br />
+            <br />
+            <br />
+
+            <table>
+                <th>Player's score</th>
+                <th>Computer's score</th>
+                <tr>
+                    <td width="300px" align="center">
+                        <p id="p1_score_output">0</p>
+                    </td>
+                    <td width="300px" align="center">
+                        <p id="p2_score_output">0</p>
+                    </td>
+                </tr>
+            </table>
+        </center>
+
+        <py-tutor>
+            <py-config>
+                plugins = [
+                  "https://pyscript.net/latest/plugins/python/py_tutor.py"
+                ]
+            </py-config>
+
+            <section class="pyscript">
+                <py-script>
+                    import random
+
+                    possible_moves = ["Rock", "Paper", "Scissors"]
+                    p1_score = 0
+                    p2_score = 0
+
+                    p1_move_output = Element("p1_move_output")
+                    p2_move_output = Element("p2_move_output")
+                    results_output = Element("results")
+
+                    def update(move_index):
+                        global p1_score, p2_score
+
+                        p1 = possible_moves[move_index]
+                        p2 = random.choice(possible_moves)
+
+                        p1_move_output.element.innerHTML = f"You have chosen: <b>{p1}</b>"
+                        p2_move_output.element.innerHTML = f"The computer have chosen: <b>{p2}</b>"
+
+                        results = check_winner(p1, p2)
+                        if results == "P1":
+                            results_output.write("You win!")
+                            p1_score += 1
+                        elif results == "P2":
+                            results_output.write("The computer have won!")
+                            p2_score += 1
+                        else:
+                            results_output.write("Tied!")
+
+                        update_score()
+
+                    def check_winner(p1, p2):
+                        # Coding challenge: this are more efficient ways of checking who would win. Can you figure any of them out?
+                        if p1 == p2:
+                            return "Tied"
+
+                        if ((p1 == "Rock" and p2 == "Scissors") or
+                            (p1 == "Scissors" and p2 == "Paper") or
+                            (p1 == "Paper" and p2 == "Rock")):
+                            return "P1"
+                        else:
+                            return "P2"
+
+                    def update_score():
+                        Element("p1_score_output").write(p1_score)
+                        Element("p2_score_output").write(p2_score)
+                </py-script>
+            </section>
+        </py-tutor>
+    </body>
+</html>
