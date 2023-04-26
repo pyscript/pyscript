@@ -4,7 +4,7 @@ import { Plugin, validateConfigParameterFromArray } from '../plugin';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
-import type { Terminal as TerminalType } from 'xterm';
+import { Terminal as TerminalType } from 'xterm';
 
 type AppConfigStyle = AppConfig & {
     terminal?: boolean | 'auto';
@@ -163,7 +163,8 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
     class PyTerminalXterm extends PyTerminalBaseClass {
         outElem: HTMLDivElement;
         moduleResolved: boolean;
-        term: TerminalType;
+        xtermReadyPromise: Promise<TerminalType>;
+        xterm: TerminalType;
         cachedStdOut: Array<string>;
         cachedStdErr: Array<string>;
 
@@ -185,6 +186,11 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
 
             this.setupPosition(app);
 
+            this.xtermReadyPromise = this.setupXterm();
+            await this.xtermReadyPromise;
+        }
+
+        async setupXterm() {
             // eslint-disable-next-line
             // @ts-ignore
             if (globalThis.Terminal == undefined) {
@@ -200,8 +206,11 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
                 document.head.appendChild(cssTag);
 
                 //Create xterm, add addons
-                this.term = new Terminal({ screenReaderMode: true, cols: 80 });
-                this.term.open(this);
+                this.xterm = new Terminal({ screenReaderMode: true, cols: 80 });
+
+                // xterm must only 'open' into a visible DOM element
+                // If terminal is still hidden, open during first write
+                if (!this.autoShowOnNextLine) this.xterm.open(this);
 
                 this.moduleResolved = true;
 
@@ -211,13 +220,14 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
             } else {
                 this.moduleResolved = true;
             }
+            return this.xterm;
         }
 
         // implementation of the Stdio interface
         stdout_writeline(msg: string) {
             if (this.moduleResolved) {
                 console.log(`Writing ${msg} to xterm`);
-                this.term.writeln(msg);
+                this.xterm.writeln(msg);
                 //this.outElem.innerText += msg + '\n';
 
                 if (this.isDocked()) {
@@ -226,6 +236,7 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
                 if (this.autoShowOnNextLine) {
                     this.classList.remove('py-terminal-hidden');
                     this.autoShowOnNextLine = false;
+                    this.xterm.open(this);
                 }
             } else {
                 //if xtermjs not loaded, cache messages

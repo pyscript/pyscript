@@ -33,6 +33,18 @@ For the **xterm** field, these are the values:
 | `false` | This is the default. The `<py-terminal>` is a simple `<pre>` tag with some CSS styling. |
 | `true` or `xterm` | The [xtermjs](http://xtermjs.org/) library is loaded and its Terminal object is used as the `<py-terminal>`. It's visibility and position are determined by the  `docked` and `auto` keys in the same way as the default `<py-terminal>` |
 
+The xterm.js [Terminal object](http://xtermjs.org/docs/api/terminal/classes/terminal/) can be accessed directly if you want to adjust its properties, add [custom parser hooks](http://xtermjs.org/docs/guides/hooks/), introduce [xterm.js addons](http://xtermjs.org/docs/guides/using-addons/), etc. Access is best achieved by awaiting the `xtermReadyPromise` attribute of the `<py-terminal>` HTML element itself:
+
+```python
+import js
+import asyncio
+
+async def adjust_term_size(columns, rows):
+    xterm = await js.document.querySelector('py-terminal').xtermReadyPromise
+    xterm.resize(columns, rows)
+
+asyncio.ensure_future(adjust_term_size(40,10))
+```
 
 ### Examples
 
