@@ -163,10 +163,16 @@ export class PyScriptApp {
         if (this.config.execution_thread === 'worker' && crossOriginIsolated === false) {
             throw new UserError(
                 ErrorCode.BAD_CONFIG,
-                `execution_thread is set to "worker" but the following CORS headers are missing: ${JSON.stringify({
-                    'Cross-Origin-Embedder-Policy': 'require-corp',
-                    'Cross-Origin-Opener-Policy': 'same-origin',
-                })}`,
+                `When execution_thread is "worker", the site must be cross origin isolated, but crossOriginIsolated is false.
+                To be cross origin isolated, the server must use https and also serve with the following headers: ${JSON.stringify(
+                    {
+                        'Cross-Origin-Embedder-Policy': 'require-corp',
+                        'Cross-Origin-Opener-Policy': 'same-origin',
+                    },
+                )}.
+
+                The problem may be that one or both of these are missing.
+                `,
             );
         }
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));

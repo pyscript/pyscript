@@ -45,9 +45,12 @@ class TestBasic(PyScriptTest):
         assert self.headers == {}
         if self.execution_thread == "worker":
             expected_alert_banner_msg = (
-                '(PY1000): execution_thread is set to "worker" but the following '
-                "CORS headers are missing: "
-                '{"Cross-Origin-Embedder-Policy":"require-corp","Cross-Origin-Opener-Policy":"same-origin"}'
+                '(PY1000): When execution_thread is "worker", the site must be cross origin '
+                "isolated, but crossOriginIsolated is false. To be cross origin isolated, "
+                "the server must use https and also serve with the following headers: "
+                '{"Cross-Origin-Embedder-Policy":"require-corp",'
+                '"Cross-Origin-Opener-Policy":"same-origin"}. '
+                "The problem may be that one or both of these are missing."
             )
             alert_banner = self.page.wait_for_selector(".alert-banner")
             assert expected_alert_banner_msg in alert_banner.inner_text()
