@@ -37,4 +37,12 @@ module.exports = {
         '@typescript-eslint/no-empty-function': 'error',
         '@typescript-eslint/restrict-template-expressions': ['error', { allowBoolean: true }],
     },
+    overrides: [
+        {
+            files: ['src/components/pyscript.ts'],
+            rules: {
+                '@typescript-eslint/unbound-method': 'off',
+            },
+        },
+    ],
 };

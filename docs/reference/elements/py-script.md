@@ -1,6 +1,6 @@
 # &lt;py-script&gt;
 
-The `<py-script>` element lets you execute multi-line Python scripts both inline and via a src attribute.
+The `<py-script>` element, also available as `<script type="py-script">`, lets you execute multi-line Python scripts both inline and via a src attribute.
 
 ## Attributes
 
@@ -12,13 +12,13 @@ The `<py-script>` element lets you execute multi-line Python scripts both inline
 
 ### output
 
-If the `output` attribute is provided, any output to [sys.stdout](https://docs.python.org/3/library/sys.html#sys.stdout) or [sys.stderr](https://docs.python.org/3/library/sys.html#sys.stderr) is written to the DOM element with the ID matching the attribute. If no DOM element is found with a matching ID, a warning is shown. The msg is output to the `innerHTML` of the HTML Element, with newlines (`\n'`) converted to breaks (`<br\>`).
+If the `output` attribute is provided, any output to [sys.stdout](https://docs.python.org/3/library/sys.html#sys.stdout) or [sys.stderr](https://docs.python.org/3/library/sys.html#sys.stderr) is written to the DOM element with the ID matching the attribute. If no DOM element is found with a matching ID, a warning is shown. The msg is output to the `innerHTML` of the HTML Element, with newlines (`\n'`) converted to breaks (`<br/>`).
 
 This output is in addition to the output being written to the developer console and the `<py-terminal>` if it is being used.
 
 ### stderr
 
-If the `stderr` attribute is provided, any output to [sys.stderr](https://docs.python.org/3/library/sys.html#sys.stderr) is written to the DOM element with the ID matching the attribute. If no DOM element is found with a matching ID, a warning is shown. The msg is output to the `innerHTML` of the HTML Element, with newlines (`\n'`) converted to breaks (`<br\>`).
+If the `stderr` attribute is provided, any output to [sys.stderr](https://docs.python.org/3/library/sys.html#sys.stderr) is written to the DOM element with the ID matching the attribute. If no DOM element is found with a matching ID, a warning is shown. The msg is output to the `innerHTML` of the HTML Element, with newlines (`\n'`) converted to breaks (`<br/>`).
 
 This output is in addition to the output being written to the developer console and the `<py-terminal>` if it is being used.
 
