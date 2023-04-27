@@ -12,7 +12,7 @@ class TestEventHandler(PyScriptTest):
             <button id="foo_id">foo_button</button>
             <py-script>
                 from pyscript import when
-                @when("click", id="foo_id")
+                @when("click", selector="#foo_id")
                 def foo(evt):
                     print(f"I've clicked {evt.target} with id {evt.target.id}")
             </py-script>
@@ -34,7 +34,7 @@ class TestEventHandler(PyScriptTest):
             <button id="foo_id">foo_button</button>
             <py-script>
                 from pyscript import when
-                @when("click", id="foo_id")
+                @when("click", selector="#foo_id")
                 def foo():
                     print("The button was clicked")
             </py-script>
@@ -53,10 +53,10 @@ class TestEventHandler(PyScriptTest):
             <button id="bar_id">bar_button</button>
             <py-script>
                 from pyscript import when
-                @when("click", id="foo_id")
+                @when("click", selector="#foo_id")
                 def foo(evt):
                     print(f"I've clicked {evt.target} with id {evt.target.id}")
-                @when("click", id="bar_id")
+                @when("click", selector="#bar_id")
                 def foo(evt):
                     print(f"I've clicked {evt.target} with id {evt.target.id}")
             </py-script>
