@@ -35,7 +35,9 @@ git pull upstream main
 cd pyscript/pyscriptjs
 ```
 
-We need to ensure that we have installed `nodejs` >= 16 and `make`, before we can continue.
+We need to ensure that we have installed `conda`, `nodejs` >= 16 and `make`, before we can continue.
+
+* Install `conda` by downloading one of the following packages that include it [MiniConda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/download/).
 
 * Install `nodejs` with at least version 16. This can be downloaded at [https://nodejs.org](https://nodejs.org)
 
