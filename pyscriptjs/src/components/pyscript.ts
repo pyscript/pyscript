@@ -69,6 +69,10 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
             this.innerHTML = '';
             await init(this, this._fetchSourceFallback);
         }
+
+        getPySrc(): Promise<string> {
+            return fetchSource(this, this._fetchSourceFallback);
+        }
     }
 
     // bootstrap the <script> tag fallback only if needed (once per definition)
@@ -83,6 +87,16 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
         // bootstrap with the same connectedCallback logic any <script>
         const bootstrap = (script: PyScriptElement) => {
             const pyScriptTag = document.createElement('py-script-tag') as PyScript;
+
+            // move attributes to the live resulting pyScriptTag reference
+            for (const name of ['output', 'stderr']) {
+                const value = script.getAttribute(name);
+                if (value) {
+                    pyScriptTag.setAttribute(name, value);
+                }
+            }
+
+            // insert pyScriptTag companion right after the original script
             script.after(pyScriptTag);
 
             // remove the first empty line to preserve line numbers/counting
@@ -124,11 +138,12 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
             },
         });
 
-        // observe the current document and retrieve all already live py <script> tags
-        const addedNodes = observe(document).querySelectorAll(pyScriptCSS);
+        // bootstrap all already live py <script> tags
+        callback([{ addedNodes: document.querySelectorAll(pyScriptCSS) } as unknown] as MutationRecord[], null);
 
-        // bootstrap retrieved py <script> tags
-        callback([{ addedNodes } as unknown] as MutationRecord[], null);
+        // once all tags have been initialized, observe new possible tags added later on
+        // this is to save a few ticks within the callback as each <script> already adds a companion node
+        observe(document);
     }
 
     return PyScript;
