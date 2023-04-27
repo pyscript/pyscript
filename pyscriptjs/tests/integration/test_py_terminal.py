@@ -1,3 +1,5 @@
+import time
+
 from playwright.sync_api import expect
 
 from .support import PyScriptTest, skip_worker
@@ -173,6 +175,14 @@ class TestPyTerminal(PyScriptTest):
         # since xtermjs processes its input buffer in chunks
         last_line = self.page.get_by_text("done")
         last_line.wait_for()
+
+        # Yes, this is not ideal. However, per http://xtermjs.org/docs/guides/hooks/
+        # "It is not possible to conclude, whether or when a certain chunk of data
+        # will finally appear on the screen," which is what we'd really like to know.
+        # By waiting for the "done" test to appear above, we get close, however it is
+        # possible for the text to appear and not be 'processed' (i.e.) formatted. This
+        # small delay should avoid that.
+        time.sleep(1)
 
         rows = self.page.locator(".xterm-rows")
 
