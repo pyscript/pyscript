@@ -1,7 +1,7 @@
 import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import { getLogger } from '../logger';
 import { pyExec, displayPyException } from '../pyexec';
-import { _createAlertBanner } from '../exceptions';
+import { UserError, ErrorCode, _createAlertBanner } from '../exceptions';
 import { robustFetch } from '../fetch';
 import { PyScriptApp } from '../main';
 import { Stdio } from '../stdio';
@@ -98,7 +98,6 @@ export function initHandlers(interpreter: InterpreterClient) {
 /** An always same listeners to reduce RAM and enable future runtime changes via MO */
 const pyScriptEventHandler = async ({ type, currentTarget: el }) => {
     try {
-        const interpreter = elementInterpreter.get(el);
         /*  here, we need to:
                 - resolve the user-provided name to a Python object
                 - determine whether that object is the name of a Callable
@@ -107,6 +106,38 @@ const pyScriptEventHandler = async ({ type, currentTarget: el }) => {
                     - If it's 1, set up listener to call it with the event object
                     - If it's 2, show error/warning
         */
+
+        const interpreter = elementInterpreter.get(el);
+
+        // Import create_proxy for later user
+        await interpreter.run(`from pyodide.ffi import create_proxy`);
+
+        // Get the value the user provided for their (hopefully) Callable
+        const userFunctionName = el.getAttribute(`py-${type as string}`);
+
+        // Get the Python object this name refers to
+        const resolvedFunction = (
+            await interpreter.run(`create_proxy(eval("""${userFunctionName}"""), roundtrip=False)`)
+        ).result;
+
+        // Get a reference to the Python function 'callable()'
+        const pyCallable = (await interpreter.run(`create_proxy(callable)`)).result;
+
+        // Check if the user's provided function is callable
+        const userFunctionIsCallable = await pyCallable(resolvedFunction);
+        if (!userFunctionIsCallable) {
+            throw new UserError(
+                ErrorCode.GENERIC,
+                "The value of'py-[event]' should be the name " +
+                    "of a function or Callable. To run an expression as code, use 'py-[event]-code'",
+            );
+        }
+
+        const inspectModule = (await interpreter._remote.pyimport('inspect')) as unknown as {
+            signature: (obj: any) => any;
+        };
+        console.log(await resolvedFunction.__repr__());
+        const numParams = await inspectModule.signature(resolvedFunction); //TODO: Currently s
     } catch (e) {
         const err = e as Error;
         displayPyException(err, el.parentElement);
@@ -116,8 +147,8 @@ const pyScriptEventHandler = async ({ type, currentTarget: el }) => {
 const pyScriptCodeRunner = async ({ type, currentTarget: el }) => {
     try {
         const interpreter = elementInterpreter.get(el);
-        const userCode = el.getAttribute(`py-${type as string}`);
-        await interpreter.run(`eval(${userCode})`);
+        const userCode = el.getAttribute(`py-${type as string}-code`);
+        await interpreter.run(`eval("""${userCode}""")`);
     } catch (e) {
         const err = e as Error;
         displayPyException(err, el.parentElement);
@@ -134,7 +165,7 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, el: El
 
     // Note: these are *NOT* misused-promises, this is how async events work.
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    if (type.slice(-5) === '-code') el.addEventListener(type.slice(-5), pyScriptCodeRunner);
+    if (type.slice(-5) === '-code') el.addEventListener(type.slice(0, -5), pyScriptCodeRunner);
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     else el.addEventListener(type, pyScriptEventHandler);
 }
