@@ -1,3 +1,5 @@
+import { $$ } from 'basic-devtools';
+
 import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
@@ -150,7 +152,7 @@ export class PyScriptApp {
         // XXX: we should actively complain if there are multiple <py-config>
         // and show a big error. PRs welcome :)
         logger.info('searching for <py-config>');
-        const elements = document.getElementsByTagName('py-config');
+        const elements = $$('py-config', document);
         let el: Element | null = null;
         if (elements.length > 0) el = elements[0];
         if (elements.length >= 2) {

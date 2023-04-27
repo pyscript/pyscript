@@ -1,3 +1,5 @@
+import { $ } from 'basic-devtools';
+
 import type { AppConfig } from '../pyconfig';
 import type { UserError } from '../exceptions';
 import { showWarning } from '../utils';
@@ -92,8 +94,8 @@ export class PySplashscreen extends HTMLElement {
         </div>
       </div>`;
         this.mount_name = this.id.split('-').join('_');
-        this.operation = document.getElementById('pyscript-operation');
-        this.details = document.getElementById('pyscript-operation-details');
+        this.operation = $('#pyscript-operation', document) as HTMLElement;
+        this.details = $('#pyscript-operation-details', document) as HTMLElement;
     }
 
     log(msg: string) {
