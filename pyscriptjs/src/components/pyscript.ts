@@ -96,10 +96,28 @@ export function initHandlers(interpreter: InterpreterClient) {
 }
 
 /** An always same listeners to reduce RAM and enable future runtime changes via MO */
-const pyScriptListener = async ({ type, currentTarget: el }) => {
+const pyScriptEventHandler = async ({ type, currentTarget: el }) => {
     try {
         const interpreter = elementInterpreter.get(el);
-        await interpreter.run(el.getAttribute(`py-${type as string}`));
+        /*  here, we need to:
+                - resolve the user-provided name to a Python object
+                - determine whether that object is the name of a Callable
+                - Determine the number of parameters of that Callable
+                    - If it's 0, set up listener to call it with no args
+                    - If it's 1, set up listener to call it with the event object
+                    - If it's 2, show error/warning
+        */
+    } catch (e) {
+        const err = e as Error;
+        displayPyException(err, el.parentElement);
+    }
+};
+
+const pyScriptCodeRunner = async ({ type, currentTarget: el }) => {
+    try {
+        const interpreter = elementInterpreter.get(el);
+        const userCode = el.getAttribute(`py-${type as string}`);
+        await interpreter.run(`eval(${userCode})`);
     } catch (e) {
         const err = e as Error;
         displayPyException(err, el.parentElement);
@@ -113,9 +131,12 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, el: El
         ensureUniqueId(el as HTMLElement);
     }
     elementInterpreter.set(el, interpreter);
-    // Note: this is *NOT* a misused-promise, this is how async events work.
+
+    // Note: these are *NOT* misused-promises, this is how async events work.
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    el.addEventListener(type, pyScriptListener);
+    if (type.slice(-5) === '-code') el.addEventListener(type.slice(-5), pyScriptCodeRunner);
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    else el.addEventListener(type, pyScriptEventHandler);
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
