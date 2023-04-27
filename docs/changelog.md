@@ -7,6 +7,7 @@
 Features
 --------
 
+- Added the `xterm` attribute to `py-config`. When set to `True` or `xterm`, an (output-only) [xterm.js](http://xtermjs.org/) terminal will be used in place of the default py-terminal.
 - The `py-mount` attribute on HTML elements has been deprecated, and will be removed in a future release.
 
 
