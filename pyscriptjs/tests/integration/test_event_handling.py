@@ -72,3 +72,30 @@ class TestEventHandler(PyScriptTest):
         self.wait_for_console("I've clicked [object HTMLButtonElement] with id bar_id")
         assert "I've clicked [object HTMLButtonElement] with id bar_id" in console_text
         self.assert_no_banners()
+
+    @skip_worker(reason="FIXME: js.document")
+    def test_invalid_selector(self):
+        """When the selector parameter of @when is invalid, it should show an error"""
+        self.pyscript_run(
+            """
+            <button id="foo_id">foo_button</button>
+            <py-script>
+                from pyscript import when
+                @when("click", selector="#.bad")
+                def foo(evt):
+                    ...
+            </py-script>
+        """
+        )
+        self.page.locator("text=foo_button").click()
+        msg = "Failed to execute 'querySelectorAll' on 'Document': '#.bad' is not a valid selector."
+        error = self.page.wait_for_selector(".py-error")
+        banner_text = error.inner_text()
+
+        if msg not in banner_text:
+            raise AssertionError(
+                f"Expected message '{msg}' does not "
+                f"match banner text '{banner_text}'"
+            )
+
+        assert any(msg in line for line in self.console.error.lines)
