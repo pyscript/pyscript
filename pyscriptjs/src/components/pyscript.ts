@@ -89,7 +89,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
             const pyScriptTag = document.createElement('py-script-tag') as PyScript;
 
             // move attributes to the live resulting pyScriptTag reference
-            for (const name of ['output', 'stderr']) {
+            for (const name of ['output', 'src', 'stderr']) {
                 const value = script.getAttribute(name);
                 if (value) {
                     pyScriptTag.setAttribute(name, value);
