@@ -97,6 +97,28 @@ class TestEventHandler(PyScriptTest):
         self.assert_no_banners()
 
     @skip_worker(reason="FIXME: js.document (@when decorator)")
+    def test_two_when_decorators_same_element(self):
+        """When decorating a function twice *on the same DOM element*, both should function"""
+        self.pyscript_run(
+            """
+            <button id="foo_id">foo_button</button>
+            <py-script>
+                from pyscript import when
+                @when("click", selector="#foo_id")
+                @when("mouseover", selector="#foo_id")
+                def foo(evt):
+                    print(f"An event of type {evt.type} happened")
+            </py-script>
+        """
+        )
+        self.page.locator("text=foo_button").hover()
+        self.page.locator("text=foo_button").click()
+        self.wait_for_console("An event of type click happened")
+        assert "An event of type mouseover happened" in self.console.log.lines
+        assert "An event of type click happened" in self.console.log.lines
+        self.assert_no_banners()
+
+    @skip_worker(reason="FIXME: js.document (@when decorator)")
     def test_when_decorator_multiple_elements(self):
         """The @when decorator's selector should successfully select multiple
         DOM elements
