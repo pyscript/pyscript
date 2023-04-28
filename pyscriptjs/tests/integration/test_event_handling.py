@@ -143,7 +143,31 @@ class TestEventHandler(PyScriptTest):
         self.assert_no_banners()
 
     @skip_worker(reason="FIXME: js.document (@when decorator)")
-    def test_invalid_selector(self):
+    def test_when_decorator_duplicate_selectors(self):
+        """ """
+        self.pyscript_run(
+            """
+            <button id="foo_id">foo_button</button>
+            <py-script>
+                from pyscript import when
+                @when("click", selector="#foo_id")
+                @when("click", selector="#foo_id")
+                def foo(evt):
+                    print(f"I've clicked {evt.target} with id {evt.target.id}")
+            </py-script>
+        """
+        )
+        self.page.locator("text=foo_button").click()
+        console_text = self.console.all.lines
+        self.wait_for_console("I've clicked [object HTMLButtonElement] with id foo_id")
+        assert (
+            console_text.count("I've clicked [object HTMLButtonElement] with id foo_id")
+            == 2
+        )
+        self.assert_no_banners()
+
+    @skip_worker(reason="FIXME: js.document (@when decorator)")
+    def test_when_decorator_invalid_selector(self):
         """When the selector parameter of @when is invalid, it should show an error"""
         self.pyscript_run(
             """
