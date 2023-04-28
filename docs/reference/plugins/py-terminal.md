@@ -46,7 +46,11 @@ async def adjust_term_size(columns, rows):
 asyncio.ensure_future(adjust_term_size(40,10))
 ```
 
-Some terminal-formatting packages read from specific environment variables to determine whether they should emit formatted output; PyScript does not set these variables explicitly - you may need to set them yourself, or force your terminal-formatting package into a state where it outputs correctly formatted output. For example, the [rich](https://github.com/Textualize/rich) will not, by default, output colorful text, but passing `256` or `truecolor` as an argument as the `color_system` parameter to the [Console constructor](https://rich.readthedocs.io/en/stable/reference/console.html#rich.console.Console) will force it to do so. Please consult the documentation for your specific terminal-formatting package.
+Some terminal-formatting packages read from specific environment variables to determine whether they should emit formatted output; PyScript does not set these variables explicitly - you may need to set them yourself, or force your terminal-formatting package into a state where it outputs correctly formatted output.
+
+A couple of specific examples:
+ - the [rich](https://github.com/Textualize/rich) will not, by default, output colorful text, but passing `256` or `truecolor` as an argument as the `color_system` parameter to the [Console constructor](https://rich.readthedocs.io/en/stable/reference/console.html#rich.console.Console) will force it to do so. (As of rich v13)
+ - [termcolor](https://github.com/termcolor/termcolor) will not, by default, output colorful text, but setting `os.environ["FORCE_COLOR"] = "True"` or by passing `force_color=True` to the `colored()` function will force it to do so. (As of termcolor v2.3)
 
 ### Examples
 
