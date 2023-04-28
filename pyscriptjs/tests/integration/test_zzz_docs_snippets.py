@@ -209,3 +209,63 @@ class TestDocsSnippets(PyScriptTest):
         py_terminal = self.page.wait_for_selector("py-terminal")
 
         assert "0\n1\n2\n" in py_terminal.inner_text()
+
+    @skip_worker(reason="FIXME: js.document (@when decorator)")
+    def test_reference_when_simple(self):
+        self.pyscript_run(
+            """
+            <button id="my_btn">Click Me to Say Hi</button>
+            <py-script>
+                from pyscript import when
+                @when("click", selector="#my_btn")
+                def say_hello():
+                    print(f"Hello, world!")
+            </py-script>
+            """
+        )
+        self.page.get_by_text("Click Me to Say Hi").click()
+        self.wait_for_console("Hello, world!")
+        assert ("Hello, world!") in self.console.log.lines
+
+    @skip_worker(reason="FIXME: js.document (@when decorator)")
+    def test_reference_when_complex(self):
+        self.pyscript_run(
+            """
+            <div id="container">
+                <button>First</button>
+                <button>Second</button>
+                <button>Third</button>
+            </div>
+            <py-script>
+                from pyscript import when
+                import js
+
+                @when("click", selector="#container button")
+                def highlight(evt):
+                    #Set the clicked button's background to green
+                    evt.target.style.backgroundColor = 'green'
+
+                    #Set the background of all buttons to red
+                    other_buttons = (button for button in js.document.querySelectorAll('button') if button != evt.target)
+                    for button in other_buttons:
+                        button.style.backgroundColor = 'red'
+
+                    print("set") # Test Only
+            </py-script>
+            """
+        )
+
+        def getBackgroundColor(locator):
+            return locator.evaluate(
+                "(element) => getComputedStyle(element).getPropertyValue('background-color')"
+            )
+
+        first_button = self.page.get_by_text("First")
+        assert getBackgroundColor(first_button) == "rgb(239, 239, 239)"
+
+        first_button.click()
+        self.wait_for_console("set")
+
+        assert getBackgroundColor(first_button) == "rgb(0, 128, 0)"
+        assert getBackgroundColor(self.page.get_by_text("Second")) == "rgb(255, 0, 0)"
+        assert getBackgroundColor(self.page.get_by_text("Third")) == "rgb(255, 0, 0)"
