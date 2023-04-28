@@ -4,7 +4,7 @@ import js
 from pyodide.ffi.wrappers import add_event_listener
 
 
-def when(event=None, selector=None):
+def when(event_type=None, selector=None):
     """
     Decorates a function and passes py-* events to the decorated function
     The events might or not be an argument of the decorated function
@@ -20,10 +20,10 @@ def when(event=None, selector=None):
                 func()
 
             for el in elements:
-                add_event_listener(el, event, wrapper)
+                add_event_listener(el, event_type, wrapper)
         else:
             for el in elements:
-                add_event_listener(el, event, func)
+                add_event_listener(el, event_type, func)
         return func
 
     return decorator
