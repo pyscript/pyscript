@@ -107,28 +107,55 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
             );
         };
 
-        // callback used to bootstrap already known <script> tags
-        const callback: MutationCallback = records => {
-            for (const { addedNodes } of records) {
-                for (const node of addedNodes) {
-                    if (node.nodeType === Node.ELEMENT_NODE) {
-                        if ((node as PyScriptElement).matches(pyScriptCSS)) {
-                            bootstrap(node as PyScriptElement);
-                        }
-                        for (const child of $$(pyScriptCSS, node as PyScriptElement)) {
-                            bootstrap(child as PyScriptElement);
-                        }
-                    }
-                }
+        // loop over all py scripts and botstrap these
+        const bootstrapScripts = (root: Document | Element) => {
+            for (const node of $$(pyScriptCSS, root)) {
+                bootstrap(node as PyScriptElement);
             }
         };
 
         // globally shared MutationObserver for <script> special cases
-        const pyScriptMO = new MutationObserver(callback);
+        const pyScriptMO = new MutationObserver(records => {
+            for (const { type, target, attributeName, addedNodes } of records) {
+                if (type === 'attributes') {
+                    // consider only py-* attributes
+                    if (type.startsWith('py-')) {
+                        // if the attribute is currently present
+                        if ((target as Element).hasAttribute(attributeName)) {
+                            // handle the element
+                            addPyScriptEventListener(
+                                getInterpreter(target as Element),
+                                target as Element,
+                                type.slice(3),
+                            );
+                        } else {
+                            // remove the listener because the element should not answer
+                            // to this specific event anymore
+
+                            // Note: this is *NOT* a misused-promise, this is how async events work.
+                            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                            target.removeEventListener(type.slice(3), pyScriptListener);
+                        }
+                    }
+                    // skip further loop on empty addedNodes
+                    continue;
+                }
+                for (const node of addedNodes) {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        if ((node as PyScriptElement).matches(pyScriptCSS)) {
+                            bootstrap(node as PyScriptElement);
+                        } else {
+                            addAllPyScriptEventListeners(node as Element);
+                            bootstrapScripts(node as Element);
+                        }
+                    }
+                }
+            }
+        });
 
         // simplifies observing any root node (document/shadowRoot)
         const observe = (root: Document | ShadowRoot) => {
-            pyScriptMO.observe(root, { childList: true, subtree: true });
+            pyScriptMO.observe(root, { childList: true, subtree: true, attributes: true });
             return root;
         };
 
@@ -141,7 +168,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
         });
 
         // bootstrap all already live py <script> tags
-        callback([{ addedNodes: $$(pyScriptCSS, document) } as unknown] as MutationRecord[], null);
+        bootstrapScripts(document);
 
         // once all tags have been initialized, observe new possible tags added later on
         // this is to save a few ticks within the callback as each <script> already adds a companion node
@@ -154,18 +181,32 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
 /** A weak relation between an element and current interpreter */
 const elementInterpreter: WeakMap<Element, InterpreterClient> = new WeakMap();
 
+/** Return the interpreter, if any, or vallback to the last known one */
+const getInterpreter = (el: Element) => elementInterpreter.get(el) || lastInterpreter;
+
+/** Retain last used interpreter to bootstrap PyScript to augment via MO runtime nodes */
+let lastInterpreter: InterpreterClient;
+
+/** Find all py-* attributes in a context node and its descendant + add listeners */
+const addAllPyScriptEventListeners = (root: Document | Element) => {
+    // note the XPath needs to start with a `.` to reference the starting root element
+    const attributes = $x('.//@*[starts-with(name(), "py-")]', root) as Attr[];
+    for (const { name, ownerElement: el } of attributes) {
+        addPyScriptEventListener(getInterpreter(el), el, name.slice(3));
+    }
+};
+
 /** Initialize all elements with py-* handlers attributes */
 export function initHandlers(interpreter: InterpreterClient) {
     logger.debug('Initializing py-* event handlers...');
-    for (const { name, ownerElement: el } of $x('//@*[starts-with(name(), "py-")]') as Attr[]) {
-        createElementsWithEventListeners(interpreter, el, name.slice(3));
-    }
+    lastInterpreter = interpreter;
+    addAllPyScriptEventListeners(document);
 }
 
 /** An always same listeners to reduce RAM and enable future runtime changes via MO */
 const pyScriptListener = async ({ type, currentTarget: el }) => {
     try {
-        const interpreter = elementInterpreter.get(el);
+        const interpreter = getInterpreter(el);
         await interpreter.run(el.getAttribute(`py-${type as string}`));
     } catch (e) {
         const err = e as Error;
@@ -174,7 +215,7 @@ const pyScriptListener = async ({ type, currentTarget: el }) => {
 };
 
 /** Weakly relate an element with an interpreter and then add the listener's type */
-function createElementsWithEventListeners(interpreter: InterpreterClient, el: Element, type: string) {
+function addPyScriptEventListener(interpreter: InterpreterClient, el: Element, type: string) {
     // If the element doesn't have an id, let's add one automatically!
     if (el.id.length === 0) {
         ensureUniqueId(el as HTMLElement);
