@@ -7,6 +7,7 @@
 Features
 --------
 
+- Added the `@when` decorator for attaching Python functions as event handlers
 - The `py-mount` attribute on HTML elements has been deprecated, and will be removed in a future release.
 
 

@@ -316,6 +316,7 @@ class TestBasic(PyScriptTest):
         )
         btn = self.page.wait_for_selector("button")
         btn.click()
+        self.wait_for_console("hello world!")
         assert self.console.log.lines[-1] == "hello world!"
         assert self.console.error.lines == []
 

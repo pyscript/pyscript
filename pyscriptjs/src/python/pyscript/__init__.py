@@ -1,5 +1,6 @@
 from _pyscript_js import showWarning
 
+from ._event_handling import when
 from ._event_loop import LOOP as loop
 from ._event_loop import run_until_complete
 from ._html import (
@@ -51,4 +52,5 @@ __all__ = [
     "__version__",
     "version_info",
     "showWarning",
+    "when",
 ]
