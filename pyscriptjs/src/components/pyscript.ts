@@ -6,6 +6,7 @@ import { robustFetch } from '../fetch';
 import { PyScriptApp } from '../main';
 import { Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
+import { PyProxyCallable } from 'pyodide';
 
 const logger = getLogger('py-script');
 
@@ -108,6 +109,25 @@ const pyScriptEventHandler = async ({ type, currentTarget: el }) => {
         */
 
         const interpreter = elementInterpreter.get(el);
+        const interf = interpreter._remote.interface
+
+        const pyMethod = (await interf).runPython(`
+            class SomeClass():
+                def someMethod(self, param1):
+                    print(f"This got 1 argument: {param1}")
+            instance = SomeClass()
+            instance.someMethod("foo")
+            import inspect
+            print(f"{len(inspect.signature(instance.someMethod).parameters)= }")
+            instance.someMethod
+        `)
+
+        const pyInspectModule_x = await interf.pyimport('inspect').syncify()
+        console.log(Object.keys(pyInspectModule_x))
+        console.warn('Number of Parameters of dummy method:', await pyInspectModule_x.signature(pyMethod).parameters.length)
+
+        const pyInspectModule = (await interpreter).pyimport('inspect')
+        console.log()
 
         // Import create_proxy for later user
         await interpreter.run(`from pyodide.ffi import create_proxy`);
