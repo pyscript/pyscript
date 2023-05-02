@@ -167,6 +167,7 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
         xterm: TerminalType;
         cachedStdOut: Array<string>;
         cachedStdErr: Array<string>;
+        _xterm_cdn_base_url = 'https://cdn.jsdelivr.net/npm/xterm@5.1.0';
 
         constructor() {
             super();
@@ -186,23 +187,28 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
 
             this.setupPosition(app);
 
-            this.xtermReadyPromise = this.setupXterm();
+            this.xtermReadyPromise = this._setupXterm();
             await this.xtermReadyPromise;
         }
 
-        async setupXterm() {
+        /**
+         * Fetch the xtermjs library from CDN an initialize it.
+         * @private
+         * @returns the associated xterm.js Terminal
+         */
+        async _setupXterm() {
             // eslint-disable-next-line
             // @ts-ignore
             if (globalThis.Terminal == undefined) {
                 //xterm module proper
                 //eslint-disable-next-line
                 //@ts-ignore
-                await import('https://cdn.jsdelivr.net/npm/xterm@5.1.0/lib/xterm.js');
+                await import(this._xterm_cdn_base_url + '/lib/xterm.js');
 
                 const cssTag = document.createElement('link');
                 cssTag.type = 'text/css';
                 cssTag.rel = 'stylesheet';
-                cssTag.href = 'https://cdn.jsdelivr.net/npm/xterm@5.1.0/css/xterm.css';
+                cssTag.href = this._xterm_cdn_base_url + '/css/xterm.css';
                 document.head.appendChild(cssTag);
 
                 //Create xterm, add addons
