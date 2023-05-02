@@ -1,3 +1,5 @@
+import { $$, $x } from 'basic-devtools';
+
 import { ltrim, htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import { getLogger } from '../logger';
 import { pyExec, displayPyException } from '../pyexec';
@@ -113,7 +115,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
                         if ((node as PyScriptElement).matches(pyScriptCSS)) {
                             bootstrap(node as PyScriptElement);
                         }
-                        for (const child of (node as PyScriptElement).querySelectorAll(pyScriptCSS)) {
+                        for (const child of $$(pyScriptCSS, node as PyScriptElement)) {
                             bootstrap(child as PyScriptElement);
                         }
                     }
@@ -139,7 +141,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
         });
 
         // bootstrap all already live py <script> tags
-        callback([{ addedNodes: document.querySelectorAll(pyScriptCSS) } as unknown] as MutationRecord[], null);
+        callback([{ addedNodes: $$(pyScriptCSS, document) } as unknown] as MutationRecord[], null);
 
         // once all tags have been initialized, observe new possible tags added later on
         // this is to save a few ticks within the callback as each <script> already adds a companion node
@@ -148,20 +150,6 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
 
     return PyScript;
 }
-
-// Differently from CSS selectors, XPath can crawl attributes by name and select
-// directly attribute nodes. This allows us to look for literally any `py-*` attribute.
-// TODO: could we just depend on basic-devtools module?
-// @see https://github.com/WebReflection/basic-devtools
-const $x = (path: string, root: Document | HTMLElement = document): (Node | Attr)[] => {
-    const expression = new XPathEvaluator().createExpression(path);
-    const xpath = expression.evaluate(root, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
-    const result = [];
-    for (let i = 0, { snapshotLength } = xpath; i < snapshotLength; i++) {
-        result.push(xpath.snapshotItem(i));
-    }
-    return result;
-};
 
 /** A weak relation between an element and current interpreter */
 const elementInterpreter: WeakMap<Element, InterpreterClient> = new WeakMap();
@@ -199,7 +187,7 @@ function createElementsWithEventListeners(interpreter: InterpreterClient, el: El
 
 /** Mount all elements with attribute py-mount into the Python namespace */
 export async function mountElements(interpreter: InterpreterClient) {
-    const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
+    const matches = $$('[py-mount]', document);
     logger.info(`py-mount: found ${matches.length} elements`);
 
     if (matches.length > 0) {

@@ -1,3 +1,5 @@
+import { $$ } from 'basic-devtools';
+
 import { _createAlertBanner } from './exceptions';
 
 export function addClasses(element: HTMLElement, classes: string[]) {
@@ -101,7 +103,7 @@ export function createDeprecationWarning(msg: string, elementName: string): void
  *                     If null, the full text of 'msg' is used instead.
  */
 export function createSingularWarning(msg: string, sentinelText: string | null = null): void {
-    const banners = document.getElementsByClassName('alert-banner py-warning');
+    const banners = $$('.alert-banner, .py-warning', document);
     let bannerCount = 0;
     for (const banner of banners) {
         if (banner.innerHTML.includes(sentinelText ? sentinelText : msg)) {

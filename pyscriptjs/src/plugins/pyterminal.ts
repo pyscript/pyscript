@@ -1,3 +1,5 @@
+import { $ } from 'basic-devtools';
+
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
 import { Plugin, validateConfigParameterFromArray } from '../plugin';
@@ -42,7 +44,7 @@ export class PyTerminalPlugin extends Plugin {
         const { terminal: t, docked: d } = config;
         const auto = t === true || t === 'auto';
         const docked = d === true || d === 'docked';
-        if (auto && document.querySelector('py-terminal') === null) {
+        if (auto && $('py-terminal', document) === null) {
             logger.info('No <py-terminal> found, adding one');
             const termElem = document.createElement('py-terminal');
             if (auto) termElem.setAttribute('auto', '');
