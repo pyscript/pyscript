@@ -158,16 +158,17 @@ class PyScriptTest:
         self.tmpdir.chdir()
         self.logger = logger
         self.execution_thread = execution_thread
+        self.dev_server = None
 
         if request.config.option.no_fake_server:
             # use a real HTTP server. Note that as soon as we request the
             # fixture, the server automatically starts in its own thread.
-            self.http_server = request.getfixturevalue("http_server")
+            self.dev_server = request.getfixturevalue("dev_server")
+            self.http_server_addr = self.dev_server.base_url
             self.router = None
-            self.is_fake_server = False
         else:
             # use the internal playwright routing
-            self.http_server = "https://fake_server"
+            self.http_server_addr = "https://fake_server"
             self.router = SmartRouter(
                 "fake_server",
                 cache=request.config.cache,
@@ -175,7 +176,6 @@ class PyScriptTest:
                 usepdb=request.config.option.usepdb,
             )
             self.router.install(page)
-            self.is_fake_server = True
         #
         self.init_page(page)
         #
@@ -210,6 +210,18 @@ class PyScriptTest:
         self._js_errors = []
         page.on("console", self._on_console)
         page.on("pageerror", self._on_pageerror)
+
+    @property
+    def headers(self):
+        if self.dev_server is None:
+            return self.router.headers
+        return self.dev_server.RequestHandlerClass.my_headers()
+
+    def disable_cors_headers(self):
+        if self.dev_server is None:
+            self.router.enable_cors_headers = False
+        else:
+            self.dev_server.RequestHandlerClass.enable_cors_headers = False
 
     def run_js(self, code):
         """
@@ -301,7 +313,7 @@ class PyScriptTest:
     def goto(self, path):
         self.logger.reset()
         self.logger.log("page.goto", path, color="yellow")
-        url = f"{self.http_server}/{path}"
+        url = f"{self.http_server_addr}/{path}"
         self.page.goto(url, timeout=0)
 
     def wait_for_console(
@@ -433,8 +445,8 @@ class PyScriptTest:
         doc = f"""
         <html>
           <head>
-              <link rel="stylesheet" href="{self.http_server}/build/pyscript.css" />
-              <script defer src="{self.http_server}/build/pyscript.js"></script>
+              <link rel="stylesheet" href="{self.http_server_addr}/build/pyscript.css" />
+              <script defer src="{self.http_server_addr}/build/pyscript.js"></script>
               {extra_head}
           </head>
           <body>
@@ -851,6 +863,16 @@ class SmartRouter:
         self.usepdb = usepdb
         self.page = None
         self.requests = []  # (status, kind, url)
+        self.enable_cors_headers = True
+
+    @property
+    def headers(self):
+        if self.enable_cors_headers:
+            return {
+                "Cross-Origin-Embedder-Policy": "require-corp",
+                "Cross-Origin-Opener-Policy": "same-origin",
+            }
+        return {}
 
     def install(self, page):
         """
@@ -903,13 +925,9 @@ class SmartRouter:
             assert url.path[0] == "/"
             relative_path = url.path[1:]
             if os.path.exists(relative_path):
-                headers = {
-                    "Cross-Origin-Embedder-Policy": "require-corp",
-                    "Cross-Origin-Opener-Policy": "same-origin",
-                }
-                route.fulfill(status=200, headers=headers, path=relative_path)
+                route.fulfill(status=200, headers=self.headers, path=relative_path)
             else:
-                route.fulfill(status=404)
+                route.fulfill(status=404, headers=self.headers)
             return
 
         # network requests might be cached

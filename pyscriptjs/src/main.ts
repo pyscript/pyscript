@@ -162,6 +162,21 @@ export class PyScriptApp {
             );
         }
         this.config = loadConfigFromElement(el);
+        if (this.config.execution_thread === 'worker' && crossOriginIsolated === false) {
+            throw new UserError(
+                ErrorCode.BAD_CONFIG,
+                `When execution_thread is "worker", the site must be cross origin isolated, but crossOriginIsolated is false.
+                To be cross origin isolated, the server must use https and also serve with the following headers: ${JSON.stringify(
+                    {
+                        'Cross-Origin-Embedder-Policy': 'require-corp',
+                        'Cross-Origin-Opener-Policy': 'same-origin',
+                    },
+                )}.
+
+                The problem may be that one or both of these are missing.
+                `,
+            );
+        }
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
     }
 
