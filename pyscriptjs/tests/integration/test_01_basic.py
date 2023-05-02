@@ -36,9 +36,8 @@ class TestBasic(PyScriptTest):
         self.disable_cors_headers()
         self.pyscript_run(
             """
-            <py-config>
-                magic = "unicorn"
-            </py-config>
+            <!-- we don't really need anything here, we just want to check that
+                 pyscript starts -->
             """,
             wait_for_pyscript=False,
         )
