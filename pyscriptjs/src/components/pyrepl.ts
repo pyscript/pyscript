@@ -1,3 +1,5 @@
+import { $, $$ } from 'basic-devtools';
+
 import { basicSetup, EditorView } from 'codemirror';
 import { python } from '@codemirror/lang-python';
 import { indentUnit } from '@codemirror/language';
@@ -78,7 +80,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
                 if (!response.ok) {
                     return;
                 }
-                const cmcontentElement = this.querySelector("div[class='cm-content']");
+                const cmcontentElement = $('div[class="cm-content"]', this);
                 const { lastElementChild } = cmcontentElement;
                 cmcontentElement.replaceChildren(lastElementChild);
                 lastElementChild.textContent = await response.text();
@@ -191,7 +193,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
         // should be the default.
         autogenerateMaybe(): void {
             if (this.hasAttribute('auto-generate')) {
-                const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
+                const allPyRepls = $$(`py-repl[root='${this.getAttribute('root')}'][exec-id]`, document);
                 const lastRepl = allPyRepls[allPyRepls.length - 1];
                 const lastExecId = lastRepl.getAttribute('exec-id');
                 const nextExecId = parseInt(lastExecId) + 1;

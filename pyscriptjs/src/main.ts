@@ -1,3 +1,5 @@
+import { $$ } from 'basic-devtools';
+
 import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
@@ -150,7 +152,7 @@ export class PyScriptApp {
         // XXX: we should actively complain if there are multiple <py-config>
         // and show a big error. PRs welcome :)
         logger.info('searching for <py-config>');
-        const elements = document.getElementsByTagName('py-config');
+        const elements = $$('py-config', document);
         let el: Element | null = null;
         if (elements.length > 0) el = elements[0];
         if (elements.length >= 2) {
@@ -160,6 +162,21 @@ export class PyScriptApp {
             );
         }
         this.config = loadConfigFromElement(el);
+        if (this.config.execution_thread === 'worker' && crossOriginIsolated === false) {
+            throw new UserError(
+                ErrorCode.BAD_CONFIG,
+                `When execution_thread is "worker", the site must be cross origin isolated, but crossOriginIsolated is false.
+                To be cross origin isolated, the server must use https and also serve with the following headers: ${JSON.stringify(
+                    {
+                        'Cross-Origin-Embedder-Policy': 'require-corp',
+                        'Cross-Origin-Opener-Policy': 'same-origin',
+                    },
+                )}.
+
+                The problem may be that one or both of these are missing.
+                `,
+            );
+        }
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
     }
 
