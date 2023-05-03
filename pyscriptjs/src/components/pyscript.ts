@@ -11,6 +11,9 @@ import { InterpreterClient } from '../interpreter_client';
 
 const logger = getLogger('py-script');
 
+// used to flag already initialized nodes
+const knownPyScriptTags: WeakSet<HTMLElement> = new WeakSet();
+
 export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) {
     /**
      * A common <py-script> VS <script type="py"> initializator.
@@ -64,6 +67,10 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
         _fetchSourceFallback = () => htmlDecode(this.srcCode);
 
         async connectedCallback() {
+            // prevent multiple initialization of the same node if re-appended
+            if (knownPyScriptTags.has(this)) return;
+            knownPyScriptTags.add(this);
+
             // Save innerHTML information in srcCode so we can access it later
             // once we clean innerHTML (which is required since we don't want
             // source code to be rendered on the screen)
@@ -88,6 +95,10 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
 
         // bootstrap with the same connectedCallback logic any <script>
         const bootstrap = (script: PyScriptElement) => {
+            // prevent multiple initialization of the same node if re-appended
+            if (knownPyScriptTags.has(script)) return;
+            knownPyScriptTags.add(script);
+
             const pyScriptTag = document.createElement('py-script-tag') as PyScript;
 
             // move attributes to the live resulting pyScriptTag reference
