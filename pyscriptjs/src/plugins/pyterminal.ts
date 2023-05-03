@@ -129,7 +129,7 @@ function make_PyTerminal_pre(app: PyScriptApp) {
             // complicated to me, but I'm not really sure about the
             // implications
             this.outElem = document.createElement('pre');
-            this.outElem.className = 'py-terminal';
+            this.outElem.classList.add('py-terminal');
             this.appendChild(this.outElem);
 
             this.setupPosition(app);
