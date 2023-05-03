@@ -3,22 +3,6 @@
         <title>Panel Example</title>
         <meta charset="iso-8859-1" />
         <link rel="icon" type="image/x-icon" href="./favicon.png" />
-        <script
-            type="text/javascript"
-            src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.js"
-        ></script>
-        <script
-            type="text/javascript"
-            src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.3.min.js"
-        ></script>
-        <script
-            type="text/javascript"
-            src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.3.min.js"
-        ></script>
-        <script
-            type="text/javascript"
-            src="https://cdn.jsdelivr.net/npm/@holoviz/panel@0.14.1/dist/panel.min.js"
-        ></script>
         <link
             rel="stylesheet"
             href="https://pyscript.net/latest/pyscript.css"
@@ -41,6 +25,10 @@
             <div id="simple_app"></div>
 
             <py-tutor>
+                <script defer src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.js"></script>
+                <script defer src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.3.min.js"></script>
+                <script defer src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.3.min.js"></script>
+                <script defer src="https://cdn.jsdelivr.net/npm/@holoviz/panel@0.14.1/dist/panel.min.js"></script>
                 <py-config>
                     packages = [
                       "https://cdn.holoviz.org/panel/0.14.3/dist/wheels/bokeh-2.4.3-py3-none-any.whl",
