@@ -94,7 +94,7 @@ describe('robustFetch', () => {
         const expectedError = new FetchError(
             ErrorCode.FETCH_ERROR,
             `PyScript: Access to local files
-        (using "files" in &lt;py-config&gt;)
+        (using [[fetch]] configurations in &lt;py-config&gt;)
         is not available when directly opening a HTML file;
         you must use a webserver to serve the additional files.
         See <a style="text-decoration: underline;" href="https://github.com/pyscript/pyscript/issues/257#issuecomment-1119595062">this reference</a>
