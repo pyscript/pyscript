@@ -44,7 +44,7 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        src = py_repl.inner_text()
+        src = py_repl.locator("div.cm-content").inner_text()
         assert "print('hello from py-repl')" in src
         py_repl.locator("button").click()
         self.page.wait_for_selector("py-terminal")
@@ -601,7 +601,7 @@ class TestPyRepl(PyScriptTest):
         assert self.console.info.lines[-1] == successMsg
 
         py_repl = self.page.locator("py-repl")
-        code = py_repl.inner_text()
+        code = py_repl.locator("div.cm-content").inner_text()
         assert "print('1')" in code
 
     @skip_worker("TIMEOUT")
