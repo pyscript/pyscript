@@ -2,6 +2,8 @@ from .support import PyScriptTest, skip_worker
 
 
 class TestEventHandler(PyScriptTest):
+    ## The tests at the top of this file are for py-[event] and py-[event]-code handling
+
     @skip_worker(reason="FIXME: js.document")
     def test_coderunner(self):
         self.pyscript_run(
@@ -12,6 +14,90 @@ class TestEventHandler(PyScriptTest):
         self.page.get_by_role("button").click()
         assert "hello" in self.console.log.lines
         self.assert_no_banners()
+
+    def test_py_event_no_args(self):
+        self.pyscript_run(
+            """
+        <py-script>
+            def noargs():
+                print("Called a function with no args")
+        </py-script>
+        <button py-click="noargs">Click Me</button>
+        """
+        )
+
+        self.page.get_by_role("button").click()
+        self.wait_for_console("Called a function with no args")
+        self.assert_no_banners()
+
+    # This test is currently failing - see PR #1432 for progress
+    # https://github.com/pyscript/pyscript/pull/1432
+    def test_py_event_one_arg(self):
+        self.pyscript_run(
+            """
+        <py-script>
+            def onearg(arg1):
+                print(f"Called a function with one argument {arg1}")
+        </py-script>
+        <button py-click="onearg">Click Me</button>
+        """
+        )
+
+        self.page.get_by_role("button").click()
+        self.wait_for_console("Called a function with one argument", timeout=5000)
+        self.assert_no_banners()
+
+    def test_py_event_two_args(self):
+        self.pyscript_run(
+            """
+        <py-script>
+            def twoargs(arg1, arg2):
+                print(f"This should not get printed")
+        </py-script>
+        <button py-click="twoargs">Click Me</button>
+        """
+        )
+
+        self.page.get_by_role("button").click()
+        expected_msg = (
+            "UserError: (PY3001): The Callable specified by py-[event] should "
+            "take zero or one arguments; the provided callable takes 2 arguments"
+        )
+        banner = self.page.wait_for_selector(".py-error")
+        assert expected_msg in banner.inner_text()
+
+    def test_py_event_name_not_defined(self):
+        self.pyscript_run(
+            """
+        <button py-click="not_defined">Click Me</button>
+        """
+        )
+
+        self.page.get_by_role("button").click()
+        expected_msg = "NameError: name 'not_defined' is not defined"
+        banner = self.page.wait_for_selector(".py-error")
+        assert expected_msg in banner.inner_text()
+
+    def test_py_event_not_callable(self):
+        self.pyscript_run(
+            """
+        <py-script>
+            foo = 1
+        </py-script>
+        <button py-click="foo">Click Me</button>
+        """
+        )
+
+        self.page.get_by_role("button").click()
+        expected_msg = (
+            "UserError: (PY3000): The value of 'py-[event]' should be the name of a function"
+            " or Callable. (Got 'foo')\n"
+            "To run an expression as code, use 'py-[event]-code'"
+        )
+        banner = self.page.wait_for_selector(".py-error")
+        assert expected_msg in banner.inner_text()
+
+    ## The tests in the second half of this file are for the @when decorator
 
     @skip_worker(reason="FIXME: js.document (@when decorator)")
     def test_when_decorator_with_event(self):

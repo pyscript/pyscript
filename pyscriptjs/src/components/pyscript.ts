@@ -237,9 +237,10 @@ const pyScriptEventHandler = async event => {
         const userFunctionIsCallable = (await client.run(`callable(${userCallableName})`)).result;
         if (!userFunctionIsCallable) {
             throw new UserError(
-                ErrorCode.GENERIC,
-                "The value of'py-[event]' should be the name " +
-                    "of a function or Callable. To run an expression as code, use 'py-[event]-code'",
+                ErrorCode.EVENT_HANDLER_INVALID_NAME,
+                "The value of 'py-[event]' should be the name " +
+                    `of a function or Callable. (Got '${userCallableName}')\n` +
+                    "To run an expression as code, use 'py-[event]-code'",
             );
         }
 
@@ -267,7 +268,7 @@ const pyScriptEventHandler = async event => {
             userCallable(event);
         } else {
             throw new UserError(
-                ErrorCode.GENERIC,
+                ErrorCode.EVENT_HANDLER_WRONG_ARG_COUNT,
                 `The Callable specified by py-[event] should take zero or one ` +
                     `arguments; the provided callable takes ${numParams} arguments`,
             );
