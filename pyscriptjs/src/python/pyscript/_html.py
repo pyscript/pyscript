@@ -2,6 +2,7 @@ import time
 from textwrap import dedent
 
 import js
+from _pyscript_js import deepQuerySelector
 
 from . import _internal
 from ._mime import format_mime as _format_mime
@@ -55,7 +56,7 @@ class Element:
     def element(self):
         """Return the dom element"""
         if not self._element:
-            self._element = js.document.querySelector(f"#{self._id}")
+            self._element = deepQuerySelector(f"#{self._id}")
         return self._element
 
     @property
