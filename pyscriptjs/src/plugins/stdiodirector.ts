@@ -1,3 +1,5 @@
+import { $ } from 'basic-devtools';
+
 import { Plugin } from '../plugin';
 import { TargetedStdio, StdioMultiplexer } from '../stdio';
 import type { InterpreterClient } from '../interpreter_client';
@@ -107,7 +109,7 @@ export class StdioDirector extends Plugin {
             if (outputId) {
                 // 'output' attribute also used as location to send
                 // result of REPL
-                if (document.getElementById(outputId)) {
+                if ($('#' + outputId, document)) {
                     await pyDisplay(options.interpreter, options.result, { target: outputId });
                 } else {
                     //no matching element on page

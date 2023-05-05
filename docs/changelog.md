@@ -7,8 +7,16 @@
 Features
 --------
 
+- Added the `@when` decorator for attaching Python functions as event handlers
 - The `py-mount` attribute on HTML elements has been deprecated, and will be removed in a future release.
 
+
+### Runtime py- attributes
+
+- Added logic to react to `py-*` attributes changes, removal, `py-*` attributes added to already live nodes but also `py-*` attributes added or defined via injected nodes (either appended or via `innerHTML` operations). ([#1435](https://github.com/pyscript/pyscript/pull/1435))
+
+### &lt;script type="py"&gt;
+- Added the ability to optionally use `<script type="py">`, `<script type="pyscript">` or `<script type="py-script">` instead of a `<py-script>` custom element, in order to tackle cases where the content of the `<py-script>` tag, inevitably parsed by browsers, could accidentally contain *HTML* able to break the surrounding page layout. ([#1396](https://github.com/pyscript/pyscript/pull/1396))
 
 ### &lt;py-terminal&gt;
 - Added a `docked` field and attribute for the `<py-terminal>` custom element, enabled by default when the terminal is in `auto` mode, and able to dock the terminal at the bottom of the page with auto scroll on new code execution.

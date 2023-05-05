@@ -1,3 +1,5 @@
+import { $ } from 'basic-devtools';
+
 import { createSingularWarning, escape } from './utils';
 
 export interface Stdio {
@@ -67,7 +69,7 @@ export class TargetedStdio implements Stdio {
      */
     writeline_by_attribute(msg: string) {
         const target_id = this.source_element.getAttribute(this.source_attribute);
-        const target = document.getElementById(target_id);
+        const target = $('#' + target_id, document);
         if (target === null) {
             // No matching ID
             createSingularWarning(

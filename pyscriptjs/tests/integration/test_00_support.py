@@ -113,7 +113,7 @@ class TestSupport(PyScriptTest):
             f"""
             JS errors found: 1
             Error: this is an error
-                at {self.http_server}/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)

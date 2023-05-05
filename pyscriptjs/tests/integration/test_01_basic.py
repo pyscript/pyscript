@@ -9,10 +9,10 @@ class TestBasic(PyScriptTest):
     def test_pyscript_hello(self):
         self.pyscript_run(
             """
-            <py-script>
+            <script type="py">
                 import js
                 js.console.log('hello pyscript')
-            </py-script>
+            </script>
             """
         )
         assert self.console.log.lines == ["hello pyscript"]
@@ -31,6 +31,30 @@ class TestBasic(PyScriptTest):
             where = "a web worker"
         expected = f"[pyscript/main] Starting the interpreter in {where}"
         assert expected in self.console.info.lines
+
+    def test_no_cors_headers(self):
+        self.disable_cors_headers()
+        self.pyscript_run(
+            """
+            <!-- we don't really need anything here, we just want to check that
+                 pyscript starts -->
+            """,
+            wait_for_pyscript=False,
+        )
+        assert self.headers == {}
+        if self.execution_thread == "worker":
+            expected_alert_banner_msg = (
+                '(PY1000): When execution_thread is "worker", the site must be cross origin '
+                "isolated, but crossOriginIsolated is false. To be cross origin isolated, "
+                "the server must use https and also serve with the following headers: "
+                '{"Cross-Origin-Embedder-Policy":"require-corp",'
+                '"Cross-Origin-Opener-Policy":"same-origin"}. '
+                "The problem may be that one or both of these are missing."
+            )
+            alert_banner = self.page.wait_for_selector(".alert-banner")
+            assert expected_alert_banner_msg in alert_banner.inner_text()
+        else:
+            self.assert_no_banners()
 
     def test_print(self):
         self.pyscript_run(
@@ -316,6 +340,7 @@ class TestBasic(PyScriptTest):
         )
         btn = self.page.wait_for_selector("button")
         btn.click()
+        self.wait_for_console("hello world!")
         assert self.console.log.lines[-1] == "hello world!"
         assert self.console.error.lines == []
 

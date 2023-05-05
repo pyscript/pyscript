@@ -1,3 +1,5 @@
+import { $$ } from 'basic-devtools';
+
 import { showWarning } from '../utils';
 import { Plugin } from '../plugin';
 import { getLogger } from '../logger';
@@ -21,7 +23,7 @@ export class ImportmapPlugin extends Plugin {
         // await the module to be fully registered before executing the code
         // inside py-script. It's also unclear whether we want to wait or not
         // (or maybe only wait only if we do an actual 'import'?)
-        for (const node of document.querySelectorAll("script[type='importmap']")) {
+        for (const node of $$("script[type='importmap']", document)) {
             const importmap: ImportMapType = (() => {
                 try {
                     return JSON.parse(node.textContent) as ImportMapType;
