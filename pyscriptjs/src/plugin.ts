@@ -143,7 +143,7 @@ export class PluginManager {
     }
 
     add(...plugins: Plugin[]) {
-        for (const p of plugins) this._plugins.push(p);
+        this._plugins.push(...plugins);
     }
 
     addPythonPlugin(plugin: PythonPlugin) {
