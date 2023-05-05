@@ -309,7 +309,7 @@ function addPyScriptEventListener(interpreter: InterpreterClient, el: Element, t
 /** Mount all elements with attribute py-mount into the Python namespace */
 export async function mountElements(interpreter: InterpreterClient) {
     const matches = $$('[py-mount]', document);
-    logger.info(`py-mount: found ${matches.length as string} elements`);
+    logger.info(`py-mount: found ${matches.length} elements`);
 
     if (matches.length > 0) {
         //last non-deprecated version: 2023.03.1
@@ -321,7 +321,8 @@ export async function mountElements(interpreter: InterpreterClient) {
     let source = '';
     for (const el of matches) {
         const mountName = el.getAttribute('py-mount') || el.id.split('-').join('_');
-        source += `\n${mountName as string} = Element("${el.id as string}")`;
+        source += `\n${mountName} = Element("${el.id}")`;
+
+        await interpreter.run(source);
     }
-    await interpreter.run(source);
 }
