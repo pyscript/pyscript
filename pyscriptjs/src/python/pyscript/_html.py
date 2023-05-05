@@ -149,15 +149,6 @@ def create(what, id_=None, classes=""):
     return Element(id_, element)
 
 
-class PyWidgetTheme:
-    def __init__(self, main_style_classes):
-        self.main_style_classes = main_style_classes
-
-    def theme_it(self, widget):
-        for klass in self.main_style_classes.split(" "):
-            widget.classList.add(klass)
-
-
 class PyItemTemplate(Element):
     label_fields = None
 
@@ -220,13 +211,13 @@ class PyItemTemplate(Element):
 
 
 class PyListTemplate:
-    theme = PyWidgetTheme("py-li-element")
     item_class = PyItemTemplate
 
     def __init__(self, parent):
         self.parent = parent
         self._children = []
         self._id = self.parent.id
+        self.main_style_classes = "py-li-element"
 
     @property
     def children(self):
@@ -259,8 +250,9 @@ class PyListTemplate:
         self.md = main_div = js.document.createElement("div")
         main_div.id = self._id + "-list-tasks-container"
 
-        if self.theme:
-            self.theme.theme_it(main_div)
+        if self.main_style_classes:
+            for klass in self.main_style_classes.split(" "):
+                main_div.classList.add(klass)
 
         self.parent.appendChild(main_div)
 
