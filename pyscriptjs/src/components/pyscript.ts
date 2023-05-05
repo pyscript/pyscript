@@ -6,7 +6,6 @@ import { robustFetch } from '../fetch';
 import { PyScriptApp } from '../main';
 import { Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
-import { PyProxyCallable } from 'pyodide';
 
 const logger = getLogger('py-script');
 
@@ -96,55 +95,27 @@ export function initHandlers(interpreter: InterpreterClient) {
     }
 }
 
-/** An always same listeners to reduce RAM and enable future runtime changes via MO */
-const pyScriptEventHandler = async ({ type, currentTarget: el }) => {
+/** An always-the-same event listener for py-[event] code handlers**/
+const pyScriptEventHandler = async event => {
+    const { type, currentTarget: el } = event;
     try {
         /*  here, we need to:
                 - resolve the user-provided name to a Python object
                 - determine whether that object is the name of a Callable
+                    - If not, show and error
                 - Determine the number of parameters of that Callable
-                    - If it's 0, set up listener to call it with no args
-                    - If it's 1, set up listener to call it with the event object
-                    - If it's 2, show error/warning
+                    - If it's 0, call it with no args
+                    - If it's 1, call it with the event object
+                    - If it's 2, show error
         */
 
-        const interpreter = elementInterpreter.get(el);
-        const interf = interpreter._remote.interface
+        const client = elementInterpreter.get(el);
 
-        const pyMethod = (await interf).runPython(`
-            class SomeClass():
-                def someMethod(self, param1):
-                    print(f"This got 1 argument: {param1}")
-            instance = SomeClass()
-            instance.someMethod("foo")
-            import inspect
-            print(f"{len(inspect.signature(instance.someMethod).parameters)= }")
-            instance.someMethod
-        `)
+        const userCallableName: string | null = el.getAttribute(`py-${type as string}`);
+        if (!userCallableName) return; // on missing/empty attribute, bail
 
-        const pyInspectModule_x = await interf.pyimport('inspect').syncify()
-        console.log(Object.keys(pyInspectModule_x))
-        console.warn('Number of Parameters of dummy method:', await pyInspectModule_x.signature(pyMethod).parameters.length)
-
-        const pyInspectModule = (await interpreter).pyimport('inspect')
-        console.log()
-
-        // Import create_proxy for later user
-        await interpreter.run(`from pyodide.ffi import create_proxy`);
-
-        // Get the value the user provided for their (hopefully) Callable
-        const userFunctionName = el.getAttribute(`py-${type as string}`);
-
-        // Get the Python object this name refers to
-        const resolvedFunction = (
-            await interpreter.run(`create_proxy(eval("""${userFunctionName}"""), roundtrip=False)`)
-        ).result;
-
-        // Get a reference to the Python function 'callable()'
-        const pyCallable = (await interpreter.run(`create_proxy(callable)`)).result;
-
-        // Check if the user's provided function is callable
-        const userFunctionIsCallable = await pyCallable(resolvedFunction);
+        //check if the user-provided name refers to a Callable in the global namespace
+        const userFunctionIsCallable = (await client.run(`callable(${userCallableName})`)).result;
         if (!userFunctionIsCallable) {
             throw new UserError(
                 ErrorCode.GENERIC,
@@ -153,11 +124,35 @@ const pyScriptEventHandler = async ({ type, currentTarget: el }) => {
             );
         }
 
-        const inspectModule = (await interpreter._remote.pyimport('inspect')) as unknown as {
-            signature: (obj: any) => any;
-        };
-        console.log(await resolvedFunction.__repr__());
-        const numParams = await inspectModule.signature(resolvedFunction); //TODO: Currently s
+        // Use inspect.signature to get the number of parameters of the Callable:
+        // TODO: When auto-syncify works, eliminate evaluating the user's provided
+        // string a second time. Currently, cannot get signature of JsProxy object,
+        // when the function reference is passed back into Pyodide
+        const numParams: number | undefined = (
+            await client.run(`
+            from inspect import signature
+            len(signature(${userCallableName}).parameters)
+            `)
+        ).result;
+
+        const userCallable = (
+            await client.run(`from pyodide.ffi import create_once_callable; create_once_callable(${userCallableName})`)
+        ).result;
+
+        if (numParams == 0) {
+            userCallable().syncify();
+        } else if (numParams == 1) {
+            // The object is passed but not unwrapped, resulting in TypeErrors:
+            // TypeError: __str__ returned non-string (type pyodide.JsProxy);
+            // is this something to be fixed by 'auto-syncify'?
+            userCallable(event);
+        } else {
+            throw new UserError(
+                ErrorCode.GENERIC,
+                `The Callable specified by py-[event] should take zero or one ` +
+                    `arguments; the provided callable takes ${numParams} arguments`,
+            );
+        }
     } catch (e) {
         const err = e as Error;
         displayPyException(err, el.parentElement);
@@ -167,8 +162,10 @@ const pyScriptEventHandler = async ({ type, currentTarget: el }) => {
 const pyScriptCodeRunner = async ({ type, currentTarget: el }) => {
     try {
         const interpreter = elementInterpreter.get(el);
-        const userCode = el.getAttribute(`py-${type as string}-code`);
-        await interpreter.run(`eval("""${userCode}""")`);
+        const userCode: string | null = el.getAttribute(`py-${type as string}-code`);
+        if (userCode) {
+            await interpreter.run(`eval("""${userCode}""")`);
+        }
     } catch (e) {
         const err = e as Error;
         displayPyException(err, el.parentElement);
