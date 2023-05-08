@@ -29,11 +29,6 @@
         <section class="pyscript">
             <h1>To Do List</h1>
             <py-tutor modules="utils.py;pylist.py">
-                <py-register-widget
-                    src="./pylist.py"
-                    name="py-list"
-                    klass="PyList"
-                ></py-register-widget>
 
                 <py-config>
                     plugins = [
@@ -83,7 +78,7 @@
                     </button>
                 </div>
 
-                <py-list id="myList"></py-list>
+                <py-list src="./pylist.py" id="myList"></py-list>
                 <py-repl id="my-repl" auto-generate="true"> </py-repl>
             </py-tutor>
         </section>
