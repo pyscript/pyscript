@@ -21,7 +21,7 @@ function make_PyList(interpreter: InterpreterClient) {
             super();
             this.wrapper = document.createElement('slot');
             this.attachShadow({ mode: 'open' }).appendChild(this.wrapper);
-            this.src = this.getAttribute('src');
+            this.src = this.hasAttribute("src") ? this.getAttribute('src') : "";
         }
 
         async connectedCallback() {
@@ -34,13 +34,16 @@ function make_PyList(interpreter: InterpreterClient) {
             const mainDiv = document.createElement('div');
             mainDiv.id = this.id + '-main';
             this.appendChild(mainDiv);
-            logger.debug('PyList: reading source', this.src);
-            const response = await robustFetch(this.src);
-            if (!response.ok) {
-                return;
+            if (this.src !== "")
+            {
+                logger.debug('PyList: reading source', this.src);
+                const response = await robustFetch(this.src);
+                if (!response.ok) {
+                    return;
+                }
+                this.code = await response.text();
+                await interpreter.runButDontRaise(this.code);
             }
-            this.code = await response.text();
-            await interpreter.runButDontRaise(this.code);
             this.proxyClass = (await interpreter.globals.get(this.klass)) as Remote<PyProxyCallable>;
             this.proxy = (await this.proxyClass(this)) as Remote<PyProxy & { connect(): void }>;
             await this.proxy.connect();
