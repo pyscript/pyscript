@@ -84,7 +84,12 @@ export class PyScriptApp {
     constructor() {
         // initialize the builtin plugins
         this.plugins = new PluginManager();
-        this.plugins.add(new SplashscreenPlugin(), new PyTerminalPlugin(this), new ImportmapPlugin(), new PyListPlugin());
+        this.plugins.add(
+            new SplashscreenPlugin(),
+            new PyTerminalPlugin(this),
+            new ImportmapPlugin(),
+            new PyListPlugin(),
+        );
 
         this._stdioMultiplexer = new StdioMultiplexer();
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
