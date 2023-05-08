@@ -43,11 +43,12 @@ function make_PyList(interpreter: InterpreterClient) {
                 }
                 this.code = await response.text();
                 await interpreter.runButDontRaise(this.code);
+                // execution of code sets `this.klass` in `interpreter.globals`
+                this.proxyClass = (await interpreter.globals.get(this.klass)) as Remote<PyProxyCallable>;
+                this.proxy = (await this.proxyClass(this)) as Remote<PyProxy & { connect(): void }>;
+                await this.proxy.connect();
+                await interpreter.globals.set(this.id, this.proxy);
             }
-            this.proxyClass = (await interpreter.globals.get(this.klass)) as Remote<PyProxyCallable>;
-            this.proxy = (await this.proxyClass(this)) as Remote<PyProxy & { connect(): void }>;
-            await this.proxy.connect();
-            await interpreter.globals.set(this.id, this.proxy);
         }
     }
 
