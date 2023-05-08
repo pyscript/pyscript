@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from .support import JsErrors, PyScriptTest, skip_worker
+from .support import PageErrors, PyScriptTest, skip_worker
 
 
 class TestBasic(PyScriptTest):
@@ -76,6 +76,8 @@ class TestBasic(PyScriptTest):
         """
         )
         assert "hello pyscript" in self.console.log.lines
+        self.check_py_errors("Exception: this is an error")
+        #
         # check that we sent the traceback to the console
         tb_lines = self.console.error.lines[-1].splitlines()
         assert tb_lines[0] == "[pyexec] Python exception:"
@@ -106,6 +108,8 @@ class TestBasic(PyScriptTest):
         self.wait_for_console(
             "Exception: this is an error inside handler", match_substring=True
         )
+
+        self.check_py_errors("Exception: this is an error inside handler")
 
         ## error in console
         tb_lines = self.console.error.lines[-1].splitlines()
@@ -240,7 +244,7 @@ class TestBasic(PyScriptTest):
         assert self.console.log.lines[-1] == "hello from foo"
 
     def test_py_script_src_not_found(self):
-        with pytest.raises(JsErrors) as exc:
+        with pytest.raises(PageErrors) as exc:
             self.pyscript_run(
                 """
                 <py-script src="foo.py"></py-script>
@@ -249,9 +253,7 @@ class TestBasic(PyScriptTest):
         assert "Failed to load resource" in self.console.error.lines[0]
 
         error_msgs = str(exc.value)
-
         expected_msg = "(PY0404): Fetching from URL foo.py failed with error 404"
-
         assert expected_msg in error_msgs
         assert self.assert_banner_message(expected_msg)
 
