@@ -9,10 +9,10 @@ const logger = getLogger('py-list');
 
 function make_PyList(interpreter: InterpreterClient) {
     class PyList extends HTMLElement {
-        name: string = 'py-list';
+        name = 'py-list';
         src: string;
         code: string;
-        klass: string = 'PyList';
+        klass = 'PyList';
         wrapper: HTMLElement;
         proxy: Remote<PyProxy & { connect(): void }>;
         proxyClass: Remote<PyProxyCallable>;
