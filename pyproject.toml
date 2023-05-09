@@ -12,8 +12,6 @@ skip = "pyscriptjs/node_modules/*,*.js,*.json"
 [tool.ruff]
 builtins = [
     "Element",
-    "PyItemTemplate",
-    "PyListTemplate",
     "pyscript",
 ]
 ignore = [

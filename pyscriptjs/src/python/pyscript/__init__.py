@@ -6,8 +6,6 @@ from ._event_loop import run_until_complete
 from ._html import (
     HTML,
     Element,
-    PyItemTemplate,
-    PyListTemplate,
     add_classes,
     create,
     display,
@@ -42,8 +40,6 @@ __all__ = [
     "Element",
     "add_classes",
     "create",
-    "PyItemTemplate",
-    "PyListTemplate",
     "run_until_complete",
     "loop",
     "Plugin",
