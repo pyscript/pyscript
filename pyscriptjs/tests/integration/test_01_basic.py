@@ -182,20 +182,21 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <py-config>
-                packages = ["nonexistendright"]
+                packages = ["i-dont-exist"]
             </py-config>
             """,
             wait_for_pyscript=False,
         )
 
         expected_alert_banner_msg = (
-            "(PY1001): Unable to install package(s) 'nonexistendright'. "
+            "(PY1001): Unable to install package(s) 'i-dont-exist'. "
             "Unable to find package in PyPI. Please make sure you have "
             "entered a correct package name."
         )
 
         alert_banner = self.page.wait_for_selector(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
+        self.check_py_errors("Can't fetch metadata for 'i-dont-exist'")
 
     @skip_worker("FIXME: the banner doesn't appear")
     def test_no_python_wheel(self):
@@ -215,6 +216,7 @@ class TestBasic(PyScriptTest):
 
         alert_banner = self.page.wait_for_selector(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
+        self.check_py_errors("Can't find a pure Python 3 wheel for 'opsdroid'")
 
     def test_dynamically_add_py_script_tag(self):
         self.pyscript_run(
