@@ -1,9 +1,12 @@
-import time, js
-from textwrap import dedent
+import time
 from datetime import datetime as dt
-from pyscript import Plugin, Element, create
+from textwrap import dedent
+
+import js
+from pyscript import Element, Plugin, create
 
 plugin = Plugin("PyList")
+
 
 class PyItemTemplate(Element):
     label_fields = None
@@ -155,7 +158,7 @@ class PyList(PyListTemplate):
 
 
 @plugin.register_custom_element("py-list")
-class PyList:
+class PyListPlugin:
     def __init__(self, element):
         self.element = element
 
