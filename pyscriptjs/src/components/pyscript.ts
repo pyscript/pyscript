@@ -130,14 +130,14 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
             for (const { type, target, attributeName, addedNodes } of records) {
                 if (type === 'attributes') {
                     // consider only py-* attributes
-                    if (type.startsWith('py-')) {
+                    if (attributeName.startsWith('py-')) {
                         // if the attribute is currently present
                         if ((target as Element).hasAttribute(attributeName)) {
                             // handle the element
                             addPyScriptEventListener(
                                 getInterpreter(target as Element),
                                 target as Element,
-                                type.slice(3),
+                                attributeName.slice(3),
                             );
                         } else {
                             // remove the listener because the element should not answer
@@ -145,7 +145,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
 
                             // Note: this is *NOT* a misused-promise, this is how async events work.
                             // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                            target.removeEventListener(type.slice(3), pyScriptListener);
+                            target.removeEventListener(attributeName.slice(3), pyScriptListener);
                         }
                     }
                     // skip further loop on empty addedNodes
