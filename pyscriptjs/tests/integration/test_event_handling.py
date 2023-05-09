@@ -191,4 +191,5 @@ class TestEventHandler(PyScriptTest):
                 f"match banner text '{banner_text}'"
             )
 
-        assert any(msg in line for line in self.console.error.lines)
+        assert msg in self.console.error.lines[-1]
+        self.check_py_errors(msg)

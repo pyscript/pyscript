@@ -124,6 +124,7 @@ class TestDisplay(PyScriptTest):
         """
         )
         self.page.locator("text=Click me").click()
+        self.check_py_errors("Implicit target not allowed here")
         ## error in console
         tb_lines = self.console.error.lines[-1].splitlines()
         assert tb_lines[0] == "[pyexec] Python exception:"
