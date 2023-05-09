@@ -1,5 +1,3 @@
-import pytest
-
 from .support import PyScriptTest, skip_worker
 
 
@@ -128,7 +126,6 @@ class TestElement(PyScriptTest):
         input = self.page.wait_for_selector("#foo")
         assert input.input_value() == ""
 
-    @pytest.mark.skip(reason="Element.select seems to be just broken, fixme or killme")
     @skip_worker("FIXME: js.document")
     def test_element_select(self):
         """Test the element select"""
@@ -139,9 +136,25 @@ class TestElement(PyScriptTest):
             </select>
             <py-script>
             from pyscript import Element
-            el_foo = Element("foo")
-            el_bar = el_foo.select("bar")
-            js.console.log(el_bar.innerHtml)
+            el = Element("foo")
+            js.console.log(el.select("option").value)
+            </py-script>
+            """
+        )
+        assert self.console.log.lines[-1] == "bar"
+
+    @skip_worker("FIXME: js.document")
+    def test_element_select_content(self):
+        """Test the element select"""
+        self.pyscript_run(
+            """
+            <template id="foo">
+                <div>Bar</div>
+            </template>
+            <py-script>
+            from pyscript import Element
+            el = Element("foo")
+            js.console.log(el.select("div", from_content=True).innerHtml)
             </py-script>
             """
         )
