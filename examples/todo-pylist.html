@@ -28,13 +28,14 @@
         </nav>
         <section class="pyscript">
             <h1>To Do List</h1>
-            <py-tutor modules="utils.py;pylist.py">
+            <py-tutor modules="utils.py">
                 <py-config>
                     plugins = [
-                      "https://pyscript.net/latest/plugins/python/py_tutor.py"
+                      "https://pyscript.net/latest/plugins/python/py_tutor.py",
+                      "https://pyscript.net/latest/plugins/python/py_list.py"
                     ]
                     [[fetch]]
-                    files = ["./utils.py", "./pylist.py"]
+                    files = ["./utils.py"]
                 </py-config>
 
                 <py-script>
@@ -77,7 +78,7 @@
                     </button>
                 </div>
 
-                <py-list src="./pylist.py" id="myList"></py-list>
+                <py-list id="myList"></py-list>
                 <py-repl id="my-repl" auto-generate="true"> </py-repl>
             </py-tutor>
         </section>

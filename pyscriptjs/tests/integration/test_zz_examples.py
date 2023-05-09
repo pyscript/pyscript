@@ -368,7 +368,7 @@ class TestExamples(PyScriptTest):
         assert self.page.title() == "Todo App"
         wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
         self.assert_no_banners()
-        self.check_tutor_generated_code(modules_to_check=["utils.py", "pylist.py"])
+        self.check_tutor_generated_code(modules_to_check=["utils.py"])
 
     @pytest.mark.xfail(reason="To be moved to collective and updated, see issue #686")
     def test_toga_freedom(self):
