@@ -1,5 +1,6 @@
 import { $$, $x } from 'basic-devtools';
 
+import { shadowRoots } from '../shadow_roots';
 import { ltrim, htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import { getLogger } from '../logger';
 import { pyExec, displayPyException } from '../pyexec';
@@ -174,7 +175,9 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
         const { attachShadow } = Element.prototype;
         Object.assign(Element.prototype, {
             attachShadow(init: ShadowRootInit) {
-                return observe(attachShadow.call(this as Element, init));
+                const shadowRoot = observe(attachShadow.call(this as Element, init));
+                shadowRoots.add(shadowRoot);
+                return shadowRoot;
             },
         });
 

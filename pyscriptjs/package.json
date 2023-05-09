@@ -40,6 +40,7 @@
         "typescript": "5.0.4"
     },
     "dependencies": {
-        "basic-devtools": "^0.1.6"
+        "basic-devtools": "^0.1.6",
+        "not-so-weak": "^1.0.0"
     }
 }
