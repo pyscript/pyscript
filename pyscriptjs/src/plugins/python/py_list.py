@@ -163,5 +163,5 @@ class PyListPlugin:
         self.element = element
 
     def connect(self):
-        py_list_template = PyListTemplate(self.element)
-        py_list_template.connect()
+        py_list = PyList(self.element)
+        py_list.connect()
