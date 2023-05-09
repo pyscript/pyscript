@@ -161,7 +161,10 @@ class PyList(PyListTemplate):
 class PyListPlugin:
     def __init__(self, element):
         self.element = element
+        self.py_list = PyList(self.element)
+
+    def add(self, item):
+        self.py_list.add(item)
 
     def connect(self):
-        py_list = PyList(self.element)
-        py_list.connect()
+        self.py_list.connect()

@@ -50,7 +50,8 @@
 
                       # add a new task to the list and tell it to use the `content` key to show in the UI
                       # and to use the key `done` to sync the task status with a checkbox element in the UI
-                      myList.add(task)
+                      myList = Element("myList")
+                      myList.element.pyElementInstance.add(task)
 
                       # clear the inputbox element used to create the new task
                       new_task_content.clear()
