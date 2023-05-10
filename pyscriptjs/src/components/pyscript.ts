@@ -1,4 +1,7 @@
-import { htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
+import { $$, $x } from 'basic-devtools';
+
+import { shadowRoots } from '../shadow_roots';
+import { ltrim, htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import { getLogger } from '../logger';
 import { pyExec, displayPyException } from '../pyexec';
 import { _createAlertBanner } from '../exceptions';
@@ -9,230 +12,237 @@ import { InterpreterClient } from '../interpreter_client';
 
 const logger = getLogger('py-script');
 
+// used to flag already initialized nodes
+const knownPyScriptTags: WeakSet<HTMLElement> = new WeakSet();
+
 export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) {
+    /**
+     * A common <py-script> VS <script type="py"> initializator.
+     */
+    const init = async (pyScriptTag: PyScript, fallback: () => string) => {
+        /**
+         * Since connectedCallback is async, multiple py-script tags can be executed in
+         * an order which is not particularly sequential. The locking mechanism here ensures
+         * a sequential execution of multiple py-script tags present in one page.
+         *
+         * Concurrent access to the multiple py-script tags is thus avoided.
+         */
+        app.incrementPendingTags();
+        let releaseLock: () => void;
+        try {
+            releaseLock = await app.tagExecutionLock();
+            ensureUniqueId(pyScriptTag);
+            const src = await fetchSource(pyScriptTag, fallback);
+            await app.plugins.beforePyScriptExec({ interpreter, src, pyScriptTag });
+            const { result } = await pyExec(interpreter, src, pyScriptTag);
+            await app.plugins.afterPyScriptExec({ interpreter, src, pyScriptTag, result });
+        } finally {
+            releaseLock();
+            app.decrementPendingTags();
+        }
+    };
+
+    /**
+     * Given a generic DOM Element, tries to fetch the 'src' attribute, if present.
+     * It either throws an error if the 'src' can't be fetched or it returns a fallback
+     * content as source.
+     */
+    const fetchSource = async (tag: Element, fallback: () => string): Promise<string> => {
+        if (tag.hasAttribute('src')) {
+            try {
+                const response = await robustFetch(tag.getAttribute('src'));
+                return await response.text();
+            } catch (err) {
+                const e = err as Error;
+                _createAlertBanner(e.message);
+                throw e;
+            }
+        }
+        return fallback();
+    };
+
     class PyScript extends HTMLElement {
         srcCode: string;
         stdout_manager: Stdio | null;
         stderr_manager: Stdio | null;
+        _fetchSourceFallback = () => htmlDecode(this.srcCode);
 
         async connectedCallback() {
-            /**
-             * Since connectedCallback is async, multiple py-script tags can be executed in
-             * an order which is not particularly sequential. The locking mechanism here ensures
-             * a sequential execution of multiple py-script tags present in one page.
-             *
-             * Concurrent access to the multiple py-script tags is thus avoided.
-             */
-            app.incrementPendingTags();
-            let releaseLock: () => void;
-            try {
-                releaseLock = await app.tagExecutionLock();
-                ensureUniqueId(this);
-                // Save innerHTML information in srcCode so we can access it later
-                // once we clean innerHTML (which is required since we don't want
-                // source code to be rendered on the screen)
-                this.srcCode = this.innerHTML;
-                const pySrc = await this.getPySrc();
-                this.innerHTML = '';
+            // prevent multiple initialization of the same node if re-appended
+            if (knownPyScriptTags.has(this)) return;
+            knownPyScriptTags.add(this);
 
-                await app.plugins.beforePyScriptExec({ interpreter: interpreter, src: pySrc, pyScriptTag: this });
-                const result = (await pyExec(interpreter, pySrc, this)).result;
-                await app.plugins.afterPyScriptExec({
-                    interpreter: interpreter,
-                    src: pySrc,
-                    pyScriptTag: this,
-                    result: result,
-                });
-            } finally {
-                releaseLock();
-                app.decrementPendingTags();
-            }
+            // Save innerHTML information in srcCode so we can access it later
+            // once we clean innerHTML (which is required since we don't want
+            // source code to be rendered on the screen)
+            this.srcCode = this.innerHTML;
+            this.innerHTML = '';
+            await init(this, this._fetchSourceFallback);
         }
 
-        async getPySrc(): Promise<string> {
-            if (this.hasAttribute('src')) {
-                const url = this.getAttribute('src');
-                try {
-                    const response = await robustFetch(url);
-                    return await response.text();
-                } catch (err) {
-                    const e = err as Error;
-                    _createAlertBanner(e.message);
-                    this.innerHTML = '';
-                    throw e;
+        getPySrc(): Promise<string> {
+            return fetchSource(this, this._fetchSourceFallback);
+        }
+    }
+
+    // bootstrap the <script> tag fallback only if needed (once per definition)
+    if (!customElements.get('py-script')) {
+        // allow any HTMLScriptElement to behave like a PyScript custom-elelement
+        type PyScriptElement = HTMLScriptElement & PyScript;
+
+        // the <script> tags to look for, acting like a <py-script> one
+        // both py, pyscript, and py-script, are valid types to help reducing typo cases
+        const pyScriptCSS = 'script[type="py"],script[type="pyscript"],script[type="py-script"]';
+
+        // bootstrap with the same connectedCallback logic any <script>
+        const bootstrap = (script: PyScriptElement) => {
+            // prevent multiple initialization of the same node if re-appended
+            if (knownPyScriptTags.has(script)) return;
+            knownPyScriptTags.add(script);
+
+            const pyScriptTag = document.createElement('py-script-tag') as PyScript;
+
+            // move attributes to the live resulting pyScriptTag reference
+            for (const name of ['output', 'src', 'stderr']) {
+                const value = script.getAttribute(name);
+                if (value) {
+                    pyScriptTag.setAttribute(name, value);
                 }
-            } else {
-                return htmlDecode(this.srcCode);
             }
-        }
+
+            // insert pyScriptTag companion right after the original script
+            script.after(pyScriptTag);
+
+            // remove the first empty line to preserve line numbers/counting
+            init(pyScriptTag, () => ltrim(script.textContent.replace(/^[\r\n]+/, ''))).catch(() =>
+                pyScriptTag.remove(),
+            );
+        };
+
+        // loop over all py scripts and botstrap these
+        const bootstrapScripts = (root: Document | Element) => {
+            for (const node of $$(pyScriptCSS, root)) {
+                bootstrap(node as PyScriptElement);
+            }
+        };
+
+        // globally shared MutationObserver for <script> special cases
+        const pyScriptMO = new MutationObserver(records => {
+            for (const { type, target, attributeName, addedNodes } of records) {
+                if (type === 'attributes') {
+                    // consider only py-* attributes
+                    if (attributeName.startsWith('py-')) {
+                        // if the attribute is currently present
+                        if ((target as Element).hasAttribute(attributeName)) {
+                            // handle the element
+                            addPyScriptEventListener(
+                                getInterpreter(target as Element),
+                                target as Element,
+                                attributeName.slice(3),
+                            );
+                        } else {
+                            // remove the listener because the element should not answer
+                            // to this specific event anymore
+
+                            // Note: this is *NOT* a misused-promise, this is how async events work.
+                            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                            target.removeEventListener(attributeName.slice(3), pyScriptListener);
+                        }
+                    }
+                    // skip further loop on empty addedNodes
+                    continue;
+                }
+                for (const node of addedNodes) {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        if ((node as PyScriptElement).matches(pyScriptCSS)) {
+                            bootstrap(node as PyScriptElement);
+                        } else {
+                            addAllPyScriptEventListeners(node as Element);
+                            bootstrapScripts(node as Element);
+                        }
+                    }
+                }
+            }
+        });
+
+        // simplifies observing any root node (document/shadowRoot)
+        const observe = (root: Document | ShadowRoot) => {
+            pyScriptMO.observe(root, { childList: true, subtree: true, attributes: true });
+            return root;
+        };
+
+        // patch attachShadow once to bootstrap <script> special cases in there too
+        const { attachShadow } = Element.prototype;
+        Object.assign(Element.prototype, {
+            attachShadow(init: ShadowRootInit) {
+                const shadowRoot = observe(attachShadow.call(this as Element, init));
+                shadowRoots.add(shadowRoot);
+                return shadowRoot;
+            },
+        });
+
+        // bootstrap all already live py <script> tags
+        bootstrapScripts(document);
+
+        // once all tags have been initialized, observe new possible tags added later on
+        // this is to save a few ticks within the callback as each <script> already adds a companion node
+        observe(document);
     }
 
     return PyScript;
 }
 
-/** Defines all possible py-on* and their corresponding event types  */
-const pyAttributeToEvent: Map<string, string> = new Map<string, string>([
-    // Leaving pys-onClick and pys-onKeyDown for backward compatibility
-    ['pys-onClick', 'click'],
-    ['pys-onKeyDown', 'keydown'],
-    ['py-onClick', 'click'],
-    ['py-onKeyDown', 'keydown'],
-    // Window Events
-    ['py-afterprint', 'afterprint'],
-    ['py-beforeprint', 'beforeprint'],
-    ['py-beforeunload', 'beforeunload'],
-    ['py-error', 'error'],
-    ['py-hashchange', 'hashchange'],
-    ['py-load', 'load'],
-    ['py-message', 'message'],
-    ['py-offline', 'offline'],
-    ['py-online', 'online'],
-    ['py-pagehide', 'pagehide'],
-    ['py-pageshow', 'pageshow'],
-    ['py-popstate', 'popstate'],
-    ['py-resize', 'resize'],
-    ['py-storage', 'storage'],
-    ['py-unload', 'unload'],
+/** A weak relation between an element and current interpreter */
+const elementInterpreter: WeakMap<Element, InterpreterClient> = new WeakMap();
 
-    // Form Events
-    ['py-blur', 'blur'],
-    ['py-change', 'change'],
-    ['py-contextmenu', 'contextmenu'],
-    ['py-focus', 'focus'],
-    ['py-input', 'input'],
-    ['py-invalid', 'invalid'],
-    ['py-reset', 'reset'],
-    ['py-search', 'search'],
-    ['py-select', 'select'],
-    ['py-submit', 'submit'],
+/** Return the interpreter, if any, or vallback to the last known one */
+const getInterpreter = (el: Element) => elementInterpreter.get(el) || lastInterpreter;
 
-    // Keyboard Events
-    ['py-keydown', 'keydown'],
-    ['py-keypress', 'keypress'],
-    ['py-keyup', 'keyup'],
+/** Retain last used interpreter to bootstrap PyScript to augment via MO runtime nodes */
+let lastInterpreter: InterpreterClient;
 
-    // Mouse Events
-    ['py-click', 'click'],
-    ['py-dblclick', 'dblclick'],
-    ['py-mousedown', 'mousedown'],
-    ['py-mousemove', 'mousemove'],
-    ['py-mouseout', 'mouseout'],
-    ['py-mouseover', 'mouseover'],
-    ['py-mouseup', 'mouseup'],
-    ['py-mousewheel', 'mousewheel'],
-    ['py-wheel', 'wheel'],
-
-    // Drag Events
-    ['py-drag', 'drag'],
-    ['py-dragend', 'dragend'],
-    ['py-dragenter', 'dragenter'],
-    ['py-dragleave', 'dragleave'],
-    ['py-dragover', 'dragover'],
-    ['py-dragstart', 'dragstart'],
-    ['py-drop', 'drop'],
-    ['py-scroll', 'scroll'],
-
-    // Clipboard Events
-    ['py-copy', 'copy'],
-    ['py-cut', 'cut'],
-    ['py-paste', 'paste'],
-
-    // Media Events
-    ['py-abort', 'abort'],
-    ['py-canplay', 'canplay'],
-    ['py-canplaythrough', 'canplaythrough'],
-    ['py-cuechange', 'cuechange'],
-    ['py-durationchange', 'durationchange'],
-    ['py-emptied', 'emptied'],
-    ['py-ended', 'ended'],
-    ['py-loadeddata', 'loadeddata'],
-    ['py-loadedmetadata', 'loadedmetadata'],
-    ['py-loadstart', 'loadstart'],
-    ['py-pause', 'pause'],
-    ['py-play', 'play'],
-    ['py-playing', 'playing'],
-    ['py-progress', 'progress'],
-    ['py-ratechange', 'ratechange'],
-    ['py-seeked', 'seeked'],
-    ['py-seeking', 'seeking'],
-    ['py-stalled', 'stalled'],
-    ['py-suspend', 'suspend'],
-    ['py-timeupdate', 'timeupdate'],
-    ['py-volumechange', 'volumechange'],
-    ['py-waiting', 'waiting'],
-
-    // Misc Events
-    ['py-toggle', 'toggle'],
-]);
-
-/** Initialize all elements with py-* handlers attributes  */
-export async function initHandlers(interpreter: InterpreterClient) {
-    logger.debug('Initializing py-* event handlers...');
-    for (const pyAttribute of pyAttributeToEvent.keys()) {
-        await createElementsWithEventListeners(interpreter, pyAttribute);
+/** Find all py-* attributes in a context node and its descendant + add listeners */
+const addAllPyScriptEventListeners = (root: Document | Element) => {
+    // note the XPath needs to start with a `.` to reference the starting root element
+    const attributes = $x('.//@*[starts-with(name(), "py-")]', root) as Attr[];
+    for (const { name, ownerElement: el } of attributes) {
+        addPyScriptEventListener(getInterpreter(el), el, name.slice(3));
     }
+};
+
+/** Initialize all elements with py-* handlers attributes */
+export function initHandlers(interpreter: InterpreterClient) {
+    logger.debug('Initializing py-* event handlers...');
+    lastInterpreter = interpreter;
+    addAllPyScriptEventListeners(document);
 }
 
-/** Initializes an element with the given py-on* attribute and its handler */
-async function createElementsWithEventListeners(interpreter: InterpreterClient, pyAttribute: string) {
-    const matches: NodeListOf<HTMLElement> = document.querySelectorAll(`[${pyAttribute}]`);
-    for (const el of matches) {
-        // If the element doesn't have an id, let's add one automatically!
-        if (el.id.length === 0) {
-            ensureUniqueId(el);
-        }
-        const handlerCode = el.getAttribute(pyAttribute);
-        const event = pyAttributeToEvent.get(pyAttribute);
-
-        if (pyAttribute === 'pys-onClick' || pyAttribute === 'pys-onKeyDown') {
-            const msg =
-                `The attribute 'pys-onClick' and 'pys-onKeyDown' are deprecated. Please 'py-click="myFunction()"' ` +
-                ` or 'py-keydown="myFunction()"' instead.`;
-            createDeprecationWarning(msg, msg);
-            const source = `
-            from pyodide.ffi import create_proxy
-            Element("${el.id}").element.addEventListener("${event}",  create_proxy(${handlerCode}))
-            `;
-
-            // We meed to run the source code in a try/catch block, because
-            // the source code may contain a syntax error, which will cause
-            // the splashscreen to not be removed.
-            try {
-                await interpreter.run(source);
-            } catch (e) {
-                logger.error((e as Error).message);
-            }
-        } else {
-            el.addEventListener(event, () => {
-                void (async () => {
-                    try {
-                        await interpreter.run(handlerCode);
-                    } catch (e) {
-                        const err = e as Error;
-                        displayPyException(err, el.parentElement);
-                    }
-                })();
-            });
-        }
-        // TODO: Should we actually map handlers in JS instead of Python?
-        // el.onclick = (evt: any) => {
-        //   console.log("click");
-        //   new Promise((resolve, reject) => {
-        //     setTimeout(() => {
-        //       console.log('Inside')
-        //     }, 300);
-        //   }).then(() => {
-        //     console.log("resolved")
-        //   });
-        //   // let handlerCode = el.getAttribute('py-onClick');
-        //   // pyodide.runPython(handlerCode);
-        // }
+/** An always same listeners to reduce RAM and enable future runtime changes via MO */
+const pyScriptListener = async ({ type, currentTarget: el }) => {
+    try {
+        const interpreter = getInterpreter(el);
+        await interpreter.run(el.getAttribute(`py-${type as string}`));
+    } catch (e) {
+        const err = e as Error;
+        displayPyException(err, el.parentElement);
     }
+};
+
+/** Weakly relate an element with an interpreter and then add the listener's type */
+function addPyScriptEventListener(interpreter: InterpreterClient, el: Element, type: string) {
+    // If the element doesn't have an id, let's add one automatically!
+    if (el.id.length === 0) {
+        ensureUniqueId(el as HTMLElement);
+    }
+    elementInterpreter.set(el, interpreter);
+    // Note: this is *NOT* a misused-promise, this is how async events work.
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    el.addEventListener(type, pyScriptListener);
 }
 
 /** Mount all elements with attribute py-mount into the Python namespace */
 export async function mountElements(interpreter: InterpreterClient) {
-    const matches: NodeListOf<HTMLElement> = document.querySelectorAll('[py-mount]');
+    const matches = $$('[py-mount]', document);
     logger.info(`py-mount: found ${matches.length} elements`);
 
     if (matches.length > 0) {

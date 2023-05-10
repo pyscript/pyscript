@@ -1,4 +1,5 @@
 import dataclasses
+import functools
 import math
 import os
 import pdb
@@ -11,13 +12,100 @@ from dataclasses import dataclass
 
 import py
 import pytest
+import toml
 from playwright.sync_api import Error as PlaywrightError
 
 ROOT = py.path.local(__file__).dirpath("..", "..", "..")
 BUILD = ROOT.join("pyscriptjs", "build")
 
 
+def params_with_marks(params):
+    """
+    Small helper to automatically apply to each param a pytest.mark with the
+    same name of the param itself. E.g.:
+
+        params_with_marks(['aaa', 'bbb'])
+
+    is equivalent to:
+
+        [pytest.param('aaa', marks=pytest.mark.aaa),
+         pytest.param('bbb', marks=pytest.mark.bbb)]
+
+    This makes it possible to use 'pytest -m aaa' to run ONLY the tests which
+    uses the param 'aaa'.
+    """
+    return [pytest.param(name, marks=getattr(pytest.mark, name)) for name in params]
+
+
+def with_execution_thread(*values):
+    """
+    Class decorator to override config.execution_thread.
+
+    By default, we run each test twice:
+      - execution_thread = 'main'
+      - execution_thread = 'worker'
+
+    If you want to execute certain tests with only one specific values of
+    execution_thread, you can use this class decorator. For example:
+
+    @with_execution_thread('main')
+    class TestOnlyMainThread:
+        ...
+
+    @with_execution_thread('worker')
+    class TestOnlyWorker:
+        ...
+
+    If you use @with_execution_thread(None), the logic to inject the
+    execution_thread config is disabled.
+    """
+
+    if values == (None,):
+
+        @pytest.fixture
+        def execution_thread(self, request):
+            return None
+
+    else:
+        for value in values:
+            assert value in ("main", "worker")
+
+            @pytest.fixture(params=params_with_marks(values))
+            def execution_thread(self, request):
+                return request.param
+
+    def with_execution_thread_decorator(cls):
+        cls.execution_thread = execution_thread
+        return cls
+
+    return with_execution_thread_decorator
+
+
+def skip_worker(reason):
+    """
+    Decorator to skip a test if self.execution_thread == 'worker'
+    """
+    if callable(reason):
+        # this happens if you use @skip_worker instead of @skip_worker("bla bla bla")
+        raise Exception(
+            "You need to specify a reason for skipping, "
+            "please use: @skip_worker('...')"
+        )
+
+    def decorator(fn):
+        @functools.wraps(fn)
+        def decorated(self, *args):
+            if self.execution_thread == "worker":
+                pytest.skip(reason)
+            return fn(self, *args)
+
+        return decorated
+
+    return decorator
+
+
 @pytest.mark.usefixtures("init")
+@with_execution_thread("main", "worker")
 class PyScriptTest:
     """
     Base class to write PyScript integration tests, based on playwright.
@@ -46,12 +134,8 @@ class PyScriptTest:
         creates an HTML page to run the specified snippet.
     """
 
-    # Pyodide always print()s this message upon initialization. Make it
-    # available to all tests so that it's easiert to check.
-    PY_COMPLETE = "Python initialization complete"
-
     @pytest.fixture()
-    def init(self, request, tmpdir, logger, page):
+    def init(self, request, tmpdir, logger, page, execution_thread):
         """
         Fixture to automatically initialize all the tests in this class and its
         subclasses.
@@ -73,16 +157,18 @@ class PyScriptTest:
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
         self.logger = logger
+        self.execution_thread = execution_thread
+        self.dev_server = None
 
         if request.config.option.no_fake_server:
             # use a real HTTP server. Note that as soon as we request the
             # fixture, the server automatically starts in its own thread.
-            self.http_server = request.getfixturevalue("http_server")
+            self.dev_server = request.getfixturevalue("dev_server")
+            self.http_server_addr = self.dev_server.base_url
             self.router = None
-            self.is_fake_server = False
         else:
             # use the internal playwright routing
-            self.http_server = "http://fake_server"
+            self.http_server_addr = "https://fake_server"
             self.router = SmartRouter(
                 "fake_server",
                 cache=request.config.cache,
@@ -90,7 +176,6 @@ class PyScriptTest:
                 usepdb=request.config.option.usepdb,
             )
             self.router.install(page)
-            self.is_fake_server = True
         #
         self.init_page(page)
         #
@@ -123,8 +208,21 @@ class PyScriptTest:
 
         self.console = ConsoleMessageCollection(self.logger)
         self._js_errors = []
+        self._py_errors = []
         page.on("console", self._on_console)
         page.on("pageerror", self._on_pageerror)
+
+    @property
+    def headers(self):
+        if self.dev_server is None:
+            return self.router.headers
+        return self.dev_server.RequestHandlerClass.my_headers()
+
+    def disable_cors_headers(self):
+        if self.dev_server is None:
+            self.router.enable_cors_headers = False
+        else:
+            self.dev_server.RequestHandlerClass.enable_cors_headers = False
 
     def run_js(self, code):
         """
@@ -146,17 +244,26 @@ class PyScriptTest:
         # page and they should not cause the test to fail, you should call
         # self.check_js_errors() in the test itself.
         self.check_js_errors()
+        self.check_py_errors()
 
     def _on_console(self, msg):
+        if msg.type == "error" and "Traceback (most recent call last)" in msg.text:
+            # this is a Python traceback, let's record it as a py_error
+            self._py_errors.append(msg.text)
         self.console.add_message(msg.type, msg.text)
 
     def _on_pageerror(self, error):
-        self.console.add_message("js_error", error.stack)
-        self._js_errors.append(error)
+        # apparently, playwright Error.stack contains all the info that we
+        # want: exception name, message and stacktrace. The docs say that
+        # error.stack is optional, so fallback to the standard repr if it's
+        # unavailable.
+        error_msg = error.stack or str(error)
+        self.console.add_message("js_error", error_msg)
+        self._js_errors.append(error_msg)
 
-    def check_js_errors(self, *expected_messages):
+    def _check_page_errors(self, kind, expected_messages):
         """
-        Check whether JS errors were reported.
+        Check whether the page raised any 'JS' or 'Python' error.
 
         expected_messages is a list of strings of errors that you expect they
         were raised in the page.  They are checked using a simple 'in' check,
@@ -164,46 +271,71 @@ class PyScriptTest:
             if expected_message in actual_error_message:
                 ...
 
-        If an error was expected but not found, it raises
-        DidNotRaiseJsError().
+        If an error was expected but not found, it raises PageErrorsDidNotRaise.
 
-        If there are MORE errors other than the expected ones, it raises JsErrors.
+        If there are MORE errors other than the expected ones, it raises PageErrors.
 
         Upon return, all the errors are cleared, so a subsequent call to
-        check_js_errors will not raise, unless NEW JS errors have been reported
+        check_{js,py}_errors will not raise, unless NEW errors have been reported
         in the meantime.
         """
+        assert kind in ("JS", "Python")
+        if kind == "JS":
+            actual_errors = self._js_errors[:]
+        else:
+            actual_errors = self._py_errors[:]
         expected_messages = list(expected_messages)
-        js_errors = self._js_errors[:]
 
         for i, msg in enumerate(expected_messages):
-            for j, error in enumerate(js_errors):
-                if msg is not None and error is not None and msg in error.message:
+            for j, error in enumerate(actual_errors):
+                if msg is not None and error is not None and msg in error:
                     # we matched one expected message with an error, remove both
                     expected_messages[i] = None
-                    js_errors[j] = None
+                    actual_errors[j] = None
 
-        # if everything is find, now expected_messages and js_errors contains
+        # if everything is find, now expected_messages and actual_errors contains
         # only Nones. If they contain non-None elements, it means that we
-        # either have messages which are expected-but-not-found or errors
-        # which are found-but-not-expected.
-        expected_messages = [msg for msg in expected_messages if msg is not None]
-        js_errors = [err for err in js_errors if err is not None]
-        self.clear_js_errors()
+        # either have messages which are expected-but-not-found or
+        # found-but-not-expected.
+        not_found = [msg for msg in expected_messages if msg is not None]
+        unexpected = [err for err in actual_errors if err is not None]
 
-        if expected_messages:
+        if kind == "JS":
+            self.clear_js_errors()
+        else:
+            self.clear_py_errors()
+
+        if not_found:
             # expected-but-not-found
-            raise JsErrorsDidNotRaise(expected_messages, js_errors)
-
-        if js_errors:
+            raise PageErrorsDidNotRaise(kind, not_found, unexpected)
+        if unexpected:
             # found-but-not-expected
-            raise JsErrors(js_errors)
+            raise PageErrors(kind, unexpected)
+
+    def check_js_errors(self, *expected_messages):
+        """
+        Check whether JS errors were reported.
+
+        See the docstring for _check_page_errors for more details.
+        """
+        self._check_page_errors("JS", expected_messages)
+
+    def check_py_errors(self, *expected_messages):
+        """
+        Check whether Python errors were reported.
+
+        See the docstring for _check_page_errors for more details.
+        """
+        self._check_page_errors("Python", expected_messages)
 
     def clear_js_errors(self):
         """
         Clear all JS errors.
         """
         self._js_errors = []
+
+    def clear_py_errors(self):
+        self._py_errors = []
 
     def writefile(self, filename, content):
         """
@@ -216,15 +348,19 @@ class PyScriptTest:
     def goto(self, path):
         self.logger.reset()
         self.logger.log("page.goto", path, color="yellow")
-        url = f"{self.http_server}/{path}"
+        url = f"{self.http_server_addr}/{path}"
         self.page.goto(url, timeout=0)
 
-    def wait_for_console(self, text, *, timeout=None, check_js_errors=True):
+    def wait_for_console(
+        self, text, *, match_substring=False, timeout=None, check_js_errors=True
+    ):
         """
         Wait until the given message appear in the console. If the message was
         already printed in the console, return immediately.
 
-        Note: it must be the *exact* string as printed by e.g. console.log.
+        By default "text" must be the *exact* string as printed by a single
+        call to e.g. console.log. If match_substring is True, it is enough
+        that the console contains the given text anywhere.
 
         timeout is expressed in milliseconds. If it's None, it will use
         the same default as playwright, which is 30 seconds.
@@ -234,6 +370,16 @@ class PyScriptTest:
 
         Return the elapsed time in ms.
         """
+        if match_substring:
+
+            def find_text():
+                return text in self.console.all.text
+
+        else:
+
+            def find_text():
+                return text in self.console.all.lines
+
         if timeout is None:
             timeout = 30 * 1000
         # NOTE: we cannot use playwright's own page.expect_console_message(),
@@ -246,7 +392,7 @@ class PyScriptTest:
                 if elapsed_ms > timeout:
                     raise TimeoutError(f"{elapsed_ms:.2f} ms")
                 #
-                if text in self.console.all.lines:
+                if find_text():
                     # found it!
                     return elapsed_ms
                 #
@@ -283,6 +429,69 @@ class PyScriptTest:
         # events aren't being triggered in the tests.
         self.page.wait_for_timeout(100)
 
+    def _parse_py_config(self, doc):
+        configs = re.findall("<py-config>(.*?)</py-config>", doc, flags=re.DOTALL)
+        configs = [cfg.strip() for cfg in configs]
+        if len(configs) == 0:
+            return None
+        elif len(configs) == 1:
+            return toml.loads(configs[0])
+        else:
+            raise AssertionError("Too many <py-config>")
+
+    def _inject_execution_thread_config(self, snippet, execution_thread):
+        """
+        If snippet already contains a py-config, let's try to inject
+        execution_thread automatically. Note that this works only for plain
+        <py-config> with inline config: type="json" and src="..." are not
+        supported by this logic, which should remain simple.
+        """
+        cfg = self._parse_py_config(snippet)
+        if cfg is None:
+            # we don't have any <py-config>, let's add one
+            py_config_maybe = f"""
+            <py-config>
+                execution_thread = "{execution_thread}"
+            </py-config>
+            """
+        else:
+            cfg["execution_thread"] = execution_thread
+            dumped_cfg = toml.dumps(cfg)
+            new_py_config = f"""
+            <py-config>
+                {dumped_cfg}
+            </py-config>
+            """
+            snippet = re.sub(
+                "<py-config>.*</py-config>", new_py_config, snippet, flags=re.DOTALL
+            )
+            # no need for extra config, it's already in the snippet
+            py_config_maybe = ""
+        #
+        return snippet, py_config_maybe
+
+    def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
+        if execution_thread is None:
+            py_config_maybe = ""
+        else:
+            snippet, py_config_maybe = self._inject_execution_thread_config(
+                snippet, execution_thread
+            )
+        doc = f"""
+        <html>
+          <head>
+              <link rel="stylesheet" href="{self.http_server_addr}/build/pyscript.css" />
+              <script defer src="{self.http_server_addr}/build/pyscript.js"></script>
+              {extra_head}
+          </head>
+          <body>
+            {py_config_maybe}
+            {snippet}
+          </body>
+        </html>
+        """
+        return doc
+
     def pyscript_run(
         self, snippet, *, extra_head="", wait_for_pyscript=True, timeout=None
     ):
@@ -299,18 +508,9 @@ class PyScriptTest:
           - open a playwright page for it
           - wait until pyscript has been fully loaded
         """
-        doc = f"""
-        <html>
-          <head>
-              <link rel="stylesheet" href="{self.http_server}/build/pyscript.css" />
-              <script defer src="{self.http_server}/build/pyscript.js"></script>
-              {extra_head}
-          </head>
-          <body>
-            {snippet}
-          </body>
-        </html>
-        """
+        doc = self._pyscript_format(
+            snippet, execution_thread=self.execution_thread, extra_head=extra_head
+        )
         if not wait_for_pyscript and timeout is not None:
             raise ValueError("Cannot set a timeout if wait_for_pyscript=False")
         filename = f"{self.testname}.html"
@@ -454,54 +654,37 @@ def wait_for_render(page, selector, pattern, timeout_seconds: int | None = None)
     assert py_rendered  # nosec
 
 
-class JsErrors(Exception):
+class PageErrors(Exception):
     """
-    Represent one or more exceptions which happened in JS.
-
-    It's a thin wrapper around playwright.sync_api.Error, with two important
-    differences:
-
-    1. it has a better name: if you see JsError in a traceback, it's
-       immediately obvious that it's a JS exception.
-
-    2. Show also the JS stacktrace by default, contrarily to
-       playwright.sync_api.Error
+    Represent one or more exceptions which happened in JS or Python.
     """
 
-    def __init__(self, errors):
+    def __init__(self, kind, errors):
+        assert kind in ("JS", "Python")
         n = len(errors)
         assert n != 0
-        lines = [f"JS errors found: {n}"]
-        for err in errors:
-            lines.append(self.format_playwright_error(err))
+        lines = [f"{kind} errors found: {n}"]
+        lines += errors
         msg = "\n".join(lines)
         super().__init__(msg)
         self.errors = errors
 
-    @staticmethod
-    def format_playwright_error(error):
-        # apparently, playwright Error.stack contains all the info that we
-        # want: exception name, message and stacktrace. The docs say that
-        # error.stack is optional, so fallback to the standard repr if it's
-        # unavailable.
-        return error.stack or str(error)
 
-
-class JsErrorsDidNotRaise(Exception):
+class PageErrorsDidNotRaise(Exception):
     """
-    Exception raised by check_js_errors when the expected JS error messages
-    are not found.
+    Exception raised by check_{js,py}_errors when the expected JS or Python
+    error messages are not found.
     """
 
-    def __init__(self, expected_messages, errors):
-        lines = ["The following JS errors were expected but could not be found:"]
+    def __init__(self, kind, expected_messages, errors):
+        assert kind in ("JS", "Python")
+        lines = [f"The following {kind} errors were expected but could not be found:"]
         for msg in expected_messages:
             lines.append("    - " + msg)
         if errors:
             lines.append("---")
-            lines.append("The following JS errors were raised but not expected:")
-            for err in errors:
-                lines.append(JsErrors.format_playwright_error(err))
+            lines.append(f"The following {kind} errors were raised but not expected:")
+            lines += errors
         msg = "\n".join(lines)
         super().__init__(msg)
         self.expected_messages = expected_messages
@@ -703,6 +886,16 @@ class SmartRouter:
         self.usepdb = usepdb
         self.page = None
         self.requests = []  # (status, kind, url)
+        self.enable_cors_headers = True
+
+    @property
+    def headers(self):
+        if self.enable_cors_headers:
+            return {
+                "Cross-Origin-Embedder-Policy": "require-corp",
+                "Cross-Origin-Opener-Policy": "same-origin",
+            }
+        return {}
 
     def install(self, page):
         """
@@ -755,9 +948,9 @@ class SmartRouter:
             assert url.path[0] == "/"
             relative_path = url.path[1:]
             if os.path.exists(relative_path):
-                route.fulfill(status=200, path=relative_path)
+                route.fulfill(status=200, headers=self.headers, path=relative_path)
             else:
-                route.fulfill(status=404)
+                route.fulfill(status=404, headers=self.headers)
             return
 
         # network requests might be cached

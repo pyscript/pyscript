@@ -7,10 +7,11 @@ import re
 import numpy as np
 from PIL import Image
 
-from .support import PyScriptTest, wait_for_render
+from .support import PyScriptTest, skip_worker, wait_for_render
 
 
-class TestOutput(PyScriptTest):
+class TestDisplay(PyScriptTest):
+    @skip_worker("FIXME: display()")
     def test_simple_display(self):
         self.pyscript_run(
             """
@@ -24,6 +25,7 @@ class TestOutput(PyScriptTest):
         assert re.search(pattern, node_list[0].inner_html())
         assert len(node_list) == 1
 
+    @skip_worker("FIXME: display()")
     def test_consecutive_display(self):
         self.pyscript_run(
             """
@@ -41,6 +43,7 @@ class TestOutput(PyScriptTest):
         lines = [line for line in lines if line != ""]  # remove empty lines
         assert lines == ["hello 1", "hello 2", "hello 3"]
 
+    @skip_worker("FIXME: display()")
     def test_target_attribute(self):
         self.pyscript_run(
             """
@@ -53,6 +56,7 @@ class TestOutput(PyScriptTest):
         mydiv = self.page.locator("#mydiv")
         assert mydiv.inner_text() == "hello world"
 
+    @skip_worker("FIXME: display()")
     def test_consecutive_display_target(self):
         self.pyscript_run(
             """
@@ -73,6 +77,7 @@ class TestOutput(PyScriptTest):
         lines = [line for line in lines if line != ""]  # remove empty lines
         assert lines == ["hello 1", "hello in between 1 and 2", "hello 2", "hello 3"]
 
+    @skip_worker("FIXME: display()")
     def test_multiple_display_calls_same_tag(self):
         self.pyscript_run(
             """
@@ -86,6 +91,7 @@ class TestOutput(PyScriptTest):
         lines = tag.inner_text().splitlines()
         assert lines == ["hello", "world"]
 
+    @skip_worker("FIXME: display()")
     def test_implicit_target_from_a_different_tag(self):
         self.pyscript_run(
             """
@@ -104,6 +110,7 @@ class TestOutput(PyScriptTest):
         assert py1.inner_text() == ""
         assert py2.inner_text() == "hello"
 
+    @skip_worker("FIXME: display()")
     def test_no_implicit_target(self):
         self.pyscript_run(
             """
@@ -113,10 +120,11 @@ class TestOutput(PyScriptTest):
                     # from event handlers
                     display('hello world')
             </py-script>
-            <button id="my-button" py-onClick="display_hello()">Click me</button>
+            <button id="my-button" py-click="display_hello()">Click me</button>
         """
         )
         self.page.locator("text=Click me").click()
+        self.check_py_errors("Implicit target not allowed here")
         ## error in console
         tb_lines = self.console.error.lines[-1].splitlines()
         assert tb_lines[0] == "[pyexec] Python exception:"
@@ -129,6 +137,7 @@ class TestOutput(PyScriptTest):
         text = self.page.text_content("body")
         assert "hello world" not in text
 
+    @skip_worker("FIXME: display()")
     def test_explicit_target_pyscript_tag(self):
         self.pyscript_run(
             """
@@ -144,6 +153,7 @@ class TestOutput(PyScriptTest):
         text = self.page.locator("id=second-pyscript-tag").inner_text()
         assert text == "hello"
 
+    @skip_worker("FIXME: display()")
     def test_explicit_target_on_button_tag(self):
         self.pyscript_run(
             """
@@ -151,13 +161,14 @@ class TestOutput(PyScriptTest):
                 def display_hello():
                     display('hello', target='my-button')
             </py-script>
-            <button id="my-button" py-onClick="display_hello()">Click me</button>
+            <button id="my-button" py-click="display_hello()">Click me</button>
         """
         )
         self.page.locator("text=Click me").click()
         text = self.page.locator("id=my-button").inner_text()
         assert "hello" in text
 
+    @skip_worker("FIXME: display()")
     def test_explicit_different_target_from_call(self):
         self.pyscript_run(
             """
@@ -176,6 +187,7 @@ class TestOutput(PyScriptTest):
         text = self.page.locator("id=second-pyscript-tag").all_inner_texts()
         assert "hello" in text
 
+    @skip_worker("FIXME: display()")
     def test_append_true(self):
         self.pyscript_run(
             """
@@ -189,6 +201,7 @@ class TestOutput(PyScriptTest):
         assert re.search(pattern, node_list[0].inner_html())
         assert len(node_list) == 1
 
+    @skip_worker("FIXME: display()")
     def test_append_false(self):
         self.pyscript_run(
             """
@@ -201,6 +214,7 @@ class TestOutput(PyScriptTest):
         pattern = r'<py-script id="py-.*">hello world</py-script>'
         assert re.search(pattern, inner_html)
 
+    @skip_worker("FIXME: display()")
     def test_display_multiple_values(self):
         self.pyscript_run(
             """
@@ -214,6 +228,7 @@ class TestOutput(PyScriptTest):
         inner_text = self.page.inner_text("html")
         assert inner_text == "hello\nworld"
 
+    @skip_worker("FIXME: display()")
     def test_display_multiple_append_false(self):
         self.pyscript_run(
             """
@@ -227,6 +242,7 @@ class TestOutput(PyScriptTest):
         pattern = r'<py-script id="py-.*">world</py-script>'
         assert re.search(pattern, inner_html)
 
+    @skip_worker("FIXME: display()")
     def test_display_multiple_append_false_with_target(self):
         self.pyscript_run(
             """
@@ -255,6 +271,7 @@ class TestOutput(PyScriptTest):
             == '<svg height="20" width="20"><circle cx="10" cy="10" r="10" fill="red"></circle></svg>'  # noqa: E501
         )
 
+    @skip_worker("FIXME: display()")
     def test_display_list_dict_tuple(self):
         self.pyscript_run(
             """
@@ -273,6 +290,7 @@ class TestOutput(PyScriptTest):
             == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
         )
 
+    @skip_worker("FIXME: display()")
     def test_display_should_escape(self):
         self.pyscript_run(
             """
@@ -285,6 +303,7 @@ class TestOutput(PyScriptTest):
         assert out.inner_html() == html.escape("<p>hello world</p>")
         assert out.inner_text() == "<p>hello world</p>"
 
+    @skip_worker("FIXME: display()")
     def test_display_HTML(self):
         self.pyscript_run(
             """
@@ -297,6 +316,7 @@ class TestOutput(PyScriptTest):
         assert out.inner_html() == "<p>hello world</p>"
         assert out.inner_text() == "hello world"
 
+    @skip_worker("FIXME: display()")
     def test_image_display(self):
         self.pyscript_run(
             """
@@ -325,13 +345,14 @@ class TestOutput(PyScriptTest):
         assert deviation == 0.0
         self.assert_no_banners()
 
+    @skip_worker("FIXME: display()")
     def test_empty_HTML_and_console_output(self):
         self.pyscript_run(
             """
             <py-script>
                 print('print from python')
-                console.log('print from js')
-                console.error('error from js');
+                js.console.log('print from js')
+                js.console.error('error from js');
             </py-script>
         """
         )
@@ -342,20 +363,20 @@ class TestOutput(PyScriptTest):
         assert "print from js" in console_text
         assert "error from js" in console_text
 
+    @skip_worker("FIXME: display()")
     def test_text_HTML_and_console_output(self):
         self.pyscript_run(
             """
             <py-script>
                 display('this goes to the DOM')
                 print('print from python')
-                console.log('print from js')
-                console.error('error from js');
+                js.console.log('print from js')
+                js.console.error('error from js');
             </py-script>
         """
         )
         inner_text = self.page.inner_text("py-script")
         assert inner_text == "this goes to the DOM"
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-2:] == [
             "print from python",
             "print from js",
@@ -363,6 +384,7 @@ class TestOutput(PyScriptTest):
         print(self.console.error.lines)
         assert self.console.error.lines[-1] == "error from js"
 
+    @skip_worker("FIXME: display()")
     def test_console_line_break(self):
         self.pyscript_run(
             """
@@ -376,6 +398,7 @@ class TestOutput(PyScriptTest):
         assert console_text.index("1print") == (console_text.index("2print") - 1)
         assert console_text.index("1console") == (console_text.index("2console") - 1)
 
+    @skip_worker("FIXME: display()")
     def test_image_renders_correctly(self):
         """This is just a sanity check to make sure that images are rendered correctly."""
         buffer = io.BytesIO()

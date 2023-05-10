@@ -5,15 +5,13 @@ PyScript provides a convenient syntax for mapping JavaScript events to PyScript 
 For example, you can use the following code to connect the click event to a button:
 
 ```
-<button id="py-click" py-onClick="foo()">Click me</button>
+<button id="py-click" py-click="foo()">Click me</button>
 ```
 
 Here is a list of all the available event mappings:
 
 | PyScript Event Name | DOM Event Name |
 |-------------------|----------------|
-| py-onClick        | click          |
-| py-onKeyDown      | keydown        |
 | py-afterprint     | afterprint     |
 | py-beforeprint    | beforeprint    |
 | py-beforeunload   | beforeunload   |

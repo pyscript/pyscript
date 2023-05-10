@@ -37,10 +37,9 @@ export class InterpreterClient extends Object {
     /**
      * initializes the remote interpreter, which further loads the underlying
      * interface.
-     * */
+     */
     async initializeRemote(): Promise<void> {
-        await this._unwrapped_remote.loadInterpreter(this.config, this.stdio);
-        // await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
+        await this._remote.loadInterpreter(this.config, Synclink.proxy(this.stdio));
         this.globals = this._remote.globals;
     }
 
@@ -60,7 +59,7 @@ export class InterpreterClient extends Object {
      *    serializable.
      */
     async run(code: string, id?: string): Promise<{ result: any }> {
-        return this._remote.pyscript_py._run_pyscript(code, id);
+        return this._remote.pyscript_internal.run_pyscript(code, id);
     }
 
     /**

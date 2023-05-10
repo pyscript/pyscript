@@ -3,7 +3,7 @@
     "_version": "3.0.0",
 
     "include": ["src/**/*"],
-    "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
+    "exclude": ["node_modules/*", "__sapper__/*", "public/*", "src/interpreter_worker/*"],
     "compilerOptions": {
         "moduleResolution": "node",
         "target": "ES2020",

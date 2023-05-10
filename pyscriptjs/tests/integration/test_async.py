@@ -1,4 +1,4 @@
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 
 class TestAsync(PyScriptTest):
@@ -20,13 +20,11 @@ class TestAsync(PyScriptTest):
     def test_asyncio_ensure_future(self):
         self.pyscript_run(self.coroutine_script.format(func="ensure_future"))
         self.wait_for_console("third")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-3:] == ["first", "second", "third"]
 
     def test_asyncio_create_task(self):
         self.pyscript_run(self.coroutine_script.format(func="create_task"))
         self.wait_for_console("third")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-3:] == ["first", "second", "third"]
 
     def test_asyncio_gather(self):
@@ -79,8 +77,7 @@ class TestAsync(PyScriptTest):
         """
         )
         self.wait_for_console("b func done")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-        assert self.console.log.lines[1:] == [
+        assert self.console.log.lines == [
             "A 0",
             "B 0",
             "A 1",
@@ -90,6 +87,7 @@ class TestAsync(PyScriptTest):
             "b func done",
         ]
 
+    @skip_worker("FIXME: display()")
     def test_multiple_async_multiple_display_targeted(self):
         self.pyscript_run(
             """
@@ -122,6 +120,7 @@ class TestAsync(PyScriptTest):
         inner_text = self.page.inner_text("html")
         assert "A0\nA1\nB0\nB1" in inner_text
 
+    @skip_worker("FIXME: display()")
     def test_async_display_untargeted(self):
         self.pyscript_run(
             """

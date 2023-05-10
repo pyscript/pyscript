@@ -55,6 +55,6 @@ repos:
             types: [file]
             additional_dependencies:
                 - eslint@8.25.0
-                - typescript@4.8.4
-                - "@typescript-eslint/eslint-plugin@5.39.0"
-                - "@typescript-eslint/parser@5.39.0"
+                - typescript@5.0.4
+                - "@typescript-eslint/eslint-plugin@5.58.0"
+                - "@typescript-eslint/parser@5.58.0"

@@ -7,9 +7,17 @@
 Features
 --------
 
-- The default version of Pyodide is now `0.23.0`. See the [Pyodide Changelog](https://pyodide.org/en/stable/project/changelog.html#version-0-23-0) for a detailed list of changes.
+- The default version of Pyodide is now `0.23.2`. See the [Pyodide Changelog](https://pyodide.org/en/stable/project/changelog.html#version-0-23-2) for a detailed list of changes.
+- Added the `@when` decorator for attaching Python functions as event handlers
 - The `py-mount` attribute on HTML elements has been deprecated, and will be removed in a future release.
 
+
+### Runtime py- attributes
+
+- Added logic to react to `py-*` attributes changes, removal, `py-*` attributes added to already live nodes but also `py-*` attributes added or defined via injected nodes (either appended or via `innerHTML` operations). ([#1435](https://github.com/pyscript/pyscript/pull/1435))
+
+### &lt;script type="py"&gt;
+- Added the ability to optionally use `<script type="py">`, `<script type="pyscript">` or `<script type="py-script">` instead of a `<py-script>` custom element, in order to tackle cases where the content of the `<py-script>` tag, inevitably parsed by browsers, could accidentally contain *HTML* able to break the surrounding page layout. ([#1396](https://github.com/pyscript/pyscript/pull/1396))
 
 ### &lt;py-terminal&gt;
 - Added a `docked` field and attribute for the `<py-terminal>` custom element, enabled by default when the terminal is in `auto` mode, and able to dock the terminal at the bottom of the page with auto scroll on new code execution.
@@ -26,6 +34,10 @@ Features
 
 ### Plugins
 - Plugins may now implement the `beforePyReplExec()` and `afterPyReplExec()` hooks, which are called immediately before and after code in a `py-repl` tag is executed. ([#1106](https://github.com/pyscript/pyscript/pull/1106))
+
+### Web worker support
+- introduced the new experimental `execution_thread` config option: if you set `execution_thread = "worker"`, the python interpreter runs inside a web worker
+- worker support is still **very** experimental: not everything works, use it at your own risk
 
 Bug fixes
 ---------
@@ -78,3 +90,4 @@ Deprecations and Removals
 - The py-config `runtimes` to specify an interpreter has been deprecated. The `interpreters` config should be used instead. ([#1082](https://github.com/pyscript/pyscript/pull/1082))
 - The attributes `pys-onClick` and `pys-onKeyDown` have been deprecated, but the warning was only shown in the console. An alert banner will now be shown on the page if the attributes are used. They will be removed in the next release. ([#1084](https://github.com/pyscript/pyscript/pull/1084))
 - The pyscript elements `py-button`, `py-inputbox`, `py-box` and `py-title` have now completed their deprecation cycle and have been removed. ([#1084](https://github.com/pyscript/pyscript/pull/1084))
+- The attributes `pys-onClick` and `pys-onKeyDown` have been removed. Use `py-click` and `py-keydown` instead ([#1361](https://github.com/pyscript/pyscript/pull/1361))

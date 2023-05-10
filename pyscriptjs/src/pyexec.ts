@@ -12,7 +12,7 @@ export async function pyExec(
     outElem: HTMLElement,
 ): Promise<{ result: any }> {
     ensureUniqueId(outElem);
-    if (await interpreter._remote.pyscript_py.uses_top_level_await(pysrc)) {
+    if (await interpreter._remote.pyscript_internal.uses_top_level_await(pysrc)) {
         const err = new UserError(
             ErrorCode.TOP_LEVEL_AWAIT,
             'The use of top-level "await", "async for", and ' +
@@ -55,7 +55,6 @@ export async function pyDisplay(interpreter: InterpreterClient, obj: any, kwargs
 }
 
 export function displayPyException(err: Error, errElem: HTMLElement) {
-    //addClasses(errElem, ['py-error'])
     const pre = document.createElement('pre');
     pre.className = 'py-error';
 

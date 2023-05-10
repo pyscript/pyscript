@@ -59,7 +59,7 @@ build:
 	npm run build
 
 build-fast:
-	node esbuild.js
+	node esbuild.mjs
 
 # use the following rule to do all the checks done by precommit: in
 # particular, use this if you want to run eslint.

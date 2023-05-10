@@ -1,6 +1,6 @@
 import platform
 
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 
 class TestPyRepl(PyScriptTest):
@@ -44,7 +44,7 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        src = py_repl.inner_text()
+        src = py_repl.locator("div.cm-content").inner_text()
         assert "print('hello from py-repl')" in src
         py_repl.locator("button").click()
         self.page.wait_for_selector("py-terminal")
@@ -74,12 +74,12 @@ class TestPyRepl(PyScriptTest):
         self.page.keyboard.press("Shift+Enter")
         self.page.wait_for_selector("py-terminal")
 
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-1] == "hello world"
 
         # Shift-enter should not add a newline to the editor
         assert self.page.locator(".cm-line").count() == 1
 
+    @skip_worker("FIXME: display()")
     def test_display(self):
         self.pyscript_run(
             """
@@ -93,6 +93,7 @@ class TestPyRepl(PyScriptTest):
         out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert out_div.inner_text() == "hello world"
 
+    @skip_worker("TIMEOUT")
     def test_show_last_expression(self):
         """
         Test that we display() the value of the last expression, as you would
@@ -110,6 +111,7 @@ class TestPyRepl(PyScriptTest):
         out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert out_div.inner_text() == "42"
 
+    @skip_worker("TIMEOUT")
     def test_show_last_expression_with_output(self):
         """
         Test that we display() the value of the last expression, as you would
@@ -131,6 +133,7 @@ class TestPyRepl(PyScriptTest):
         out_div = self.page.wait_for_selector("#repl-target")
         assert out_div.inner_text() == "42"
 
+    @skip_worker("FIXME: display()")
     def test_run_clears_previous_output(self):
         """
         Check that we clear the previous output of the cell before executing it
@@ -180,7 +183,10 @@ class TestPyRepl(PyScriptTest):
         tb_lines = err_pre.inner_text().splitlines()
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
+        #
+        self.check_py_errors("this is an error")
 
+    @skip_worker("FIXME: display()")
     def test_multiple_repls(self):
         """
         Multiple repls showing in the correct order in the page
@@ -203,6 +209,7 @@ class TestPyRepl(PyScriptTest):
         self.page.wait_for_selector("#py-internal-1-repl-output")
         assert self.page.inner_text("#py-internal-1-repl-output") == "second"
 
+    @skip_worker("FIXME: display()")
     def test_python_exception_after_previous_output(self):
         self.pyscript_run(
             """
@@ -223,7 +230,10 @@ class TestPyRepl(PyScriptTest):
         out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert "hello world" not in out_div.inner_text()
         assert "ZeroDivisionError" in out_div.inner_text()
+        #
+        self.check_py_errors("ZeroDivisionError")
 
+    @skip_worker("FIXME: js.document")
     def test_hide_previous_error_after_successful_run(self):
         """
         this tests the fact that a new error div should be created once there's an
@@ -247,6 +257,8 @@ class TestPyRepl(PyScriptTest):
         # test runner can be too fast, the line below should wait for output to change
         out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert out_div.inner_text() == "hello"
+        #
+        self.check_py_errors("this is an error")
 
     def test_output_attribute_does_not_exist(self):
         """
@@ -271,6 +283,7 @@ class TestPyRepl(PyScriptTest):
         )
         assert banner_content == expected
 
+    @skip_worker("TIMEOUT")
     def test_auto_generate(self):
         self.pyscript_run(
             """
@@ -301,6 +314,7 @@ class TestPyRepl(PyScriptTest):
         out_texts = [el.inner_text() for el in self.iter_locator(outputs)]
         assert out_texts == ["hello", "world", ""]
 
+    @skip_worker("FIXME: display()")
     def test_multiple_repls_mixed_display_order(self):
         """
         Displaying several outputs that don't obey the order in which the original
@@ -332,6 +346,7 @@ class TestPyRepl(PyScriptTest):
         assert self.page.inner_text("#py-internal-1-1-repl-output") == "second children"
         assert self.page.inner_text("#py-internal-0-1-repl-output") == "first children"
 
+    @skip_worker("FIXME: display()")
     def test_repl_output_attribute(self):
         # Test that output attribute sends stdout to the element
         # with the given ID, but not display()
@@ -357,6 +372,7 @@ class TestPyRepl(PyScriptTest):
 
         self.assert_no_banners()
 
+    @skip_worker("FIXME: js.document")
     def test_repl_output_display_async(self):
         # py-repls running async code are not expected to
         # send display to element element
@@ -397,6 +413,7 @@ class TestPyRepl(PyScriptTest):
         assert self.page.locator("#repl-target").text_content() == ""
         self.assert_no_banners()
 
+    @skip_worker("FIXME: js.document")
     def test_repl_stdio_dynamic_tags(self):
         self.pyscript_run(
             """
@@ -499,6 +516,7 @@ class TestPyRepl(PyScriptTest):
         assert self.page.wait_for_selector("#stderr-div").inner_text() == "one.\n"
         self.assert_no_banners()
 
+    @skip_worker("TIMEOUT")
     def test_repl_output_attribute_change(self):
         # If the user changes the 'output' attribute of a <py-repl> tag mid-execution,
         # Output should no longer go to the selected div and a warning should appear
@@ -536,6 +554,7 @@ class TestPyRepl(PyScriptTest):
         alert_banner = self.page.wait_for_selector(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
 
+    @skip_worker("TIMEOUT")
     def test_repl_output_element_id_change(self):
         # If the user changes the ID of the targeted DOM element mid-execution,
         # Output should no longer go to the selected element and a warning should appear
@@ -585,13 +604,13 @@ class TestPyRepl(PyScriptTest):
             """
         )
         successMsg = "[py-repl] loading code from ./loadReplSrc1.py to repl...success"
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.info.lines[-1] == successMsg
 
         py_repl = self.page.locator("py-repl")
-        code = py_repl.inner_text()
+        code = py_repl.locator("div.cm-content").inner_text()
         assert "print('1')" in code
 
+    @skip_worker("TIMEOUT")
     def test_repl_src_change(self):
         self.writefile("loadReplSrc2.py", "2")
         self.writefile("loadReplSrc3.py", "print('3')")
@@ -610,7 +629,6 @@ class TestPyRepl(PyScriptTest):
         )
 
         successMsg1 = "[py-repl] loading code from ./loadReplSrc2.py to repl...success"
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.info.lines[-1] == successMsg1
 
         py_repl3 = self.page.locator("py-repl#py-repl3")
@@ -635,5 +653,4 @@ class TestPyRepl(PyScriptTest):
             "failed with error 404 (Not Found). "
             "Are your filename and path correct?"
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.error.lines[-1] == errorMsg

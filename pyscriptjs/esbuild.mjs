@@ -1,11 +1,12 @@
 import { build } from 'esbuild';
 import { spawn } from 'child_process';
-import { dirname, join } from 'path';
+import { join } from 'path';
 import { watchFile } from 'fs';
 import { cp, lstat, readdir } from 'fs/promises';
 import { directoryManifest } from './directoryManifest.mjs';
+import { fileURLToPath } from 'url';
 
-const __dirname = dirname(new URL(import.meta.url).pathname);
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 const production = !process.env.NODE_WATCH || process.env.NODE_ENV === 'production';
 
@@ -60,6 +61,14 @@ const pyScriptConfig = {
     plugins: [bundlePyscriptPythonPlugin()],
 };
 
+const interpreterWorkerConfig = {
+    entryPoints: ['src/interpreter_worker/worker.ts'],
+    loader: { '.py': 'text' },
+    bundle: true,
+    format: 'iife',
+    plugins: [bundlePyscriptPythonPlugin()],
+};
+
 const copyPath = (source, dest, ...rest) => cp(join(__dirname, source), join(__dirname, dest), ...rest);
 
 const esbuild = async () => {
@@ -78,6 +87,14 @@ const esbuild = async () => {
             sourcemap: true,
             minify: true,
             outfile: 'build/pyscript.min.js',
+        }),
+        // XXX I suppose we should also build a minified version
+        // TODO (HC): Simplify config a bit
+        build({
+            ...interpreterWorkerConfig,
+            sourcemap: false,
+            minify: false,
+            outfile: 'build/interpreter_worker.js',
         }),
     ]);
 

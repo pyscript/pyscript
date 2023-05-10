@@ -1,16 +1,6 @@
+import { $$ } from 'basic-devtools';
+
 import { _createAlertBanner } from './exceptions';
-
-export function addClasses(element: HTMLElement, classes: string[]) {
-    for (const entry of classes) {
-        element.classList.add(entry);
-    }
-}
-
-export function removeClasses(element: HTMLElement, classes: string[]) {
-    for (const entry of classes) {
-        element.classList.remove(entry);
-    }
-}
 
 export function escape(str: string): string {
     return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -58,23 +48,6 @@ export function inJest(): boolean {
     return typeof process === 'object' && process.env.JEST_WORKER_ID !== undefined;
 }
 
-export function globalExport(name: string, obj: object) {
-    // attach the given object to the global object, so that it is globally
-    // visible everywhere. Should be used very sparingly!
-
-    globalThis[name] = obj;
-}
-
-export function getAttribute(el: Element, attr: string): string | null {
-    if (el.hasAttribute(attr)) {
-        const value = el.getAttribute(attr);
-        if (value) {
-            return value;
-        }
-    }
-    return null;
-}
-
 export function joinPaths(parts: string[], separator = '/') {
     const res = parts
         .map(function (part) {
@@ -100,11 +73,11 @@ export function createDeprecationWarning(msg: string, elementName: string): void
  * @param sentinelText {string} [null] The text to match against existing warning banners.
  *                     If null, the full text of 'msg' is used instead.
  */
-export function createSingularWarning(msg: string, sentinelText: string | null = null): void {
-    const banners = document.getElementsByClassName('alert-banner py-warning');
+export function createSingularWarning(msg: string, sentinelText?: string): void {
+    const banners = $$('.alert-banner, .py-warning', document);
     let bannerCount = 0;
     for (const banner of banners) {
-        if (banner.innerHTML.includes(sentinelText ? sentinelText : msg)) {
+        if (banner.innerHTML.includes(sentinelText || msg)) {
             bannerCount++;
         }
     }

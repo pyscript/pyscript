@@ -10,6 +10,7 @@ dependencies:
 -   sphinx-copybutton
 -   sphinx-design
 -   sphinx-togglebutton
+-   nodejs=16
 
 -   pip:
     -   sphinxemoji

@@ -9,13 +9,14 @@ This document lists the Maintainers of the Project. Maintainers may be added onc
 | Philipp Rudiger      | Anaconda, Inc    |
 | Peter Wang           | Anaconda, Inc    |
 | Kevin Goldsmith      | Anaconda, Inc    |
-| Mariana Meireles     | Anaconda, Inc    |
+| Mariana Meireles     |                  |
 | Nicholas H.Tollervey | Anaconda, Inc    |
 | Madhur Tandon        | Anaconda, Inc    |
 | Ted Patrick          | Anaconda, Inc    |
-| Jeff Glass           | ---              |
-| Paul Everitt         | ---              |
-| Fabio Rosado         | ---              |
+| Jeff Glass           |                  |
+| Paul Everitt         |                  |
+| Fabio Rosado         | Anaconda, Inc    |
+| Andrea Giammarchi    | Anaconda, Inc    |
 
 ---
 

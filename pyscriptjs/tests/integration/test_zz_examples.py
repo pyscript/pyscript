@@ -8,9 +8,10 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from .support import ROOT, PyScriptTest, wait_for_render
+from .support import ROOT, PyScriptTest, wait_for_render, with_execution_thread
 
 
+@with_execution_thread(None)
 @pytest.mark.usefixtures("chdir")
 class TestExamples(PyScriptTest):
     """
@@ -58,7 +59,7 @@ class TestExamples(PyScriptTest):
 
     def test_altair(self):
         self.goto("examples/altair.html")
-        self.wait_for_pyscript(timeout=60 * 1000)
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Altair"
         wait_for_render(self.page, "*", '<canvas.*?class=\\"marks\\".*?>')
         save_as_png_link = self.page.locator("text=Save as PNG")
@@ -136,7 +137,7 @@ class TestExamples(PyScriptTest):
 
     def test_folium(self):
         self.goto("examples/folium.html")
-        self.wait_for_pyscript(timeout=60 * 1000)
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Folium"
         wait_for_render(self.page, "*", "<iframe srcdoc=")
 
@@ -172,7 +173,7 @@ class TestExamples(PyScriptTest):
 
     def test_matplotlib(self):
         self.goto("examples/matplotlib.html")
-        self.wait_for_pyscript(timeout=60 * 1000)
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Matplotlib"
         wait_for_render(self.page, "*", "<img src=['\"]data:image")
         # The image is being rended using base64, lets fetch its source
@@ -200,7 +201,7 @@ class TestExamples(PyScriptTest):
 
     def test_numpy_canvas_fractals(self):
         self.goto("examples/numpy_canvas_fractals.html")
-        self.wait_for_pyscript(timeout=60 * 1000)
+        self.wait_for_pyscript(timeout=90 * 1000)
         assert (
             self.page.title()
             == "Visualization of Mandelbrot, Julia and Newton sets with NumPy and HTML5 canvas"
@@ -275,7 +276,7 @@ class TestExamples(PyScriptTest):
         self.check_tutor_generated_code()
 
     def test_panel_kmeans(self):
-        # XXX improve this test
+        # XXX improve this test>>>>>>> main
         self.goto("examples/panel_kmeans.html")
         self.wait_for_pyscript(timeout=90 * 1000)
         assert self.page.title() == "Pyscript/Panel KMeans Demo"

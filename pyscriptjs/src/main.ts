@@ -1,13 +1,14 @@
+import { $$ } from 'basic-devtools';
+
 import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
-import type { AppConfig } from './pyconfig';
+import type { AppConfig, InterpreterConfig } from './pyconfig';
 import { InterpreterClient } from './interpreter_client';
-import { version } from './version';
-import { PluginManager, define_custom_element, Plugin, PythonPlugin } from './plugin';
+import { PluginManager, Plugin, PythonPlugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { getLogger } from './logger';
-import { showWarning, globalExport, createLock } from './utils';
+import { showWarning, createLock } from './utils';
 import { calculateFetchPaths } from './plugins/calculateFetchPaths';
 import { createCustomElements } from './components/elements';
 import { UserError, ErrorCode, _createAlertBanner } from './exceptions';
@@ -60,16 +61,6 @@ throwHandler.serialize = new_error_transfer_handler;
       user scripts
 
    8. initialize the rest of web components such as py-button, py-repl, etc.
-
-More concretely:
-
-  - Points 1-4 are implemented sequentially in PyScriptApp.main().
-
-  - PyScriptApp.loadInterpreter adds a <script> tag to the document to initiate
-    the download, and then adds an event listener for the 'load' event, which
-    in turns calls PyScriptApp.afterInterpreterLoad().
-
-  - PyScriptApp.afterInterpreterLoad() implements all the points >= 5.
 */
 
 export let interpreter;
@@ -161,7 +152,7 @@ export class PyScriptApp {
         // XXX: we should actively complain if there are multiple <py-config>
         // and show a big error. PRs welcome :)
         logger.info('searching for <py-config>');
-        const elements = document.getElementsByTagName('py-config');
+        const elements = $$('py-config', document);
         let el: Element | null = null;
         if (elements.length > 0) el = elements[0];
         if (elements.length >= 2) {
@@ -171,7 +162,68 @@ export class PyScriptApp {
             );
         }
         this.config = loadConfigFromElement(el);
+        if (this.config.execution_thread === 'worker' && crossOriginIsolated === false) {
+            throw new UserError(
+                ErrorCode.BAD_CONFIG,
+                `When execution_thread is "worker", the site must be cross origin isolated, but crossOriginIsolated is false.
+                To be cross origin isolated, the server must use https and also serve with the following headers: ${JSON.stringify(
+                    {
+                        'Cross-Origin-Embedder-Policy': 'require-corp',
+                        'Cross-Origin-Opener-Policy': 'same-origin',
+                    },
+                )}.
+
+                The problem may be that one or both of these are missing.
+                `,
+            );
+        }
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
+    }
+
+    _get_base_url(): string {
+        // Note that this requires that pyscript is loaded via a <script>
+        // tag. If we want to allow loading via an ES6 module in the future,
+        // we need to think about some other strategy
+        const elem = document.currentScript as HTMLScriptElement;
+        const slash = elem.src.lastIndexOf('/');
+        return elem.src.slice(0, slash);
+    }
+
+    async _startInterpreter_main(interpreter_cfg: InterpreterConfig) {
+        logger.info('Starting the interpreter in the main thread');
+        // this is basically equivalent to worker_initialize()
+        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
+        const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
+        port1.start();
+        port2.start();
+        Synclink.expose(remote_interpreter, port2);
+        const wrapped_remote_interpreter = Synclink.wrap(port1);
+
+        this.logStatus(`Downloading ${interpreter_cfg.name}...`);
+        /* Dynamically download and import pyodide: the import() puts a
+           loadPyodide() function into globalThis, which is later called by
+           RemoteInterpreter.
+
+           This is suboptimal: ideally, we would like to import() a module
+           which exports loadPyodide(), but this plays badly with workers
+           because at the moment of writing (2023-03-24) Firefox does not
+           support ES modules in workers:
+           https://caniuse.com/mdn-api_worker_worker_ecmascript_modules
+        */
+        const interpreterURL = interpreter_cfg.src;
+        await import(interpreterURL);
+        return { remote_interpreter, wrapped_remote_interpreter };
+    }
+
+    async _startInterpreter_worker(interpreter_cfg: InterpreterConfig) {
+        logger.warn('execution_thread = "worker" is still VERY experimental, use it at your own risk');
+        logger.info('Starting the interpreter in a web worker');
+        const base_url = this._get_base_url();
+        const worker = new Worker(base_url + '/interpreter_worker.js');
+        const worker_initialize: any = Synclink.wrap(worker);
+        const wrapped_remote_interpreter = await worker_initialize(interpreter_cfg);
+        const remote_interpreter = undefined; // this is _unwrapped_remote
+        return { remote_interpreter, wrapped_remote_interpreter };
     }
 
     // lifecycle (4)
@@ -185,35 +237,21 @@ export class PyScriptApp {
             showWarning('Multiple interpreters are not supported yet.<br />Only the first will be used', 'html');
         }
 
-        const interpreter_cfg = this.config.interpreters[0];
+        const cfg = this.config.interpreters[0];
+        let x;
+        if (this.config.execution_thread == 'worker') {
+            x = await this._startInterpreter_worker(cfg);
+        } else {
+            x = await this._startInterpreter_main(cfg);
+        }
+        const { remote_interpreter, wrapped_remote_interpreter } = x;
 
-        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
-        const { port1, port2 } = new MessageChannel();
-        port1.start();
-        port2.start();
-        Synclink.expose(remote_interpreter, port2);
-        const wrapped_remote_interpreter = Synclink.wrap(port1);
         this.interpreter = new InterpreterClient(
             this.config,
             this._stdioMultiplexer,
             wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
             remote_interpreter,
         );
-
-        this.logStatus(`Downloading ${interpreter_cfg.name}...`);
-
-        /* Dynamically download and import pyodide: the import() puts a
-           loadPyodide() function into globalThis, which is later called by
-           RemoteInterpreter.
-
-           This is suboptimal: ideally, we would like to import() a module
-           which exports loadPyodide(), but this plays badly with workers
-           because at the moment of writing (2023-03-24) Firefox does not
-           support ES modules in workers:
-           https://caniuse.com/mdn-api_worker_worker_ecmascript_modules
-        */
-        const interpreterURL = await this.interpreter._remote.src;
-        await import(interpreterURL);
         await this.afterInterpreterLoad(this.interpreter);
     }
 
@@ -246,7 +284,7 @@ export class PyScriptApp {
 
         //Takes a runtime and a reference to the PyScriptApp (to access plugins)
         createCustomElements(interpreter, this);
-        await initHandlers(interpreter);
+        initHandlers(interpreter);
 
         // NOTE: interpreter message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
@@ -261,24 +299,6 @@ export class PyScriptApp {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
-
-        // inject `define_custom_element` and showWarning it into the PyScript
-        // module scope
-        // eventually replace the setHandler calls with interpreter._remote.setHandler i.e. the ones mentioned below
-        // await interpreter._remote.setHandler('define_custom_element', Synclink.proxy(define_custom_element));
-        // await interpreter._remote.setHandler('showWarning', Synclink.proxy(showWarning));
-        interpreter._unwrapped_remote.setHandler('define_custom_element', define_custom_element);
-        interpreter._unwrapped_remote.setHandler('showWarning', showWarning);
-        await interpreter._remote.pyscript_py._set_version_info(version);
-
-        // import some carefully selected names into the global namespace
-        await interpreter.run(`
-        import js
-        import pyscript
-        from pyscript import Element, display, HTML
-        pyscript._install_deprecated_globals_2022_12_1(globals())
-        `);
-
         await Promise.all([this.installPackages(), this.fetchPaths(interpreter)]);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
@@ -414,7 +434,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
         this.incrementPendingTags();
         this.decrementPendingTags();
         await this.scriptTagsPromise;
-        await this.interpreter._remote.pyscript_py._schedule_deferred_tasks();
+        await this.interpreter._remote.pyscript_internal.schedule_deferred_tasks();
     }
 
     // ================= registraton API ====================
@@ -430,10 +450,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
     }
 }
 
-function pyscript_get_config() {
-    return globalApp.config;
-}
-globalExport('pyscript_get_config', pyscript_get_config);
+globalThis.pyscript_get_config = () => globalApp.config;
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
@@ -443,4 +460,4 @@ if (typeof jest === 'undefined') {
     globalApp.readyPromise = globalApp.main();
 }
 
-export { version };
+export { version } from './version';

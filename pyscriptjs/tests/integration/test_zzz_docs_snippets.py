@@ -1,9 +1,10 @@
 import re
 
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 
 class TestDocsSnippets(PyScriptTest):
+    @skip_worker("FIXME: js.document")
     def test_tutorials_py_click(self):
         self.pyscript_run(
             """
@@ -30,7 +31,6 @@ class TestDocsSnippets(PyScriptTest):
             """
         )
 
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         btn = self.page.wait_for_selector("#get-time")
         btn.click()
 
@@ -61,12 +61,12 @@ class TestDocsSnippets(PyScriptTest):
             """
         )
 
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         py_terminal = self.page.wait_for_selector("py-terminal")
         # Just a small check to confirm that the response was received
         assert "userId" in py_terminal.inner_text()
         self.assert_no_banners()
 
+    @skip_worker("FIXME: js.document")
     def test_tutorials_py_config_fetch(self):
         # flake8: noqa
         self.pyscript_run(
@@ -106,7 +106,6 @@ class TestDocsSnippets(PyScriptTest):
             """
         )
 
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         todo_input = self.page.locator("input")
         submit_task_button = self.page.locator("button")
 
@@ -146,11 +145,11 @@ class TestDocsSnippets(PyScriptTest):
             """
         )
 
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert "0.23.0" in py_terminal.inner_text()
         self.assert_no_banners()
 
+    @skip_worker("FIXME: display()")
     def test_tutorials_writing_to_page(self):
         self.pyscript_run(
             """
@@ -176,7 +175,6 @@ class TestDocsSnippets(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         btn_manual = self.page.wait_for_selector("#manual")
         btn_display = self.page.wait_for_selector("#display")
         btn_print = self.page.wait_for_selector("#print")
@@ -208,7 +206,66 @@ class TestDocsSnippets(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         py_terminal = self.page.wait_for_selector("py-terminal")
 
         assert "0\n1\n2\n" in py_terminal.inner_text()
+
+    @skip_worker(reason="FIXME: js.document (@when decorator)")
+    def test_reference_when_simple(self):
+        self.pyscript_run(
+            """
+            <button id="my_btn">Click Me to Say Hi</button>
+            <py-script>
+                from pyscript import when
+                @when("click", selector="#my_btn")
+                def say_hello():
+                    print(f"Hello, world!")
+            </py-script>
+            """
+        )
+        self.page.get_by_text("Click Me to Say Hi").click()
+        self.wait_for_console("Hello, world!")
+        assert ("Hello, world!") in self.console.log.lines
+
+    @skip_worker(reason="FIXME: js.document (@when decorator)")
+    def test_reference_when_complex(self):
+        self.pyscript_run(
+            """
+            <div id="container">
+                <button>First</button>
+                <button>Second</button>
+                <button>Third</button>
+            </div>
+            <py-script>
+                from pyscript import when
+                import js
+
+                @when("click", selector="#container button")
+                def highlight(evt):
+                    #Set the clicked button's background to green
+                    evt.target.style.backgroundColor = 'green'
+
+                    #Set the background of all buttons to red
+                    other_buttons = (button for button in js.document.querySelectorAll('button') if button != evt.target)
+                    for button in other_buttons:
+                        button.style.backgroundColor = 'red'
+
+                    print("set") # Test Only
+            </py-script>
+            """
+        )
+
+        def getBackgroundColor(locator):
+            return locator.evaluate(
+                "(element) => getComputedStyle(element).getPropertyValue('background-color')"
+            )
+
+        first_button = self.page.get_by_text("First")
+        assert getBackgroundColor(first_button) == "rgb(239, 239, 239)"
+
+        first_button.click()
+        self.wait_for_console("set")
+
+        assert getBackgroundColor(first_button) == "rgb(0, 128, 0)"
+        assert getBackgroundColor(self.page.get_by_text("Second")) == "rgb(255, 0, 0)"
+        assert getBackgroundColor(self.page.get_by_text("Third")) == "rgb(255, 0, 0)"

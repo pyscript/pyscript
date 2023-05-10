@@ -1,3 +1,5 @@
+import { $, $$ } from 'basic-devtools';
+
 import { basicSetup, EditorView } from 'codemirror';
 import { python } from '@codemirror/lang-python';
 import { indentUnit } from '@codemirror/language';
@@ -46,9 +48,12 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
 
             const pySrc = htmlDecode(this.innerHTML).trim();
             this.innerHTML = '';
-            this.editor = this.makeEditor(pySrc);
             const boxDiv = this.makeBoxDiv();
+            const shadowRoot = $('.py-repl-editor > div', boxDiv).attachShadow({ mode: 'open' });
+            // avoid inheriting styles from the outer component
+            shadowRoot.innerHTML = `<style> :host { all: initial; }</style>`;
             this.appendChild(boxDiv);
+            this.editor = this.makeEditor(pySrc, shadowRoot);
             this.editor.focus();
             logger.debug(`element ${this.id} successfully connected`);
         }
@@ -78,7 +83,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
                 if (!response.ok) {
                     return;
                 }
-                const cmcontentElement = this.querySelector("div[class='cm-content']");
+                const cmcontentElement = $('div.cm-content', this.editor.dom);
                 const { lastElementChild } = cmcontentElement;
                 cmcontentElement.replaceChildren(lastElementChild);
                 lastElementChild.textContent = await response.text();
@@ -91,7 +96,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
 
         /** Create and configure the codemirror editor
          */
-        makeEditor(pySrc: string): EditorView {
+        makeEditor(pySrc: string, parent: ShadowRoot): EditorView {
             const languageConf = new Compartment();
             const extensions = [
                 indentUnit.of('    '),
@@ -111,6 +116,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
             return new EditorView({
                 doc: pySrc,
                 extensions,
+                parent,
             });
         }
 
@@ -136,10 +142,16 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
             const editorDiv = document.createElement('div');
             editorDiv.className = 'py-repl-editor';
             editorDiv.setAttribute('aria-label', 'Python Script Area');
-            editorDiv.appendChild(this.editor.dom);
 
             const runButton = this.makeRunButton();
-            editorDiv.appendChild(runButton);
+            const editorShadowContainer = document.createElement('div');
+
+            // avoid outer elements intercepting key events (reveal as example)
+            editorShadowContainer.addEventListener('keydown', event => {
+                event.stopPropagation();
+            });
+
+            editorDiv.append(editorShadowContainer, runButton);
 
             return editorDiv;
         }
@@ -191,7 +203,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
         // should be the default.
         autogenerateMaybe(): void {
             if (this.hasAttribute('auto-generate')) {
-                const allPyRepls = document.querySelectorAll(`py-repl[root='${this.getAttribute('root')}'][exec-id]`);
+                const allPyRepls = $$(`py-repl[root='${this.getAttribute('root')}'][exec-id]`, document);
                 const lastRepl = allPyRepls[allPyRepls.length - 1];
                 const lastExecId = lastRepl.getAttribute('exec-id');
                 const nextExecId = parseInt(lastExecId) + 1;

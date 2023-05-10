@@ -1,4 +1,4 @@
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 # Source code of a simple plugin that creates a Custom Element for testing purposes
 CE_PLUGIN_CODE = """
@@ -194,6 +194,7 @@ def prepare_test(
 
 
 class TestPlugin(PyScriptTest):
+    @skip_worker("FIXME: relative paths")
     @prepare_test("py-upper", CE_PLUGIN_CODE, tagname="py-up", html="Hello World")
     def test_py_plugin_inline(self):
         """Test that a regular plugin that returns new HTML content from connected works"""
@@ -209,6 +210,7 @@ class TestPlugin(PyScriptTest):
         rendered_text = self.page.locator("py-up").inner_text()
         assert rendered_text == "HELLO WORLD"
 
+    @skip_worker("FIXME: relative paths")
     @prepare_test("hooks_logger", HOOKS_PLUGIN_CODE, template=HTML_TEMPLATE_NO_TAG)
     def test_execution_hooks(self):
         """Test that a Plugin that hooks into the PyScript App events, gets called
@@ -241,6 +243,7 @@ class TestPlugin(PyScriptTest):
 
         # TODO: It'd be actually better to check that the events get called in order
 
+    @skip_worker("FIXME: relative paths")
     @prepare_test(
         "exec_test_logger",
         PYSCRIPT_HOOKS_PLUGIN_CODE,
@@ -263,6 +266,7 @@ class TestPlugin(PyScriptTest):
         assert "after_id:pyid" in log_lines
         assert "result:2" in log_lines
 
+    @skip_worker("FIXME: relative paths")
     @prepare_test(
         "pyrepl_test_logger",
         PYREPL_HOOKS_PLUGIN_CODE,
@@ -287,6 +291,7 @@ class TestPlugin(PyScriptTest):
         assert "after_id:pyid" in log_lines
         assert "result:2" in log_lines
 
+    @skip_worker("FIXME: relative paths")
     @prepare_test("no_plugin", NO_PLUGIN_CODE)
     def test_no_plugin_attribute_error(self):
         """
@@ -301,6 +306,7 @@ class TestPlugin(PyScriptTest):
         # EXPECT an error for the missing attribute
         assert error_msg in self.console.error.lines
 
+    @skip_worker("FIXME: relative paths")
     def test_fetch_python_plugin(self):
         """
         Test that we can fetch a plugin from a remote URL. Note we need to use
@@ -355,7 +361,7 @@ class TestPlugin(PyScriptTest):
             """
             <py-config>
                 plugins = [
-                    "http://non-existent.blah/hello-world"
+                    "https://non-existent.blah/hello-world"
                 ]
             </py-config>
             """,
@@ -364,7 +370,7 @@ class TestPlugin(PyScriptTest):
 
         expected_msg = (
             "(PY2000): Unable to load plugin from "
-            "'http://non-existent.blah/hello-world'. Plugins "
+            "'https://non-existent.blah/hello-world'. Plugins "
             "need to contain a file extension and be either a "
             "python or javascript file."
         )

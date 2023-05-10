@@ -1,28 +1,17 @@
+import { $ } from 'basic-devtools';
+
 import type { PyScriptApp } from '../main';
 import type { AppConfig } from '../pyconfig';
-import { Plugin } from '../plugin';
-import { UserError, ErrorCode } from '../exceptions';
+import { Plugin, validateConfigParameterFromArray } from '../plugin';
 import { getLogger } from '../logger';
 import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
 
-type AppConfigStyle = AppConfig & { terminal?: boolean | 'auto'; docked?: boolean | 'docked' };
-
 const logger = getLogger('py-terminal');
 
-const validate = (config: AppConfigStyle, name: string, default_: string) => {
-    const value = config[name] as undefined | boolean | string;
-    if (value !== undefined && value !== true && value !== false && value !== default_) {
-        const got = JSON.stringify(value);
-        throw new UserError(
-            ErrorCode.BAD_CONFIG,
-            `Invalid value for config.${name}: the only accepted` +
-                `values are true, false and "${default_}", got "${got}".`,
-        );
-    }
-    if (value === undefined) {
-        config[name] = default_;
-    }
+type AppConfigStyle = AppConfig & {
+    terminal?: string | boolean;
+    docked?: string | boolean;
 };
 
 export class PyTerminalPlugin extends Plugin {
@@ -35,8 +24,18 @@ export class PyTerminalPlugin extends Plugin {
 
     configure(config: AppConfigStyle) {
         // validate the terminal config and handle default values
-        validate(config, 'terminal', 'auto');
-        validate(config, 'docked', 'docked');
+        validateConfigParameterFromArray({
+            config: config,
+            name: 'terminal',
+            possibleValues: [true, false, 'auto'],
+            defaultValue: 'auto',
+        });
+        validateConfigParameterFromArray({
+            config: config,
+            name: 'docked',
+            possibleValues: [true, false, 'docked'],
+            defaultValue: 'docked',
+        });
     }
 
     beforeLaunch(config: AppConfigStyle) {
@@ -45,7 +44,7 @@ export class PyTerminalPlugin extends Plugin {
         const { terminal: t, docked: d } = config;
         const auto = t === true || t === 'auto';
         const docked = d === true || d === 'docked';
-        if (auto && document.querySelector('py-terminal') === null) {
+        if (auto && $('py-terminal', document) === null) {
             logger.info('No <py-terminal> found, adding one');
             const termElem = document.createElement('py-terminal');
             if (auto) termElem.setAttribute('auto', '');
@@ -67,9 +66,7 @@ export class PyTerminalPlugin extends Plugin {
         //   3. everything which was written to stdout BEFORE this moment will
         //      NOT be shown on the py-terminal; in particular, pyodide
         //      startup messages will not be shown (but they will go to the
-        //      console as usual). This is by design, else we would display
-        //      e.g. "Python initialization complete" on every page, which we
-        //      don't want.
+        //      console as usual).
         //
         //   4. (in the future we might want to add an option to start the
         //      capture earlier, but I don't think it's important now).
