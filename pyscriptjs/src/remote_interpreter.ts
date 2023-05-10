@@ -67,7 +67,7 @@ export class RemoteInterpreter extends Object {
     // TODO: Remove this once `runtimes` is removed!
     interpreter: InterpreterInterface & ProxyMarked;
 
-    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js') {
+    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js') {
         super();
         this.src = src;
     }
