@@ -166,7 +166,7 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
      */
     class PyTerminalXterm extends PyTerminalBaseClass {
         outElem: HTMLDivElement;
-        moduleResolved: boolean;
+        _moduleResolved: boolean;
         xtermReadyPromise: Promise<TerminalType>;
         xterm: TerminalType;
         cachedStdOut: Array<string>;
@@ -175,9 +175,13 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
 
         constructor() {
             super();
-            this.moduleResolved = false;
             this.cachedStdOut = [];
             this.cachedStdErr = [];
+
+            // While this is false, store writes to stdout/stderr to a buffer
+            // when the xterm.js is actually ready, we will "replay" those writes
+            // and set this to true
+            this._moduleResolved = false;
 
             //Required to make xterm appear properly
             this.style.width = '100%';
@@ -226,20 +230,20 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
                 // If terminal is still hidden, open during first write
                 if (!this.autoShowOnNextLine) this.xterm.open(this);
 
-                this.moduleResolved = true;
+                this._moduleResolved = true;
 
                 //Write out any messages output while xterm was loading
                 this.cachedStdOut.forEach((value: string): void => this.stdout_writeline(value));
                 this.cachedStdErr.forEach((value: string): void => this.stderr_writeline(value));
             } else {
-                this.moduleResolved = true;
+                this._moduleResolved = true;
             }
             return this.xterm;
         }
 
         // implementation of the Stdio interface
         stdout_writeline(msg: string) {
-            if (this.moduleResolved) {
+            if (this._moduleResolved) {
                 console.log(`Writing ${msg} to xterm`);
                 this.xterm.writeln(msg);
                 //this.outElem.innerText += msg + '\n';
