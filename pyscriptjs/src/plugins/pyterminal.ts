@@ -8,6 +8,8 @@ import { type Stdio } from '../stdio';
 import { InterpreterClient } from '../interpreter_client';
 import { Terminal as TerminalType } from 'xterm';
 
+const knownPyTerminalTags: WeakSet<HTMLElement> = new WeakSet();
+
 type AppConfigStyle = AppConfig & {
     terminal?: boolean | 'auto';
     docked?: boolean | 'docked';
@@ -183,6 +185,9 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
         }
 
         async connectedCallback() {
+            //guard against initializing a tag twice
+            if (knownPyTerminalTags.has(this)) return;
+
             this.outElem = document.createElement('div');
             //this.outElem.className = 'py-terminal';
             this.appendChild(this.outElem);
@@ -191,6 +196,7 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
 
             this.xtermReadyPromise = this._setupXterm();
             await this.xtermReadyPromise;
+            knownPyTerminalTags.add(this);
         }
 
         /**
