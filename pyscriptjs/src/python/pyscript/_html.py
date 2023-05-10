@@ -122,23 +122,23 @@ class Element:
         return Element(clone.id, clone)
 
     def remove_class(self, classname):
+        classList = self.element.classList
         if isinstance(classname, list):
-            for cl in classname:
-                self.remove_class(cl)
+            classList.remove(*classname)
         else:
-            self.element.classList.remove(classname)
+            classList.remove(classname)
 
     def add_class(self, classname):
+        classList = self.element.classList
         if isinstance(classname, list):
-            for cl in classname:
-                self.element.classList.add(cl)
+            classList.add(*classname)
         else:
             self.element.classList.add(classname)
 
 
 def add_classes(element, class_list):
-    for klass in class_list.split(" "):
-        element.classList.add(klass)
+    classList = element.classList
+    classList.add(*class_list.split(" "))
 
 
 def create(what, id_=None, classes=""):
