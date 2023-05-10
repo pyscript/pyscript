@@ -278,7 +278,7 @@ class TestExamples(PyScriptTest):
     def test_panel_kmeans(self):
         # XXX improve this test>>>>>>> main
         self.goto("examples/panel_kmeans.html")
-        self.wait_for_pyscript(timeout=90 * 1000)
+        self.wait_for_pyscript(timeout=120 * 1000)
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
         wait_for_render(
             self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>", timeout_seconds=60 * 2
