@@ -23,6 +23,9 @@ import * as Synclink from 'synclink';
 
 const logger = getLogger('pyscript/main');
 
+// This comment is to force CI to run again on this branch, and will be removed
+// before final review
+
 /**
  * Monkey patching the error transfer handler to preserve the `$$isUserError`
  * marker so as to detect `UserError` subclasses in the error handling code.
