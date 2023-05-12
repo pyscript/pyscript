@@ -89,7 +89,6 @@ test:
 	make test-ts
 	make test-py
 	make test-integration-parallel
-	make examples
 	make test-examples
 
 test-integration:
