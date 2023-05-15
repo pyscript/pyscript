@@ -170,7 +170,7 @@ export class RemoteInterpreter extends Object {
      * */
     async loadPackage(names: string | string[]): Promise<void> {
         logger.info(`pyodide.loadPackage: ${names.toString()}`);
-        // the new way in Pyodode 0.22.0 and later a locally downloaded older version of pyodide
+        // the new way in Pyodode 0.22 and later a locally downloaded older version of pyodide
         // for which the signature of `loadPackage` accepts the above params as args i.e.
         // the call uses `logger.info.bind(logger), logger.info.bind(logger)`.
         const messageCallback = logger.info.bind(logger) as typeof logger.info;

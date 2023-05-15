@@ -130,6 +130,7 @@ class TestDocsSnippets(PyScriptTest):
         self.assert_no_banners()
 
     def test_tutorials_py_config_interpreter(self):
+        """Load a previous version of Pyodide"""
         self.pyscript_run(
             """
             <py-config>

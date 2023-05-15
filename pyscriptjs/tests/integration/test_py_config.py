@@ -82,7 +82,7 @@ class TestConfig(PyScriptTest):
 
     # The default pyodide version is newer than
     # the one we are loading below (after downloading locally)
-    # which is 0.20.0
+    # which is 0.22.0
 
     # The test checks if loading a different interpreter is possible
     # and that too from a locally downloaded file without needing
