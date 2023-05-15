@@ -91,6 +91,7 @@ test:
 	make test-integration-parallel
 	make test-examples
 
+# run all integration tests *including examples* sequentially
 test-integration:
 	mkdir -p test_results
 	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
