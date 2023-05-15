@@ -493,7 +493,13 @@ class PyScriptTest:
         return doc
 
     def pyscript_run(
-        self, snippet, *, extra_head="", wait_for_pyscript=True, timeout=None
+        self,
+        snippet,
+        *,
+        extra_head="",
+        wait_for_pyscript=True,
+        timeout=None,
+        check_js_errors=True,
     ):
         """
         Main entry point for pyscript tests.
@@ -517,7 +523,7 @@ class PyScriptTest:
         self.writefile(filename, doc)
         self.goto(filename)
         if wait_for_pyscript:
-            self.wait_for_pyscript(timeout=timeout)
+            self.wait_for_pyscript(timeout=timeout, check_js_errors=check_js_errors)
 
     def iter_locator(self, loc):
         """

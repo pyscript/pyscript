@@ -250,6 +250,7 @@ class TestBasic(PyScriptTest):
             """
             <py-script src="foo.py"></py-script>
             """,
+            check_js_errors=False,
         )
         assert "Failed to load resource" in self.console.error.lines[0]
 
