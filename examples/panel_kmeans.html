@@ -198,7 +198,6 @@
                     @pn.depends(x, y, n_clusters, watch=True)
                     def update_chart(*events):
                         chart.object = get_chart(x.value, y.value, table.value)
-                        #chart.selection.param.watch(update_filters, 'brush')
 
                     @param.depends('brush', watch=True)
                     def update_filters(event=None):
