@@ -1,5 +1,6 @@
 import { $$, $x } from 'basic-devtools';
 
+import { shadowRoots } from '../shadow_roots';
 import { ltrim, htmlDecode, ensureUniqueId, createDeprecationWarning } from '../utils';
 import { getLogger } from '../logger';
 import { pyExec, displayPyException } from '../pyexec';
@@ -130,14 +131,14 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
             for (const { type, target, attributeName, addedNodes } of records) {
                 if (type === 'attributes') {
                     // consider only py-* attributes
-                    if (type.startsWith('py-')) {
+                    if (attributeName.startsWith('py-')) {
                         // if the attribute is currently present
                         if ((target as Element).hasAttribute(attributeName)) {
                             // handle the element
                             addPyScriptEventListener(
                                 getInterpreter(target as Element),
                                 target as Element,
-                                type.slice(3),
+                                attributeName.slice(3),
                             );
                         } else {
                             // remove the listener because the element should not answer
@@ -145,7 +146,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
 
                             // Note: this is *NOT* a misused-promise, this is how async events work.
                             // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                            target.removeEventListener(type.slice(3), pyScriptEventHandler);
+                            target.removeEventListener(attributeName.slice(3), pyScriptListener);
                         }
                     }
                     // skip further loop on empty addedNodes
@@ -174,7 +175,9 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
         const { attachShadow } = Element.prototype;
         Object.assign(Element.prototype, {
             attachShadow(init: ShadowRootInit) {
-                return observe(attachShadow.call(this as Element, init));
+                const shadowRoot = observe(attachShadow.call(this as Element, init));
+                shadowRoots.add(shadowRoot);
+                return shadowRoot;
             },
         });
 

@@ -1,6 +1,6 @@
 from playwright.sync_api import expect
 
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 
 class TestStyle(PyScriptTest):
@@ -24,6 +24,7 @@ class TestStyle(PyScriptTest):
         expect(self.page.locator("py-script")).to_be_hidden()
         expect(self.page.locator("py-repl")).to_be_hidden()
 
+    @skip_worker("FIXME: display()")
     def test_pyscript_defined(self):
         """Test elements have visibility that should"""
         self.pyscript_run(

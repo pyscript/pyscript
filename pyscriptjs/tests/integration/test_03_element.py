@@ -137,12 +137,28 @@ class TestElement(PyScriptTest):
             <py-script>
             from pyscript import Element
             el = Element("foo")
-            el.select("bar", from_content=True)
+            js.console.log(el.select("option").value)
             </py-script>
             """
         )
-        select = self.page.wait_for_selector("#foo")
-        assert select.inner_text() == "Bar"
+        assert self.console.log.lines[-1] == "bar"
+
+    @skip_worker("FIXME: js.document")
+    def test_element_select_content(self):
+        """Test the element select"""
+        self.pyscript_run(
+            """
+            <template id="foo">
+                <div>Bar</div>
+            </template>
+            <py-script>
+            from pyscript import Element
+            el = Element("foo")
+            js.console.log(el.select("div", from_content=True).innerHtml)
+            </py-script>
+            """
+        )
+        assert self.console.log.lines[-1] == "Bar"
 
     @skip_worker("FIXME: js.document")
     def test_element_clone_no_id(self):

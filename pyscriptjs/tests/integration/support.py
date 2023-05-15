@@ -208,6 +208,7 @@ class PyScriptTest:
 
         self.console = ConsoleMessageCollection(self.logger)
         self._js_errors = []
+        self._py_errors = []
         page.on("console", self._on_console)
         page.on("pageerror", self._on_pageerror)
 
@@ -243,17 +244,26 @@ class PyScriptTest:
         # page and they should not cause the test to fail, you should call
         # self.check_js_errors() in the test itself.
         self.check_js_errors()
+        self.check_py_errors()
 
     def _on_console(self, msg):
+        if msg.type == "error" and "Traceback (most recent call last)" in msg.text:
+            # this is a Python traceback, let's record it as a py_error
+            self._py_errors.append(msg.text)
         self.console.add_message(msg.type, msg.text)
 
     def _on_pageerror(self, error):
-        self.console.add_message("js_error", error.stack)
-        self._js_errors.append(error)
+        # apparently, playwright Error.stack contains all the info that we
+        # want: exception name, message and stacktrace. The docs say that
+        # error.stack is optional, so fallback to the standard repr if it's
+        # unavailable.
+        error_msg = error.stack or str(error)
+        self.console.add_message("js_error", error_msg)
+        self._js_errors.append(error_msg)
 
-    def check_js_errors(self, *expected_messages):
+    def _check_page_errors(self, kind, expected_messages):
         """
-        Check whether JS errors were reported.
+        Check whether the page raised any 'JS' or 'Python' error.
 
         expected_messages is a list of strings of errors that you expect they
         were raised in the page.  They are checked using a simple 'in' check,
@@ -261,46 +271,71 @@ class PyScriptTest:
             if expected_message in actual_error_message:
                 ...
 
-        If an error was expected but not found, it raises
-        DidNotRaiseJsError().
+        If an error was expected but not found, it raises PageErrorsDidNotRaise.
 
-        If there are MORE errors other than the expected ones, it raises JsErrors.
+        If there are MORE errors other than the expected ones, it raises PageErrors.
 
         Upon return, all the errors are cleared, so a subsequent call to
-        check_js_errors will not raise, unless NEW JS errors have been reported
+        check_{js,py}_errors will not raise, unless NEW errors have been reported
         in the meantime.
         """
+        assert kind in ("JS", "Python")
+        if kind == "JS":
+            actual_errors = self._js_errors[:]
+        else:
+            actual_errors = self._py_errors[:]
         expected_messages = list(expected_messages)
-        js_errors = self._js_errors[:]
 
         for i, msg in enumerate(expected_messages):
-            for j, error in enumerate(js_errors):
-                if msg is not None and error is not None and msg in error.message:
+            for j, error in enumerate(actual_errors):
+                if msg is not None and error is not None and msg in error:
                     # we matched one expected message with an error, remove both
                     expected_messages[i] = None
-                    js_errors[j] = None
+                    actual_errors[j] = None
 
-        # if everything is find, now expected_messages and js_errors contains
+        # if everything is find, now expected_messages and actual_errors contains
         # only Nones. If they contain non-None elements, it means that we
-        # either have messages which are expected-but-not-found or errors
-        # which are found-but-not-expected.
-        expected_messages = [msg for msg in expected_messages if msg is not None]
-        js_errors = [err for err in js_errors if err is not None]
-        self.clear_js_errors()
+        # either have messages which are expected-but-not-found or
+        # found-but-not-expected.
+        not_found = [msg for msg in expected_messages if msg is not None]
+        unexpected = [err for err in actual_errors if err is not None]
 
-        if expected_messages:
+        if kind == "JS":
+            self.clear_js_errors()
+        else:
+            self.clear_py_errors()
+
+        if not_found:
             # expected-but-not-found
-            raise JsErrorsDidNotRaise(expected_messages, js_errors)
-
-        if js_errors:
+            raise PageErrorsDidNotRaise(kind, not_found, unexpected)
+        if unexpected:
             # found-but-not-expected
-            raise JsErrors(js_errors)
+            raise PageErrors(kind, unexpected)
+
+    def check_js_errors(self, *expected_messages):
+        """
+        Check whether JS errors were reported.
+
+        See the docstring for _check_page_errors for more details.
+        """
+        self._check_page_errors("JS", expected_messages)
+
+    def check_py_errors(self, *expected_messages):
+        """
+        Check whether Python errors were reported.
+
+        See the docstring for _check_page_errors for more details.
+        """
+        self._check_page_errors("Python", expected_messages)
 
     def clear_js_errors(self):
         """
         Clear all JS errors.
         """
         self._js_errors = []
+
+    def clear_py_errors(self):
+        self._py_errors = []
 
     def writefile(self, filename, content):
         """
@@ -614,54 +649,37 @@ def wait_for_render(page, selector, pattern):
     assert py_rendered  # nosec
 
 
-class JsErrors(Exception):
+class PageErrors(Exception):
     """
-    Represent one or more exceptions which happened in JS.
-
-    It's a thin wrapper around playwright.sync_api.Error, with two important
-    differences:
-
-    1. it has a better name: if you see JsError in a traceback, it's
-       immediately obvious that it's a JS exception.
-
-    2. Show also the JS stacktrace by default, contrarily to
-       playwright.sync_api.Error
+    Represent one or more exceptions which happened in JS or Python.
     """
 
-    def __init__(self, errors):
+    def __init__(self, kind, errors):
+        assert kind in ("JS", "Python")
         n = len(errors)
         assert n != 0
-        lines = [f"JS errors found: {n}"]
-        for err in errors:
-            lines.append(self.format_playwright_error(err))
+        lines = [f"{kind} errors found: {n}"]
+        lines += errors
         msg = "\n".join(lines)
         super().__init__(msg)
         self.errors = errors
 
-    @staticmethod
-    def format_playwright_error(error):
-        # apparently, playwright Error.stack contains all the info that we
-        # want: exception name, message and stacktrace. The docs say that
-        # error.stack is optional, so fallback to the standard repr if it's
-        # unavailable.
-        return error.stack or str(error)
 
-
-class JsErrorsDidNotRaise(Exception):
+class PageErrorsDidNotRaise(Exception):
     """
-    Exception raised by check_js_errors when the expected JS error messages
-    are not found.
+    Exception raised by check_{js,py}_errors when the expected JS or Python
+    error messages are not found.
     """
 
-    def __init__(self, expected_messages, errors):
-        lines = ["The following JS errors were expected but could not be found:"]
+    def __init__(self, kind, expected_messages, errors):
+        assert kind in ("JS", "Python")
+        lines = [f"The following {kind} errors were expected but could not be found:"]
         for msg in expected_messages:
             lines.append("    - " + msg)
         if errors:
             lines.append("---")
-            lines.append("The following JS errors were raised but not expected:")
-            for err in errors:
-                lines.append(JsErrors.format_playwright_error(err))
+            lines.append(f"The following {kind} errors were raised but not expected:")
+            lines += errors
         msg = "\n".join(lines)
         super().__init__(msg)
         self.expected_messages = expected_messages

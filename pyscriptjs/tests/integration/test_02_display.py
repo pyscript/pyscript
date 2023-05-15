@@ -124,6 +124,7 @@ class TestDisplay(PyScriptTest):
         """
         )
         self.page.locator("text=Click me").click()
+        self.check_py_errors("Implicit target not allowed here")
         ## error in console
         tb_lines = self.console.error.lines[-1].splitlines()
         assert tb_lines[0] == "[pyexec] Python exception:"
@@ -246,7 +247,7 @@ class TestDisplay(PyScriptTest):
         self.pyscript_run(
             """
             <div id="circle-div"></div>
-            <py-script>
+            <script type="py">
                 class Circle:
                     r = 0
                     def _repr_svg_(self):
@@ -261,7 +262,7 @@ class TestDisplay(PyScriptTest):
                 display(circle, target="circle-div", append=False)
                 circle.r += 5
                 display(circle, target="circle-div", append=False)
-            </py-script>
+            </script>
         """
         )
         innerhtml = self.page.locator("id=circle-div").inner_html()
@@ -269,6 +270,7 @@ class TestDisplay(PyScriptTest):
             innerhtml
             == '<svg height="20" width="20"><circle cx="10" cy="10" r="10" fill="red"></circle></svg>'  # noqa: E501
         )
+        assert self.console.error.lines == []
 
     @skip_worker("FIXME: display()")
     def test_display_list_dict_tuple(self):

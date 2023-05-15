@@ -137,6 +137,7 @@
                     import altair as alt
                     import panel as pn
                     import pandas as pd
+                    import param
 
                     from sklearn.cluster import KMeans
                     from pyodide.http import open_url
@@ -170,7 +171,7 @@
                                     y=alt.Y(y, scale=alt.Scale(zero=False)),
                                     shape='labels',
                                     color='species'
-                                ).add_selection(brush).properties(width=800) +
+                                ).add_params(brush).properties(width=800) +
                             alt.Chart(centers)
                                 .mark_point(size=250, shape='cross', color='black')
                                 .encode(x=x+':Q', y=y+':Q')
@@ -197,8 +198,8 @@
                     @pn.depends(x, y, n_clusters, watch=True)
                     def update_chart(*events):
                         chart.object = get_chart(x.value, y.value, table.value)
-                        chart.selection.param.watch(update_filters, 'brush')
 
+                    @param.depends('brush', watch=True)
                     def update_filters(event=None):
                         filters = []
                         for k, v in (getattr(event, 'new') or {}).items():
