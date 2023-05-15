@@ -302,7 +302,7 @@ function addPyScriptEventListener(interpreter: InterpreterClient, el: Element, t
 
     // Note: these are *NOT* misused-promises, this is how async events work.
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    if (type.slice(-5) === '-code') el.addEventListener(type.slice(0, -5), pyScriptCodeRunner);
+    if (type.endsWith('-code')) el.addEventListener(type.slice(0, -5), pyScriptCodeRunner);
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     else el.addEventListener(type, pyScriptEventHandler);
 }
