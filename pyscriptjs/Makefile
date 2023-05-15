@@ -92,7 +92,6 @@ test:
 	make test-examples
 
 test-integration:
-	make examples
 	mkdir -p test_results
 	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
 
