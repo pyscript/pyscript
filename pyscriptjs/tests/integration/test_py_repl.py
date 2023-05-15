@@ -44,7 +44,7 @@ class TestPyRepl(PyScriptTest):
             """
         )
         py_repl = self.page.locator("py-repl")
-        src = py_repl.inner_text()
+        src = py_repl.locator("div.cm-content").inner_text()
         assert "print('hello from py-repl')" in src
         py_repl.locator("button").click()
         self.page.wait_for_selector("py-terminal")
@@ -183,6 +183,8 @@ class TestPyRepl(PyScriptTest):
         tb_lines = err_pre.inner_text().splitlines()
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
+        #
+        self.check_py_errors("this is an error")
 
     @skip_worker("FIXME: display()")
     def test_multiple_repls(self):
@@ -228,6 +230,8 @@ class TestPyRepl(PyScriptTest):
         out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert "hello world" not in out_div.inner_text()
         assert "ZeroDivisionError" in out_div.inner_text()
+        #
+        self.check_py_errors("ZeroDivisionError")
 
     @skip_worker("FIXME: js.document")
     def test_hide_previous_error_after_successful_run(self):
@@ -253,6 +257,8 @@ class TestPyRepl(PyScriptTest):
         # test runner can be too fast, the line below should wait for output to change
         out_div = self.page.wait_for_selector("#py-internal-0-repl-output")
         assert out_div.inner_text() == "hello"
+        #
+        self.check_py_errors("this is an error")
 
     def test_output_attribute_does_not_exist(self):
         """
@@ -601,7 +607,7 @@ class TestPyRepl(PyScriptTest):
         assert self.console.info.lines[-1] == successMsg
 
         py_repl = self.page.locator("py-repl")
-        code = py_repl.inner_text()
+        code = py_repl.locator("div.cm-content").inner_text()
         assert "print('1')" in code
 
     @skip_worker("TIMEOUT")

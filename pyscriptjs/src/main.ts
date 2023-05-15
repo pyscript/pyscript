@@ -8,7 +8,7 @@ import { InterpreterClient } from './interpreter_client';
 import { PluginManager, Plugin, PythonPlugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
 import { getLogger } from './logger';
-import { showWarning, globalExport, createLock } from './utils';
+import { showWarning, createLock } from './utils';
 import { calculateFetchPaths } from './plugins/calculateFetchPaths';
 import { createCustomElements } from './components/elements';
 import { UserError, ErrorCode, _createAlertBanner } from './exceptions';
@@ -450,10 +450,7 @@ modules must contain a "plugin" attribute. For more information check the plugin
     }
 }
 
-function pyscript_get_config() {
-    return globalApp.config;
-}
-globalExport('pyscript_get_config', pyscript_get_config);
+globalThis.pyscript_get_config = () => globalApp.config;
 
 // main entry point of execution
 const globalApp = new PyScriptApp();

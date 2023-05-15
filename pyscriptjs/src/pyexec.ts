@@ -55,7 +55,6 @@ export async function pyDisplay(interpreter: InterpreterClient, obj: any, kwargs
 }
 
 export function displayPyException(err: Error, errElem: HTMLElement) {
-    //addClasses(errElem, ['py-error'])
     const pre = document.createElement('pre');
     pre.className = 'py-error';
 

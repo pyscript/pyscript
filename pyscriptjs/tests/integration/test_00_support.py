@@ -3,7 +3,12 @@ import textwrap
 
 import pytest
 
-from .support import JsErrors, JsErrorsDidNotRaise, PyScriptTest, with_execution_thread
+from .support import (
+    PageErrors,
+    PageErrorsDidNotRaise,
+    PyScriptTest,
+    with_execution_thread,
+)
 
 
 @with_execution_thread(None)
@@ -104,7 +109,7 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(JsErrors) as exc:
+        with pytest.raises(PageErrors) as exc:
             self.check_js_errors()
         # check that the exception message contains the error message and the
         # stack trace
@@ -147,7 +152,7 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(JsErrorsDidNotRaise) as exc:
+        with pytest.raises(PageErrorsDidNotRaise) as exc:
             self.check_js_errors(
                 "this is an error 1",
                 "this is an error 2",
@@ -176,7 +181,7 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(JsErrors) as exc:
+        with pytest.raises(PageErrors) as exc:
             self.check_js_errors()
         #
         msg = str(exc.value)
@@ -207,7 +212,7 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(JsErrors) as exc:
+        with pytest.raises(PageErrors) as exc:
             self.check_js_errors("expected 1", "expected 3")
         #
         msg = str(exc.value)
@@ -233,7 +238,7 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(JsErrorsDidNotRaise) as exc:
+        with pytest.raises(PageErrorsDidNotRaise) as exc:
             self.check_js_errors("this is not going to be found")
         #
         msg = str(exc.value)
@@ -348,7 +353,7 @@ class TestSupport(PyScriptTest):
         self.writefile("mytest.html", doc)
         # "Page loaded!" will never appear, of course.
         self.goto("mytest.html")
-        with pytest.raises(JsErrors) as exc:
+        with pytest.raises(PageErrors) as exc:
             self.wait_for_console("Page loaded!", timeout=200)
         assert "this is an error" in str(exc.value)
         assert isinstance(exc.value.__context__, TimeoutError)
@@ -358,7 +363,7 @@ class TestSupport(PyScriptTest):
         self.goto("mytest.html")
         with pytest.raises(TimeoutError):
             self.wait_for_console("Page loaded!", timeout=200, check_js_errors=False)
-        # we still got a JsErrors, so we need to manually clear it, else the
+        # we still got a PageErrors, so we need to manually clear it, else the
         # test fails at teardown
         self.clear_js_errors()
 
@@ -381,7 +386,7 @@ class TestSupport(PyScriptTest):
         """
         self.writefile("mytest.html", doc)
         self.goto("mytest.html")
-        with pytest.raises(JsErrors) as exc:
+        with pytest.raises(PageErrors) as exc:
             self.wait_for_console("Page loaded!", timeout=200)
         assert "this is an error" in str(exc.value)
         #

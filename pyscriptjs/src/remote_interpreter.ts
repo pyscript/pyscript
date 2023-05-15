@@ -9,6 +9,7 @@ import type { ProxyMarked } from 'synclink';
 import * as Synclink from 'synclink';
 import { showWarning } from './utils';
 import { define_custom_element } from './plugin';
+import { deepQuerySelector } from './shadow_roots';
 
 import { python_package } from './python_package';
 
@@ -100,7 +101,7 @@ export class RemoteInterpreter extends Object {
      */
     async loadInterpreter(config: AppConfig, stdio: Synclink.Remote<Stdio & ProxyMarked>): Promise<void> {
         // TODO: move this to "main thread"!
-        const _pyscript_js_main = { define_custom_element, showWarning };
+        const _pyscript_js_main = { define_custom_element, showWarning, deepQuerySelector };
 
         this.interface = Synclink.proxy(
             await loadPyodide({

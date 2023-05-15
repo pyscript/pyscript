@@ -1,7 +1,7 @@
 import toml from '@hoodmane/toml-j0.4';
 import { getLogger } from './logger';
 import { version } from './version';
-import { getAttribute, readTextFromPath, htmlDecode, createDeprecationWarning } from './utils';
+import { readTextFromPath, htmlDecode, createDeprecationWarning } from './utils';
 import { UserError, ErrorCode } from './exceptions';
 
 const logger = getLogger('py-config');
@@ -74,7 +74,7 @@ export function loadConfigFromElement(el: Element): AppConfig {
         srcConfig = {};
         inlineConfig = {};
     } else {
-        const configType = getAttribute(el, 'type') || 'toml';
+        const configType = el.getAttribute('type') || 'toml';
         srcConfig = extractFromSrc(el, configType);
         inlineConfig = extractFromInline(el, configType);
     }
@@ -88,7 +88,7 @@ export function loadConfigFromElement(el: Element): AppConfig {
 }
 
 function extractFromSrc(el: Element, configType: string) {
-    const src = getAttribute(el, 'src');
+    const src = el.getAttribute('src');
     if (src) {
         logger.info('loading ', src);
         return validateConfig(readTextFromPath(src), configType);
