@@ -146,7 +146,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
 
                             // Note: this is *NOT* a misused-promise, this is how async events work.
                             // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                            target.removeEventListener(attributeName.slice(3), pyScriptListener);
+                            target.removeEventListener(attributeName.slice(3), pyScriptEventHandler);
                         }
                     }
                     // skip further loop on empty addedNodes
