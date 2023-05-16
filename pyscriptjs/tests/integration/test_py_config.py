@@ -234,8 +234,8 @@ class TestConfig(PyScriptTest):
             {
                 "interpreters": [
                     {
-                        "src": "https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js",
-                        "name": "pyodide-0.23.0",
+                        "src": "https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js",
+                        "name": "pyodide-0.23.2",
                         "lang": "python"
                     },
                     {
