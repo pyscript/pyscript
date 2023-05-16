@@ -174,7 +174,7 @@ export class RemoteInterpreter extends Object {
         // don't support older versions of Pyodide in any given release of PyScript, this
         // significant change is useful in some testing scenarios (for now)
         const messageCallback = logger.info.bind(logger) as typeof logger.info;
-        if (this.interpreter.version.split('.')[1] >= '0.22') {
+        if (Number(this.interpreter.version.split('.')[1]) >= 22) {
             await this.interface.loadPackage(names, {
                 messageCallback,
                 errorCallback: messageCallback,
