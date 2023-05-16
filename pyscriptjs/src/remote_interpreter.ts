@@ -171,7 +171,7 @@ export class RemoteInterpreter extends Object {
     async loadPackage(names: string | string[]): Promise<void> {
         logger.info(`pyodide.loadPackage: ${names.toString()}`);
         // The signature of `loadPackage` changed in Pyodide 0.22; while we generally
-        // don't support older versions of Pyodide in a release of PyScript, this
+        // don't support older versions of Pyodide in any given release of PyScript, this
         // significant change is useful in some testing scenarios (for now)
         const messageCallback = logger.info.bind(logger) as typeof logger.info;
         if (this.interpreter.version.split('.')[1] >= '0.22') {
