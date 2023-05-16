@@ -22,26 +22,38 @@ The [PyScript Code of Conduct](https://github.com/pyscript/governance/blob/main/
 
 # Contributing
 
-## Reporting bugs
+## Opening an Issue
+
+If you encounter a bug, have a feature proposal, or a question, please open an issue on the PyScript repository and select. When opening an issue, make sure to include the following information:
+
+- A clear and concise title that summarizes the issue.
+- A detailed description of the problem or feature request.
+- Steps to reproduce the issue (if applicable).
+- Any relevant error messages or screenshots.
+- The version of PyScript you are using (if applicable).
+
+### Reporting bugs
 
 Bugs are tracked on the [project issues page](https://github.com/pyscript/pyscript/issues). Please check if your issue has already been filed by someone else by searching the existing issues before filing a new one. Once your issue is filed, it will be triaged by another contributor or maintainer. If there are questions raised about your issue, please respond promptly.
 
-## Creating useful issues
+### Creating useful issues
 
 * Use a clear and descriptive title.
 * Describe the specific steps that reproduce the problem with as many details as possible so that someone can verify the issue.
 * Describe the behavior you observed, and the behavior you had expected.
 * Include screenshots if they help make the issue clear.
 
-## Reporting security issues
+### Reporting security issues
 
 If you aren't confident that it is appropriate to submit a security issue using the above process, you can e-mail it to security@pyscript.net
 
-## Asking questions
+### Asking questions
 
 If you have questions about the project, using PyScript, or anything else, please ask in the [PyScript forum](https://community.anaconda.cloud/c/tech-topics/pyscript).
 
-## Places to start
+## Code Contributions
+
+### Places to start
 
 If you would like to contribute to PyScript, but you aren't sure where to begin, here are some suggestions.
 
@@ -50,7 +62,7 @@ If you would like to contribute to PyScript, but you aren't sure where to begin,
 * **Look over the open pull requests.** Do you have comments or suggestions for the proposed changes? Add them.
 * **Check out the examples.** Is there a use case that would be good to have sample code for? Create an example for it.
 
-## Setting up your local environment and developing
+### Setting up your local environment and developing
 
 If you would like to contribute to PyScript, you will need to set up a local development environment. The [following instructions](https://docs.pyscript.net/latest/development/setting-up-environment.html) will help you get started.
 
