@@ -223,7 +223,7 @@ class TestDocsSnippets(PyScriptTest):
                 import asyncio
 
                 async def adjust_term_size(columns, rows):
-                    xterm = await js.document.querySelector('py-terminal').xtermReadyPromise
+                    xterm = await js.document.querySelector('py-terminal').xtermReady
                     xterm.resize(columns, rows)
                     print("test-done")
 

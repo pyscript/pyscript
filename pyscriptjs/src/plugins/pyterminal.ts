@@ -167,7 +167,7 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
     class PyTerminalXterm extends PyTerminalBaseClass {
         outElem: HTMLDivElement;
         _moduleResolved: boolean;
-        xtermReadyPromise: Promise<TerminalType>;
+        xtermReady: Promise<TerminalType>;
         xterm: TerminalType;
         cachedStdOut: Array<string>;
         cachedStdErr: Array<string>;
@@ -198,8 +198,8 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
 
             this.setupPosition(app);
 
-            this.xtermReadyPromise = this._setupXterm();
-            await this.xtermReadyPromise;
+            this.xtermReady = this._setupXterm();
+            await this.xtermReady;
             knownPyTerminalTags.add(this);
         }
 
@@ -209,19 +209,23 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
          * @returns the associated xterm.js Terminal
          */
         async _setupXterm() {
-            // eslint-disable-next-line
-            // @ts-ignore
-            if (globalThis.Terminal == undefined) {
-                //xterm module proper
-                //eslint-disable-next-line
-                //@ts-ignore
-                await import(this._xterm_cdn_base_url + '/lib/xterm.js');
+            if (this.xterm == undefined) {
+                //need to initialize the Terminal for this element
 
-                const cssTag = document.createElement('link');
-                cssTag.type = 'text/css';
-                cssTag.rel = 'stylesheet';
-                cssTag.href = this._xterm_cdn_base_url + '/css/xterm.css';
-                document.head.appendChild(cssTag);
+                // eslint-disable-next-line
+                // @ts-ignore
+                if (globalThis.Terminal == undefined) {
+                    //load xterm module from cdn
+                    //eslint-disable-next-line
+                    //@ts-ignore
+                    await import(this._xterm_cdn_base_url + '/lib/xterm.js');
+
+                    const cssTag = document.createElement('link');
+                    cssTag.type = 'text/css';
+                    cssTag.rel = 'stylesheet';
+                    cssTag.href = this._xterm_cdn_base_url + '/css/xterm.css';
+                    document.head.appendChild(cssTag);
+                }
 
                 //Create xterm, add addons
                 this.xterm = new Terminal({ screenReaderMode: true, cols: 80 });
