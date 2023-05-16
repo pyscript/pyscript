@@ -23,6 +23,8 @@ import * as Synclink from 'synclink';
 
 const logger = getLogger('pyscript/main');
 
+// This is a dummy comment for the purposes of this experiment
+
 /**
  * Monkey patching the error transfer handler to preserve the `$$isUserError`
  * marker so as to detect `UserError` subclasses in the error handling code.
