@@ -24,6 +24,7 @@ import * as Synclink from 'synclink';
 const logger = getLogger('pyscript/main');
 
 // This is a dummy comment for the purposes of this experiment
+// This is a second dummy content
 
 /**
  * Monkey patching the error transfer handler to preserve the `$$isUserError`
