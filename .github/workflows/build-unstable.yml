@@ -49,7 +49,7 @@ jobs:
               run: make build
 
             - name: Integration Tests
-              run: make test-integration-parallel
+              run: make test-integration
 
             - uses: actions/upload-artifact@v3
               with:
