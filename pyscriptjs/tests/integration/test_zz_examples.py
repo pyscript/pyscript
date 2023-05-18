@@ -37,6 +37,7 @@ class TestExamples(PyScriptTest):
         assert re.search(pattern, content)
         self.assert_no_banners()
         self.check_tutor_generated_code()
+        raise AssertionError()
 
     def test_simple_clock(self):
         self.goto("examples/simple_clock.html")
