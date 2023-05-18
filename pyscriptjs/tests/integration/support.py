@@ -960,6 +960,10 @@ class SmartRouter:
                         for file in files:
                             print(len(path) * "---", file)
 
+                print(
+                    f"This code is executing in file {__file__=} with parent dir {os.path.dirname(__file__)=}"
+                )
+
                 enclosing_folder = "/".join(relative_path.split("/")[:-1])
                 enclosing_folder = enclosing_folder if enclosing_folder else "."
                 print(
@@ -967,7 +971,7 @@ class SmartRouter:
                 )
                 print(f"Current working directory is: {os.getcwd()}")
                 print("Contents of cwd are:")
-                walkFiles(os.getcwd())
+                # walkFiles(os.getcwd())
                 print("Contents of {enclosing_folder} :")
                 printFilesInPath(enclosing_folder)
                 route.fulfill(status=404, headers=self.headers)
