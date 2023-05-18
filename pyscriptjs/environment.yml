@@ -3,9 +3,9 @@ channels:
     - conda-forge
     - microsoft
 dependencies:
-    - python=3.11
+    - python=3.11.3
     - pip
-    - pytest=7
+    - pytest=7.1.2
     - nodejs=16
     - black
     - isort
@@ -16,9 +16,9 @@ dependencies:
     - markdown
     - toml
     - pip:
-          - playwright
-          - pytest-playwright
-          - pytest-xdist
+          - playwright==1.33.0
+          - pytest-playwright==0.3.3
+          - pytest-xdist==3.3.0
           # We need Pyodide and micropip so we can import them in our Python
           # unit tests
           - pyodide_py==0.22
