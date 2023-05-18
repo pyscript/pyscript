@@ -947,13 +947,21 @@ class SmartRouter:
             if os.path.exists(relative_path):
                 route.fulfill(status=200, headers=self.headers, path=relative_path)
             else:
+
+                def printFilesInPath(path):
+                    for file in sorted(os.listdir(path)):
+                        print(">>> ", file)
+
                 enclosing_folder = "/".join(relative_path.split("/")[:-1])
                 enclosing_folder = enclosing_folder if enclosing_folder else "."
                 print(
-                    f"Failed to find '{relative_path} (based on full path {url.path= })'.\nContents of {enclosing_folder} :"
+                    f"Failed to find '{relative_path} (based on full path {url.path= })'"
                 )
-                for file in sorted(os.listdir(enclosing_folder)):
-                    print(file)
+                print(f"Current working directory is: {os.getcwd()}")
+                print("Contents of cwd are:")
+                printFilesInPath(os.getcwd())
+                print("Contents of {enclosing_folder} :")
+                printFilesInPath(enclosing_folder)
                 route.fulfill(status=404, headers=self.headers)
             return
 
