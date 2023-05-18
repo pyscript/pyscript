@@ -952,8 +952,6 @@ class SmartRouter:
                     for file in sorted(os.listdir(path)):
                         print(">>> ", file)
 
-                import os
-
                 def walkFiles(path):
                     # traverse root directory, and list directories as dirs and files as files
                     for root, _dirs, files in os.walk("."):
