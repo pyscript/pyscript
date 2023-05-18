@@ -933,6 +933,7 @@ class SmartRouter:
 
     def _router(self, route):
         full_url = route.request.url
+        self.logger.log("route", f"Request for {full_url}")
         url = urllib.parse.urlparse(full_url)
         assert url.scheme in ("http", "https")
 
@@ -942,6 +943,7 @@ class SmartRouter:
             self.log_request(200, "fake_server", full_url)
             assert url.path[0] == "/"
             relative_path = url.path[1:]
+            self.logger.log("url", f"{url.path= }")
             if os.path.exists(relative_path):
                 route.fulfill(status=200, headers=self.headers, path=relative_path)
             else:
