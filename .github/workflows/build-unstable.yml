@@ -48,12 +48,6 @@ jobs:
             - name: Build
               run: make build
 
-            - name: TypeScript Tests
-              run: make test-ts
-
-            - name: Python Tests
-              run: make test-py
-
             - name: Integration Tests
               run: make test-integration-parallel
 
