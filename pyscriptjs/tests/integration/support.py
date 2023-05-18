@@ -952,6 +952,16 @@ class SmartRouter:
                     for file in sorted(os.listdir(path)):
                         print(">>> ", file)
 
+                import os
+
+                def walkFiles(path):
+                    # traverse root directory, and list directories as dirs and files as files
+                    for root, _dirs, files in os.walk("."):
+                        path = root.split(os.sep)
+                        print((len(path) - 1) * "---", os.path.basename(root))
+                        for file in files:
+                            print(len(path) * "---", file)
+
                 enclosing_folder = "/".join(relative_path.split("/")[:-1])
                 enclosing_folder = enclosing_folder if enclosing_folder else "."
                 print(
@@ -959,7 +969,7 @@ class SmartRouter:
                 )
                 print(f"Current working directory is: {os.getcwd()}")
                 print("Contents of cwd are:")
-                printFilesInPath(os.getcwd())
+                walkFiles(os.getcwd())
                 print("Contents of {enclosing_folder} :")
                 printFilesInPath(enclosing_folder)
                 route.fulfill(status=404, headers=self.headers)
