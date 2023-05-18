@@ -55,6 +55,9 @@ jobs:
             - name: Setup Environment
               run: make setup
 
+            - name: Clean
+              run: make clean
+
             - name: Build
               run: make build
 
