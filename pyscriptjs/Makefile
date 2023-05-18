@@ -77,6 +77,8 @@ examples:
 	rm -rf ./examples/build
 	mkdir -p ./examples/build
 	cp -R ./build/* ./examples/build
+	ls ./examples
+	ls ./examples/build
 	@echo "To serve examples run: $(conda_run) python -m http.server 8080 --directory examples"
 
 # run prerequisites and serve pyscript examples at http://localhost:8000/examples/
