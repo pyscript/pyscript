@@ -228,3 +228,37 @@ class TestPyTerminal(PyScriptTest):
             "(element) => getComputedStyle(element).getPropertyValue('font-style')"
         )
         assert font_style == "italic"
+
+    def test_xterm_multiple(self):
+        """Test whether multiple x-terms on the page all function"""
+        self.pyscript_run(
+            """
+            <py-config>
+                xterm = true
+            </py-config>
+            <py-script>
+                print("\x1b[33mYellow\x1b[0m")
+                print("done")
+            </py-script>
+            <py-terminal id="a"></py-terminal>
+            <py-terminal id="b" data-testid="b"></py-terminal>
+            """
+        )
+
+        # Wait for "done" to actually appear in the xterm; may be delayed,
+        # since xtermjs processes its input buffer in chunks
+        last_line = self.page.get_by_test_id("b").get_by_text("done")
+        last_line.wait_for()
+
+        # Yes, this is not ideal. See note in `test_xterm_function`
+        time.sleep(1)
+
+        rows = self.page.locator("#a .xterm-rows")
+
+        # First line should be yellow
+        first_line = rows.locator("div").nth(0)
+        first_char = first_line.locator("span").nth(0)
+        color = first_char.evaluate(
+            "(element) => getComputedStyle(element).getPropertyValue('color')"
+        )
+        assert color == "rgb(196, 160, 0)"
