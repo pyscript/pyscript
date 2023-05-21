@@ -75,7 +75,7 @@ Now that we have installed the dependencies, we need to patch the Requests libra
         pyodide_http.patch_all()
       </py-script>
     </body>
-</html
+</html>
 ```
 
 ## Making a request
