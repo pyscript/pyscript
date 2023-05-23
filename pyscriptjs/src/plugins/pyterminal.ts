@@ -191,6 +191,7 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
         async connectedCallback() {
             //guard against initializing a tag twice
             if (knownPyTerminalTags.has(this)) return;
+            knownPyTerminalTags.add(this);
 
             this.outElem = document.createElement('div');
             //this.outElem.className = 'py-terminal';
@@ -200,7 +201,6 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
 
             this.xtermReady = this._setupXterm();
             await this.xtermReady;
-            knownPyTerminalTags.add(this);
         }
 
         /**
