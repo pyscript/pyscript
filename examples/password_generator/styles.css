@@ -1,0 +1,119 @@
+﻿body {
+    background-color: #F3F6F8 !important;
+}
+
+#output {
+    height: 0;
+}
+
+img {
+    flex: 1;
+    margin: 5%;
+    margin-left: 20%;
+}
+
+#first_div {
+    align-content: center;
+    margin: 1%;
+    flex: 1.25;
+}
+
+#welcome {
+    text-shadow: 5px 5px 10px #F3F6F8;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    padding: 2%;
+    text-align: center;
+    color: #BFAE51;
+}
+
+#include_symbols {
+    background: yellow;
+}
+
+#first_p {
+    margin: 3.5%;
+    margin-left: 5%;
+    font-family: Tahoma, sans-serif;
+}
+
+.flexelement {
+    flex: 1;
+    padding: 2%;
+}
+
+
+
+#form {
+    margin-top: 2%;
+    height: 100%;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+#form input[type=number] {
+    border: 1px solid white;
+    border-radius: 0.3em;
+    height: 12%;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+
+#form button {
+    width: 100%;
+    height: 12%;
+    margin-bottom: 5px;
+    border: 1px solid black;
+    min-height: 60px;
+    color: white;
+    background: #D2BF55;
+    letter-spacing: 0.5px;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.35s;
+}
+
+#form button:hover {
+    background: #938950;
+    letter-spacing: 0px;
+}
+
+header {
+    height: 100px;
+}
+
+footer {
+    height: 57px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    color: white;
+    text-align: center;
+}
+
+header, footer {
+    background-color: #1A1A27;
+}
+
+#header_h1 {
+    padding-top: 2.2%;
+    margin-left: 40%;
+    font-weight: bold;
+    color: white;
+}
+
+label {
+    cursor: pointer;
+}
+
+#footer_p {
+    font-weight: bold;
+    font-size: 13px;
+    text-align: center;
+    color: white;
+    vertical-align: central;
+    padding: 1.2%;
+}
