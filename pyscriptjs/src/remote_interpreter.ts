@@ -72,7 +72,7 @@ export class RemoteInterpreter extends Object {
     // TODO: Remove this once `runtimes` is removed!
     interpreter: InterpreterInterface & ProxyMarked;
 
-    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js') {
+    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js') {
         super();
         this.src = src;
     }
@@ -91,10 +91,9 @@ export class RemoteInterpreter extends Object {
      *
      * This is because, if it's used, loadPyodide
      * behaves mischievously i.e. it tries to load
-     * `pyodide.asm.js` and `pyodide_py.tar` but
-     * with paths that are wrong such as:
+     * additional files but with paths that are wrong such as:
      *
-     * http://127.0.0.1:8080/build/pyodide_py.tar
+     * http://127.0.0.1:8080/build/...
      * which results in a 404 since `build` doesn't
      * contain these files and is clearly the wrong
      * path.
@@ -171,13 +170,12 @@ export class RemoteInterpreter extends Object {
      * */
     async loadPackage(names: string | string[]): Promise<void> {
         logger.info(`pyodide.loadPackage: ${names.toString()}`);
-        // the new way in v0.22.1 is to pass it as a dict of options i.e.
-        // { messageCallback: logger.info.bind(logger), errorCallback: logger.info.bind(logger) }
-        // but one of our tests tries to use a locally downloaded older version of pyodide
-        // for which the signature of `loadPackage` accepts the above params as args i.e.
-        // the call uses `logger.info.bind(logger), logger.info.bind(logger)`.
+        // The signature of `loadPackage` changed in Pyodide 0.22; while we generally
+        // don't support older versions of Pyodide in any given release of PyScript, this
+        // significant change is useful in some testing scenarios (for now)
         const messageCallback = logger.info.bind(logger) as typeof logger.info;
-        if (this.interpreter.version.startsWith('0.22')) {
+        // Comparing version as number to avoid issues with lexicographic comparison
+        if (Number(this.interpreter.version.split('.')[1]) >= 22) {
             await this.interface.loadPackage(names, {
                 messageCallback,
                 errorCallback: messageCallback,

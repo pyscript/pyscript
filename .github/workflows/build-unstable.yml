@@ -67,6 +67,9 @@ jobs:
             - name: Integration Tests
               run: make test-integration-parallel
 
+            - name: Examples Tests
+              run: make test-examples
+
             - uses: actions/upload-artifact@v3
               with:
                   name: pyscript

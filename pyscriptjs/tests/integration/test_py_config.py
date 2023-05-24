@@ -80,9 +80,9 @@ class TestConfig(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "config name: app with external config"
 
-    # The default pyodide version is 0.22.1 as of writing
-    # this test which is newer than the one we are loading below
-    # (after downloading locally) -- which is 0.22.0
+    # The default pyodide version is newer than
+    # the one we are loading below (after downloading locally)
+    # which is 0.22.0
 
     # The test checks if loading a different interpreter is possible
     # and that too from a locally downloaded file without needing
@@ -234,8 +234,8 @@ class TestConfig(PyScriptTest):
             {
                 "interpreters": [
                     {
-                        "src": "https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js",
-                        "name": "pyodide-0.22.1",
+                        "src": "https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js",
+                        "name": "pyodide-0.23.2",
                         "lang": "python"
                     },
                     {
