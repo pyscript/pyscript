@@ -1,5 +1,5 @@
 ﻿body {
-    background-color: #F3F6F8 !important;
+    background-color: #f3f6f8 !important;
 }
 
 #output {
@@ -19,12 +19,12 @@ img {
 }
 
 #welcome {
-    text-shadow: 5px 5px 10px #F3F6F8;
+    text-shadow: 5px 5px 10px #f3f6f8;
     font-family: Arial, sans-serif;
     font-weight: bold;
     padding: 2%;
     text-align: center;
-    color: #BFAE51;
+    color: #bfae51;
 }
 
 #include_symbols {
@@ -42,8 +42,6 @@ img {
     padding: 2%;
 }
 
-
-
 #form {
     margin-top: 2%;
     height: 100%;
@@ -52,14 +50,13 @@ img {
     justify-content: center;
 }
 
-#form input[type=number] {
+#form input[type="number"] {
     border: 1px solid white;
     border-radius: 0.3em;
     height: 12%;
     width: 100%;
     margin-bottom: 5px;
 }
-
 
 #form button {
     width: 100%;
@@ -68,7 +65,7 @@ img {
     border: 1px solid black;
     min-height: 60px;
     color: white;
-    background: #D2BF55;
+    background: #d2bf55;
     letter-spacing: 0.5px;
     font-weight: bold;
     font-size: 18px;
@@ -94,8 +91,9 @@ footer {
     text-align: center;
 }
 
-header, footer {
-    background-color: #1A1A27;
+header,
+footer {
+    background-color: #1a1a27;
 }
 
 #header_h1 {

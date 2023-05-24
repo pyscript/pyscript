@@ -2,92 +2,119 @@
     author's github': https://github.com/meg-1
     license: MIT
     tags: PyScript Password Generator JavaScript Python Bootstrap Web Application -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Password Generator</title>
-    <link rel="icon" type="image/png" href="../../../favicon.png">
-    <link rel="stylesheet" href="styles.css" />
-    <script defer src="pyscript.js"></script>
-    <script defer src="script.js"></script>
-    <!--<script defer src="https://pyscript.net/latest/pyscript.js"></script>-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-          crossorigin="anonymous">
-</head>
-<body>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Password Generator</title>
+        <link rel="icon" type="image/png" href="../../../favicon.png" />
+        <link rel="stylesheet" href="styles.css" />
+        <script defer src="pyscript.js"></script>
+        <script defer src="script.js"></script>
+        <!--<script defer src="https://pyscript.net/latest/pyscript.js"></script>-->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+            crossorigin="anonymous"
+        />
+    </head>
+    <body>
+        <!-- welcome -->
+        <h5 id="welcome" class="m-auto d-flex justify-content-center">
+            Welcome to the "PyScript Password Generator Web Application"
+        </h5>
 
-    <!-- welcome -->
-    <h5 id="welcome" class="m-auto d-flex justify-content-center">
-        Welcome to the "PyScript Password Generator Web Application"
-    </h5>
+        <div class="row m-auto d-flex justify-content-center">
+            <div id="form">
+                <div>
+                    <center><h5>Generate password</h5></center>
+                    <label>
+                        Password:
+                        <input
+                            id="result"
+                            type="text"
+                            style="color: black; min-height: 50px"
+                            placeholder="generated password"
+                        />
+                    </label>
+                    <br />
 
-    <div class="row m-auto d-flex justify-content-center">
-        <div id="form">
-            <div>
-                <center><h5>Generate password</h5></center>
-                <label>
-                    Password:
-                    <input id="result" type="text" style="color: black; min-height: 50px;"
-                           placeholder="generated password" />
-                </label>
-                <br>
+                    <label style="display: flex">
+                        Password Length:
+                        <input
+                            id="password_length"
+                            type="number"
+                            step="1"
+                            style="
+                                color: black;
+                                min-height: 30px;
+                                max-width: 50px;
+                                margin-left: 10px;
+                            "
+                            value="16"
+                            min="1"
+                        />
+                    </label>
+                    <br />
 
-                <label style="display: flex;">
-                    Password Length:
-                    <input id="password_length" type="number" step="1"
-                           style="color: black; min-height: 30px; max-width: 50px; margin-left: 10px;"
-                           value="16" min="1" />
-                </label>
-                <br>
+                    <label>
+                        Include numbers:
+                        <input
+                            id="include_numbers"
+                            type="checkbox"
+                            style="color: black"
+                        />
+                    </label>
+                    <br />
 
-                <label>
-                    Include numbers:
-                    <input id="include_numbers" type="checkbox" style="color: black;" />
-                </label>
-                <br>
+                    <label>
+                        Include symbols:
+                        <input
+                            id="include_symbols"
+                            type="checkbox"
+                            style="color: black"
+                        />
+                    </label>
+                    <br />
 
-                <label>
-                    Include symbols:
-                    <input id="include_symbols" type="checkbox" style="color: black;"/>
-                </label>
-                <br>
+                    <label>
+                        Include similar characters:
+                        <input
+                            id="include_similar"
+                            type="checkbox"
+                            style="color: black"
+                        />
+                    </label>
 
-                <label>
-                    Include similar characters:
-                    <input id="include_similar" type="checkbox" style="color: black;" />
-                </label>
+                    <br />
 
-                <br>
-
-                <p id="output"></p>
-                <button py-click="generate_password()" id="generate" disabled>
-                    Generate Password
-                </button>
-
-            </div>
-        </div>
-
-    </div>
-
-    <py-config src="./py_config.toml"></py-config>
-    <py-script src="./generate.py"></py-script>
-
-    <footer>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <p id="footer_p">
-                        Thank you for using the "PyScript Password Generator",
-                        powered by PyScript!
-                    </p>
+                    <p id="output"></p>
+                    <button
+                        py-click="generate_password()"
+                        id="generate"
+                        disabled
+                    >
+                        Generate Password
+                    </button>
                 </div>
             </div>
         </div>
 
-    </footer>
+        <py-config src="./py_config.toml"></py-config>
+        <py-script src="./generate.py"></py-script>
 
-</body>
-
+        <footer>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <p id="footer_p">
+                            Thank you for using the "PyScript Password
+                            Generator", powered by PyScript!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </body>
 </html>
