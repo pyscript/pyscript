@@ -151,9 +151,9 @@ export class PluginManager {
     }
 
     async configure(config: AppConfig) {
-        for (const p of this._plugins) p.configure?.(config);
-
-        for (const p of this._pythonPlugins) await p.configure?.(config);
+        const fn = p => p.configure?.(config);
+        await Promise.all(this._plugins.map(fn));
+        await Promise.all(this._pythonPlugins.map(fn));
     }
 
     beforeLaunch(config: AppConfig) {
@@ -167,27 +167,28 @@ export class PluginManager {
     }
 
     async afterSetup(interpreter: InterpreterClient) {
+        const promises = [];
         for (const p of this._plugins) {
             try {
-                p.afterSetup?.(interpreter);
+                promises.push(p.afterSetup?.(interpreter));
             } catch (e) {
                 logger.error(`Error while calling afterSetup hook of plugin ${p.constructor.name}`, e);
             }
         }
+        await Promise.all(promises);
 
         for (const p of this._pythonPlugins) await p.afterSetup?.(interpreter);
     }
 
     async afterStartup(interpreter: InterpreterClient) {
-        for (const p of this._plugins) p.afterStartup?.(interpreter);
-
-        for (const p of this._pythonPlugins) await p.afterStartup?.(interpreter);
+        const fn = p => p.afterStartup?.(interpreter);
+        await Promise.all(this._plugins.map(fn));
+        await Promise.all(this._pythonPlugins.map(fn));
     }
 
     async beforePyScriptExec(options: { interpreter: InterpreterClient; src: string; pyScriptTag: PyScriptTag }) {
-        for (const p of this._plugins) p.beforePyScriptExec?.(options);
-
-        for (const p of this._pythonPlugins) await p.beforePyScriptExec.callKwargs(options);
+        await Promise.all(this._plugins.map(p => p.beforePyScriptExec?.(options)));
+        await Promise.all(this._pythonPlugins.map(p => p.beforePyScriptExec.callKwargs(options)));
     }
 
     async afterPyScriptExec(options: {
@@ -196,9 +197,8 @@ export class PluginManager {
         pyScriptTag: PyScriptTag;
         result: any;
     }) {
-        for (const p of this._plugins) p.afterPyScriptExec?.(options);
-
-        for (const p of this._pythonPlugins) await p.afterPyScriptExec.callKwargs(options);
+        await Promise.all(this._plugins.map(p => p.afterPyScriptExec?.(options)));
+        await Promise.all(this._pythonPlugins.map(p => p.afterPyScriptExec.callKwargs(options)));
     }
 
     async beforePyReplExec(options: {
@@ -207,21 +207,19 @@ export class PluginManager {
         outEl: HTMLElement;
         pyReplTag: any;
     }) {
-        for (const p of this._plugins) p.beforePyReplExec?.(options);
-
-        for (const p of this._pythonPlugins) await p.beforePyReplExec?.callKwargs(options);
+        await Promise.all(this._plugins.map(p => p.beforePyReplExec?.(options)));
+        await Promise.all(this._pythonPlugins.map(p => p.beforePyReplExec.callKwargs(options)));
     }
 
     async afterPyReplExec(options: { interpreter: InterpreterClient; src: string; outEl; pyReplTag; result }) {
-        for (const p of this._plugins) p.afterPyReplExec?.(options);
-
-        for (const p of this._pythonPlugins) await p.afterPyReplExec?.callKwargs(options);
+        await Promise.all(this._plugins.map(p => p.afterPyReplExec?.(options)));
+        await Promise.all(this._pythonPlugins.map(p => p.afterPyReplExec.callKwargs(options)));
     }
 
     async onUserError(error: UserError) {
-        for (const p of this._plugins) p.onUserError?.(error);
-
-        for (const p of this._pythonPlugins) await p.onUserError?.(error);
+        const fn = p => p.onUserError?.(error);
+        await Promise.all(this._plugins.map(fn));
+        await Promise.all(this._pythonPlugins.map(fn));
     }
 }
 
