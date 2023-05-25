@@ -248,7 +248,6 @@ function make_PyTerminal_xterm(app: PyScriptApp) {
         // implementation of the Stdio interface
         stdout_writeline(msg: string) {
             if (this._moduleResolved) {
-                console.log(`Writing ${msg} to xterm`);
                 this.xterm.writeln(msg);
                 //this.outElem.innerText += msg + '\n';
 
