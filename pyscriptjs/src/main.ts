@@ -212,7 +212,7 @@ export class PyScriptApp {
         */
         const interpreterURL = interpreter_cfg.src;
         await import(interpreterURL);
-        return { remote_interpreter, wrapped_remote_interpreter };
+        return wrapped_remote_interpreter;
     }
 
     async _startInterpreter_worker(interpreter_cfg: InterpreterConfig) {
@@ -222,8 +222,7 @@ export class PyScriptApp {
         const worker = new Worker(base_url + '/interpreter_worker.js');
         const worker_initialize: any = Synclink.wrap(worker);
         const wrapped_remote_interpreter = await worker_initialize(interpreter_cfg);
-        const remote_interpreter = undefined; // this is _unwrapped_remote
-        return { remote_interpreter, wrapped_remote_interpreter };
+        return wrapped_remote_interpreter;
     }
 
     // lifecycle (4)
@@ -238,19 +237,17 @@ export class PyScriptApp {
         }
 
         const cfg = this.config.interpreters[0];
-        let x;
+        let wrapped_remote_interpreter;
         if (this.config.execution_thread == 'worker') {
-            x = await this._startInterpreter_worker(cfg);
+            wrapped_remote_interpreter = await this._startInterpreter_worker(cfg);
         } else {
-            x = await this._startInterpreter_main(cfg);
+            wrapped_remote_interpreter = await this._startInterpreter_main(cfg);
         }
-        const { remote_interpreter, wrapped_remote_interpreter } = x;
 
         this.interpreter = new InterpreterClient(
             this.config,
             this._stdioMultiplexer,
             wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
-            remote_interpreter,
         );
         await this.afterInterpreterLoad(this.interpreter);
     }
@@ -413,11 +410,9 @@ export class PyScriptApp {
         // TODO: This is very specific to Pyodide API and will not work for other interpreters,
         //       when we add support for other interpreters we will need to move this to the
         //       interpreter API level and allow each one to implement it in its own way
-
-        // eventually replace with interpreter.pyimport(modulename);
-        const module = interpreter._unwrapped_remote.pyimport(modulename);
+        const module = await interpreter.pyimport(modulename);
         if (typeof (await module.plugin) !== 'undefined') {
-            const py_plugin = module.plugin as PythonPlugin;
+            const py_plugin = await module.plugin;
             py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);
         } else {

@@ -29,7 +29,6 @@ describe('RemoteInterpreter', () => {
             config,
             stdio,
             wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
-            remote_interpreter,
         );
 
         /**
@@ -69,10 +68,6 @@ describe('RemoteInterpreter', () => {
         expect(interpreter).toBeInstanceOf(InterpreterClient);
     });
 
-    it('should check if interpreter is an instance of RemoteInterpreter', async () => {
-        expect(interpreter._unwrapped_remote).toBeInstanceOf(RemoteInterpreter);
-    });
-
     it('should check if interpreter can run python code asynchronously', async () => {
         expect((await interpreter.run('2+3')).result).toBe(5);
     });
@@ -85,7 +80,7 @@ describe('RemoteInterpreter', () => {
 
     it('should check if interpreter is able to load a package', async () => {
         stdio.reset();
-        await interpreter._unwrapped_remote.loadPackage('numpy');
+        await interpreter._remote.loadPackage('numpy');
         await interpreter.run('import numpy as np');
         await interpreter.run('x = np.ones((10,))');
         await interpreter.run('print(x)');
