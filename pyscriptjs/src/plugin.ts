@@ -126,10 +126,21 @@ export type PythonPlugin = {
     configure?: (config: AppConfig) => Promise<void>;
     afterSetup?: (interpreter: InterpreterClient) => Promise<void>;
     afterStartup?: (interpreter: InterpreterClient) => Promise<void>;
-    beforePyScriptExec?: { callKwargs: (options: any) => Promise<void> };
-    afterPyScriptExec?: { callKwargs: (options: any) => Promise<void> };
-    beforePyReplExec?: { callKwargs: (options: any) => Promise<void> };
-    afterPyReplExec?: { callKwargs: (options: any) => Promise<void> };
+    beforePyScriptExec?: (interpreter: InterpreterClient, src: string, pyScriptTag: any) => Promise<void>;
+    afterPyScriptExec?: (interpreter: InterpreterClient, src: string, pyScriptTag: any, result: any) => Promise<void>;
+    beforePyReplExec?: (
+        interpreter: InterpreterClient,
+        src: string,
+        outEl: HTMLElement,
+        pyReplTag: any,
+    ) => Promise<void>;
+    afterPyReplExec?: (
+        interpreter: InterpreterClient,
+        src: string,
+        outEl: HTMLElement,
+        pyReplTag: any,
+        result: any,
+    ) => Promise<void>;
     onUserError?: (error: UserError) => Promise<void>;
 };
 
@@ -188,7 +199,9 @@ export class PluginManager {
 
     async beforePyScriptExec(options: { interpreter: InterpreterClient; src: string; pyScriptTag: PyScriptTag }) {
         await Promise.all(this._plugins.map(p => p.beforePyScriptExec?.(options)));
-        await Promise.all(this._pythonPlugins.map(p => p.beforePyScriptExec.callKwargs(options)));
+        await Promise.all(
+            this._pythonPlugins.map(p => p.beforePyScriptExec?.(options.interpreter, options.src, options.pyScriptTag)),
+        );
     }
 
     async afterPyScriptExec(options: {
@@ -198,7 +211,11 @@ export class PluginManager {
         result: any;
     }) {
         await Promise.all(this._plugins.map(p => p.afterPyScriptExec?.(options)));
-        await Promise.all(this._pythonPlugins.map(p => p.afterPyScriptExec.callKwargs(options)));
+        await Promise.all(
+            this._pythonPlugins.map(
+                p => p.afterPyScriptExec?.(options.interpreter, options.src, options.pyScriptTag, options.result),
+            ),
+        );
     }
 
     async beforePyReplExec(options: {
@@ -208,12 +225,27 @@ export class PluginManager {
         pyReplTag: any;
     }) {
         await Promise.all(this._plugins.map(p => p.beforePyReplExec?.(options)));
-        await Promise.all(this._pythonPlugins.map(p => p.beforePyReplExec.callKwargs(options)));
+        await Promise.all(
+            this._pythonPlugins.map(
+                p => p.beforePyReplExec?.(options.interpreter, options.src, options.outEl, options.pyReplTag),
+            ),
+        );
     }
 
     async afterPyReplExec(options: { interpreter: InterpreterClient; src: string; outEl; pyReplTag; result }) {
         await Promise.all(this._plugins.map(p => p.afterPyReplExec?.(options)));
-        await Promise.all(this._pythonPlugins.map(p => p.afterPyReplExec.callKwargs(options)));
+        await Promise.all(
+            this._pythonPlugins.map(
+                p =>
+                    p.afterPyReplExec?.(
+                        options.interpreter,
+                        options.src,
+                        options.outEl,
+                        options.pyReplTag,
+                        options.result,
+                    ),
+            ),
+        );
     }
 
     async onUserError(error: UserError) {
