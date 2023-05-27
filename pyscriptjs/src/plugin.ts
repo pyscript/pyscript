@@ -4,9 +4,11 @@ import { UserError, ErrorCode } from './exceptions';
 import { getLogger } from './logger';
 import { make_PyScript } from './components/pyscript';
 import { InterpreterClient } from './interpreter_client';
+import { make_PyRepl } from './components/pyrepl';
 
 const logger = getLogger('plugin');
 type PyScriptTag = InstanceType<ReturnType<typeof make_PyScript>>;
+type PyReplTag = InstanceType<ReturnType<typeof make_PyRepl>>;
 
 export class Plugin {
     /** Validate the configuration of the plugin and handle default values.
@@ -84,7 +86,12 @@ export class Plugin {
      * @param options.outEl The element that the result of the REPL evaluation will be output to.
      * @param options.pyReplTag The <py-repl> HTML tag the originated the evaluation
      */
-    beforePyReplExec(options: { interpreter: InterpreterClient; src: string; outEl: HTMLElement; pyReplTag: any }) {
+    beforePyReplExec(options: {
+        interpreter: InterpreterClient;
+        src: string;
+        outEl: HTMLElement;
+        pyReplTag: PyReplTag;
+    }) {
         /* empty */
     }
 
@@ -100,7 +107,7 @@ export class Plugin {
         interpreter: InterpreterClient;
         src: string;
         outEl: HTMLElement;
-        pyReplTag: HTMLElement;
+        pyReplTag: PyReplTag;
         result: any;
     }) {
         /* empty */
@@ -126,19 +133,24 @@ export type PythonPlugin = {
     configure?: (config: AppConfig) => Promise<void>;
     afterSetup?: (interpreter: InterpreterClient) => Promise<void>;
     afterStartup?: (interpreter: InterpreterClient) => Promise<void>;
-    beforePyScriptExec?: (interpreter: InterpreterClient, src: string, pyScriptTag: any) => Promise<void>;
-    afterPyScriptExec?: (interpreter: InterpreterClient, src: string, pyScriptTag: any, result: any) => Promise<void>;
+    beforePyScriptExec?: (interpreter: InterpreterClient, src: string, pyScriptTag: PyScriptTag) => Promise<void>;
+    afterPyScriptExec?: (
+        interpreter: InterpreterClient,
+        src: string,
+        pyScriptTag: PyScriptTag,
+        result: any,
+    ) => Promise<void>;
     beforePyReplExec?: (
         interpreter: InterpreterClient,
         src: string,
         outEl: HTMLElement,
-        pyReplTag: any,
+        pyReplTag: PyReplTag,
     ) => Promise<void>;
     afterPyReplExec?: (
         interpreter: InterpreterClient,
         src: string,
         outEl: HTMLElement,
-        pyReplTag: any,
+        pyReplTag: PyReplTag,
         result: any,
     ) => Promise<void>;
     onUserError?: (error: UserError) => Promise<void>;
@@ -222,7 +234,7 @@ export class PluginManager {
         interpreter: InterpreterClient;
         src: string;
         outEl: HTMLElement;
-        pyReplTag: any;
+        pyReplTag: PyReplTag;
     }) {
         await Promise.all(this._plugins.map(p => p.beforePyReplExec?.(options)));
         await Promise.all(
@@ -232,7 +244,13 @@ export class PluginManager {
         );
     }
 
-    async afterPyReplExec(options: { interpreter: InterpreterClient; src: string; outEl; pyReplTag; result }) {
+    async afterPyReplExec(options: {
+        interpreter: InterpreterClient;
+        src: string;
+        outEl: HTMLElement;
+        pyReplTag: PyReplTag;
+        result: any;
+    }) {
         await Promise.all(this._plugins.map(p => p.afterPyReplExec?.(options)));
         await Promise.all(
             this._pythonPlugins.map(
