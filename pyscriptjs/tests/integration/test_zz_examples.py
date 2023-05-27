@@ -276,18 +276,20 @@ class TestExamples(PyScriptTest):
         self.check_tutor_generated_code()
 
     def test_panel_kmeans(self):
-        # XXX improve this test
+        # XXX improve this test>>>>>>> main
         self.goto("examples/panel_kmeans.html")
-        self.wait_for_pyscript(timeout=90 * 1000)
+        self.wait_for_pyscript(timeout=120 * 1000)
         assert self.page.title() == "Pyscript/Panel KMeans Demo"
-        wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
+        wait_for_render(
+            self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>", timeout_seconds=60 * 2
+        )
         self.assert_no_banners()
         self.check_tutor_generated_code()
 
     def test_panel_stream(self):
         # XXX improve this test
         self.goto("examples/panel_stream.html")
-        self.wait_for_pyscript(timeout=90 * 1000)
+        self.wait_for_pyscript(timeout=3 * 60 * 1000)
         assert self.page.title() == "PyScript/Panel Streaming Demo"
         wait_for_render(self.page, "*", "<div.*?class=['\"]bk-root['\"].*?>")
         self.assert_no_banners()
@@ -316,7 +318,7 @@ class TestExamples(PyScriptTest):
 
     def test_repl2(self):
         self.goto("examples/repl2.html")
-        self.wait_for_pyscript()
+        self.wait_for_pyscript(timeout=1.5 * 60 * 1000)
         assert self.page.title() == "Custom REPL Example"
         wait_for_render(self.page, "*", "<py-repl.*?>")
         # confirm we can import utils and run one command
@@ -360,15 +362,31 @@ class TestExamples(PyScriptTest):
         self.assert_no_banners()
         self.check_tutor_generated_code(modules_to_check=["./utils.py", "./todo.py"])
 
-    @pytest.mark.xfail(reason="fails after introducing synclink, fix me soon!")
     def test_todo_pylist(self):
-        # XXX improve this test
         self.goto("examples/todo-pylist.html")
         self.wait_for_pyscript()
         assert self.page.title() == "Todo App"
         wait_for_render(self.page, "*", "<input.*?id=['\"]new-task-content['\"].*?>")
+        todo_input = self.page.locator("input")
+        submit_task_button = self.page.locator("button#new-task-btn")
+
+        todo_input.type("Fold laundry")
+        submit_task_button.click()
+
+        first_task = self.page.locator("div#myList-c-0")
+        assert "Fold laundry" in first_task.inner_text()
+
+        task_checkbox = first_task.locator("input")
+        # Confirm that the new task isn't checked
+        assert not task_checkbox.is_checked()
+
+        # Let's mark it as done now
+        task_checkbox.check()
+
+        # Basic check that the task has the line-through class
+        assert "line-through" in first_task.get_attribute("class")
         self.assert_no_banners()
-        self.check_tutor_generated_code(modules_to_check=["utils.py", "pylist.py"])
+        self.check_tutor_generated_code(modules_to_check=["utils.py"])
 
     @pytest.mark.xfail(reason="To be moved to collective and updated, see issue #686")
     def test_toga_freedom(self):

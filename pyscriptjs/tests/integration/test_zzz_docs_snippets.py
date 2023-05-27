@@ -130,12 +130,13 @@ class TestDocsSnippets(PyScriptTest):
         self.assert_no_banners()
 
     def test_tutorials_py_config_interpreter(self):
+        """Load a previous version of Pyodide"""
         self.pyscript_run(
             """
             <py-config>
                 [[interpreters]]
-                    src = "https://cdn.jsdelivr.net/pyodide/v0.22.0a3/full/pyodide.js"
-                    name = "pyodide-0.22.0a3"
+                    src = "https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js"
+                    name = "pyodide-0.23.0"
                     lang = "python"
             </py-config>
             <py-script>
@@ -146,7 +147,7 @@ class TestDocsSnippets(PyScriptTest):
         )
 
         py_terminal = self.page.wait_for_selector("py-terminal")
-        assert "0.22.0a3" in py_terminal.inner_text()
+        assert "0.23.0" in py_terminal.inner_text()
         self.assert_no_banners()
 
     @skip_worker("FIXME: display()")

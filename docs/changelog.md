@@ -8,6 +8,7 @@ Features
 --------
 
 - Added the `xterm` attribute to `py-config`. When set to `True` or `xterm`, an (output-only) [xterm.js](http://xtermjs.org/) terminal will be used in place of the default py-terminal.
+- The default version of Pyodide is now `0.23.2`. See the [Pyodide Changelog](https://pyodide.org/en/stable/project/changelog.html#version-0-23-2) for a detailed list of changes.
 - Added the `@when` decorator for attaching Python functions as event handlers
 - The `py-mount` attribute on HTML elements has been deprecated, and will be removed in a future release.
 

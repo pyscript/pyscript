@@ -25,7 +25,7 @@ To get started, let's create a new `index.html` file and import `pyscript.js`.
 </html>
 ```
 
-We are using the pyodide CDN to setup our interpreter, but you can also download the files from [the pyodide GitHub release](https://github.com/pyodide/pyodide/releases/tag/0.22.0a3), unzip them and use the `pyodide.js` file as your interpreter.
+We are using the pyodide CDN to setup our interpreter, but you can also download the files from [the pyodide GitHub releases](https://github.com/pyodide/pyodide/releases/), unzip them and use the `pyodide.js` file as your interpreter.
 
 ## Setting the interpreter
 
@@ -47,8 +47,8 @@ To set the interpreter, you can use the `interpreter` configuration in the `py-c
   <body>
     <py-config>
       [[interpreters]]
-        src = "https://cdn.jsdelivr.net/pyodide/v0.22.0a3/full/pyodide.js"
-        name = "pyodide-0.22.0a3"
+        src = "https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js"
+        name = "pyodide-0.23.0"
         lang = "python"
     </py-config>
   </body>
@@ -75,8 +75,8 @@ To confirm that the interpreter is set correctly, you can open the DevTools and 
   <body>
     <py-config>
       [[interpreters]]
-        src = "https://cdn.jsdelivr.net/pyodide/v0.22.0a3/full/pyodide.js"
-        name = "pyodide-0.22.0a3"
+        src = "https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js"
+        name = "pyodide-0.23.0"
         lang = "python"
     </py-config>
     <py-script>

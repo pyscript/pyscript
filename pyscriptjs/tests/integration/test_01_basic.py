@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from .support import PageErrors, PyScriptTest, skip_worker
+from .support import PyScriptTest, skip_worker
 
 
 class TestBasic(PyScriptTest):
@@ -246,21 +246,22 @@ class TestBasic(PyScriptTest):
         assert self.console.log.lines[-1] == "hello from foo"
 
     def test_py_script_src_not_found(self):
-        with pytest.raises(PageErrors) as exc:
-            self.pyscript_run(
-                """
-                <py-script src="foo.py"></py-script>
-                """
-            )
+        self.pyscript_run(
+            """
+            <py-script src="foo.py"></py-script>
+            """,
+            check_js_errors=False,
+        )
         assert "Failed to load resource" in self.console.error.lines[0]
 
-        error_msgs = str(exc.value)
         expected_msg = "(PY0404): Fetching from URL foo.py failed with error 404"
-        assert expected_msg in error_msgs
+        assert any((expected_msg in line) for line in self.console.js_error.lines)
         assert self.assert_banner_message(expected_msg)
 
         pyscript_tag = self.page.locator("py-script")
         assert pyscript_tag.inner_html() == ""
+
+        self.check_js_errors(expected_msg)
 
     def test_js_version(self):
         self.pyscript_run(
