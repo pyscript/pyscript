@@ -412,7 +412,7 @@ export class PyScriptApp {
         //       interpreter API level and allow each one to implement it in its own way
         const module = await interpreter.pyimport(modulename);
         if (typeof (await module.plugin) !== 'undefined') {
-            const py_plugin = await module.plugin;
+            const py_plugin = (await module.plugin) as PythonPlugin;
             py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);
         } else {

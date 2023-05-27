@@ -20,11 +20,7 @@ export class InterpreterClient extends Object {
     globals: Synclink.Remote<PyProxyDict>;
     stdio: Stdio;
 
-    constructor(
-        config: AppConfig,
-        stdio: Stdio,
-        remote: Synclink.Remote<RemoteInterpreter>,
-    ) {
+    constructor(config: AppConfig, stdio: Stdio, remote: Synclink.Remote<RemoteInterpreter>) {
         super();
         this.config = config;
         this._remote = remote;
