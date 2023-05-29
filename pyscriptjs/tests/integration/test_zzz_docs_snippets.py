@@ -211,6 +211,35 @@ class TestDocsSnippets(PyScriptTest):
 
         assert "0\n1\n2\n" in py_terminal.inner_text()
 
+    @skip_worker("FIXME: js.document")
+    def test_reference_pyterminal_xterm(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                xterm = true
+            </py-config>
+            <py-script>
+                print("HELLO!")
+                import js
+                import asyncio
+
+                async def adjust_term_size(columns, rows):
+                    xterm = await js.document.querySelector('py-terminal').xtermReady
+                    xterm.resize(columns, rows)
+                    print("test-done")
+
+                asyncio.ensure_future(adjust_term_size(40, 10))
+                </py-script>
+            """
+        )
+        self.page.get_by_text("test-done").wait_for()
+
+        py_terminal = self.page.locator("py-terminal")
+        print(dir(py_terminal))
+        print(type(py_terminal))
+        assert py_terminal.evaluate("el => el.xterm.cols") == 40
+        assert py_terminal.evaluate("el => el.xterm.rows") == 10
+
     @skip_worker(reason="FIXME: js.document (@when decorator)")
     def test_reference_when_simple(self):
         self.pyscript_run(

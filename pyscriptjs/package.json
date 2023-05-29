@@ -37,7 +37,8 @@
         "pyodide": "0.23.2",
         "synclink": "0.2.4",
         "ts-jest": "29.0.3",
-        "typescript": "5.0.4"
+        "typescript": "5.0.4",
+        "xterm": "^5.1.0"
     },
     "dependencies": {
         "basic-devtools": "^0.1.6",
