@@ -50,5 +50,9 @@ jobs:
                   role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
 
               # Sync will only copy changed files
+            - name: Sync Error
+              run: aws s3 cp --quiet ./docs/_build/html/error.html s3://docs.pyscript.net/error.html
+
+              # Sync will only copy changed files
             - name: Sync to S3
               run: aws s3 sync --quiet ./docs/_build/html/ s3://docs.pyscript.net/unstable/
