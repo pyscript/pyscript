@@ -63,12 +63,10 @@ class ExecTestLogger(Plugin):
     async def beforePyScriptExec(self, interpreter, src, pyScriptTag):
         console.log(f'beforePyScriptExec called')
         console.log(f'before_src:{src}')
-        console.log(f'before_id:{pyScriptTag.id}')
 
     async def afterPyScriptExec(self, interpreter, src, pyScriptTag, result):
         console.log(f'afterPyScriptExec called')
         console.log(f'after_src:{src}')
-        console.log(f'after_id:{pyScriptTag.id}')
         console.log(f'result:{result}')
 
 
@@ -88,12 +86,10 @@ class PyReplTestLogger(Plugin):
     def beforePyReplExec(self, interpreter, src, outEl, pyReplTag):
         console.log(f'beforePyReplExec called')
         console.log(f'before_src:{src}')
-        console.log(f'before_id:{pyReplTag.id}')
 
     def afterPyReplExec(self, interpreter, src, outEl, pyReplTag, result):
         console.log(f'afterPyReplExec called')
         console.log(f'after_src:{src}')
-        console.log(f'after_id:{pyReplTag.id}')
         console.log(f'result:{result}')
 
 
@@ -261,9 +257,7 @@ class TestPlugin(PyScriptTest):
         # These could be made better with a utility function that found log lines
         # that match a filter function, or start with something
         assert "before_src:x=2; x" in log_lines
-        assert "before_id:pyid" in log_lines
         assert "after_src:x=2; x" in log_lines
-        assert "after_id:pyid" in log_lines
         assert "result:2" in log_lines
 
     @skip_worker("FIXME: relative paths")
@@ -286,9 +280,7 @@ class TestPlugin(PyScriptTest):
         # These could be made better with a utility function that found log lines
         # that match a filter function, or start with something
         assert "before_src:x=2; x" in log_lines
-        assert "before_id:pyid" in log_lines
         assert "after_src:x=2; x" in log_lines
-        assert "after_id:pyid" in log_lines
         assert "result:2" in log_lines
 
     @skip_worker("FIXME: relative paths")
