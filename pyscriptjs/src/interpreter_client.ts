@@ -13,7 +13,6 @@ InterpreterClient class is responsible to request code execution
 */
 export class InterpreterClient extends Object {
     _remote: Synclink.Remote<RemoteInterpreter>;
-    _unwrapped_remote: RemoteInterpreter;
     config: AppConfig;
     /**
      * global symbols table for the underlying interface.
@@ -21,16 +20,10 @@ export class InterpreterClient extends Object {
     globals: Synclink.Remote<PyProxyDict>;
     stdio: Stdio;
 
-    constructor(
-        config: AppConfig,
-        stdio: Stdio,
-        remote: Synclink.Remote<RemoteInterpreter>,
-        unwrapped_remote: RemoteInterpreter,
-    ) {
+    constructor(config: AppConfig, stdio: Stdio, remote: Synclink.Remote<RemoteInterpreter>) {
         super();
         this.config = config;
         this._remote = remote;
-        this._unwrapped_remote = unwrapped_remote;
         this.stdio = stdio;
     }
 
