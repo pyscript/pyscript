@@ -413,7 +413,7 @@ export class PyScriptApp {
         const module = await interpreter.pyimport(modulename);
         if (typeof (await module.plugin) !== 'undefined') {
             const py_plugin = (await module.plugin) as PythonPlugin;
-            py_plugin.init(this);
+            await py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);
         } else {
             logger.error(`Cannot find plugin on Python module ${modulename}! Python plugins \

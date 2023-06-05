@@ -12,7 +12,7 @@ class Plugin:
         self._custom_elements = []
         self.app = None
 
-    def init(self, app):
+    async def init(self, app):
         self.app = app
 
     def configure(self, config):
