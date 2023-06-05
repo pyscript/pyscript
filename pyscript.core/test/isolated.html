@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>python</title>
+  <script type="module" src="../min.js"></script>
+</head>
+<body>
+  <script type="py">
+    # define a "global" variable and print it
+    shared_env = 1
+    print(shared_env)
+  </script>
+  <script type="py">
+    # just print the "global" variable from same env
+    print(shared_env)
+  </script>
+  <script type="py" env="another-one">
+    # see the error
+    print(shared_env)
+  </script>
+</body>
+</html>

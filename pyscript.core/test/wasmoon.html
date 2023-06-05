@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>lua</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "basic-devtools": "../node_modules/basic-devtools/esm/index.js"
+      }
+    }
+  </script>
+  <script type="module" src="../esm/index.js"></script>
+</head>
+<body>
+  <script type="lua" config="./fetch.toml">
+    local function read_file(path)
+      local file = io.open(path, "rb")
+      if not file then return nil end
+      local content = file:read "*a"
+      file:close()
+      return content
+    end
+
+    function print_version(event)
+      print(event.type)
+      print(_VERSION)
+      print(read_file('/a.py'))
+    end
+  </script>
+  <button lua-click="print_version(event)">lua version</button>
+</body>
+</html>

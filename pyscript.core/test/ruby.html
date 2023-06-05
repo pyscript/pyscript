@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Ruby</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "basic-devtools": "../node_modules/basic-devtools/esm/index.js"
+      }
+    }
+  </script>
+  <script type="module" src="../esm/index.js"></script>
+</head>
+<body>
+  <script type="rb">
+    def print_version(event)
+      puts event[:type]
+      print "ruby #{ RUBY_VERSION }p#{ RUBY_PATCHLEVEL }"
+    end
+  </script>
+  <button rb-click="print_version(event)">ruby version</button>
+</body>
+</html>
