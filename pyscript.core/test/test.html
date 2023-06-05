@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <title>python</title>
+        <link rel="stylesheet" href="style.css" />
+        <script type="importmap">
+            {
+                "imports": {
+                    "basic-devtools": "../node_modules/basic-devtools/esm/index.js"
+                }
+            }
+        </script>
+        <script type="module" src="../esm/index.js"></script>
+    </head>
+    <body>
+        <script type="py">
+            def print_version():
+              import sys
+              print(sys.version)
+              print("bad.", file=sys.stderr)
+        </script>
+        <button py-click="print_version()">python version</button>
+
+        <script type="mpy">
+            def print_version():
+              import sys
+              print(sys.version)
+              print("bad.", file=sys.stderr)
+        </script>
+        <button mpy-click="print_version()">micropython version</button>
+
+        <script type="lua">
+            function print_version()
+              print(_VERSION)
+              printErr(123)
+            end
+        </script>
+        <button lua-click="print_version()">lua version</button>
+
+        <script type="rb">
+            def print_version()
+              print "ruby #{ RUBY_VERSION }p#{ RUBY_PATCHLEVEL }"
+            end
+        </script>
+        <button rb-click="print_version()">ruby version</button>
+    </body>
+</html>

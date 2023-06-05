@@ -1,0 +1,17 @@
+{
+    "background_color": "#ffffff",
+    "description": "PythonScript",
+    "display": "standalone",
+    "name": "PythonScript",
+    "orientation": "any",
+    "short_name": "PythonScript",
+    "start_url": "./",
+    "theme_color": "#ffffff",
+    "icons": [
+        {
+            "src": "icon.svg",
+            "sizes": "144x144",
+            "type": "image/svg+xml"
+        }
+    ]
+}

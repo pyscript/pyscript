@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>py-script</title>
+        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="../pyscript/pyscript.css" />
+        <script defer src="../pyscript/pyscript.js"></script>
+        <title>py-script</title>
+    </head>
+    <body>
+        <py-script>
+            import sys
+            display(sys.version, target="target")
+        </py-script>
+        <div id="target"></div>
+    </body>
+</html>
