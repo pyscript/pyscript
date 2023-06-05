@@ -1,35 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>python</title>
-  <link rel="stylesheet" href="style.css">
-  <script type="importmap">
-    {
-      "imports": {
-        "basic-devtools": "../node_modules/basic-devtools/esm/index.js"
-      }
-    }
-  </script>
-  <script type="module" src="../esm/index.js"></script>
-</head>
-<body>
-  <script type="mpy" src="http://localhost:7357/print-a.py"></script>
-  <script type="mpy">
-    print('B')
-  </script>
-  <script type="mpy" src="http://localhost:7357/print-a.py"></script>
-  <script type="mpy">
-    print('C')
-  </script>
-  <script type="mpy">
-    print('D')
-  </script>
-  <pre>A
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <title>python</title>
+        <link rel="stylesheet" href="style.css" />
+        <script type="importmap">
+            {
+                "imports": {
+                    "basic-devtools": "../node_modules/basic-devtools/esm/index.js"
+                }
+            }
+        </script>
+        <script type="module" src="../esm/index.js"></script>
+    </head>
+    <body>
+        <script type="mpy" src="http://localhost:7357/print-a.py"></script>
+        <script type="mpy">
+            print('B')
+        </script>
+        <script type="mpy" src="http://localhost:7357/print-a.py"></script>
+        <script type="mpy">
+            print('C')
+        </script>
+        <script type="mpy">
+            print('D')
+        </script>
+        <pre>
+A
 B
 A
 C
-D</pre>
-</body>
+D</pre
+        >
+    </body>
 </html>

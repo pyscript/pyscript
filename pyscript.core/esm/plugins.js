@@ -1,9 +1,9 @@
-import {$$} from 'basic-devtools';
+import { $$ } from "basic-devtools";
 
-import {getDetails} from './script-handler.js';
-import {registry, configs} from './runtimes.js';
-import {getRuntimeID} from './loader.js';
-import {io} from './runtime/_utils.js';
+import { getDetails } from "./script-handler.js";
+import { registry, configs } from "./runtimes.js";
+import { getRuntimeID } from "./loader.js";
+import { io } from "./runtime/_utils.js";
 
 export const PLUGINS_SELECTORS = [];
 
@@ -23,37 +23,43 @@ export const PLUGINS_SELECTORS = [];
 /**
  * @param {Element} node any DOM element registered via plugin.
  */
-export const handlePlugin = node => {
-  for (const name of PLUGINS_SELECTORS) {
-    if (node.matches(name)) {
-      const {options, known} = plugins.get(name);
-      if (!known.has(node)) {
-        known.add(node);
-        const {type, version, config, env, onRuntimeReady} = options;
-        const name = getRuntimeID(type, version);
-        const id = env || `${name}${config ? `|${config}` : ''}`;
-        const {runtime: engine, XWorker} = getDetails(type, id, name, version, config);
-        engine.then(runtime => {
-          const module = registry.get(type);
-          onRuntimeReady(node, {
-            type,
-            runtime,
-            XWorker,
-            io: io.get(runtime),
-            config: structuredClone(configs.get(name)),
-            run: module.run.bind(module, runtime),
-            runAsync: module.runAsync.bind(module, runtime),
-          });
-        });
-      }
+export const handlePlugin = (node) => {
+    for (const name of PLUGINS_SELECTORS) {
+        if (node.matches(name)) {
+            const { options, known } = plugins.get(name);
+            if (!known.has(node)) {
+                known.add(node);
+                const { type, version, config, env, onRuntimeReady } = options;
+                const name = getRuntimeID(type, version);
+                const id = env || `${name}${config ? `|${config}` : ""}`;
+                const { runtime: engine, XWorker } = getDetails(
+                    type,
+                    id,
+                    name,
+                    version,
+                    config,
+                );
+                engine.then((runtime) => {
+                    const module = registry.get(type);
+                    onRuntimeReady(node, {
+                        type,
+                        runtime,
+                        XWorker,
+                        io: io.get(runtime),
+                        config: structuredClone(configs.get(name)),
+                        run: module.run.bind(module, runtime),
+                        runAsync: module.runAsync.bind(module, runtime),
+                    });
+                });
+            }
+        }
     }
-  }
 };
 
 /**
  * @type {Map<string, {options:object, known:WeakSet<Element>}>}
  */
-const plugins = new Map;
+const plugins = new Map();
 
 /**
  * @typedef {Object} PluginOptions plugin configuration
@@ -70,10 +76,10 @@ const plugins = new Map;
  * @param {PluginOptions} options the plugin configuration
  */
 export const registerPlugin = (name, options) => {
-  if (PLUGINS_SELECTORS.includes(name))
-    throw new Error(`plugin ${name} already registered`);
-  PLUGINS_SELECTORS.push(name);
-  plugins.set(name, {options, known: new WeakSet});
-  $$(name).forEach(handlePlugin);
+    if (PLUGINS_SELECTORS.includes(name))
+        throw new Error(`plugin ${name} already registered`);
+    PLUGINS_SELECTORS.push(name);
+    plugins.set(name, { options, known: new WeakSet() });
+    $$(name).forEach(handlePlugin);
 };
 /* c8 ignore stop */

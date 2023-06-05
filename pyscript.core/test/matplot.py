@@ -2,15 +2,16 @@ import js
 import matplotlib
 
 try:
-  getattr(js, 'document')
+    js.document
 except AttributeError:
-  matplotlib.use('agg')
+    matplotlib.use("agg")
+
+import base64
+import io
 
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 import numpy as np
-import base64
-import io
 
 # First create the x and y coordinates of the points.
 n_angles = 36
@@ -30,18 +31,21 @@ z = (np.cos(radii) * np.cos(3 * angles)).flatten()
 triang = tri.Triangulation(x, y)
 
 # Mask off unwanted triangles.
-triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1),
-                          y[triang.triangles].mean(axis=1))
-                < min_radius)
+triang.set_mask(
+    np.hypot(x[triang.triangles].mean(axis=1), y[triang.triangles].mean(axis=1))
+    < min_radius
+)
 
 fig1, ax1 = plt.subplots()
-ax1.set_aspect('equal')
-tpc = ax1.tripcolor(triang, z, shading='flat')
+ax1.set_aspect("equal")
+tpc = ax1.tripcolor(triang, z, shading="flat")
 fig1.colorbar(tpc)
-ax1.set_title('tripcolor of Delaunay triangulation, flat shading')
+ax1.set_title("tripcolor of Delaunay triangulation, flat shading")
 
 buf = io.BytesIO()
-plt.savefig(buf, format='png')
+plt.savefig(buf, format="png")
 buf.seek(0)
 
-js.xworker.postMessage('data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8'))
+js.xworker.postMessage(
+    "data:image/png;base64," + base64.b64encode(buf.read()).decode("UTF-8")
+)

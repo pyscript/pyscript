@@ -1,4 +1,6 @@
-declare function _default(...args: any[]): (url: string, options?: WorkerOptions) => Worker;
+declare function _default(
+    ...args: any[]
+): (url: string, options?: WorkerOptions) => Worker;
 export default _default;
 /**
  * plugin configuration

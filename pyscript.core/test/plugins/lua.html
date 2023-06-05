@@ -1,30 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Plugins</title>
-  <style>py-script{display: none}</style>
-  <script type="importmap">{"imports":{"@pyscript/core":"../../min.js"}}</script>
-  <script type="module">
-    import {registerPlugin} from '@pyscript/core';
-    registerPlugin('lua-script', {
-      type: 'wasmoon', // or just 'lua'
-      async onRuntimeReady(element, wasmoon) {
-        // Somehow this doesn't work in Wasmoon
-        wasmoon.io.stdout = message => {
-          console.log('🌑', wasmoon.type, message);
-        };
-        wasmoon.run(element.textContent);
-        element.replaceChildren('See console ->');
-        element.style.display = 'block';
-      }
-    });
-  </script>
-</head>
-<body>
-  <lua-script>
-    print('Hello Console!')
-  </lua-script>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <title>Plugins</title>
+        <style>
+            py-script {
+                display: none;
+            }
+        </style>
+        <script type="importmap">
+            { "imports": { "@pyscript/core": "../../min.js" } }
+        </script>
+        <script type="module">
+            import { registerPlugin } from "@pyscript/core";
+            registerPlugin("lua-script", {
+                type: "wasmoon", // or just 'lua'
+                async onRuntimeReady(element, wasmoon) {
+                    // Somehow this doesn't work in Wasmoon
+                    wasmoon.io.stdout = (message) => {
+                        console.log("🌑", wasmoon.type, message);
+                    };
+                    wasmoon.run(element.textContent);
+                    element.replaceChildren("See console ->");
+                    element.style.display = "block";
+                },
+            });
+        </script>
+    </head>
+    <body>
+        <lua-script> print('Hello Console!') </lua-script>
+    </body>
 </html>

@@ -1,26 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>python</title>
-  <link rel="stylesheet" href="style.css">
-  <script defer src="./counter.js"></script>
-  <script type="module" src="../min.js"></script>
-</head>
-<body>
-  <script type="mpy">
-    from js import XWorker
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <title>python</title>
+        <link rel="stylesheet" href="style.css" />
+        <script defer src="./counter.js"></script>
+        <script type="module" src="../min.js"></script>
+    </head>
+    <body>
+        <script type="mpy">
+            from js import XWorker
 
-    def show_image(event):
-      from js import document
-      img = document.createElement("img")
-      img.style.transform = "scale(.5)"
-      img.src = event.data
-      document.body.appendChild(img)
+            def show_image(event):
+              from js import document
+              img = document.createElement("img")
+              img.style.transform = "scale(.5)"
+              img.src = event.data
+              document.body.appendChild(img)
 
-    w = XWorker('./matplot.py', **{'type': 'py', 'config': './config.toml'})
-    w.onmessage = show_image
-  </script>
-</body>
+            w = XWorker('./matplot.py', **{'type': 'py', 'config': './config.toml'})
+            w.onmessage = show_image
+        </script>
+    </body>
 </html>

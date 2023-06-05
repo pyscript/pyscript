@@ -1,31 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Plugins</title>
-  <style>py-script{display: none}</style>
-  <script type="importmap">{"imports":{"@pyscript/core":"../../min.js"}}</script>
-  <script type="module">
-    import {registerPlugin} from '@pyscript/core';
-    registerPlugin('mpy-script', {
-      type: 'micropython', // or just 'mpy'
-      async onRuntimeReady(element, micropython) {
-        console.log(micropython);
-        // Somehow this doesn't work in MicroPython
-        micropython.io.stdout = message => {
-          console.log('🐍', micropython.type, message);
-        };
-        micropython.run(element.textContent);
-        element.replaceChildren('See console ->');
-        element.style.display = 'block';
-      }
-    });
-  </script>
-</head>
-<body>
-  <mpy-script>
-    print('Hello Console!')
-  </mpy-script>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <title>Plugins</title>
+        <style>
+            py-script {
+                display: none;
+            }
+        </style>
+        <script type="importmap">
+            { "imports": { "@pyscript/core": "../../min.js" } }
+        </script>
+        <script type="module">
+            import { registerPlugin } from "@pyscript/core";
+            registerPlugin("mpy-script", {
+                type: "micropython", // or just 'mpy'
+                async onRuntimeReady(element, micropython) {
+                    console.log(micropython);
+                    // Somehow this doesn't work in MicroPython
+                    micropython.io.stdout = (message) => {
+                        console.log("🐍", micropython.type, message);
+                    };
+                    micropython.run(element.textContent);
+                    element.replaceChildren("See console ->");
+                    element.style.display = "block";
+                },
+            });
+        </script>
+    </head>
+    <body>
+        <mpy-script> print('Hello Console!') </mpy-script>
+    </body>
 </html>

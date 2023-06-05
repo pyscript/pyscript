@@ -1,1 +1,1 @@
-export const parse = text => JSON.parse(text);
+export const parse = (text) => JSON.parse(text);

@@ -1,1 +1,1 @@
-x = 'hello from B'
+x = "hello from B"

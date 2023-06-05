@@ -1,69 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>python workers</title>
-  <script type="importmap">
-    {
-      "imports": {
-        "basic-devtools": "../../node_modules/basic-devtools/esm/index.js",
-        "@pyscript/core": "../../esm/index.js"
-      }
-    }
-  </script>
-  <script defer src="../counter.js"></script>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <title>python workers</title>
+        <script type="importmap">
+            {
+                "imports": {
+                    "basic-devtools": "../../node_modules/basic-devtools/esm/index.js",
+                    "@pyscript/core": "../../esm/index.js"
+                }
+            }
+        </script>
+        <script defer src="../counter.js"></script>
+    </head>
+    <body>
+        <!-- XWorker - JavaScript to MicroPython -->
+        <script type="module">
+            import { XWorker } from "@pyscript/core";
 
-  <!-- XWorker - JavaScript to MicroPython -->
-  <script type="module">
-    import {XWorker} from '@pyscript/core';
+            const w = new XWorker("./worker.py", { type: "mpy" });
+            w.postMessage("JavaScript: Hello MicroPython 👋");
+            w.onmessage = (event) => {
+                console.log(event.data);
+            };
+        </script>
 
-    const w = new XWorker('./worker.py', {type: 'mpy'});
-    w.postMessage('JavaScript: Hello MicroPython 👋')
-    w.onmessage = event => {
-      console.log(event.data);
-    };
-  </script>
+        <!-- XWorker - MicroPython to MicroPython -->
+        <script type="mpy">
+            from js import XWorker
 
-  <!-- XWorker - MicroPython to MicroPython -->
-  <script type="mpy">
-    from js import XWorker
+            def handle_message(event):
+              print(event.data)
 
-    def handle_message(event):
-      print(event.data)
+            w = XWorker('./worker.py')
+            w.postMessage('MicroPython: Hello MicroPython 👋')
+            w.onmessage = handle_message
+        </script>
 
-    w = XWorker('./worker.py')
-    w.postMessage('MicroPython: Hello MicroPython 👋')
-    w.onmessage = handle_message
-  </script>
+        <!-- XWorker - MicroPython to Pyodide -->
+        <script type="mpy">
+            from js import XWorker
 
-  <!-- XWorker - MicroPython to Pyodide -->
-  <script type="mpy">
-    from js import XWorker
+            def handle_message(event):
+              print(event.data)
 
-    def handle_message(event):
-      print(event.data)
+            w = XWorker('./worker.py', **{'type': 'py', 'async': True, 'config': '../fetch.toml'})
+            w.postMessage('MicroPython: Hello Pyodide 👋')
+            w.onmessage = handle_message
+        </script>
 
-    w = XWorker('./worker.py', **{'type': 'py', 'async': True, 'config': '../fetch.toml'})
-    w.postMessage('MicroPython: Hello Pyodide 👋')
-    w.onmessage = handle_message
-  </script>
+        <!-- XWorker - MicroPython to Lua -->
+        <script type="mpy">
+            from js import XWorker
 
-  <!-- XWorker - MicroPython to Lua -->
-  <script type="mpy">
-    from js import XWorker
+            def handle_message(event):
+              print(event.data)
 
-    def handle_message(event):
-      print(event.data)
+            w = XWorker('./worker.lua', type='lua')
+            w.postMessage('MicroPython: Hello Lua 👋')
+            w.onmessage = handle_message
+        </script>
 
-    w = XWorker('./worker.lua', type='lua')
-    w.postMessage('MicroPython: Hello Lua 👋')
-    w.onmessage = handle_message
-  </script>
-
-  <!-- XWorker - MicroPython to Ruby
+        <!-- XWorker - MicroPython to Ruby
   <script type="mpy">
     from js import XWorker
 
@@ -74,5 +73,5 @@
     w.postMessage('MicroPython: Hello Ruby 👋')
     w.onmessage = handle_message
   </script><!---->
-</body>
+    </body>
 </html>

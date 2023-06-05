@@ -1,7 +1,7 @@
-import {runtime} from './runtimes.js';
-import {absoluteURL, resolve} from './utils.js';
-import {parse} from './toml.js';
-import {getJSON, getText} from './fetch-utils.js';
+import { runtime } from "./runtimes.js";
+import { absoluteURL, resolve } from "./utils.js";
+import { parse } from "./toml.js";
+import { getJSON, getText } from "./fetch-utils.js";
 
 /**
  * @param {string} id the runtime name @ version identifier
@@ -9,27 +9,25 @@ import {getJSON, getText} from './fetch-utils.js';
  * @returns
  */
 export const getRuntime = (id, config) => {
-  let options = {};
-  if (config) {
-    // REQUIRES INTEGRATION TEST
-    /* c8 ignore start */
-    if (config.endsWith('.json'))
-      options = fetch(config).then(getJSON);
-    else if (config.endsWith('.toml'))
-      options = fetch(config).then(getText).then(parse);
-    else {
-      try {
-        options = JSON.parse(config);
-      }
-      catch (_) {
-        options = parse(config);
-      }
-      // make the config a URL to be able to retrieve relative paths from it
-      config = absoluteURL('./config.txt');
+    let options = {};
+    if (config) {
+        // REQUIRES INTEGRATION TEST
+        /* c8 ignore start */
+        if (config.endsWith(".json")) options = fetch(config).then(getJSON);
+        else if (config.endsWith(".toml"))
+            options = fetch(config).then(getText).then(parse);
+        else {
+            try {
+                options = JSON.parse(config);
+            } catch (_) {
+                options = parse(config);
+            }
+            // make the config a URL to be able to retrieve relative paths from it
+            config = absoluteURL("./config.txt");
+        }
+        /* c8 ignore stop */
     }
-    /* c8 ignore stop */
-  }
-  return resolve(options).then(options =>  runtime[id](options, config));
+    return resolve(options).then((options) => runtime[id](options, config));
 };
 
 /**
@@ -37,4 +35,5 @@ export const getRuntime = (id, config) => {
  * @param {string} [version] the optional runtime version
  * @returns
  */
-export const getRuntimeID = (type, version = '') => `${type}@${version}`.replace(/@$/, '');
+export const getRuntimeID = (type, version = "") =>
+    `${type}@${version}`.replace(/@$/, "");
