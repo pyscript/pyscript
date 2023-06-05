@@ -413,6 +413,7 @@ export class PyScriptApp {
         const module = await interpreter.pyimport(modulename);
         if (typeof (await module.plugin) !== 'undefined') {
             const py_plugin = (await module.plugin) as PythonPlugin;
+            // eslint-disable-next-line
             await py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);
         } else {
