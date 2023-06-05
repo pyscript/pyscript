@@ -141,3 +141,11 @@ coverage/
 
 # junit xml for test results
 test_results
+
+# PyScript.next
+pyscript.next/coverage/
+pyscript.next/node_modules/
+pyscript.next/cjs/
+pyscript.next/!cjs/package.json
+pyscript.next/min.js
+pyscript.next/esm/worker/xworker.js
