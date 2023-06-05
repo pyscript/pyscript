@@ -34,12 +34,12 @@ class PluginsManager:
         # mapping containing all the custom elements createed by plugins
         self._custom_elements = {}
 
-    def addPythonPlugin(self, pluginInstance: pyscript.Plugin):
+    async def addPythonPlugin(self, pluginInstance: pyscript.Plugin):
         """
         Add a pluginInstance to the plugins managed by the PluginManager and calls
         pluginInstance.init(self) to initialized the plugin with the manager
         """
-        pluginInstance.init(self)
+        await pluginInstance.init(self)
         self.plugins.append(pluginInstance)
 
     def reset(self):

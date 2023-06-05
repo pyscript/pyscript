@@ -415,7 +415,8 @@ export class PyScriptApp {
             const py_plugin = (await module.plugin) as PythonPlugin;
             // eslint-disable-next-line
             await py_plugin.init(this);
-            this.plugins.addPythonPlugin(py_plugin);
+            // eslint-disable-next-line
+            await this.plugins.addPythonPlugin(py_plugin);
         } else {
             logger.error(`Cannot find plugin on Python module ${modulename}! Python plugins \
 modules must contain a "plugin" attribute. For more information check the plugins documentation.`);

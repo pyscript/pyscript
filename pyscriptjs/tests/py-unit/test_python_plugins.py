@@ -5,6 +5,7 @@ import js
 import py_markdown
 import py_tutor
 import pyscript_plugins_tester as ppt
+import pytest
 
 TUTOR_SOURCE = """
 <py-config>
@@ -118,7 +119,8 @@ class TestPyTutor:
         assert html.escape(TUTOR_SOURCE) in section.innerHTML
         assert section.innerHTML == section_innerHTML
 
-    def test_connected_calls(self, plugins_manager: ppt.PluginsManager):
+    @pytest.mark.asyncio
+    async def test_connected_calls(self, plugins_manager: ppt.PluginsManager):
         """
         Test that all parts of the plugin have been added to the page body and head
         properly. This test effectively calls `self.check_prism_added`,
@@ -130,7 +132,7 @@ class TestPyTutor:
         # - init the plugin instance passing the plugins_manager as parent app
         # - add the plugin instance to plugins_manager.plugins
         assert not py_tutor.plugin.app
-        plugins_manager.addPythonPlugin(py_tutor.plugin)
+        await plugins_manager.addPythonPlugin(py_tutor.plugin)
 
         # EXPECT: the plugin app to now be the plugin manager
         assert py_tutor.plugin.app == plugins_manager
@@ -149,7 +151,8 @@ class TestPyTutor:
 
         self.check_create_code_section()
 
-    def test_plugin_registered(self, plugins_manager: ppt.PluginsManager):
+    @pytest.mark.asyncio
+    async def test_plugin_registered(self, plugins_manager: ppt.PluginsManager):
         """
         Test that, when registered, plugin actually has an app attribute set
         and that it's present in plugins manager plugins list.
@@ -161,7 +164,7 @@ class TestPyTutor:
         assert not plugins_manager.plugins
 
         # GIVEN THAT we add the plugin to the app plugin manager
-        plugins_manager.addPythonPlugin(py_tutor.plugin)
+        await plugins_manager.addPythonPlugin(py_tutor.plugin)
 
         # EXPECT: the plugin app to now be the plugin manager
         assert py_tutor.plugin.app == plugins_manager

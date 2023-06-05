@@ -6,6 +6,7 @@ dependencies:
     - python=3.11.3
     - pip
     - pytest=7.1.2
+    - pytest-asyncio==0.21.0
     - nodejs=16
     - black
     - isort
