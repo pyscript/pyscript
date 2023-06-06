@@ -1,4 +1,4 @@
-import { fetchPaths } from "./_utils.js";
+import { clean, fetchPaths } from "./_utils.js";
 
 const type = "ruby";
 
@@ -32,8 +32,8 @@ export default {
         if (config.fetch) await fetchPaths(this, runtime, config.fetch);
         return runtime;
     },
-    run: (runtime, code) => runtime.eval(code),
-    runAsync: (runtime, code) => runtime.evalAsync(code),
+    run: (runtime, code) => runtime.eval(clean(code)),
+    runAsync: (runtime, code) => runtime.evalAsync(clean(code)),
     runEvent(runtime, code, key) {
         return this.run(
             runtime,

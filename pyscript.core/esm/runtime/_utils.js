@@ -1,6 +1,13 @@
 import { getBuffer } from "../fetch-utils.js";
 import { absoluteURL } from "../utils.js";
 
+/**
+ * Trim code only if it's a single line that prettier or other tools might have modified.
+ * @param {string} code code that might be a single line
+ * @returns {strong}
+ */
+export const clean = code => code.replace(/^[^\r\n]+$/, line => line.trim());
+
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
 export const io = new WeakMap();

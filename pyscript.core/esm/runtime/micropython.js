@@ -1,4 +1,4 @@
-import { fetchPaths, stdio, writeFile } from "./_utils.js";
+import { clean, fetchPaths, stdio, writeFile } from "./_utils.js";
 
 const type = "micropython";
 
@@ -20,8 +20,8 @@ export default {
         if (config.fetch) await fetchPaths(this, runtime, config.fetch);
         return runtime;
     },
-    run: (runtime, code) => runtime.runPython(code),
-    runAsync: (runtime, code) => runtime.runPythonAsync(code),
+    run: (runtime, code) => runtime.runPython(clean(code)),
+    runAsync: (runtime, code) => runtime.runPythonAsync(clean(code)),
     runEvent(runtime, code, key) {
         return this.run(
             runtime,

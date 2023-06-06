@@ -6,6 +6,5 @@ examples/panel.html
 pyscript.core/micropython/
 pyscript.core/pyscript/
 pyscript.core/types/
-pyscript.core/examples/
 pyscript.core/esm/worker/xworker.js
 pyscript.core/min.js
