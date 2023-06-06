@@ -17,10 +17,10 @@ npm i
 
 This project requires some automatic artifact creation to:
 
--   create a _Worker_ as a _Blob_ based on the same code used by this repo
--   create automatically the list of runtimes available via the module
-    _ create the `min.js` file used by most integration tests
-    _ create a sha256 version of the Blob content for CSP cases
+    * create a _Worker_ as a _Blob_ based on the same code used by this repo
+    * create automatically the list of runtimes available via the module
+    * create the `min.js` file used by most integration tests
+    * create a sha256 version of the Blob content for CSP cases
 
 Accordingly, to build latest project:
 
