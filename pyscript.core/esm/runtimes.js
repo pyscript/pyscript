@@ -50,8 +50,8 @@ const register = (runtime) => {
 };
 
 //:RUNTIMES
-import micropython from "./runtime/micropython.js";
-import pyodide from "./runtime/pyodide.js";
-import ruby from "./runtime/ruby.js";
-import wasmoon from "./runtime/wasmoon.js";
+import micropython from './runtime/micropython.js';
+import pyodide from './runtime/pyodide.js';
+import ruby from './runtime/ruby.js';
+import wasmoon from './runtime/wasmoon.js';
 for (const runtime of [micropython, pyodide, ruby, wasmoon]) register(runtime);

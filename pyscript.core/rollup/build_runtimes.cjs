@@ -1,11 +1,11 @@
 // ⚠️ This files modifies at build time esm/runtimes.js so that
 //    it's impossible to forget to export a runtime from esm/runtime folder.
 
-const { join, resolve } = require("node:path");
-const { readdirSync, readFileSync, writeFileSync } = require("node:fs");
+const { join, resolve } = require('node:path');
+const { readdirSync, readFileSync, writeFileSync } = require('node:fs');
 
-const RUNTIMES_DIR = resolve(join(__dirname, "..", "esm", "runtime"));
-const RUNTIMES_JS = resolve(join(__dirname, "..", "esm", "runtimes.js"));
+const RUNTIMES_DIR = resolve(join(__dirname, '..', 'esm', 'runtime'));
+const RUNTIMES_JS = resolve(join(__dirname, '..', 'esm', 'runtimes.js'));
 
 const createRuntimes = () => {
     const runtimes = [];
@@ -18,9 +18,9 @@ const createRuntimes = () => {
     for (const runtime of runtimes)
         output.push(`import ${runtime} from './runtime/${runtime}.js';`);
     output.push(
-        `for (const runtime of [${runtimes.join(", ")}]) register(runtime);`,
+        `for (const runtime of [${runtimes.join(', ')}]) register(runtime);`,
     );
-    return output.join("\n");
+    return output.join('\n');
 };
 
 writeFileSync(

@@ -7,3 +7,4 @@ cjs/
 !cjs/package.json
 min.js
 esm/worker/xworker.js
+types/
