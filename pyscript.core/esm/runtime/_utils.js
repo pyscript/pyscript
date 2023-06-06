@@ -6,7 +6,8 @@ import { absoluteURL } from "../utils.js";
  * @param {string} code code that might be a single line
  * @returns {strong}
  */
-export const clean = code => code.replace(/^[^\r\n]+$/, line => line.trim());
+export const clean = (code) =>
+    code.replace(/^[^\r\n]+$/, (line) => line.trim());
 
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
