@@ -1,6 +1,4 @@
 .DS_Store
-.nyc_output
-*.log
 coverage/
 node_modules/
 cjs/
