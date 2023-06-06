@@ -1,4 +1,4 @@
-import { fetchPaths, stdio, writeFileShim } from "./_utils.js";
+import { clean, fetchPaths, stdio, writeFileShim } from "./_utils.js";
 
 const type = "wasmoon";
 
@@ -24,8 +24,8 @@ export default {
         if (config.fetch) await fetchPaths(this, runtime, config.fetch);
         return runtime;
     },
-    run: (runtime, code) => runtime.doStringSync(code),
-    runAsync: (runtime, code) => runtime.doString(code),
+    run: (runtime, code) => runtime.doStringSync(clean(code)),
+    runAsync: (runtime, code) => runtime.doString(clean(code)),
     runEvent(runtime, code, key) {
         runtime.global.set("event", globalThis.__events.get(key));
         return this.run(runtime, code);

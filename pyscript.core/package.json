@@ -5,7 +5,7 @@
     "main": "./cjs/index.js",
     "types": "./types/index.d.ts",
     "scripts": {
-        "server": "npx static-handler --cors .",
+        "server": "npx static-handler --cors --coep --coop .",
         "build": "npm run rollup:xworker && npm run rollup:min && eslint esm/ && npm run ts && npm run cjs && npm run test",
         "cjs": "ascjs --no-default esm cjs",
         "rollup:min": "rollup --config rollup/min.config.js",
@@ -27,11 +27,11 @@
         "@rollup/plugin-terser": "^0.4.3",
         "ascjs": "^5.0.1",
         "c8": "^7.14.0",
-        "eslint": "^8.41.0",
+        "eslint": "^8.42.0",
         "linkedom": "^0.14.26",
-        "rollup": "^3.23.0",
-        "static-handler": "^0.3.2",
-        "typescript": "^5.0.4"
+        "rollup": "^3.23.1",
+        "static-handler": "^0.4.0",
+        "typescript": "^5.1.3"
     },
     "module": "./esm/index.js",
     "type": "module",
@@ -48,6 +48,6 @@
         "basic-devtools": "^0.1.6"
     },
     "worker": {
-        "blob": "sha256-gI4kK2AXlU8ZeNni68iQv7KcVZlHjloKCe2H3Ah7ePE="
+        "blob": "sha256-kYwW0+fdul6LFbjoFeqku+pa9ARFxRtfmeM6zF53zLo="
     }
 }

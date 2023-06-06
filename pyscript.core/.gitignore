@@ -1,9 +1,8 @@
 .DS_Store
-.nyc_output
-*.log
 coverage/
 node_modules/
 cjs/
 !cjs/package.json
 min.js
 esm/worker/xworker.js
+types/

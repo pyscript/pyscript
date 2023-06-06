@@ -20,7 +20,7 @@ for (const file of readdirSync(WORKERS_DIR)) {
         hash.update(js);
         const json = require(PACKAGE_JSON);
         json.worker = { blob: "sha256-" + hash.digest("base64") };
-        writeFileSync(PACKAGE_JSON, JSON.stringify(json, null, "  "));
+        writeFileSync(PACKAGE_JSON, JSON.stringify(json, null, "    ") + "\n");
         writeFileSync(
             join(WORKERS_DIR, "xworker.js"),
             `/* c8 ignore next */\nexport default () => new Worker(URL.createObjectURL(new Blob([${js}],{type:'application/javascript'})),{type:'module'});`,

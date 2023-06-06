@@ -1,4 +1,4 @@
-import { fetchPaths, stdio, writeFile } from "./_utils.js";
+import { clean, fetchPaths, stdio, writeFile } from "./_utils.js";
 
 const type = "pyodide";
 
@@ -26,8 +26,8 @@ export default {
         }
         return runtime;
     },
-    run: (runtime, code) => runtime.runPython(code),
-    runAsync: (runtime, code) => runtime.runPythonAsync(code),
+    run: (runtime, code) => runtime.runPython(clean(code)),
+    runAsync: (runtime, code) => runtime.runPythonAsync(clean(code)),
     runEvent(runtime, code, key) {
         return this.run(
             runtime,

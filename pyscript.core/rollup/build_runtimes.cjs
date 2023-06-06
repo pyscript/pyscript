@@ -16,7 +16,7 @@ const createRuntimes = () => {
     // generate the output to append at the end of the file
     const output = [];
     for (const runtime of runtimes)
-        output.push(`import ${runtime} from './runtime/${runtime}.js';`);
+        output.push(`import ${runtime} from "./runtime/${runtime}.js";`);
     output.push(
         `for (const runtime of [${runtimes.join(", ")}]) register(runtime);`,
     );
