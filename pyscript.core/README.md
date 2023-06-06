@@ -1,4 +1,4 @@
-# pyscript
+# @pyscript/core
 
 [![build](https://github.com/WebReflection/python/actions/workflows/node.js.yml/badge.svg)](https://github.com/WebReflection/python/actions/workflows/node.js.yml) [![Coverage Status](https://coveralls.io/repos/github/WebReflection/python/badge.svg?branch=api&t=1RBdLX)](https://coveralls.io/github/WebReflection/python?branch=api)
 
