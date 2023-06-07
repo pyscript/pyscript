@@ -6,8 +6,9 @@
     "types": "./types/index.d.ts",
     "scripts": {
         "server": "npx static-handler --cors --coep --coop .",
-        "build": "npm run rollup:xworker && npm run rollup:min && eslint esm/ && npm run ts && npm run cjs && npm run test",
+        "build": "npm run patch:wasmoon && npm run rollup:xworker && npm run rollup:min && eslint esm/ && npm run ts && npm run cjs && npm run test",
         "cjs": "ascjs --no-default esm cjs",
+        "patch:wasmoon": "node rollup/patch_wasmoon.cjs",
         "rollup:min": "rollup --config rollup/min.config.js",
         "rollup:xworker": "rollup --config rollup/xworker.config.js",
         "test": "c8 node --experimental-loader @node-loader/import-maps test/index.js",
@@ -45,9 +46,11 @@
     },
     "unpkg": "min.js",
     "dependencies": {
-        "basic-devtools": "^0.1.6"
+        "@ungap/with-resolvers": "^0.1.0",
+        "basic-devtools": "^0.1.6",
+        "coincident": "^0.2.0"
     },
     "worker": {
-        "blob": "sha256-kYwW0+fdul6LFbjoFeqku+pa9ARFxRtfmeM6zF53zLo="
+        "blob": "sha256-ISIGUjp9BiEiZHiU/dqstN6site4yzN9HJdXCj0ob2k="
     }
 }

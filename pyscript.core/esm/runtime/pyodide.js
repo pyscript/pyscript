@@ -1,15 +1,10 @@
-import { clean, fetchPaths, stdio, writeFile } from "./_utils.js";
+import { fetchPaths, stdio } from "./_utils.js";
+import { run, runAsync, runEvent, runWorker, runWorkerAsync, writeFile } from "./_python.js";
 
 const type = "pyodide";
 
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
-const worker = (method) =>
-    function (runtime, code, xworker) {
-        globalThis.xworker = xworker;
-        return this[method](runtime, `from js import xworker;${code}`);
-    };
-
 export default {
     type: [type, "py"],
     module: (version = "0.22.1") =>
@@ -26,16 +21,11 @@ export default {
         }
         return runtime;
     },
-    run: (runtime, code) => runtime.runPython(clean(code)),
-    runAsync: (runtime, code) => runtime.runPythonAsync(clean(code)),
-    runEvent(runtime, code, key) {
-        return this.run(
-            runtime,
-            `import js;event=js.__events.get(${key});${code}`,
-        );
-    },
-    runWorker: worker("run"),
-    runWorkerAsync: worker("runAsync"),
-    writeFile: ({ FS }, path, buffer) => writeFile(FS, path, buffer),
+    run,
+    runAsync,
+    runEvent,
+    runWorker,
+    runWorkerAsync,
+    writeFile,
 };
 /* c8 ignore stop */

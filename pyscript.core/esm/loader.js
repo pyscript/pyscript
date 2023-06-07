@@ -13,10 +13,11 @@ export const getRuntime = (id, config) => {
     if (config) {
         // REQUIRES INTEGRATION TEST
         /* c8 ignore start */
-        if (config.endsWith(".json")) options = fetch(config).then(getJSON);
-        else if (config.endsWith(".toml"))
+        if (config.endsWith(".json")) {
+            options = fetch(config).then(getJSON);
+        } else if (config.endsWith(".toml")) {
             options = fetch(config).then(getText).then(parse);
-        else {
+        } else {
             try {
                 options = JSON.parse(config);
             } catch (_) {
