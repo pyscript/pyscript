@@ -32,7 +32,9 @@ export default (...args) =>
         return defineProperties(worker, {
             postMessage: {
                 value: (data, ...rest) =>
-                    bootstrap.then(() => postMessage.call(worker, data, ...rest)),
+                    bootstrap.then(() =>
+                        postMessage.call(worker, data, ...rest),
+                    ),
             },
             sync: {
                 value: coincident(worker),

@@ -7,13 +7,13 @@ import "@ungap/with-resolvers";
 // TODO: this should *NOT* be needed as the polyfill
 //       already patches on demand the Promise object
 const { withResolvers } = Promise;
-defineProperty(globalThis, 'Promise', {
+defineProperty(globalThis, "Promise", {
     configurable: true,
     value: class extends Promise {
         withResolvers() {
             return withResolvers.call(this);
         }
-    }
+    },
 });
 /* c8 ignore stop */
 

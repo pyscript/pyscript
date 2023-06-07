@@ -1,5 +1,12 @@
 import { fetchPaths, stdio } from "./_utils.js";
-import { run, runAsync, runEvent, runWorker, runWorkerAsync, writeFile } from "./_python.js";
+import {
+    run,
+    runAsync,
+    runEvent,
+    runWorker,
+    runWorkerAsync,
+    writeFile,
+} from "./_python.js";
 
 const type = "micropython";
 

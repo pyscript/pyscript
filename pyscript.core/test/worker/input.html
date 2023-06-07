@@ -14,7 +14,9 @@
                 }
             }
         </script>
-        <script type="module"> import "@pyscript/core"; </script>
+        <script type="module">
+            import "@pyscript/core";
+        </script>
     </head>
     <body>
         <script type="mpy">
@@ -39,8 +41,8 @@
             w.sync.input = handle_input
         </script>
 
-        <input type="text" placeholder="loading ..." required disabled>
-        <input type="submit" mpy-click="handle_result(event)" disabled>
+        <input type="text" placeholder="loading ..." required disabled />
+        <input type="submit" mpy-click="handle_result(event)" disabled />
 
         <!--script type="mpy">
           from js import XWorker, Array, Promise, Reflect, document

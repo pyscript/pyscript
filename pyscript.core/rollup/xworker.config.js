@@ -16,7 +16,7 @@ const WORKERS_DIR = resolve(
 
 export default {
     input: join(WORKERS_DIR, "_template.js"),
-    plugins: [nodeResolve(), terser()],
+    plugins: process.env.NO_MIN ? [nodeResolve()] : [nodeResolve(), terser()],
     output: {
         esModule: true,
         file: join(WORKERS_DIR, "__template.js"),

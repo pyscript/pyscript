@@ -3,6 +3,6 @@
         "http://pyodide": "./test/mocked/pyodide.mjs",
         "https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.mjs": "./test/mocked/pyodide.mjs",
         "http://localhost:8080/micropython/micropython.mjs": "./test/mocked/micropython.mjs",
-        "https://unpkg.com/basic-toml@0.3.1/es.js": "./test/mocked/toml.mjs"
+        "https://cdn.jsdelivr.net/npm/basic-toml@0.3.1/es.js": "./test/mocked/toml.mjs"
     }
 }

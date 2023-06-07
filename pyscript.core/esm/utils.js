@@ -8,4 +8,13 @@ const { all, resolve } = new Proxy(Promise, {
 
 const absoluteURL = (path, base = location.href) => new URL(path, base).href;
 
-export { isArray, assign, create, defineProperties, defineProperty, all, resolve, absoluteURL };
+export {
+    isArray,
+    assign,
+    create,
+    defineProperties,
+    defineProperty,
+    all,
+    resolve,
+    absoluteURL,
+};

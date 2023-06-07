@@ -10,7 +10,7 @@ createRequire(import.meta.url)("./build_xworker.cjs");
 
 export default {
     input: "./esm/index.js",
-    plugins: [nodeResolve(), terser()],
+    plugins: process.env.NO_MIN ? [nodeResolve()] : [nodeResolve(), terser()],
     output: {
         esModule: true,
         file: "./min.js",
