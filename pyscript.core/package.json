@@ -50,10 +50,6 @@
         "coincident": "^0.2.3"
     },
     "worker": {
-<<<<<<< HEAD
-        "blob": "sha256-XIl723wj4b0gyB5IGnLem05DRvl5bzkeMahwAmQFMrM="
-=======
-        "blob": "sha256-uN1EB6aLcSu40ScbE4o+8wIFKcAD9mMgmBUsVHmWhpQ="
->>>>>>> 6ee438d (Fix #1512 - Improve worker tests + update Pyodide)
+        "blob": "sha256-s/Qe9L8Mxmdjzk/TnVwmMYA5AvEemsRkOeqtZG6uBLM="
     }
 }
