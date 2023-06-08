@@ -14,11 +14,12 @@ const type = "pyodide";
 /* c8 ignore start */
 export default {
     type: [type, "py"],
-    module: (version = "0.22.1") =>
+    module: (version = "0.23.2") =>
         `https://cdn.jsdelivr.net/pyodide/v${version}/full/pyodide.mjs`,
-    async engine({ loadPyodide }, config) {
+    async engine({ loadPyodide }, config, url) {
         const { stderr, stdout, get } = stdio();
-        const runtime = await get(loadPyodide({ stderr, stdout }));
+        const indexURL = url.slice(0, url.lastIndexOf("/"));
+        const runtime = await get(loadPyodide({ stderr, stdout, indexURL }));
         if (config.fetch) await fetchPaths(this, runtime, config.fetch);
         if (config.packages) {
             await runtime.loadPackage("micropip");
