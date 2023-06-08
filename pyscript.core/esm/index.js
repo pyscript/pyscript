@@ -18,13 +18,13 @@ const awaitRuntime = async (key) => {
         return (await all([runtime, queue]))[0];
     }
 
-    const available = runtimes.size ?
-        `Available runtimes are: ${[...runtimes.keys()].map(r => `"${r}"`).join(', ')}.` :
-        `There are no runtimes in this page.`;
+    const available = runtimes.size
+        ? `Available runtimes are: ${[...runtimes.keys()]
+              .map((r) => `"${r}"`)
+              .join(", ")}.`
+        : `There are no runtimes in this page.`;
 
-    throw new Error(
-        `The runtime "${key}" was not found. ${available}`
-    );
+    throw new Error(`The runtime "${key}" was not found. ${available}`);
 };
 
 defineProperty(globalThis, "pyscript", {
