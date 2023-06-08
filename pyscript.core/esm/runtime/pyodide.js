@@ -18,7 +18,7 @@ export default {
         `https://cdn.jsdelivr.net/pyodide/v${version}/full/pyodide.mjs`,
     async engine({ loadPyodide }, config, url) {
         const { stderr, stdout, get } = stdio();
-        const indexURL = url.slice(0, url.lastIndexOf('/'));
+        const indexURL = url.slice(0, url.lastIndexOf("/"));
         const runtime = await get(loadPyodide({ stderr, stdout, indexURL }));
         if (config.fetch) await fetchPaths(this, runtime, config.fetch);
         if (config.packages) {
