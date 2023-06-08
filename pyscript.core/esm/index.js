@@ -13,8 +13,18 @@ const RUNTIME_SELECTOR = selectors.join(",");
 
 // ensure both runtime and its queue are awaited then returns the runtime
 const awaitRuntime = async (key) => {
-    const { runtime, queue } = runtimes.get(key);
-    return (await all([runtime, queue]))[0];
+    if (runtimes.has(key)) {
+        const { runtime, queue } = runtimes.get(key);
+        return (await all([runtime, queue]))[0];
+    }
+
+    const available = runtimes.size ?
+        `Available runtimes are: ${[...runtimes.keys()].map(r => `"${r}"`).join(', ')}.` :
+        `There are no runtimes in this page.`;
+
+    throw new Error(
+        `The runtime "${key}" was not found. ${available}`
+    );
 };
 
 defineProperty(globalThis, "pyscript", {
