@@ -595,6 +595,26 @@ class TestPyRepl(PyScriptTest):
         alert_banner = self.page.wait_for_selector(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
 
+    def test_getPySrc_Contents(self):
+        """Test that an empty REPL returns an empty string as src, and that the typed contents
+        are returned as the source
+        """
+        self.pyscript_run(
+            """
+            <py-repl>
+            </py-repl>
+        """
+        )
+        py_repl = self.page.locator("py-repl")
+        src = py_repl.evaluate("node => node.getPySrc()")
+        assert src == ""
+        assert type(src) == str
+
+        py_repl.focus()
+        py_repl.type("Hello, world!")
+        src = py_repl.evaluate("node => node.getPySrc()")
+        assert src == "Hello, world!"
+
     def test_repl_load_content_from_src(self):
         self.writefile("loadReplSrc1.py", "print('1')")
         self.pyscript_run(

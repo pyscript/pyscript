@@ -28,6 +28,14 @@ The ID of an element in the DOM that `stderr` will be written to. Defaults to No
 ### `src`
 If a \<py-repl\> tag has the `src` attribute, during page initialization, resource in the `src` will be preloaded into the REPL. Please note that this will not run in advance. If there is content in the \<py-repl\> tag, it will be cleared and replaced with preloaded resource.
 
+## Methods
+
+The following are methods that can be called on the \<py-repl\> element, from within Python or JavaScript
+
+### `getPySrc()`
+
+Returns the current code contents of the REPL as a string.
+
 ## Examples
 
 ### `<py-repl>` element set to auto-generate
