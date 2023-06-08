@@ -69,7 +69,11 @@ export default {
         runtime.runPython(`runOok("""${code.trim()}""")`);
     },
     runAsync,
-    runEvent,
+    runEvent: (runtime, code) => {
+
+        runtime.runPython(ookCode);
+        runtime.runPython(`runOok("""${code.trim()}""")`);
+    },
     runWorker,
     runWorkerAsync,
     writeFile,
