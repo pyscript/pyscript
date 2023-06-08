@@ -69,7 +69,7 @@ const { registerPlugin } = require("../cjs");
     // all tests
     for (const test of [
         async function versionedRuntime() {
-            document.head.innerHTML = `<script type="py" version="0.22.1">${content}</script>`;
+            document.head.innerHTML = `<script type="py" version="0.23.2">${content}</script>`;
             await tick();
             assert(pyodide.content, content);
             assert(pyodide.target.tagName, "PY-SCRIPT");

@@ -14,7 +14,7 @@ const type = "pyodide";
 /* c8 ignore start */
 export default {
     type: [type, "py"],
-    module: (version = "0.22.1") =>
+    module: (version = "0.23.2") =>
         `https://cdn.jsdelivr.net/pyodide/v${version}/full/pyodide.mjs`,
     async engine({ loadPyodide }, config) {
         const { stderr, stdout, get } = stdio();
