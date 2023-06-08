@@ -90,7 +90,7 @@ test:
 	make test-py
 	make test-integration-parallel
 
-# run all integration tests *including examples* sequentially
+# run all integration tests *excluding examples* sequentially
 test-integration:
 	mkdir -p test_results
 	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml -k 'not zz_examples'
@@ -106,7 +106,7 @@ test-examples:
 	mkdir -p test_results
 	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml -k 'zz_examples'
 
-# run integration tests in parallel (currently running out of memory)
+# run examples only integration tests in parallel (currently running out of memory)
 test-examples-parallel:
 	make examples
 	mkdir -p test_results
