@@ -4,6 +4,8 @@
 //    Please check via `npm run size` that worker code is not much
 //    bigger than it used to be before any changes is applied to this file.
 
+import coincident from "coincident/structured";
+
 import { registry } from "../runtimes.js";
 import { getRuntime, getRuntimeID } from "../loader.js";
 
@@ -20,7 +22,11 @@ const add = (type, fn) => {
         !!fn && { once: true },
     );
 };
+
 const xworker = {
+    // allows synchronous utilities between this worker and the main thread
+    sync: coincident(self),
+    // standard worker related events / features
     onerror() {},
     onmessage() {},
     onmessageerror() {},
@@ -35,16 +41,14 @@ const xworker = {
         return event;
     },
 };
+
 add("message", ({ data: { options, code } }) => {
     engine = (async () => {
         const { type, version, config, async: isAsync } = options;
         const engine = await getRuntime(getRuntimeID(type, version), config);
         const details = registry.get(type);
-        (run = details[`runWorker${isAsync ? "Async" : ""}`].bind(details))(
-            engine,
-            code,
-            (globalThis.xworker = xworker),
-        );
+        run = details[`runWorker${isAsync ? "Async" : ""}`].bind(details);
+        run(engine, code, xworker);
         return engine;
     })();
     add("error");

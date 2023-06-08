@@ -1,5 +1,5 @@
 // lazy TOML parser (fast-toml might be a better alternative)
-const TOML_LIB = `https://unpkg.com/basic-toml@0.3.1/es.js`;
+const TOML_LIB = `https://cdn.jsdelivr.net/npm/basic-toml@0.3.1/es.js`;
 
 /**
  * @param {string} text TOML text to parse

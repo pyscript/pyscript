@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <title>python workers</title>
+        <script type="importmap">
+            {
+                "imports": {
+                    "basic-devtools": "../../node_modules/basic-devtools/esm/index.js",
+                    "coincident/structured": "../../node_modules/coincident/structured.js",
+                    "@ungap/with-resolvers": "../../node_modules/@ungap/with-resolvers/index.js",
+                    "@pyscript/core": "../../esm/index.js"
+                }
+            }
+        </script>
+        <script type="module">
+            import "@pyscript/core";
+        </script>
+    </head>
+    <body>
+        <script type="mpy">
+            from js import XWorker, Promise, document
+
+            deferred = Promise.withResolvers()
+
+            def handle_result(event):
+              inputs = document.querySelectorAll('input')
+              inputs[0].disabled = True
+              inputs[1].disabled = True
+              deferred.resolve(inputs[0].value)
+
+            def handle_input(data):
+              inputs = document.querySelectorAll('input')
+              inputs[0].placeholder = data
+              inputs[0].disabled = False
+              inputs[1].disabled = False
+              return deferred.promise
+
+            w = XWorker('./input.lua', type='lua')
+            w.sync.input = handle_input
+        </script>
+
+        <input type="text" placeholder="loading ..." required disabled />
+        <input type="submit" mpy-click="handle_result(event)" disabled />
+
+        <!--script type="mpy">
+          from js import XWorker, Array, Promise, Reflect, document
+
+          resolve = None
+
+          def trap_resolve(res, rej):
+            global resolve
+            resolve = res
+
+          def handle_result(event):
+            input = document.querySelector('input[type="text"]')
+            resolve(input.value)
+
+          def handle_input(data):
+            input = document.querySelector('input[type="text"]')
+            input.placeholder = data
+            input.disabled = False
+            # TODO: Promise.new(trap_resolve) does not work in MicroPython
+            #       but the following throws in Pyodide 😅 so fallback to deferred
+            return Reflect.construct(Promise, Array(trap_resolve))
+
+          # TODO: Proxy do not work in MicroPython so type='py' it is
+          w = XWorker('./input.py', type='py')
+          w.sync.input = handle_input
+      </script-->
+    </body>
+</html>

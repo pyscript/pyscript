@@ -14,7 +14,7 @@ repos:
           - id: check-docstring-first
           - id: check-executables-have-shebangs
           - id: check-json
-            exclude: tsconfig.json
+            exclude: tsconfig.json pyscript.core/cjs/package.json
           - id: check-toml
           - id: check-xml
           - id: check-yaml

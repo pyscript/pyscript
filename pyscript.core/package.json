@@ -5,7 +5,7 @@
     "main": "./cjs/index.js",
     "types": "./types/index.d.ts",
     "scripts": {
-        "server": "npx static-handler --cors --coep --coop .",
+        "server": "npx static-handler --cors --coep --coop --corp .",
         "build": "npm run rollup:xworker && npm run rollup:min && eslint esm/ && npm run ts && npm run cjs && npm run test",
         "cjs": "ascjs --no-default esm cjs",
         "rollup:min": "rollup --config rollup/min.config.js",
@@ -29,8 +29,8 @@
         "c8": "^7.14.0",
         "eslint": "^8.42.0",
         "linkedom": "^0.14.26",
-        "rollup": "^3.23.1",
-        "static-handler": "^0.4.0",
+        "rollup": "^3.24.0",
+        "static-handler": "^0.4.1",
         "typescript": "^5.1.3"
     },
     "module": "./esm/index.js",
@@ -45,9 +45,11 @@
     },
     "unpkg": "min.js",
     "dependencies": {
-        "basic-devtools": "^0.1.6"
+        "@ungap/with-resolvers": "^0.1.0",
+        "basic-devtools": "^0.1.6",
+        "coincident": "^0.2.3"
     },
     "worker": {
-        "blob": "sha256-kYwW0+fdul6LFbjoFeqku+pa9ARFxRtfmeM6zF53zLo="
+        "blob": "sha256-T0DDfoQde+3gciIoHqPGP2SgMQpbY/nAMjfd1cg8jyA="
     }
 }

@@ -1,5 +1,6 @@
+import coincident from "coincident/structured";
 import xworker from "./xworker.js";
-import { assign, defineProperty, absoluteURL } from "../utils.js";
+import { assign, defineProperties, absoluteURL } from "../utils.js";
 import { getText } from "../fetch-utils.js";
 
 /**
@@ -28,8 +29,15 @@ export default (...args) =>
         const bootstrap = fetch(url)
             .then(getText)
             .then((code) => postMessage.call(worker, { options, code }));
-        return defineProperty(worker, "postMessage", {
-            value: (data, ...rest) =>
-                bootstrap.then(() => postMessage.call(worker, data, ...rest)),
+        return defineProperties(worker, {
+            postMessage: {
+                value: (data, ...rest) =>
+                    bootstrap.then(() =>
+                        postMessage.call(worker, data, ...rest),
+                    ),
+            },
+            sync: {
+                value: coincident(worker),
+            },
         });
     };

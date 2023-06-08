@@ -7,4 +7,5 @@ pyscript.core/micropython/
 pyscript.core/pyscript/
 pyscript.core/types/
 pyscript.core/esm/worker/xworker.js
+pyscript.core/cjs/package.json
 pyscript.core/min.js

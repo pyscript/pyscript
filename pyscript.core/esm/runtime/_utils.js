@@ -1,10 +1,26 @@
 import { getBuffer } from "../fetch-utils.js";
-import { absoluteURL } from "../utils.js";
+import { absoluteURL, defineProperty } from "../utils.js";
+import "@ungap/with-resolvers";
+
+// REQUIRES INTEGRATION TEST
+/* c8 ignore start */
+// TODO: this should *NOT* be needed as the polyfill
+//       already patches on demand the Promise object
+const { withResolvers } = Promise;
+defineProperty(globalThis, "Promise", {
+    configurable: true,
+    value: class extends Promise {
+        withResolvers() {
+            return withResolvers.call(this);
+        }
+    },
+});
+/* c8 ignore stop */
 
 /**
  * Trim code only if it's a single line that prettier or other tools might have modified.
  * @param {string} code code that might be a single line
- * @returns {strong}
+ * @returns {string}
  */
 export const clean = (code) =>
     code.replace(/^[^\r\n]+$/, (line) => line.trim());
