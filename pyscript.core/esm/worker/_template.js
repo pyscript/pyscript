@@ -9,6 +9,19 @@ import coincident from "coincident/structured";
 import { registry } from "../runtimes.js";
 import { getRuntime, getRuntimeID } from "../loader.js";
 
+// bails out out of the box with a native/meaningful error
+// in case the SharedArrayBuffer is not available
+try {
+    new SharedArrayBuffer(4);
+} catch (_) {
+    throw new Error(
+        [
+            "Unable to use SharedArrayBuffer due insecure environment.",
+            "Please read requirements in MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements",
+        ].join("\n"),
+    );
+}
+
 let engine, run, runtimeEvent;
 const add = (type, fn) => {
     addEventListener(
