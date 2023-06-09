@@ -10,12 +10,19 @@ import {
 
 const type = "micropython";
 
+let patchPromise = true;
+
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
 export default {
     type: [type, "mpy"],
     module: () => `http://localhost:8080/micropython/micropython.mjs`,
     async engine({ loadMicroPython }, config, url) {
+        // @bug https://github.com/micropython/micropython/issues/11749
+        if (patchPromise) {
+            patchPromise = false;
+            globalThis.Promise = class extends Promise {};
+        }
         const { stderr, stdout, get } = stdio();
         url = url.replace(/\.m?js$/, ".wasm");
         const runtime = await get(loadMicroPython({ stderr, stdout, url }));

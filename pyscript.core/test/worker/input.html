@@ -40,34 +40,7 @@
             w = XWorker('./input.lua', type='lua')
             w.sync.input = handle_input
         </script>
-
         <input type="text" placeholder="loading ..." required disabled />
         <input type="submit" mpy-click="handle_result(event)" disabled />
-
-        <!--script type="mpy">
-          from js import XWorker, Array, Promise, Reflect, document
-
-          resolve = None
-
-          def trap_resolve(res, rej):
-            global resolve
-            resolve = res
-
-          def handle_result(event):
-            input = document.querySelector('input[type="text"]')
-            resolve(input.value)
-
-          def handle_input(data):
-            input = document.querySelector('input[type="text"]')
-            input.placeholder = data
-            input.disabled = False
-            # TODO: Promise.new(trap_resolve) does not work in MicroPython
-            #       but the following throws in Pyodide 😅 so fallback to deferred
-            return Reflect.construct(Promise, Array(trap_resolve))
-
-          # TODO: Proxy do not work in MicroPython so type='py' it is
-          w = XWorker('./input.py', type='py')
-          w.sync.input = handle_input
-      </script-->
     </body>
 </html>
