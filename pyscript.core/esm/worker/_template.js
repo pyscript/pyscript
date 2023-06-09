@@ -14,10 +14,12 @@ import { getRuntime, getRuntimeID } from "../loader.js";
 try {
     new SharedArrayBuffer(4);
 } catch (_) {
-    throw new Error([
-        'Unable to use SharedArrayBuffer due insecure environment.',
-        'Please read requirements in MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements'
-    ].join('\n'));
+    throw new Error(
+        [
+            "Unable to use SharedArrayBuffer due insecure environment.",
+            "Please read requirements in MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements",
+        ].join("\n"),
+    );
 }
 
 let engine, run, runtimeEvent;
