@@ -20,7 +20,7 @@ on:
 
 jobs:
     BuildAndTest:
-        runs-on: ubuntu-latest-8core
+        runs-on: ubuntu-latest-16core
         defaults:
             run:
                 working-directory: pyscriptjs
