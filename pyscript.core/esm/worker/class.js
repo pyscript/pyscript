@@ -2,6 +2,7 @@ import coincident from "coincident/structured";
 import xworker from "./xworker.js";
 import { assign, defineProperties, absoluteURL } from "../utils.js";
 import { getText } from "../fetch-utils.js";
+import workerHooks from "./hooks.js";
 
 /**
  * @typedef {Object} WorkerOptions plugin configuration
@@ -18,6 +19,7 @@ export default (...args) =>
      * @returns {Worker}
      */
     function XWorker(url, options) {
+        const hooks = workerHooks.get(XWorker);
         const worker = xworker();
         const { postMessage } = worker;
         if (args.length) {
@@ -28,7 +30,7 @@ export default (...args) =>
         if (options?.config) options.config = absoluteURL(options.config);
         const bootstrap = fetch(url)
             .then(getText)
-            .then((code) => postMessage.call(worker, { options, code }));
+            .then((code) => postMessage.call(worker, { options, code, hooks }));
         return defineProperties(worker, {
             postMessage: {
                 value: (data, ...rest) =>

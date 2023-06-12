@@ -11,19 +11,32 @@ document.head.appendChild(document.createElement("style")).textContent = `
 let id = 0;
 const getID = (prefix = "py-script") => `${prefix}-${id++}`;
 
-let bootstrap = true;
+let bootstrap = true,
+    XWorker,
+    sharedRuntime;
 const sharedPyodide = new Promise((resolve) => {
     const pyConfig = document.querySelector("py-config");
     const config = pyConfig?.getAttribute("src") || pyConfig?.textContent;
     registerPlugin("py-script", {
         config,
         type: "pyodide", // or just 'py'
-        async onRuntimeReady(_, pyodide) {
+        codeBeforeRunWorker: `print('codeBeforeRunWorker')`,
+        codeAfterRunWorker: `print('codeAfterRunWorker')`,
+        onBeforeRun(pyodide, node) {
+            pyodide.runtime.globals.set("XWorker", XWorker);
+            console.log("onBeforeRun", sharedRuntime === pyodide, node);
+        },
+        onAfterRun(pyodide, node) {
+            console.log("onAfterRun", sharedRuntime === pyodide, node);
+        },
+        async onRuntimeReady(pyodide) {
             // bootstrap the shared runtime once
             // as each node as plugin gets onRuntimeReady called once
             // because no custom-element is strictly needed
             if (bootstrap) {
                 bootstrap = false;
+                sharedRuntime = pyodide;
+                XWorker = pyodide.XWorker;
                 pyodide.io.stdout = (message) => {
                     console.log("🐍", pyodide.type, message);
                 };

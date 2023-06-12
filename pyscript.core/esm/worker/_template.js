@@ -6,6 +6,7 @@
 
 import coincident from "coincident/structured";
 
+import { create } from "../utils.js";
 import { registry } from "../runtimes.js";
 import { getRuntime, getRuntimeID } from "../loader.js";
 
@@ -55,12 +56,40 @@ const xworker = {
     },
 };
 
-add("message", ({ data: { options, code } }) => {
+add("message", ({ data: { options, code, hooks } }) => {
     engine = (async () => {
         const { type, version, config, async: isAsync } = options;
         const engine = await getRuntime(getRuntimeID(type, version), config);
-        const details = registry.get(type);
-        run = details[`runWorker${isAsync ? "Async" : ""}`].bind(details);
+        const details = create(registry.get(type));
+        const name = `runWorker${isAsync ? "Async" : ""}`;
+
+        // patch code if needed
+        const { beforeRun, beforeRunAsync, afterRun, afterRunAsync } = hooks;
+
+        const after = afterRun || afterRunAsync;
+        const before = beforeRun || beforeRunAsync;
+
+        // append code that should be executed *after* first
+        if (after) {
+            const method = details[name];
+            details[name] = function (runtime, code, xworker) {
+                return method.call(this, runtime, `${code}\n${after}`, xworker);
+            };
+        }
+
+        // prepend code that should be executed *before* (so that after is post-patched)
+        if (before) {
+            const method = details[name];
+            details[name] = function (runtime, code, xworker) {
+                return method.call(
+                    this,
+                    runtime,
+                    `${before}\n${code}`,
+                    xworker,
+                );
+            };
+        }
+        run = details[name].bind(details);
         run(engine, code, xworker);
         return engine;
     })();
