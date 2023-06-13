@@ -1,9 +1,9 @@
-name: "[CI] Build Unstable"
+name: "[CI] Build Unstable (Next branch)"
 
 on:
     push: # Only run on merges into main that modify files under pyscriptjs/ and examples/
         branches:
-            - main
+            - next
         paths:
             - pyscriptjs/**
             - examples/**
@@ -11,7 +11,7 @@ on:
 
     pull_request: # Run on any PR that modifies files under pyscriptjs/ and examples/
         branches:
-            - main
+            - next
         paths:
             - pyscriptjs/**
             - examples/**
@@ -116,27 +116,3 @@ jobs:
 
             - name: Eslint
               run: npx eslint src -c .eslintrc.js
-
-    Deploy:
-        runs-on: ubuntu-latest
-        needs: BuildAndTest
-        if: github.ref == 'refs/heads/main' # Only deploy on merge into main
-        permissions:
-            contents: read
-            id-token: write
-
-        steps:
-            - uses: actions/download-artifact@v3
-              with:
-                  name: pyscript
-                  path: ./build/
-
-              # Deploy to S3
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v1.6.1
-              with:
-                  aws-region: ${{ secrets.AWS_REGION }}
-                  role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
-
-            - name: Sync to S3
-              run: aws s3 sync --quiet ./build/ s3://pyscript.net/unstable/
