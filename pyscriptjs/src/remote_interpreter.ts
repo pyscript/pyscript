@@ -1,3 +1,5 @@
+import { registerPlugin } from '../../pyscript.core/esm/plugins.js';
+
 import type { AppConfig } from './pyconfig';
 import { version } from './version';
 import { getLogger } from './logger';
@@ -45,6 +47,17 @@ type PyScriptInternalModule = ProxyMarked & {
     schedule_deferred_tasks(): void;
 };
 
+// TODO: find a way to provide this definition more broadly
+type PyodideHelper = {
+    type: string;
+    runtime: InterpreterInterface;
+    XWorker: Worker;
+    io: { stdout: (msg: string) => void; stderr: (msg: string) => void };
+    config: object;
+    run: (code: string) => any;
+    runAsync: (code: string) => Promise<any>;
+};
+
 /*
 RemoteInterpreter class is responsible to process requests from the
 `InterpreterClient` class -- these can be requests for installation of
@@ -72,9 +85,35 @@ export class RemoteInterpreter extends Object {
     // TODO: Remove this once `runtimes` is removed!
     interpreter: InterpreterInterface & ProxyMarked;
 
-    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js') {
+    pyodide: Promise<PyodideHelper> | null;
+
+    constructor(src = 'https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js', bootstrap = false) {
         super();
         this.src = src;
+        this.pyodide = bootstrap
+            ? new Promise(resolve => {
+                  const pyConfig = document.querySelector('py-config');
+                  const config = pyConfig?.getAttribute('src') || pyConfig?.textContent;
+                  // register all default plugins
+                  registerPlugin(
+                      ['py-repl', 'py-terminal', 'py-tutor', 'py-splashscreen', 'py-script', 'script[type="py"]'],
+                      {
+                          config,
+                          type: 'py',
+                          version: src.replace(/\.js$/, '.mjs'),
+                          onRuntimeReady(pyodide: PyodideHelper) {
+                              // bootstrap the shared runtime once
+                              // as each node registered as plugin gets onRuntimeReady called once
+                              // because no custom-element is strictly needed in core
+                              if (bootstrap) {
+                                  bootstrap = false;
+                                  resolve(pyodide);
+                              }
+                          },
+                      },
+                  );
+              })
+            : null;
     }
 
     /**
@@ -102,17 +141,28 @@ export class RemoteInterpreter extends Object {
         // TODO: move this to "main thread"!
         const _pyscript_js_main = { define_custom_element, showWarning, deepQuerySelector };
 
-        this.interface = Synclink.proxy(
-            await loadPyodide({
-                stdout: (msg: string) => {
-                    stdio.stdout_writeline(msg).syncify();
-                },
-                stderr: (msg: string) => {
-                    stdio.stderr_writeline(msg).syncify();
-                },
-                fullStdLib: false,
-            }),
-        );
+        if (this.pyodide === null) {
+            this.interface = Synclink.proxy(
+                await loadPyodide({
+                    stdout: (msg: string) => {
+                        stdio.stdout_writeline(msg).syncify();
+                    },
+                    stderr: (msg: string) => {
+                        stdio.stderr_writeline(msg).syncify();
+                    },
+                    fullStdLib: false,
+                }),
+            );
+        } else {
+            const pyodide = await this.pyodide;
+            pyodide.io.stdout = (msg: string) => {
+                stdio.stdout_writeline(msg).syncify();
+            };
+            pyodide.io.stderr = (msg: string) => {
+                stdio.stdout_writeline(msg).syncify();
+            };
+            this.interface = Synclink.proxy(pyodide.runtime);
+        }
         this.interface.registerComlink(Synclink);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.FS = this.interface.FS;
@@ -142,7 +192,7 @@ export class RemoteInterpreter extends Object {
         this.pyscript_internal.set_version_info(version);
         this.pyscript_internal.install_pyscript_loop();
 
-        if (config.packages) {
+        if (this.pyodide === null && config.packages) {
             logger.info('Found packages in configuration to install. Loading micropip...');
             await this.loadPackage('micropip');
         }

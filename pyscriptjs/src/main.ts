@@ -192,7 +192,7 @@ export class PyScriptApp {
     async _startInterpreter_main(interpreter_cfg: InterpreterConfig) {
         logger.info('Starting the interpreter in the main thread');
         // this is basically equivalent to worker_initialize()
-        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
+        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src, true);
         const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
         port1.start();
         port2.start();

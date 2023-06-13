@@ -141,14 +141,16 @@ const plugins = new Map();
 
 /**
  * Allows plugins and components on the page to receive runtimes to execute any code.
- * @param {string} name the unique plugin name
+ * @param {string | string[]} selector the unique plugin name
  * @param {PluginOptions} options the plugin configuration
  */
-export const registerPlugin = (name, options) => {
-    if (PLUGINS_SELECTORS.includes(name))
-        throw new Error(`plugin ${name} already registered`);
-    PLUGINS_SELECTORS.push(name);
-    plugins.set(name, { options, known: new WeakSet() });
-    $$(name).forEach(handlePlugin);
+export const registerPlugin = (selector, options) => {
+    for (const name of [].concat(selector)) {
+        if (PLUGINS_SELECTORS.includes(name))
+            throw new Error(`plugin for ${name} already registered`);
+        PLUGINS_SELECTORS.push(name);
+        plugins.set(name, { options, known: new WeakSet() });
+        $$(name).forEach(handlePlugin);
+    }
 };
 /* c8 ignore stop */
