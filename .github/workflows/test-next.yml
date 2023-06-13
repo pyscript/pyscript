@@ -5,6 +5,7 @@ on:
         branches:
             - next
         paths:
+            - pyscript.core/**
             - pyscriptjs/**
             - examples/**
             - .github/workflows/test-next.yml # Test that workflow works when changed
@@ -13,6 +14,7 @@ on:
         branches:
             - next
         paths:
+            - pyscript.core/**
             - pyscriptjs/**
             - examples/**
             - .github/workflows/test-next.yml # Test that workflow works when changed
