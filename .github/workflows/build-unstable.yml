@@ -1,4 +1,4 @@
-name: "[CI] Build Unstable (Next branch)"
+name: "[CI] Build Unstable"
 
 on:
     push: # Only run on merges into main that modify files under pyscriptjs/ and examples/
