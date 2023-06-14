@@ -70,9 +70,13 @@ jobs:
               working-directory: pyscript.core
               run: npm i
 
+            - name: build next
+              working-directory: pyscript.core
+              run: npm run build
+
             - name: Run next tests
               working-directory: pyscript.core
-              run: npm test
+              run: npm run test
 
             - name: Integration Tests
               run: make test-integration-parallel
