@@ -1,9 +1,10 @@
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 
 class TestInterpreterAccess(PyScriptTest):
     """Test accessing Python objects from JS via pyscript.interpreter"""
 
+    @skip_worker("WONTFIX: used without synclink to avoid awaits")
     def test_interpreter_python_access(self):
         self.pyscript_run(
             """
@@ -17,9 +18,9 @@ class TestInterpreterAccess(PyScriptTest):
 
         self.run_js(
             """
-            const x = await pyscript.interpreter.globals.get('x');
-            const py_func = await pyscript.interpreter.globals.get('py_func');
-            const py_func_res = await py_func();
+            const x = pyscript.interpreter.globals.get('x');
+            const py_func = pyscript.interpreter.globals.get('py_func');
+            const py_func_res = py_func();
             console.log(`x is ${x}`);
             console.log(`py_func() returns ${py_func_res}`);
             """
@@ -29,13 +30,14 @@ class TestInterpreterAccess(PyScriptTest):
             "py_func() returns 2",
         ]
 
+    @skip_worker("WONTFIX: used without synclink")
     def test_interpreter_script_execution(self):
         """Test running Python code from js via pyscript.interpreter"""
         self.pyscript_run("")
 
         self.run_js(
             """
-            const interface = pyscript.interpreter._remote.interface;
+            const interface = pyscript.interpreter.interface;
             await interface.runPython('print("Interpreter Ran This")');
             """
         )
@@ -46,13 +48,14 @@ class TestInterpreterAccess(PyScriptTest):
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert py_terminal.text_content() == expected_message
 
+    @skip_worker("WONTFIX: used without synclink")
     def test_backward_compatibility_runtime_script_execution(self):
         """Test running Python code from js via pyscript.runtime"""
         self.pyscript_run("")
 
         self.run_js(
             """
-            const interface = pyscript.runtime._remote.interpreter;
+            const interface = pyscript.runtime.interpreter;
             await interface.runPython('print("Interpreter Ran This")');
             """
         )
@@ -63,6 +66,7 @@ class TestInterpreterAccess(PyScriptTest):
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert py_terminal.text_content() == expected_message
 
+    @skip_worker("WONTFIX: used without synclink to avoid awaits")
     def test_backward_compatibility_runtime_python_access(self):
         """Test accessing Python objects from JS via pyscript.runtime"""
         self.pyscript_run(
@@ -77,9 +81,9 @@ class TestInterpreterAccess(PyScriptTest):
 
         self.run_js(
             """
-            const x = await pyscript.interpreter.globals.get('x');
-            const py_func = await pyscript.interpreter.globals.get('py_func');
-            const py_func_res = await py_func();
+            const x = pyscript.runtime.globals.get('x');
+            const py_func = pyscript.runtime.globals.get('py_func');
+            const py_func_res = py_func();
             console.log(`x is ${x}`);
             console.log(`py_func() returns ${py_func_res}`);
             """
