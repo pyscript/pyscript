@@ -60,11 +60,19 @@ jobs:
             - name: Build
               run: make build
 
-            - name: TypeScript Tests
+            - name: TypeScript Tests (core)
               run: make test-ts
 
             - name: Python Tests
               run: make test-py
+
+            - name: install next deps
+              working-directory: pyscript.core
+              run: npm i
+
+            - name: Run next tests
+              working-directory: pyscript.core
+              run: npm test
 
             - name: Integration Tests
               run: make test-integration-parallel
