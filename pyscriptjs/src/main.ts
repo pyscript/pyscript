@@ -71,6 +71,7 @@ export let runtime;
 export class PyScriptApp {
     config: AppConfig;
     interpreter: InterpreterClient;
+    unwrapped_remote: RemoteInterpreter;
     readyPromise: Promise<void>;
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
@@ -139,10 +140,10 @@ export class PyScriptApp {
         await this.plugins.configure(this.config);
         this.plugins.beforeLaunch(this.config);
         await this.loadInterpreter();
-        interpreter = this.interpreter;
+        interpreter = this.unwrapped_remote;
         // TODO: This is for backwards compatibility, it should be removed
         // when we finish the deprecation cycle of `runtime`
-        runtime = this.interpreter;
+        runtime = this.unwrapped_remote;
     }
 
     // lifecycle (2)
@@ -193,6 +194,7 @@ export class PyScriptApp {
         logger.info('Starting the interpreter in the main thread');
         // this is basically equivalent to worker_initialize()
         const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
+        this.unwrapped_remote = remote_interpreter;
         const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
         port1.start();
         port2.start();
