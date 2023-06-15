@@ -675,7 +675,6 @@ class TestPyRepl(PyScriptTest):
         )
         assert self.console.error.lines[-1] == errorMsg
 
-
     @skip_worker("dont-care")
     def test_repl_results(self):
         self.writefile("loadReplSrc2.py", "2")
@@ -703,7 +702,7 @@ class TestPyRepl(PyScriptTest):
         )
         py_repl1 = self.page.locator("py-repl#py-repl1")
         py_repl1.locator("button").click()
-        
+
         py_repl2 = self.page.locator("py-repl#py-repl2")
         py_repl2.locator("button").click()
 
