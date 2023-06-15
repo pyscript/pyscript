@@ -15,10 +15,15 @@ const createRuntimes = () => {
     }
     // generate the output to append at the end of the file
     const output = [];
-    for (const interpreter of interpreters)
+    for (let i = 0; i < interpreters.length; i++) {
+        const interpreter = interpreters[i].replace(/-/g, "_");
         output.push(
-            `import ${interpreter} from "./interpreter/${interpreter}.js";`,
+            `import ${interpreter.replace(/-/g, "_")} from "./interpreter/${
+                interpreters[i]
+            }.js";`,
         );
+        interpreters[i] = interpreter;
+    }
     output.push(
         `
 for (const interpreter of [${interpreters.join(", ")}])

@@ -63,7 +63,7 @@ const listener = async (event) => {
 for (let { name, ownerElement: el } of $x(
     `.//@*[${prefixes.map((p) => `starts-with(name(),"${p}")`).join(" or ")}]`,
 )) {
-    name = name.slice(name.indexOf("-") + 1);
+    name = name.slice(name.lastIndexOf("-") + 1);
     if (name !== "env") el.addEventListener(name, listener);
 }
 
@@ -72,7 +72,7 @@ const mo = new MutationObserver((records) => {
         // attributes are tested via integration / e2e
         /* c8 ignore next 17 */
         if (type === "attributes") {
-            const i = attributeName.indexOf("-") + 1;
+            const i = attributeName.lastIndexOf("-") + 1;
             if (i) {
                 const prefix = attributeName.slice(0, i);
                 for (const p of prefixes) {

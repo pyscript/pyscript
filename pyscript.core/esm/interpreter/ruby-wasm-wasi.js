@@ -1,6 +1,6 @@
 import { clean, fetchPaths } from "./_utils.js";
 
-const type = "ruby";
+const type = "ruby-wasm-wasi";
 
 // MISSING:
 //  * there is no VFS apparently or I couldn't reach any
@@ -19,8 +19,8 @@ const worker = (method) =>
     };
 
 export default {
+    type,
     experimental: true,
-    type: [type, "rb"],
     module: (version = "2.0.0") =>
         `https://cdn.jsdelivr.net/npm/ruby-3_2-wasm-wasi@${version}/dist/browser.esm.js`,
     async engine({ DefaultRubyVM }, config, url) {

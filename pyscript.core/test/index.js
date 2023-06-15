@@ -69,31 +69,31 @@ const { registerPlugin } = require("../cjs");
     // all tests
     for (const test of [
         async function versionedRuntime() {
-            document.head.innerHTML = `<script type="py" version="0.23.2">${content}</script>`;
+            document.head.innerHTML = `<script type="pyodide" version="0.23.2">${content}</script>`;
             await tick();
             assert(pyodide.content, content);
-            assert(pyodide.target.tagName, "PY-SCRIPT");
+            assert(pyodide.target.tagName, "PYODIDE-SCRIPT");
         },
 
         async function basicExpectations() {
-            document.head.innerHTML = `<script type="py">${content}</script>`;
+            document.head.innerHTML = `<script type="pyodide">${content}</script>`;
             await tick();
             assert(pyodide.content, content);
-            assert(pyodide.target.tagName, "PY-SCRIPT");
+            assert(pyodide.target.tagName, "PYODIDE-SCRIPT");
         },
 
         async function foreignRuntime() {
-            document.head.innerHTML = `<script type="py" version="http://pyodide">${content}</script>`;
+            document.head.innerHTML = `<script type="pyodide" version="http://pyodide">${content}</script>`;
             await tick();
             assert(pyodide.content, content);
-            assert(pyodide.target.tagName, "PY-SCRIPT");
+            assert(pyodide.target.tagName, "PYODIDE-SCRIPT");
         },
 
         async function basicMicroPython() {
-            document.head.innerHTML = `<script type="mpy">${content}</script>`;
+            document.head.innerHTML = `<script type="micropython">${content}</script>`;
             await tick();
             assert(micropython.content, content);
-            assert(micropython.target.tagName, "MPY-SCRIPT");
+            assert(micropython.target.tagName, "MICROPYTHON-SCRIPT");
             const script = document.head.firstElementChild;
             document.body.appendChild(script);
             await tick();
@@ -107,7 +107,7 @@ const { registerPlugin } = require("../cjs");
             );
             shadowRoot.innerHTML = `
         <my-plugin></my-plugin>
-        <script src="./whatever" env="unique" type="py" target="my-plugin"></script>
+        <script src="./whatever" env="unique" type="pyodide" target="my-plugin"></script>
       `.trim();
             await tick();
             assert(pyodide.content, "OK");
@@ -118,7 +118,7 @@ const { registerPlugin } = require("../cjs");
             setTarget(div);
             shadowRoot.innerHTML = `
         <my-plugin></my-plugin>
-        <script type="py"></script>
+        <script type="pyodide"></script>
       `.trim();
             await tick();
             assert(pyodide.target, div);
@@ -128,7 +128,7 @@ const { registerPlugin } = require("../cjs");
             setTarget("my-plugin");
             shadowRoot.innerHTML = `
         <my-plugin></my-plugin>
-        <script type="py"></script>
+        <script type="pyodide"></script>
       `.trim();
             await tick();
             assert(pyodide.target.tagName, "MY-PLUGIN");
@@ -137,7 +137,7 @@ const { registerPlugin } = require("../cjs");
         async function jsonConfig() {
             const packages = {};
             patchFetch(() => Promise.resolve({ json: () => ({ packages }) }));
-            shadowRoot.innerHTML = `<script config="./whatever.json" type="py"></script>`;
+            shadowRoot.innerHTML = `<script config="./whatever.json" type="pyodide"></script>`;
             await tick();
             assert(pyodide.packages, packages);
         },
@@ -149,7 +149,7 @@ const { registerPlugin } = require("../cjs");
             patchFetch(() =>
                 Promise.resolve({ text: () => Promise.resolve(jsonPackages) }),
             );
-            shadowRoot.innerHTML = `<script config="./whatever.toml" type="py"></script>`;
+            shadowRoot.innerHTML = `<script config="./whatever.toml" type="pyodide"></script>`;
             // there are more promises in here let's increase the tick delay to avoid flaky tests
             await tick(20);
             assert(
@@ -173,7 +173,7 @@ const { registerPlugin } = require("../cjs");
                 }),
             );
             shadowRoot.innerHTML = `
-        <script type="py" config="./fetch.toml">
+        <script type="pyodide" config="./fetch.toml">
           import js
           import a, b
           js.console.log(a.x)
@@ -184,9 +184,9 @@ const { registerPlugin } = require("../cjs");
         },
 
         async function testDefaultRuntime() {
-            const py = await pyscript.env.py;
+            const pyodide = await pyscript.env.pyodide;
             const keys = Object.keys(loadPyodide()).join(",");
-            assert(Object.keys(py).join(","), keys);
+            assert(Object.keys(pyodide).join(","), keys);
 
             const unique = await pyscript.env.unique;
             assert(Object.keys(unique).join(","), keys);

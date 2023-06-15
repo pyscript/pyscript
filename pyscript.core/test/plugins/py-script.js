@@ -19,7 +19,7 @@ const sharedPyodide = new Promise((resolve) => {
     const config = pyConfig?.getAttribute("src") || pyConfig?.textContent;
     registerPlugin("py-script", {
         config,
-        type: "pyodide", // or just 'py'
+        type: "pyodide",
         codeBeforeRunWorker: `print('codeBeforeRunWorker')`,
         codeAfterRunWorker: `print('codeAfterRunWorker')`,
         onBeforeRun(pyodide, node) {

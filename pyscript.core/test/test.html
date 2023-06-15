@@ -17,7 +17,7 @@
         <script type="module" src="../esm/index.js"></script>
     </head>
     <body>
-        <script type="py">
+        <script type="pyodide">
             def print_version():
               import sys
               print(sys.version)
@@ -25,15 +25,15 @@
         </script>
         <button py-click="print_version()">python version</button>
 
-        <script type="mpy">
+        <script type="micropython">
             def print_version():
               import sys
               print(sys.version)
               print("bad.", file=sys.stderr)
         </script>
-        <button mpy-click="print_version()">micropython version</button>
+        <button micropython-click="print_version()">micropython version</button>
 
-        <script type="lua">
+        <script type="wasmoon">
             function print_version()
               print(_VERSION)
               printErr(123)
@@ -41,11 +41,11 @@
         </script>
         <button lua-click="print_version()">lua version</button>
 
-        <script type="rb">
+        <script type="ruby-wasm-wasi">
             def print_version()
               print "ruby #{ RUBY_VERSION }p#{ RUBY_PATCHLEVEL }"
             end
         </script>
-        <button rb-click="print_version()">ruby version</button>
+        <button ruby-wasm-wasi-click="print_version()">ruby version</button>
     </body>
 </html>

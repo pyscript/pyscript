@@ -9,28 +9,28 @@
         <script type="module" src="../min.js"></script>
     </head>
     <body>
-        <script type="py">
+        <script type="pyodide">
             def print_version(event):
               import sys
               print(event.type)
               print(sys.version)
         </script>
         <button
-            py-pointerdown="print_version(event)"
-            py-click="print_version(event)"
+            pyodide-pointerdown="print_version(event)"
+            pyodide-click="print_version(event)"
         >
-            python version
+            pyodide version
         </button>
 
-        <script type="mpy">
+        <script type="micropython">
             def print_version(event):
               import sys
               print(event.type)
               print(sys.version)
         </script>
         <button
-            mpy-pointerdown="print_version(event)"
-            mpy-click="print_version(event)"
+            micropython-pointerdown="print_version(event)"
+            micropython-click="print_version(event)"
         >
             micropython version
         </button>
