@@ -191,7 +191,7 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
                 pyReplTag: this,
                 result,
             });
-            interpreter._remote.destroyIfProxy(result);
+            await interpreter._remote.destroyIfProxy(result);
             this.autogenerateMaybe();
         }
 

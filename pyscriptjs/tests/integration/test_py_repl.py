@@ -674,3 +674,42 @@ class TestPyRepl(PyScriptTest):
             "Are your filename and path correct?"
         )
         assert self.console.error.lines[-1] == errorMsg
+
+
+    @skip_worker("dont-care")
+    def test_repl_results(self):
+        self.writefile("loadReplSrc2.py", "2")
+        self.writefile("loadReplSrc3.py", "print('3')")
+        self.pyscript_run(
+            """
+            <py-repl id="py-repl1" output="out1">
+            42
+            </py-repl>
+            <div id="out1"></div>
+
+            <py-repl id="py-repl2" output="out2">
+            c = [1,2,3]
+            from sys import getrefcount
+            print(getrefcount(c))
+            c
+            </py-repl>
+            <div id="out2"></div>
+
+            <py-repl id="py-repl3" output="out3">
+            getrefcount(c)
+            </py-repl>
+            <div id="out3"></div>
+            """
+        )
+        py_repl1 = self.page.locator("py-repl#py-repl1")
+        py_repl1.locator("button").click()
+        
+        py_repl2 = self.page.locator("py-repl#py-repl2")
+        py_repl2.locator("button").click()
+
+        py_repl3 = self.page.locator("py-repl#py-repl3")
+        py_repl3.locator("button").click()
+
+        assert self.page.wait_for_selector("#out1").inner_text() == "42"
+        assert self.page.wait_for_selector("#out2").inner_text() == "2\n\n[1, 2, 3]"
+        assert self.page.wait_for_selector("#out3").inner_text() == "2"
