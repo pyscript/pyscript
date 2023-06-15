@@ -23,7 +23,7 @@ const sharedPyodide = new Promise((resolve) => {
         codeBeforeRunWorker: `print('codeBeforeRunWorker')`,
         codeAfterRunWorker: `print('codeAfterRunWorker')`,
         onBeforeRun(pyodide, node) {
-            pyodide.runtime.globals.set("XWorker", XWorker);
+            pyodide.interpreter.globals.set("XWorker", XWorker);
             console.log("onBeforeRun", sharedRuntime === pyodide, node);
         },
         onAfterRun(pyodide, node) {

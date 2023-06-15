@@ -1,4 +1,4 @@
-const { writeFileShim } = require("../cjs/runtime/_utils.js");
+const { writeFileShim } = require("../cjs/interpreter/_utils.js");
 
 const assert = require("./assert.js");
 

@@ -1,9 +1,9 @@
 import { $x, $$ } from "basic-devtools";
 
 import xworker from "./worker/class.js";
-import { handle, runtimes } from "./script-handler.js";
+import { handle, interpreters } from "./script-handler.js";
 import { all, assign, create, defineProperty } from "./utils.js";
-import { registry, selectors, prefixes } from "./runtimes.js";
+import { registry, selectors, prefixes } from "./interpreters.js";
 import { PLUGINS_SELECTORS, handlePlugin } from "./plugins.js";
 
 export { registerPlugin } from "./plugins.js";
@@ -11,20 +11,20 @@ export const XWorker = xworker();
 
 const RUNTIME_SELECTOR = selectors.join(",");
 
-// ensure both runtime and its queue are awaited then returns the runtime
+// ensure both interpreter and its queue are awaited then returns the interpreter
 const awaitRuntime = async (key) => {
-    if (runtimes.has(key)) {
-        const { runtime, queue } = runtimes.get(key);
-        return (await all([runtime, queue]))[0];
+    if (interpreters.has(key)) {
+        const { interpreter, queue } = interpreters.get(key);
+        return (await all([interpreter, queue]))[0];
     }
 
-    const available = runtimes.size
-        ? `Available runtimes are: ${[...runtimes.keys()]
+    const available = interpreters.size
+        ? `Available interpreters are: ${[...interpreters.keys()]
               .map((r) => `"${r}"`)
               .join(", ")}.`
-        : `There are no runtimes in this page.`;
+        : `There are no interpreters in this page.`;
 
-    throw new Error(`The runtime "${key}" was not found. ${available}`);
+    throw new Error(`The interpreter "${key}" was not found. ${available}`);
 };
 
 defineProperty(globalThis, "pyscript", {
@@ -45,13 +45,13 @@ const listener = async (event) => {
         currentTarget,
     )) {
         name = name.slice(0, -(type.length + 1));
-        const runtime = await awaitRuntime(
+        const interpreter = await awaitRuntime(
             el.getAttribute(`${name}-env`) || name,
         );
         const i = index++;
         try {
             globalThis.__events.set(i, event);
-            registry.get(name).runEvent(runtime, value, i);
+            registry.get(name).runEvent(interpreter, value, i);
         } finally {
             globalThis.__events.delete(i);
         }

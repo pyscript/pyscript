@@ -6,16 +6,16 @@ import workerHooks from "./hooks.js";
 
 /**
  * @typedef {Object} WorkerOptions plugin configuration
- * @prop {string} type the runtime/interpreter type to use
- * @prop {string} [version] the optional runtime version to use
- * @prop {string} [config] the optional config to use within such runtime
+ * @prop {string} type the interpreter type to use
+ * @prop {string} [version] the optional interpreter version to use
+ * @prop {string} [config] the optional config to use within such interpreter
  */
 
 export default (...args) =>
     /**
-     * A XWorker is a Worker facade able to bootstrap a channel with any desired runtime.
+     * A XWorker is a Worker facade able to bootstrap a channel with any desired interpreter.
      * @param {string} url the remote file to evaluate on bootstrap
-     * @param {WorkerOptions} [options] optional arguments to define the runtime to use
+     * @param {WorkerOptions} [options] optional arguments to define the interpreter to use
      * @returns {Worker}
      */
     function XWorker(url, options) {

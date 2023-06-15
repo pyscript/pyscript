@@ -1,10 +1,10 @@
-import { runtime } from "./runtimes.js";
+import { interpreter } from "./interpreters.js";
 import { absoluteURL, resolve } from "./utils.js";
 import { parse } from "./toml.js";
 import { getJSON, getText } from "./fetch-utils.js";
 
 /**
- * @param {string} id the runtime name @ version identifier
+ * @param {string} id the interpreter name @ version identifier
  * @param {string} [config] optional config file to parse
  * @returns
  */
@@ -28,12 +28,12 @@ export const getRuntime = (id, config) => {
         }
         /* c8 ignore stop */
     }
-    return resolve(options).then((options) => runtime[id](options, config));
+    return resolve(options).then((options) => interpreter[id](options, config));
 };
 
 /**
- * @param {string} type the runtime type
- * @param {string} [version] the optional runtime version
+ * @param {string} type the interpreter type
+ * @param {string} [version] the optional interpreter version
  * @returns
  */
 export const getRuntimeID = (type, version = "") =>

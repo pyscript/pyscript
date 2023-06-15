@@ -24,9 +24,9 @@ export const stdio = (init) => {
         stderr: (...args) => localIO.stderr(...args),
         stdout: (...args) => localIO.stdout(...args),
         async get(engine) {
-            const runtime = await engine;
-            io.set(runtime, localIO);
-            return runtime;
+            const interpreter = await engine;
+            io.set(interpreter, localIO);
+            return interpreter;
         },
     };
 };
@@ -123,11 +123,11 @@ const fetchResolved = (config_fetch, url) =>
 
 export const base = new WeakMap();
 
-export const fetchPaths = (module, runtime, config_fetch) =>
+export const fetchPaths = (module, interpreter, config_fetch) =>
     all(
         calculateFetchPaths(config_fetch).map(({ url, path }) =>
             fetchResolved(config_fetch, url)
                 .then(getBuffer)
-                .then((buffer) => module.writeFile(runtime, path, buffer)),
+                .then((buffer) => module.writeFile(interpreter, path, buffer)),
         ),
     );
