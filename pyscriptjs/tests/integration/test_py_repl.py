@@ -679,13 +679,6 @@ class TestPyRepl(PyScriptTest):
     def test_repl_results(self):
         self.writefile("loadReplSrc2.py", "2")
         self.writefile("loadReplSrc3.py", "print('3')")
-        """
-
-
-
-            # should print 2: if it prints 3 that means that c was not properly
-            # released by py-repl
-        """
 
         self.pyscript_run(
             """
