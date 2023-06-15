@@ -2,9 +2,9 @@ import ast
 from collections import namedtuple
 from contextlib import contextmanager
 
+from js import Object
 from pyodide.code import eval_code
 from pyodide.ffi import JsProxy, to_js
-from js import Object
 
 from ._event_loop import (
     defer_user_asyncio,
