@@ -8,7 +8,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 
-createRequire(import.meta.url)("./build_runtimes.cjs");
+createRequire(import.meta.url)("./build_interpreters.cjs");
 
 const WORKERS_DIR = resolve(
     join(dirname(fileURLToPath(import.meta.url)), "..", "esm", "worker"),

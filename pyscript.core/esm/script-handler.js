@@ -2,7 +2,7 @@ import { $ } from "basic-devtools";
 
 import xworker from "./worker/class.js";
 import { getRuntime, getRuntimeID } from "./loader.js";
-import { registry } from "./runtimes.js";
+import { registry } from "./interpreters.js";
 import { all, resolve, defineProperty, absoluteURL } from "./utils.js";
 import { getText } from "./fetch-utils.js";
 
@@ -40,14 +40,17 @@ const targetDescriptor = {
 
 const handled = new WeakMap();
 
-export const runtimes = new Map();
+export const interpreters = new Map();
 
 const execute = async (script, source, XWorker, isAsync) => {
     const module = registry.get(script.type);
     /* c8 ignore next */
     if (module.experimental)
-        console.warn(`The ${script.type} runtime is experimental`);
-    const [runtime, content] = await all([handled.get(script).runtime, source]);
+        console.warn(`The ${script.type} interpreter is experimental`);
+    const [interpreter, content] = await all([
+        handled.get(script).interpreter,
+        source,
+    ]);
     try {
         // temporarily override inherited document.currentScript in a non writable way
         // but it deletes it right after to preserve native behavior (as it's sync: no trouble)
@@ -59,7 +62,7 @@ const execute = async (script, source, XWorker, isAsync) => {
             configurable: true,
             get: () => script,
         });
-        return module[isAsync ? "runAsync" : "run"](runtime, content);
+        return module[isAsync ? "runAsync" : "run"](interpreter, content);
     } finally {
         delete globalThis.XWorker;
         delete document.currentScript;
@@ -72,18 +75,18 @@ const getValue = (ref, prefix) => {
 };
 
 export const getDetails = (type, id, name, version, config) => {
-    if (!runtimes.has(id)) {
+    if (!interpreters.has(id)) {
         const details = {
-            runtime: getRuntime(name, config),
+            interpreter: getRuntime(name, config),
             queue: resolve(),
             XWorker: xworker(type, version),
         };
-        runtimes.set(id, details);
-        // enable sane defaults when single runtime *of kind* is used in the page
-        // this allows `xxx-*` attributes to refer to such runtime without `env` around
-        if (!runtimes.has(type)) runtimes.set(type, details);
+        interpreters.set(id, details);
+        // enable sane defaults when single interpreter *of kind* is used in the page
+        // this allows `xxx-*` attributes to refer to such interpreter without `env` around
+        if (!interpreters.has(type)) interpreters.set(type, details);
     }
-    return runtimes.get(id);
+    return interpreters.get(id);
 };
 
 /**
@@ -104,8 +107,8 @@ export const handle = async (script) => {
     // new script to handle ... allow newly created scripts to work
     // just exactly like any other script would
     else {
-        // allow a shared config among scripts, beside runtime,
-        // and/or source code with different config or runtime
+        // allow a shared config among scripts, beside interpreter,
+        // and/or source code with different config or interpreter
         const {
             attributes: { async: isAsync, config, env, target, version },
             src,

@@ -10,10 +10,10 @@ const type = "ruby";
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
 const worker = (method) =>
-    function (runtime, code, xworker) {
+    function (interpreter, code, xworker) {
         globalThis.xworker = xworker;
         return this[method](
-            runtime,
+            interpreter,
             `require "js";xworker=JS::eval("return xworker");${code}`,
         );
     };
@@ -28,15 +28,15 @@ export default {
             `${url.slice(0, url.lastIndexOf("/"))}/ruby.wasm`,
         );
         const module = await WebAssembly.compile(await response.arrayBuffer());
-        const { vm: runtime } = await DefaultRubyVM(module);
-        if (config.fetch) await fetchPaths(this, runtime, config.fetch);
-        return runtime;
+        const { vm: interpreter } = await DefaultRubyVM(module);
+        if (config.fetch) await fetchPaths(this, interpreter, config.fetch);
+        return interpreter;
     },
-    run: (runtime, code) => runtime.eval(clean(code)),
-    runAsync: (runtime, code) => runtime.evalAsync(clean(code)),
-    runEvent(runtime, code, key) {
+    run: (interpreter, code) => interpreter.eval(clean(code)),
+    runAsync: (interpreter, code) => interpreter.evalAsync(clean(code)),
+    runEvent(interpreter, code, key) {
         return this.run(
-            runtime,
+            interpreter,
             `require "js";event=JS::eval("return __events.get(${key})");${code}`,
         );
     },

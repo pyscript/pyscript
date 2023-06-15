@@ -7,7 +7,7 @@
 import coincident from "coincident/structured";
 
 import { create } from "../utils.js";
-import { registry } from "../runtimes.js";
+import { registry } from "../interpreters.js";
 import { getRuntime, getRuntimeID } from "../loader.js";
 
 // bails out out of the box with a native/meaningful error
@@ -23,15 +23,15 @@ try {
     );
 }
 
-let engine, run, runtimeEvent;
+let engine, run, interpreterEvent;
 const add = (type, fn) => {
     addEventListener(
         type,
         fn ||
             (async (event) => {
-                const runtime = await engine;
-                runtimeEvent = event;
-                run(runtime, `xworker.on${type}(xworker.event);`, xworker);
+                const interpreter = await engine;
+                interpreterEvent = event;
+                run(interpreter, `xworker.on${type}(xworker.event);`, xworker);
             }),
         !!fn && { once: true },
     );
@@ -49,9 +49,9 @@ const xworker = {
     // would always fail once an event has been dispatched, as that's not
     // meant to be accessed in the wild, respecting the one-off event nature of JS.
     get event() {
-        const event = runtimeEvent;
+        const event = interpreterEvent;
         if (!event) throw new Error("Unauthorized event access");
-        runtimeEvent = void 0;
+        interpreterEvent = void 0;
         return event;
     },
 };
@@ -74,10 +74,10 @@ add("message", ({ data: { options, code, hooks } }) => {
             // append code that should be executed *after* first
             if (after) {
                 const method = details[name];
-                details[name] = function (runtime, code, xworker) {
+                details[name] = function (interpreter, code, xworker) {
                     return method.call(
                         this,
-                        runtime,
+                        interpreter,
                         `${code}\n${after}`,
                         xworker,
                     );
@@ -87,10 +87,10 @@ add("message", ({ data: { options, code, hooks } }) => {
             // prepend code that should be executed *before* (so that after is post-patched)
             if (before) {
                 const method = details[name];
-                details[name] = function (runtime, code, xworker) {
+                details[name] = function (interpreter, code, xworker) {
                     return method.call(
                         this,
-                        runtime,
+                        interpreter,
                         `${before}\n${code}`,
                         xworker,
                     );

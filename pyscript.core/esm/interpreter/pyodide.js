@@ -19,15 +19,17 @@ export default {
     async engine({ loadPyodide }, config, url) {
         const { stderr, stdout, get } = stdio();
         const indexURL = url.slice(0, url.lastIndexOf("/"));
-        const runtime = await get(loadPyodide({ stderr, stdout, indexURL }));
-        if (config.fetch) await fetchPaths(this, runtime, config.fetch);
+        const interpreter = await get(
+            loadPyodide({ stderr, stdout, indexURL }),
+        );
+        if (config.fetch) await fetchPaths(this, interpreter, config.fetch);
         if (config.packages) {
-            await runtime.loadPackage("micropip");
-            const micropip = await runtime.pyimport("micropip");
+            await interpreter.loadPackage("micropip");
+            const micropip = await interpreter.pyimport("micropip");
             await micropip.install(config.packages);
             micropip.destroy();
         }
-        return runtime;
+        return interpreter;
     },
     run,
     runAsync,

@@ -47,9 +47,9 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "coincident": "^0.4.0"
+        "coincident": "^0.4.1"
     },
     "worker": {
-        "blob": "sha256-cyZ90yuiHhmQ0syjP+lzJYZoUaioBPzIDmKPEpGSXaU="
+        "blob": "sha256-TbwtN60VpzVf6WDe6PfdTcHNVyKO4Z2zUN1gi/0rJeE="
     }
 }
