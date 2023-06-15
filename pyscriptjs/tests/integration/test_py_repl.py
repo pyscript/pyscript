@@ -681,8 +681,8 @@ class TestPyRepl(PyScriptTest):
         self.writefile("loadReplSrc3.py", "print('3')")
         """
 
-        
-            
+
+
             # should print 2: if it prints 3 that means that c was not properly
             # released by py-repl
         """
@@ -698,8 +698,8 @@ class TestPyRepl(PyScriptTest):
             c = [1,2,3]
             from sys import getrefcount
             # should print 2: 1 from the reference c and 1 since getrefcount
-            # holds a reference to its argument 
-            print(getrefcount(c)) 
+            # holds a reference to its argument
+            print(getrefcount(c))
             c
             </py-repl>
             <div id="out2"></div>
