@@ -2,9 +2,9 @@ import ast
 from collections import namedtuple
 from contextlib import contextmanager
 
-from js import Object
 from pyodide.code import eval_code
-from pyodide.ffi import JsProxy
+from pyodide.ffi import JsProxy, to_js
+from js import Object
 
 from ._event_loop import (
     defer_user_asyncio,
@@ -103,7 +103,7 @@ def run_pyscript(code: str, id: str = None) -> JsProxy:
     with display_target(id), defer_user_asyncio():
         result = eval_code(code, globals=__main__.__dict__)
 
-    return Object.new(result=result)
+    return to_js({"result": result}, depth=1, dict_converter=Object.fromEntries)
 
 
 __all__ = [

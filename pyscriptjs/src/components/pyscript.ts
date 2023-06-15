@@ -36,6 +36,7 @@ export function make_PyScript(interpreter: InterpreterClient, app: PyScriptApp) 
             await app.plugins.beforePyScriptExec({ interpreter, src, pyScriptTag });
             const { result } = await pyExec(interpreter, src, pyScriptTag);
             await app.plugins.afterPyScriptExec({ interpreter, src, pyScriptTag, result });
+            interpreter._remote.destroyIfProxy(result);
         } finally {
             releaseLock();
             app.decrementPendingTags();
