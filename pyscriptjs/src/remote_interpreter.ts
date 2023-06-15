@@ -274,6 +274,20 @@ export class RemoteInterpreter extends Object {
         this.FS.writeFile(path, data, { canOwn: true });
     }
 
+    destroyIfProxy(px: any): void {
+        if (this.interface.ffi) {
+            // Pyodide 0.23
+            if (px instanceof this.interface.ffi.PyProxy) {
+                px.destroy();
+            }
+        } else {
+            // older Pyodide
+            if (this.interface.isPyProxy(px)) {
+                px.destroy();
+            }
+        }
+    }
+
     /**
      * delegates clearing importlib's module path
      * caches to the underlying interface
