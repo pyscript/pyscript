@@ -715,6 +715,6 @@ class TestPyRepl(PyScriptTest):
         py_repl3.locator("button").click()
 
         assert self.page.wait_for_selector("#out1").inner_text() == "42"
-        assert self.page.wait_for_selector("#out2").inner_text() == "2\n\n[1, 2, 3]"'
+        assert self.page.wait_for_selector("#out2").inner_text() == "2\n\n[1, 2, 3]"
         # Check that c was released
         assert self.page.wait_for_selector("#out3").inner_text() == "2"
