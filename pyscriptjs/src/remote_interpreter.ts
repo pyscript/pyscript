@@ -275,8 +275,16 @@ export class RemoteInterpreter extends Object {
     }
 
     destroyIfProxy(px: any): void {
-        if (px instanceof this.interface.ffi.PyProxy) {
-            px.destroy();
+        if (this.interface.ffi) {
+            // Pyodide 0.23
+            if (px instanceof this.interface.ffi.PyProxy) {
+                px.destroy();
+            }
+        } else {
+            // older Pyodide
+            if (this.interface.isPyProxy(px)) {
+                px.destroy();
+            }
         }
     }
 
