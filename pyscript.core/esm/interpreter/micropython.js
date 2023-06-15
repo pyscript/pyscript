@@ -13,7 +13,7 @@ const type = "micropython";
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
 export default {
-    type: [type, "mpy"],
+    type,
     module: () => `http://localhost:8080/micropython/micropython.mjs`,
     async engine({ loadMicroPython }, config, url) {
         const { stderr, stdout, get } = stdio();

@@ -15,7 +15,7 @@
         <script type="module">
             import { registerPlugin } from "@pyscript/core";
             registerPlugin("lua-script", {
-                type: "wasmoon", // or just 'lua'
+                type: "wasmoon",
                 async onRuntimeReady(wasmoon, element) {
                     // Somehow this doesn't work in Wasmoon
                     wasmoon.io.stdout = (message) => {

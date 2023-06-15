@@ -7,16 +7,16 @@
         <script type="module" src="../min.js"></script>
     </head>
     <body>
-        <script type="py">
+        <script type="pyodide">
             # define a "global" variable and print it
             shared_env = 1
             print(shared_env)
         </script>
-        <script type="py">
+        <script type="pyodide">
             # just print the "global" variable from same env
             print(shared_env)
         </script>
-        <script type="py" env="another-one">
+        <script type="pyodide" env="another-one">
             # see the error
             print(shared_env)
         </script>

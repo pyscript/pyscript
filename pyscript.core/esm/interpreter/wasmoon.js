@@ -11,7 +11,7 @@ const worker = (method) =>
     };
 
 export default {
-    type: [type, "lua"],
+    type,
     module: (version = "1.15.0") =>
         `https://cdn.jsdelivr.net/npm/wasmoon@${version}/+esm`,
     async engine({ LuaFactory, LuaLibraries }, config) {

@@ -19,7 +19,7 @@
         </script>
     </head>
     <body>
-        <script type="mpy">
+        <script type="micropython">
             from js import XWorker, Promise, document
 
             deferred = Promise.withResolvers()
@@ -37,10 +37,14 @@
               inputs[1].disabled = False
               return deferred.promise
 
-            w = XWorker('./input.lua', type='lua')
+            w = XWorker('./input.lua', type='wasmoon')
             w.sync.input = handle_input
         </script>
         <input type="text" placeholder="loading ..." required disabled />
-        <input type="submit" mpy-click="handle_result(event)" disabled />
+        <input
+            type="submit"
+            micropython-click="handle_result(event)"
+            disabled
+        />
     </body>
 </html>

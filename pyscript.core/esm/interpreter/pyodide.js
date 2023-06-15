@@ -13,7 +13,7 @@ const type = "pyodide";
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
 export default {
-    type: [type, "py"],
+    type,
     module: (version = "0.23.2") =>
         `https://cdn.jsdelivr.net/pyodide/v${version}/full/pyodide.mjs`,
     async engine({ loadPyodide }, config, url) {

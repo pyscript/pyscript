@@ -17,12 +17,14 @@
         <script type="module" src="../esm/index.js"></script>
     </head>
     <body>
-        <script type="rb">
+        <script type="ruby-wasm-wasi">
             def print_version(event)
               puts event[:type]
               print "ruby #{ RUBY_VERSION }p#{ RUBY_PATCHLEVEL }"
             end
         </script>
-        <button rb-click="print_version(event)">ruby version</button>
+        <button ruby-wasm-wasi-click="print_version(event)">
+            ruby-wasm-wasi version
+        </button>
     </body>
 </html>

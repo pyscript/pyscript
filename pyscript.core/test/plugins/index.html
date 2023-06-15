@@ -15,7 +15,7 @@
         <script type="module">
             import { registerPlugin } from "@pyscript/core";
             registerPlugin("mpy-script", {
-                type: "micropython", // or just 'mpy'
+                type: "micropython",
                 async onRuntimeReady(micropython, element) {
                     console.log(micropython);
                     // Somehow this doesn't work in MicroPython

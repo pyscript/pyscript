@@ -17,7 +17,7 @@
         <script type="module" src="../esm/index.js"></script>
     </head>
     <body>
-        <script type="lua" config="./fetch.toml">
+        <script type="wasmoon" config="./fetch.toml">
             local function read_file(path)
               local file = io.open(path, "rb")
               if not file then return nil end
@@ -32,6 +32,6 @@
               print(read_file('/a.py'))
             end
         </script>
-        <button lua-click="print_version(event)">lua version</button>
+        <button wasmoon-click="print_version(event)">wasmoon version</button>
     </body>
 </html>

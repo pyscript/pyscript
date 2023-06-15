@@ -9,7 +9,7 @@
         <script type="module" src="../min.js"></script>
     </head>
     <body>
-        <script type="mpy">
+        <script type="micropython">
             from js import XWorker
 
             def show_image(event):
@@ -19,7 +19,7 @@
               img.src = event.data
               document.body.appendChild(img)
 
-            w = XWorker('./matplot.py', **{'type': 'py', 'config': './config.toml'})
+            w = XWorker('./matplot.py', **{'type': 'pyodide', 'config': './config.toml'})
             w.onmessage = show_image
         </script>
     </body>

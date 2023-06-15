@@ -9,13 +9,13 @@
         <script type="module" src="../min.js"></script>
     </head>
     <body>
-        <script type="py" version="0.23.2">
+        <script type="pyodide" version="0.23.2">
             import sys
             import js
             js.document.currentScript.target.textContent = sys.version
         </script>
-        <script type="mpy" src="three.py"></script>
-        <script type="py" config="./config.json">
+        <script type="micropython" src="three.py"></script>
+        <script type="pyodide" config="./config.json">
             import matplotlib.pyplot as plt
             import matplotlib.tri as tri
             import numpy as np
