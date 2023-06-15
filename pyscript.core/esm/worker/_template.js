@@ -63,31 +63,39 @@ add("message", ({ data: { options, code, hooks } }) => {
         const details = create(registry.get(type));
         const name = `runWorker${isAsync ? "Async" : ""}`;
 
-        // patch code if needed
-        const { beforeRun, beforeRunAsync, afterRun, afterRunAsync } = hooks;
+        if (hooks) {
+            // patch code if needed
+            const { beforeRun, beforeRunAsync, afterRun, afterRunAsync } =
+                hooks;
 
-        const after = afterRun || afterRunAsync;
-        const before = beforeRun || beforeRunAsync;
+            const after = afterRun || afterRunAsync;
+            const before = beforeRun || beforeRunAsync;
 
-        // append code that should be executed *after* first
-        if (after) {
-            const method = details[name];
-            details[name] = function (runtime, code, xworker) {
-                return method.call(this, runtime, `${code}\n${after}`, xworker);
-            };
-        }
+            // append code that should be executed *after* first
+            if (after) {
+                const method = details[name];
+                details[name] = function (runtime, code, xworker) {
+                    return method.call(
+                        this,
+                        runtime,
+                        `${code}\n${after}`,
+                        xworker,
+                    );
+                };
+            }
 
-        // prepend code that should be executed *before* (so that after is post-patched)
-        if (before) {
-            const method = details[name];
-            details[name] = function (runtime, code, xworker) {
-                return method.call(
-                    this,
-                    runtime,
-                    `${before}\n${code}`,
-                    xworker,
-                );
-            };
+            // prepend code that should be executed *before* (so that after is post-patched)
+            if (before) {
+                const method = details[name];
+                details[name] = function (runtime, code, xworker) {
+                    return method.call(
+                        this,
+                        runtime,
+                        `${before}\n${code}`,
+                        xworker,
+                    );
+                };
+            }
         }
         run = details[name].bind(details);
         run(engine, code, xworker);
