@@ -1,9 +1,9 @@
 
 var _createMicroPythonModule = (() => {
-  var _scriptDir = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : undefined;
-  if (typeof __filename !== 'undefined') _scriptDir = _scriptDir || __filename;
+  var _scriptDir = import.meta.url;
+
   return (
-function(_createMicroPythonModule = {})  {
+async function(_createMicroPythonModule = {})  {
 
 // include: shell.js
 // The Module object: Our interface to the outside world. We import
@@ -98,6 +98,9 @@ if (ENVIRONMENT_IS_NODE) {
   // the require()` function.  This is only necessary for multi-environment
   // builds, `-sENVIRONMENT=node` emits a static import declaration instead.
   // TODO: Swap all `require()`'s with `import()`'s?
+  const { createRequire } = await import('module');
+  /** @suppress{duplicate} */
+  var require = createRequire(import.meta.url);
   // These modules will usually be used on Node.js. Load them eagerly to avoid
   // the complexity of lazy-loading.
   var fs = require('fs');
@@ -106,7 +109,10 @@ if (ENVIRONMENT_IS_NODE) {
   if (ENVIRONMENT_IS_WORKER) {
     scriptDirectory = nodePath.dirname(scriptDirectory) + '/';
   } else {
-    scriptDirectory = __dirname + '/';
+    // EXPORT_ES6 + ENVIRONMENT_IS_NODE always requires use of import.meta.url,
+    // since there's no way getting the current absolute path of the module when
+    // support for that is not available.
+    scriptDirectory = require('url').fileURLToPath(new URL('./', import.meta.url)); // includes trailing slash
   }
 
 // include: node_shell_read.js
@@ -511,7 +517,7 @@ function initRuntime() {
   checkStackCookie();
 
 
-  if (!Module["noFSInit"] && !FS.init.initialized)
+if (!Module["noFSInit"] && !FS.init.initialized)
   FS.init();
 FS.ignorePermissions = false;
 
@@ -718,10 +724,15 @@ function createExportWrapper(name, fixedasm) {
 // include: runtime_exceptions.js
 // end include: runtime_exceptions.js
 var wasmBinaryFile;
+if (Module['locateFile']) {
   wasmBinaryFile = 'micropython.wasm';
   if (!isDataURI(wasmBinaryFile)) {
     wasmBinaryFile = locateFile(wasmBinaryFile);
   }
+} else {
+  // Use bundler-friendly `new URL(..., import.meta.url)` pattern; works in browsers too.
+  wasmBinaryFile = new URL('micropython.wasm', import.meta.url).href;
+}
 
 function getBinary(file) {
   try {
@@ -999,15 +1010,14 @@ function dbg(text) {
 // end include: runtime_debug.js
 // === Body ===
 
-function load_global(str,out) { let s = UTF8ToString(str); if (s in globalThis) { let value = globalThis[s]; if (typeof value == "function") { value = value.bind(globalThis); } convert_js_to_mp_obj_jsside(value, out); return true; } else { return false; } }
-function lookup_attr(jsref,str,out) { const base = proxy_js_ref[jsref]; const attr = UTF8ToString(str); console.debug("lookup_attr", jsref, base, attr); if (attr in base) { let value = base[attr]; if (typeof value == "function") { value = value.bind(base); } convert_js_to_mp_obj_jsside(value, out); return true; } else { return false; } }
-function store_attr(jsref,attr_ptr,value_ref) { const attr = UTF8ToString(attr_ptr); const value = convert_mp_to_js_obj_jsside(value_ref); console.debug("store_attr", proxy_js_ref[jsref], attr, value); proxy_js_ref[jsref][attr] = value; }
+function lookup_attr(jsref,str,out) { const base = proxy_js_ref[jsref]; const attr = UTF8ToString(str); if (attr in base) { let value = base[attr]; if (typeof value == "function") { if (base !== globalThis) { value = value.bind(base); } } convert_js_to_mp_obj_jsside(value, out); return true; } else { return false; } }
+function store_attr(jsref,attr_ptr,value_ref) { const attr = UTF8ToString(attr_ptr); const value = convert_mp_to_js_obj_jsside(value_ref); proxy_js_ref[jsref][attr] = value; }
 function call0(f_ref,out) { let f = proxy_js_ref[f_ref]; let ret = f(); convert_js_to_mp_obj_jsside(ret, out); }
 function call1(f_ref,a0,out) { const a0_js = convert_mp_to_js_obj_jsside(a0); const ret = proxy_js_ref[f_ref](a0_js); convert_js_to_mp_obj_jsside(ret, out); }
 function call0_kwarg(f_ref,n_kw,key,value,out) { let f = proxy_js_ref[f_ref]; let a = {}; for (let i = 0; i < n_kw; ++i) { let k = UTF8ToString(getValue(key + i * 4, "i32")); let v = convert_mp_to_js_obj_jsside(value + i * 3 * 4); a[k] = v; } let ret = f(a); convert_js_to_mp_obj_jsside(ret, out); }
 function call1_kwarg(f_ref,arg0,n_kw,key,value,out) { let f = proxy_js_ref[f_ref]; let a0 = convert_mp_to_js_obj_jsside(arg0); let a = {}; for (let i = 0; i < n_kw; ++i) { let k = UTF8ToString(getValue(key + i * 4, "i32")); let v = convert_mp_to_js_obj_jsside(value + i * 3 * 4); a[k] = v; } let ret = f(a0, a); convert_js_to_mp_obj_jsside(ret, out); }
 function call2(f_ref,a0,a1,out) { const a0_js = convert_mp_to_js_obj_jsside(a0); const a1_js = convert_mp_to_js_obj_jsside(a1); const ret = proxy_js_ref[f_ref](a0_js, a1_js); convert_js_to_mp_obj_jsside(ret, out); }
-function js_reflect_construct(a0_ref,a1,out) { const ret = Reflect.construct(proxy_js_ref[a0_ref], [UTF8ToString(a1)]); convert_js_to_mp_obj_jsside(ret, out); }
+function js_reflect_construct(f_ref,n_args,args,out) { const f = proxy_js_ref[f_ref]; const as = []; for (let i = 0; i < n_args; ++i) { as.push(convert_mp_to_js_obj_jsside(args + i * 4)); } const ret = Reflect.construct(f, as); convert_js_to_mp_obj_jsside(ret, out); }
 function js_get_len(f_ref) { return proxy_js_ref[f_ref].length; }
 function js_subscr_int(f_ref,idx,out) { const ret = proxy_js_ref[f_ref][idx]; convert_js_to_mp_obj_jsside(ret, out); }
 function js_subscr_load(f_ref,index_ref,out) { const target = proxy_js_ref[f_ref]; const index = python_index_semantics(target, convert_mp_to_js_obj_jsside(index_ref)); const ret = target[index]; convert_js_to_mp_obj_jsside(ret, out); }
@@ -1152,7 +1162,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
         return PATH.normalize(l + '/' + r);
       }};
 
-      function initRandomFill() {
+  function initRandomFill() {
       if (typeof crypto == 'object' && typeof crypto['getRandomValues'] == 'function') {
         // for modern web browsers
         return (view) => crypto.getRandomValues(view);
@@ -1185,7 +1195,9 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       return (randomFill = initRandomFill())(view);
     }
 
-    var PATH_FS = {resolve:function() {
+
+
+  var PATH_FS = {resolve:function() {
         var resolvedPath = '',
           resolvedAbsolute = false;
         for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
@@ -1236,7 +1248,8 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
         return outputParts.join('/');
       }};
 
-      function lengthBytesUTF8(str) {
+
+  function lengthBytesUTF8(str) {
       var len = 0;
       for (var i = 0; i < str.length; ++i) {
         // Gotcha: charCodeAt returns a 16-bit word that is a UTF-16 encoded code
@@ -1257,14 +1270,14 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       return len;
     }
 
-    function stringToUTF8Array(str, heap, outIdx, maxBytesToWrite) {
+  function stringToUTF8Array(str, heap, outIdx, maxBytesToWrite) {
       assert(typeof str === 'string');
       // Parameter maxBytesToWrite is not optional. Negative values, 0, null,
       // undefined and false each don't write out any bytes.
       if (!(maxBytesToWrite > 0))
         return 0;
 
-        var startIdx = outIdx;
+      var startIdx = outIdx;
       var endIdx = outIdx + maxBytesToWrite - 1; // -1 for string null terminator.
       for (var i = 0; i < str.length; ++i) {
         // Gotcha: charCodeAt returns a 16-bit word that is a UTF-16 encoded code
@@ -1315,7 +1328,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
 
   var UTF8Decoder = typeof TextDecoder != 'undefined' ? new TextDecoder('utf8') : undefined;
 
-  /**
+    /**
      * Given a pointer 'idx' to a null-terminated UTF8-encoded string in the given
      * array that contains uint8 values, returns a copy of that string as a
      * Javascript String object.
@@ -1508,12 +1521,13 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
           }
         }}};
 
-        function zeroMemory(address, size) {
+
+  function zeroMemory(address, size) {
       HEAPU8.fill(0, address, address + size);
       return address;
     }
 
-    function alignMemory(size, alignment) {
+  function alignMemory(size, alignment) {
       assert(alignment, "alignment argument is required");
       return Math.ceil(size / alignment) * alignment;
     }
@@ -1821,7 +1835,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
           return 0;
         }}};
 
-        /** @param {boolean=} noRunDep */
+  /** @param {boolean=} noRunDep */
   function asyncLoad(url, onload, onerror, noRunDep) {
       var dep = !noRunDep ? getUniqueRunDependency(`al ${url}`) : '';
       readAsync(url, (arrayBuffer) => {
@@ -1838,7 +1852,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       if (dep) addRunDependency(dep);
     }
 
-    var preloadPlugins = Module['preloadPlugins'] || [];
+  var preloadPlugins = Module['preloadPlugins'] || [];
   function FS_handledByPreloadPlugin(byteArray, fullname, finish, onerror) {
       // Ensure plugins are ready.
       if (typeof Browser != 'undefined') Browser.init();
@@ -1883,7 +1897,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       }
     }
 
-    function FS_modeStringToFlags(str) {
+  function FS_modeStringToFlags(str) {
       var flagModes = {
         'r': 0,
         'r+': 2,
@@ -1899,14 +1913,17 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       return flags;
     }
 
-    function FS_getMode(canRead, canWrite) {
+  function FS_getMode(canRead, canWrite) {
       var mode = 0;
       if (canRead) mode |= 292 | 73;
       if (canWrite) mode |= 146;
       return mode;
     }
 
-    var ERRNO_MESSAGES = {0:"Success",1:"Arg list too long",2:"Permission denied",3:"Address already in use",4:"Address not available",5:"Address family not supported by protocol family",6:"No more processes",7:"Socket already connected",8:"Bad file number",9:"Trying to read unreadable message",10:"Mount device busy",11:"Operation canceled",12:"No children",13:"Connection aborted",14:"Connection refused",15:"Connection reset by peer",16:"File locking deadlock error",17:"Destination address required",18:"Math arg out of domain of func",19:"Quota exceeded",20:"File exists",21:"Bad address",22:"File too large",23:"Host is unreachable",24:"Identifier removed",25:"Illegal byte sequence",26:"Connection already in progress",27:"Interrupted system call",28:"Invalid argument",29:"I/O error",30:"Socket is already connected",31:"Is a directory",32:"Too many symbolic links",33:"Too many open files",34:"Too many links",35:"Message too long",36:"Multihop attempted",37:"File or path name too long",38:"Network interface is not configured",39:"Connection reset by network",40:"Network is unreachable",41:"Too many open files in system",42:"No buffer space available",43:"No such device",44:"No such file or directory",45:"Exec format error",46:"No record locks available",47:"The link has been severed",48:"Not enough core",49:"No message of desired type",50:"Protocol not available",51:"No space left on device",52:"Function not implemented",53:"Socket is not connected",54:"Not a directory",55:"Directory not empty",56:"State not recoverable",57:"Socket operation on non-socket",59:"Not a typewriter",60:"No such device or address",61:"Value too large for defined data type",62:"Previous owner died",63:"Not super-user",64:"Broken pipe",65:"Protocol error",66:"Unknown protocol",67:"Protocol wrong type for socket",68:"Math result not representable",69:"Read only file system",70:"Illegal seek",71:"No such process",72:"Stale file handle",73:"Connection timed out",74:"Text file busy",75:"Cross-device link",100:"Device not a stream",101:"Bad font file fmt",102:"Invalid slot",103:"Invalid request code",104:"No anode",105:"Block device required",106:"Channel number out of range",107:"Level 3 halted",108:"Level 3 reset",109:"Link number out of range",110:"Protocol driver not attached",111:"No CSI structure available",112:"Level 2 halted",113:"Invalid exchange",114:"Invalid request descriptor",115:"Exchange full",116:"No data (for no delay io)",117:"Timer expired",118:"Out of streams resources",119:"Machine is not on the network",120:"Package not installed",121:"The object is remote",122:"Advertise error",123:"Srmount error",124:"Communication error on send",125:"Cross mount point (not really error)",126:"Given log. name not unique",127:"f.d. invalid for this operation",128:"Remote address changed",129:"Can   access a needed shared lib",130:"Accessing a corrupted shared lib",131:".lib section in a.out corrupted",132:"Attempting to link in too many libs",133:"Attempting to exec a shared library",135:"Streams pipe error",136:"Too many users",137:"Socket type not supported",138:"Not supported",139:"Protocol family not supported",140:"Can't send after socket shutdown",141:"Too many references",142:"Host is down",148:"No medium (in tape drive)",156:"Level 2 not synchronized"};
+
+
+
+  var ERRNO_MESSAGES = {0:"Success",1:"Arg list too long",2:"Permission denied",3:"Address already in use",4:"Address not available",5:"Address family not supported by protocol family",6:"No more processes",7:"Socket already connected",8:"Bad file number",9:"Trying to read unreadable message",10:"Mount device busy",11:"Operation canceled",12:"No children",13:"Connection aborted",14:"Connection refused",15:"Connection reset by peer",16:"File locking deadlock error",17:"Destination address required",18:"Math arg out of domain of func",19:"Quota exceeded",20:"File exists",21:"Bad address",22:"File too large",23:"Host is unreachable",24:"Identifier removed",25:"Illegal byte sequence",26:"Connection already in progress",27:"Interrupted system call",28:"Invalid argument",29:"I/O error",30:"Socket is already connected",31:"Is a directory",32:"Too many symbolic links",33:"Too many open files",34:"Too many links",35:"Message too long",36:"Multihop attempted",37:"File or path name too long",38:"Network interface is not configured",39:"Connection reset by network",40:"Network is unreachable",41:"Too many open files in system",42:"No buffer space available",43:"No such device",44:"No such file or directory",45:"Exec format error",46:"No record locks available",47:"The link has been severed",48:"Not enough core",49:"No message of desired type",50:"Protocol not available",51:"No space left on device",52:"Function not implemented",53:"Socket is not connected",54:"Not a directory",55:"Directory not empty",56:"State not recoverable",57:"Socket operation on non-socket",59:"Not a typewriter",60:"No such device or address",61:"Value too large for defined data type",62:"Previous owner died",63:"Not super-user",64:"Broken pipe",65:"Protocol error",66:"Unknown protocol",67:"Protocol wrong type for socket",68:"Math result not representable",69:"Read only file system",70:"Illegal seek",71:"No such process",72:"Stale file handle",73:"Connection timed out",74:"Text file busy",75:"Cross-device link",100:"Device not a stream",101:"Bad font file fmt",102:"Invalid slot",103:"Invalid request code",104:"No anode",105:"Block device required",106:"Channel number out of range",107:"Level 3 halted",108:"Level 3 reset",109:"Link number out of range",110:"Protocol driver not attached",111:"No CSI structure available",112:"Level 2 halted",113:"Invalid exchange",114:"Invalid request descriptor",115:"Exchange full",116:"No data (for no delay io)",117:"Timer expired",118:"Out of streams resources",119:"Machine is not on the network",120:"Package not installed",121:"The object is remote",122:"Advertise error",123:"Srmount error",124:"Communication error on send",125:"Cross mount point (not really error)",126:"Given log. name not unique",127:"f.d. invalid for this operation",128:"Remote address changed",129:"Can   access a needed shared lib",130:"Accessing a corrupted shared lib",131:".lib section in a.out corrupted",132:"Attempting to link in too many libs",133:"Attempting to exec a shared library",135:"Streams pipe error",136:"Too many users",137:"Socket type not supported",138:"Not supported",139:"Protocol family not supported",140:"Can't send after socket shutdown",141:"Too many references",142:"Host is down",148:"No medium (in tape drive)",156:"Level 2 not synchronized"};
 
   var ERRNO_CODES = {};
 
@@ -3392,7 +3409,9 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
         abort('FS.standardizePath has been removed; use PATH.normalize instead');
       }};
 
-      /**
+
+
+    /**
      * Given a pointer 'ptr' to a null-terminated UTF8-encoded string in the
      * emscripten HEAP, returns a copy of that string as a Javascript String object.
      *
@@ -3487,7 +3506,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_chdir(path) {
   try {
 
-    path = SYSCALLS.getStr(path);
+      path = SYSCALLS.getStr(path);
       FS.chdir(path);
       return 0;
     } catch (e) {
@@ -3499,7 +3518,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_fstat64(fd, buf) {
   try {
 
-    var stream = SYSCALLS.getStreamFromFD(fd);
+      var stream = SYSCALLS.getStreamFromFD(fd);
       return SYSCALLS.doStat(FS.stat, stream.path, buf);
     } catch (e) {
     if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
@@ -3513,10 +3532,10 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       return stringToUTF8Array(str, HEAPU8,outPtr, maxBytesToWrite);
     }
 
-    function ___syscall_getcwd(buf, size) {
+  function ___syscall_getcwd(buf, size) {
   try {
 
-    if (size === 0) return -28;
+      if (size === 0) return -28;
       var cwd = FS.cwd();
       var cwdLengthInBytes = lengthBytesUTF8(cwd) + 1;
       if (size < cwdLengthInBytes) return -68;
@@ -3532,7 +3551,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_getdents64(fd, dirp, count) {
   try {
 
-    var stream = SYSCALLS.getStreamFromFD(fd)
+      var stream = SYSCALLS.getStreamFromFD(fd)
       if (!stream.getdents) {
         stream.getdents = FS.readdir(stream.path);
       }
@@ -3584,7 +3603,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_lstat64(path, buf) {
   try {
 
-    path = SYSCALLS.getStr(path);
+      path = SYSCALLS.getStr(path);
       return SYSCALLS.doStat(FS.lstat, path, buf);
     } catch (e) {
     if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
@@ -3595,7 +3614,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_mkdirat(dirfd, path, mode) {
   try {
 
-    path = SYSCALLS.getStr(path);
+      path = SYSCALLS.getStr(path);
       path = SYSCALLS.calculateAt(dirfd, path);
       // remove a trailing slash, if one - /a/b/ has basename of '', but
       // we want to create b in the context of this function
@@ -3612,7 +3631,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_newfstatat(dirfd, path, buf, flags) {
   try {
 
-    path = SYSCALLS.getStr(path);
+      path = SYSCALLS.getStr(path);
       var nofollow = flags & 256;
       var allowEmpty = flags & 4096;
       flags = flags & (~6400);
@@ -3629,7 +3648,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   SYSCALLS.varargs = varargs;
   try {
 
-    path = SYSCALLS.getStr(path);
+      path = SYSCALLS.getStr(path);
       path = SYSCALLS.calculateAt(dirfd, path);
       var mode = varargs ? SYSCALLS.get() : 0;
       return FS.open(path, flags, mode).fd;
@@ -3642,7 +3661,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_poll(fds, nfds, timeout) {
   try {
 
-    var nonzero = 0;
+      var nonzero = 0;
       for (var i = 0; i < nfds; i++) {
         var pollfd = fds + 8 * i;
         var fd = HEAP32[((pollfd)>>2)];
@@ -3669,7 +3688,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_renameat(olddirfd, oldpath, newdirfd, newpath) {
   try {
 
-    oldpath = SYSCALLS.getStr(oldpath);
+      oldpath = SYSCALLS.getStr(oldpath);
       newpath = SYSCALLS.getStr(newpath);
       oldpath = SYSCALLS.calculateAt(olddirfd, oldpath);
       newpath = SYSCALLS.calculateAt(newdirfd, newpath);
@@ -3684,7 +3703,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_rmdir(path) {
   try {
 
-    path = SYSCALLS.getStr(path);
+      path = SYSCALLS.getStr(path);
       FS.rmdir(path);
       return 0;
     } catch (e) {
@@ -3696,7 +3715,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_stat64(path, buf) {
   try {
 
-    path = SYSCALLS.getStr(path);
+      path = SYSCALLS.getStr(path);
       return SYSCALLS.doStat(FS.stat, path, buf);
     } catch (e) {
     if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
@@ -3707,7 +3726,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_statfs64(path, size, buf) {
   try {
 
-    path = SYSCALLS.getStr(path);
+      path = SYSCALLS.getStr(path);
       assert(size === 64);
       // NOTE: None of the constants here are true. We're just returning safe and
       //       sane values.
@@ -3731,7 +3750,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function ___syscall_unlinkat(dirfd, path, flags) {
   try {
 
-    path = SYSCALLS.getStr(path);
+      path = SYSCALLS.getStr(path);
       path = SYSCALLS.calculateAt(dirfd, path);
       if (flags === 0) {
         FS.unlink(path);
@@ -3764,7 +3783,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       return HEAPU8.length;
     }
 
-    function abortOnCannotGrowMemory(requestedSize) {
+  function abortOnCannotGrowMemory(requestedSize) {
       abort(`Cannot enlarge memory arrays to size ${requestedSize} bytes (OOM). Either (1) compile with -sINITIAL_MEMORY=X with X higher than the current value ${HEAP8.length}, (2) compile with -sALLOW_MEMORY_GROWTH which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with -sABORTING_MALLOC=0`);
     }
   function _emscripten_resize_heap(requestedSize) {
@@ -3780,7 +3799,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function _fd_close(fd) {
   try {
 
-    var stream = SYSCALLS.getStreamFromFD(fd);
+      var stream = SYSCALLS.getStreamFromFD(fd);
       FS.close(stream);
       return 0;
     } catch (e) {
@@ -3807,10 +3826,10 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       return ret;
     }
 
-    function _fd_read(fd, iov, iovcnt, pnum) {
+  function _fd_read(fd, iov, iovcnt, pnum) {
   try {
 
-    var stream = SYSCALLS.getStreamFromFD(fd);
+      var stream = SYSCALLS.getStreamFromFD(fd);
       var num = doReadv(stream, iov, iovcnt);
       HEAPU32[((pnum)>>2)] = num;
       return 0;
@@ -3826,10 +3845,13 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       return ((hi + 0x200000) >>> 0 < 0x400001 - !!lo) ? (lo >>> 0) + hi * 4294967296 : NaN;
     }
 
-    function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
+
+
+
+  function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
   try {
 
-    var offset = convertI32PairToI53Checked(offset_low, offset_high); if (isNaN(offset)) return 61;
+      var offset = convertI32PairToI53Checked(offset_low, offset_high); if (isNaN(offset)) return 61;
       var stream = SYSCALLS.getStreamFromFD(fd);
       FS.llseek(stream, offset, whence);
       (tempI64 = [stream.position>>>0,(tempDouble=stream.position,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? (+(Math.floor((tempDouble)/4294967296.0)))>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)], HEAP32[((newOffset)>>2)] = tempI64[0],HEAP32[(((newOffset)+(4))>>2)] = tempI64[1]);
@@ -3844,7 +3866,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
   function _fd_sync(fd) {
   try {
 
-    var stream = SYSCALLS.getStreamFromFD(fd);
+      var stream = SYSCALLS.getStreamFromFD(fd);
       if (stream.stream_ops && stream.stream_ops.fsync) {
         return stream.stream_ops.fsync(stream);
       }
@@ -3872,10 +3894,10 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       return ret;
     }
 
-    function _fd_write(fd, iov, iovcnt, pnum) {
+  function _fd_write(fd, iov, iovcnt, pnum) {
   try {
 
-    var stream = SYSCALLS.getStreamFromFD(fd);
+      var stream = SYSCALLS.getStreamFromFD(fd);
       var num = doWritev(stream, iov, iovcnt);
       HEAPU32[((pnum)>>2)] = num;
       return 0;
@@ -3884,7 +3906,6 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
     return e.errno;
   }
   }
-
 
 
 
@@ -3950,17 +3971,19 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       return func;
     }
 
-    function writeArrayToMemory(array, buffer) {
+  function writeArrayToMemory(array, buffer) {
       assert(array.length >= 0, 'writeArrayToMemory array must have a length (should be an array or typed array)')
       HEAP8.set(array, buffer);
     }
 
-    function stringToUTF8OnStack(str) {
+
+  function stringToUTF8OnStack(str) {
       var size = lengthBytesUTF8(str) + 1;
       var ret = stackAlloc(size);
       stringToUTF8(str, ret, size);
       return ret;
     }
+
 
     /**
      * @param {string|null=} returnType
@@ -3988,6 +4011,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
 
       function convertReturnValue(ret) {
         if (returnType === 'string') {
+
           return UTF8ToString(ret);
         }
         if (returnType === 'boolean') return Boolean(ret);
@@ -4018,6 +4042,7 @@ function js_callable_proxy(callable,out) { const callback = function(js0, js1) {
       ret = onDone(ret);
       return ret;
     }
+
 
 
     /**
@@ -4258,7 +4283,6 @@ var wasmImports = {
   "js_subscr_int": js_subscr_int,
   "js_subscr_load": js_subscr_load,
   "js_subscr_store": js_subscr_store,
-  "load_global": load_global,
   "lookup_attr": lookup_attr,
   "mp_js_hook": _mp_js_hook,
   "mp_js_ticks_ms": _mp_js_ticks_ms,
@@ -4335,8 +4359,8 @@ var stackSave = createExportWrapper("stackSave");
 var stackRestore = createExportWrapper("stackRestore");
 /** @type {function(...*):?} */
 var stackAlloc = createExportWrapper("stackAlloc");
-var ___start_em_js = Module['___start_em_js'] = 169992;
-var ___stop_em_js = Module['___stop_em_js'] = 173353;
+var ___start_em_js = Module['___start_em_js'] = 168184;
+var ___stop_em_js = Module['___stop_em_js'] = 171314;
 function invoke_ii(index,a1) {
   var sp = stackSave();
   try {
@@ -4403,10 +4427,10 @@ function invoke_vi(index,a1) {
   }
 }
 
-function invoke_iiii(index,a1,a2,a3) {
+function invoke_vii(index,a1,a2) {
   var sp = stackSave();
   try {
-    return getWasmTableEntry(index)(a1,a2,a3);
+    getWasmTableEntry(index)(a1,a2);
   } catch(e) {
     stackRestore(sp);
     if (e !== e+0) throw e;
@@ -4414,10 +4438,10 @@ function invoke_iiii(index,a1,a2,a3) {
   }
 }
 
-function invoke_vii(index,a1,a2) {
+function invoke_iiii(index,a1,a2,a3) {
   var sp = stackSave();
   try {
-    getWasmTableEntry(index)(a1,a2);
+    return getWasmTableEntry(index)(a1,a2,a3);
   } catch(e) {
     stackRestore(sp);
     if (e !== e+0) throw e;
@@ -4859,12 +4883,12 @@ run();
 
 );
 })();
-if (typeof exports === 'object' && typeof module === 'object')
-  module.exports = _createMicroPythonModule;
-else if (typeof define === 'function' && define['amd'])
-  define([], function() { return _createMicroPythonModule; });
-else if (typeof exports === 'object')
-  exports["_createMicroPythonModule"] = _createMicroPythonModule;
+export default _createMicroPythonModule;/*
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+var __dirname = "";
+*/
+
 export async function loadMicroPython(options) {
     const {heapsize, url, stdin, stdout, stderr} = Object.assign({heapsize: 1024 * 1024}, options);
     const Module = {};
@@ -4930,11 +4954,11 @@ class PythonError extends Error {
 Object.defineProperty(PythonError.prototype, "name", { value: "PythonError" });
 
 function proxy_js_init() {
-    globalThis.proxy_js_ref = [0];
+    globalThis.proxy_js_ref = [globalThis];
 }
 
 function proxy_call_python(target, argumentsList) {
-    console.debug("APPLY", target, argumentsList);
+    //console.debug("APPLY", target, argumentsList);
     let args = 0;
 
     // TODO: is this the correct thing to do, strip trailing "undefined" args?
@@ -4965,7 +4989,7 @@ const proxy_handler = {
         throw Error("has not implemented");
     },
     get(target, prop) {
-        console.debug("GET", target._ref, prop);
+        //console.debug("GET", target._ref, prop);
         if (prop in target || typeof prop === "symbol") {
             return Reflect.get(target, prop);
         }
@@ -4974,7 +4998,7 @@ const proxy_handler = {
         return convert_mp_to_js_obj_jsside_with_free(value);
     },
     set(target, prop, value) {
-        console.debug("SET", target, prop, value);
+        //console.debug("SET", target, prop, value);
         if (typeof prop === "symbol") {
             return Reflect.set(target, prop, value);
         }
@@ -5016,7 +5040,7 @@ function convert_js_to_mp_obj_jsside(js_obj, out) {
         Module.setValue(out + 4, id, "i32");
     }
     Module.setValue(out + 0, kind, "i32");
-    console.debug("convert_js_to_mp_obj_jsside", js_obj, out, "->", kind, Module.getValue(out + 4, "i32"));
+    //console.debug("convert_js_to_mp_obj_jsside", js_obj, out, "->", kind, Module.getValue(out + 4, "i32"));
 }
 
 function convert_mp_to_js_obj_jsside(value) {
@@ -5065,7 +5089,7 @@ function convert_mp_to_js_obj_jsside(value) {
             obj = new Proxy(target, proxy_handler);
         }
     }
-    console.debug("convert_mp_to_js_obj_jsside", value, kind, "->", obj, kind == 5 ? Module.getValue(value + 4, "i32") : "");
+    //console.debug("convert_mp_to_js_obj_jsside", value, kind, "->", obj, kind == 5 ? Module.getValue(value + 4, "i32") : "");
     return obj;
 }
 
