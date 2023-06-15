@@ -679,6 +679,14 @@ class TestPyRepl(PyScriptTest):
     def test_repl_results(self):
         self.writefile("loadReplSrc2.py", "2")
         self.writefile("loadReplSrc3.py", "print('3')")
+        """
+
+        
+            
+            # should print 2: if it prints 3 that means that c was not properly
+            # released by py-repl
+        """
+
         self.pyscript_run(
             """
             <py-repl id="py-repl1" output="out1">
@@ -689,12 +697,16 @@ class TestPyRepl(PyScriptTest):
             <py-repl id="py-repl2" output="out2">
             c = [1,2,3]
             from sys import getrefcount
-            print(getrefcount(c))
+            # should print 2: 1 from the reference c and 1 since getrefcount
+            # holds a reference to its argument 
+            print(getrefcount(c)) 
             c
             </py-repl>
             <div id="out2"></div>
 
             <py-repl id="py-repl3" output="out3">
+            # should also print 2: if it prints 3 that would mean that c was not properly
+            # released by py-repl
             getrefcount(c)
             </py-repl>
             <div id="out3"></div>
@@ -710,5 +722,6 @@ class TestPyRepl(PyScriptTest):
         py_repl3.locator("button").click()
 
         assert self.page.wait_for_selector("#out1").inner_text() == "42"
-        assert self.page.wait_for_selector("#out2").inner_text() == "2\n\n[1, 2, 3]"
+        assert self.page.wait_for_selector("#out2").inner_text() == "2\n\n[1, 2, 3]"'
+        # Check that c was released
         assert self.page.wait_for_selector("#out3").inner_text() == "2"
