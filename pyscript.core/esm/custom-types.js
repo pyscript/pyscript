@@ -1,18 +1,23 @@
+import "@ungap/with-resolvers";
 import { $$ } from "basic-devtools";
 
-import { create } from "./utils.js";
+import { assign, create } from "./utils.js";
 import { getDetails } from "./script-handler.js";
-import { registry, configs } from "./interpreters.js";
+import {
+    registry as defaultRegistry,
+    prefixes,
+    configs,
+} from "./interpreters.js";
 import { getRuntimeID } from "./loader.js";
 import { io } from "./interpreter/_utils.js";
+import { addAllListeners } from "./listeners.js";
 
 import workerHooks from "./worker/hooks.js";
 
-export const PLUGINS_SELECTORS = [];
+export const CUSTOM_SELECTORS = [];
 
 /**
- * @typedef {Object} Runtime plugin configuration
- * @prop {string} type the interpreter type
+ * @typedef {Object} Runtime custom configuration
  * @prop {object} interpreter the bootstrapped interpreter
  * @prop {(url:string, options?: object) => Worker} XWorker an XWorker constructor that defaults to same interpreter on the Worker.
  * @prop {object} config a cloned config used to bootstrap the interpreter
@@ -22,23 +27,33 @@ export const PLUGINS_SELECTORS = [];
  */
 
 const patched = new Map();
+const types = new Map();
+const waitList = new Map();
 
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
 /**
- * @param {Element} node any DOM element registered via plugin.
+ * @param {Element} node any DOM element registered via define.
  */
-export const handlePlugin = (node) => {
-    for (const name of PLUGINS_SELECTORS) {
-        if (node.matches(name)) {
-            const { options, known } = plugins.get(name);
+export const handleCustomType = (node) => {
+    for (const selector of CUSTOM_SELECTORS) {
+        if (node.matches(selector)) {
+            const type = types.get(selector);
+            const { resolve } = waitList.get(type);
+            const { options, known } = registry.get(type);
             if (!known.has(node)) {
                 known.add(node);
-                const { type, version, config, env, onRuntimeReady } = options;
-                const name = getRuntimeID(type, version);
+                const {
+                    interpreter: runtime,
+                    version,
+                    config,
+                    env,
+                    onRuntimeReady,
+                } = options;
+                const name = getRuntimeID(runtime, version);
                 const id = env || `${name}${config ? `|${config}` : ""}`;
                 const { interpreter: engine, XWorker } = getDetails(
-                    type,
+                    runtime,
                     id,
                     name,
                     version,
@@ -46,7 +61,7 @@ export const handlePlugin = (node) => {
                 );
                 engine.then((interpreter) => {
                     if (!patched.has(id)) {
-                        const module = create(registry.get(type));
+                        const module = create(defaultRegistry.get(runtime));
                         const {
                             onBeforeRun,
                             onBeforeRunAsync,
@@ -120,9 +135,10 @@ export const handlePlugin = (node) => {
                         };
 
                         patched.set(id, resolved);
+                        resolve(resolved);
                     }
 
-                    onRuntimeReady(patched.get(id), node);
+                    onRuntimeReady?.(patched.get(id), node);
                 });
             }
         }
@@ -132,27 +148,58 @@ export const handlePlugin = (node) => {
 /**
  * @type {Map<string, {options:object, known:WeakSet<Element>}>}
  */
-const plugins = new Map();
+const registry = new Map();
 
 /**
- * @typedef {Object} PluginOptions plugin configuration
- * @prop {string} type the interpreter/interpreter type to receive
+ * @typedef {Object} PluginOptions custom configuration
+ * @prop {'pyodide' | 'micropython' | 'wasmoon' | 'ruby-wasm-wasi'} interpreter the interpreter to use
  * @prop {string} [version] the optional interpreter version to use
  * @prop {string} [config] the optional config to use within such interpreter
- * @prop {string} [env] the optional environment to use
- * @prop {(node: Element, interpreter: Runtime) => void} onRuntimeReady the callback that will be invoked once
+ * @prop {(environment: object, node: Element) => void} [onRuntimeReady] the callback that will be invoked once
  */
 
 /**
- * Allows plugins and components on the page to receive interpreters to execute any code.
- * @param {string} name the unique plugin name
- * @param {PluginOptions} options the plugin configuration
+ * Allows custom types and components on the page to receive interpreters to execute any code
+ * @param {string} type the unique `<script type="...">` identifier
+ * @param {PluginOptions} options the custom type configuration
  */
-export const registerPlugin = (name, options) => {
-    if (PLUGINS_SELECTORS.includes(name))
-        throw new Error(`plugin ${name} already registered`);
-    PLUGINS_SELECTORS.push(name);
-    plugins.set(name, { options, known: new WeakSet() });
-    $$(name).forEach(handlePlugin);
+export const define = (type, options) => {
+    if (defaultRegistry.has(type) || registry.has(type))
+        throw new Error(`<script type="${type}"> already registered`);
+
+    if (!defaultRegistry.has(options?.interpreter))
+        throw new Error(`Unspecified interpreter`);
+
+    // allows reaching out the interpreter helpers on events
+    defaultRegistry.set(type, defaultRegistry.get(options?.interpreter));
+
+    // ensure a Promise can resolve once a custom type has been bootstrapped
+    whenDefined(type);
+
+    // allows selector -> registry by type
+    const selectors = [`script[type="${type}"]`, `${type}-script`];
+    for (const selector of selectors) types.set(selector, type);
+
+    CUSTOM_SELECTORS.push(...selectors);
+    prefixes.push(`${type}-`);
+
+    // ensure always same env for this custom type
+    registry.set(type, {
+        options: assign({ env: type }, options),
+        known: new WeakSet(),
+    });
+
+    addAllListeners(document);
+    $$(selectors.join(",")).forEach(handleCustomType);
+};
+
+/**
+ * Resolves whenever a defined custom type is bootstrapped on the page
+ * @param {string} type the unique `<script type="...">` identifier
+ * @returns {Promise<object>}
+ */
+export const whenDefined = (type) => {
+    if (!waitList.has(type)) waitList.set(type, Promise.withResolvers());
+    return waitList.get(type).promise;
 };
 /* c8 ignore stop */
