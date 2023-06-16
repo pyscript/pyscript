@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0" />
         <title>Plugins</title>
         <style>
-            py-script {
+            mpy-script {
                 display: none;
             }
         </style>
@@ -13,9 +13,10 @@
             { "imports": { "@pyscript/core": "../../min.js" } }
         </script>
         <script type="module">
-            import { registerPlugin } from "@pyscript/core";
-            registerPlugin("mpy-script", {
-                type: "micropython",
+            import { define, whenDefined } from "@pyscript/core";
+            whenDefined("mpy").then(console.log);
+            define("mpy", {
+                interpreter: "micropython",
                 async onRuntimeReady(micropython, element) {
                     console.log(micropython);
                     // Somehow this doesn't work in MicroPython
@@ -25,11 +26,21 @@
                     micropython.run(element.textContent);
                     element.replaceChildren("See console ->");
                     element.style.display = "block";
+
+                    const button = document.createElement("button");
+                    button.textContent = "click";
+                    button.setAttribute("mpy-click", "test_click(event)");
+                    document.body.append(button);
                 },
             });
         </script>
     </head>
     <body>
-        <mpy-script> print('Hello Console!') </mpy-script>
+        <mpy-script mpy-click="test_click(event)">
+            def test_click(event):
+                print(event.type)
+
+            print('Hello Console!')
+        </mpy-script>
     </body>
 </html>

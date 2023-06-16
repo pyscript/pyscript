@@ -1,4 +1,4 @@
-import { registerPlugin } from "@pyscript/core";
+import { define } from "@pyscript/core";
 
 // append ASAP CSS to avoid showing content
 document.head.appendChild(document.createElement("style")).textContent = `
@@ -17,9 +17,9 @@ let bootstrap = true,
 const sharedPyodide = new Promise((resolve) => {
     const pyConfig = document.querySelector("py-config");
     const config = pyConfig?.getAttribute("src") || pyConfig?.textContent;
-    registerPlugin("py-script", {
+    define("py", {
         config,
-        type: "pyodide",
+        interpreter: "pyodide",
         codeBeforeRunWorker: `print('codeBeforeRunWorker')`,
         codeAfterRunWorker: `print('codeAfterRunWorker')`,
         onBeforeRun(pyodide, node) {

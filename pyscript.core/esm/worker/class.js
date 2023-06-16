@@ -5,7 +5,7 @@ import { getText } from "../fetch-utils.js";
 import workerHooks from "./hooks.js";
 
 /**
- * @typedef {Object} WorkerOptions plugin configuration
+ * @typedef {Object} WorkerOptions custom configuration
  * @prop {string} type the interpreter type to use
  * @prop {string} [version] the optional interpreter version to use
  * @prop {string} [config] the optional config to use within such interpreter

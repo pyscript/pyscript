@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0" />
         <title>Plugins</title>
         <style>
-            py-script {
+            lua-script {
                 display: none;
             }
         </style>
@@ -13,9 +13,9 @@
             { "imports": { "@pyscript/core": "../../min.js" } }
         </script>
         <script type="module">
-            import { registerPlugin } from "@pyscript/core";
-            registerPlugin("lua-script", {
-                type: "wasmoon",
+            import { define } from "@pyscript/core";
+            define("lua", {
+                interpreter: "wasmoon",
                 async onRuntimeReady(wasmoon, element) {
                     // Somehow this doesn't work in Wasmoon
                     wasmoon.io.stdout = (message) => {
@@ -29,6 +29,8 @@
         </script>
     </head>
     <body>
-        <lua-script> print('Hello Console!') </lua-script>
+        <lua-script lua-click="print(event.type)">
+            print('Hello Console!')
+        </lua-script>
     </body>
 </html>
