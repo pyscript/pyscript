@@ -54,18 +54,15 @@ const execute = async (script, source, XWorker, isAsync) => {
     try {
         // temporarily override inherited document.currentScript in a non writable way
         // but it deletes it right after to preserve native behavior (as it's sync: no trouble)
-        defineProperty(globalThis, "XWorker", {
-            configurable: true,
-            get: () => XWorker,
-        });
         defineProperty(document, "currentScript", {
             configurable: true,
             get: () => script,
         });
+        module.setGlobal(interpreter, "XWorker", XWorker);
         return module[isAsync ? "runAsync" : "run"](interpreter, content);
     } finally {
-        delete globalThis.XWorker;
         delete document.currentScript;
+        module.deleteGlobal(interpreter, "XWorker");
     }
 };
 

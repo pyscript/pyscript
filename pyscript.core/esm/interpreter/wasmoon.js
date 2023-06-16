@@ -4,12 +4,6 @@ const type = "wasmoon";
 
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
-const worker = (method) =>
-    function (interpreter, code, xworker) {
-        interpreter.global.set("xworker", xworker);
-        return this[method](interpreter, code);
-    };
-
 export default {
     type,
     module: (version = "1.15.0") =>
@@ -24,14 +18,14 @@ export default {
         if (config.fetch) await fetchPaths(this, interpreter, config.fetch);
         return interpreter;
     },
+    setGlobal(interpreter, name, value) {
+        interpreter.global.set(name, value);
+    },
+    deleteGlobal(interpreter, name) {
+        interpreter.global.set(name, void 0);
+    },
     run: (interpreter, code) => interpreter.doStringSync(clean(code)),
     runAsync: (interpreter, code) => interpreter.doString(clean(code)),
-    runEvent(interpreter, code, key) {
-        interpreter.global.set("event", globalThis.__events.get(key));
-        return this.run(interpreter, code);
-    },
-    runWorker: worker("run"),
-    runWorkerAsync: worker("runAsync"),
     writeFile: (
         {
             cmodule: {

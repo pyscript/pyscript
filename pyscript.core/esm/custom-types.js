@@ -124,6 +124,8 @@ export const handleCustomType = (node) => {
                             afterRunAsync: codeAfterRunWorkerAsync,
                         });
 
+                        module.setGlobal(interpreter, "XWorker", XWorker);
+
                         const resolved = {
                             type,
                             interpreter,

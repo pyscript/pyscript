@@ -13,9 +13,6 @@ defineProperty(globalThis, "pyscript", {
     },
 });
 
-let index = 0;
-globalThis.__events = new Map();
-
 /* c8 ignore start */ // attributes are tested via integration / e2e
 // ensure both interpreter and its queue are awaited then returns the interpreter
 const awaitInterpreter = async (key) => {
@@ -43,12 +40,12 @@ export const listener = async (event) => {
         const interpreter = await awaitInterpreter(
             el.getAttribute(`${name}-env`) || name,
         );
-        const i = index++;
+        const handler = registry.get(name);
         try {
-            globalThis.__events.set(i, event);
-            registry.get(name).runEvent(interpreter, value, i);
+            handler.setGlobal(interpreter, "event", event);
+            handler.run(interpreter, value);
         } finally {
-            globalThis.__events.delete(i);
+            handler.deleteGlobal(interpreter, "event");
         }
     }
 };

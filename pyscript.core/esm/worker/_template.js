@@ -23,15 +23,15 @@ try {
     );
 }
 
-let engine, run, interpreterEvent;
+let interpreter, run, interpreterEvent;
 const add = (type, fn) => {
     addEventListener(
         type,
         fn ||
             (async (event) => {
-                const interpreter = await engine;
+                await interpreter;
                 interpreterEvent = event;
-                run(interpreter, `xworker.on${type}(xworker.event);`, xworker);
+                run(`xworker.on${type}(xworker.event);`, xworker);
             }),
         !!fn && { once: true },
     );
@@ -48,6 +48,8 @@ const xworker = {
     // this getter exists so that arbitrarily access to xworker.event
     // would always fail once an event has been dispatched, as that's not
     // meant to be accessed in the wild, respecting the one-off event nature of JS.
+    // because xworker is a unique well defined globally shared reference,
+    // there's also no need to bother setGlobal and deleteGlobal every single time.
     get event() {
         const event = interpreterEvent;
         if (!event) throw new Error("Unauthorized event access");
@@ -57,11 +59,14 @@ const xworker = {
 };
 
 add("message", ({ data: { options, code, hooks } }) => {
-    engine = (async () => {
+    interpreter = (async () => {
         const { type, version, config, async: isAsync } = options;
-        const engine = await getRuntime(getRuntimeID(type, version), config);
+        const interpreter = await getRuntime(
+            getRuntimeID(type, version),
+            config,
+        );
         const details = create(registry.get(type));
-        const name = `runWorker${isAsync ? "Async" : ""}`;
+        const name = `run${isAsync ? "Async" : ""}`;
 
         if (hooks) {
             // patch code if needed
@@ -73,33 +78,25 @@ add("message", ({ data: { options, code, hooks } }) => {
 
             // append code that should be executed *after* first
             if (after) {
-                const method = details[name];
-                details[name] = function (interpreter, code, xworker) {
-                    return method.call(
-                        this,
-                        interpreter,
-                        `${code}\n${after}`,
-                        xworker,
-                    );
-                };
+                const method = details[name].bind(details);
+                details[name] = (interpreter, code) =>
+                    method(interpreter, `${code}\n${after}`);
             }
 
             // prepend code that should be executed *before* (so that after is post-patched)
             if (before) {
-                const method = details[name];
-                details[name] = function (interpreter, code, xworker) {
-                    return method.call(
-                        this,
-                        interpreter,
-                        `${before}\n${code}`,
-                        xworker,
-                    );
-                };
+                const method = details[name].bind(details);
+                details[name] = (interpreter, code) =>
+                    method(interpreter, `${before}\n${code}`);
             }
         }
-        run = details[name].bind(details);
-        run(engine, code, xworker);
-        return engine;
+        // set the `xworker` global reference once
+        details.setGlobal(interpreter, "xworker", xworker);
+        // simplify run calls after possible patches
+        run = details[name].bind(details, interpreter);
+        // execute the content of the worker file
+        run(code);
+        return interpreter;
     })();
     add("error");
     add("message");
