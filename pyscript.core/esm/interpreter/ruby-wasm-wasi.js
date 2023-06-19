@@ -9,15 +9,6 @@ const type = "ruby-wasm-wasi";
 
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
-const worker = (method) =>
-    function (interpreter, code, xworker) {
-        globalThis.xworker = xworker;
-        return this[method](
-            interpreter,
-            `require "js";xworker=JS::eval("return xworker");${code}`,
-        );
-    };
-
 export default {
     type,
     experimental: true,
@@ -32,16 +23,18 @@ export default {
         if (config.fetch) await fetchPaths(this, interpreter, config.fetch);
         return interpreter;
     },
+    setGlobal(interpreter, name, value) {
+        const id = `__pyscript_ruby_wasm_wasi_${name}`;
+        globalThis[id] = value;
+        this.run(interpreter, `require "js";$${name}=JS::eval("return ${id}")`);
+    },
+    deleteGlobal(interpreter, name) {
+        const id = `__pyscript_ruby_wasm_wasi_${name}`;
+        this.run(interpreter, `$${name}=nil`);
+        delete globalThis[id];
+    },
     run: (interpreter, code) => interpreter.eval(clean(code)),
     runAsync: (interpreter, code) => interpreter.evalAsync(clean(code)),
-    runEvent(interpreter, code, key) {
-        return this.run(
-            interpreter,
-            `require "js";event=JS::eval("return __events.get(${key})");${code}`,
-        );
-    },
-    runWorker: worker("run"),
-    runWorkerAsync: worker("runAsync"),
     writeFile: () => {
         throw new Error(`writeFile is not supported in ${type}`);
     },

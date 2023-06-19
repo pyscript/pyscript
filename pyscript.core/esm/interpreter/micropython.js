@@ -1,12 +1,5 @@
 import { fetchPaths, stdio } from "./_utils.js";
-import {
-    run,
-    runAsync,
-    runEvent,
-    runWorker,
-    runWorkerAsync,
-    writeFile,
-} from "./_python.js";
+import { run, runAsync, writeFile } from "./_python.js";
 
 const type = "micropython";
 
@@ -23,11 +16,18 @@ export default {
         if (config.fetch) await fetchPaths(this, runtime, config.fetch);
         return runtime;
     },
+    setGlobal(interpreter, name, value) {
+        const id = `__pyscript_${this.type}_${name}`;
+        globalThis[id] = value;
+        this.run(interpreter, `from js import ${id};${name}=${id};`);
+    },
+    deleteGlobal(interpreter, name) {
+        const id = `__pyscript_${this.type}_${name}`;
+        this.run(interpreter, `del ${id};del ${name}`);
+        delete globalThis[id];
+    },
     run,
     runAsync,
-    runEvent,
-    runWorker,
-    runWorkerAsync,
     writeFile,
 };
 /* c8 ignore stop */

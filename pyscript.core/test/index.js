@@ -40,7 +40,7 @@ globalThis.XPathEvaluator =
         }
     };
 
-const { registerPlugin } = require("../cjs");
+require("../cjs");
 
 (async () => {
     // shared 3rd party mocks
