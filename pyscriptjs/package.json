@@ -36,7 +36,7 @@
         "prettier": "2.7.1",
         "pyodide": "0.23.2",
         "synclink": "0.2.4",
-        "ts-jest": "29.0.3",
+        "ts-jest": "29.1.0",
         "typescript": "5.0.4",
         "xterm": "^5.1.0"
     },
