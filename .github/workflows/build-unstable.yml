@@ -85,7 +85,7 @@ jobs:
                   path: pyscriptjs/test_results
                   if-no-files-found: error
     eslint:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-latest-8core
         defaults:
             run:
                 working-directory: pyscriptjs
@@ -118,7 +118,7 @@ jobs:
               run: npx eslint src -c .eslintrc.js
 
     Deploy:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-latest-8core
         needs: BuildAndTest
         if: github.ref == 'refs/heads/main' # Only deploy on merge into main
         permissions:

@@ -19,7 +19,7 @@ concurrency:
 jobs:
     build:
         if: github.repository_owner == 'pyscript'
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-latest-8core
         permissions:
             contents: read
             id-token: write
