@@ -12,7 +12,7 @@ const getRoot = (script) => {
     return parent;
 };
 
-const queryTarget = (script, idOrSelector) => {
+export const queryTarget = (script, idOrSelector) => {
     const root = getRoot(script);
     return root.getElementById(idOrSelector) || $(idOrSelector, root);
 };
