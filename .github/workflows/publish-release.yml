@@ -43,6 +43,9 @@ jobs:
             - name: setup Miniconda
               uses: conda-incubator/setup-miniconda@v2
 
+            - name: Setup Environment
+              run: make setup
+
             - name: Build
               run: make build
 
