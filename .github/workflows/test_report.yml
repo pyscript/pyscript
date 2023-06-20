@@ -6,7 +6,7 @@ on:
             - completed
 jobs:
     report:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-latest-8core
         steps:
             - uses: dorny/test-reporter@v1.6.0
               with:
