@@ -44,8 +44,20 @@ jobs:
             - name: Setup Environment
               run: make setup
 
-            - name: Build and Test
-              run: make test
+            - name: Build
+              run: make build
+
+            - name: TypeScript Tests
+              run: make test-ts
+
+            - name: Python Tests
+              run: make test-py
+
+            - name: Integration Tests
+              run: make test-integration-parallel
+
+            - name: Examples Tests
+              run: make test-examples
 
             - name: Zip build folder
               run: zip -r -q ./build.zip ./build

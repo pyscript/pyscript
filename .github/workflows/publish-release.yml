@@ -43,11 +43,20 @@ jobs:
             - name: setup Miniconda
               uses: conda-incubator/setup-miniconda@v2
 
-            - name: Setup Environment
-              run: make setup
+            - name: Build
+              run: make build
 
-            - name: Build and Test
-              run: make test
+            - name: TypeScript Tests
+              run: make test-ts
+
+            - name: Python Tests
+              run: make test-py
+
+            - name: Integration Tests
+              run: make test-integration-parallel
+
+            - name: Examples Tests
+              run: make test-examples
 
               # Upload to S3
             - name: Configure AWS credentials
