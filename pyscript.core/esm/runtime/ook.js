@@ -43,7 +43,7 @@ def runOok(program):
         print(f"{s=}")
         print(err)
     print("")
-`
+`;
 
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
@@ -64,13 +64,11 @@ export default {
         return runtime;
     },
     run: (runtime, code) => {
-
         runtime.runPython(ookCode);
         runtime.runPython(`runOok("""${code.trim()}""")`);
     },
     runAsync,
     runEvent: (runtime, code) => {
-
         runtime.runPython(ookCode);
         runtime.runPython(`runOok("""${code.trim()}""")`);
     },
