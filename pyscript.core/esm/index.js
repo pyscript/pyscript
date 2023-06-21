@@ -4,10 +4,10 @@ import xworker from "./worker/class.js";
 import { handle } from "./script-handler.js";
 import { assign } from "./utils.js";
 import { selectors, prefixes } from "./interpreters.js";
-import { CUSTOM_SELECTORS, handleCustomType } from "./custom-types.js";
+import { CUSTOM_SELECTORS, handleCustomType } from "./custom.js";
 import { listener, addAllListeners } from "./listeners.js";
 
-export { define, whenDefined } from "./custom-types.js";
+export { define, whenDefined } from "./custom.js";
 export const XWorker = xworker();
 
 const INTERPRETER_SELECTORS = selectors.join(",");

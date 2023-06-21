@@ -6,19 +6,23 @@
         <title>python</title>
         <link rel="stylesheet" href="style.css" />
         <script defer src="./counter.js"></script>
-        <script type="module" src="../min.js"></script>
+        <script type="module" src="../core.js"></script>
     </head>
     <body>
         <script type="micropython">
-            def show_image(event):
-              from js import document
-              img = document.createElement("img")
-              img.style.transform = "scale(.5)"
-              img.src = event.data
-              document.body.appendChild(img)
-
             w = XWorker('./matplot.py', **{'type': 'pyodide', 'config': './config.toml'})
-            w.onmessage = show_image
+
+            # xworker.window made the following completely unnecessary
+
+            # def show_image(event):
+            #   from js import document
+            #   img = document.createElement("img")
+            #   img.style.transform = "scale(.5)"
+            #   img.src = event.data
+            #   document.querySelector("#image").append(img)
+
+            # w.onmessage = show_image
         </script>
+        <div id="image"></div>
     </body>
 </html>

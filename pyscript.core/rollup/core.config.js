@@ -1,4 +1,4 @@
-// This file generates /min.js minified version of the module, which is
+// This file generates /core.js minified version of the module, which is
 // the default exported as npm entry.
 
 import { nodeResolve } from "@rollup/plugin-node-resolve";
@@ -13,6 +13,6 @@ export default {
     plugins: process.env.NO_MIN ? [nodeResolve()] : [nodeResolve(), terser()],
     output: {
         esModule: true,
-        file: "./min.js",
+        file: "./core.js",
     },
 };

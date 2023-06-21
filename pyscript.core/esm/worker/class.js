@@ -1,8 +1,8 @@
-import coincident from "coincident/structured";
+import * as JSON from "@ungap/structured-clone/json";
+import coincident from "coincident/window";
 import xworker from "./xworker.js";
 import { assign, defineProperties, absoluteURL } from "../utils.js";
 import { getText } from "../fetch-utils.js";
-import workerHooks from "./hooks.js";
 
 /**
  * @typedef {Object} WorkerOptions custom configuration
@@ -19,9 +19,9 @@ export default (...args) =>
      * @returns {Worker}
      */
     function XWorker(url, options) {
-        const hooks = workerHooks.get(XWorker);
         const worker = xworker();
         const { postMessage } = worker;
+        const hooks = this instanceof XWorker ? void 0 : this;
         if (args.length) {
             const [type, version] = args;
             options = assign({}, options || { type, version });
@@ -39,7 +39,7 @@ export default (...args) =>
                     ),
             },
             sync: {
-                value: coincident(worker),
+                value: coincident(worker, JSON).proxy,
             },
         });
     };

@@ -1,5 +1,11 @@
 import { fetchPaths, stdio } from "./_utils.js";
-import { run, runAsync, writeFile } from "./_python.js";
+import {
+    run,
+    runAsync,
+    setGlobal,
+    deleteGlobal,
+    writeFile,
+} from "./_python.js";
 
 const type = "micropython";
 
@@ -7,7 +13,7 @@ const type = "micropython";
 /* c8 ignore start */
 export default {
     type,
-    module: (version = "1.20.0-239") =>
+    module: (version = "1.20.0-253") =>
         `https://cdn.jsdelivr.net/npm/@micropython/micropython-webassembly-pyscript@${version}/micropython.mjs`,
     async engine({ loadMicroPython }, config, url) {
         const { stderr, stdout, get } = stdio();
@@ -16,16 +22,8 @@ export default {
         if (config.fetch) await fetchPaths(this, runtime, config.fetch);
         return runtime;
     },
-    setGlobal(interpreter, name, value) {
-        const id = `__pyscript_${this.type}_${name}`;
-        globalThis[id] = value;
-        this.run(interpreter, `from js import ${id};${name}=${id};`);
-    },
-    deleteGlobal(interpreter, name) {
-        const id = `__pyscript_${this.type}_${name}`;
-        this.run(interpreter, `del ${id};del ${name}`);
-        delete globalThis[id];
-    },
+    setGlobal,
+    deleteGlobal,
     run,
     runAsync,
     writeFile,

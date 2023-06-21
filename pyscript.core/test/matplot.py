@@ -46,6 +46,26 @@ buf = io.BytesIO()
 plt.savefig(buf, format="png")
 buf.seek(0)
 
-js.xworker.postMessage(
-    "data:image/png;base64," + base64.b64encode(buf.read()).decode("UTF-8")
-)
+# how it was (including main thread counter part)
+# js.xworker.postMessage(
+#     "data:image/png;base64," + base64.b64encode(buf.read()).decode("UTF-8")
+# )
+
+# how it is now via structured coincident/window
+document = xworker.window.document
+img = document.createElement("img")
+img.style.transform = "scale(.5)"
+img.src = "data:image/png;base64," + base64.b64encode(buf.read()).decode("UTF-8")
+
+# document.body.append(img) fails for some reason I don't understand
+# same would be for document.querySelector("#image").append(img)
+# those would work in any JS counterpart though ... but for demo sake:
+document.querySelector("#image").innerHTML = img.outerHTML
+
+# about pyodide issue
+print(xworker.window.Array(1, 2))  # this works
+xworker.window.console.log(1, 2)  # this works too
+# xworker.window.console.log(xworker.window.Array(1, 2)) # this doesn't
+# xworker.window.console.log([1, 2]) # also this doesn't
+
+# xworker.window.console.log(to_js({})) # this doesn't neither
