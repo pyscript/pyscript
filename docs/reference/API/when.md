@@ -6,7 +6,7 @@ The `@when` decorator attaches the decorated function or Callable as an event ha
 
 If the decorated function takes a single (non-self) argument, it will be passed the [Event object](https://developer.mozilla.org/en-US/docs/Web/API/Event) corresponding to the triggered event. If the function takes no (non-self) argument, it will be called with no arguments.
 
-You wil need to import when to get access to this feature:
+You will need to import `when` to get access to this feature:
 `from pyscript import when`
 
 ## Parameters
