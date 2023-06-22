@@ -1,7 +1,7 @@
 {
     "name": "@pyscript/core",
-    "version": "0.0.1",
-    "description": "",
+    "version": "0.0.4",
+    "description": "PyScript Next core",
     "main": "./cjs/index.js",
     "types": "./types/index.d.ts",
     "scripts": {
@@ -19,9 +19,13 @@
         "size:worker": "echo worker is $(cat esm/worker/xworker.js | brotli | wc -c) bytes once compressed",
         "ts": "tsc -p ."
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
+    "keywords": [
+        "py-script",
+        "pyscript",
+        "next"
+    ],
+    "author": "Anaconda Inc.",
+    "license": "MIT",
     "devDependencies": {
         "@node-loader/import-maps": "^1.1.0",
         "@rollup/plugin-node-resolve": "^15.1.0",
