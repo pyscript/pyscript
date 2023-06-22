@@ -2,7 +2,7 @@
 
 As the world’s most popular programming language, Python is powerful in its capabilities and comparatively easy to learn, yet the limitations cannot be ignored: it’s hard to install Python and all necessary dependencies; it’s glued to the backend without the ability to make apps or websites; and it’s difficult to share your work.
 
-What if we could remove those limitations, making the power of Python accessible to the masses? The makers of PyScript set out to do just that by enabling Python in the browser for frontend web and application development. No more complicated installs. Projects can be shared with anyone, anywhere—all you need is a browser.
+What if we could remove those limitations, making the power of Python available to the masses? The makers of PyScript set out to do just that by enabling Python in the browser for frontend web and application development. No more complicated installs. Projects can be shared with anyone, anywhere—all you need is a browser.
 
 We are fully leaning into the idea that the browser is the most ubiquitous VM by using Python to build a graphical, programmable OS on top to make and share applications. Harness the full power of canvas, webGL, WASI, and even in-browser support for P2P and CRDTs for serverless data sharing and collaboration.
 
@@ -10,7 +10,7 @@ We are fully leaning into the idea that the browser is the most ubiquitous VM by
 
 ## Why PyScript?
 
-Exponentially expand accessibility and use cases for Python by enabling Python in the browser for building UIs. Reproduce environments without having to download Python or conda or install other packages. Projects can be shared with anyone and deployed anywhere—all you need is a browser and a web-accessible device (computer, tablet, or mobile).
+Exponentially expand access and use cases for Python by enabling Python in the browser for building UIs. Reproduce environments without having to download Python or conda or install other packages. Projects can be shared with anyone and deployed anywhere—all you need is a browser and a web-accessible device (computer, tablet, or mobile).
 
 We are fully leaning into the idea that the browser is the most ubiquitous VM by using Python to build a graphical, programmable operating system on top of the browser to make and share applications. Harness the full power of canvas, webGL, WASI, and even in-browser support for P2P and CRDTs for serverless data sharing and collaboration.
 
