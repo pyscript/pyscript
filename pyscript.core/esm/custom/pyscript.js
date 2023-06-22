@@ -90,14 +90,10 @@ document.head.appendChild(document.createElement("style")).textContent = `
         env: "py-script",
         interpreter: "pyodide",
         codeBeforeRunWorker() {
-            const { codeBeforeRunWorker: set } = hooks;
-            const prefix = 'print("codeBeforeRunWorker")';
-            return [prefix].concat(...set).join("\n");
+            return [...hooks.codeBeforeRunWorker].join("\n");
         },
         codeAfterRunWorker() {
-            const { codeAfterRunWorker: set } = hooks;
-            const prefix = 'print("codeAfterRunWorker")';
-            return [prefix].concat(...set).join("\n");
+            return [...hooks.codeAfterRunWorker].join("\n");
         },
         onBeforeRun(pyodide, element) {
             bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRun");

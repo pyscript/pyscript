@@ -8,10 +8,14 @@
         <script type="module">
             // how would PyScript plugins add their own behavior?
             import { hooks } from "@pyscript/element";
+
             let counter = 0;
             hooks.onBeforeRun.add((pyodide, { localName }) => {
                 // console.log(++counter, 'elements so far', localName, pyodide);
             });
+
+            hooks.codeBeforeRunWorker.add('print("codeBeforeRunWorker")');
+            hooks.codeAfterRunWorker.add('print("codeAfterRunWorker")');
         </script>
     </head>
     <body>

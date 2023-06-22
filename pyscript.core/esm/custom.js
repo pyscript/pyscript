@@ -11,6 +11,7 @@ import {
 import { getRuntimeID } from "./loader.js";
 import { io } from "./interpreter/_utils.js";
 import { addAllListeners } from "./listeners.js";
+import { Hook } from "./worker/hooks.js";
 
 export const CUSTOM_SELECTORS = [];
 
@@ -64,18 +65,9 @@ export const handleCustomType = (node) => {
                         onBeforeRunAsync,
                         onAfterRun,
                         onAfterRunAsync,
-                        codeBeforeRunWorker,
-                        codeBeforeRunWorkerAsync,
-                        codeAfterRunWorker,
-                        codeAfterRunWorkerAsync,
                     } = options;
 
-                    const hooks = {
-                        beforeRun: codeBeforeRunWorker?.(),
-                        beforeRunAsync: codeBeforeRunWorkerAsync?.(),
-                        afterRun: codeAfterRunWorker?.(),
-                        afterRunAsync: codeAfterRunWorkerAsync?.(),
-                    };
+                    const hooks = new Hook(options);
 
                     const XWorker = function XWorker(...args) {
                         return Worker.apply(hooks, args);
