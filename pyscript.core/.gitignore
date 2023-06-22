@@ -3,6 +3,6 @@ coverage/
 node_modules/
 cjs/
 !cjs/package.json
-min.js
+core.js
 esm/worker/xworker.js
 types/

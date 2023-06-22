@@ -1,5 +1,11 @@
 import { fetchPaths, stdio } from "./_utils.js";
-import { run, runAsync, writeFile } from "./_python.js";
+import {
+    run,
+    runAsync,
+    setGlobal,
+    deleteGlobal,
+    writeFile,
+} from "./_python.js";
 
 const type = "pyodide";
 
@@ -24,12 +30,8 @@ export default {
         }
         return interpreter;
     },
-    setGlobal(interpreter, name, value) {
-        interpreter.globals.set(name, value);
-    },
-    deleteGlobal(interpreter, name) {
-        interpreter.globals.delete(name);
-    },
+    setGlobal,
+    deleteGlobal,
     run,
     runAsync,
     writeFile,

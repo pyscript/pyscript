@@ -3,24 +3,30 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-        <title>PyScript</title>
-        <style>
-            py-script {
-                display: none;
-            }
-        </style>
-        <script type="importmap">
-            { "imports": { "@pyscript/core": "../../min.js" } }
+        <title>PyScript Next</title>
+        <script type="importmap">{ "imports": { "@pyscript/element": "../../pyscript.js" } }</script>
+        <script type="module">
+            // how would PyScript plugins add their own behavior?
+            import { hooks } from "@pyscript/element";
+            let counter = 0;
+            hooks.onBeforeRun.add((pyodide, { localName }) => {
+                // console.log(++counter, 'elements so far', localName, pyodide);
+            });
         </script>
-        <script type="module" src="py-script.js"></script>
     </head>
     <body>
+        <fieldset>
+            <legend id="dary"></legend>
+            Something something about something ...
+        </fieldset>
         <py-config>
             [[fetch]]
             from = "../"
             to_folder = "./"
             files = ["a.py", "b.py"]
         </py-config>
+
+        <!-- <py-script next> -->
         <py-script>
             import js
             import a, b
@@ -29,8 +35,24 @@
             'Hello Web!'
         </py-script>
         <py-script>
+            # note the target is this element itself
+            display('second &lt;py-script&gt;')
+        </py-script>
+        <py-script>
+            # note this is late to the party simply because
+            # pyodide needs to be bootstrapped in the Worker too
             XWorker('../a.py')
             'OK'
         </py-script>
+
+        <!-- <script type="py"> -->
+        <script type="py">
+            # not the target is inferred as companion element
+            display('first <script type="py">')
+        </script>
+        <script type="py">
+            # note the target here is different
+            display('second <script type="py">', target="dary")
+        </script>
     </body>
 </html>

@@ -12,8 +12,6 @@ import { getRuntimeID } from "./loader.js";
 import { io } from "./interpreter/_utils.js";
 import { addAllListeners } from "./listeners.js";
 
-import workerHooks from "./worker/hooks.js";
-
 export const CUSTOM_SELECTORS = [];
 
 /**
@@ -26,7 +24,6 @@ export const CUSTOM_SELECTORS = [];
  * @prop {(path:string, data:ArrayBuffer) => void} writeFile an utility to write a file in the virtual FS, if available
  */
 
-const patched = new Map();
 const types = new Map();
 const waitList = new Map();
 
@@ -52,7 +49,7 @@ export const handleCustomType = (node) => {
                 } = options;
                 const name = getRuntimeID(runtime, version);
                 const id = env || `${name}${config ? `|${config}` : ""}`;
-                const { interpreter: engine, XWorker } = getDetails(
+                const { interpreter: engine, XWorker: Worker } = getDetails(
                     runtime,
                     id,
                     name,
@@ -60,87 +57,79 @@ export const handleCustomType = (node) => {
                     config,
                 );
                 engine.then((interpreter) => {
-                    if (!patched.has(id)) {
-                        const module = create(defaultRegistry.get(runtime));
-                        const {
-                            onBeforeRun,
-                            onBeforeRunAsync,
-                            onAfterRun,
-                            onAfterRunAsync,
-                            codeBeforeRunWorker,
-                            codeBeforeRunWorkerAsync,
-                            codeAfterRunWorker,
-                            codeAfterRunWorkerAsync,
-                        } = options;
+                    const module = create(defaultRegistry.get(runtime));
 
-                        // These two loops mimic a `new Map(arrayContent)` without needing
-                        // the new Map overhead so that [name, [before, after]] can be easily destructured
-                        // and new sync or async patches become easy to add (when the logic is the same).
+                    const {
+                        onBeforeRun,
+                        onBeforeRunAsync,
+                        onAfterRun,
+                        onAfterRunAsync,
+                        codeBeforeRunWorker,
+                        codeBeforeRunWorkerAsync,
+                        codeAfterRunWorker,
+                        codeAfterRunWorkerAsync,
+                    } = options;
 
-                        // patch sync
-                        for (const [name, [before, after]] of [
-                            ["run", [onBeforeRun, onAfterRun]],
-                        ]) {
-                            const method = module[name];
-                            module[name] = function (interpreter, code) {
-                                if (before) before.call(this, resolved, node);
-                                const result = method.call(
-                                    this,
-                                    interpreter,
-                                    code,
-                                );
-                                if (after) after.call(this, resolved, node);
-                                return result;
-                            };
-                        }
+                    const hooks = {
+                        beforeRun: codeBeforeRunWorker?.(),
+                        beforeRunAsync: codeBeforeRunWorkerAsync?.(),
+                        afterRun: codeAfterRunWorker?.(),
+                        afterRunAsync: codeAfterRunWorkerAsync?.(),
+                    };
 
-                        // patch async
-                        for (const [name, [before, after]] of [
-                            ["runAsync", [onBeforeRunAsync, onAfterRunAsync]],
-                        ]) {
-                            const method = module[name];
-                            module[name] = async function (interpreter, code) {
-                                if (before)
-                                    await before.call(this, resolved, node);
-                                const result = await method.call(
-                                    this,
-                                    interpreter,
-                                    code,
-                                );
-                                if (after)
-                                    await after.call(this, resolved, node);
-                                return result;
-                            };
-                        }
+                    const XWorker = function XWorker(...args) {
+                        return Worker.apply(hooks, args);
+                    };
 
-                        // setup XWorker hooks, allowing strings to be forwarded to the worker
-                        // whenever it's created, as functions can't possibly be serialized
-                        // unless these are pure with no outer scope access (or globals vars)
-                        // so that making it strings disambiguate about their running context.
-                        workerHooks.set(XWorker, {
-                            beforeRun: codeBeforeRunWorker,
-                            beforeRunAsync: codeBeforeRunWorkerAsync,
-                            afterRun: codeAfterRunWorker,
-                            afterRunAsync: codeAfterRunWorkerAsync,
-                        });
+                    // These two loops mimic a `new Map(arrayContent)` without needing
+                    // the new Map overhead so that [name, [before, after]] can be easily destructured
+                    // and new sync or async patches become easy to add (when the logic is the same).
 
-                        module.setGlobal(interpreter, "XWorker", XWorker);
-
-                        const resolved = {
-                            type,
-                            interpreter,
-                            XWorker,
-                            io: io.get(interpreter),
-                            config: structuredClone(configs.get(name)),
-                            run: module.run.bind(module, interpreter),
-                            runAsync: module.runAsync.bind(module, interpreter),
+                    // patch sync
+                    for (const [name, [before, after]] of [
+                        ["run", [onBeforeRun, onAfterRun]],
+                    ]) {
+                        const method = module[name];
+                        module[name] = function (interpreter, code) {
+                            if (before) before.call(this, resolved, node);
+                            const result = method.call(this, interpreter, code);
+                            if (after) after.call(this, resolved, node);
+                            return result;
                         };
-
-                        patched.set(id, resolved);
-                        resolve(resolved);
                     }
 
-                    onRuntimeReady?.(patched.get(id), node);
+                    // patch async
+                    for (const [name, [before, after]] of [
+                        ["runAsync", [onBeforeRunAsync, onAfterRunAsync]],
+                    ]) {
+                        const method = module[name];
+                        module[name] = async function (interpreter, code) {
+                            if (before) await before.call(this, resolved, node);
+                            const result = await method.call(
+                                this,
+                                interpreter,
+                                code,
+                            );
+                            if (after) await after.call(this, resolved, node);
+                            return result;
+                        };
+                    }
+
+                    module.setGlobal(interpreter, "XWorker", XWorker);
+
+                    const resolved = {
+                        type,
+                        interpreter,
+                        XWorker,
+                        io: io.get(interpreter),
+                        config: structuredClone(configs.get(name)),
+                        run: module.run.bind(module, interpreter),
+                        runAsync: module.runAsync.bind(module, interpreter),
+                    };
+
+                    resolve(resolved);
+
+                    onRuntimeReady?.(resolved, node);
                 });
             }
         }

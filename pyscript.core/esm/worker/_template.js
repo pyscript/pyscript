@@ -4,7 +4,8 @@
 //    Please check via `npm run size` that worker code is not much
 //    bigger than it used to be before any changes is applied to this file.
 
-import coincident from "coincident/structured";
+import * as JSON from "@ungap/structured-clone/json";
+import coincident from "coincident/window";
 
 import { create } from "../utils.js";
 import { registry } from "../interpreters.js";
@@ -37,9 +38,15 @@ const add = (type, fn) => {
     );
 };
 
+const { proxy: sync, window, isWindowProxy } = coincident(self, JSON);
+
 const xworker = {
     // allows synchronous utilities between this worker and the main thread
-    sync: coincident(self),
+    sync,
+    // allow access to the main thread world
+    window,
+    // allow introspection for foreign (main thread) refrences
+    isWindowProxy,
     // standard worker related events / features
     onerror() {},
     onmessage() {},

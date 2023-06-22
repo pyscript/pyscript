@@ -1,20 +1,21 @@
 {
     "name": "@pyscript/core",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "",
     "main": "./cjs/index.js",
     "types": "./types/index.d.ts",
     "scripts": {
         "server": "npx static-handler --cors --coep --coop --corp .",
-        "build": "npm run rollup:xworker && npm run rollup:min && eslint esm/ && npm run ts && npm run cjs && npm run test",
+        "build": "npm run rollup:xworker && npm run rollup:core && npm run rollup:pyscript && eslint esm/ && npm run ts && npm run cjs && npm run test",
         "cjs": "ascjs --no-default esm cjs",
-        "rollup:min": "rollup --config rollup/min.config.js",
+        "rollup:core": "rollup --config rollup/core.config.js",
+        "rollup:pyscript": "rollup --config rollup/pyscript.config.js",
         "rollup:xworker": "rollup --config rollup/xworker.config.js",
         "test": "c8 --100 node --experimental-loader @node-loader/import-maps test/index.js ",
         "test:html": "npm run test && c8 report -r html",
         "coverage": "mkdir -p ./coverage; c8 report --reporter=text-lcov > ./coverage/lcov.info",
         "size": "npm run size:module && npm run size:worker",
-        "size:module": "echo module is $(cat min.js | brotli | wc -c) bytes once compressed",
+        "size:module": "echo module is $(cat core.js | brotli | wc -c) bytes once compressed",
         "size:worker": "echo worker is $(cat esm/worker/xworker.js | brotli | wc -c) bytes once compressed",
         "ts": "tsc -p ."
     },
@@ -27,10 +28,10 @@
         "@rollup/plugin-terser": "^0.4.3",
         "ascjs": "^5.0.1",
         "c8": "^8.0.0",
-        "eslint": "^8.42.0",
+        "eslint": "^8.43.0",
         "linkedom": "^0.14.26",
         "rollup": "^3.25.1",
-        "static-handler": "^0.4.1",
+        "static-handler": "^0.4.2",
         "typescript": "^5.1.3"
     },
     "module": "./esm/index.js",
@@ -43,13 +44,14 @@
         },
         "./package.json": "./package.json"
     },
-    "unpkg": "min.js",
+    "unpkg": "core.js",
     "dependencies": {
+        "@ungap/structured-clone": "^1.2.0",
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "coincident": "^0.4.1"
+        "coincident": "^0.7.2"
     },
     "worker": {
-        "blob": "sha256-obDch1OaxOZKhaCpSW9vEAHJk01N+9kYvSiGkNmeJRU="
+        "blob": "sha256-llcU6BJSNpU+9XN3CXzTrR1Js0KQaXygnnKiD039CTQ="
     }
 }
