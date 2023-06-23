@@ -41,11 +41,15 @@ export const listener = async (event) => {
             el.getAttribute(`${name}-env`) || name,
         );
         const handler = registry.get(name);
+        const run = () => handler.run(interpreter, value);
         try {
-            handler.setGlobal(interpreter, "event", event);
-            handler.run(interpreter, value);
+            const promise = handler.setGlobal(interpreter, "event", event);
+            if (promise) {
+                await promise();
+                await run();
+            } else run();
         } finally {
-            handler.deleteGlobal(interpreter, "event");
+            await handler.deleteGlobal(interpreter, "event");
         }
     }
 };

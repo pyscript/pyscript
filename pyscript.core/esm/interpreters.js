@@ -54,5 +54,6 @@ import micropython from "./interpreter/micropython.js";
 import pyodide from "./interpreter/pyodide.js";
 import ruby_wasm_wasi from "./interpreter/ruby-wasm-wasi.js";
 import wasmoon from "./interpreter/wasmoon.js";
-for (const interpreter of [micropython, pyodide, ruby_wasm_wasi, wasmoon])
+import webr from "./interpreter/webr.js";
+for (const interpreter of [micropython, pyodide, ruby_wasm_wasi, wasmoon, webr])
     register(interpreter);

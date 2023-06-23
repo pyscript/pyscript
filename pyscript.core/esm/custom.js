@@ -57,7 +57,7 @@ export const handleCustomType = (node) => {
                     version,
                     config,
                 );
-                engine.then((interpreter) => {
+                engine.then(async (interpreter) => {
                     const module = create(defaultRegistry.get(runtime));
 
                     const {
@@ -107,7 +107,7 @@ export const handleCustomType = (node) => {
                         };
                     }
 
-                    module.setGlobal(interpreter, "XWorker", XWorker);
+                    await module.setGlobal(interpreter, "XWorker", XWorker);
 
                     const resolved = {
                         type,

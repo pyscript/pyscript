@@ -58,11 +58,11 @@ const execute = async (script, source, XWorker, isAsync) => {
             configurable: true,
             get: () => script,
         });
-        module.setGlobal(interpreter, "XWorker", XWorker);
-        return module[isAsync ? "runAsync" : "run"](interpreter, content);
+        await module.setGlobal(interpreter, "XWorker", XWorker);
+        return await module[isAsync ? "runAsync" : "run"](interpreter, content);
     } finally {
         delete document.currentScript;
-        module.deleteGlobal(interpreter, "XWorker");
+        await module.deleteGlobal(interpreter, "XWorker");
     }
 };
 

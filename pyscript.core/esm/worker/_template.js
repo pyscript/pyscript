@@ -98,11 +98,11 @@ add("message", ({ data: { options, code, hooks } }) => {
             }
         }
         // set the `xworker` global reference once
-        details.setGlobal(interpreter, "xworker", xworker);
+        await details.setGlobal(interpreter, "xworker", xworker);
         // simplify run calls after possible patches
         run = details[name].bind(details, interpreter);
         // execute the content of the worker file
-        run(code);
+        await run(code);
         return interpreter;
     })();
     add("error");
