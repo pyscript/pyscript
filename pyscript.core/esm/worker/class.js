@@ -22,19 +22,24 @@ export default (...args) =>
     function XWorker(url, options) {
         const worker = xworker();
         const { postMessage } = worker;
+        const isHook = this instanceof Hook;
+
         if (args.length) {
             const [type, version] = args;
             options = assign({}, options || { type, version });
             if (!options.type) options.type = type;
         }
+
         if (options?.config) options.config = absoluteURL(options.config);
+
         const bootstrap = fetch(url)
             .then(getText)
             .then((code) => {
-                const hooks = this instanceof Hook ? this : void 0;
+                const hooks = isHook ? this.stringHooks : void 0;
                 postMessage.call(worker, { options, code, hooks });
             });
-        return defineProperties(worker, {
+
+        defineProperties(worker, {
             postMessage: {
                 value: (data, ...rest) =>
                     bootstrap.then(() =>
@@ -45,4 +50,8 @@ export default (...args) =>
                 value: coincident(worker, JSON).proxy,
             },
         });
+
+        if (isHook) this.onWorkerReady?.(this.interpreter, worker);
+
+        return worker;
     };

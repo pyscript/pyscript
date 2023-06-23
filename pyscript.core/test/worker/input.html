@@ -8,7 +8,7 @@
             {
                 "imports": {
                     "basic-devtools": "../../node_modules/basic-devtools/esm/index.js",
-                    "coincident/window": "../../node_modules/coincident/window.js",
+                    "coincident/window": "../../node_modules/coincident/esm/window.js",
                     "@ungap/with-resolvers": "../../node_modules/@ungap/with-resolvers/index.js",
                     "@ungap/structured-clone/json": "../../node_modules/@ungap/structured-clone/esm/json.js",
                     "@pyscript/core": "../../esm/index.js"
@@ -38,7 +38,7 @@
               inputs[1].disabled = False
               return deferred.promise
 
-            w = XWorker('./input.lua', type='wasmoon')
+            w = XWorker('./input.py', type='micropython')
             w.sync.input = handle_input
         </script>
         <input type="text" placeholder="loading ..." required disabled />
