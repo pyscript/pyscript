@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+        <title>File Input Plugin</title>
+
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/examples/assets/css/examples.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/releases/2023.03.1/pyscript.css"
+        />
+        <script
+            defer
+            src="https://pyscript.net/releases/2023.03.1/pyscript.js"
+        ></script>
+    </head>
+
+    <body>
+        <nav class="navbar" style="background-color: #000000">
+            <div class="app-header">
+                <a href="/">
+                    <img
+                        src="https://pyscript.net/examples/logo.png"
+                        class="logo"
+                    />
+                </a>
+                <a class="title" href="" style="color: #f0ab3c"
+                    >File Input Plugin</a
+                >
+            </div>
+        </nav>
+
+        <h1>File Input Plugin</h1>
+        <p>
+            This plugin allows you to upload files to Pyscript virtual file
+            system (emscripten filesystem) using
+            <code>&lt;py-input-file&gt;</code> elements (file input element).
+            This can help you solve the issue of importing local modules in
+            Pyscript.
+        </p>
+
+        <py-tutor>
+            <py-config>
+                plugins = [
+                "https://pyscript.net/latest/plugins/python/py_tutor.py",
+                "https://raw.githubusercontent.com/Saketh-Chandra/pyscript/file_input_plugin/pyscriptjs/src/plugins/python/py_input_file.py"
+                ]
+            </py-config>
+
+            <section class="pyscript">
+                <py-input-file
+                    type="file"
+                    id="file_id"
+                    name="name"
+                    multiple
+                ></py-input-file>
+            </section>
+        </py-tutor>
+        <py-script>
+            print("Hello World")
+            import os
+            def ls():
+                print("ls:")
+                for path, subdirs, files in os.walk('/home/uploads'):
+                    for name in files:
+                        print(os.path.join(path, name))
+        </py-script>
+        <button class="button" py-onclick="ls()" id="btn-ls">
+            show uploaed files
+        </button>
+    </body>
+</html>

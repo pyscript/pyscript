@@ -36,6 +36,7 @@ Features
 
 ### Plugins
 - Plugins may now implement the `beforePyReplExec()` and `afterPyReplExec()` hooks, which are called immediately before and after code in a `py-repl` tag is executed. ([#1106](https://github.com/pyscript/pyscript/pull/1106))
+- This plugin allows you to upload files to Pyscript virtual file system (emscripten filesystem) using `<py-input-file>` elements (file input element). This can help you solve the issue of importing local modules in Pyscript. ([#1561](https://github.com/pyscript/pyscript/pull/1561))
 
 ### Web worker support
 - introduced the new experimental `execution_thread` config option: if you set `execution_thread = "worker"`, the python interpreter runs inside a web worker
