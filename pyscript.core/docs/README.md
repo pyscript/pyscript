@@ -318,6 +318,20 @@ In each Interpreter, `XWorker` is a global reference, with a counter `xworker` (
 
 In short, the `XWorker` global goal is to help, without much thinking, to run any desired interpreter out of a *Worker*, enabling extra features on the *worker*'s code side.
 
+
+### Enabling XWorker
+
+We use the latest Web technologies to allow fast, non-blocking, yet synchronous like, operations from any non-experimental interpreter's worker, and the standard requires some special header to enable such technologies and, most importantly, the [SharedArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer).
+
+There is an exhaustive [section](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements) around this topic but the *TL;DR* version is:
+
+  * to protect your page from undesired attacks, the `Cross-Origin-Opener-Policy` header should be present with the `same-origin` value
+  * to protect other sites from your pages' code, the `Cross-Origin-Embedder-Policy` header should be present with either the `credentialless` value (Chrome and Firefox browsers) or the `require-corp` one (Safari + other browsers)
+  * when the `Cross-Origin-Embedder-Policy` header is set with the `require-corp` value, the `Cross-Origin-Resource-Policy` header should also be available with [one of these options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Resource-Policy): `same-site`, `same-origin` or `cross-origin`
+
+There are **alternative ways** to enable these headers for your site or local host, and [this script](https://github.com/gzuidhof/coi-serviceworker#readme) is just one of these, one that works with most free-hosting websites too.
+
+
 ### XWorker options
 
 Before showing any example, it's important to understand how the offered API differs from Web standard *workers*:
