@@ -52,3 +52,43 @@ The following example includes three buttons - when any of the buttons is clicke
             button.style.backgroundColor = 'red'
 </py-script>
 ```
+
+There is a complexity when using `@when` if you are used to Javascript's `addEventHandler()` behavior.
+The event will fire on **any child** of the selector which is acted on by the `event_type`.
+So you will need to test for where the `event_type` occurred and act depending on which child that is.
+
+E.g. if you have an html dropdown implemented with a div surrounding an input and several option divs.
+```html
+  <div id="dropdown">
+    <input class="text-box" type="text" placeholder="Select" readonly>
+    <div class="options">
+      <div>HTML</div>
+      <div>CSS</div>
+    </div>
+```
+Then you might have the following Javascript to toggle the drawdon div to `active` for your options to show via css.
+```javascript
+  let dropdown = document.getElementById('dropdown')
+  dropdown.onclick = function() {
+     dropdown.classList.toggle("active")
+  }
+```
+Even though you may click on the `input` element the javascript will fire the `onclick` function when that event bubbles up to the dropdown div. And so the `active` class will appear on the dropdown div and not on the `input`.
+
+If you do the same operation using `@when` then it might look like this:
+```python
+@when("click", selector="#dropdown")
+def swatch_dropdown(evt):
+    evt.target.classList.toggle("active")
+```
+However the `@when` will fire immediately the input is clicked and so your `active` class will appear on `input` and not the dropdown div.
+The event target will be the `input` and your desired behavior will not occur.
+You can fix this by getting the `parentElement` of the `input` target. or by getting the Element directly. e.g.
+```python
+@when("click", selector="#dropdown")
+def swatch_dropdown(evt):
+    el = Element("dropdown").element
+    # or
+    #el = evt.target.parentElement # if you can be sure input was clicked on
+    el.classList.toggle("active")
+```
