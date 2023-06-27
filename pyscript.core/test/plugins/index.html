@@ -17,7 +17,7 @@
             whenDefined("mpy").then(console.log);
             define("mpy", {
                 interpreter: "micropython",
-                async onRuntimeReady(micropython, element) {
+                async onInterpreterReady(micropython, element) {
                     console.log(micropython);
                     // Somehow this doesn't work in MicroPython
                     micropython.io.stdout = (message) => {

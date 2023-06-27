@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+    <head>
+        <!-- this is a way to automatically bootstrap @pyscript/core -->
+        <script type="module" src="https://esm.run/@pyscript/core"></script>
+    </head>
+    <body>
+        <script type="micropython" id="my-target">
+            from js import document
+
+            # explicitly grab the current script as target
+            my_target = document.getElementById('my-target')
+
+            # verify it is the exact same node with same id
+            print(document.currentScript.id == my_target.id)
+        </script>
+        <script type="micropython">
+            # XWorker is globally defined
+            print(XWorker != None)
+        </script>
+        <script type="micropython">
+            def print_type(event, double):
+                # logs "click 4"
+                print(f"{event.type} {double(2)}")
+        </script>
+        <button micropython-click="print_type(event, lambda x: x * 2)">
+            print type
+        </button>
+        <script type="micropython">
+            def log():
+                print(1)
+        </script>
+        <!-- note the env value -->
+        <script type="micropython" env="two">
+            def log():
+                print(2)
+        </script>
+        <!-- note the micropython-env value -->
+        <button
+            micropython-env="two"
+            micropython-click="log()"
+        >
+            log
+        </button>
+        <script type="micropython">
+            from js import document
+            document.body.append('@pyscript/core')
+        </script>
+    </body>
+</html>

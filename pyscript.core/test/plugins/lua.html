@@ -16,7 +16,7 @@
             import { define } from "@pyscript/core";
             define("lua", {
                 interpreter: "wasmoon",
-                async onRuntimeReady(wasmoon, element) {
+                async onInterpreterReady(wasmoon, element) {
                     // Somehow this doesn't work in Wasmoon
                     wasmoon.io.stdout = (message) => {
                         console.log("🌑", wasmoon.type, message);

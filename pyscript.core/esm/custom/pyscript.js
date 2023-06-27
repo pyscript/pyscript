@@ -114,10 +114,10 @@ document.head.appendChild(document.createElement("style")).textContent = `
         onAfterRunAsync(pyodide, element) {
             bootstrapNodeAndPlugins(pyodide, element, after, "onAfterRunAsync");
         },
-        async onRuntimeReady(pyodide, element) {
+        async onInterpreterReady(pyodide, element) {
             // allows plugins to do whatever they want with the element
             // before regular stuff happens in here
-            for (const callback of hooks.onRuntimeReady)
+            for (const callback of hooks.onInterpreterReady)
                 callback(pyodide, element);
             if (isScript(element)) {
                 const {
@@ -178,7 +178,7 @@ export const hooks = {
     /** @type {Set<function>} */
     onAfterRunAsync: new Set(),
     /** @type {Set<function>} */
-    onRuntimeReady: new Set(),
+    onInterpreterReady: new Set(),
 
     /** @type {Set<string>} */
     codeBeforeRunWorker: new Set(),
