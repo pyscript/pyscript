@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "PyScript Next core",
     "main": "./cjs/index.js",
     "types": "./types/index.d.ts",
