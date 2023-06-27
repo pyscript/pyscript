@@ -1,0 +1,56 @@
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <title>pyscript-core</title>
+        <script type="module" src="https://pyscript.net/tech-preview/pyscript.core/core.js"></script>
+    </head>
+    <body>
+        <h1>pyscript-core</h1>
+
+        <p>
+            <h2>MicroPython</h2>
+            <script type="micropython">
+                import sys
+                import js
+                js.document.currentScript.target.textContent = sys.version
+            </script>
+        </p>
+
+        <p>
+            <h2>Pyodide</h2>
+            <script type="pyodide">
+                import sys
+                import js
+                js.document.currentScript.target.textContent = sys.version
+            </script>
+        </p>
+
+        <p>
+            <h2>Lua</h2>
+            <script type="wasmoon">
+                XWorker('./version.lua')
+            </script>
+            <div id="lua"></div>
+        </p>
+
+        <p>
+            <h2>Ruby (See Console)</h2>
+            <script type="ruby-wasm-wasi">
+                print "ruby #{ RUBY_VERSION }p#{ RUBY_PATCHLEVEL }"
+            </script>
+        </p>
+
+
+
+    <a href="https://pyscript.com/view/6fd75ce3-df0a-4384-b255-195e41c4f02f/5b929f68-b671-4d23-b80d-224d1c2f3424/latest/"><svg style="z-index:9997;position:fixed;bottom:0;right:0" viewBox="83.27 86.353 259.586 26.781" width="259.586" height="26.781">
+        <path d="M 227.175 86.396 L 168.855 86.458 C 158.655 86.44 149.685 88.219 141.925 91.888 C 134.035 95.618 126.125 99.342 118.245 103.083 C 110.435 106.796 109.327 108.991 99.048 108.854 C 89.045 108.721 85.71 113.134 83.27 113.134 L 83.815 113.046 C 105.275 113.025 126.725 113.029 148.185 113.029 C 173.925 113.029 199.665 113.018 225.405 113.052 C 226.385 113.052 227.185 112.612 227.185 112.06 C 227.125 98.082 227.125 100.379 227.185 86.402 L 227.175 86.396 Z" fill="#292929" style=""></path>
+        <path d="M 214.408 86.353 L 342.856 86.69 L 342.831 113.074 L 214.218 113.036 L 214.408 86.353 Z" fill="#292929" style=""></path>
+    </svg>
+    <div style="z-index:9998;color:#FFF;font-family:sans-serif;background-color:#292929;padding:2px 8px;position:fixed;bottom:0;right:0;left:0"></div>
+    <div style="z-index:9999;font-size: 0.7rem;color:#FFF;font-family:sans-serif;padding: 5px;position:fixed;bottom:0;right:0">Made on pyscript.com&nbsp;│&nbsp;View Code&nbsp;&nbsp;</div></a>
+    </body>
+
+</html>
