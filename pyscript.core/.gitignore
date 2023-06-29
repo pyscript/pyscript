@@ -5,4 +5,5 @@ cjs/
 !cjs/package.json
 core.js
 esm/worker/xworker.js
+esm/worker/__template.js
 types/

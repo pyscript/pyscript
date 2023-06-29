@@ -8,6 +8,7 @@
         "server": "npx static-handler --cors --coep --coop --corp .",
         "build": "npm run rollup:xworker && npm run rollup:core && npm run rollup:pyscript && eslint esm/ && npm run ts && npm run cjs && npm run test",
         "cjs": "ascjs --no-default esm cjs",
+        "dev": "node dev.cjs",
         "rollup:core": "rollup --config rollup/core.config.js",
         "rollup:pyscript": "rollup --config rollup/pyscript.config.js",
         "rollup:xworker": "rollup --config rollup/xworker.config.js",
@@ -32,6 +33,7 @@
         "@rollup/plugin-terser": "^0.4.3",
         "ascjs": "^5.0.1",
         "c8": "^8.0.0",
+        "chokidar": "^3.5.3",
         "eslint": "^8.43.0",
         "linkedom": "^0.14.26",
         "rollup": "^3.25.3",
@@ -64,6 +66,6 @@
         "coincident": "^0.8.3"
     },
     "worker": {
-        "blob": "sha256-CaHDEAEttvghrbLR/GVAofT+zQZyy0Ri9tkpVTNBbiE="
+        "blob": "sha256-eWNZbyS06lxxlUW/bkU7/fl/Levxxxfiv/+frsgl/fA="
     }
 }

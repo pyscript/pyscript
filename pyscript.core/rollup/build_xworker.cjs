@@ -13,18 +13,28 @@ const PACKAGE_JSON = resolve(join(__dirname, "..", "package.json"));
 
 for (const file of readdirSync(WORKERS_DIR)) {
     if (file.startsWith("__")) {
-        const js = JSON.stringify(
-            readFileSync(join(WORKERS_DIR, file)).toString(),
-        );
-        const hash = createHash("sha256");
-        hash.update(js);
-        const json = require(PACKAGE_JSON);
-        json.worker = { blob: "sha256-" + hash.digest("base64") };
-        writeFileSync(PACKAGE_JSON, JSON.stringify(json, null, "    ") + "\n");
-        writeFileSync(
-            join(WORKERS_DIR, "xworker.js"),
-            `/* c8 ignore next */\nexport default () => new Worker(URL.createObjectURL(new Blob([${js}],{type:'application/javascript'})),{type:'module'});`,
-        );
-        rmSync(join(WORKERS_DIR, file));
+        if (process.env.NO_MIN) {
+            writeFileSync(
+                join(WORKERS_DIR, "xworker.js"),
+                `/* c8 ignore next */\nexport default () => new Worker('/esm/worker/__template.js',{type:'module'});`,
+            );
+        } else {
+            const js = JSON.stringify(
+                readFileSync(join(WORKERS_DIR, file)).toString(),
+            );
+            const hash = createHash("sha256");
+            hash.update(js);
+            const json = require(PACKAGE_JSON);
+            json.worker = { blob: "sha256-" + hash.digest("base64") };
+            writeFileSync(
+                PACKAGE_JSON,
+                JSON.stringify(json, null, "    ") + "\n",
+            );
+            writeFileSync(
+                join(WORKERS_DIR, "xworker.js"),
+                `/* c8 ignore next */\nexport default () => new Worker(URL.createObjectURL(new Blob([${js}],{type:'application/javascript'})),{type:'module'});`,
+            );
+            rmSync(join(WORKERS_DIR, file));
+        }
     }
 }

@@ -43,3 +43,7 @@ NO_MIN=1 npm run build
 
 npm run server
 ```
+
+### Dev Build
+
+Beside spinning the _localhost_ server via `npm run server`, the `npm run dev` will watch changes in the `./esm` folder and it will build automatically non optimized artifacts out of the box.
