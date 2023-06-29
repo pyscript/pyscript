@@ -29,14 +29,14 @@
 
                     const button = document.createElement("button");
                     button.textContent = "click";
-                    button.setAttribute("mpy-click", "test_click(event)");
+                    button.setAttribute("mpy-click", "test_click");
                     document.body.append(button);
                 },
             });
         </script>
     </head>
     <body>
-        <mpy-script mpy-click="test_click(event)">
+        <mpy-script mpy-click="test_click">
             def test_click(event):
                 print(event.type)
 

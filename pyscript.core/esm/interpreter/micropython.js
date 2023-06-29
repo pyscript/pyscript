@@ -1,5 +1,12 @@
 import { fetchPaths, stdio } from "./_utils.js";
-import { run, setGlobal, deleteGlobal, writeFile } from "./_python.js";
+import {
+    run,
+    getGlobal,
+    setGlobal,
+    deleteGlobal,
+    registerJSModule,
+    writeFile,
+} from "./_python.js";
 
 const type = "micropython";
 
@@ -16,8 +23,10 @@ export default {
         if (config.fetch) await fetchPaths(this, interpreter, config.fetch);
         return interpreter;
     },
+    getGlobal,
     setGlobal,
     deleteGlobal,
+    registerJSModule,
     run,
     // TODO: MicroPython doesn't have a Pyodide like top-level await,
     //       this method should still not throw errors once invoked

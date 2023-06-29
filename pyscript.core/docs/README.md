@@ -229,11 +229,11 @@ Please read the [Terminology](#terminology) **target** dedicated details to know
   <summary><strong>XWorker</strong></summary>
   <div>
 
-With or without access to the `document`, every (*non experimental*) interpreter will have defined, at the global level, a reference to the `XWorker` "_class_" (it's just a *function*!), which goal is to enable off-loading heavy operations on a worker, without blocking the main / UI thread (the current page) and allowing such worker to even reach the `document` or anything else available on the very same main / UI thread.
+With or without access to the `document`, every (*non experimental*) interpreter will have defined, either at the global level or after an import (i.e.`from xworker import XWorker` in *Python* case), a reference to the `XWorker` "_class_" (it's just a *function*!), which goal is to enable off-loading heavy operations on a worker, without blocking the main / UI thread (the current page) and allowing such worker to even reach the `document` or anything else available on the very same main / UI thread.
 
 ```html
 <script type="micropython">
-    # XWorker is globally defined
+    from xworker import XWorker
     print(XWorker != None)
 </script>
 ```
@@ -246,40 +246,19 @@ Please read the [XWorker](#xworker) dedicated section to know more.
 
 ## How Events Work
 
-Inspired by the current [HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-handlers):
-
-> the event handler is exposed through a name, which is a string that always starts with "_on_" and is followed by the name of the event for which the handler is intended.
-
-We took a similar approach, replacing that `on` prefix with whatever *interpreter* or *custom type* is available on the page, plus a *dash* `-` to avoid clashing with standards:
+The event should contain the *interpreter* or *custom type* prefix, followed by the *event* type it'd like to handle.
 
 ```html
 <script type="micropython">
-    def print_type(event, double):
-        # logs "click 4"
-        print(f"{event.type} {double(2)}")
+    def print_type(event):
+        print(event.type)
 </script>
-<button micropython-click="print_type(event, lambda x: x * 2)">
+<button micropython-click="print_type">
     print type
 </button>
 ```
 
-If this example felt a bit verbose, be ensured custom types would work the same:
-
-```html
-<!-- ℹ️ - requires py-script custom type -->
-<button py-click="print(event.type)">
-    print type
-</button>
-```
-
-What is important to understand about *events* in PyScript is that the text within the attribute is executed just like any other inline or external content is, through the very same *interpreter*, with the notably extra feature that the `event` reference is made temporarily available as *global* by *core*.
-
-This really reflects how otherwise native Web inline events handlers work and we think it's a great feature to support ... *but*:
-
- * if your script runs *asynchronously* the `event` might be gone on the main / UI thread and by that time any of its `event.stopPropagation()` or `event.preventDefault()` goodness will be problematic, as too late to be executed
- * if your *interpreter* is *experimental*, or incapable of running *synchronous* events, the `event` reference might be less useful
-
-ℹ️ - Please note that if your code runs via *XWorker*, hence in a different thread, there are different caveats and constraints to consider. Please read the [XWorker](#xworker) dedicated section to know more.
+Differently from *Web* inline events, there's no code evaluation at all within the attribute: it's just a globally available name that will receive the current event and nothing else.
 
 #### The type-env attribute
 
@@ -299,7 +278,7 @@ Just as the `env` attribute on a `<script>` tag specifies a specific instance of
 <!-- note the micropython-env value -->
 <button
     micropython-env="two"
-    micropython-click="log()"
+    micropython-click="log"
 >
     log
 </button>
@@ -314,9 +293,9 @@ Whenever computing relatively expensive stuff, such as a *matplot* image, or lit
 
 `@pyscript/core` adds a functionality called `XWorker` to all of the interpreters it offers, which works in each language the way `Worker` does in JavaScript.
 
-In each Interpreter, `XWorker` is a global reference, with a counter `xworker` (lower case) global reference within the worker code.
+In each Interpreter, `XWorker` is either global reference or an import (i.e.`from xworker import XWorker` in *Python* case) module's utility, with a counter `xworker` (lower case) global reference, or an import (i.e.`from xworker import xworker` in *Python* case) module's utility, within the worker code.
 
-In short, the `XWorker` global goal is to help, without much thinking, to run any desired interpreter out of a *Worker*, enabling extra features on the *worker*'s code side.
+In short, the `XWorker` utility is to help, without much thinking, to run any desired interpreter out of a *Worker*, enabling extra features on the *worker*'s code side.
 
 
 ### Enabling XWorker
@@ -348,7 +327,7 @@ The returning *JS* reference to any `XWorker(...)` call is literally a `Worker` 
 
 | name      | example                            | behavior |
 | :-------- | :--------------------------------- | :--------|
-| sync      | `sync = XWorker('./file.py').sync` | Allows exposure of callbacks that can be run synchronously from the worker file, even if the defined callback is *asynchronous*. This property is also available in the global `xworker` reference. |
+| sync      | `sync = XWorker('./file.py').sync` | Allows exposure of callbacks that can be run synchronously from the worker file, even if the defined callback is *asynchronous*. This property is also available in the `xworker` reference. |
 
 ```python
 
@@ -370,9 +349,9 @@ In the `xworker` counter part:
 xworker.sync.from_main(1, "two")
 ```
 
-### The xworker global reference
+### The xworker reference
 
-The content of the file used to initialize any `XWorker` on the main thread can always reach the `xworker` counter part as globally available (that means: no *import ... form ...* is necessary, it is already there).
+The content of the file used to initialize any `XWorker` on the main thread can always reach the `xworker` counter part as globally available or as import (i.e.`from xworker import xworker` in *Python* case) module's utility.
 
 Within a *Worker* execution context, the `xworker` exposes the following features:
 
@@ -380,7 +359,7 @@ Within a *Worker* execution context, the `xworker` exposes the following feature
 | :------------ | :------------------------------------------| :--------|
 | sync          | `xworker.sync.from_main(1, "two")`         | Executes the exposed `from_main` function in the main thread. Returns synchronously its result, if any. |
 | window        | `xworker.window.document.title = 'Worker'` | Differently from *pyodide* or *micropython* `import js`, this field allows every single possible operation directly in the main thread. It does not refer to the local `js` environment the interpreter might have decided to expose, it is a proxy to handle otherwise impossible operations in the main thread, such as manipulating the *DOM*, reading `localStorage` otherwise not available in workers, change location or anything else usually possible to do in the main thread. |
-| isWindowProxy | `xworker.isWindowProxy(ref)`               | **Advanced** - Allows introspection of *JS* references, helping differentiating between local worker references, and main thread global references. This is valid both for non primitive objects (array, dictionaries) as well as functions, as functions are also enabled via `xworker.window` in both ways: we can add a listener from the worker or invoke a function in the main. Please note that functions passed to the main thread will always be invoked asynchronously.
+| isWindowProxy | `xworker.isWindowProxy(ref)`               | **Advanced** - Allows introspection of *JS* references, helping differentiating between local worker references, and main thread global JS references. This is valid both for non primitive objects (array, dictionaries) as well as functions, as functions are also enabled via `xworker.window` in both ways: we can add a listener from the worker or invoke a function in the main. Please note that functions passed to the main thread will always be invoked asynchronously.
 
 ```python
 print(xworker.window.document.title)
@@ -472,7 +451,7 @@ In few words, while every *interpreter* is literally passed along to unlock its 
 | :------------------------ | :-------------------------------------------- | :--------|
 | type                      | `wrap.type`                                   | Return the current `type` (interpreter or custom type) used in the current code execution. |
 | interpreter               | `wrap.interpreter`                            | Return the *interpreter* _AS-IS_ after being bootstrapped by the desired `config`. |
-| XWorker                   | `wrap.XWorker`                                | Refer to the global `XWorker` class available to the main thread code while executing. |
+| XWorker                   | `wrap.XWorker`                                | Refer to the `XWorker` class available to the main thread code while executing. |
 | io                        | `wrap.io`                                     | Allow to lazily define different `stdout` or `stderr` via the running *interpreter*. This `io` field can be lazily defined and restored back for any element currently running the code. |
 | config                    | `wrap.config`                                 | It is the resolved *JSON* config and it is an own clone per each element running the code, usable also as "_state_" reference for the specific element, as changing it at run time will never affect any other element. |
 | run                       | `wrap.run(code)`                              | It abstracts away the need to know the exact method name used to run code synchronously, whenever the *interpreter* allows such operation, facilitating future migrations from an interpreter to another. |

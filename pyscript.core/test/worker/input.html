@@ -22,6 +22,7 @@
     <body>
         <script type="micropython">
             from js import Promise, document
+            from xworker import XWorker
 
             deferred = Promise.withResolvers()
 
@@ -44,7 +45,7 @@
         <input type="text" placeholder="loading ..." required disabled />
         <input
             type="submit"
-            micropython-click="handle_result(event)"
+            micropython-click="handle_result"
             disabled
         />
     </body>

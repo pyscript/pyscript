@@ -1,5 +1,8 @@
 export const python = { content: "", target: null };
 export const loadMicroPython = () => ({
+    registerJsModule() {
+
+    },
     runPython(content) {
         if (document.currentScript?.target) {
             python.content = content;

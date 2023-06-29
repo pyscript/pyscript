@@ -7,12 +7,18 @@ export const run = (interpreter, code) => interpreter.runPython(clean(code));
 export const runAsync = (interpreter, code) =>
     interpreter.runPythonAsync(clean(code));
 
+export const getGlobal = (interpreter, name) => interpreter.globals.get(name);
+
 export const setGlobal = (interpreter, name, value) => {
     interpreter.globals.set(name, value);
 };
 
 export const deleteGlobal = (interpreter, name) => {
     interpreter.globals.delete(name);
+};
+
+export const registerJSModule = (interpreter, name, value) => {
+    interpreter.registerJsModule(name, value);
 };
 
 export const writeFile = ({ FS }, path, buffer) =>

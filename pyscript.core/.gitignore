@@ -4,6 +4,7 @@ node_modules/
 cjs/
 !cjs/package.json
 core.js
+pyscript.js
 esm/worker/xworker.js
 esm/worker/__template.js
 types/
