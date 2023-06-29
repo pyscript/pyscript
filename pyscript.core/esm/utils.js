@@ -1,6 +1,6 @@
 const { isArray } = Array;
 
-const { assign, create, defineProperties, defineProperty } = Object;
+const { assign, create, defineProperties, defineProperty, entries } = Object;
 
 const { all, resolve } = new Proxy(Promise, {
     get: ($, name) => $[name].bind($),
@@ -14,6 +14,7 @@ export {
     create,
     defineProperties,
     defineProperty,
+    entries,
     all,
     resolve,
     absoluteURL,

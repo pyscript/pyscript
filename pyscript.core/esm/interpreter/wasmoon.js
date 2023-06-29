@@ -1,6 +1,15 @@
-import { clean, fetchPaths, stdio, writeFileShim } from "./_utils.js";
+import {
+    clean,
+    fetchPaths,
+    stdio,
+    registerJSModule,
+    writeFileShim,
+} from "./_utils.js";
 
 const type = "wasmoon";
+
+// MISSING:
+//  * I've no idea how to import packages
 
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
@@ -18,6 +27,7 @@ export default {
         if (config.fetch) await fetchPaths(this, interpreter, config.fetch);
         return interpreter;
     },
+    registerJSModule,
     setGlobal(interpreter, name, value) {
         interpreter.global.set(name, value);
     },

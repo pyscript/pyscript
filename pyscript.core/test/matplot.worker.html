@@ -10,6 +10,7 @@
     </head>
     <body>
         <script type="micropython">
+            from xworker import XWorker
             w = XWorker('./matplot.py', **{'type': 'pyodide', 'config': './config.toml'})
 
             # xworker.window made the following completely unnecessary

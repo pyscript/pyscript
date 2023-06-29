@@ -15,6 +15,10 @@ export const deleteGlobal = (interpreter, name) => {
     interpreter.globals.delete(name);
 };
 
+export const registerJSModule = (interpreter, name, value) => {
+    interpreter.registerJsModule(name, value);
+};
+
 export const writeFile = ({ FS }, path, buffer) =>
     writeFileUtil(FS, path, buffer);
 /* c8 ignore stop */
