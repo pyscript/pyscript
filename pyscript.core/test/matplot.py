@@ -1,5 +1,6 @@
 import js
 import matplotlib
+from xworker import xworker
 
 try:
     js.document

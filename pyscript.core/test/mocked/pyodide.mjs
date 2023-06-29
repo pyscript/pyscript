@@ -7,6 +7,9 @@ export const setTarget = (value) => {
 export const python = { content: "", target: null, packages: null };
 export const loadPyodide = () => ({
     loadPackage() {},
+    registerJsModule() {
+
+    },
     pyimport() {
         return {
             install(packages) {

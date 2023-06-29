@@ -107,7 +107,9 @@ export const handleCustomType = (node) => {
                         };
                     }
 
-                    module.setGlobal(interpreter, "XWorker", XWorker);
+                    module.registerJSModule(interpreter, "xworker", {
+                        XWorker,
+                    });
 
                     const resolved = {
                         type,

@@ -43,6 +43,7 @@
             display('second &lt;py-script&gt;')
         </py-script>
         <py-script>
+            from xworker import XWorker
             # note this is late to the party simply because
             # pyodide needs to be bootstrapped in the Worker too
             XWorker('../a.py')

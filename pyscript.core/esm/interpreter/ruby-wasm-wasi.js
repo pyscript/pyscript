@@ -1,4 +1,4 @@
-import { clean, fetchPaths } from "./_utils.js";
+import { clean, fetchPaths, registerJSModule } from "./_utils.js";
 
 const type = "ruby-wasm-wasi";
 
@@ -23,6 +23,7 @@ export default {
         if (config.fetch) await fetchPaths(this, interpreter, config.fetch);
         return interpreter;
     },
+    registerJSModule,
     setGlobal(interpreter, name, value) {
         const id = `__pyscript_ruby_wasm_wasi_${name}`;
         globalThis[id] = value;

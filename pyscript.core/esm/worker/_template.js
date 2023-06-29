@@ -98,7 +98,7 @@ add("message", ({ data: { options, code, hooks } }) => {
             }
         }
         // set the `xworker` global reference once
-        details.setGlobal(interpreter, "xworker", xworker);
+        details.registerJSModule(interpreter, "xworker", { xworker });
         // simplify run calls after possible patches
         run = details[name].bind(details, interpreter);
         // execute the content of the worker file

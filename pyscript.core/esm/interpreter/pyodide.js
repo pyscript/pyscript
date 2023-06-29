@@ -4,6 +4,7 @@ import {
     runAsync,
     setGlobal,
     deleteGlobal,
+    registerJSModule,
     writeFile,
 } from "./_python.js";
 
@@ -32,6 +33,7 @@ export default {
     },
     setGlobal,
     deleteGlobal,
+    registerJSModule,
     run,
     runAsync,
     writeFile,
