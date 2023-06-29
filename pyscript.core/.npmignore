@@ -16,4 +16,6 @@ node.importmap
 sw.js
 tsconfig.json
 cjs/worker/_template.js
+cjs/worker/__template.js
 esm/worker/_template.js
+esm/worker/__template.js
