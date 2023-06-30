@@ -2,6 +2,7 @@ import { fetchPaths, stdio } from "./_utils.js";
 import {
     run,
     runAsync,
+    getGlobal,
     setGlobal,
     deleteGlobal,
     registerJSModule,
@@ -31,6 +32,7 @@ export default {
         }
         return interpreter;
     },
+    getGlobal,
     setGlobal,
     deleteGlobal,
     registerJSModule,

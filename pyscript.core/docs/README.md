@@ -272,7 +272,7 @@ If this example felt a bit verbose, be ensured custom types would work the same:
 </button>
 ```
 
-What is important to understand about *events* in PyScript is that the text within the attribute is executed just like any other inline or external content is, through the very same *interpreter*, with the notably extra feature that the `event` reference is made temporarily available as *global* by *core*.
+What is important to understand about *events* in PyScript is that, unless the attribute content is just a method/function name, the text within the attribute is executed just like any other inline or external content is, through the very same *interpreter*, with the notably extra feature that the `event` reference is made temporarily available as *global* by *core*.
 
 This really reflects how otherwise native Web inline events handlers work and we think it's a great feature to support ... *but*:
 
@@ -280,6 +280,24 @@ This really reflects how otherwise native Web inline events handlers work and we
  * if your *interpreter* is *experimental*, or incapable of running *synchronous* events, the `event` reference might be less useful
 
 ℹ️ - Please note that if your code runs via *XWorker*, hence in a different thread, there are different caveats and constraints to consider. Please read the [XWorker](#xworker) dedicated section to know more.
+
+
+#### The direct method / function
+
+If the content of the generic *event* attribute is just a function name (that means: no parenthesis, no `event` passed along, just `print` or `my_method` or `my_function` name), *core* tries to grab that from the current execution context and invokes it directly passing the *event*:
+
+```html
+<script type="micropython">
+    def print_type(event):
+        print(event.type)
+</script>
+<button micropython-click="print_type">
+    print type directly
+</button>
+```
+
+The advantage of this alternative is that *core* does not need to temporarily create an event at all, the disadvantage is that it's not possible to pass any other value if not just the currently triggered *event*.
+
 
 #### The type-env attribute
 

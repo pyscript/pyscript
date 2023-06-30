@@ -1,6 +1,7 @@
 import { fetchPaths, stdio } from "./_utils.js";
 import {
     run,
+    getGlobal,
     setGlobal,
     deleteGlobal,
     registerJSModule,
@@ -22,6 +23,7 @@ export default {
         if (config.fetch) await fetchPaths(this, interpreter, config.fetch);
         return interpreter;
     },
+    getGlobal,
     setGlobal,
     deleteGlobal,
     registerJSModule,

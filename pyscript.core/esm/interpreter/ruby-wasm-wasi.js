@@ -24,6 +24,9 @@ export default {
         return interpreter;
     },
     registerJSModule,
+    getGlobal(interpreter, name) {
+        return this.run(interpreter, `$${name}`);
+    },
     setGlobal(interpreter, name, value) {
         const id = `__pyscript_ruby_wasm_wasi_${name}`;
         globalThis[id] = value;

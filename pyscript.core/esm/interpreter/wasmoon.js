@@ -28,6 +28,7 @@ export default {
         return interpreter;
     },
     registerJSModule,
+    getGlobal: (interpreter, name) => interpreter.global.get(name),
     setGlobal(interpreter, name, value) {
         interpreter.global.set(name, value);
     },

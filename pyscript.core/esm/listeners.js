@@ -41,11 +41,20 @@ export const listener = async (event) => {
             el.getAttribute(`${name}-env`) || name,
         );
         const handler = registry.get(name);
-        try {
-            handler.setGlobal(interpreter, "event", event);
-            handler.run(interpreter, value);
-        } finally {
-            handler.deleteGlobal(interpreter, "event");
+        // fast path (locally scoped + direct invoke + no eval) for:
+        //  * x-click="method"
+        //  * x-click="method event"
+        //  * x-click="method(event)"
+        //  * x-click="method( event )"
+        if (/^(\w+)(?:\s+event|\(\s*event\s*\))?$/.test(value)) {
+            handler.getGlobal(interpreter, RegExp.$1)(event);
+        } else {
+            try {
+                handler.setGlobal(interpreter, "event", event);
+                handler.run(interpreter, value);
+            } finally {
+                handler.deleteGlobal(interpreter, "event");
+            }
         }
     }
 };
