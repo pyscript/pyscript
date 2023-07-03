@@ -6,14 +6,16 @@
     "types": "./types/index.d.ts",
     "scripts": {
         "server": "npx static-handler --cors --coep --coop --corp .",
-        "build": "npm run rollup:xworker && npm run rollup:core && npm run rollup:pyscript && eslint esm/ && npm run ts && npm run cjs && npm run test",
+        "build": "npm run rollup:xworker && npm run rollup:core && npm run rollup:pyscript && eslint esm/ && npm run ts && npm run cjs",
         "cjs": "ascjs --no-default esm cjs",
         "dev": "node dev.cjs",
         "rollup:core": "rollup --config rollup/core.config.js",
         "rollup:pyscript": "rollup --config rollup/pyscript.config.js",
         "rollup:xworker": "rollup --config rollup/xworker.config.js",
-        "test": "c8 --100 node --experimental-loader @node-loader/import-maps test/index.js ",
+        "test": "c8 --100 node --experimental-loader @node-loader/import-maps test/index.js && npm run test:integration",
         "test:html": "npm run test && c8 report -r html",
+        "test:integration//": "Don't bother with spinning servers. Trap the tests EXIT_CODE. Kill the running server, if any. Return the EXIT_CODE to eventually throw an error.",
+        "test:integration": "static-handler --cors --coep --coop --corp . 2>/dev/null & SH_PID=$!; EXIT_CODE=0; playwright test --fully-parallel test/ || EXIT_CODE=$?; kill $SH_PID 2>/dev/null; exit $EXIT_CODE",
         "coverage": "mkdir -p ./coverage; c8 report --reporter=text-lcov > ./coverage/lcov.info",
         "size": "npm run size:module && npm run size:worker",
         "size:module": "echo module is $(cat core.js | brotli | wc -c) bytes once compressed",
@@ -29,6 +31,7 @@
     "license": "MIT",
     "devDependencies": {
         "@node-loader/import-maps": "^1.1.0",
+        "@playwright/test": "^1.35.1",
         "@rollup/plugin-node-resolve": "^15.1.0",
         "@rollup/plugin-terser": "^0.4.3",
         "ascjs": "^5.0.1",
@@ -66,6 +69,6 @@
         "coincident": "^0.11.1"
     },
     "worker": {
-        "blob": "sha256-lKnkzAqePCcARjTnFS6sRscDVvubVW8t5ptuccVkREc="
+        "blob": "sha256-Ku7KFQEos4ex24kNmg6mhCafl5jblyxgiWfXyVxhpUk="
     }
 }

@@ -46,7 +46,7 @@ jobs:
 
             - name: install next deps
               working-directory: pyscript.core
-              run: npm i
+              run: npm i; npx playwright install
 
             - name: build next
               working-directory: pyscript.core
