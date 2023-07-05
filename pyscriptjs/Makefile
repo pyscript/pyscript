@@ -58,6 +58,14 @@ dev:
 build:
 	npm run build
 
+build-fast:
+	node esbuild.mjs
+
+# use the following rule to do all the checks done by precommit: in
+# particular, use this if you want to run eslint.
+precommit-check:
+	pre-commit run --all-files
+
 examples:
 	mkdir -p ./examples
 	cp -r ../examples/* ./examples
@@ -78,22 +86,31 @@ run-examples: setup build examples
 	make dev
 
 test:
-	make examples
 	make test-ts
 	make test-py
 	make test-integration-parallel
+	make test-examples
 
+# run all integration tests *including examples* sequentially
 test-integration:
-	make examples
-	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning
+	mkdir -p test_results
+	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
 
+# run all integration tests *except examples* in parallel (examples use too much memory)
 test-integration-parallel:
+	mkdir -p test_results
+	$(PYTEST_EXE) --numprocesses auto -vv $(ARGS) tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml -k 'not zz_examples'
+
+# run integration tests on only examples sequentially (to avoid running out of memory)
+test-examples:
 	make examples
-	$(PYTEST_EXE) --numprocesses auto -vv $(ARGS) tests/integration/ --log-cli-level=warning
+	mkdir -p test_results
+	$(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml -k 'zz_examples'
 
 test-py:
 	@echo "Tests from $(src_dir)"
-	$(PYTEST_EXE) -vv $(ARGS) tests/py-unit/ --log-cli-level=warning
+	mkdir -p test_results
+	$(PYTEST_EXE) -vv $(ARGS) tests/py-unit/ --log-cli-level=warning --junitxml=test_results/py-unit.xml
 
 test-ts:
 	npm run test

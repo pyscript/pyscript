@@ -1,4 +1,4 @@
-name: '[CI] Publish Release'
+name: "[CI] Publish Release"
 
 on:
     release:
@@ -14,49 +14,62 @@ defaults:
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-latest-8core
         permissions:
             contents: read
             id-token: write
         steps:
-        -   name: Checkout
-            uses: actions/checkout@v3
+            - name: Checkout
+              uses: actions/checkout@v3
 
-        -   name: Install node
-            uses: actions/setup-node@v3
-            with:
-                node-version: 18.x
+            - name: Install node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18.x
 
-        -   name: Cache node modules
-            uses: actions/cache@v3
-            env:
-                cache-name: cache-node-modules
-            with:
-              # npm cache files are stored in `~/.npm` on Linux/macOS
-                path: ~/.npm
-                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-                restore-keys: |
-                    ${{ runner.os }}-build-${{ env.cache-name }}-
-                    ${{ runner.os }}-build-
-                    ${{ runner.os }}-
+            - name: Cache node modules
+              uses: actions/cache@v3
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  # npm cache files are stored in `~/.npm` on Linux/macOS
+                  path: ~/.npm
+                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-build-${{ env.cache-name }}-
+                      ${{ runner.os }}-build-
+                      ${{ runner.os }}-
 
-        -   name: setup Miniconda
-            uses: conda-incubator/setup-miniconda@v2
+            - name: setup Miniconda
+              uses: conda-incubator/setup-miniconda@v2
 
-        -   name: Setup Environment
-            run: make setup
+            - name: Setup Environment
+              run: make setup
 
-        -   name: Build and Test
-            run: make test
+            - name: Build
+              run: make build
 
-        # Upload to S3
-        -   name: Configure AWS credentials
-            uses: aws-actions/configure-aws-credentials@v1.6.1
-            with:
-                aws-region: ${{ secrets.AWS_REGION }}
-                role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
+            - name: TypeScript Tests
+              run: make test-ts
 
-        -   name: Sync to S3
-            run: | # Update /latest and create an explicitly versioned directory under releases/YYYY.MM.MICRO/
-                aws s3 sync --quiet ./build/ s3://pyscript.net/latest/
-                aws s3 sync --quiet ./build/ s3://pyscript.net/releases/${{ github.ref_name }}/
+            - name: Python Tests
+              run: make test-py
+
+            - name: Integration Tests
+              run: make test-integration-parallel
+
+            - name: Examples Tests
+              run: make test-examples
+
+              # Upload to S3
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v1.6.1
+              with:
+                  aws-region: ${{ secrets.AWS_REGION }}
+                  role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
+
+            - name: Sync to S3
+              run:
+                  | # Update /latest and create an explicitly versioned directory under releases/YYYY.MM.MICRO/
+                  aws s3 sync --quiet ./build/ s3://pyscript.net/latest/
+                  aws s3 sync --quiet ./build/ s3://pyscript.net/releases/${{ github.ref_name }}/

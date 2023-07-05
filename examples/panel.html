@@ -1,51 +1,56 @@
 <html>
-  <head>
-    <title>Panel Example</title>
-    <meta charset="iso-8859-1">
-    <link rel="icon" type="image/x-icon" href="./favicon.png">
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.3.min.js"></script>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.3.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@holoviz/panel@0.14.1/dist/panel.min.js"></script>
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <link rel="stylesheet" href="./assets/css/examples.css" />
-  </head>
-  <body>
-   <nav class="navbar" style="background-color: #000000;">
-      <div class="app-header">
-        <a href="/">
-          <img src="./logo.png" class="logo">
-        </a>
-        <a class="title" href="" style="color: #f0ab3c;">Panel Example</a>
-      </div>
-    </nav>
-    <section class="pyscript">
-      <div id="simple_app"></div>
+    <head>
+        <title>Panel Example</title>
+        <meta charset="iso-8859-1" />
+        <link rel="icon" type="image/x-icon" href="./favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
+        <link rel="stylesheet" href="./assets/css/examples.css" />
+    </head>
+    <body>
+        <nav class="navbar" style="background-color: #000000">
+            <div class="app-header">
+                <a href="/">
+                    <img src="./logo.png" class="logo" />
+                </a>
+                <a class="title" href="" style="color: #f0ab3c"
+                    >Panel Example</a
+                >
+            </div>
+        </nav>
+        <section class="pyscript">
+            <div id="simple_app"></div>
 
-      <py-tutor>
-        <py-config>
-          packages = [
-            "https://cdn.holoviz.org/panel/0.14.3/dist/wheels/bokeh-2.4.3-py3-none-any.whl",
-            "numpy",
-            "panel==0.14.1"
-          ]
-          plugins = [
-            "../build/plugins/python/py_tutor.py"
-          ]
-        </py-config>
+            <py-tutor>
+                <script defer src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.js"></script>
+                <script defer src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.3.min.js"></script>
+                <script defer src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.3.min.js"></script>
+                <script defer src="https://cdn.jsdelivr.net/npm/@holoviz/panel@0.14.1/dist/panel.min.js"></script>
+                <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+                <py-config>
+                    packages = [
+                      "https://cdn.holoviz.org/panel/0.14.3/dist/wheels/bokeh-2.4.3-py3-none-any.whl",
+                      "numpy",
+                      "panel==0.14.1"
+                    ]
+                    plugins = [
+                      "https://pyscript.net/latest/plugins/python/py_tutor.py"
+                    ]
+                </py-config>
 
-        <py-script>
-          import panel as pn
+                <py-script>
+                    import panel as pn
 
-          slider = pn.widgets.FloatSlider(start=0, end=10, name='Amplitude')
+                    slider = pn.widgets.FloatSlider(start=0, end=10, name='Amplitude')
 
-          def callback(new):
-              return f'Amplitude is: {new}'
+                    def callback(new):
+                        return f'Amplitude is: {new}'
 
-          pn.Row(slider, pn.bind(callback, slider)).servable(target='simple_app');
-        </py-script>
-      </py-tutor>
-    </section>
-  </body>
+                    pn.Row(slider, pn.bind(callback, slider)).servable(target='simple_app');
+                </py-script>
+            </py-tutor>
+        </section>
+    </body>
 </html>

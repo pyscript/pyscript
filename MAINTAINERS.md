@@ -9,15 +9,16 @@ This document lists the Maintainers of the Project. Maintainers may be added onc
 | Philipp Rudiger      | Anaconda, Inc    |
 | Peter Wang           | Anaconda, Inc    |
 | Kevin Goldsmith      | Anaconda, Inc    |
-| Mariana Meireles     | Anaconda, Inc    |
+| Mariana Meireles     |                  |
 | Nicholas H.Tollervey | Anaconda, Inc    |
 | Madhur Tandon        | Anaconda, Inc    |
 | Ted Patrick          | Anaconda, Inc    |
-| Jeff Glass           | ---              |
-| Paul Everitt         | ---              |
-| Fabio Rosado         | ---              |
+| Jeff Glass           |                  |
+| Paul Everitt         |                  |
+| Fabio Rosado         | Anaconda, Inc    |
+| Andrea Giammarchi    | Anaconda, Inc    |
 
-______________________________________________________________________
+---
 
 Part of MVG-0.1-beta.
 Made with love by GitHub. Licensed under the [CC-BY 4.0 License](https://creativecommons.org/licenses/by-sa/4.0/).

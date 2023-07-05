@@ -1,18 +1,35 @@
 import type { AppConfig } from '../../src/pyconfig';
-import { Interpreter } from '../../src/interpreter';
-import { PyodideInterpreter } from '../../src/pyodide';
+import { InterpreterClient } from '../../src/interpreter_client';
 import { CaptureStdio } from '../../src/stdio';
+import * as Synclink from 'synclink';
+import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
+// We can't import RemoteInterpreter at top level because we need to mock the
+// Python package in setup.ts
+// But we can import the types at top level.
+// TODO: is there a better way to handle this?
+import type { RemoteInterpreter } from '../../src/remote_interpreter';
 
-import { TextEncoder, TextDecoder } from 'util';
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
-
-describe('PyodideInterpreter', () => {
-    let interpreter: PyodideInterpreter;
+describe('RemoteInterpreter', () => {
+    let interpreter: InterpreterClient;
     let stdio: CaptureStdio = new CaptureStdio();
+    let RemoteInterpreter;
+    const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
     beforeAll(async () => {
-        const config: AppConfig = {};
-        interpreter = new PyodideInterpreter(config, stdio);
+        const SRC = '../pyscriptjs/node_modules/pyodide/pyodide.js';
+        const config: AppConfig = { interpreters: [{ src: SRC }], packages: [] };
+        // Dynamic import of RemoteInterpreter sees our mocked Python package.
+        ({ RemoteInterpreter } = await import('../../src/remote_interpreter'));
+        const remote_interpreter = new RemoteInterpreter(SRC);
+
+        port1.start();
+        port2.start();
+        Synclink.expose(remote_interpreter, port2);
+        const wrapped_remote_interpreter = Synclink.wrap(port1);
+        interpreter = new InterpreterClient(
+            config,
+            stdio,
+            wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
+        );
 
         /**
          * Since import { loadPyodide } from 'pyodide';
@@ -39,31 +56,34 @@ describe('PyodideInterpreter', () => {
         const pyodideSpec = await import('pyodide');
         global.loadPyodide = async options =>
             pyodideSpec.loadPyodide(Object.assign({ indexURL: '../pyscriptjs/node_modules/pyodide/' }, options));
-        await interpreter.loadInterpreter();
+        await interpreter.initializeRemote();
+    });
+
+    afterAll(async () => {
+        port1.close();
+        port2.close();
     });
 
     it('should check if interpreter is an instance of abstract Interpreter', async () => {
-        expect(interpreter).toBeInstanceOf(Interpreter);
-    });
-
-    it('should check if interpreter is an instance of PyodideInterpreter', async () => {
-        expect(interpreter).toBeInstanceOf(PyodideInterpreter);
+        expect(interpreter).toBeInstanceOf(InterpreterClient);
     });
 
     it('should check if interpreter can run python code asynchronously', async () => {
-        expect(interpreter.run('2+3')).toBe(5);
+        expect((await interpreter.run('2+3')).result).toBe(5);
     });
 
     it('should capture stdout', async () => {
         stdio.reset();
-        interpreter.run("print('hello')");
+        await interpreter.run("print('hello')");
         expect(stdio.captured_stdout).toBe('hello\n');
     });
 
     it('should check if interpreter is able to load a package', async () => {
-        await interpreter.loadPackage('numpy');
-        interpreter.run('import numpy as np');
-        interpreter.run('x = np.ones((10,))');
-        expect(interpreter.globals.get('x').toJs()).toBeInstanceOf(Float64Array);
+        stdio.reset();
+        await interpreter._remote.loadPackage('numpy');
+        await interpreter.run('import numpy as np');
+        await interpreter.run('x = np.ones((10,))');
+        await interpreter.run('print(x)');
+        expect(stdio.captured_stdout).toBe('[1. 1. 1. 1. 1. 1. 1. 1. 1. 1.]\n');
     });
 });

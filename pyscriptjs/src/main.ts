@@ -1,15 +1,15 @@
+import { $$ } from 'basic-devtools';
+
 import './styles/pyscript_base.css';
 
 import { loadConfigFromElement } from './pyconfig';
-import type { AppConfig } from './pyconfig';
-import type { Interpreter } from './interpreter';
-import { version } from './version';
-import { PluginManager, define_custom_element } from './plugin';
+import type { AppConfig, InterpreterConfig } from './pyconfig';
+import { InterpreterClient } from './interpreter_client';
+import { PluginManager, Plugin, PythonPlugin } from './plugin';
 import { make_PyScript, initHandlers, mountElements } from './components/pyscript';
-import { PyodideInterpreter } from './pyodide';
 import { getLogger } from './logger';
-import { showWarning, globalExport } from './utils';
-import { calculatePaths } from './plugins/fetch';
+import { showWarning, createLock } from './utils';
+import { calculateFetchPaths } from './plugins/calculateFetchPaths';
 import { createCustomElements } from './components/elements';
 import { UserError, ErrorCode, _createAlertBanner } from './exceptions';
 import { type Stdio, StdioMultiplexer, DEFAULT_STDIO } from './stdio';
@@ -17,13 +17,27 @@ import { PyTerminalPlugin } from './plugins/pyterminal';
 import { SplashscreenPlugin } from './plugins/splashscreen';
 import { ImportmapPlugin } from './plugins/importmap';
 import { StdioDirector as StdioDirector } from './plugins/stdiodirector';
-// eslint-disable-next-line
-// @ts-ignore
-import pyscript from './python/pyscript.py';
+import { RemoteInterpreter } from './remote_interpreter';
 import { robustFetch } from './fetch';
-import type { Plugin } from './plugin';
+import * as Synclink from 'synclink';
 
 const logger = getLogger('pyscript/main');
+
+/**
+ * Monkey patching the error transfer handler to preserve the `$$isUserError`
+ * marker so as to detect `UserError` subclasses in the error handling code.
+ */
+const throwHandler = Synclink.transferHandlers.get('throw') as Synclink.TransferHandler<
+    { value: unknown },
+    { value: { $$isUserError: boolean } }
+>;
+const old_error_transfer_handler = throwHandler.serialize.bind(throwHandler) as typeof throwHandler.serialize;
+function new_error_transfer_handler({ value }: { value: { $$isUserError: boolean } }) {
+    const result = old_error_transfer_handler({ value });
+    result[0].value.$$isUserError = value.$$isUserError;
+    return result;
+}
+throwHandler.serialize = new_error_transfer_handler;
 
 /* High-level overview of the lifecycle of a PyScript App:
 
@@ -47,24 +61,25 @@ const logger = getLogger('pyscript/main');
       user scripts
 
    8. initialize the rest of web components such as py-button, py-repl, etc.
-
-More concretely:
-
-  - Points 1-4 are implemented sequentially in PyScriptApp.main().
-
-  - PyScriptApp.loadInterpreter adds a <script> tag to the document to initiate
-    the download, and then adds an event listener for the 'load' event, which
-    in turns calls PyScriptApp.afterInterpreterLoad().
-
-  - PyScriptApp.afterInterpreterLoad() implements all the points >= 5.
 */
+
+export let interpreter;
+// TODO: This is for backwards compatibility, it should be removed
+// when we finish the deprecation cycle of `runtime`
+export let runtime;
 
 export class PyScriptApp {
     config: AppConfig;
-    interpreter: Interpreter;
+    interpreter: InterpreterClient;
+    unwrapped_remote: RemoteInterpreter;
+    readyPromise: Promise<void>;
     PyScript: ReturnType<typeof make_PyScript>;
     plugins: PluginManager;
     _stdioMultiplexer: StdioMultiplexer;
+    tagExecutionLock: () => Promise<() => void>; // this is used to ensure that py-script tags are executed sequentially
+    _numPendingTags: number;
+    scriptTagsPromise: Promise<void>;
+    resolvedScriptTags: () => void;
 
     constructor() {
         // initialize the builtin plugins
@@ -75,6 +90,9 @@ export class PyScriptApp {
         this._stdioMultiplexer.addListener(DEFAULT_STDIO);
 
         this.plugins.add(new StdioDirector(this._stdioMultiplexer));
+        this.tagExecutionLock = createLock();
+        this._numPendingTags = 0;
+        this.scriptTagsPromise = new Promise(res => (this.resolvedScriptTags = res));
     }
 
     // Error handling logic: if during the execution we encounter an error
@@ -82,18 +100,33 @@ export class PyScriptApp {
     // config, file not found in fetch, etc.), we can throw UserError(). It is
     // responsibility of main() to catch it and show it to the user in a
     // proper way (e.g. by using a banner at the top of the page).
-    main() {
+    async main() {
         try {
-            this._realMain();
+            await this._realMain();
         } catch (error) {
-            this._handleUserErrorMaybe(error);
+            await this._handleUserErrorMaybe(error);
         }
     }
 
-    _handleUserErrorMaybe(error) {
-        if (error instanceof UserError) {
-            _createAlertBanner(error.message, 'error', error.messageType);
-            this.plugins.onUserError(error);
+    incrementPendingTags() {
+        this._numPendingTags += 1;
+    }
+
+    decrementPendingTags() {
+        if (this._numPendingTags <= 0) {
+            throw new Error('INTERNAL ERROR: assertion _numPendingTags > 0 failed');
+        }
+        this._numPendingTags -= 1;
+        if (this._numPendingTags === 0) {
+            this.resolvedScriptTags();
+        }
+    }
+
+    async _handleUserErrorMaybe(error: any) {
+        const e = error as UserError;
+        if (e && e.$$isUserError) {
+            _createAlertBanner(e.message, 'error', e.messageType);
+            await this.plugins.onUserError(e);
         } else {
             throw error;
         }
@@ -102,11 +135,15 @@ export class PyScriptApp {
     // ============ lifecycle ============
 
     // lifecycle (1)
-    _realMain() {
+    async _realMain() {
         this.loadConfig();
-        this.plugins.configure(this.config);
+        await this.plugins.configure(this.config);
         this.plugins.beforeLaunch(this.config);
-        this.loadInterpreter();
+        await this.loadInterpreter();
+        interpreter = this.unwrapped_remote;
+        // TODO: This is for backwards compatibility, it should be removed
+        // when we finish the deprecation cycle of `runtime`
+        runtime = this.unwrapped_remote;
     }
 
     // lifecycle (2)
@@ -116,7 +153,7 @@ export class PyScriptApp {
         // XXX: we should actively complain if there are multiple <py-config>
         // and show a big error. PRs welcome :)
         logger.info('searching for <py-config>');
-        const elements = document.getElementsByTagName('py-config');
+        const elements = $$('py-config', document);
         let el: Element | null = null;
         if (elements.length > 0) el = elements[0];
         if (elements.length >= 2) {
@@ -126,11 +163,72 @@ export class PyScriptApp {
             );
         }
         this.config = loadConfigFromElement(el);
+        if (this.config.execution_thread === 'worker' && crossOriginIsolated === false) {
+            throw new UserError(
+                ErrorCode.BAD_CONFIG,
+                `When execution_thread is "worker", the site must be cross origin isolated, but crossOriginIsolated is false.
+                To be cross origin isolated, the server must use https and also serve with the following headers: ${JSON.stringify(
+                    {
+                        'Cross-Origin-Embedder-Policy': 'require-corp',
+                        'Cross-Origin-Opener-Policy': 'same-origin',
+                    },
+                )}.
+
+                The problem may be that one or both of these are missing.
+                `,
+            );
+        }
         logger.info('config loaded:\n' + JSON.stringify(this.config, null, 2));
     }
 
+    _get_base_url(): string {
+        // Note that this requires that pyscript is loaded via a <script>
+        // tag. If we want to allow loading via an ES6 module in the future,
+        // we need to think about some other strategy
+        const elem = document.currentScript as HTMLScriptElement;
+        const slash = elem.src.lastIndexOf('/');
+        return elem.src.slice(0, slash);
+    }
+
+    async _startInterpreter_main(interpreter_cfg: InterpreterConfig) {
+        logger.info('Starting the interpreter in the main thread');
+        // this is basically equivalent to worker_initialize()
+        const remote_interpreter = new RemoteInterpreter(interpreter_cfg.src);
+        this.unwrapped_remote = remote_interpreter;
+        const { port1, port2 } = new Synclink.FakeMessageChannel() as unknown as MessageChannel;
+        port1.start();
+        port2.start();
+        Synclink.expose(remote_interpreter, port2);
+        const wrapped_remote_interpreter = Synclink.wrap(port1);
+
+        this.logStatus(`Downloading ${interpreter_cfg.name}...`);
+        /* Dynamically download and import pyodide: the import() puts a
+           loadPyodide() function into globalThis, which is later called by
+           RemoteInterpreter.
+
+           This is suboptimal: ideally, we would like to import() a module
+           which exports loadPyodide(), but this plays badly with workers
+           because at the moment of writing (2023-03-24) Firefox does not
+           support ES modules in workers:
+           https://caniuse.com/mdn-api_worker_worker_ecmascript_modules
+        */
+        const interpreterURL = interpreter_cfg.src;
+        await import(interpreterURL);
+        return wrapped_remote_interpreter;
+    }
+
+    async _startInterpreter_worker(interpreter_cfg: InterpreterConfig) {
+        logger.warn('execution_thread = "worker" is still VERY experimental, use it at your own risk');
+        logger.info('Starting the interpreter in a web worker');
+        const base_url = this._get_base_url();
+        const worker = new Worker(base_url + '/interpreter_worker.js');
+        const worker_initialize: any = Synclink.wrap(worker);
+        const wrapped_remote_interpreter = await worker_initialize(interpreter_cfg);
+        return wrapped_remote_interpreter;
+    }
+
     // lifecycle (4)
-    loadInterpreter() {
+    async loadInterpreter() {
         logger.info('Initializing interpreter');
         if (this.config.interpreters.length == 0) {
             throw new UserError(ErrorCode.BAD_CONFIG, 'Fatal error: config.interpreter is empty');
@@ -140,30 +238,20 @@ export class PyScriptApp {
             showWarning('Multiple interpreters are not supported yet.<br />Only the first will be used', 'html');
         }
 
-        const interpreter_cfg = this.config.interpreters[0];
-        this.interpreter = new PyodideInterpreter(
+        const cfg = this.config.interpreters[0];
+        let wrapped_remote_interpreter;
+        if (this.config.execution_thread == 'worker') {
+            wrapped_remote_interpreter = await this._startInterpreter_worker(cfg);
+        } else {
+            wrapped_remote_interpreter = await this._startInterpreter_main(cfg);
+        }
+
+        this.interpreter = new InterpreterClient(
             this.config,
             this._stdioMultiplexer,
-            interpreter_cfg.src,
-            interpreter_cfg.name,
-            interpreter_cfg.lang,
+            wrapped_remote_interpreter as Synclink.Remote<RemoteInterpreter>,
         );
-        this.logStatus(`Downloading ${interpreter_cfg.name}...`);
-
-        // download pyodide by using a <script> tag. Once it's ready, the
-        // "load" event will be fired and the exeuction logic will continue.
-        // Note that the load event is fired asynchronously and thus any
-        // exception which is throw inside the event handler is *NOT* caught
-        // by the try/catch inside main(): that's why we need to .catch() it
-        // explicitly and call _handleUserErrorMaybe also there.
-        const script = document.createElement('script'); // create a script DOM node
-        script.src = this.interpreter.src;
-        script.addEventListener('load', () => {
-            this.afterInterpreterLoad(this.interpreter).catch(error => {
-                this._handleUserErrorMaybe(error);
-            });
-        });
-        document.head.appendChild(script);
+        await this.afterInterpreterLoad(this.interpreter);
     }
 
     // lifecycle (5)
@@ -171,94 +259,72 @@ export class PyScriptApp {
     // point (4) to point (5).
     //
     // Invariant: this.config is set and available.
-    async afterInterpreterLoad(interpreter: Interpreter): Promise<void> {
+    async afterInterpreterLoad(interpreter: InterpreterClient): Promise<void> {
         console.assert(this.config !== undefined);
 
         this.logStatus('Python startup...');
-        await this.interpreter.loadInterpreter();
+        await this.interpreter.initializeRemote();
         this.logStatus('Python ready!');
 
         this.logStatus('Setting up virtual environment...');
         await this.setupVirtualEnv(interpreter);
-        mountElements(interpreter);
+        await mountElements(interpreter);
 
         // lifecycle (6.5)
-        this.plugins.afterSetup(interpreter);
+        await this.plugins.afterSetup(interpreter);
 
         //Refresh module cache in case plugins have modified the filesystem
-        interpreter.invalidate_module_path_cache();
+        await interpreter._remote.invalidate_module_path_cache();
         this.logStatus('Executing <py-script> tags...');
-        this.executeScripts(interpreter);
+        await this.executeScripts(interpreter);
 
         this.logStatus('Initializing web components...');
         // lifecycle (8)
-        createCustomElements(interpreter);
 
+        //Takes a runtime and a reference to the PyScriptApp (to access plugins)
+        createCustomElements(interpreter, this);
         initHandlers(interpreter);
 
         // NOTE: interpreter message is used by integration tests to know that
         // pyscript initialization has complete. If you change it, you need to
         // change it also in tests/integration/support.py
         this.logStatus('Startup complete');
-        this.plugins.afterStartup(interpreter);
+        await this.plugins.afterStartup(interpreter);
         logger.info('PyScript page fully initialized');
     }
 
     // lifecycle (6)
-    async setupVirtualEnv(interpreter: Interpreter): Promise<void> {
+    async setupVirtualEnv(interpreter: InterpreterClient): Promise<void> {
         // XXX: maybe the following calls could be parallelized, instead of
         // await()ing immediately. For now I'm using await to be 100%
         // compatible with the old behavior.
-        logger.info('importing pyscript');
-
-        // Save and load pyscript.py from FS
-        interpreter.interface.FS.writeFile('pyscript.py', pyscript, { encoding: 'utf8' });
-        //Refresh the module cache so Python consistently finds pyscript module
-        interpreter.invalidate_module_path_cache();
-
-        // inject `define_custom_element` and showWarning it into the PyScript
-        // module scope
-        const pyscript_module = interpreter.interface.pyimport('pyscript');
-        pyscript_module.define_custom_element = define_custom_element;
-        pyscript_module.showWarning = showWarning;
-        pyscript_module._set_version_info(version);
-        pyscript_module.destroy();
-
-        // import some carefully selected names into the global namespace
-        await interpreter.run(`
-        import js
-        import pyscript
-        from pyscript import Element, display, HTML
-        pyscript._install_deprecated_globals_2022_12_1(globals())
-        `);
-
-        if (this.config.packages) {
-            logger.info('Packages to install: ', this.config.packages);
-            await interpreter.installPackage(this.config.packages);
-        }
-        await this.fetchPaths(interpreter);
+        await Promise.all([this.installPackages(), this.fetchPaths(interpreter)]);
 
         //This may be unnecessary - only useful if plugins try to import files fetch'd in fetchPaths()
-        interpreter.invalidate_module_path_cache();
+        await interpreter._remote.invalidate_module_path_cache();
         // Finally load plugins
         await this.fetchUserPlugins(interpreter);
     }
 
-    async fetchPaths(interpreter: Interpreter) {
-        // XXX this can be VASTLY improved: for each path we need to fetch a
-        // URL and write to the virtual filesystem: pyodide.loadFromFile does
-        // it in Python, which means we need to have the interpreter
-        // initialized. But we could easily do it in JS in parallel with the
-        // download/startup of pyodide.
-        const [paths, fetchPaths] = calculatePaths(this.config.fetch);
-        logger.info('Paths to fetch: ', fetchPaths);
-        for (let i = 0; i < paths.length; i++) {
-            logger.info(`  fetching path: ${fetchPaths[i]}`);
-
-            // Exceptions raised from here will create an alert banner
-            await interpreter.loadFromFile(paths[i], fetchPaths[i]);
+    async installPackages() {
+        if (!this.config.packages) {
+            return;
         }
-        logger.info('All paths fetched');
+        logger.info('Packages to install: ', this.config.packages);
+        await this.interpreter._remote.installPackage(this.config.packages);
+    }
+
+    async fetchPaths(interpreter: InterpreterClient) {
+        // TODO: start fetching before interpreter initialization
+        const paths = calculateFetchPaths(this.config.fetch);
+        logger.info('Fetching urls:', paths.map(({ url }) => url).join(', '));
+        await Promise.all(
+            paths.map(async ({ path, url }) => {
+                await interpreter._remote.loadFileFromURL(path, url);
+                logger.info(`    Fetched ${url} ==> ${path}`);
+            }),
+        );
+        logger.info('Fetched all paths');
     }
 
     /**
@@ -268,7 +334,7 @@ export class PyScriptApp {
      *
      * @param interpreter - the interpreter that will be used to execute the plugins that need it.
      */
-    async fetchUserPlugins(interpreter: Interpreter) {
+    async fetchUserPlugins(interpreter: InterpreterClient) {
         const plugins = this.config.plugins;
         logger.info('Plugins to fetch: ', plugins);
         for (const singleFile of plugins) {
@@ -305,7 +371,7 @@ export class PyScriptApp {
         const blobFile = new File([pluginBlob], 'plugin.js', { type: 'text/javascript' });
         const fileUrl = URL.createObjectURL(blobFile);
 
-        const module = await import(fileUrl);
+        const module = (await import(fileUrl)) as { default: { new (): Plugin } };
         // Note: We have to put module.default in a variable
         // because we have seen weird behaviour when doing
         // new module.default() directly.
@@ -331,15 +397,14 @@ export class PyScriptApp {
      * @param interpreter - the interpreter that will execute the plugins
      * @param filePath - path to the python file to fetch
      */
-    async fetchPythonPlugin(interpreter: Interpreter, filePath: string) {
+    async fetchPythonPlugin(interpreter: InterpreterClient, filePath: string) {
         const pathArr = filePath.split('/');
         const filename = pathArr.pop();
         // TODO: Would be probably be better to store plugins somewhere like /plugins/python/ or similar
-        const destPath = `./${filename}`;
-        await interpreter.loadFromFile(destPath, filePath);
+        await interpreter._remote.loadFileFromURL(filename, filePath);
 
         //refresh module cache before trying to import module files into interpreter
-        interpreter.invalidate_module_path_cache();
+        await interpreter._remote.invalidate_module_path_cache();
 
         const modulename = filePath.replace(/^.*[\\/]/, '').replace('.py', '');
 
@@ -347,9 +412,9 @@ export class PyScriptApp {
         // TODO: This is very specific to Pyodide API and will not work for other interpreters,
         //       when we add support for other interpreters we will need to move this to the
         //       interpreter API level and allow each one to implement it in its own way
-        const module = interpreter.interface.pyimport(modulename);
-        if (typeof module.plugin !== 'undefined') {
-            const py_plugin = module.plugin;
+        const module = await interpreter.pyimport(modulename);
+        if (typeof (await module.plugin) !== 'undefined') {
+            const py_plugin = (await module.plugin) as PythonPlugin;
             py_plugin.init(this);
             this.plugins.addPythonPlugin(py_plugin);
         } else {
@@ -359,10 +424,14 @@ modules must contain a "plugin" attribute. For more information check the plugin
     }
 
     // lifecycle (7)
-    executeScripts(interpreter: Interpreter) {
+    async executeScripts(interpreter: InterpreterClient) {
         // make_PyScript takes an interpreter and a PyScriptApp as arguments
         this.PyScript = make_PyScript(interpreter, this);
         customElements.define('py-script', this.PyScript);
+        this.incrementPendingTags();
+        this.decrementPendingTags();
+        await this.scriptTagsPromise;
+        await this.interpreter._remote.pyscript_internal.schedule_deferred_tasks();
     }
 
     // ================= registraton API ====================
@@ -378,17 +447,14 @@ modules must contain a "plugin" attribute. For more information check the plugin
     }
 }
 
-function pyscript_get_config() {
-    return globalApp.config;
-}
-globalExport('pyscript_get_config', pyscript_get_config);
+globalThis.pyscript_get_config = () => globalApp.config;
 
 // main entry point of execution
 const globalApp = new PyScriptApp();
-globalApp.main();
 
-export { version };
-export const interpreter = globalApp.interpreter;
-// TODO: This is for backwards compatibility, it should be removed
-// when we finish the deprecation cycle of `runtime`
-export const runtime = globalApp.interpreter;
+// This top level execution causes trouble in jest
+if (typeof jest === 'undefined') {
+    globalApp.readyPromise = globalApp.main();
+}
+
+export { version } from './version';

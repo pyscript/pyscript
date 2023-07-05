@@ -1,4 +1,4 @@
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 
 class TestAsync(PyScriptTest):
@@ -20,13 +20,11 @@ class TestAsync(PyScriptTest):
     def test_asyncio_ensure_future(self):
         self.pyscript_run(self.coroutine_script.format(func="ensure_future"))
         self.wait_for_console("third")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-3:] == ["first", "second", "third"]
 
     def test_asyncio_create_task(self):
         self.pyscript_run(self.coroutine_script.format(func="create_task"))
         self.wait_for_console("third")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
         assert self.console.log.lines[-3:] == ["first", "second", "third"]
 
     def test_asyncio_gather(self):
@@ -43,7 +41,7 @@ class TestAsync(PyScriptTest):
 
             async def get_results():
                 results = await asyncio.gather(*[coro(d) for d in range(3,0,-1)])
-                js.console.log(to_js(results))
+                js.console.log(str(results)) #Compare to string representation, not Proxy
                 js.console.log("DONE")
 
             asyncio.ensure_future(get_results())
@@ -51,7 +49,7 @@ class TestAsync(PyScriptTest):
             """
         )
         self.wait_for_console("DONE")
-        assert self.console.log.lines[-2:] == ["[3,2,1]", "DONE"]
+        assert self.console.log.lines[-2:] == ["[3, 2, 1]", "DONE"]
 
     def test_multiple_async(self):
         self.pyscript_run(
@@ -79,10 +77,7 @@ class TestAsync(PyScriptTest):
         """
         )
         self.wait_for_console("b func done")
-        assert self.console.log.lines[0] == self.PY_COMPLETE
-        # We are getting some deprecation warnings from pyodide, so we
-        # need to skip the first 2 lines
-        assert self.console.log.lines[3:] == [
+        assert self.console.log.lines == [
             "A 0",
             "B 0",
             "A 1",
@@ -92,6 +87,7 @@ class TestAsync(PyScriptTest):
             "b func done",
         ]
 
+    @skip_worker("FIXME: display()")
     def test_multiple_async_multiple_display_targeted(self):
         self.pyscript_run(
             """
@@ -124,6 +120,7 @@ class TestAsync(PyScriptTest):
         inner_text = self.page.inner_text("html")
         assert "A0\nA1\nB0\nB1" in inner_text
 
+    @skip_worker("FIXME: display()")
     def test_async_display_untargeted(self):
         self.pyscript_run(
             """
@@ -149,3 +146,58 @@ class TestAsync(PyScriptTest):
             self.console.error.lines[-1]
             == "Implicit target not allowed here. Please use display(..., target=...)"
         )
+
+    def test_sync_and_async_order(self):
+        """
+        The order of execution is defined as follows:
+          1. first, we execute all the py-script tag in order
+          2. then, we start all the tasks which were scheduled with create_task
+
+        Note that tasks are started *AFTER* all py-script tags have been
+        executed. That's why the console.log() inside mytask1 and mytask2 are
+        executed after e.g. js.console.log("6").
+        """
+        src = """
+                <py-script>
+                    import js
+                    js.console.log("1")
+                </py-script>
+
+                <py-script>
+                    import asyncio
+                    import js
+
+                    async def mytask1():
+                        js.console.log("7")
+                        await asyncio.sleep(0)
+                        js.console.log("9")
+
+                    js.console.log("2")
+                    asyncio.create_task(mytask1())
+                    js.console.log("3")
+                </py-script>
+
+                <py-script>
+                    import js
+                    js.console.log("4")
+                </py-script>
+
+                <py-script>
+                    import asyncio
+                    import js
+
+                    async def mytask2():
+                        js.console.log("8")
+                        await asyncio.sleep(0)
+                        js.console.log("10")
+                        js.console.log("DONE")
+
+                    js.console.log("5")
+                    asyncio.create_task(mytask2())
+                    js.console.log("6")
+                </py-script>
+            """
+        self.pyscript_run(src, wait_for_pyscript=False)
+        self.wait_for_console("DONE")
+        lines = self.console.log.lines[-11:]
+        assert lines == ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "DONE"]

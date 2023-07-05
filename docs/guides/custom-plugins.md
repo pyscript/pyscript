@@ -120,11 +120,7 @@ Writing plugins in Python is an excellent way if you want to use PyScript's API'
 
 ## Javascript plugins
 
-Javascript plugins need to have a specific structure to be loaded by PyScript. The plugin must also export a default class with the following method:
-
-- `afterStartup(runtime)`: This method is called after the plugin has been loaded and the runtime has been initialized.
-
-Note that the `afterStartup` method must accept a single argument, but you can name it whatever you want. For Javascript plugins, this argument is not in use.
+Javascript plugins need to have a specific structure to be loaded by PyScript. The plugin export a default class with the following method, which may implement any, all, or none of the [Plugin lifecycle methods](https://github.com/pyscript/pyscript/blob/main/pyscriptjs/src/plugin.ts#L9-L65). These method will be called at the corresponding points in lifecycle of PyScript as it loads, configures itself and its Python interpreter, and executes `<py-script>` and `<py-repl>` tags.
 
 ```{note}
 You need to specify the file extension `.js` when adding your custom plugin to the `<py-config>` tag.

@@ -36,20 +36,21 @@ body {
     border-radius: 10px 0px 0px 10px;
     color: #c6c6c8;
 }
-.code-section-visible p{
+.code-section-visible p {
     margin: 0;
     font-style: italic;
     font-size: small;
 }
 
-.language-html, .language-python {
+.language-html,
+.language-python {
     float: left;
 }
 
 #view-code-button {
     writing-mode: tb-rl;
     text-orientation: sideways-right;
-    background-color: #1D1D22;
+    background-color: #1d1d22;
     color: white;
     padding: 0.5rem;
     border-radius: 5px;

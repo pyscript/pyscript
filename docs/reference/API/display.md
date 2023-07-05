@@ -2,7 +2,8 @@
 
 ## Parameters
 
-`*values` - the objects to be displayed. String objects are output as-written. For non-string objects, the default content to display is the the object's `repr()`. Objects may implement the following methods to indicate that they should be displayed as a different MIME type. MIME types with a * indicate that the content will be wrapped in the appropriate html tags and attributes before output:
+`*values` - the objects to be displayed. String objects are output as-written. For non-string objects, the default content to display is the the object's {py:func}`repr`. Objects may implement the following methods to indicate that they should be displayed as a different MIME type. MIME types with a * indicate that the content will be wrapped in the appropriate html tags and attributes before output:
+
 
 | Method              | Inferred MIME type     |
 |---------------------|------------------------|
@@ -34,7 +35,7 @@ Display will throw an exception if the target is not clear. E.g. the following c
         # from event handlers
         display('hello')
 </py-script>
-<button id="my-button" py-onClick="display_hello()">Click me</button>
+<button id="my-button" py-click="display_hello()">Click me</button>
 ```
 
 Because it's considered unclear if the `hello` string should be displayed underneath the `<py-script>` tag or the `<button>` tag.
@@ -44,12 +45,11 @@ To write compliant code, make sure to specify the target using the `target` para
 ```html
 <py-script>
     def display_hello():
-        # this fails because we don't have any implicit target
-        # from event handlers
+        # this works because we give an explicit target
         display('hello', target="helloDiv")
 </py-script>
 <div id="helloDiv"></div>
-<button id="my-button" py-onClick="display_hello()">Click me</button>
+<button id="my-button" py-click="display_hello()">Click me</button>
 ```
 
 #### Using matplotlib with display

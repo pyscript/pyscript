@@ -1,7 +1,9 @@
-import type { Interpreter } from '../interpreter';
+import { $$ } from 'basic-devtools';
+
 import { showWarning } from '../utils';
 import { Plugin } from '../plugin';
 import { getLogger } from '../logger';
+import { InterpreterClient } from '../interpreter_client';
 
 const logger = getLogger('plugins/importmap');
 
@@ -11,7 +13,7 @@ type ImportMapType = {
 };
 
 export class ImportmapPlugin extends Plugin {
-    async afterSetup(interpreter: Interpreter) {
+    async afterSetup(interpreter: InterpreterClient) {
         // make importmap ES modules available from python using 'import'.
         //
         // XXX: this code can probably be improved because errors are silently
@@ -21,11 +23,12 @@ export class ImportmapPlugin extends Plugin {
         // await the module to be fully registered before executing the code
         // inside py-script. It's also unclear whether we want to wait or not
         // (or maybe only wait only if we do an actual 'import'?)
-        for (const node of document.querySelectorAll("script[type='importmap']")) {
+        for (const node of $$("script[type='importmap']", document)) {
             const importmap: ImportMapType = (() => {
                 try {
                     return JSON.parse(node.textContent) as ImportMapType;
-                } catch (error) {
+                } catch (e) {
+                    const error = e as Error;
                     showWarning('Failed to parse import map: ' + error.message);
                 }
             })();
@@ -46,7 +49,7 @@ export class ImportmapPlugin extends Plugin {
                 }
 
                 logger.info('Registering JS module', name);
-                interpreter.registerJsModule(name, exports);
+                await interpreter._remote.registerJsModule(name, exports);
             }
         }
     }

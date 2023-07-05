@@ -20,6 +20,7 @@ glob:
 ---
 writing-to-page
 py-click
+requests
 ```
 
 ## PyScript Configuration
@@ -34,5 +35,4 @@ glob:
 ---
 py-config-fetch
 py-config-interpreter
-writing-to-page
 ```

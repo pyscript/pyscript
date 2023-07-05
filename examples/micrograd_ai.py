@@ -99,7 +99,9 @@ def micrograd_demo(*args, **kwargs):
         scores = list(map(model, inputs))
 
         # svm "max-margin" loss
-        losses = [(1 + -yi * scorei).relu() for yi, scorei in zip(yb, scores)]
+        losses = [
+            (1 + -yi * scorei).relu() for yi, scorei in zip(yb, scores, strict=True)
+        ]
         data_loss = sum(losses) * (1.0 / len(losses))
         # L2 regularization
         alpha = 1e-4
@@ -109,7 +111,7 @@ def micrograd_demo(*args, **kwargs):
         # also get accuracy
         accuracy = [
             ((yi).__gt__(0)) == ((scorei.data).__gt__(0))
-            for yi, scorei in zip(yb, scores)
+            for yi, scorei in zip(yb, scores, strict=True)
         ]
         return total_loss, sum(accuracy) / len(accuracy)
 

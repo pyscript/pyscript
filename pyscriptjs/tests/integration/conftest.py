@@ -123,12 +123,16 @@ def browser_type_launch_args(request):
     return launch_options
 
 
-class HTTPServer(SuperHTTPServer):
+class DevServer(SuperHTTPServer):
     """
     Class for wrapper to run SimpleHTTPServer on Thread.
     Ctrl +Only Thread remains dead when terminated with C.
     Keyboard Interrupt passes.
     """
+
+    def __init__(self, base_url, *args, **kwargs):
+        self.base_url = base_url
+        super().__init__(*args, **kwargs)
 
     def run(self):
         try:
@@ -140,21 +144,40 @@ class HTTPServer(SuperHTTPServer):
 
 
 @pytest.fixture(scope="session")
-def http_server(logger):
+def dev_server(logger):
     class MyHTTPRequestHandler(SimpleHTTPRequestHandler):
+        enable_cors_headers = True
+
+        @classmethod
+        def my_headers(cls):
+            if cls.enable_cors_headers:
+                return {
+                    "Cross-Origin-Embedder-Policy": "require-corp",
+                    "Cross-Origin-Opener-Policy": "same-origin",
+                }
+            return {}
+
+        def end_headers(self):
+            self.send_my_headers()
+            SimpleHTTPRequestHandler.end_headers(self)
+
+        def send_my_headers(self):
+            for k, v in self.my_headers().items():
+                self.send_header(k, v)
+
         def log_message(self, fmt, *args):
             logger.log("http_server", fmt % args, color="blue")
 
-    host, port = "127.0.0.1", 8080
+    host, port = "localhost", 8080
     base_url = f"http://{host}:{port}"
 
     # serve_Run forever under thread
-    server = HTTPServer((host, port), MyHTTPRequestHandler)
+    server = DevServer(base_url, (host, port), MyHTTPRequestHandler)
 
     thread = threading.Thread(None, server.run)
     thread.start()
 
-    yield base_url  # Transition to test here
+    yield server  # Transition to test here
 
     # End thread
     server.shutdown()

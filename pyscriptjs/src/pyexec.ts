@@ -1,39 +1,40 @@
 import { getLogger } from './logger';
 import { ensureUniqueId } from './utils';
 import { UserError, ErrorCode } from './exceptions';
-import type { Interpreter } from './interpreter';
+import { InterpreterClient } from './interpreter_client';
+import type { PyProxyCallable } from 'pyodide';
 
 const logger = getLogger('pyexec');
 
-export function pyExec(interpreter: Interpreter, pysrc: string, outElem: HTMLElement) {
-    //This is pyscript.py
-    const pyscript_py = interpreter.interface.pyimport('pyscript');
-
+export async function pyExec(
+    interpreter: InterpreterClient,
+    pysrc: string,
+    outElem: HTMLElement,
+): Promise<{ result: any }> {
     ensureUniqueId(outElem);
-    pyscript_py.set_current_display_target(outElem.id);
+    if (await interpreter._remote.pyscript_internal.uses_top_level_await(pysrc)) {
+        const err = new UserError(
+            ErrorCode.TOP_LEVEL_AWAIT,
+            'The use of top-level "await", "async for", and ' +
+                '"async with" has been removed.' +
+                '\nPlease write a coroutine containing ' +
+                'your code and schedule it using asyncio.ensure_future() or similar.' +
+                '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.',
+        );
+        displayPyException(err, outElem);
+        return { result: undefined };
+    }
+
     try {
-        try {
-            if (pyscript_py.uses_top_level_await(pysrc)) {
-                throw new UserError(
-                    ErrorCode.TOP_LEVEL_AWAIT,
-                    'The use of top-level "await", "async for", and ' +
-                        '"async with" is deprecated.' +
-                        '\nPlease write a coroutine containing ' +
-                        'your code and schedule it using asyncio.ensure_future() or similar.' +
-                        '\nSee https://docs.pyscript.net/latest/guides/asyncio.html for more information.',
-                );
-            }
-            return interpreter.run(pysrc);
-        } catch (err) {
-            // XXX: currently we display exceptions in the same position as
-            // the output. But we probably need a better way to do that,
-            // e.g. allowing plugins to intercept exceptions and display them
-            // in a configurable way.
-            displayPyException(err, outElem);
-        }
-    } finally {
-        pyscript_py.set_current_display_target(undefined);
-        pyscript_py.destroy();
+        return await interpreter.run(pysrc, outElem.id);
+    } catch (e) {
+        const err = e as Error;
+        // XXX: currently we display exceptions in the same position as
+        // the output. But we probably need a better way to do that,
+        // e.g. allowing plugins to intercept exceptions and display them
+        // in a configurable way.
+        displayPyException(err, outElem);
+        return { result: undefined };
     }
 }
 
@@ -44,16 +45,16 @@ export function pyExec(interpreter: Interpreter, pysrc: string, outElem: HTMLEle
  *     pyDisplay(interpreter, obj);
  *     pyDisplay(interpreter, obj, { target: targetID });
  */
-export function pyDisplay(interpreter: Interpreter, obj: any, kwargs: object) {
-    const display = interpreter.globals.get('display');
-    if (kwargs === undefined) display(obj);
-    else {
-        display.callKwargs(obj, kwargs);
+export async function pyDisplay(interpreter: InterpreterClient, obj: any, kwargs: { [k: string]: any } = {}) {
+    const display = (await interpreter.globals.get('display')) as PyProxyCallable;
+    try {
+        await display.callKwargs(obj, kwargs);
+    } finally {
+        display.destroy();
     }
 }
 
-export function displayPyException(err: any, errElem: HTMLElement) {
-    //addClasses(errElem, ['py-error'])
+export function displayPyException(err: Error, errElem: HTMLElement) {
     const pre = document.createElement('pre');
     pre.className = 'py-error';
 
@@ -65,8 +66,8 @@ export function displayPyException(err: any, errElem: HTMLElement) {
     } else {
         // this is very likely a normal JS exception. The best we can do is to
         // display it as is.
-        logger.error('Non-python exception:\n' + err);
-        pre.innerText = err;
+        logger.error('Non-python exception:\n' + err.toString());
+        pre.innerText = err.toString();
     }
     errElem.appendChild(pre);
 }

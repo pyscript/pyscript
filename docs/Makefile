@@ -30,7 +30,7 @@ shell:
 	@export CONDA_ENV_PROMPT='<{name}>'
 	@echo 'conda activate $(env)'
 
-htmlserve:
+htmlserve: html
 	@echo 'visit docs at http://localhost:8080'
 	python -m http.server -d "$(BUILDDIR)/html/" 8080
 

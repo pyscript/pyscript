@@ -1,65 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>Todo App</title>
+        <title>Todo App</title>
 
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
 
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <link rel="stylesheet" href="./assets/css/examples.css" />
-  </head>
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <link rel="stylesheet" href="./assets/css/examples.css" />
+    </head>
 
-  <body>
-  <nav class="navbar" style="background-color: #000000;">
-      <div class="app-header">
-        <a href="/">
-          <img src="./logo.png" class="logo">
-        </a>
-        <a class="title" href="" style="color: #f0ab3c;">Todo App</a>
-      </div>
-    </nav>
-    <section class="pyscript">
-      <py-tutor modules="./utils.py;./todo.py">
-        <py-config>
-          plugins = [
-            "../build/plugins/python/py_tutor.py"
-          ]
-          [[fetch]]
-          files = ["./utils.py", "./todo.py"]
-        </py-config>
+    <body>
+        <nav class="navbar" style="background-color: #000000">
+            <div class="app-header">
+                <a href="/">
+                    <img src="./logo.png" class="logo" />
+                </a>
+                <a class="title" href="" style="color: #f0ab3c">Todo App</a>
+            </div>
+        </nav>
+        <section class="pyscript">
+            <py-tutor modules="./utils.py;./todo.py">
+                <py-config>
+                    plugins = [
+                      "https://pyscript.net/latest/plugins/python/py_tutor.py",
+                      "./py_list.py"
+                    ]
+                    [[fetch]]
+                    files = ["./utils.py", "./todo.py"]
+                </py-config>
 
-        <py-script src="./todo.py">  </py-script>
+                <py-script src="./todo.py"></py-script>
+            </py-tutor>
+            <main>
+                <section>
+                    <div class="text-center w-full mb-8">
+                        <h1
+                            class="text-3xl font-bold text-gray-800 uppercase tracking-tight"
+                        >
+                            To Do List
+                        </h1>
+                    </div>
+                    <div>
+                        <input
+                            id="new-task-content"
+                            class="py-input"
+                            type="text"
+                        />
+                        <button
+                            id="new-task-btn"
+                            class="py-button"
+                            type="submit"
+                            py-click="add_task()"
+                        >
+                            Add task
+                        </button>
+                    </div>
 
-      <main>
-        <section>
+                    <py-list id="myList"></py-list>
+                    <div
+                        id="list-tasks-container"
+                        class="flex flex-col-reverse mt-4"
+                    ></div>
 
-          <div class="text-center w-full mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-tight">To Do List</h1>
-          </div>
-          <div>
-            <input id="new-task-content" class="py-input" type="text">
-            <button id="new-task-btn" class="py-button" type="submit" py-click="add_task()">
-              Add task
-            </button>
-          </div>
-
-          <py-list id="myList"></py-list>
-          <div id="list-tasks-container" class="flex flex-col-reverse mt-4"></div>
-
-          <template id="task-template">
-            <section class="task py-li-element">
-                <label for="flex items-center p-2 ">
-                  <input class="mr-2" type="checkbox">
-                  <p class="m-0 inline"></p>
-                </label>
-            </section>
-          </template>
+                    <template id="task-template">
+                        <section class="task py-li-element">
+                            <label for="flex items-center p-2 ">
+                                <input class="mr-2" type="checkbox" />
+                                <p class="m-0 inline"></p>
+                            </label>
+                        </section>
+                    </template>
+                </section>
+            </main>
         </section>
-      </main>
-   </section>
-</body>
+    </body>
 </html>

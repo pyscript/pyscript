@@ -1,7 +1,7 @@
-import toml from '../src/toml';
+import toml from '@hoodmane/toml-j0.4';
 import { getLogger } from './logger';
 import { version } from './version';
-import { getAttribute, readTextFromPath, htmlDecode, createDeprecationWarning } from './utils';
+import { readTextFromPath, htmlDecode, createDeprecationWarning } from './utils';
 import { UserError, ErrorCode } from './exceptions';
 
 const logger = getLogger('py-config');
@@ -22,6 +22,7 @@ export interface AppConfig extends Record<string, any> {
     fetch?: FetchConfig[];
     plugins?: string[];
     pyscript?: PyScriptMetadata;
+    execution_thread?: string; // "main" or "worker"
 }
 
 export type FetchConfig = {
@@ -42,19 +43,19 @@ export type PyScriptMetadata = {
     time?: string;
 };
 
-const allKeys = {
-    string: ['name', 'description', 'version', 'type', 'author_name', 'author_email', 'license'],
+const allKeys = Object.entries({
+    string: ['name', 'description', 'version', 'type', 'author_name', 'author_email', 'license', 'execution_thread'],
     number: ['schema_version'],
     array: ['runtimes', 'interpreters', 'packages', 'fetch', 'plugins'],
-};
+});
 
 export const defaultConfig: AppConfig = {
     schema_version: 1,
     type: 'app',
     interpreters: [
         {
-            src: 'https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js',
-            name: 'pyodide-0.22.1',
+            src: 'https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js',
+            name: 'pyodide-0.23.2',
             lang: 'python',
         },
     ],
@@ -63,6 +64,7 @@ export const defaultConfig: AppConfig = {
     packages: [],
     fetch: [],
     plugins: [],
+    execution_thread: 'main',
 };
 
 export function loadConfigFromElement(el: Element): AppConfig {
@@ -72,7 +74,7 @@ export function loadConfigFromElement(el: Element): AppConfig {
         srcConfig = {};
         inlineConfig = {};
     } else {
-        const configType = getAttribute(el, 'type') || 'toml';
+        const configType = el.getAttribute('type') || 'toml';
         srcConfig = extractFromSrc(el, configType);
         inlineConfig = extractFromInline(el, configType);
     }
@@ -86,7 +88,7 @@ export function loadConfigFromElement(el: Element): AppConfig {
 }
 
 function extractFromSrc(el: Element, configType: string) {
-    const src = getAttribute(el, 'src');
+    const src = el.getAttribute('src');
     if (src) {
         logger.info('loading ', src);
         return validateConfig(readTextFromPath(src), configType);
@@ -122,8 +124,7 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
     } else {
         let merged: AppConfig = {};
 
-        for (const keyType in allKeys) {
-            const keys: string[] = allKeys[keyType];
+        for (const [keyType, keys] of allKeys) {
             keys.forEach(function (item: string) {
                 if (keyType === 'boolean') {
                     merged[item] =
@@ -143,19 +144,21 @@ function mergeConfig(inlineConfig: AppConfig, externalConfig: AppConfig): AppCon
     }
 }
 
-function parseConfig(configText: string, configType = 'toml') {
+function parseConfig(configText: string, configType = 'toml'): AppConfig {
     if (configType === 'toml') {
+        // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
+        if (configText.trim()[0] === '{') {
+            throw new UserError(
+                ErrorCode.BAD_CONFIG,
+                `The config supplied: ${configText} is an invalid TOML and cannot be parsed`,
+            );
+        }
         try {
-            // TOML parser is soft and can parse even JSON strings, this additional check prevents it.
-            if (configText.trim()[0] === '{') {
-                throw new UserError(
-                    ErrorCode.BAD_CONFIG,
-                    `The config supplied: ${configText} is an invalid TOML and cannot be parsed`,
-                );
-            }
-            return toml.parse(configText);
-        } catch (err) {
+            return toml.parse(configText) as AppConfig;
+        } catch (e) {
+            const err = e as Error;
             const errMessage: string = err.toString();
+
             throw new UserError(
                 ErrorCode.BAD_CONFIG,
                 `The config supplied: ${configText} is an invalid TOML and cannot be parsed: ${errMessage}`,
@@ -163,8 +166,9 @@ function parseConfig(configText: string, configType = 'toml') {
         }
     } else if (configType === 'json') {
         try {
-            return JSON.parse(configText);
-        } catch (err) {
+            return JSON.parse(configText) as AppConfig;
+        } catch (e) {
+            const err = e as Error;
             const errMessage: string = err.toString();
             throw new UserError(
                 ErrorCode.BAD_CONFIG,
@@ -184,13 +188,12 @@ function validateConfig(configText: string, configType = 'toml') {
 
     const finalConfig: AppConfig = {};
 
-    for (const keyType in allKeys) {
-        const keys: string[] = allKeys[keyType];
+    for (const [keyType, keys] of allKeys) {
         keys.forEach(function (item: string) {
             if (validateParamInConfig(item, keyType, config)) {
                 if (item === 'interpreters') {
                     finalConfig[item] = [];
-                    const interpreters = config[item] as InterpreterConfig[];
+                    const interpreters = config[item];
                     interpreters.forEach(function (eachInterpreter: InterpreterConfig) {
                         const interpreterConfig: InterpreterConfig = {};
                         for (const eachInterpreterParam in eachInterpreter) {
@@ -213,7 +216,7 @@ function validateConfig(configText: string, configType = 'toml') {
                         '',
                     );
                     finalConfig['interpreters'] = [];
-                    const interpreters = config[item] as InterpreterConfig[];
+                    const interpreters = config[item];
                     interpreters.forEach(function (eachInterpreter: InterpreterConfig) {
                         const interpreterConfig: InterpreterConfig = {};
                         for (const eachInterpreterParam in eachInterpreter) {
@@ -225,7 +228,7 @@ function validateConfig(configText: string, configType = 'toml') {
                     });
                 } else if (item === 'fetch') {
                     finalConfig[item] = [];
-                    const fetchList = config[item] as FetchConfig[];
+                    const fetchList = config[item];
                     fetchList.forEach(function (eachFetch: FetchConfig) {
                         const eachFetchConfig: FetchConfig = {};
                         for (const eachFetchConfigParam in eachFetch) {
@@ -236,6 +239,15 @@ function validateConfig(configText: string, configType = 'toml') {
                         }
                         finalConfig[item].push(eachFetchConfig);
                     });
+                } else if (item == 'execution_thread') {
+                    const value = config[item];
+                    if (value !== 'main' && value !== 'worker') {
+                        throw new UserError(
+                            ErrorCode.BAD_CONFIG,
+                            `"${value}" is not a valid value for the property "execution_thread". The only valid values are "main" and "worker"`,
+                        );
+                    }
+                    finalConfig[item] = value;
                 } else {
                     finalConfig[item] = config[item];
                 }

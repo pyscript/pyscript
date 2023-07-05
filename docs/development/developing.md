@@ -41,7 +41,7 @@ git checkout -b <your branch name>
 * Run tests before pushing the changes
 
 ```
-make tests
+make test
 ```
 
 To learn more about tests please refer to the session [Quick guide to pytest](## Quick guide to pytest).
@@ -146,8 +146,8 @@ $ pytest test_01_basic.py -k test_pyscript_hello -s
 [  0.00 page.goto       ] pyscript_hello.html
 [  0.01 request         ] 200 - fake_server - http://fake_server/pyscript_hello.html
 ...
-[  0.17 console.info    ] [py-loader] Downloading pyodide-0.22.1...
-[  0.18 request         ] 200 - CACHED - https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js
+[  0.17 console.info    ] [py-loader] Downloading pyodide-x.y.z...
+[  0.18 request         ] 200 - CACHED - https://cdn.jsdelivr.net/pyodide/vx.y.z/full/pyodide.js
 ...
 [  3.59 console.info    ] [pyscript/main] PyScript page fully initialized
 [  3.60 console.log     ] hello pyscript
@@ -190,6 +190,16 @@ $ pytest test_01_basic.py -k test_pyscript_hello -s --dev
 `--dev` implies `--headed --no-fake-server`. In addition, it also
 automatically open chrome dev tools.
 
+#### To run only main thread or worker tests
+
+By default, we run each test twice: one with `execution_thread = "main"` and
+one with `execution_thread = "worker"`. If you want to run only half of them,
+you can use `-m`:
+
+```
+$ pytest -m main    # run only the tests in the main thread
+$ pytest -m worker  # ron only the tests in the web worker
+```
 
 ## Fake server, HTTP cache
 
@@ -206,25 +216,6 @@ If you want to temporarily disable the cache, the easiest thing is to use
 
 If you want to clear the cache, you can use the special option
 `--clear-http-cache`:
-
-```
-$ pytest --clear-http-cache
-...
--------------------- SmartRouter HTTP cache --------------------
-Requests found in the cache:
-     https://raw.githubusercontent.com/pyscript/pyscript/main/README.md
-     https://cdn.jsdelivr.net/pyodide/v0.22.1/full/repodata.json
-     https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.asm.js
-     https://cdn.jsdelivr.net/pyodide/v0.22.1/full/micropip-0.1-py3-none-any.whl
-     https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.asm.data
-     https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js
-     https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.asm.wasm
-     https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide_py.tar
-     https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyparsing-3.0.9-py3-none-any.whl
-     https://cdn.jsdelivr.net/pyodide/v0.22.1/full/distutils.tar
-     https://cdn.jsdelivr.net/pyodide/v0.22.1/full/packaging-21.3-py3-none-any.whl
-Cache cleared
-```
 
 **NOTE**: this works only if you are inside `tests/integration`, or if you
 explicitly specify `tests/integration` from the command line. This is due to

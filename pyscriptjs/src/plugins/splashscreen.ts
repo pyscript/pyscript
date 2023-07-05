@@ -1,9 +1,11 @@
+import { $ } from 'basic-devtools';
+
 import type { AppConfig } from '../pyconfig';
 import type { UserError } from '../exceptions';
-import type { Interpreter } from '../interpreter';
 import { showWarning } from '../utils';
 import { Plugin } from '../plugin';
 import { getLogger } from '../logger';
+import { InterpreterClient } from '../interpreter_client';
 
 const logger = getLogger('py-splashscreen');
 
@@ -22,7 +24,9 @@ export class SplashscreenPlugin extends Plugin {
     autoclose: boolean;
     enabled: boolean;
 
-    configure(config: AppConfig) {
+    configure(
+        config: AppConfig & { splashscreen?: { autoclose?: boolean; enabled?: boolean }; autoclose_loader?: boolean },
+    ) {
         // the officially supported setting is config.splashscreen.autoclose,
         // but we still also support the old config.autoclose_loader (with a
         // deprecation warning)
@@ -40,7 +44,7 @@ export class SplashscreenPlugin extends Plugin {
         }
     }
 
-    beforeLaunch(config: AppConfig) {
+    beforeLaunch(_config: AppConfig) {
         if (!this.enabled) {
             return;
         }
@@ -50,18 +54,18 @@ export class SplashscreenPlugin extends Plugin {
         this.elem = <PySplashscreen>document.createElement('py-splashscreen');
         document.body.append(this.elem);
         document.addEventListener('py-status-message', (e: CustomEvent) => {
-            const msg = e.detail;
+            const msg = e.detail as string;
             this.elem.log(msg);
         });
     }
 
-    afterStartup(interpreter: Interpreter) {
+    afterStartup(_interpreter: InterpreterClient) {
         if (this.autoclose && this.enabled) {
             this.elem.close();
         }
     }
 
-    onUserError(error: UserError) {
+    onUserError(_error: UserError) {
         if (this.elem !== undefined && this.enabled) {
             // Remove the splashscreen so users can see the banner better
             this.elem.close();
@@ -90,8 +94,8 @@ export class PySplashscreen extends HTMLElement {
         </div>
       </div>`;
         this.mount_name = this.id.split('-').join('_');
-        this.operation = document.getElementById('pyscript-operation');
-        this.details = document.getElementById('pyscript-operation-details');
+        this.operation = $('#pyscript-operation', document) as HTMLElement;
+        this.details = $('#pyscript-operation-details', document) as HTMLElement;
     }
 
     log(msg: string) {

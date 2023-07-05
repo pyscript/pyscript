@@ -1,10 +1,10 @@
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 
 class TestOutputHandling(PyScriptTest):
     # Source of a script to test the TargetedStdio functionality
 
-    def test_targeted_stdio(self):
+    def test_targeted_stdio_solo(self):
         self.pyscript_run(
             """
             <py-config>
@@ -183,6 +183,7 @@ class TestOutputHandling(PyScriptTest):
 
         self.assert_no_banners()
 
+    @skip_worker("FIXME: js.document")
     def test_targeted_stdio_dynamic_tags(self):
         # Test that creating py-script tags via Python still leaves
         # stdio targets working
@@ -292,6 +293,7 @@ class TestOutputHandling(PyScriptTest):
         assert self.page.locator("#stderr-div").text_content() == "one."
         self.assert_no_banners()
 
+    @skip_worker("FIXME: js.document")
     def test_stdio_output_attribute_change(self):
         # If the user changes the 'output' attribute of a <py-script> tag mid-execution,
         # Output should no longer go to the selected div and a warning should appear
@@ -325,6 +327,7 @@ class TestOutputHandling(PyScriptTest):
         alert_banner = self.page.locator(".alert-banner")
         assert expected_alert_banner_msg in alert_banner.inner_text()
 
+    @skip_worker("FIXME: js.document")
     def test_stdio_target_element_id_change(self):
         # If the user changes the ID of the targeted DOM element mid-execution,
         # Output should no longer go to the selected element and a warning should appear

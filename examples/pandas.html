@@ -1,120 +1,132 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-	<head>
-		<title id="header-title"></title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<link rel="icon" type="image/png" href="./favicon.png" />
-		<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-		<script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <head>
+        <title id="header-title"></title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="icon" type="image/png" href="./favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 
-		<link rel="stylesheet" href="./assets/css/examples.css" />
-	</head>
+        <link rel="stylesheet" href="./assets/css/examples.css" />
+    </head>
 
-	<body>
-		<nav class="navbar" style="background-color: #000000;">
-			<div class="app-header">
-				<a href="/">
-					<img src="./logo.png" class="logo">
-				</a>
-				<a class="title" id="page-title" href="" style="color: #f0ab3c;"></a>
-			</div>
-		</nav>
+    <body>
+        <nav class="navbar" style="background-color: #000000">
+            <div class="app-header">
+                <a href="/">
+                    <img src="./logo.png" class="logo" />
+                </a>
+                <a
+                    class="title"
+                    id="page-title"
+                    href=""
+                    style="color: #f0ab3c"
+                ></a>
+            </div>
+        </nav>
 
-		<br />
-		<div id="page-message"></div>
+        <br />
+        <div id="page-message"></div>
 
-		<div id="pandas-source">
-			<h3>Data Source</h3>
-			<input type="text" id="txt-url" class="py-input" size="70"></input>
-			<button type="submit" id="btn-load" class="py-button" py-click="loadFromURL()">Load CSV</button>
-		</div>
+        <div id="pandas-source">
+            <h3>Data Source</h3>
+            <input type="text" id="txt-url" class="py-input" size="70" />
+            <button
+                type="submit"
+                id="btn-load"
+                class="py-button"
+                py-click="loadFromURL()"
+            >
+                Load CSV
+            </button>
+        </div>
 
-		<div id="pandas-repl" hidden>
-			<h3>Python REPL</h3>
-			<py-repl id ="pandas-repl-inner" output="pandas-output-inner">
-				# Hit SHIFT + ENTER to execute example code
+        <div id="pandas-repl" hidden>
+            <h3>Python REPL</h3>
+            <py-repl id="pandas-repl-inner" output="pandas-output-inner">
+                # Hit SHIFT + ENTER to execute example code # Get all closed
+                airports in Great Britain df2 = df.query("type == 'closed' &
+                iso_country == 'GB'") df2
+            </py-repl>
+        </div>
 
-				# Get all closed airports in Great Britain
-				df2 = df.query("type == 'closed' & iso_country == 'GB'")
-				df2
-			</py-repl>
+        <div id="pandas-output" hidden>
+            <h3>Output</h3>
+            <div id="pandas-output-inner"></div>
+        </div>
 
-		</div>
+        <div id="pandas-dev-console" hidden>
+            <h3>Dev Console</h3>
+            <py-terminal auto></py-terminal>
+        </div>
 
-		<div id ="pandas-output" hidden>
-			<h3>Output</h3>
-			<div id="pandas-output-inner"></div>
-		</div>
+        <py-tutor>
+            <py-config>
+                plugins = [
+                "https://pyscript.net/latest/plugins/python/py_tutor.py"
+                ]
+                packages = ["pandas"]
+            </py-config>
 
-		<div id="pandas-dev-console" hidden>
-			<h3>Dev Console</h3>
-			<py-terminal auto></py-terminal>
-		</div>
+            <section class="pyscript">
+                <py-script>
+                    import pandas as pd
+                    from pyodide.http import open_url
+                    import sys
 
-		<py-tutor>
-			<py-config>
-				plugins = [
-				"../build/plugins/python/py_tutor.py"
-				]
-				packages = ["pandas"]
-			</py-config>
+                    title = "Pandas (and basic DOM manipulation)"
+                    page_message = "This example loads a remote CSV file into a Pandas dataframe, displays it and lets you manipulate it through a Python REPL"
 
-			<section class="pyscript">
-				<py-script>
-					import pandas as pd
-					from pyodide.http import open_url
-					import sys
+                    url = "https://raw.githubusercontent.com/datasets/airport-codes/master/data/airport-codes.csv"
 
-					title = "Pandas (and basic DOM manipulation)"
-					page_message = "This example loads a remote CSV file into a Pandas dataframe, displays it and lets you manipulate it through a Python REPL"
+                    Element("header-title").element.innerText = title
+                    Element("page-title").element.innerText = title
+                    Element("page-message").element.innerText = page_message
 
-					url = "https://raw.githubusercontent.com/datasets/airport-codes/master/data/airport-codes.csv"
+                    Element("txt-url").element.value = url
 
-					Element("header-title").element.innerText = title
-					Element("page-title").element.innerText = title
-					Element("page-message").element.innerText = page_message
+                    # Depending on the type of DOM element, there are several alternative methods to write to it
+                    # Element("id-of-dom-element").write("example")
+                    # Element("id-of-dom-element").innerText = "example"
+                    # Element("id-of-dom-element").value = "example"
+                    # Element("id-of-dom-element").element.innerText = "example"
+                    # Element("id-of-dom-element").element.value = "example"
+                    # js.document.getElementById("id-of-dom-element").innerText = "example"
+                    # js.document.getElementById("id-of-dom-element").value = "example"
 
-					Element("txt-url").element.value = url
-
-					# Depending on the type of DOM element, there are several alternative methods to write to it
-					# Element("id-of-dom-element").write("example")
-					# Element("id-of-dom-element").innerText = "example"
-					# Element("id-of-dom-element").value = "example"
-					# Element("id-of-dom-element").element.innerText = "example"
-					# Element("id-of-dom-element").element.value = "example"
-					# js.document.getElementById("id-of-dom-element").innerText = "example"
-					# js.document.getElementById("id-of-dom-element").value = "example"
-
-					df = pd.DataFrame()
+                    df = pd.DataFrame()
 
 
-					def loadFromURL(*ags, **kws):
-						global df
+                    def loadFromURL(*args, **kws):
+                    	global df
 
-						# clear dataframe & output
-						df = pd.DataFrame()
-						Element("pandas-output-inner").element.innerHTML = ""
+                    	# clear dataframe & output
+                    	df = pd.DataFrame()
+                    	Element("pandas-output-inner").element.innerHTML = ""
 
-						url = Element("txt-url").element.value
-						log ("Trying to fetch CSV from " + url)
+                    	url = Element("txt-url").element.value
+                    	log ("Trying to fetch CSV from " + url)
 
-						df = pd.read_csv(open_url(url))
+                    	df = pd.read_csv(open_url(url))
 
-						Element("pandas-repl").element.style.display = "block"
-						Element("pandas-output").element.style.display = "block"
-						Element("pandas-dev-console").element.style.display = "block"
+                    	Element("pandas-repl").element.style.display = "block"
+                    	Element("pandas-output").element.style.display = "block"
+                    	Element("pandas-dev-console").element.style.display = "block"
 
-						display (df, target="pandas-output-inner", append="False")
+                    	display (df, target="pandas-output-inner", append="False")
 
-					def log(message):
-						# log to pyscript dev console
-						print (message)
+                    def log(message):
+                    	# log to pyscript dev console
+                    	print (message)
 
-						# log to JS console
-						js.console.log (message)
-				</py-script>
-			</section>
-		</py-tutor>
-	</body>
+                    	# log to JS console
+                    	js.console.log (message)
+                </py-script>
+            </section>
+        </py-tutor>
+    </body>
 </html>

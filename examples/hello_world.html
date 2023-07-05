@@ -1,43 +1,46 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>PyScript Hello World</title>
+        <title>PyScript Hello World</title>
 
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <link rel="stylesheet" href="./assets/css/examples.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-  </head>
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
+        <link rel="stylesheet" href="./assets/css/examples.css" />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    </head>
 
-  <body>
-    <nav class="navbar" style="background-color: #000000;">
-      <div class="app-header">
-        <a href="/">
-          <img src="./logo.png" class="logo">
-        </a>
-        <a class="title" href="" style="color: #f0ab3c;">Hello World</a>
-      </div>
-    </nav>
+    <body>
+        <nav class="navbar" style="background-color: #000000">
+            <div class="app-header">
+                <a href="/">
+                    <img src="./logo.png" class="logo" />
+                </a>
+                <a class="title" href="" style="color: #f0ab3c">Hello World</a>
+            </div>
+        </nav>
 
-    <py-tutor>
-      <py-config>
-        plugins = [
-          "../build/plugins/python/py_tutor.py"
-        ]
-      </py-config>
+        <py-tutor>
+            <py-config>
+                plugins = [
+                  "https://pyscript.net/latest/plugins/python/py_tutor.py"
+                ]
+            </py-config>
 
-      <section class="pyscript">
-        Hello world! <br>
-        This is the current date and time, as computed by Python:
-        <py-script>
-          from datetime import datetime
-          now = datetime.now()
-          display(now.strftime("%m/%d/%Y, %H:%M:%S"))
-        </py-script>
-      </section>
-    </py-tutor>
-  </body>
+            <section class="pyscript">
+                Hello world! <br />
+                This is the current date and time, as computed by Python:
+                <py-script>
+                    from datetime import datetime
+                    now = datetime.now()
+                    display(now.strftime("%m/%d/%Y, %H:%M:%S"))
+                </py-script>
+            </section>
+        </py-tutor>
+    </body>
 </html>
