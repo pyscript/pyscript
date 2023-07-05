@@ -40,7 +40,7 @@ Finally, the PyScript `maintainters` group may either intervene, or be called up
 
 NOTE: The decision-making process is intended to balance broad participation of stakeholders with agility. This process aims to be a tool to help and not get in the way of the decision making process itself (turning it into a long and bureaucratic hassle), and is inspired by other successful projects such as the Python and Jupyter projects.
 
-### 3.2.1 Steps Towards Consensus
+### 3.2.1. Steps Towards Consensus
 
 **Informal consensus seeking.** Decision making starts with informal consensus seeking through discussion. The goal of this phase is to refine the proposal, consider alternatives, weigh trade-offs, and attempt to find informal consensus. The legitimacy of the consensus-seeking process is predicated on all stakeholders having their voices heard, so `maintainers` must be proactive in providing opportunities for all relevant stakeholders to provide input. If `maintainers` at informal consensus, they may immediately move to document and enact the decision. This is the consensus-seeking phase.
 
@@ -55,6 +55,24 @@ NOTE: While only `maintainers` can vote, anyone can comment and participate to t
 All `maintainers` are highly encouraged to participate and exercise their rights expressing their opinion in at least 2/3 of formal votes per calendar year. Members that have not met the 2/3 vote participation threshold for a year and have a low contribution rate in that year may be to step down from their `maintainer` status at the end of that year. Those individuals remain eligible to rejoin the `maintainers` group in the future as they become available to participate at the required level. The quorum for all formal votes will be 50% and a “blank” option will always be included, with the “blank” option counting towards the quorum but not included in totals for calculating results.
 
 **Recording.** Once a decision has been made during the consensus-seeking phase or by a formal vote, the initiative `sponsor` will record the decision in the related discussion, for posterity.
+
+### 3.2.2. Things to avoid
+
+**Rushing a decision**: While we want prioritize a lean and fast process, we also want to make sure that everyone express their opinions.
+
+**Calling for a vote too soon**: Expanding on the item above, `maintainers` should not call a vote to short-circuit an ongoing discussion that is still productive in terms of exploring ideas and feedback. Votes should be called only when discussion has explored the space, stakeholders have provided input and consensus hasn't been reached through the informal process
+
+**Give the right weight to decisions** `Maintainers` and those proposing decisions should explicitly distinguish between decisions that are two-way (easy to reverse later) and one-way (difficult or impossible to reverse later). For one-way doors, `maintainers` should carefully weigh alternatives and tradeoffs and take extra care to ensure broad participation and stakeholder input. For two-way doors, `maintainers` should feel free to move quickly, without compromising the principles and procedures described herein.
+
+**Lack of data** In the context of the above item and in the interest of making solid decisions, argumente should bring data and examples to back them up. "Gut feelings" will not be considered with the same relevance of arguments backed by data and examples.
+
+**Forgetting how we work** Given how passionate `maintainers` and users in general can be passionate about the project, discussion can get passionate. This should never be an excuse to operate with all our principles in mind and treat each other with respect, empathy and kindness.
+
+**Explicit is better than implicit** `Sponsors` and `maintainers` should proactively solicit input from relevant stakeholders and should not assume that silence is consent without attempting to reach out to those individuals.
+
+**Planning before acting** If you are interested in a decision being made, it is your responsibility to encourage voting member/stakeholder/community participation in the decision-making process. If you cannot get such participation, you may want to hold off on doing any significant work on the matter.
+
+**Adopt guidelines to help the process** Make sure you adopt the development governance guidelines to ensure the process you are promoting is visible and clear to other members. I.e: using the proper Github `labels` to mark special discussions (that require a decision or vote), linking documents to discussions, etc. The actual guidelines are defined in a separate Software Development Governance document.
 
 ## 4. No Confidentiality.
 
