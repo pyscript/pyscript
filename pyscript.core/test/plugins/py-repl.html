@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <title>PyScript</title>
+        <style>
+            py-script {
+                display: none;
+            }
+        </style>
+        <script type="importmap">
+            { "imports": { 
+                "@pyscript/core": "../../min.js"} }
+        </script>
+        <script type="module" src="py-repl.js"></script>
+    </head>
+    <body>
+        <py-config>
+            [[fetch]]
+            from = "../"
+            to_folder = "./"
+            files = ["a.py", "b.py"]
+        </py-config>
+        <py-repl>
+            import js
+            import a, b
+            print('Hello Console!')
+            js.console.log(a.x, b.x)
+            'Hello Web!'
+        </py-repl>
+    </body>
+</html>
