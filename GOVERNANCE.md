@@ -20,7 +20,7 @@ This project may include the following roles. Additional roles may be adopted an
 
 ### 3.1. Principles
 
-**3.1.1. Openness**. Participation is open to anyone who is directly and materially affected by the activity in question. There shall be no undue financial barriers to participation.
+**3.1.1. Openness**. Participation is open to anyone who is directly and materially affected by the activity in question. There shall be no undue financial barriers to participation. In that sense, discussions should prioritize public channels (Github discussions/issues/PRs or Discord) whenever possible.
 
 **3.1.2. Balance**. The development process should balance the interests of Contributors and other stakeholders. Contributors from diverse interest categories shall be sought with the objective of achieving balance.
 
@@ -32,13 +32,23 @@ This project may include the following roles. Additional roles may be adopted an
 
 ### 3.2. Decision-Making Guide
 
-This section describes how PyScript governing bodies (generally called “maintainers”) make decisions. This section provides clarity to all users, around the process around how decisions are made while providing a clear guide that can be consulted in case of doubts and the process to resolve conflicts and reach a resolution.
+This section describes how PyScript governing bodies (generally called “`maintainers`”) make decisions. This section provides clarity to all users, around the process around how decisions are made while providing a clear guide that can be consulted in case of doubts and the process to resolve conflicts and reach a resolution.
 
 We seek to honor the principles of collaboration, inclusive participation, and responsive decision making. Some aspects of this decision-making guide are required while others are provided as recommendations and are optional. We have clearly noted the optional aspects of decision making below.
 
 Finally, the PyScript `maintainters` group may either intervene, or be called upon, in the event that issues arise in the decision-making process and it comes short in providing the right guidance on specific subjects. This includes, but is not limited to: process ambiguity, violations of the decision-making process, mitigating circumstances that require process exceptions, etc.
 
-NOTE: This process aims to be a tool to help and not get in the way of the decision making process itself (turning it into a long and bureaucratic hassle), and is inspired by other successful projects such as the Python and Jupyter projects.
+NOTE: The decision-making process is intended to balance broad participation of stakeholders with agility. This process aims to be a tool to help and not get in the way of the decision making process itself (turning it into a long and bureaucratic hassle), and is inspired by other successful projects such as the Python and Jupyter projects.
+
+### 3.2.1 Steps Towards Consensus
+
+**Informal consensus seeking.** Decision making starts with informal consensus seeking through discussion. The goal of this phase is to refine the proposal, consider alternatives, weigh trade-offs, and attempt to find informal consensus. The legitimacy of the consensus-seeking process is predicated on all stakeholders having their voices heard, so `maintainers` must be proactive in providing opportunities for all relevant stakeholders to provide input. If `maintainers` at informal consensus, they may immediately move to document and enact the decision. This is the consensus-seeking phase.
+
+**Calling a vote.** While "calling a vote" seems like a slow and bureaucratic process, its goal is to ensure that all stakeholders had a say in the process of making a decision. In an effort to keep things simple and lean, this step can be considered "integrated" into the previous (informal) step of Informal Consensus Seeking if there's enough support and agreement so that is clear that the proposal has the support from the majority of `maintainers`.
+
+If that's not the case and two or more parties are not aligned, any `maintainer` can call the matter to a vote. When that member (the sponsor) calls the vote, they shall summarize the proposal in its current to make sure the proposal is clear to everyone. After the proposal is seconded by at least another `maintainer`, voters have 4 days to vote. `Maintainers` may consider longer voting periods as necessary for special circumstances, or shorter periods only if all voting members are present. The decision will be determined by a simple majority of non-blank votes for binary decisions (i.e., approving a proposal) and ranked choice for multi-class decisions (one among many, or several among many). The sponsor may update the proposal at any point during the voting period, in which case the voting period will be reset.
+
+NOTE: While only `maintainers` can vote, anyone can comment and participate to the discussion around the proposal, in the spiriti of opennes and inclusivity at the base of this project.
 
 ## 4. No Confidentiality.
 
