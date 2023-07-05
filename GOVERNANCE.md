@@ -18,6 +18,8 @@ This project may include the following roles. Additional roles may be adopted an
 
 ## 3. How We Work.
 
+### 3.1. Principles
+
 **3.1. Openness**. Participation is open to anyone who is directly and materially affected by the activity in question. There shall be no undue financial barriers to participation.
 
 **3.2. Balance**. The development process should balance the interests of Contributors and other stakeholders. Contributors from diverse interest categories shall be sought with the objective of achieving balance.
@@ -27,6 +29,19 @@ This project may include the following roles. Additional roles may be adopted an
 **3.4. Consideration of Views and Objections**. Prompt consideration shall be given to the written views and objections of all Contributors.
 
 **3.5. Written procedures**. This governance document and other materials documenting this project's development process shall be available to any interested person.
+
+### Decision-Making Guide
+
+This section describes how PyScript governing bodies (generally called “maintainers”) make decisions. This section provides clarity to all users, around the process around how decisions are made while providing a clear guide that can be consulted in case of doubts and the process to resolve conflicts and reach a resolution.
+
+We seek to honor the principles of collaboration, inclusive participation, and responsive decision making. Some aspects of this decision-making guide are required while others are provided as recommendations and are optional. We have clearly noted the optional aspects of decision making below.
+
+Finally, the PyScript `maintainters` group may either intervene, or be called upon, in the event that issues arise in the decision-making process and it comes short in providing the right guidance on specific subjects. This includes, but is not limited to: process ambiguity, violations of the decision-making process, mitigating circumstances that require process exceptions, etc.
+
+NOTE: This process aims to be a tool to help and not get in the way of the decision making process itself (turning it into a long and bureaucratic hassle), and is inspired by other successful projects such as the Python and Jupyter projects.
+
+
+
 
 ## 4. No Confidentiality.
 
