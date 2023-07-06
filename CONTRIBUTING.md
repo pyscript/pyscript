@@ -127,11 +127,15 @@ A PR without the above will likely be kindly rejected. :)
 
 ## PR approval process
 
-In order for a PR to be approved it has to be reviewed and approved by at least 1 maintainer, preferably 2.
+**Reviewers and Approvals**: In order for a PR to be approved it has to be reviewed and approved by at least 1 maintainer, preferably 2.
 
-During the PR review process, the reviewer may ask the author for changes of just have questions in general. It is the PR author responsibility to make sure they address any questions or changes requests and re-submit the PR for review. The author should not expect that PRs pending that process will be taken over by the project `maintainers`.
+**Review Process**: During the PR review process, the reviewer may ask the author for changes of just have questions in general. It is the PR author responsibility to make sure they address any questions or changes requests and re-submit the PR for review. The author should not expect that PRs pending that process will be taken over by the project `maintainers`. If one or more reviewers express concern around the PR, the default process is to not merge until the concern has been addressed (there are exceptions to this rule that will be mentioned in the items below).
 
-PRs that have been waiting for the author to answer questions or for code changes will be labeled as `stale` after a week and will be automatically closed after 2 weeks.
+**Meaningful Feedback**: Reviewers providing feedback (especially when expressing concerns) should make sure their feedback is backed by meaningful and clear comments and is backed by data (i.e. examples and use cases that relate to the expressed concerns). If the reviewer is in a hurry and cannot provide said feedback right away, they can quickly mention their concern and have a grace period of 1 day to amend their comment with meaningful comments and data. After the grace period is over, if the reviewer hasn't provided additional data and there are no other active concerns, the PR can be considered approved and can be merged.
+
+**Stale PRs**: PRs that have been waiting for the author to answer questions or for code changes will be labeled as `stale` after a week and will be automatically closed after 2 weeks.
+
+**No rush**: Authors should not expect PRs to be force merged or
 
 ### Places to start
 
