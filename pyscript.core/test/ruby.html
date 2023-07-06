@@ -15,7 +15,7 @@
                 }
             }
         </script>
-        <script type="module" src="../esm/index.js"></script>
+        <script type="module" src="../core.js"></script>
     </head>
     <body>
         <script type="ruby-wasm-wasi">
@@ -24,7 +24,7 @@
               print "ruby #{ RUBY_VERSION }p#{ RUBY_PATCHLEVEL }"
             end
         </script>
-        <button ruby-wasm-wasi-click="print_version($event)">
+        <button ruby-wasm-wasi-click="print_version">
             ruby-wasm-wasi version
         </button>
     </body>

@@ -41,12 +41,8 @@ export const listener = async (event) => {
             el.getAttribute(`${name}-env`) || name,
         );
         const handler = registry.get(name);
-        try {
-            handler.setGlobal(interpreter, "event", event);
-            handler.run(interpreter, value);
-        } finally {
-            handler.deleteGlobal(interpreter, "event");
-        }
+        const callback = handler.getGlobal(interpreter, value);
+        callback(event);
     }
 };
 

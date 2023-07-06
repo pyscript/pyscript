@@ -246,40 +246,19 @@ Please read the [XWorker](#xworker) dedicated section to know more.
 
 ## How Events Work
 
-Inspired by the current [HTML Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-handlers):
-
-> the event handler is exposed through a name, which is a string that always starts with "_on_" and is followed by the name of the event for which the handler is intended.
-
-We took a similar approach, replacing that `on` prefix with whatever *interpreter* or *custom type* is available on the page, plus a *dash* `-` to avoid clashing with standards:
+The event should contain the *interpreter* or *custom type* prefix, followed by the *event* type it'd like to handle.
 
 ```html
 <script type="micropython">
-    def print_type(event, double):
-        # logs "click 4"
-        print(f"{event.type} {double(2)}")
+    def print_type(event):
+        print(event.type)
 </script>
-<button micropython-click="print_type(event, lambda x: x * 2)">
+<button micropython-click="print_type">
     print type
 </button>
 ```
 
-If this example felt a bit verbose, be ensured custom types would work the same:
-
-```html
-<!-- ℹ️ - requires py-script custom type -->
-<button py-click="print(event.type)">
-    print type
-</button>
-```
-
-What is important to understand about *events* in PyScript is that the text within the attribute is executed just like any other inline or external content is, through the very same *interpreter*, with the notably extra feature that the `event` reference is made temporarily available as *global* by *core*.
-
-This really reflects how otherwise native Web inline events handlers work and we think it's a great feature to support ... *but*:
-
- * if your script runs *asynchronously* the `event` might be gone on the main / UI thread and by that time any of its `event.stopPropagation()` or `event.preventDefault()` goodness will be problematic, as too late to be executed
- * if your *interpreter* is *experimental*, or incapable of running *synchronous* events, the `event` reference might be less useful
-
-ℹ️ - Please note that if your code runs via *XWorker*, hence in a different thread, there are different caveats and constraints to consider. Please read the [XWorker](#xworker) dedicated section to know more.
+Differently from *Web* inline events, there's no code evaluation at all within the attribute: it's just a globally available name that will receive the current event and nothing else.
 
 #### The type-env attribute
 
@@ -299,7 +278,7 @@ Just as the `env` attribute on a `<script>` tag specifies a specific instance of
 <!-- note the micropython-env value -->
 <button
     micropython-env="two"
-    micropython-click="log()"
+    micropython-click="log"
 >
     log
 </button>
