@@ -34,8 +34,8 @@ export const stdio = (init) => {
 
 // This should be the only helper needed for all Emscripten based FS exports
 export const writeFile = (FS, path, buffer) => {
+    FS.mkdirTree(dirname(path));
     const { parentPath, name } = FS.analyzePath(path, true);
-    FS.mkdirTree(parentPath);
     return FS.writeFile([parentPath, name].join("/"), new Uint8Array(buffer), {
         canOwn: true,
     });
