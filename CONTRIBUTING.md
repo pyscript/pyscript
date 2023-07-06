@@ -1,6 +1,8 @@
 # Contributing to PyScript
 
-Thank you for wanting to contribute to the PyScript project!
+Thank you for your interest in contributing to the PyScript project! This document provides guidelines on how to contribute to the project effectively and what to expect from the project's development flow and guidelines.
+
+Please read these guidelines thoroughly before opening a pull request, issue, or discussion.
 
 ## Table of contents
 
@@ -33,11 +35,11 @@ The [PyScript Code of Conduct](https://github.com/pyscript/governance/blob/main/
 
 If you encounter a bug, have a feature proposal, or a question, please open an issue on the PyScript repository and select. When opening an issue, make sure to include the following information:
 
-- A clear and concise title that summarizes the issue.
-- A detailed description of the problem or feature request.
-- Steps to reproduce the issue (if applicable).
-- Any relevant error messages or screenshots.
-- The version of PyScript you are using (if applicable).
+-   A clear and concise title that summarizes the issue.
+-   A detailed description of the problem or feature request.
+-   Steps to reproduce the issue (if applicable).
+-   Any relevant error messages or screenshots.
+-   The version of PyScript you are using (if applicable).
 
 ### Reporting bugs
 
