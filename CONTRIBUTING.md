@@ -62,6 +62,27 @@ If you have questions about the project, using PyScript, or anything else, pleas
 
 ## Code Contributions
 
+### Opening a Pull Request
+
+To contribute code changes or bug fixes to PyScript, follow these steps to open a pull request:
+
+1. Fork the PyScript repository to your GitHub account.
+2. Create a new branch from the `main` branch with a descriptive name for your changes.
+3. Make your desired changes, ensuring they adhere to the project's coding styles (detailed in this document).
+4. Write tests for your changes to maintain code quality and avoid regressions.
+5. Commit your changes with clear and concise commit messages.
+6. Push your branch to your forked repository.
+7. Open a pull request (PR) from your branch to the `main` branch of the PyScript repository.
+8. Provide a clear and descriptive title for your PR.
+9. Include a detailed description of the changes made, along with any relevant context or references.
+10. Wait for feedback and engage in discussions to address any reviewer comments or change requests.
+
+### PR approval requirements
+
+After you've created a PR there are a few extra steps that need to be taken so the PR can be approved. These steps aim to make sure the approval process is clear and that when a PR is merged, the level of quality of the codebase meets the standards set by the project `maintainers` in order to avoid regression and, ultimately, to keep high standards for the project users.
+
+**Documentation**: If your PR changes or adds functionality, it's expected that you also make sure to add the right information to the docs. For more information about how to work on the project documentation check out the [documentation readme](docs/tutorials/getting-started.md).
+
 ### Places to start
 
 If you would like to contribute to PyScript, but you aren't sure where to begin, here are some suggestions:
