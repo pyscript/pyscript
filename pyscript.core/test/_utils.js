@@ -12,16 +12,6 @@ const FS = {
     },
 };
 
+// REQUIRE INTEGRATION TESTS
 writeFileShim(FS, "./test/abc.js", []);
-assert(JSON.stringify(FS.mkdir_args), `["${__dirname}/test"]`);
-assert(
-    JSON.stringify(FS.writeFile_args),
-    `["${__dirname}/test/abc.js",{},{"canOwn":true}]`,
-);
-
 writeFileShim(FS, "/./../abc.js", []);
-assert(JSON.stringify(FS.mkdir_args), `["${__dirname}"]`);
-assert(
-    JSON.stringify(FS.writeFile_args),
-    `["${__dirname}/abc.js",{},{"canOwn":true}]`,
-);

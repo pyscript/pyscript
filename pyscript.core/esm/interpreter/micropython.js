@@ -1,11 +1,5 @@
-import { fetchPaths, stdio } from "./_utils.js";
-import {
-    registerJSModule,
-    run,
-    runAsync,
-    runEvent,
-    writeFile,
-} from "./_python.js";
+import { fetchPaths, stdio, writeFile } from "./_utils.js";
+import { registerJSModule, run, runAsync, runEvent } from "./_python.js";
 
 const type = "micropython";
 
@@ -26,6 +20,7 @@ export default {
     run,
     runAsync,
     runEvent,
-    writeFile,
+    writeFile: ({ FS, _module: { PATH, PATH_FS } }, path, buffer) =>
+        writeFile({ FS, PATH, PATH_FS }, path, buffer),
 };
 /* c8 ignore stop */

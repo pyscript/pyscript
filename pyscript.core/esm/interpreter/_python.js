@@ -1,4 +1,4 @@
-import { clean, writeFile as writeFileUtil } from "./_utils.js";
+import { clean } from "./_utils.js";
 
 // REQUIRES INTEGRATION TEST
 /* c8 ignore start */
@@ -20,7 +20,4 @@ export const runEvent = async (interpreter, code, event) => {
     for (const key of keys) [context, target] = [target, target[key]];
     await target.call(context, event);
 };
-
-export const writeFile = ({ FS }, path, buffer) =>
-    writeFileUtil(FS, path, buffer);
 /* c8 ignore stop */

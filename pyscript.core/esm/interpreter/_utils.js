@@ -30,21 +30,21 @@ export const stdio = (init) => {
         },
     };
 };
-/* c8 ignore stop */
 
 // This should be the only helper needed for all Emscripten based FS exports
-export const writeFile = (FS, path, buffer) => {
-    const { parentPath, name } = FS.analyzePath(path, true);
-    FS.mkdirTree(parentPath);
-    return FS.writeFile([parentPath, name].join("/"), new Uint8Array(buffer), {
+export const writeFile = ({ FS, PATH, PATH_FS }, path, buffer) => {
+    const absPath = PATH_FS.resolve(path);
+    FS.mkdirTree(PATH.dirname(absPath));
+    return FS.writeFile(absPath, new Uint8Array(buffer), {
         canOwn: true,
     });
 };
+/* c8 ignore stop */
 
 // This is instead a fallback for Lua or others
 export const writeFileShim = (FS, path, buffer) => {
-    path = resolve(FS, path);
     mkdirTree(FS, dirname(path));
+    path = resolve(FS, path);
     return FS.writeFile(path, new Uint8Array(buffer), { canOwn: true });
 };
 
@@ -57,6 +57,7 @@ const dirname = (path) => {
 const mkdirTree = (FS, path) => {
     const current = [];
     for (const branch of path.split("/")) {
+        if (branch === ".") continue;
         current.push(branch);
         if (branch) FS.mkdir(current.join("/"));
     }
