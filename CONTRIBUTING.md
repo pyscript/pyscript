@@ -77,11 +77,61 @@ To contribute code changes or bug fixes to PyScript, follow these steps to open 
 9. Include a detailed description of the changes made, along with any relevant context or references.
 10. Wait for feedback and engage in discussions to address any reviewer comments or change requests.
 
+**Important TIP**: As mentioned below in the [PR approval requirements](#pr-approval-requirements), while not mandatory, all PRs should have a related issue. This is extremely helpful in general but even more important if the PR adds new functionality or changes some behavior. It can be very frustrating to work on something and then learn that not everyone share the same opinion on how that specific problem should be solved. To make sure the problem the PR is solving is undertood and the the solution has been discussed and approved by the majority of the users want to have their say and`maintainers`, creating an issue/discussion and discussing there is the best (and highly recommended) option.
+
 ### PR approval requirements
 
 After you've created a PR there are a few extra steps that need to be taken so the PR can be approved. These steps aim to make sure the approval process is clear and that when a PR is merged, the level of quality of the codebase meets the standards set by the project `maintainers` in order to avoid regression and, ultimately, to keep high standards for the project users.
 
+If your PR changes or adds functionality, it's expected that it includes:
+
+**Description**: Every PR should have a meaningful and exhaustive description of what they do and a link to the original issue they address.
+
+**Tests**: This is the way we ensure added/modified functionality meets the related feature expectations and that other code changes don't break functionlity over time.
+
 **Documentation**: If your PR changes or adds functionality, it's expected that you also make sure to add the right information to the docs. For more information about how to work on the project documentation check out the [documentation readme](docs/tutorials/getting-started.md).
+
+**Readable code**: Ok, this is a broad and generic statement and deserves some explanation. The mantra behind this statement is that code that is semantically meaningful (aka "has a meaning" :-) is preferable to code that is short and "saves some line of code". Remember, others will be reading your code and if they understand what's going on easily it's a good sign that your code reflects your intentions while also making it easier for everyone. In addition to that, remember that you may be reading that code in the future and your future self will definitely thank you for making it easy to read! For instance, a code like:
+
+```python
+t = "python"
+...
+# 20 lines later...
+xs = engine.fetch_plugins(t)
+
+...
+# another 20 lines later...
+for x in xs:
+    x.init()
+```
+
+is harder to read compare to something like:
+
+```python
+plugin_type = "python"
+...
+# 20 lines later...
+plugins = engine.fetch_plugins(plugin_type)
+
+...
+# another 20 lines later...
+for plugin in plugins:
+    plugin.init()
+```
+
+**Docstrings**: Document. Your. Code! Make sure all your classes and functions have docstrings that document their behaviour, inputs and outputs. Other people (especially users!) shouldn't need to dive your the code implementing a function in order to understand what it does.
+
+**Comments**: In order to support the 2 previous points (remember, we said support, not replace!), make sure your core has meaningful comments that complement the code itself so that anyone reading your code can understand the intentions and the algorithm being implemented. While comments easily become out dated, they do help understanding the intentions.
+
+A PR without the above will likely be kindly rejected. :)
+
+## PR approval process
+
+In order for a PR to be approved it has to be reviewed and approved by at least 1 maintainer, preferably 2.
+
+During the PR review process, the reviewer may ask the author for changes of just have questions in general. It is the PR author responsibility to make sure they address any questions or changes requests and re-submit the PR for review. The author should not expect that PRs pending that process will be taken over by the project `maintainers`.
+
+PRs that have been waiting for the author to answer questions or for code changes will be labeled as `stale` after a week and will be automatically closed after 2 weeks.
 
 ### Places to start
 
