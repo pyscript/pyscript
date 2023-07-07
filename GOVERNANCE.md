@@ -66,7 +66,7 @@ All `maintainers` are highly encouraged to participate and exercise their rights
 
 **Give the right weight to decisions** `Maintainers` and those proposing decisions should explicitly distinguish between decisions that are two-way (easy to reverse later) and one-way (difficult or impossible to reverse later). For one-way doors, `maintainers` should carefully weigh alternatives and tradeoffs and take extra care to ensure broad participation and stakeholder input. For two-way doors, `maintainers` should feel free to move quickly, without compromising the principles and procedures described herein.
 
-**Utilize Data** In the context of the above item and in the interest of making solid decisions, arguments should bring data and examples to back them up. "Gut feelings" will not be considered with the same relevance of arguments backed by data and examples.
+**Utilize Data** In the context of the above item and in the interest of making solid decisions, arguments should bring data and examples to back them up. "Gut feelings" do not carry as much weight as data and examples.
 
 **Acknowledge Some Questions Don't Have 'Right' Answers**: Expanding on the item above, many proposals or question won't have any objectively 'right' answers (e.g. naming things). `Maintainers` should acknowledge when they are expressing a preference, while avoiding declaring their preferences as "correct." Maintainers should also be wary that these matters can be the most prone to [bikeshedding](https://en.wikipedia.org/wiki/Law_of_triviality) and judge how much time they're spending on these matters accordingly.
 
