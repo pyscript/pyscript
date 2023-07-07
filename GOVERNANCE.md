@@ -66,7 +66,7 @@ All `maintainers` are highly encouraged to participate and exercise their rights
 
 **Utilize Data** In the context of the above item and in the interest of making solid decisions, arguments should bring data and examples to back them up. "Gut feelings" will not be considered with the same relevance of arguments backed by data and examples.
 
-**Forgetting how we work** Given how passionate `maintainers` and users in general can be passionate about the project, discussion can get passionate. This should never be an excuse to operate with all our principles in mind and treat each other with respect, empathy and kindness.
+**Remember How We Work* Given how passionate `maintainers` and users in general can be passionate about the project, discussion can get passionate. This should never be an excuse to operate with all our principles in mind and treat each other with respect, empathy and kindness.
 
 **Explicit is better than implicit** `Sponsors` and `maintainers` should proactively solicit input from relevant stakeholders and should not assume that silence is consent without attempting to reach out to those individuals.
 
