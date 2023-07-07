@@ -3,31 +3,28 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-        <title>PyScript</title>
+        <title>PyRepl</title>
         <style>
             py-script {
                 display: none;
             }
         </style>
         <script type="importmap">
-            { "imports": { 
-                "@pyscript/core": "../../min.js"} }
+            { "imports":
+                { 
+                    "@pyscript/core": "../../min.js",
+                    "interactive": "./repl/interactive_src.js"
+                } }
         </script>
-        <script type="module" src="py-repl.js"></script>
+        <script src ="../../node_modules/xterm/lib/xterm.js"></script>
+        <script type="module" src="py-script.js"></script>
+        
     </head>
     <body>
-        <py-config>
-            [[fetch]]
-            from = "../"
-            to_folder = "./"
-            files = ["a.py", "b.py"]
-        </py-config>
-        <py-repl>
-            import js
-            import a, b
-            print('Hello Console!')
-            js.console.log(a.x, b.x)
-            'Hello Web!'
-        </py-repl>
+        <py-script>
+            x = 1_000_000
+            sentence = "PyScript is awesome!"
+        </py-script>
+        <py-repl>FOO</py-repl>
     </body>
 </html>

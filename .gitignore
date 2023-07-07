@@ -150,3 +150,6 @@ pyscript.core/cjs/
 pyscript.core/min.js
 pyscript.core/esm/worker/xworker.js
 pyscript.core/types/
+
+#Python-code-as-JS-string:
+*interactive_src.js

@@ -1,4 +1,5 @@
 import { registerPlugin } from "@pyscript/core";
+import { interactivesrc } from "interactive"
 
 // append ASAP CSS to avoid showing content
 document.head.appendChild(document.createElement("style")).textContent = `
@@ -7,9 +8,12 @@ document.head.appendChild(document.createElement("style")).textContent = `
   }
 `;
 
+document.head.appendChild(document.createElement("link"))
+
+
 // create a unique identifier when/if needed
 let id = 0;
-const getID = (prefix = "py-script") => `${prefix}-${id++}`;
+const getPyscriptId = (prefix = "py-script") => `${prefix}-${id++}`;
 
 let bootstrap = true;
 const sharedPyodide = new Promise((resolve) => {
@@ -40,7 +44,7 @@ const known = new WeakSet();
 
 class PyScriptElement extends HTMLElement {
     constructor() {
-        if (!super().id) this.id = getID();
+        if (!super().id) this.id = getPyscriptId();
     }
     async connectedCallback() {
         if (!known.has(this)) {
@@ -57,3 +61,42 @@ class PyScriptElement extends HTMLElement {
 }
 
 customElements.define("py-script", PyScriptElement);
+
+// Everything REPL related ////
+
+const _xterm_cdn_base_url = 'https://cdn.jsdelivr.net/npm/xterm@5.1.0';
+
+const cssTag = document.createElement('link');
+cssTag.type = 'text/css';
+cssTag.rel = 'stylesheet';
+cssTag.href = _xterm_cdn_base_url + '/css/xterm.css';
+document.head.appendChild(cssTag);
+class PyReplElement extends HTMLElement{
+
+    async connectedCallback() {
+        if (!known.has(this)) {
+            known.add(this);
+            // sharedPyodide contains various helpers including run and runAsync
+            const { run, runtime } = await sharedPyodide;
+
+            this.term = new Terminal({ //xterm.js terminal
+                allowProposedApi: true,
+                cusorBlink: true,
+                convertEol: true
+            })
+
+            this.term.open(this)
+
+            runtime.setStdout({batched: (message) => {
+                this.term.write(message + "\n")
+            }})
+
+            const pyInterpClass = run(interactivesrc) //Reference to xtermInteractive class
+            const pyInterp = pyInterpClass(this.term)
+            this.term.onKey(pyInterp.onKey)
+            pyInterp.beginInteraction()
+        }
+    }
+}
+
+customElements.define("py-repl", PyReplElement);
