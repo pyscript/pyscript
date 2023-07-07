@@ -46,7 +46,9 @@ NOTE: The decision-making process is intended to balance broad participation of 
 
 **Calling a vote.** While "calling a vote" seems like a slow and bureaucratic process, its goal is to ensure that all stakeholders had a say in the process of making a decision. In an effort to keep things simple and lean, this step can be considered "integrated" into the previous (informal) step of Informal Consensus Seeking if there's enough support and agreement so that is clear that the proposal has the support from the majority of `maintainers`.
 
-If that's not the case and two or more parties are not aligned, any `maintainer` can call the matter to a vote. When that member (the sponsor) calls the vote, they shall summarize the proposal in its current to make sure the proposal is clear to everyone. After the proposal is seconded by at least another `maintainer`, voters have 4 days to vote. `Maintainers` may consider longer voting periods as necessary for special circumstances, or shorter periods only if all voting members are present. The decision will be determined by a simple majority of non-blank votes for binary decisions (i.e., approving a proposal) and ranked choice for multi-class decisions (one among many, or several among many). The sponsor may update the proposal at any point during the voting period, in which case the voting period will be reset.
+If that's not the case and two or more parties are not aligned, any `maintainer` can call the matter to a vote. When that member (the sponsor) calls the vote, they shall summarize the proposal in its current form to make sure the proposal is clear to everyone. The summary and (and ensuing vote) shall be posted in a permanent public forum, with GitHub Discussions or Issues being the default preference.
+
+After the proposal is seconded by at least another `maintainer`, voters have 4 days to vote. `Maintainers` may consider longer voting periods as necessary for special circumstances, or shorter periods only if all voting members are present. The decision will be determined by a simple majority of non-blank votes for binary decisions (i.e., approving a proposal) and ranked choice for multi-class decisions (one among many, or several among many). The sponsor may update the proposal at any point during the voting period, in which case the voting period will be reset.
 
 NOTE: While only `maintainers` can vote, anyone can comment and participate to the discussion around the proposal, in the spiriti of opennes and inclusivity at the base of this project.
 
@@ -56,11 +58,11 @@ All `maintainers` are highly encouraged to participate and exercise their rights
 
 **Recording.** Once a decision has been made during the consensus-seeking phase or by a formal vote, the initiative `sponsor` will record the decision in the related discussion, for posterity.
 
-### 3.2.2. Things to avoid
+### 3.2.2. Keys to Successful Consensus
 
-**Rushing a decision**: While we want prioritize a lean and fast process, we also want to make sure that everyone express their opinions.
+**Allow Time for Decisions**: While we want prioritize a lean and fast process, we also want to make sure that everyone express their opinions. The process should never feel "rushed."
 
-**Calling for a vote too soon**: Expanding on the item above, `maintainers` should not call a vote to short-circuit an ongoing discussion that is still productive in terms of exploring ideas and feedback. Votes should be called only when discussion has explored the space, stakeholders have provided input and consensus hasn't been reached through the informal process
+**Use Voting at the End of the Discussion**: Expanding on the item above, formal votes should be called only when discussion has explored the space, stakeholders have provided input and consensus hasn't been reached through the informal process. `Maintainers` should be should not call a vote to short-circuit an ongoing discussion that is still productive in terms of exploring ideas and feedback.
 
 **Give the right weight to decisions** `Maintainers` and those proposing decisions should explicitly distinguish between decisions that are two-way (easy to reverse later) and one-way (difficult or impossible to reverse later). For one-way doors, `maintainers` should carefully weigh alternatives and tradeoffs and take extra care to ensure broad participation and stakeholder input. For two-way doors, `maintainers` should feel free to move quickly, without compromising the principles and procedures described herein.
 
