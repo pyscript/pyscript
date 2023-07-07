@@ -77,7 +77,7 @@ To contribute code changes or bug fixes to PyScript, follow these steps to open 
 9. Include a detailed description of the changes made, along with any relevant context or references.
 10. Wait for feedback and engage in discussions to address any reviewer comments or change requests.
 
-**Important TIP**: As mentioned below in the [PR approval requirements](#pr-approval-requirements), while not mandatory, all PRs should have a related issue. This is extremely helpful in general but even more important if the PR adds new functionality or changes some behavior. It can be very frustrating to work on something and then learn that not everyone share the same opinion on how that specific problem should be solved. To make sure the problem the PR is solving is undertood and the the solution has been discussed and approved by the majority of the users want to have their say and`maintainers`, creating an issue/discussion and discussing there is the best (and highly recommended) option.
+**Important TIP**: All PRs should have a related issue. This is particularly important if the PR adds new functionality or changes some behavior. It can be very frustrating to work on something and then learn that not everyone shares the same opinion on how that specific problem should be solved. Creating an issue/discussion and discussing the problem before making a PR is the best way to avoid wasted effort.
 
 ### PR approval requirements
 
