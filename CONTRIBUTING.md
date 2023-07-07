@@ -87,6 +87,8 @@ If your PR changes or adds functionality, it's expected that it includes:
 
 **Description**: Every PR should have a meaningful and exhaustive description of what they do and a link to the original issue they address.
 
+**Title**: A descriptive title for your PR will help others find and refer to it consistently.
+
 **Tests**: This is the way we ensure added/modified functionality meets the related feature expectations and that other code changes don't break functionlity over time.
 
 **Documentation**: If your PR changes or adds functionality, it's expected that you also make sure to add the right information to the docs. For more information about how to work on the project documentation check out the [Setting Up Your Documentation Environment](https://github.com/pyscript/pyscript/blob/main/docs/development/setting-up-environment.md#setting-up-your-documentation-environment).
