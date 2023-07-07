@@ -133,7 +133,7 @@ A PR without the above will likely be kindly rejected. :)
 
 ## PR approval process
 
-**Reviewers and Approvals**: In order for a PR to be approved it has to be reviewed and approved by at least 1 maintainer, preferably 2.
+**Reviewers and Approvals**: In order for a PR to be approved it has to be reviewed and approved by at least one maintainer, preferably two.
 
 **Review Process**: During the PR review process, the reviewer may ask the author for changes of just have questions in general. It is the PR author responsibility to make sure they address any questions or changes requests and re-submit the PR for review. The author should not expect that PRs pending that process will be taken over by the project `maintainers`. If one or more reviewers express concern around the PR, the default process is to not merge until the concern has been addressed (there are exceptions to this rule that will be mentioned in the items below).
 
