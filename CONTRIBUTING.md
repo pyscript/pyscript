@@ -91,6 +91,8 @@ If your PR changes or adds functionality, it's expected that it includes:
 
 **Documentation**: If your PR changes or adds functionality, it's expected that you also make sure to add the right information to the docs. For more information about how to work on the project documentation check out the [Setting Up Your Documentation Environment](https://github.com/pyscript/pyscript/blob/main/docs/development/setting-up-environment.md#setting-up-your-documentation-environment).
 
+Additionally, PR's which change user-facing functionality are expected to include an entry in the Changelog, for users' quick reference when comparing versions of PyScript. For information on updating the changelog, see [Updating the Changelog](https://github.com/pyscript/pyscript/blob/main/docs/development/developing.md#updating-the-changelog).
+
 **Readable code**: Ok, this is a broad and generic statement and deserves some explanation. The mantra behind this statement is that code that is semantically meaningful (aka "has a meaning" :-) is preferable to code that is short and "saves some line of code". Remember, others will be reading your code and if they understand what's going on easily it's a good sign that your code reflects your intentions while also making it easier for everyone. In addition to that, remember that you may be reading that code in the future and your future self will definitely thank you for making it easy to read! For instance, a code like:
 
 ```python
