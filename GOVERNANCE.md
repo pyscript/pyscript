@@ -64,7 +64,7 @@ All `maintainers` are highly encouraged to participate and exercise their rights
 
 **Give the right weight to decisions** `Maintainers` and those proposing decisions should explicitly distinguish between decisions that are two-way (easy to reverse later) and one-way (difficult or impossible to reverse later). For one-way doors, `maintainers` should carefully weigh alternatives and tradeoffs and take extra care to ensure broad participation and stakeholder input. For two-way doors, `maintainers` should feel free to move quickly, without compromising the principles and procedures described herein.
 
-**Lack of data** In the context of the above item and in the interest of making solid decisions, argumente should bring data and examples to back them up. "Gut feelings" will not be considered with the same relevance of arguments backed by data and examples.
+**Utilize Data** In the context of the above item and in the interest of making solid decisions, arguments should bring data and examples to back them up. "Gut feelings" will not be considered with the same relevance of arguments backed by data and examples.
 
 **Forgetting how we work** Given how passionate `maintainers` and users in general can be passionate about the project, discussion can get passionate. This should never be an excuse to operate with all our principles in mind and treat each other with respect, empathy and kindness.
 
