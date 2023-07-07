@@ -70,7 +70,7 @@ All `maintainers` are highly encouraged to participate and exercise their rights
 
 **Favor Explicit over Implicit** `Sponsors` and `maintainers` should proactively solicit input from relevant stakeholders and should not assume that silence is consent without attempting to reach out to those individuals.
 
-**Planning before acting** If you are interested in a decision being made, it is your responsibility to encourage voting member/stakeholder/community participation in the decision-making process. If you cannot get such participation, you may want to hold off on doing any significant work on the matter.
+**Plan before acting** If you are interested in a decision being made, it is your responsibility to encourage voting member/stakeholder/community participation in the decision-making process. If you cannot get such participation, you may want to hold off on doing any significant work on the matter.
 
 **Adopt guidelines to help the process** Make sure you adopt the development governance guidelines to ensure the process you are promoting is visible and clear to other members. I.e: using the proper Github `labels` to mark special discussions (that require a decision or vote), linking documents to discussions, etc. The actual guidelines are defined in a separate Software Development Governance document.
 
