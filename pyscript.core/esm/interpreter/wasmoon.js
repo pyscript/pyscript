@@ -1,10 +1,6 @@
-import {
-    clean,
-    fetchPaths,
-    stdio,
-    registerJSModule,
-    writeFileShim,
-} from "./_utils.js";
+import { clean, fetchPaths, stdio, writeFileShim } from "./_utils.js";
+
+import { entries } from "../utils.js";
 
 const type = "wasmoon";
 
@@ -27,16 +23,21 @@ export default {
         if (config.fetch) await fetchPaths(this, interpreter, config.fetch);
         return interpreter;
     },
-    registerJSModule,
-    getGlobal: (interpreter, name) => interpreter.global.get(name),
-    setGlobal(interpreter, name, value) {
-        interpreter.global.set(name, value);
-    },
-    deleteGlobal(interpreter, name) {
-        interpreter.global.set(name, void 0);
+    // Fallback to globally defined module fields
+    registerJSModule: (interpreter, _, value) => {
+        for (const [k, v] of entries(value)) interpreter.global.set(k, v);
     },
     run: (interpreter, code) => interpreter.doStringSync(clean(code)),
     runAsync: (interpreter, code) => interpreter.doString(clean(code)),
+    runEvent: (interpreter, code, event) => {
+        // allows method(event) as well as namespace.method(event)
+        // it does not allow fancy brackets names for now
+        const [name, ...keys] = code.split(".");
+        let target = interpreter.global.get(name);
+        let context;
+        for (const key of keys) [context, target] = [target, target[key]];
+        target.call(context, event);
+    },
     writeFile: (
         {
             cmodule: {

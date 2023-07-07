@@ -1,11 +1,9 @@
 import { fetchPaths, stdio } from "./_utils.js";
 import {
+    registerJSModule,
     run,
     runAsync,
-    getGlobal,
-    setGlobal,
-    deleteGlobal,
-    registerJSModule,
+    runEvent,
     writeFile,
 } from "./_python.js";
 
@@ -32,12 +30,10 @@ export default {
         }
         return interpreter;
     },
-    getGlobal,
-    setGlobal,
-    deleteGlobal,
     registerJSModule,
     run,
     runAsync,
+    runEvent,
     writeFile,
 };
 /* c8 ignore stop */

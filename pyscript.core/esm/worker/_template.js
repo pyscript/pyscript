@@ -24,15 +24,14 @@ try {
     );
 }
 
-let interpreter, run, interpreterEvent;
+let interpreter, runEvent;
 const add = (type, fn) => {
     addEventListener(
         type,
         fn ||
             (async (event) => {
                 await interpreter;
-                interpreterEvent = event;
-                run(`xworker.on${type}(xworker.event);`, xworker);
+                runEvent(`xworker.on${type}`, event);
             }),
         !!fn && { once: true },
     );
@@ -52,17 +51,6 @@ const xworker = {
     onmessage() {},
     onmessageerror() {},
     postMessage: postMessage.bind(self),
-    // this getter exists so that arbitrarily access to xworker.event
-    // would always fail once an event has been dispatched, as that's not
-    // meant to be accessed in the wild, respecting the one-off event nature of JS.
-    // because xworker is a unique well defined globally shared reference,
-    // there's also no need to bother setGlobal and deleteGlobal every single time.
-    get event() {
-        const event = interpreterEvent;
-        if (!event) throw new Error("Unauthorized event access");
-        interpreterEvent = void 0;
-        return event;
-    },
 };
 
 add("message", ({ data: { options, code, hooks } }) => {
@@ -99,10 +87,10 @@ add("message", ({ data: { options, code, hooks } }) => {
         }
         // set the `xworker` global reference once
         details.registerJSModule(interpreter, "xworker", { xworker });
-        // simplify run calls after possible patches
-        run = details[name].bind(details, interpreter);
-        // execute the content of the worker file
-        run(code);
+        // simplify runEvent calls
+        runEvent = details.runEvent.bind(details, interpreter);
+        // run either sync or async code in the worker
+        await details[name](interpreter, code);
         return interpreter;
     })();
     add("error");
