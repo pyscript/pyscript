@@ -50,7 +50,7 @@ If that's not the case and two or more parties are not aligned, any `maintainer`
 
 After the proposal is seconded by at least another `maintainer`, voters have 4 days to vote. `Maintainers` may consider longer voting periods as necessary for special circumstances, or shorter periods only if all voting members are present. The decision will be determined by a simple majority of non-blank votes for binary decisions (i.e., approving a proposal) and ranked choice for multi-class decisions (one among many, or several among many). The sponsor may update the proposal at any point during the voting period, in which case the voting period will be reset.
 
-NOTE: While only `maintainers` can vote, anyone can comment and participate to the discussion around the proposal, in the spiriti of opennes and inclusivity at the base of this project.
+NOTE: While only `maintainers` can vote, anyone can comment and participate in the discussion around the proposal.
 
 **Voter participation and quorum.** There is no minimum quorum for a vote to be considered valid, unless a voter had expressed their inability to vote and asked for an extended voting time window. All votes must include a "abstinent" option, for voters to express their desire to be neutral to decision while still casting a vote.
 
