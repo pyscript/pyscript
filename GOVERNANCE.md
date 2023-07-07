@@ -68,7 +68,7 @@ All `maintainers` are highly encouraged to participate and exercise their rights
 
 \*_Remember How We Work_ Given how passionate `maintainers` and users in general can be passionate about the project, discussion can get passionate. This should never be an excuse to operate with all our principles in mind and treat each other with respect, empathy and kindness.
 
-**Explicit is better than implicit** `Sponsors` and `maintainers` should proactively solicit input from relevant stakeholders and should not assume that silence is consent without attempting to reach out to those individuals.
+**Favor Explicit over Implicit** `Sponsors` and `maintainers` should proactively solicit input from relevant stakeholders and should not assume that silence is consent without attempting to reach out to those individuals.
 
 **Planning before acting** If you are interested in a decision being made, it is your responsibility to encourage voting member/stakeholder/community participation in the decision-making process. If you cannot get such participation, you may want to hold off on doing any significant work on the matter.
 
