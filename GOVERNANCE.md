@@ -60,7 +60,7 @@ All `maintainers` are highly encouraged to participate and exercise their rights
 
 ### 3.2.2. Keys to Successful Consensus
 
-**Allow Time for Decisions**: While we want prioritize a lean and fast process, we also want to make sure that everyone express their opinions. The process should never feel "rushed."
+**Allow Time for Decisions**: While we want prioritize a lean and fast process, we also want to make sure that everyone express their opinions. The process should never feel rushed.
 
 **Use Voting at the End of the Discussion**: Expanding on the item above, formal votes should be called only when discussion has explored the space, stakeholders have provided input and consensus hasn't been reached through the informal process. `Maintainers` should be should not call a vote to short-circuit an ongoing discussion that is still productive in terms of exploring ideas and feedback.
 
