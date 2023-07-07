@@ -125,6 +125,8 @@ for plugin in plugins:
 
 **Docstrings**: Document. Your. Code! Make sure all your classes and functions have docstrings that document their behaviour, inputs and outputs. Other people (especially users!) shouldn't need to dive your the code implementing a function in order to understand what it does.
 
+Python docstrings should ideally be styled as in [PEP 8](https://peps.python.org/pep-0008/) and [PEP 257](https://peps.python.org/pep-0257/). TypeScript docstrings should be formatted per [TSDoc.org](https://tsdoc.org/). JavaString docstrings should be formatted per [JSDoc.app](https://jsdoc.app/). In general, follow the style of the existing docstrings and you'll be fine.
+
 **Comments**: In order to support the 2 previous points (remember, we said support, not replace!), make sure your core has meaningful comments that complement the code itself so that anyone reading your code can understand the intentions and the algorithm being implemented. While comments easily become out dated, they do help understanding the intentions.
 
 A PR without the above will likely be kindly rejected. :)
