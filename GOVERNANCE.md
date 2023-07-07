@@ -58,7 +58,7 @@ All `maintainers` are highly encouraged to participate and exercise their rights
 
 **Recording.** Once a decision has been made during the consensus-seeking phase or by a formal vote, the initiative `sponsor` will record the decision in the related discussion, for posterity.
 
-### 3.2.2. Things to avoid
+### 3.2.2. Keys to Successful Consensus
 
 **Rushing a decision**: While we want prioritize a lean and fast process, we also want to make sure that everyone express their opinions.
 
