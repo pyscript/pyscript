@@ -10,7 +10,11 @@
             }
         </style>
         <script type="importmap">
-            { "imports": { "@pyscript/core": "../../min.js" } }
+            { "imports":
+                {
+                    "@pyscript/core": "../../min.js",
+                    "interactive": "./repl/interactive_src.js"
+                } }
         </script>
         <script type="module" src="py-script.js"></script>
     </head>

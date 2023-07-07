@@ -11,20 +11,24 @@
         </style>
         <script type="importmap">
             { "imports":
-                { 
+                {
                     "@pyscript/core": "../../min.js",
                     "interactive": "./repl/interactive_src.js"
                 } }
         </script>
         <script src ="../../node_modules/xterm/lib/xterm.js"></script>
         <script type="module" src="py-script.js"></script>
-        
+
     </head>
     <body>
+        <py-config>
+            packages = ['rich']
+        </py-config>
         <py-script>
             x = 1_000_000
             sentence = "PyScript is awesome!"
+            print("PyScript tags can run")
         </py-script>
-        <py-repl>FOO</py-repl>
+        <py-repl></py-repl>
     </body>
 </html>
