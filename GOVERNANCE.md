@@ -62,7 +62,7 @@ All `maintainers` are highly encouraged to participate and exercise their rights
 
 **Allow Time for Decisions**: While we want prioritize a lean and fast process, we also want to make sure that everyone express their opinions. The process should never feel "rushed."
 
-**Use Voting at the End of the Discussion**: Expanding on the item above, formal votes should be called only when discussion has explored the space, stakeholders have provided input and consensus hasn't been reached through the informal process. `Maintainers` should be should not call a vote to short-circuit an ongoing discussion that is still productive in terms of exploring ideas and feedback. 
+**Use Voting at the End of the Discussion**: Expanding on the item above, formal votes should be called only when discussion has explored the space, stakeholders have provided input and consensus hasn't been reached through the informal process. `Maintainers` should be should not call a vote to short-circuit an ongoing discussion that is still productive in terms of exploring ideas and feedback.
 
 **Give the right weight to decisions** `Maintainers` and those proposing decisions should explicitly distinguish between decisions that are two-way (easy to reverse later) and one-way (difficult or impossible to reverse later). For one-way doors, `maintainers` should carefully weigh alternatives and tradeoffs and take extra care to ensure broad participation and stakeholder input. For two-way doors, `maintainers` should feel free to move quickly, without compromising the principles and procedures described herein.
 
