@@ -33,7 +33,7 @@ The [PyScript Code of Conduct](https://github.com/pyscript/governance/blob/main/
 
 ## Opening an Issue
 
-If you encounter a bug, have a feature proposal, or a question, please open an issue on the PyScript repository and select. When opening an issue, make sure to include the following information:
+If you encounter a bug, have a feature proposal or have a question, please open an issue on the PyScript repository and select the right category. Feature proposals and questions will be opened as a `Discussion` to encourage discussions around the topic, while bugs are filed under traditional Github Issues. When opening an issue, make sure to include the following information:
 
 -   A clear and concise title that summarizes the issue.
 -   A detailed description of the problem or feature request.
