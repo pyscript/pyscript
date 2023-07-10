@@ -77,7 +77,7 @@ To contribute code changes or bug fixes to PyScript, follow these steps to open 
 9. Include a detailed description of the changes made, along with any relevant context or references.
 10. Wait for feedback and engage in discussions to address any reviewer comments or change requests.
 
-**Important TIP**: As mentioned below in the [PR approval requirements](#pr-approval-requirements), while not mandatory, all PRs should have a related issue. This is extremely helpful in general but even more important if the PR adds new functionality or changes some behavior. It can be very frustrating to work on something and then learn that not everyone share the same opinion on how that specific problem should be solved. To make sure the problem the PR is solving is undertood and the the solution has been discussed and approved by the majority of the users want to have their say and`maintainers`, creating an issue/discussion and discussing there is the best (and highly recommended) option.
+**Important TIP**: All PRs should have a related issue. This is particularly important if the PR adds new functionality or changes some behavior. It can be very frustrating to work on something and then learn that not everyone shares the same opinion on how that specific problem should be solved. Creating an issue/discussion and discussing the problem before making a PR is the best way to avoid wasted effort.
 
 ### PR approval requirements
 
@@ -133,7 +133,7 @@ A PR without the above will likely be kindly rejected. :)
 
 ## PR approval process
 
-**Reviewers and Approvals**: In order for a PR to be approved it has to be reviewed and approved by at least 1 maintainer, preferably 2.
+**Reviewers and Approvals**: In order for a PR to be approved it has to be reviewed and approved by at least one maintainer, preferably two.
 
 **Review Process**: During the PR review process, the reviewer may ask the author for changes of just have questions in general. It is the PR author responsibility to make sure they address any questions or changes requests and re-submit the PR for review. The author should not expect that PRs pending that process will be taken over by the project `maintainers`. If one or more reviewers express concern around the PR, the default process is to not merge until the concern has been addressed (there are exceptions to this rule that will be mentioned in the items below).
 

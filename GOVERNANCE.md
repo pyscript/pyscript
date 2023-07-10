@@ -50,7 +50,7 @@ If that's not the case and two or more parties are not aligned, any `maintainer`
 
 After the proposal is seconded by at least another `maintainer`, voters have 4 days to vote. `Maintainers` may consider longer voting periods as necessary for special circumstances, or shorter periods only if all voting members are present. The decision will be determined by a simple majority of non-blank votes for binary decisions (i.e., approving a proposal) and ranked choice for multi-class decisions (one among many, or several among many). The sponsor may update the proposal at any point during the voting period, in which case the voting period will be reset.
 
-NOTE: While only `maintainers` can vote, anyone can comment and participate to the discussion around the proposal, in the spiriti of opennes and inclusivity at the base of this project.
+NOTE: While only `maintainers` can vote, anyone can comment and participate in the discussion around the proposal.
 
 **Voter participation and quorum.** There is no minimum quorum for a vote to be considered valid, unless a voter had expressed their inability to vote and asked for an extended voting time window. All votes must include a "abstinent" option, for voters to express their desire to be neutral to decision while still casting a vote.
 
@@ -60,13 +60,13 @@ All `maintainers` are highly encouraged to participate and exercise their rights
 
 ### 3.2.2. Keys to Successful Consensus
 
-**Allow Time for Decisions**: While we want prioritize a lean and fast process, we also want to make sure that everyone express their opinions. The process should never feel "rushed."
+**Allow Time for Decisions**: While we want prioritize a lean and fast process, we also want to make sure that everyone express their opinions. The process should never feel rushed.
 
 **Use Voting at the End of the Discussion**: Expanding on the item above, formal votes should be called only when discussion has explored the space, stakeholders have provided input and consensus hasn't been reached through the informal process. `Maintainers` should be should not call a vote to short-circuit an ongoing discussion that is still productive in terms of exploring ideas and feedback.
 
 **Give the right weight to decisions** `Maintainers` and those proposing decisions should explicitly distinguish between decisions that are two-way (easy to reverse later) and one-way (difficult or impossible to reverse later). For one-way doors, `maintainers` should carefully weigh alternatives and tradeoffs and take extra care to ensure broad participation and stakeholder input. For two-way doors, `maintainers` should feel free to move quickly, without compromising the principles and procedures described herein.
 
-**Utilize Data** In the context of the above item and in the interest of making solid decisions, arguments should bring data and examples to back them up. "Gut feelings" will not be considered with the same relevance of arguments backed by data and examples.
+**Utilize Data** In the context of the above item and in the interest of making solid decisions, arguments should bring data and examples to back them up. "Gut feelings" do not carry as much weight as data and examples.
 
 **Acknowledge Some Questions Don't Have 'Right' Answers**: Expanding on the item above, many proposals or question won't have any objectively 'right' answers (e.g. naming things). `Maintainers` should acknowledge when they are expressing a preference, while avoiding declaring their preferences as "correct." Maintainers should also be wary that these matters can be the most prone to [bikeshedding](https://en.wikipedia.org/wiki/Law_of_triviality) and judge how much time they're spending on these matters accordingly.
 
