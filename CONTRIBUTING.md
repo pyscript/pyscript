@@ -72,7 +72,7 @@ To contribute code changes or bug fixes to PyScript, follow these steps to open 
 4. Write tests for your changes to maintain code quality and avoid regressions.
 5. Commit your changes with clear and concise commit messages.
 6. Push your branch to your forked repository.
-7. Open a pull request (PR) from your branch to the `main` branch of the PyScript repository.
+7. Open a pull request (PR) from your branch to the branch your started from in the PyScript repository.
 8. Provide a clear and descriptive title for your PR.
 9. Include a detailed description of the changes made, along with any relevant context or references.
 10. Wait for feedback and engage in discussions to address any reviewer comments or change requests.
