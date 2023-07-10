@@ -37,9 +37,9 @@ If you encounter a bug, have a feature proposal or have a question, please open 
 
 -   A clear and concise title that summarizes the issue.
 -   A detailed description of the problem or feature request.
--   Steps to reproduce the issue (if applicable).
+-   Steps to reproduce the issue.
 -   Any relevant error messages or screenshots.
--   The version of PyScript you are using (if applicable).
+-   The version of PyScript you are using.
 
 ### Reporting bugs
 
