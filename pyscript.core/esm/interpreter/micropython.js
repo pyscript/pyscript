@@ -1,10 +1,9 @@
 import { fetchPaths, stdio } from "./_utils.js";
 import {
-    run,
-    getGlobal,
-    setGlobal,
-    deleteGlobal,
     registerJSModule,
+    run,
+    runAsync,
+    runEvent,
     writeFile,
 } from "./_python.js";
 
@@ -23,16 +22,10 @@ export default {
         if (config.fetch) await fetchPaths(this, interpreter, config.fetch);
         return interpreter;
     },
-    getGlobal,
-    setGlobal,
-    deleteGlobal,
     registerJSModule,
     run,
-    // TODO: MicroPython doesn't have a Pyodide like top-level await,
-    //       this method should still not throw errors once invoked
-    async runAsync(...args) {
-        return this.run(...args);
-    },
+    runAsync,
+    runEvent,
     writeFile,
 };
 /* c8 ignore stop */

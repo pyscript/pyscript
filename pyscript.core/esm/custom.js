@@ -119,6 +119,7 @@ export const handleCustomType = (node) => {
                         config: structuredClone(configs.get(name)),
                         run: module.run.bind(module, interpreter),
                         runAsync: module.runAsync.bind(module, interpreter),
+                        runEvent: module.runEvent.bind(module, interpreter),
                     };
 
                     resolve(resolved);

@@ -64,5 +64,17 @@
             w.postMessage('MicroPython: Hello Lua 👋')
             w.onmessage = handle_message
         </script>
+
+        <!-- XWorker - MicroPython to Ruby -->
+        <script type="micropython">
+            from xworker import XWorker
+
+            def handle_message(event):
+              print(event.data)
+
+            w = XWorker('./worker.rb', type='ruby-wasm-wasi')
+            w.postMessage('MicroPython: Hello Ruby 👋')
+            w.onmessage = handle_message
+        </script>
     </body>
 </html>

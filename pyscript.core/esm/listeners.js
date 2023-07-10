@@ -41,8 +41,7 @@ export const listener = async (event) => {
             el.getAttribute(`${name}-env`) || name,
         );
         const handler = registry.get(name);
-        const callback = handler.getGlobal(interpreter, value);
-        callback(event);
+        handler.runEvent(interpreter, value, event);
     }
 };
 

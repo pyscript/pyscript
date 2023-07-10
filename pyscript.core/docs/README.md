@@ -455,7 +455,8 @@ In few words, while every *interpreter* is literally passed along to unlock its 
 | io                        | `wrap.io`                                     | Allow to lazily define different `stdout` or `stderr` via the running *interpreter*. This `io` field can be lazily defined and restored back for any element currently running the code. |
 | config                    | `wrap.config`                                 | It is the resolved *JSON* config and it is an own clone per each element running the code, usable also as "_state_" reference for the specific element, as changing it at run time will never affect any other element. |
 | run                       | `wrap.run(code)`                              | It abstracts away the need to know the exact method name used to run code synchronously, whenever the *interpreter* allows such operation, facilitating future migrations from an interpreter to another. |
-| runAsync                  | `wrap.run(code)`                              | It abstracts away the need to know the exact method name used to run code asynchronously, whenever the *interpreter* allows such operation, facilitating future migrations from an interpreter to another. |
+| runAsync                  | `wrap.runAsync(code)`                         | It abstracts away the need to know the exact method name used to run code asynchronously, whenever the *interpreter* allows such operation, facilitating future migrations from an interpreter to another. |
+| runEvent                  | `wrap.runEvent(code, event)`                  | It abstracts away the need to know how an *interpreter* retrieves paths to execute an event handler. |
 
 This is the `wrap` mentioned with most hooks and initializers previously described, and we're more than happy to learn if we are not passing along some extra helper.
 

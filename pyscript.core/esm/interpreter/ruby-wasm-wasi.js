@@ -1,6 +1,8 @@
-import { clean, fetchPaths, registerJSModule } from "./_utils.js";
+import { clean, fetchPaths } from "./_utils.js";
+import { entries } from "../utils.js";
 
 const type = "ruby-wasm-wasi";
+const jsType = type.replace(/\W+/g, "_");
 
 // MISSING:
 //  * there is no VFS apparently or I couldn't reach any
@@ -23,31 +25,35 @@ export default {
         if (config.fetch) await fetchPaths(this, interpreter, config.fetch);
         return interpreter;
     },
-    registerJSModule,
-    getGlobal(interpreter, name) {
-        try {
-            return this.run(interpreter, name);
-        } catch (_) {
-            const method = this.run(interpreter, `method(:${name})`);
-            return (...args) =>
-                method.call(
-                    name,
-                    ...args.map((value) => interpreter.wrap(value)),
-                );
+    // Fallback to globally defined module fields (i.e. $xworker)
+    registerJSModule(interpreter, _, value) {
+        const code = ['require "js"'];
+        for (const [k, v] of entries(value)) {
+            const id = `__module_${jsType}_${k}`;
+            globalThis[id] = v;
+            code.push(`$${k}=JS.global[:${id}]`);
         }
-    },
-    setGlobal(interpreter, name, value) {
-        const id = `__pyscript_ruby_wasm_wasi_${name}`;
-        globalThis[id] = value;
-        this.run(interpreter, `require "js";$${name}=JS::eval("return ${id}")`);
-    },
-    deleteGlobal(interpreter, name) {
-        const id = `__pyscript_ruby_wasm_wasi_${name}`;
-        this.run(interpreter, `$${name}=nil`);
-        delete globalThis[id];
+        this.run(interpreter, code.join(";"));
     },
     run: (interpreter, code) => interpreter.eval(clean(code)),
     runAsync: (interpreter, code) => interpreter.evalAsync(clean(code)),
+    runEvent(interpreter, code, event) {
+        // patch common xworker.onmessage/onerror cases
+        if (/^xworker\.(on\w+)$/.test(code)) {
+            const { $1: name } = RegExp;
+            const id = `__module_${jsType}_event`;
+            globalThis[id] = event;
+            this.run(
+                interpreter,
+                `require "js";$xworker.call("${name}",JS.global[:${id}])`,
+            );
+            delete globalThis[id];
+        } else {
+            // Experimental: allows only events by fully qualified method name
+            const method = this.run(interpreter, `method(:${code})`);
+            method.call(code, interpreter.wrap(event));
+        }
+    },
     writeFile: () => {
         throw new Error(`writeFile is not supported in ${type}`);
     },

@@ -14,10 +14,16 @@
               import sys
               print(event.type)
               print(sys.version)
+
+            class Printer:
+                def version(self, event):
+                    print_version(event)
+
+            printer = Printer()
         </script>
         <button
             pyodide-pointerdown="print_version"
-            pyodide-click="print_version"
+            pyodide-click="printer.version"
         >
             pyodide version
         </button>
@@ -28,9 +34,10 @@
               print(event.type)
               print(sys.version)
         </script>
+        <!-- ⚠️ MicroPython bug: it fails the printer.version case -->
         <button
             micropython-pointerdown="print_version"
-            micropython-click="print_version"
+            micropython-click="printer.version"
         >
             micropython version
         </button>

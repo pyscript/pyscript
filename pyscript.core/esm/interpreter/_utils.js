@@ -1,7 +1,7 @@
 import "@ungap/with-resolvers";
 
 import { getBuffer } from "../fetch-utils.js";
-import { absoluteURL, entries } from "../utils.js";
+import { absoluteURL } from "../utils.js";
 
 /**
  * Trim code only if it's a single line that prettier or other tools might have modified.
@@ -131,12 +131,4 @@ export const fetchPaths = (module, interpreter, config_fetch) =>
                 .then((buffer) => module.writeFile(interpreter, path, buffer)),
         ),
     );
-
-// this is a fallback for interpreters unable to register JS modules
-// all defined keys will end up as globally available references
-// REQUIRES INTEGRATION TEST
-/* c8 ignore start */
-export function registerJSModule(interpreter, _, value) {
-    for (const [k, v] of entries(value)) this.setGlobal(interpreter, k, v);
-}
 /* c8 ignore stop */
