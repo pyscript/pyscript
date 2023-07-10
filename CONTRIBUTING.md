@@ -141,7 +141,7 @@ A PR without the above will likely be kindly rejected. :)
 
 **Stale PRs**: PRs that have been waiting for the author to answer questions or for code changes will be labeled as `stale` after a week and will be automatically closed after 2 weeks.
 
-**No rush**: Authors should not expect PRs to be force merged or
+**No rush**: Authors should not expect PRs to be force merged or to have PRs merged without a review process. The review process, as well as the whole development workflow, focus on ensuring high quality standards and is should always be followed. While there can be exceptions on merging PRs that have had a partial review process because they are blocking other work, these type of cases should be a rare exception and be followed by follow-up PRs that allows the author and `maintainers` to amend any pending task not covered in the first PR.
 
 ### Places to start
 
