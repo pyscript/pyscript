@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Lights Camera Action</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script type="module" src="../../core.js"></script>
+</head>
+<body>
+    <script type="pyodide" src="./main.py"></script>
+    <script type="micropython" src="./main.py"></script>
+    <p>Open the console.</p>
+    <button pyodide-click="click_handler">Pyodide Click</button>
+    <button micropython-click="click_handler">MicroPython Click</button>
+</body>
+</html>

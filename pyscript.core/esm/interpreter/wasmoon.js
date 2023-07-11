@@ -29,14 +29,14 @@ export default {
     },
     run: (interpreter, code) => interpreter.doStringSync(clean(code)),
     runAsync: (interpreter, code) => interpreter.doString(clean(code)),
-    runEvent: (interpreter, code, event) => {
+    runEvent: async (interpreter, code, event) => {
         // allows method(event) as well as namespace.method(event)
         // it does not allow fancy brackets names for now
         const [name, ...keys] = code.split(".");
         let target = interpreter.global.get(name);
         let context;
         for (const key of keys) [context, target] = [target, target[key]];
-        target.call(context, event);
+        await target.call(context, event);
     },
     writeFile: (
         {

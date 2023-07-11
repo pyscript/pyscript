@@ -37,7 +37,7 @@ export default {
     },
     run: (interpreter, code) => interpreter.eval(clean(code)),
     runAsync: (interpreter, code) => interpreter.evalAsync(clean(code)),
-    runEvent(interpreter, code, event) {
+    async runEvent(interpreter, code, event) {
         // patch common xworker.onmessage/onerror cases
         if (/^xworker\.(on\w+)$/.test(code)) {
             const { $1: name } = RegExp;
@@ -51,7 +51,7 @@ export default {
         } else {
             // Experimental: allows only events by fully qualified method name
             const method = this.run(interpreter, `method(:${code})`);
-            method.call(code, interpreter.wrap(event));
+            await method.call(code, interpreter.wrap(event));
         }
     },
     writeFile: () => {

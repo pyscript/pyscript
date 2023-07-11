@@ -18,7 +18,7 @@ export const runEvent = async (interpreter, code, event) => {
     let target = interpreter.globals.get(name);
     let context;
     for (const key of keys) [context, target] = [target, target[key]];
-    target.call(context, event);
+    await target.call(context, event);
 };
 
 export const writeFile = ({ FS }, path, buffer) =>
