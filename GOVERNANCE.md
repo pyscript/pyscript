@@ -8,13 +8,40 @@ This project may include the following roles. Additional roles may be adopted an
 
 **1.1. Maintainers**. Maintainers are responsible for organizing activities around developing, maintaining, and updating the Project. Maintainers are also responsible for determining consensus. This Project may add or remove Maintainers with the approval of the current Maintainers.
 
-**1.2. Contributors**. Contributors are those that have made contributions to the Project.
+**1.2 BDFL** Benevolent dictator for life (BDFL) is a title given to a ~~small number of open-source software development leaders~~, typically project founders who retain the final say in disputes or arguments within the community (For more info please check the related [wikipedia page](https://en.wikipedia.org/wiki/Benevolent_dictator_for_life)).
+
+**1.3. Contributors**. Contributors are those that have made contributions to the Project.
 
 ## 2. Decisions.
 
-**2.1. Consensus-Based Decision Making**. Projects make decisions through consensus of the Maintainers. While explicit agreement of all Maintainers is preferred, it is not required for consensus. Rather, the Maintainers will determine consensus based on their good faith consideration of a number of factors, including the dominant view of the Contributors and nature of support and objections. The Maintainers will document evidence of consensus in accordance with these requirements.
+The PyScript project implements a mixed committee/BDFL (Benevolent Dictator for Life) decision making model, where the BDFL works with the committee with the ultimate goal of advancing the project while developing its vision.
 
-**2.2. Appeal Process**. Decisions may be appealed by opening an issue and that appeal will be considered by the Maintainers in good faith, who will respond in writing within a reasonable time. If the Maintainers deny the appeal, the appeal my be brought before the Organization Steering Committee, who will also respond in writing in a reasonable time.
+**3.1.1. Rationale**
+
+_Why this model rather than any other ?_
+
+It comes down to “vision” and consistency.
+
+Given the current status and life of the PyScript project, we believe that the best way to encourage a mixed approach where the active `maintainers` group acts as a committee, effectively being at the center of the decision making process, and the BDFL act as ultimate gate keeper of the vision and the project users.
+
+**2.1. Consensus-Based Decision Making**. The project standard way of making decisions is through consensus of the Maintainers and the automatic blessing of the BDFL. While explicit agreement of all Maintainers is preferred, it is not required for consensus. Rather, the Maintainers will determine consensus based on their good faith considering a number of factors, including the dominant view of the Contributors and nature of support and objections. The Maintainers will document evidence of consensus in accordance with these requirements.
+
+In cases of controversial discussions and on exceptional cases, the BDFL has the right (and duty) to make a call to confirm or decline a specific decision. This right is to be exercised very carefully, and used only on delicate matters whenever it is fit.
+
+**2.2. Appeal Process**. Decisions may be appealed by opening an issue and that appeal will be considered by the Maintainers in good faith, who will respond in writing within a reasonable time.
+
+**2.3. BDFL Role**
+
+The main goal of the PyScript BDFL is to serve as support in the decision making process, and provide a compass to help guide the project towards its vision and its core principles. It is not meant to replace the group of maintainers in the decision process nor to discourage healthy conversation and proposals or overrule the voting process.
+
+The BDFL has the following responsibilities:
+
+-   Never use their rights in ways that discourage an open and respectful dialogue among Maintainers, Contributors, and Users.
+-   Ensure a fair and respectful voting process.
+
+and rights:
+
+-   Right to bypass the voting process towards a decision in case there isn't an unanimous consensus on a specific matter among all the other Maintainers of the project or in case they consider the decision against the project vision or best interest.
 
 ## 3. How We Work.
 
