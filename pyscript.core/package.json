@@ -63,9 +63,9 @@
         "@ungap/structured-clone": "^1.2.0",
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "coincident": "^0.11.0"
+        "coincident": "^0.11.1"
     },
     "worker": {
-        "blob": "sha256-et4sTPirdlCWiNezIVZP4KVcDIX//rqZyy8vIPTJ2LA="
+        "blob": "sha256-idLCB+fF+/sTx1vHssJPaTaZgW6neAWX5SJ6leLl1kA="
     }
 }
