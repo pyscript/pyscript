@@ -30,6 +30,7 @@ open an HTML by double-clicking it in your file explorer.
 
 ```html
 <html>
+<title>This is Getting Started</title>
   <head>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
