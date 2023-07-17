@@ -37,13 +37,9 @@ export const loadPyodide = () => ({
     FS: {
         mkdirTree() {},
         writeFile() {},
-        analyzePath: (path) => ({
-            parentPath: dirname(path),
-            name: basename(path),
-        }),
     },
+    PATH: { dirname },
     _module: {
-        PATH: { dirname },
         PATH_FS: {
             resolve: (path) => path,
         },
