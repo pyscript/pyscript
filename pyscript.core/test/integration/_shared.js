@@ -9,8 +9,6 @@ exports.shared = {
         await expect(result.trim()).toBe('OK');
     },
 
-    // the `remoteBootstrap` value indicates approximately how long it takes
-    // for the different / worker interpreter to bootstrap
     worker: ({ expect }, url) => async ({ page }) => {
         const logs = [];
         page.on('console', msg => logs.push(msg.text()));

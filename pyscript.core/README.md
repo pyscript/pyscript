@@ -50,7 +50,7 @@ Besides spinning the _localhost_ server via `npm run server`, the `npm run dev` 
 
 ## Integration Tests
 
-To keep it simple, and due technical differences between what we had before and what we actually need for core (special headers, multiple interpreters, different bootstrap logic), core integration tests can be performed simply running:
+To keep it simple, and due to technical differences between what was in PyScript before and what we actually need for core (special headers, multiple interpreters, different bootstrap logic), core integration tests can be performed simply by running:
 
 ```sh
 npm run test:integration
@@ -80,7 +80,7 @@ integration
 ```
 
 -   **interpreter** this folder contains, per each interpreter, a dedicated folder with the interpreter's name. Each of these sub-folders will contain all `.html` and other files to test every specific behavior. In this folder, it's possible to share files, config, or anything else that makes sense for one or more interpreters.
--   **\_shared.js** contains some utility used across all tests. Any file prefixed with `_` (underscore) will be ignored but it can be used by the code itself.
+-   **\_shared.js** contains some utility used across all tests. Any file prefixed with `_` (underscore) will be ignored for tests purposes but it can be used by the code itself.
 -   **micropython.js** and all others contain the actual test per each interpreter. If a test is the same across multiple interpreters it can be exported via the `_shared.js` file as it is for most _Pyodide_ and _MicroPython_ cases.
 
 The [test/integration.spec.js](./test/integration.spec.js) file simply loops over folders that match interpreters _by name_ and execute in parallel all tests.
