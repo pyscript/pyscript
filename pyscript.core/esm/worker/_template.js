@@ -30,8 +30,12 @@ const add = (type, fn) => {
         type,
         fn ||
             (async (event) => {
-                await interpreter;
-                runEvent(`xworker.on${type}`, event);
+                try {
+                    await interpreter;
+                    runEvent(`xworker.on${type}`, event);
+                } catch (error) {
+                    postMessage(error);
+                }
             }),
         !!fn && { once: true },
     );
@@ -55,43 +59,47 @@ const xworker = {
 
 add("message", ({ data: { options, code, hooks } }) => {
     interpreter = (async () => {
-        const { type, version, config, async: isAsync } = options;
-        const interpreter = await getRuntime(
-            getRuntimeID(type, version),
-            config,
-        );
-        const details = create(registry.get(type));
-        const name = `run${isAsync ? "Async" : ""}`;
+        try {
+            const { type, version, config, async: isAsync } = options;
+            const interpreter = await getRuntime(
+                getRuntimeID(type, version),
+                config,
+            );
+            const details = create(registry.get(type));
+            const name = `run${isAsync ? "Async" : ""}`;
 
-        if (hooks) {
-            // patch code if needed
-            const { beforeRun, beforeRunAsync, afterRun, afterRunAsync } =
-                hooks;
+            if (hooks) {
+                // patch code if needed
+                const { beforeRun, beforeRunAsync, afterRun, afterRunAsync } =
+                    hooks;
 
-            const after = afterRun || afterRunAsync;
-            const before = beforeRun || beforeRunAsync;
+                const after = afterRun || afterRunAsync;
+                const before = beforeRun || beforeRunAsync;
 
-            // append code that should be executed *after* first
-            if (after) {
-                const method = details[name].bind(details);
-                details[name] = (interpreter, code) =>
-                    method(interpreter, `${code}\n${after}`);
+                // append code that should be executed *after* first
+                if (after) {
+                    const method = details[name].bind(details);
+                    details[name] = (interpreter, code) =>
+                        method(interpreter, `${code}\n${after}`);
+                }
+
+                // prepend code that should be executed *before* (so that after is post-patched)
+                if (before) {
+                    const method = details[name].bind(details);
+                    details[name] = (interpreter, code) =>
+                        method(interpreter, `${before}\n${code}`);
+                }
             }
-
-            // prepend code that should be executed *before* (so that after is post-patched)
-            if (before) {
-                const method = details[name].bind(details);
-                details[name] = (interpreter, code) =>
-                    method(interpreter, `${before}\n${code}`);
-            }
+            // set the `xworker` global reference once
+            details.registerJSModule(interpreter, "xworker", { xworker });
+            // simplify runEvent calls
+            runEvent = details.runEvent.bind(details, interpreter);
+            // run either sync or async code in the worker
+            await details[name](interpreter, code);
+            return interpreter;
+        } catch (error) {
+            postMessage(error);
         }
-        // set the `xworker` global reference once
-        details.registerJSModule(interpreter, "xworker", { xworker });
-        // simplify runEvent calls
-        runEvent = details.runEvent.bind(details, interpreter);
-        // run either sync or async code in the worker
-        await details[name](interpreter, code);
-        return interpreter;
     })();
     add("error");
     add("message");
