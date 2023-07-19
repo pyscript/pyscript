@@ -53,5 +53,12 @@ export default (...args) =>
 
         if (isHook) this.onWorkerReady?.(this.interpreter, worker);
 
+        worker.addEventListener("message", (event) => {
+            if (event.data instanceof Error) {
+                event.stopImmediatePropagation();
+                worker.onerror(event);
+            }
+        });
+
         return worker;
     };
