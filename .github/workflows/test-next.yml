@@ -44,17 +44,18 @@ jobs:
                       ${{ runner.os }}-build-
                       ${{ runner.os }}-
 
-            - name: install next deps
-              working-directory: pyscript.core
-              run: npm i; npx playwright install
+            # TODO: this will likely change soon to pyscript.next
+            # - name: install next deps
+            #   working-directory: pyscript.core
+            #   run: npm i; npx playwright install
 
-            - name: build next
-              working-directory: pyscript.core
-              run: npm run build
+            # - name: build next
+            #   working-directory: pyscript.core
+            #   run: npm run build
 
-            - name: Run next tests
-              working-directory: pyscript.core
-              run: npm run test
+            # - name: Run next tests
+            #   working-directory: pyscript.core
+            #   run: npm run test
 
             # TODO: DO we want to upload next yet?
             # - uses: actions/upload-artifact@v3
