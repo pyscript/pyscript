@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module">
+        import { init } from '../utils.js';
+        init('wasmoon');
+    </script>
+</head>
+<body>
+    <script type="wasmoon">
+        function show_OK(event)
+            event.target.textContent = 'OK'
+        end
+    </script>
+    <button wasmoon-click="show_OK"></button>
+</body>
+</html>
