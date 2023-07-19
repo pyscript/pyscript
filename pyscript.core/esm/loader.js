@@ -15,8 +15,10 @@ export const getRuntime = (id, config) => {
         /* c8 ignore start */
         if (config.endsWith(".json")) {
             options = fetch(config).then(getJSON);
+            config = absoluteURL(config);
         } else if (config.endsWith(".toml")) {
             options = fetch(config).then(getText).then(parse);
+            config = absoluteURL(config);
         } else {
             try {
                 options = JSON.parse(config);
