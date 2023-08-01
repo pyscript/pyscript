@@ -14,7 +14,7 @@ repos:
           - id: check-docstring-first
           - id: check-executables-have-shebangs
           - id: check-json
-            exclude: tsconfig\.json|pyscript\.core/cjs/package\.json
+            exclude: tsconfig\.json
           - id: check-toml
           - id: check-xml
           - id: check-yaml
@@ -47,7 +47,7 @@ repos:
       rev: "v3.0.0-alpha.6"
       hooks:
           - id: prettier
-            exclude: pyscript\.core/test
+            exclude: pyscript\.next/test|pyscript\.next/core.*
             args: [--tab-width, "4"]
 
     - repo: https://github.com/pre-commit/mirrors-eslint
