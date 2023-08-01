@@ -1,0 +1,41 @@
+{
+    "name": "@pyscript/core",
+    "version": "0.1.0",
+    "type": "module",
+    "description": "PyScript",
+    "main": "core.js",
+    "module": "core.js",
+    "exports": {
+        ".": {
+            "types": "./types/esm/core.d.ts",
+            "import": "./esm/core.js"
+        },
+        "./core": {
+            "import": "./core.js"
+        },
+        "./core.css": {
+            "import": "./core.css"
+        },
+        "./package.json": "./package.json"
+    },
+    "scripts": {
+        "server": "npx static-handler --cors --coep --coop --corp .",
+        "build": "rollup --config rollup/core.config.js && rollup --config rollup/core-css.config.js"
+    },
+    "keywords": [],
+    "author": "Anaconda Inc.",
+    "license": "APACHE-2.0",
+    "dependencies": {
+        "@ungap/with-resolvers": "^0.1.0",
+        "basic-devtools": "^0.1.6",
+        "polyscript": "^0.1.5"
+    },
+    "devDependencies": {
+        "@rollup/plugin-node-resolve": "^15.1.0",
+        "@rollup/plugin-terser": "^0.4.3",
+        "rollup": "^3.27.0",
+        "rollup-plugin-postcss": "^4.0.2",
+        "static-handler": "^0.4.2",
+        "typescript": "^5.1.6"
+    }
+}
