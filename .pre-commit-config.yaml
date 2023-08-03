@@ -20,7 +20,7 @@ repos:
           - id: check-yaml
           - id: detect-private-key
           - id: end-of-file-fixer
-            exclude: \.min\.js$
+            exclude: pyscript\.next/core.*|\.min\.js$
           - id: trailing-whitespace
 
     - repo: https://github.com/charliermarsh/ruff-pre-commit

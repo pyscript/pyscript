@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Next</title>
+        <link rel="stylesheet" href="../core.css" />
+        <script type="module">
+          import { PyWorker } from '../core.js';
+          PyWorker('./worker.py'/*, options allowed except `type` */);
+          // the type is overwritten as "pyodide" in PyScript as the module
+          // lives in that env too
+        </script>
+        <script>
+          // this is only to test non-blocking nature/bootstrap
+          addEventListener('DOMContentLoaded', () => {
+            const div = document.body.appendChild(
+              document.createElement('div')
+            );
+            (function monitor() {
+              const date = new Date;
+              div.textContent = `${date.getSeconds()}.${date.getMilliseconds()}`;
+              requestAnimationFrame(monitor);
+            }());
+          });
+        </script>
+    </head>
+</html>
