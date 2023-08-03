@@ -47,7 +47,7 @@ repos:
       rev: "v3.0.0-alpha.6"
       hooks:
           - id: prettier
-            exclude: pyscript\.next/test|pyscript\.next/core.*
+            exclude: pyscript\.next/test|pyscript\.next/core.*|pyscript\.next/types/
             args: [--tab-width, "4"]
 
     - repo: https://github.com/pre-commit/mirrors-eslint
