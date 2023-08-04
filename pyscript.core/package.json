@@ -23,7 +23,10 @@
         "build": "rollup --config rollup/core.config.js && rollup --config rollup/core-css.config.js && npm run ts",
         "ts": "tsc -p ."
     },
-    "keywords": [],
+    "keywords": [
+        "pyscript",
+        "core"
+    ],
     "author": "Anaconda Inc.",
     "license": "APACHE-2.0",
     "dependencies": {
@@ -38,5 +41,13 @@
         "rollup-plugin-postcss": "^4.0.2",
         "static-handler": "^0.4.2",
         "typescript": "^5.1.6"
-    }
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pyscript/pyscript.git"
+    },
+    "bugs": {
+        "url": "https://github.com/pyscript/pyscript/issues"
+    },
+    "homepage": "https://github.com/pyscript/pyscript#readme"
 }
