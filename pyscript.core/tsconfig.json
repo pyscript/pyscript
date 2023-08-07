@@ -8,5 +8,5 @@
         "emitDeclarationOnly": true,
         "declarationDir": "types"
     },
-    "include": ["esm/index.js"]
+    "include": ["src/core.js"]
 }

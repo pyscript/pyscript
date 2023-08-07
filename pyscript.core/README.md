@@ -1,5 +1,3 @@
-# @pyscript/core - deprecated
+# @pyscript/core
 
-After various discussions around this topic, we decided to avoid any confusion around this folder which never really belonged in here, as _core_ as we meant it was meant to be a _PyScript Next_ dependency, not the _PyScript Next_ itself.
-
-We have hence moved and renamed _core_ as [polyscript](https://github.com/pyscript/polyscript/#readme) which is the base module to build up a better _PyScript Next_ without confusing our users or ourselves while talking about these two distinct projects.
+We have moved and renamed previous _core_ module as [polyscript](https://github.com/pyscript/polyscript/#readme), which is the base module used in here to build up _PyScript Next_, now hosted in this folder.
