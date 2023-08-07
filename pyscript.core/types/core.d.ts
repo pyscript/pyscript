@@ -4,13 +4,10 @@
  * @param {{config?: string | object, async?: boolean}} [options] optional configuration for the worker.
  * @returns {Worker & {sync: ProxyHandler<object>}}
  */
-export function PyWorker(
-    file: string,
-    options?: {
-        config?: string | object;
-        async?: boolean;
-    },
-): Worker & {
+export function PyWorker(file: string, options?: {
+    config?: string | object;
+    async?: boolean;
+}): Worker & {
     sync: ProxyHandler<object>;
 };
 export namespace hooks {

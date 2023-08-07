@@ -101,6 +101,28 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
     });
 };
 
+export const hooks = {
+    /** @type {Set<function>} */
+    onBeforeRun: new Set(),
+    /** @type {Set<function>} */
+    onBeforeRunAync: new Set(),
+    /** @type {Set<function>} */
+    onAfterRun: new Set(),
+    /** @type {Set<function>} */
+    onAfterRunAsync: new Set(),
+    /** @type {Set<function>} */
+    onInterpreterReady: new Set(),
+
+    /** @type {Set<string>} */
+    codeBeforeRunWorker: new Set(),
+    /** @type {Set<string>} */
+    codeBeforeRunWorkerAsync: new Set(),
+    /** @type {Set<string>} */
+    codeAfterRunWorker: new Set(),
+    /** @type {Set<string>} */
+    codeAfterRunWorkerAsync: new Set(),
+};
+
 const workerPyScriptModule = [
     "from pyodide_js import FS",
     `FS.writeFile('./pyscript.py', '${[
@@ -210,25 +232,3 @@ export function PyWorker(file, options) {
         type: "pyodide",
     });
 }
-
-export const hooks = {
-    /** @type {Set<function>} */
-    onBeforeRun: new Set(),
-    /** @type {Set<function>} */
-    onBeforeRunAync: new Set(),
-    /** @type {Set<function>} */
-    onAfterRun: new Set(),
-    /** @type {Set<function>} */
-    onAfterRunAsync: new Set(),
-    /** @type {Set<function>} */
-    onInterpreterReady: new Set(),
-
-    /** @type {Set<string>} */
-    codeBeforeRunWorker: new Set(),
-    /** @type {Set<string>} */
-    codeBeforeRunWorkerAsync: new Set(),
-    /** @type {Set<string>} */
-    codeAfterRunWorker: new Set(),
-    /** @type {Set<string>} */
-    codeAfterRunWorkerAsync: new Set(),
-};
