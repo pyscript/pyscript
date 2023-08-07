@@ -1,9 +1,4 @@
-export function _createAlertBanner(
-    message: any,
-    level: any,
-    messageType?: string,
-    logMessage?: boolean,
-): void;
+export function _createAlertBanner(message: any, level: any, messageType?: string, logMessage?: boolean): void;
 export namespace ErrorCode {
     let GENERIC: string;
     let FETCH_ERROR: string;

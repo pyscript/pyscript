@@ -5,9 +5,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>PyScript Next</title>
         <link rel="stylesheet" href="../core.css" />
+
+        <!-- the worker attribute -->
+        <script type="module" src="../core.js"></script>
+        <script type="py" worker="./worker.py" config="./config.json"></script>
+
+        <!-- the PyWorker approach -->
         <script type="module">
           import { PyWorker } from '../core.js';
-          PyWorker('./worker.py'/*, options allowed except `type` */);
+          PyWorker('./worker.py', {config: {fetch: [{files: ['./a.py']}]}});
           // the type is overwritten as "pyodide" in PyScript as the module
           // lives in that env too
         </script>
