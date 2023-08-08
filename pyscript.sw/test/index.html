@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>body { font-family: sans-serif; }</style>
+        <script src="../pyscript.sw.js" handler="./test.py" config="./test.toml"></script>
+        <script type="module">
+            // this is just to show some progress
+            const span = document.querySelector('span');
+            let i = 0;
+            (function dot() {
+                span.textContent = '.'.repeat(++i % 6);
+                setTimeout(dot, 300);
+            }());
+        </script>
+    </head>
+    <body>
+        Loading PyScript Service Worker <span></span>
+    </body>
+</html>

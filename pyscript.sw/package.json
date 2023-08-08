@@ -1,0 +1,20 @@
+{
+    "name": "@pyscript/sw",
+    "version": "0.0.1",
+    "description": "PyScript Service Worker",
+    "main": "pyscript.sw.js",
+    "scripts": {
+        "server": "npx static-handler .",
+        "build": "rollup --config rollup/sw.config.mjs"
+    },
+    "keywords": [],
+    "author": "Anaconda Inc.",
+    "license": "APACHE-2.0",
+    "devDependencies": {
+        "@rollup/plugin-node-resolve": "^15.1.0",
+        "@rollup/plugin-terser": "^0.4.3",
+        "basic-toml": "^0.3.1",
+        "rollup": "^3.27.0",
+        "static-handler": "^0.4.2"
+    }
+}
