@@ -34,7 +34,7 @@ Because the Service Worker, once activated, will persist over any further sessio
 To do so, there are two options:
 
   * unregister the Service Worker, clear all browsing data per that domain and hard-refresh the browser
-  * change and save your `handper.py` file and, once saved, reach the `/pyscript.sw/update_handler` via browser, or run the following code in console:
+  * change and save your `handler.py` file and, once saved, reach the `/pyscript.sw/update_handler` via browser, or run the following code in console:
 
 ```js
 fetch('/pyscript.sw/update_handler')
