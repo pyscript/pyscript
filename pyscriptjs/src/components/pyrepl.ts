@@ -54,7 +54,19 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
             shadowRoot.innerHTML = `<style> :host { all: initial; }</style>`;
             this.appendChild(boxDiv);
             this.editor = this.makeEditor(pySrc, shadowRoot);
-            this.editor.focus();
+
+            // If the 'focused' attribute exists, it will be focused once when the component
+            // is created and then indicate whether it is in a focused state.
+            if (this.hasAttribute("focused")) {
+                this.editor.focus();
+            }
+            this.addEventListener('focusin', () => {
+                this.setAttribute("focused", "");
+            })
+            this.addEventListener('focusout', () => {
+                this.removeAttribute("focused");
+            })
+
             logger.debug(`element ${this.id} successfully connected`);
         }
 
@@ -66,8 +78,8 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
             this.setAttribute('src', value);
         }
 
-        attributeChangedCallback(name: string, oldVal: string, newVal: string) {
-            if (name === 'src' && newVal !== oldVal) {
+        attributeChangedCallback(name: string) {
+            if (name === 'src') {
                 void this.loadReplSrc();
             }
         }
@@ -80,17 +92,12 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
         async loadReplSrc() {
             try {
                 const response = await robustFetch(this.src);
-                if (!response.ok) {
-                    return;
-                }
-                const cmcontentElement = $('div.cm-content', this.editor.dom);
-                const { lastElementChild } = cmcontentElement;
-                cmcontentElement.replaceChildren(lastElementChild);
-                lastElementChild.textContent = await response.text();
-                logger.info(`loading code from ${this.src} to repl...success`);
+                this.editor.dispatch({
+                    changes: {from: 0, to: this.editor.state.doc.length, insert: await response.text()}
+                });
+                logger.info(`Loaded ${this.src} to repl[id='${this.id}']`);
             } catch (err) {
-                const e = err as Error;
-                _createAlertBanner(e.message);
+                _createAlertBanner(err.message);
             }
         }
 
@@ -224,8 +231,8 @@ export function make_PyRepl(interpreter: InterpreterClient, app: PyScriptApp) {
                     newPyRepl.setAttribute('auto-generate', '');
                     this.removeAttribute('auto-generate');
                 }
-
                 newPyRepl.setAttribute('exec-id', nextExecId.toString());
+                newPyRepl.setAttribute("focused", "");
                 if (this.parentElement) {
                     this.parentElement.appendChild(newPyRepl);
                 }

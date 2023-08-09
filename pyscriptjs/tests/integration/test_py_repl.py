@@ -7,7 +7,7 @@ class TestPyRepl(PyScriptTest):
     def _replace(self, py_repl, newcode):
         """
         Clear the editor and write new code in it.
-        WARNING: this assumes that the textbox has already the focus
+        WARNING: The textbox does not acquire focus by default.
         """
         # clear the editor, write new code
         if "macOS" in platform.platform():
@@ -53,7 +53,7 @@ class TestPyRepl(PyScriptTest):
     def test_execute_code_typed_by_the_user(self):
         self.pyscript_run(
             """
-            <py-repl></py-repl>
+            <py-repl focused></py-repl>
             """
         )
         py_repl = self.page.locator("py-repl")
@@ -65,12 +65,13 @@ class TestPyRepl(PyScriptTest):
     def test_execute_on_shift_enter(self):
         self.pyscript_run(
             """
-            <py-repl>
+            <py-repl focused>
                 print("hello world")
             </py-repl>
             """
         )
         self.page.wait_for_selector("py-repl .py-repl-run-button")
+        py_repl = self.page.locator("py-repl")
         self.page.keyboard.press("Shift+Enter")
         self.page.wait_for_selector("py-terminal")
 
@@ -141,7 +142,7 @@ class TestPyRepl(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <py-repl>
+            <py-repl focused>
                 display('hello world')
             </py-repl>
             """
@@ -213,7 +214,7 @@ class TestPyRepl(PyScriptTest):
     def test_python_exception_after_previous_output(self):
         self.pyscript_run(
             """
-            <py-repl>
+            <py-repl focused>
                 display('hello world')
             </py-repl>
             """
@@ -242,7 +243,7 @@ class TestPyRepl(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <py-repl>
+            <py-repl focused>
                 raise Exception('this is an error')
             </py-repl>
             """
@@ -287,7 +288,7 @@ class TestPyRepl(PyScriptTest):
     def test_auto_generate(self):
         self.pyscript_run(
             """
-            <py-repl auto-generate="true">
+            <py-repl focused auto-generate="true">
             </py-repl>
             """
         )
@@ -329,6 +330,7 @@ class TestPyRepl(PyScriptTest):
 
         second_py_repl = self.page.get_by_text("root second")
         second_py_repl.click()
+
         self.page.keyboard.press("Shift+Enter")
         self.page.wait_for_selector("#py-internal-1-repl-output")
         self.page.keyboard.type("display('second children')")
@@ -601,7 +603,7 @@ class TestPyRepl(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <py-repl>
+            <py-repl focused>
             </py-repl>
         """
         )
@@ -610,70 +612,58 @@ class TestPyRepl(PyScriptTest):
         assert src == ""
         assert type(src) == str
 
-        py_repl.focus()
         py_repl.type("Hello, world!")
         src = py_repl.evaluate("node => node.getPySrc()")
         assert src == "Hello, world!"
 
     def test_repl_load_content_from_src(self):
-        self.writefile("loadReplSrc1.py", "print('1')")
+        self.writefile("py_code.py", "1")
         self.pyscript_run(
             """
-            <py-repl id="py-repl1" output="replOutput1" src="./loadReplSrc1.py"></py-repl>
-            <div id="replOutput1"></div>
+            <py-repl id="py-repl" src="./py_code.py"></py-repl>
             """
         )
-        successMsg = "[py-repl] loading code from ./loadReplSrc1.py to repl...success"
+
+        successMsg = "[py-repl] Loaded ./py_code.py to repl[id='py-repl']"
         assert self.console.info.lines[-1] == successMsg
 
         py_repl = self.page.locator("py-repl")
-        code = py_repl.locator("div.cm-content").inner_text()
-        assert "print('1')" in code
+        code = py_repl.evaluate("node => node.getPySrc()")
+        assert code == "1"
 
-    @skip_worker("TIMEOUT")
+
     def test_repl_src_change(self):
-        self.writefile("loadReplSrc2.py", "2")
-        self.writefile("loadReplSrc3.py", "print('3')")
+        self.writefile("py_code1.py", "1")
+        self.writefile("py_code2.py", "2")
         self.pyscript_run(
             """
-            <py-repl id="py-repl2" output="replOutput2" src="./loadReplSrc2.py"></py-repl>
-            <div id="replOutput2"></div>
-
-            <py-repl id="py-repl3" output="replOutput3">
-                import js
-                target_tag = js.document.getElementById("py-repl2")
-                target_tag.setAttribute("src", "./loadReplSrc3.py")
-            </py-repl>
-            <div id="replOutput3"></div>
+            <py-repl id="py-repl" src="./py_code1.py"></py-repl>
+            <script>
+                document.getElementById("py-repl").setAttribute("src", "./py_code2.py");
+            </script>
             """
         )
 
-        successMsg1 = "[py-repl] loading code from ./loadReplSrc2.py to repl...success"
-        assert self.console.info.lines[-1] == successMsg1
+        successMsg = "[py-repl] Loaded ./py_code2.py to repl[id='py-repl']"
+        assert self.console.info.lines[-1] == successMsg
 
-        py_repl3 = self.page.locator("py-repl#py-repl3")
-        py_repl3.locator("button").click()
-        py_repl2 = self.page.locator("py-repl#py-repl2")
-        py_repl2.locator("button").click()
-        self.page.wait_for_selector("py-terminal")
-        assert self.console.log.lines[-1] == "3"
-
-        successMsg2 = "[py-repl] loading code from ./loadReplSrc3.py to repl...success"
-        assert self.console.info.lines[-1] == successMsg2
+        py_repl = self.page.locator("py-repl")
+        code = py_repl.evaluate("node => node.getPySrc()")
+        assert code == "2"
 
     def test_repl_src_path_that_do_not_exist(self):
         self.pyscript_run(
             """
-            <py-repl id="py-repl4" output="replOutput4" src="./loadReplSrc4.py"></py-repl>
-            <div id="replOutput4"></div>
+            <py-repl src="./py_code.py"></py-repl>
             """
         )
         errorMsg = (
-            "(PY0404): Fetching from URL ./loadReplSrc4.py "
+            "(PY0404): Fetching from URL ./py_code.py "
             "failed with error 404 (Not Found). "
             "Are your filename and path correct?"
         )
         assert self.console.error.lines[-1] == errorMsg
+
 
     @skip_worker("dont-care")
     def test_repl_results(self):
@@ -718,3 +708,27 @@ class TestPyRepl(PyScriptTest):
         assert self.page.wait_for_selector("#out2").inner_text() == "2\n\n[1, 2, 3]"
         # Check that c was released
         assert self.page.wait_for_selector("#out3").inner_text() == "2"
+
+    def test_repl_attr_focused(self):
+        self.pyscript_run(
+            """
+            <py-repl id="py-repl1" focused></py-repl>
+            <py-repl id="py-repl2" ></py-repl>
+            """
+        )
+        py_repl_1 = self.page.query_selector("py-repl#py-repl1")
+        py_repl_2 = self.page.query_selector("py-repl#py-repl2")
+
+        assert (
+            py_repl_1.get_attribute("focused") == ""  and
+            py_repl_1.evaluate("node => node.editor.hasFocus") == True and
+            not py_repl_2.get_attribute("focused")
+        )
+
+        py_repl_2.evaluate("node => node.editor.focus()")
+
+        assert (
+            py_repl_2.get_attribute("focused") == ""  and
+            py_repl_2.evaluate("node => node.editor.hasFocus") == True and
+            not py_repl_1.get_attribute("focused")
+        )

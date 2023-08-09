@@ -4,14 +4,14 @@ The `<py-repl>` element provides a REPL(Read Eval Print Loop) to evaluate multi-
 
 ## Attributes
 
-| attribute         | type    | default | description                          |
-|-------------------|---------|---------|--------------------------------------|
-| **auto-generate** | boolean |         | Auto-generates REPL after evaluation |
+| attribute         | type    | default | description                                                              |
+|-------------------|---------|---------|--------------------------------------------------------------------------|
+| **auto-generate** | boolean |         | Auto-generates REPL after evaluation                                     |
 | **output-mode**   | string  | ""      | Determines whether the output element is cleared prior to writing output |
-| **output**        | string  |         | The id of the element to write `stdout` and `stderr` to     |
-| **stderr**        | string  |         | The id of the element to write `stderr` to |
-| **src**           | string  |         | Resource to be preloaded into the REPL |
-
+| **output**        | string  |         | The id of the element to write `stdout` and `stderr` to                  |
+| **stderr**        | string  |         | The id of the element to write `stderr` to                               |
+| **src**           | string  |         | Resource to be preloaded into the REPL                                   |
+| **focused**       | string  | ""      | Indicating focus status                                                  |
 
 ### `auto-generate`
 If a \<py-repl\> tag has the `auto-generate` attribute, upon execution, another \<pr-repl\> tag will be created and added to the DOM as a sibling of the current tag.
@@ -27,6 +27,9 @@ The ID of an element in the DOM that `stderr` will be written to. Defaults to No
 
 ### `src`
 If a \<py-repl\> tag has the `src` attribute, during page initialization, resource in the `src` will be preloaded into the REPL. Please note that this will not run in advance. If there is content in the \<py-repl\> tag, it will be cleared and replaced with preloaded resource.
+
+### `focused`
+Indicate whether the component is in a focused state. Note that if this attribute is present during component creation, it will be focused `once` and only have indicative significance thereafter.
 
 ## Methods
 

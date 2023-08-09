@@ -33,6 +33,7 @@ Features
 - Resored the `output-mode` attribute of `py-repl` tags. If `output-mode` == 'append', the DOM element where output is printed is _not_ cleared before writing new results.
 - Load code from the attribute src of py-repl and preload it into the corresponding py-repl tag by use the attribute `str` in your `py-repl` tag([#1292](https://github.com/pyscript/pyscript/pull/1292))
 - &lt;py-repl&gt; elements now have a `getPySrc()` method, which returns the code inside the REPL as a string.([#1516](https://github.com/pyscript/pyscript/pull/1292))
+- Replace repl content using the built-in func of CodeMirror, disable default focus, and add new attr focused.([#1593](https://github.com/pyscript/pyscript/pull/1593))
 
 ### Plugins
 - Plugins may now implement the `beforePyReplExec()` and `afterPyReplExec()` hooks, which are called immediately before and after code in a `py-repl` tag is executed. ([#1106](https://github.com/pyscript/pyscript/pull/1106))
