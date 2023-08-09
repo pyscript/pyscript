@@ -115,8 +115,6 @@ def _format_mime(obj):
 
 
 def _write(element, value, append=False):
-    global _pyscript_id
-
     html, mime_type = _format_mime(value)
     if html == "\\n":
         return
