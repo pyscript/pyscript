@@ -1,5 +1,5 @@
-from pyscript import document
+from pyscript import display
 
 import a
 
-document.body.append("Hello World")
+display("Hello World", target="test", append=True)

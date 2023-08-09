@@ -2,6 +2,9 @@ import "@ungap/with-resolvers";
 import { $ } from "basic-devtools";
 import { define, XWorker } from "polyscript";
 
+// this is imported as string (via rollup)
+import display from "./display.py";
+
 // TODO: this is not strictly polyscript related but handy ... not sure
 //       we should factor this utility out a part but this works anyway.
 import { queryTarget } from "../node_modules/polyscript/esm/script-handler.js";
@@ -79,6 +82,17 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
         worker.onerror = ({ error }) => io.stderr(error);
         return worker;
     }
+    // trap once the python `display` utility (borrowed from "classic PyScript")
+    // provide the regular Pyodide globals instead of those from xworker
+    const pyDisplay = interpreter.runPython(
+        [
+            "import js",
+            "document=js.document",
+            "window=js",
+            display,
+            "display",
+        ].join("\n"),
+    );
     interpreter.registerJsModule("pyscript", {
         PyWorker,
         document,
@@ -91,11 +105,8 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
                 ? currentElement.target.id
                 : currentElement.id;
 
-            // TODO: decide which feature of display we want to keep
             return (what, target = id, append = true) => {
-                const element = document.getElementById(target);
-                if (append) element.append(what);
-                else element.textContent = what;
+                pyDisplay.callKwargs(...[].concat(what), { target, append });
             };
         },
     });
@@ -125,13 +136,16 @@ export const hooks = {
 
 const workerPyScriptModule = [
     "from pyodide_js import FS",
-    `FS.writeFile('./pyscript.py', '${[
-        "import polyscript",
-        "document=polyscript.xworker.window.document",
-        "window=polyscript.xworker.window",
-        "sync=polyscript.xworker.sync",
-    ].join(";")}')`,
-].join(";");
+    `FS.writeFile('./pyscript.py', ${JSON.stringify(
+        [
+            "import polyscript",
+            "document=polyscript.xworker.window.document",
+            "window=polyscript.xworker.window",
+            "sync=polyscript.xworker.sync",
+            display,
+        ].join("\n"),
+    )})`,
+].join("\n");
 
 const workerHooks = {
     codeBeforeRunWorker: () =>
