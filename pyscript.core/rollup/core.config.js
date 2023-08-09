@@ -3,10 +3,20 @@
 
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
+import { string } from "rollup-plugin-string";
+
+const plugins = [
+    string({
+        // Required to be specified
+        include: "**/*.py",
+    }),
+];
 
 export default {
     input: "./src/core.js",
-    plugins: process.env.NO_MIN ? [nodeResolve()] : [nodeResolve(), terser()],
+    plugins: plugins.concat(
+        process.env.NO_MIN ? [nodeResolve()] : [nodeResolve(), terser()],
+    ),
     output: {
         esModule: true,
         file: "./core.js",

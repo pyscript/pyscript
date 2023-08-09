@@ -27,7 +27,7 @@ repos:
       rev: v0.0.257
       hooks:
           - id: ruff
-            exclude: pyscript\.core/test
+            exclude: pyscript\.core/test|pyscript\.core/src/display.py
             args: [--fix]
 
     - repo: https://github.com/psf/black

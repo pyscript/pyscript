@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "type": "module",
     "description": "PyScript",
     "main": "core.js",
@@ -39,6 +39,7 @@
         "@rollup/plugin-terser": "^0.4.3",
         "rollup": "^3.27.2",
         "rollup-plugin-postcss": "^4.0.2",
+        "rollup-plugin-string": "^3.0.0",
         "static-handler": "^0.4.2",
         "typescript": "^5.1.6"
     },
