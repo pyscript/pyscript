@@ -1,0 +1,5 @@
+packages = [
+    "https://cdn.holoviz.org/panel/0.14.3/dist/wheels/bokeh-2.4.3-py3-none-any.whl",
+    "numpy",
+    "panel==0.14.1"
+]

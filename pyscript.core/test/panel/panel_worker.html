@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <title>Panel Example</title>
+        <meta charset="iso-8859-1" />
+        <link rel="icon" type="image/x-icon" href="./favicon.png" />
+    </head>
+    <body>
+        <section class="pyscript">
+            <div id="simple_app"></div>
+
+            <py-tutor>
+                <script defer src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.js"></script>
+                <script defer src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.3.min.js"></script>
+                <script defer src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.3.min.js"></script>
+                <script defer src="https://cdn.jsdelivr.net/npm/@holoviz/panel@0.14.1/dist/panel.min.js"></script>
+
+                <script type="module" src="../../core.js"></script>
+                <!-- <script
+                    type="module"
+                    src="https://esm.sh/@pyscript/core@latest/core.js"
+                ></script> -->
+
+                <script type="py" worker="./panel.py" config="./panel.toml" async></script>
+
+                <!-- Code below borrowed for reference from example working on polyscript directly -->
+                <!-- <script type="micropython">
+                    from pyscript import PyWorker
+                    import json
+                    import js
+
+                    w = PyWorker('./panel.py', **{'type': 'pyodide', 'async': True, 'config': './panel.toml'})
+
+                    # xworker.window made the following completely unnecessary
+                    document = js.document
+
+                    async def render_full(docs_json_str, render_items_str, root_ids_str):
+                        docs_json = json.loads(docs_json_str)
+                        render_items = json.loads(render_items_str)
+                        root_ids = json.loads(root_ids_str)
+
+                        print(type(render_items))
+                        root_elements = document.querySelectorAll('[data-root-id]')
+                        data_roots = []
+                        for el in root_elements:
+                            el.innerHTML = ''
+                            data_roots.append([el.getAttribute('data-root-id'), el.id])
+
+                        roots = {root_ids[i]: root for i, root in enumerate(data_roots)}
+
+                        print("Quick check")
+                        render_items[0]['roots'] = roots
+                        render_items[0]['root_ids'] = root_ids
+                        print("here....")
+                        views = await js.Bokeh.embed.embed_items(docs_json, render_items)
+
+
+                    def render(docs_json, render_items):
+                        print(f"GOT DATA: {docs_json}")
+                        print(f"GOT ITEMS: {render_items}")
+
+                        await js.Bokeh.embed.embed_items(json.loads(docs_json), json.loads(render_items))
+                        # views = await xworker.window.Bokeh.embed.embed_items(create_proxy(docs_json), create_proxy(render_items))
+
+                    w.sync.render = render
+                    w.sync.render_full = render_full
+
+                </script> -->
+            </py-tutor>
+        </section>
+    </body>
+</html>
