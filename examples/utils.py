@@ -10,8 +10,8 @@ def now(fmt="%m/%d/%Y, %H:%M:%S"):
 
 
 def remove_class(element, class_name):
-    element.element.classList.remove(class_name)
+    element.classList.remove(class_name)
 
 
 def add_class(element, class_name):
-    element.element.classList.add(class_name)
+    element.classList.add(class_name)

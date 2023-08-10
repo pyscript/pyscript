@@ -54,15 +54,12 @@ const after = () => {
  * It either throws an error if the 'src' can't be fetched or it returns a fallback
  * content as source.
  */
-const fetchSource = async (tag) => {
+const fetchSource = async (tag, io) => {
     if (tag.hasAttribute("src")) {
         try {
-            const response = await fetch(tag.getAttribute("src"));
-            return response.then(getText);
+            return await fetch(tag.getAttribute("src")).then(getText);
         } catch (error) {
-            // TODO _createAlertBanner(err) instead ?
-            alert(error.message);
-            throw error;
+            io.stderr(error);
         }
     }
     return tag.textContent;
@@ -105,8 +102,16 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
                 ? currentElement.target.id
                 : currentElement.id;
 
-            return (what, target = id, append = true) => {
-                pyDisplay.callKwargs(...[].concat(what), { target, append });
+            return (...args) => {
+                const last = args.at(-1);
+                let kw = { target: id, append: false };
+                if (
+                    typeof last === "object" &&
+                    last &&
+                    ("target" in last || "append" in last)
+                )
+                    kw = { ...kw, ...args.pop() };
+                pyDisplay.callKwargs(...args, kw);
             };
         },
     });
@@ -199,7 +204,9 @@ define("py", {
             // document.currentScript.target if needed
             defineProperty(element, "target", { value: show });
 
-            pyodide[`run${isAsync ? "Async" : ""}`](await fetchSource(element));
+            pyodide[`run${isAsync ? "Async" : ""}`](
+                await fetchSource(element, pyodide.io),
+            );
         } else {
             // resolve PyScriptElement to allow connectedCallback
             element._pyodide.resolve(pyodide);
@@ -217,11 +224,10 @@ class PyScriptElement extends HTMLElement {
     async connectedCallback() {
         if (!this.executed) {
             this.executed = true;
-            const { run } = await this._pyodide.promise;
-            this.srcCode = await fetchSource(this);
+            const { io, run } = await this._pyodide.promise;
+            this.srcCode = await fetchSource(this, io);
             this.textContent = "";
-            const result = run(this.srcCode);
-            if (!this.textContent && result) this.textContent = result;
+            run(this.srcCode);
             this.style.display = "block";
         }
     }

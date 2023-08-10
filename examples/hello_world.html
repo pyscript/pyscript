@@ -12,7 +12,15 @@
             href="https://pyscript.net/latest/pyscript.css"
         />
         <link rel="stylesheet" href="./assets/css/examples.css" />
-        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <style>
+            py-script {
+                display: none;
+            }
+        </style>
+        <script
+            type="module"
+            src="https://esm.sh/@pyscript/core@latest/core.js"
+        ></script>
     </head>
 
     <body>
@@ -36,6 +44,7 @@
                 Hello world! <br />
                 This is the current date and time, as computed by Python:
                 <py-script>
+                    from pyscript import display
                     from datetime import datetime
                     now = datetime.now()
                     display(now.strftime("%m/%d/%Y, %H:%M:%S"))
