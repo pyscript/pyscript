@@ -12,8 +12,16 @@
             href="https://pyscript.net/latest/pyscript.css"
         />
 
-        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
         <link rel="stylesheet" href="./assets/css/examples.css" />
+        <style>
+            py-script {
+                display: none;
+            }
+        </style>
+        <script
+            type="module"
+            src="https://esm.sh/@pyscript/core@latest/core.js"
+        ></script>
     </head>
 
     <body>
@@ -27,10 +35,10 @@
         </nav>
         <section class="pyscript">
             <div class="font-mono">
-                start time: <label id="outputDiv"></label>
+                start time: <label id="output1"></label>
             </div>
-            <div id="outputDiv2" class="font-mono"></div>
-            <div id="outputDiv3" class="font-mono"></div>
+            <div id="output2" class="font-mono"></div>
+            <div id="output3" class="font-mono"></div>
 
             <py-tutor modules="utils.py">
                 <py-config>
@@ -40,12 +48,14 @@
                     [[fetch]]
                     files = ["./utils.py"]
                 </py-config>
-                <py-script>
+                <script type="py">
                     import utils
-                    display(utils.now())
-                </py-script>
+                    from pyscript import display
+                    display(utils.now(), target="output1")
+                </script>
 
                 <py-script>
+                    from pyscript import display
                     from utils import now
                     import asyncio
 
@@ -53,15 +63,14 @@
                       while True:
                         await asyncio.sleep(1)
                         output = now()
-                        Element("outputDiv2").write(output)
+                        display(output, target="output2")
 
-                        out3 = Element("outputDiv3")
                         if output[-1] in ["0", "4", "8"]:
-                          out3.write("It's espresso time!")
+                          display("It's espresso time!", target="output3")
                         else:
-                          out3.clear()
+                          display("", target="output3")
 
-                    pyscript.run_until_complete(foo())
+                    foo()
                 </py-script>
             </py-tutor>
         </section>

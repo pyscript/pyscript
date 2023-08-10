@@ -1,25 +1,30 @@
 from datetime import datetime as dt
 
-from utils import add_class, remove_class
+from pyscript import document
 
 tasks = []
 
+
+def q(selector, root=document):
+    return root.querySelector(selector)
+
+
 # define the task template that will be use to render new templates to the page
-task_template = Element("task-template").select(".task", from_content=True)
-task_list = Element("list-tasks-container")
-new_task_content = Element("new-task-content")
+task_template = q("#task-template").content.querySelector(".task")
+task_list = q("#list-tasks-container")
+new_task_content = q("#new-task-content")
 
 
-def add_task(*args, **kws):
+def add_task(e):
     # ignore empty task
-    if not new_task_content.element.value:
+    if not new_task_content.value:
         return None
 
     # create task
     task_id = f"task-{len(tasks)}"
     task = {
         "id": task_id,
-        "content": new_task_content.element.value,
+        "content": new_task_content.value,
         "done": False,
         "created_at": dt.now(),
     }
@@ -28,26 +33,24 @@ def add_task(*args, **kws):
 
     # add the task element to the page as new node in the list by cloning from a
     # template
-    task_html = task_template.clone(task_id)
-    task_html_content = task_html.select("p")
-    task_html_content.element.innerText = task["content"]
-    task_html_check = task_html.select("input")
-    task_list.element.appendChild(task_html.element)
+    task_html = task_template.cloneNode(True)
+    task_html.id = task_id
+    task_html_check = q("input", root=task_html)
+    task_html_content = q("p", root=task_html)
+    task_html_content.textContent = task["content"]
+    task_list.append(task_html)
 
     def check_task(evt=None):
         task["done"] = not task["done"]
-        if task["done"]:
-            add_class(task_html_content, "line-through")
-        else:
-            remove_class(task_html_content, "line-through")
+        task_html_content.classList.toggle("line-through", task["done"])
 
-    new_task_content.clear()
-    task_html_check.element.onclick = check_task
+    new_task_content.value = ""
+    task_html_check.onclick = check_task
 
 
 def add_task_event(e):
     if e.key == "Enter":
-        add_task()
+        add_task(e)
 
 
-new_task_content.element.onkeypress = add_task_event
+new_task_content.onkeypress = add_task_event

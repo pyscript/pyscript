@@ -8,7 +8,15 @@
             href="https://pyscript.net/latest/pyscript.css"
         />
         <link rel="stylesheet" href="./assets/css/examples.css" />
-        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <style>
+            py-script {
+                display: none;
+            }
+        </style>
+        <script
+            type="module"
+            src="https://esm.sh/@pyscript/core@latest/core.js"
+        ></script>
     </head>
     <body>
         <nav class="navbar" style="background-color: #000000">
@@ -33,6 +41,7 @@
                     ]
                 </py-config>
                 <py-script>
+                    from pyscript import display
                     import altair as alt
                     from vega_datasets import data
 
