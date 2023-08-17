@@ -1,19 +1,20 @@
 {
     "name": "@pyscript/core",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "type": "module",
     "description": "PyScript",
-    "main": "core.js",
-    "module": "core.js",
+    "main": "./core.js",
+    "module": "./core.js",
+    "unpkg": "./core.js",
     "exports": {
         ".": {
             "types": "./types/esm/core.d.ts",
             "import": "./esm/core.js"
         },
-        "./core": {
+        "./js": {
             "import": "./core.js"
         },
-        "./core.css": {
+        "./css": {
             "import": "./core.css"
         },
         "./package.json": "./package.json"
