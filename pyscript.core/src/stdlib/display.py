@@ -129,7 +129,7 @@ def _write(element, value, append=False):
     if mime_type in ("application/javascript", "text/html"):
         script_element = document.createRange().createContextualFragment(  # noqa: F821
             html
-        )  # noqa: F821
+        )
         out_element.append(script_element)
     else:
         out_element.innerHTML = html
