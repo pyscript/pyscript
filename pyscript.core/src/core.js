@@ -3,7 +3,7 @@ import { $ } from "basic-devtools";
 import { define, XWorker } from "polyscript";
 
 // this is imported as string (via rollup)
-import display from "./display.py";
+import display from "./stdlib/display.py";
 
 // TODO: this is not strictly polyscript related but handy ... not sure
 //       we should factor this utility out a part but this works anyway.
