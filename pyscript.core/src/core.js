@@ -2,9 +2,6 @@ import "@ungap/with-resolvers";
 import { $ } from "basic-devtools";
 import { define, XWorker } from "polyscript";
 
-// this is imported as string (via rollup)
-import display from "./stdlib/display.py";
-
 // TODO: this is not strictly polyscript related but handy ... not sure
 //       we should factor this utility out a part but this works anyway.
 import { queryTarget } from "../node_modules/polyscript/esm/script-handler.js";
@@ -71,6 +68,18 @@ const bootstrapNodeAndPlugins = (pyodide, element, callback, hook) => {
     for (const fn of hooks[hook]) fn(pyodide, element);
 };
 
+// these are imported as string (via rollup)
+import init_py from "./stdlib/_pyscript/__init__.py";
+import display_py from "./stdlib/_pyscript/_display.py";
+
+const writeStdlib = (pyodide, element) => {
+    console.log("writeStdlib!");
+    const FS = pyodide.interpreter.FS;
+    FS.mkdirTree("/home/pyodide/_pyscript");
+    FS.writeFile("_pyscript/__init__.py", init_py, { encoding: "utf8" });
+    FS.writeFile("_pyscript/_display.py", display_py, { encoding: "utf8" });
+};
+
 const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
     // automatically use the pyscript stderr (when/if defined)
     // this defaults to console.error
@@ -81,15 +90,20 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
     }
     // trap once the python `display` utility (borrowed from "classic PyScript")
     // provide the regular Pyodide globals instead of those from xworker
-    const pyDisplay = interpreter.runPython(
-        [
-            "import js",
-            "document=js.document",
-            "window=js",
-            display,
-            "display",
-        ].join("\n"),
-    );
+    // const pyDisplay = interpreter.runPython(
+    //     [
+    //         "import js",
+    //         "document=js.document",
+    //         "window=js",
+    //         display,
+    //         "display",
+    //     ].join("\n"),
+    // );
+    const pyDisplay = interpreter.runPython(`
+from _pyscript import display
+display
+`);
+
     interpreter.registerJsModule("pyscript", {
         PyWorker,
         document,
@@ -139,6 +153,8 @@ export const hooks = {
     codeAfterRunWorkerAsync: new Set(),
 };
 
+// XXX antocuni: I think this is broken, because now _display.py imports
+// window and document directly from js
 const workerPyScriptModule = [
     "from pyodide_js import FS",
     `FS.writeFile('./pyscript.py', ${JSON.stringify(
@@ -147,7 +163,7 @@ const workerPyScriptModule = [
             "document=polyscript.xworker.window.document",
             "window=polyscript.xworker.window",
             "sync=polyscript.xworker.sync",
-            display,
+            display_py,
         ].join("\n"),
     )})`,
 ].join("\n");
@@ -183,6 +199,9 @@ define("py", {
         bootstrapNodeAndPlugins(pyodide, element, after, "onAfterRunAsync");
     },
     async onInterpreterReady(pyodide, element) {
+        console.log("onInterpreterReady");
+        writeStdlib(pyodide, element);
+        console.log("after writeStdlib");
         registerModule(pyodide, element);
         // allows plugins to do whatever they want with the element
         // before regular stuff happens in here
