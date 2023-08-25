@@ -257,9 +257,6 @@ class StyleCollection:
     def __get__(self, obj, objtype=None):
         return obj._get_attribute("style")
 
-    # def __set__(self, obj, value):
-    #     logging.info('Updating %r to %r', 'age', value)
-    #     obj._age = value
     def __getitem__(self, key):
         return self._collection._get_attribute("style")[key]
 
@@ -302,10 +299,6 @@ class ElementCollection:
     @html.setter
     def html(self, value):
         self._set_attribute("html", value)
-
-    # @property
-    # def style(self):
-    #     return self._get_attribute("style")
 
     @property
     def children(self):
