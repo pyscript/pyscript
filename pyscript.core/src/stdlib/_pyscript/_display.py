@@ -1,9 +1,14 @@
 # ⚠️ WARNING - both `document` and `window` are added at runtime
 
+# XXX antocuni: I think this is wrong: it works in the main thread but not in
+# the worker, because the rest of the code expects window and document to be
+# proxies (see workerPyScriptModule in core.js)
 import base64
 import html
 import io
 import re
+
+from js import document, window
 
 _MIME_METHODS = {
     "__repr__": "text/plain",

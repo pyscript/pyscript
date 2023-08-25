@@ -20,5 +20,6 @@ export default {
     output: {
         esModule: true,
         file: "./core.js",
+        sourcemap: true,
     },
 };
