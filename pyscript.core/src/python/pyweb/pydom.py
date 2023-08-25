@@ -57,11 +57,6 @@ class BaseElement:
 
         return element
 
-    # -------- Boilerplate Proxy for the Element API -------- #
-    @property
-    def appendChild(self):
-        return self._element.appendChild
-
 
 class Element(BaseElement):
     def append(self, child):
@@ -72,13 +67,15 @@ class Element(BaseElement):
             return self.append(self.from_js(child))
 
         elif isinstance(child, Element):
-            self.appendChild(child._element)
+            self._element.appendChild(child._element)
 
             return child
 
     def from_js(self, js_element):
         return self.__class__(js.tagName, parent=self)
 
+    # TODO: These 2 should be changed to basically do what PyDom.__getitem__ does
+    #       but within the scope of the current element children
     def query(self, selector):
         """The querySelector() method of the Element interface returns the first element
         that is a descendant of the element on which it is invoked that matches the specified
