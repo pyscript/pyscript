@@ -371,44 +371,4 @@ class PyDom(BaseElement):
 document = PyDom()
 
 
-# def when(event_type=None, selector=None):
-# """
-# Decorates a function and passes py-* events to the decorated function
-# The events might or not be an argument of the decorated function
-# """
-
-# def decorator(func):
-#     elements = js.document.querySelectorAll(selector)
-#     sig = inspect.signature(func)
-#     # Function doesn't receive events
-#     if not sig.parameters:
-
-#         def wrapper(*args, **kwargs):
-#             func()
-
-#         for el in elements:
-#             add_event_listener(el, event_type, wrapper)
-#     else:
-#         for el in elements:
-#             add_event_listener(el, event_type, func)
-#     return func
-
-# return decorator
-
-
-def query(selector):
-    """The querySelector() method of the Element interface returns the first element that
-    matches the specified group of selectors."""
-    return Element(js.document.querySelector(selector))
-
-
-def query_all(selector):
-    """The querySelectorAll() method of the Element interface returns a static (not live)
-    NodeList representing a list of the document's elements that match the specified group
-    of selectors.
-    """
-    for element in js.document.querySelectorAll(selector):
-        yield Element(element)
-
-
 sys.modules[__name__] = document
