@@ -215,8 +215,6 @@ class StyleProxy(dict):
 
     # CSS Properties
     # Reference: https://github.com/microsoft/TypeScript/blob/main/src/lib/dom.generated.d.ts#L3799C1-L5005C2
-    # Following prperties automatically generated from the above reference using
-    # tools/codegen_css_proxy.py
     @property
     def visibility(self):
         return self._element._element.style.visibility
@@ -240,14 +238,6 @@ class StyleProxy(dict):
     @color.setter
     def color(self, value):
         self._element._element.style.color = value
-
-    @property
-    def backgroundColor(self):
-        return self._element._element.style.backgroundColor
-
-    @backgroundColor.setter
-    def backgroundColor(self, value):
-        self._element._element.style.backgroundColor = value
 
 
 class StyleCollection:
