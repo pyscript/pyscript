@@ -16,7 +16,7 @@ import toml
 from playwright.sync_api import Error as PlaywrightError
 
 ROOT = py.path.local(__file__).dirpath("..", "..", "..")
-BUILD = ROOT.join("pyscriptjs", "build")
+BUILD = ROOT.join("pyscript.core")
 
 
 def params_with_marks(params):
@@ -381,7 +381,7 @@ class PyScriptTest:
                 return text in self.console.all.lines
 
         if timeout is None:
-            timeout = 30 * 1000
+            timeout = 10 * 1000
         # NOTE: we cannot use playwright's own page.expect_console_message(),
         # because if you call it AFTER the text has already been emitted, it
         # waits forever. Instead, we have to use our own custom logic.
@@ -418,7 +418,7 @@ class PyScriptTest:
         """
         # this is printed by interpreter.ts:Interpreter.initialize
         elapsed_ms = self.wait_for_console(
-            "[pyscript/main] PyScript page fully initialized",
+            "[pyscript/main] PyScript Ready",
             timeout=timeout,
             check_js_errors=check_js_errors,
         )
@@ -477,11 +477,14 @@ class PyScriptTest:
             snippet, py_config_maybe = self._inject_execution_thread_config(
                 snippet, execution_thread
             )
+
         doc = f"""
         <html>
           <head>
-              <link rel="stylesheet" href="{self.http_server_addr}/build/pyscript.css" />
-              <script defer src="{self.http_server_addr}/build/pyscript.js"></script>
+              <script
+                    type="module"
+                    src="{self.http_server_addr}/build/core.js"
+                ></script>
               {extra_head}
           </head>
           <body>
