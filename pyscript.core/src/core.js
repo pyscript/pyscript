@@ -211,6 +211,7 @@ define("py", {
             // resolve PyScriptElement to allow connectedCallback
             element._pyodide.resolve(pyodide);
         }
+        console.info("[pyscript/main] PyScript Ready");
     },
 });
 
