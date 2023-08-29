@@ -134,6 +134,8 @@ class PyScriptTest:
         creates an HTML page to run the specified snippet.
     """
 
+    DEFAULT_TIMEOUT = 20000
+
     @pytest.fixture()
     def init(self, request, tmpdir, logger, page, execution_thread):
         """
@@ -204,7 +206,7 @@ class PyScriptTest:
         self.page = page
 
         # set default timeout to 60000 millliseconds from 30000
-        page.set_default_timeout(60000)
+        page.set_default_timeout(self.DEFAULT_TIMEOUT)
 
         self.console = ConsoleMessageCollection(self.logger)
         self._js_errors = []
