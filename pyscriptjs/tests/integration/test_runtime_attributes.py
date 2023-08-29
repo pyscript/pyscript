@@ -1,8 +1,10 @@
-from .support import PyScriptTest, skip_worker
+import pytest
+
+from .support import PyScriptTest
 
 
 class TestPyScriptRuntimeAttributes(PyScriptTest):
-    @skip_worker("FIXME: js.document")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_injected_html_with_py_event(self):
         self.pyscript_run(
             r"""
@@ -21,7 +23,7 @@ class TestPyScriptRuntimeAttributes(PyScriptTest):
         self.page.locator("button").click()
         assert self.console.log.lines == ["hello pyscript"]
 
-    @skip_worker("FIXME: js.document")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_added_py_event(self):
         self.pyscript_run(
             r"""
@@ -40,7 +42,7 @@ class TestPyScriptRuntimeAttributes(PyScriptTest):
         self.page.locator("button").click()
         assert self.console.log.lines == ["hello pyscript"]
 
-    @skip_worker("FIXME: js.document")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_added_then_removed_py_event(self):
         self.pyscript_run(
             r"""

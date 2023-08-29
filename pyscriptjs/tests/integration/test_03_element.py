@@ -268,7 +268,7 @@ class TestElement(PyScriptTest):
         div = self.page.locator("#foo")
         assert div.get_attribute("class") == ""
 
-    @pytest.mark.skip("FIXME: js.document")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_add_single_class(self):
         """Test the element add_class"""
         self.pyscript_run(
@@ -285,7 +285,7 @@ class TestElement(PyScriptTest):
         div = self.page.locator("#foo")
         assert div.get_attribute("class") == "red"
 
-    @pytest.mark.skip("FIXME: js.document")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_add_multiple_class(self):
         """Test the element add_class"""
         self.pyscript_run(
