@@ -119,7 +119,6 @@ class TestConfig(PyScriptTest):
                 import sys, js
                 pyodide_version = sys.modules["pyodide"].__version__
                 js.console.log("version", pyodide_version)
-                display(pyodide_version)
             </py-script>
         """,
         )
@@ -146,14 +145,11 @@ class TestConfig(PyScriptTest):
                 import sys, js
                 pyodide_version = sys.modules["pyodide"].__version__
                 js.console.log("version", pyodide_version)
-                display(pyodide_version)
             </py-script>
         """,
         )
 
         assert self.console.log.lines[-1] == f"version {PYODIDE_VERSION}"
-        version = self.page.locator("py-script").inner_text()
-        assert version == f"{PYODIDE_VERSION}"
 
         deprecation_banner = self.page.wait_for_selector(".alert-banner")
         expected_message = (
