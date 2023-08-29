@@ -83,12 +83,13 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
     // provide the regular Pyodide globals instead of those from xworker
     const pyDisplay = interpreter.runPython(
         [
-            "import js",
-            "document=js.document",
-            "window=js",
+            "import js as window",
+            "document=window.document",
             display,
             "display",
         ].join("\n"),
+        // avoid leaking on global
+        { globals: interpreter.runPython("{}") },
     );
     interpreter.registerJsModule("pyscript", {
         PyWorker,
@@ -140,16 +141,17 @@ export const hooks = {
 };
 
 const workerPyScriptModule = [
-    "from pyodide_js import FS",
-    `FS.writeFile('./pyscript.py', ${JSON.stringify(
+    "from pathlib import Path as _Path",
+    `_Path("./pyscript.py").write_text(${JSON.stringify(
         [
-            "import polyscript",
-            "document=polyscript.xworker.window.document",
-            "window=polyscript.xworker.window",
-            "sync=polyscript.xworker.sync",
+            "from polyscript import xworker as _xworker",
+            "window=_xworker.window",
+            "document=window.document",
+            "sync=_xworker.sync",
             display,
         ].join("\n"),
     )})`,
+    "del _Path",
 ].join("\n");
 
 const workerHooks = {
