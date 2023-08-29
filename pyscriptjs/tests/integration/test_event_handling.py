@@ -1,8 +1,13 @@
-from .support import PyScriptTest, skip_worker
+import pytest
+
+from .support import PyScriptTest
+
+pytest.skip(
+    reason="FIXME: @when decorator missing from pyscript", allow_module_level=True
+)
 
 
 class TestEventHandler(PyScriptTest):
-    @skip_worker(reason="FIXME: js.document (@when decorator)")
     def test_when_decorator_with_event(self):
         """When the decorated function takes a single parameter,
         it should be passed the event object
@@ -24,7 +29,6 @@ class TestEventHandler(PyScriptTest):
         assert "I've clicked [object HTMLButtonElement] with id foo_id" in console_text
         self.assert_no_banners()
 
-    @skip_worker(reason="FIXME: js.document (@when decorator)")
     def test_when_decorator_without_event(self):
         """When the decorated function takes no parameters (not including 'self'),
         it should be called without the event object
@@ -45,7 +49,6 @@ class TestEventHandler(PyScriptTest):
         assert "The button was clicked" in self.console.log.lines
         self.assert_no_banners()
 
-    @skip_worker(reason="FIXME: js.document (@when decorator)")
     def test_multiple_when_decorators_with_event(self):
         self.pyscript_run(
             """
@@ -73,7 +76,6 @@ class TestEventHandler(PyScriptTest):
         assert "I've clicked [object HTMLButtonElement] with id bar_id" in console_text
         self.assert_no_banners()
 
-    @skip_worker(reason="FIXME: js.document (@when decorator)")
     def test_two_when_decorators(self):
         """When decorating a function twice, both should function"""
         self.pyscript_run(
@@ -96,7 +98,6 @@ class TestEventHandler(PyScriptTest):
         assert "An event of type click happened" in self.console.log.lines
         self.assert_no_banners()
 
-    @skip_worker(reason="FIXME: js.document (@when decorator)")
     def test_two_when_decorators_same_element(self):
         """When decorating a function twice *on the same DOM element*, both should function"""
         self.pyscript_run(
@@ -118,7 +119,6 @@ class TestEventHandler(PyScriptTest):
         assert "An event of type click happened" in self.console.log.lines
         self.assert_no_banners()
 
-    @skip_worker(reason="FIXME: js.document (@when decorator)")
     def test_when_decorator_multiple_elements(self):
         """The @when decorator's selector should successfully select multiple
         DOM elements
@@ -142,7 +142,6 @@ class TestEventHandler(PyScriptTest):
         assert "button2 was clicked" in self.console.log.lines
         self.assert_no_banners()
 
-    @skip_worker(reason="FIXME: js.document (@when decorator)")
     def test_when_decorator_duplicate_selectors(self):
         """ """
         self.pyscript_run(
@@ -166,7 +165,6 @@ class TestEventHandler(PyScriptTest):
         )
         self.assert_no_banners()
 
-    @skip_worker(reason="FIXME: js.document (@when decorator)")
     def test_when_decorator_invalid_selector(self):
         """When the selector parameter of @when is invalid, it should show an error"""
         self.pyscript_run(

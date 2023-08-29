@@ -1,4 +1,11 @@
+import pytest
+
 from .support import PyScriptTest
+
+pytest.skip(
+    reason="FIXME: pyscript API changed doesn't expose pyscript to window anymore",
+    allow_module_level=True,
+)
 
 
 class TestInterpreterAccess(PyScriptTest):

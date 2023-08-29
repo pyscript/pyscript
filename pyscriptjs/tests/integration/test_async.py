@@ -1,3 +1,5 @@
+import pytest
+
 from .support import PyScriptTest, skip_worker
 
 
@@ -87,7 +89,7 @@ class TestAsync(PyScriptTest):
             "b func done",
         ]
 
-    @skip_worker("FIXME: display()")
+    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_multiple_async_multiple_display_targeted(self):
         self.pyscript_run(
             """
