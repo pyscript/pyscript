@@ -8,14 +8,22 @@ import requests
 
 from .support import PyScriptTest, with_execution_thread
 
+PYODIDE_VERSION = "0.23.4"
+
 
 @pytest.fixture
-def pyodide_0_22_0_tar(request):
+def pyodide_tar(request):
     """
     Fixture which returns a local copy of pyodide. It uses pytest-cache to
     avoid re-downloading it between runs.
     """
-    URL = "https://github.com/pyodide/pyodide/releases/download/0.22.0/pyodide-core-0.22.0.tar.bz2"
+    URL = (
+        f"https://github.com/pyodide/pyodide/releases/download/{PYODIDE_VERSION}/"
+        f"pyodide-core-{PYODIDE_VERSION}.tar.bz2"
+    )
+    import pdb
+
+    pdb.set_trace()
     tar_name = Path(URL).name
 
     val = request.config.cache.get(tar_name, None)
@@ -93,8 +101,8 @@ class TestConfig(PyScriptTest):
     # The test checks if loading a different interpreter is possible
     # and that too from a locally downloaded file without needing
     # the use of explicit `indexURL` calculation.
-    def test_interpreter_config(self, pyodide_0_22_0_tar):
-        unzip(pyodide_0_22_0_tar, extract_to=self.tmpdir)
+    def test_interpreter_config(self, pyodide_tar):
+        unzip(pyodide_tar, extract_to=self.tmpdir)
         self.pyscript_run(
             """
             <py-config type="json">
@@ -116,14 +124,12 @@ class TestConfig(PyScriptTest):
         """,
         )
 
-        assert self.console.log.lines[-1] == "version 0.22.0"
+        assert self.console.log.lines[-1] == f"version {PYODIDE_VERSION}"
         version = self.page.locator("py-script").inner_text()
-        assert version == "0.22.0"
+        assert version == f"{PYODIDE_VERSION}"
 
-    def test_runtime_still_works_but_shows_deprecation_warning(
-        self, pyodide_0_22_0_tar
-    ):
-        unzip(pyodide_0_22_0_tar, extract_to=self.tmpdir)
+    def test_runtime_still_works_but_shows_deprecation_warning(self, pyodide_tar):
+        unzip(pyodide_tar, extract_to=self.tmpdir)
         self.pyscript_run(
             """
             <py-config type="json">
@@ -145,9 +151,9 @@ class TestConfig(PyScriptTest):
         """,
         )
 
-        assert self.console.log.lines[-1] == "version 0.22.0"
+        assert self.console.log.lines[-1] == f"version {PYODIDE_VERSION}"
         version = self.page.locator("py-script").inner_text()
-        assert version == "0.22.0"
+        assert version == f"{PYODIDE_VERSION}"
 
         deprecation_banner = self.page.wait_for_selector(".alert-banner")
         expected_message = (
