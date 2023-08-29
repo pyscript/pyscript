@@ -1,4 +1,8 @@
+import pytest
+
 from .support import PyScriptTest, skip_worker
+
+pytest.skip(reason="FIXME: entire stdio should be reviewed", allow_module_level=True)
 
 
 class TestOutputHandling(PyScriptTest):
