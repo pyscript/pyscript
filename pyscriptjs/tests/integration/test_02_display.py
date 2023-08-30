@@ -10,44 +10,71 @@ from PIL import Image
 
 from .support import PyScriptTest, wait_for_render
 
+DISPLAY_OUTPUT_ID_PATTERN = r'[id^="py-"]'
+
+
+def filter_page_content(lines, exclude=None):
+    """Remove lines that are not relevant for the test. By default, ignores:
+        ('', 'execution_thread = "main"', 'execution_thread = "worker"')
+
+    Args:
+        lines (list): list of strings
+        exclude (list): list of strings to exclude
+
+    Returns:
+        list: list of strings
+    """
+    if exclude is None:
+        exclude = {"", 'execution_thread = "main"', 'execution_thread = "worker"'}
+
+    return [line for line in lines if line not in exclude]
+
 
 class TestDisplay(PyScriptTest):
-    @pytest.mark.skip("FIXME: display() without target is broken")
+    @pytest.mark.skip(
+        "DIFFERENT BEHAVIOUR!: display w/o target renders as TXT without <div> tag"
+    )
     def test_simple_display(self):
         self.pyscript_run(
             """
             <py-script>
-                display('hello world')
+                print('ciao')
+                from pyscript import display
+                display("hello world")
             </py-script>
-        """
+            """,
+            timeout=20000,
         )
-        node_list = self.page.query_selector_all(r'[id^="py-internal"]')
+        node_list = self.page.query_selector_all(DISPLAY_OUTPUT_ID_PATTERN)
         pattern = r"<div>hello world</div>"
-        assert re.search(pattern, node_list[0].inner_html())
+        assert node_list[0].inner_html() == pattern
         assert len(node_list) == 1
 
-    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_consecutive_display(self):
         self.pyscript_run(
             """
             <py-script>
+                from pyscript import display
                 display('hello 1')
             </py-script>
             <p>hello 2</p>
             <py-script>
+                from pyscript import display
                 display('hello 3')
             </py-script>
             """
         )
         inner_text = self.page.inner_text("body")
         lines = inner_text.splitlines()
-        lines = [line for line in lines if line != ""]  # remove empty lines
+
+        lines = [line for line in filter_page_content(lines)]  # remove empty lines
         assert lines == ["hello 1", "hello 2", "hello 3"]
 
     def test_target_attribute(self):
         self.pyscript_run(
             """
             <py-script>
+                from pyscript import display
                 display('hello world', target="mydiv")
             </py-script>
             <div id="mydiv"></div>
@@ -56,32 +83,34 @@ class TestDisplay(PyScriptTest):
         mydiv = self.page.locator("#mydiv")
         assert mydiv.inner_text() == "hello world"
 
-    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_consecutive_display_target(self):
         self.pyscript_run(
             """
             <py-script id="first">
+                from pyscript import display
                 display('hello 1')
             </py-script>
                 <p>hello in between 1 and 2</p>
             <py-script id="second">
+                from pyscript import display
                 display('hello 2', target="second")
             </py-script>
             <py-script id="third">
+                from pyscript import display
                 display('hello 3')
             </py-script>
             """
         )
         inner_text = self.page.inner_text("body")
         lines = inner_text.splitlines()
-        lines = [line for line in lines if line != ""]  # remove empty lines
+        lines = [line for line in filter_page_content(lines)]  # remove empty lines
         assert lines == ["hello 1", "hello in between 1 and 2", "hello 2", "hello 3"]
 
-    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_multiple_display_calls_same_tag(self):
         self.pyscript_run(
             """
             <py-script>
+                from pyscript import display
                 display('hello')
                 display('world')
             </py-script>
@@ -89,18 +118,20 @@ class TestDisplay(PyScriptTest):
         )
         tag = self.page.locator("py-script")
         lines = tag.inner_text().splitlines()
+        # TODO: Did the default change to append=False?
         assert lines == ["hello", "world"]
 
-    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_implicit_target_from_a_different_tag(self):
         self.pyscript_run(
             """
                 <py-script id="py1">
+                    from pyscript import display
                     def say_hello():
                         display('hello')
                 </py-script>
 
                 <py-script id="py2">
+                    from pyscript import display
                     say_hello()
                 </py-script>
             """
@@ -110,11 +141,11 @@ class TestDisplay(PyScriptTest):
         assert py1.inner_text() == ""
         assert py2.inner_text() == "hello"
 
-    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_no_implicit_target(self):
         self.pyscript_run(
             """
             <py-script>
+                from pyscript import display
                 def display_hello():
                     # this fails because we don't have any implicit target
                     # from event handlers
@@ -127,6 +158,8 @@ class TestDisplay(PyScriptTest):
         self.check_py_errors("Implicit target not allowed here")
         ## error in console
         tb_lines = self.console.error.lines[-1].splitlines()
+
+        # TODO: This does seem like a regression
         assert tb_lines[0] == "[pyexec] Python exception:"
         assert tb_lines[1] == "Traceback (most recent call last):"
         assert (
@@ -141,6 +174,7 @@ class TestDisplay(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
+                from pyscript import display
                 def display_hello():
                     display('hello', target='second-pyscript-tag')
             </py-script>
@@ -153,27 +187,30 @@ class TestDisplay(PyScriptTest):
         assert text == "hello"
 
     @pytest.mark.skip(
-        "FIXME: on CHrome fails with the error:"
+        "FIXME: in Chrome fails with the error:"
         ' The interpreter "py" was not found. Available interpreters are: "py-script", "pyodide".'
     )
     def test_explicit_target_on_button_tag(self):
         self.pyscript_run(
             """
             <py-script>
+                from pyscript import display
                 def display_hello():
                     display('hello', target='my-button')
             </py-script>
-            <button id="my-button" py-click="display_hello()">Click me</button>
+            <button id="my-button" py-click="display_hello">Click me</button>
         """
         )
         self.page.locator("text=Click me").click()
         text = self.page.locator("id=my-button").inner_text()
+        # TODO: This does seem like a regression that
         assert "hello" in text
 
     def test_explicit_different_target_from_call(self):
         self.pyscript_run(
             """
             <py-script id="first-pyscript-tag">
+                from pyscript import display
                 def display_hello():
                     display('hello', target='second-pyscript-tag')
             </py-script>
@@ -188,25 +225,26 @@ class TestDisplay(PyScriptTest):
         text = self.page.locator("id=second-pyscript-tag").all_inner_texts()
         assert "hello" in text
 
-    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_append_true(self):
         self.pyscript_run(
             """
             <py-script>
+                from pyscript import display
                 display('hello world', append=True)
             </py-script>
         """
         )
-        node_list = self.page.query_selector_all(r'[id^="py-internal"]')
+        node_list = self.page.query_selector_all(DISPLAY_OUTPUT_ID_PATTERN)
         pattern = r"<div>hello world</div>"
-        assert re.search(pattern, node_list[0].inner_html())
+
+        assert node_list[0].inner_html() == pattern
         assert len(node_list) == 1
 
-    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_append_false(self):
         self.pyscript_run(
             """
             <py-script>
+                from pyscript import display
                 display('hello world', append=False)
             </py-script>
         """
@@ -220,6 +258,7 @@ class TestDisplay(PyScriptTest):
         self.pyscript_run(
             """
             <py-script>
+                from pyscript import display
                 hello = 'hello'
                 world = 'world'
                 display(hello, world)
@@ -229,11 +268,11 @@ class TestDisplay(PyScriptTest):
         inner_text = self.page.inner_text("html")
         assert inner_text == "hello\nworld"
 
-    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_display_multiple_append_false(self):
         self.pyscript_run(
             """
             <py-script>
+                from pyscript import display
                 display('hello', append=False)
                 display('world', append=False)
             </py-script>
@@ -248,6 +287,7 @@ class TestDisplay(PyScriptTest):
             """
             <div id="circle-div"></div>
             <script type="py">
+                from pyscript import display
                 class Circle:
                     r = 0
                     def _repr_svg_(self):
