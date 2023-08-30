@@ -2,6 +2,7 @@ import "@ungap/with-resolvers";
 import { $ } from "basic-devtools";
 import { define, XWorker } from "polyscript";
 import { htmlDecode } from "./utils.js";
+import sync from "./sync.js";
 
 // this is imported as string (via rollup)
 import display from "./display.py";
@@ -179,6 +180,9 @@ define("py", {
     env: "py-script",
     interpreter: "pyodide",
     ...workerHooks,
+    onWorkerReady(_, xworker) {
+        assign(xworker.sync, sync);
+    },
     onBeforeRun(pyodide, element) {
         currentElement = element;
         bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRun");
@@ -269,8 +273,10 @@ export function PyWorker(file, options) {
     // as the interpreter to use in the worker, as all hooks assume that
     // and as `pyodide` is the only default interpreter that can deal with
     // all the features we need to deliver pyscript out there.
-    return XWorker.call(new Hook(null, workerHooks), file, {
+    const xworker = XWorker.call(new Hook(null, workerHooks), file, {
         ...options,
         type: "pyodide",
     });
+    assign(xworker.sync, sync);
+    return xworker;
 }
