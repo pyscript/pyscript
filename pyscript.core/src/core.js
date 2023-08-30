@@ -199,7 +199,11 @@ define("py", {
                 ? queryTarget(target.value)
                 : document.createElement("script-py");
 
-            if (!hasTarget) element.after(show);
+            if (!hasTarget) {
+                const { head, body } = document;
+                if (head.contains(element)) body.append(show);
+                else element.after(show);
+            }
             if (!show.id) show.id = getID();
 
             // allows the code to retrieve the target element via
