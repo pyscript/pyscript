@@ -376,17 +376,9 @@ class TestDisplay(PyScriptTest):
         # assert out.inner_text() == "hello world"
 
     @pytest.mark.skip(
-        "BROKEN TEST: Text framework is causing config to fail with the following error:"
-        """[  0.08 console.js_error ] SyntaxError: Unexpected token ']',
-        "[ "s0",]" is not valid JSON
-at parse (<anonymous>)
-at t (https://cdn.jsdelivr.net/npm/basic-toml@0.3.1/es.js:2:98)
-at Module.l (https://cdn.jsdelivr.net/npm/basic-toml@0.3.1/es.js:2:875)
-at pt (https://fake_server/build/core.js:2:28737)
-
-
-SUCCEEDS IN CHROME!
-    """
+        "FIX TEST: Works correctly in Chrome, but fails in TEST with the error:\n\n"
+        "It's likely that the Test framework injections in config are causing"
+        "this error."
     )
     def test_image_display(self):
         self.pyscript_run(
@@ -473,16 +465,11 @@ SUCCEEDS IN CHROME!
         assert console_text.index("1print") == (console_text.index("2print") - 1)
         assert console_text.index("1console") == (console_text.index("2console") - 1)
 
-    #     @pytest.mark.skip(
-    #         "FIX TEST: Works correctly in Chrome, but fails in TEST with the error:"
-    #         """integration.support.PageErrors: JS errors found: 1
-    # E           SyntaxError: Unexpected token ']', "[ "s0",]" is not valid JSON
-    # E               at parse (<anonymous>)
-    # E               at t (https://cdn.jsdelivr.net/npm/basic-toml@0.3.1/es.js:2:98)
-    # E               at Module.l (https://cdn.jsdelivr.net/npm/basic-toml@0.3.1/es.js:2:875)
-    # E               at pt (https://fake_server/build/core.js:2:28737)
-    # """
-    #     )
+    @pytest.mark.skip(
+        "FIX TEST: Works correctly in Chrome, but fails in TEST with the error:\n\n"
+        "It's likely that the Test framework injections in config are causing"
+        "this error."
+    )
     def test_image_renders_correctly(self):
         """This is just a sanity check to make sure that images are rendered correctly."""
         buffer = io.BytesIO()
