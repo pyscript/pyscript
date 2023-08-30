@@ -338,24 +338,16 @@ class TestBasic(PyScriptTest):
         with pytest.raises(AssertionError, match="Found 2 alert banners"):
             self.assert_no_banners()
 
-    @pytest.mark.skip(
-        reason="Maybe Broken: different API? We don't expose getPySrc anymore"
-    )
     def test_getPySrc_returns_source_code(self):
         self.pyscript_run(
             """
-            <py-script>
-                print("hello world!")
-            </py-script>
+            <py-script>print("hello world!")</py-script>
             """
         )
 
         pyscript_tag = self.page.locator("py-script")
         assert pyscript_tag.inner_html() == ""
-        assert (
-            pyscript_tag.evaluate("node => node.getPySrc()")
-            == 'print("hello world!")\n'
-        )
+        assert pyscript_tag.evaluate("node => node.srcCode") == 'print("hello world!")'
 
     @pytest.mark.skip(
         reason="BROKEN: Error: The interpreter 'py' was not found. Available "
