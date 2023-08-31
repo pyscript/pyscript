@@ -13,7 +13,7 @@ import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
 
 import { robustFetch as fetch } from "./fetch.js";
 
-const { defineProperty } = Object;
+const { assign, defineProperty } = Object;
 
 const getText = (body) => body.text();
 
@@ -231,10 +231,17 @@ define("py", {
 
 class PyScriptElement extends HTMLElement {
     constructor() {
-        if (!super().id) this.id = getID();
-        this._pyodide = Promise.withResolvers();
-        this.srcCode = "";
-        this.executed = false;
+        assign(super(), {
+            _pyodide: Promise.withResolvers(),
+            srcCode: "",
+            executed: false,
+        });
+    }
+    get id() {
+        return super.id || (super.id = getID());
+    }
+    set id(value) {
+        super.id = value;
     }
     async connectedCallback() {
         if (!this.executed) {
