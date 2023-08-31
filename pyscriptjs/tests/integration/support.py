@@ -104,6 +104,27 @@ def skip_worker(reason):
     return decorator
 
 
+def filter_inner_text(text, exclude=None):
+    return "\n".join(filter_page_content(text.splitlines(), exclude=exclude))
+
+
+def filter_page_content(lines, exclude=None):
+    """Remove lines that are not relevant for the test. By default, ignores:
+        ('', 'execution_thread = "main"', 'execution_thread = "worker"')
+
+    Args:
+        lines (list): list of strings
+        exclude (list): list of strings to exclude
+
+    Returns:
+        list: list of strings
+    """
+    if exclude is None:
+        exclude = {"", 'execution_thread = "main"', 'execution_thread = "worker"'}
+
+    return [line for line in lines if line not in exclude]
+
+
 @pytest.mark.usefixtures("init")
 @with_execution_thread("main", "worker")
 class PyScriptTest:

@@ -7,30 +7,14 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from .support import PyScriptTest, wait_for_render
+from .support import (
+    PyScriptTest,
+    filter_inner_text,
+    filter_page_content,
+    wait_for_render,
+)
 
 DISPLAY_OUTPUT_ID_PATTERN = r'[id^="py-"]'
-
-
-def filter_inner_text(text, exclude=None):
-    return "\n".join(filter_page_content(text.splitlines(), exclude=exclude))
-
-
-def filter_page_content(lines, exclude=None):
-    """Remove lines that are not relevant for the test. By default, ignores:
-        ('', 'execution_thread = "main"', 'execution_thread = "worker"')
-
-    Args:
-        lines (list): list of strings
-        exclude (list): list of strings to exclude
-
-    Returns:
-        list: list of strings
-    """
-    if exclude is None:
-        exclude = {"", 'execution_thread = "main"', 'execution_thread = "worker"'}
-
-    return [line for line in lines if line not in exclude]
 
 
 class TestDisplay(PyScriptTest):
