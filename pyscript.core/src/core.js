@@ -1,6 +1,8 @@
 import "@ungap/with-resolvers";
 import { $ } from "basic-devtools";
 import { define, XWorker } from "polyscript";
+import { htmlDecode } from "./utils.js";
+import sync from "./sync.js";
 
 // this is imported as string (via rollup)
 import display from "./display.py";
@@ -12,7 +14,7 @@ import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
 
 import { robustFetch as fetch } from "./fetch.js";
 
-const { defineProperty } = Object;
+const { assign, defineProperty } = Object;
 
 const getText = (body) => body.text();
 
@@ -54,7 +56,7 @@ const after = () => {
  * It either throws an error if the 'src' can't be fetched or it returns a fallback
  * content as source.
  */
-const fetchSource = async (tag, io) => {
+const fetchSource = async (tag, io, asText) => {
     if (tag.hasAttribute("src")) {
         try {
             return await fetch(tag.getAttribute("src")).then(getText);
@@ -62,7 +64,15 @@ const fetchSource = async (tag, io) => {
             io.stderr(error);
         }
     }
-    return tag.textContent;
+
+    if (asText) return tag.textContent;
+
+    console.warn(
+        'Deprecated: use <script type="py"> for an always safe content parsing:\n',
+        tag.innerHTML,
+    );
+
+    return htmlDecode(tag.innerHTML);
 };
 
 // common life-cycle handlers for any node
@@ -170,6 +180,9 @@ define("py", {
     env: "py-script",
     interpreter: "pyodide",
     ...workerHooks,
+    onWorkerReady(_, xworker) {
+        assign(xworker.sync, sync);
+    },
     onBeforeRun(pyodide, element) {
         currentElement = element;
         bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRun");
@@ -211,7 +224,7 @@ define("py", {
             defineProperty(element, "target", { value: show });
 
             pyodide[`run${isAsync ? "Async" : ""}`](
-                await fetchSource(element, pyodide.io),
+                await fetchSource(element, pyodide.io, true),
             );
         } else {
             // resolve PyScriptElement to allow connectedCallback
@@ -223,17 +236,24 @@ define("py", {
 
 class PyScriptElement extends HTMLElement {
     constructor() {
-        if (!super().id) this.id = getID();
-        this._pyodide = Promise.withResolvers();
-        this.srcCode = "";
-        this.executed = false;
+        assign(super(), {
+            _pyodide: Promise.withResolvers(),
+            srcCode: "",
+            executed: false,
+        });
+    }
+    get id() {
+        return super.id || (super.id = getID());
+    }
+    set id(value) {
+        super.id = value;
     }
     async connectedCallback() {
         if (!this.executed) {
             this.executed = true;
             const { io, run } = await this._pyodide.promise;
-            this.srcCode = await fetchSource(this, io);
-            this.textContent = "";
+            this.srcCode = await fetchSource(this, io, !this.childElementCount);
+            this.replaceChildren();
             run(this.srcCode);
             this.style.display = "block";
         }
@@ -254,8 +274,10 @@ export function PyWorker(file, options) {
     // as the interpreter to use in the worker, as all hooks assume that
     // and as `pyodide` is the only default interpreter that can deal with
     // all the features we need to deliver pyscript out there.
-    return XWorker.call(new Hook(null, workerHooks), file, {
+    const xworker = XWorker.call(new Hook(null, workerHooks), file, {
         ...options,
         type: "pyodide",
     });
+    assign(xworker.sync, sync);
+    return xworker;
 }
