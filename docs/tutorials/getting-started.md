@@ -26,38 +26,77 @@ simply add a reference in your application code to where your application should
 
 If you are not an experienced developer and it all sounds very complicated, don't worry, we'll get you through it in the following steps.
 
-## Your first PyScript HTML file
+## Writing your first PyScript application
 
-Here's a "Hello, world!" example using PyScript.
+As we hinted earlier, writing a PyScript application means writing a web application that can run code writted in Python (and other languages)
+on the web. This means that the way we create PyScript applications starts in a very similar way to how we write web applications: from an
+HTML file.
 
-Using your favorite editor, create a new file called `hello.html` in
-the same directory as your PyScript, JavaScript, and CSS files with the
-following content, and open the file in your web browser. You can typically
-open an HTML by double-clicking it in your file explorer.
+To demonstrate the above, let's start from the most popular "first application example": let's write a "Hello, world!"
+example using PyScript.
+
+Using your favorite editor, create a new file called `hello.html` and paste in the following content:
 
 ```html
 <html>
   <head>
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+      <title>My First PyScript APP: Hello World!</title>
+      <script
+          type="module"
+          src="https://esm.sh/@pyscript/core@latest/core.js"
+      ></script>
   </head>
   <body>
     <py-script>
+        from pyscript import display
         print('Hello, World!')
+        display('Hello, World!')
     </py-script>
   </body>
 </html>
 ```
 
+and open it in your web browser. (You can typically
+open an HTML by double-clicking it in your file explorer.)
+
+You should see "Hello World!" printed on your page and your Javascript Console (don't worry if
+you don't know what it means yet, we'll get into that later).
+
+## Serving your application
+
+Now what we have written our first application, it's important talk about how we can access it.
+
+In the example above, we were able to visualize it by simply opening the local file from our
+system directly with the browser. While that's a very simple and fast way to open our application,
+it is not very recommended because browsers will forbid many features when accessing files this way,
+for security reasons. When this is the case, you may see your Python code in the text of the webpage,
+and the [browser developer console](https://balsamiq.com/support/faqs/browserconsole/) may show an
+error like *"Cross origin requests are only supported for HTTP."*
+
+In short, when browsers visualize a web page, they expect them to be served by a
+web server. Here are a few options that we can use to fix this issue:
+
+**NOTE:** If you are an experienced developer and already know how to host and serve files on a [static]
+web server, feel free to skip to the next section.
+
 ### Using a Local Server
 
-In some situations, your browser may forbid loading remote resources like `pyscript.js` and `pyscript.css` when you open an HTML file directly. When this is the case, you may see your Python code in the text of the webpage, and the [browser developer console](https://balsamiq.com/support/faqs/browserconsole/) may show an error like *"Cross origin requests are only supported for HTTP."* The fix for this is to use a [simple local server](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Tools_and_setup/set_up_a_local_testing_server) to make your html file available to the browser.
+A very common fix for this is to use a [simple local server](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Tools_and_setup/set_up_a_local_testing_server) to make your html file available to the browser.
 
-If you have python installed on your system, you can use it's basic built-in server for this purpose via the command line. Change the current working directory of your terminal or command line to the folder where your HTML file is stored. From this folder, run `python -m http.server 8080 --bind 127.0.0.1` in your terminal or command line. With the server program running, point your browser to `http://localhost:8080` to view the contents of that folder. (If a file in that folder is called `index.html`, it will be displayed by default.)
+
+If you have python installed on your system, you can use it's basic built-in server for this purpose via the command line.
+Change the current working directory of your terminal or command line to the folder where your HTML file is stored.
+From this folder, run `python -m http.server 8080 --bind 127.0.0.1` in your terminal or command line. With the server
+program running, point your browser to `http://localhost:8080` to view the contents of that folder. (If a file in
+that folder is called `index.html`, it will be displayed by default.)
 
 ## A more complex example
 
-Now that we know how you can create a simple 'Hello, World!' example, let's see a more complex example. This example will use the Demo created by [Cheuk Ting Ho](https://github.com/Cheukting). In this example, we will use more features from PyScript.
+Now that we know how you can create a simple 'Hello, World!' example, let's see a more complex example.
+This example will use the Demo created by [Cheuk Ting Ho](https://github.com/Cheukting). In this example, we will use more features from PyScript.
 
 ### Setting up the base index file
 
