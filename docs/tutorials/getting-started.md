@@ -1,15 +1,23 @@
 # Getting started with PyScript
 
-This page will guide you through getting started with PyScript.
+To start developing a PyScript, like with most applications development, you need a **development environment** where you
+write your code, a way to install the programming libraries and dependencies your code needs, and way to build and distribute
+your application.
+
+Luckily, PyScript makes many of these steps much easier.
 
 ## Development setup
 
-PyScript does not require any development environment other
+PyScript does not require any specific development environment other
 than a web browser (we recommend using [Chrome](https://www.google.com/chrome/)) and a text editor, even though using your [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment) of choice might be convenient.
 
 If you're using [VSCode](https://code.visualstudio.com/), the
 [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
 can be used to reload the page as you edit the HTML file.
+
+**NOTE:** The easier way to get a development setup for PyScript is to use [pyscript.com](pyscript.com). It is a free service that allows
+users to create new projects from pre-created templates that already have all the project structure created and allows users
+to edit their apps, preview it and deploy with just a link, all in the same place.
 
 ## Installation
 
