@@ -4,8 +4,7 @@ import { define, XWorker } from "polyscript";
 import { htmlDecode } from "./utils.js";
 import sync from "./sync.js";
 
-// this is imported as string (via rollup)
-import display from "./display.py";
+import stdlib from "./stdlib.js";
 
 // TODO: this is not strictly polyscript related but handy ... not sure
 //       we should factor this utility out a part but this works anyway.
@@ -81,6 +80,7 @@ const bootstrapNodeAndPlugins = (pyodide, element, callback, hook) => {
     for (const fn of hooks[hook]) fn(pyodide, element);
 };
 
+let shouldRegister = true;
 const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
     // automatically use the pyscript stderr (when/if defined)
     // this defaults to console.error
@@ -89,43 +89,20 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
         worker.onerror = ({ error }) => io.stderr(error);
         return worker;
     }
-    // trap once the python `display` utility (borrowed from "classic PyScript")
-    // provide the regular Pyodide globals instead of those from xworker
-    const pyDisplay = interpreter.runPython(
-        [
-            "import js as window",
-            "document=window.document",
-            display,
-            "display",
-        ].join("\n"),
-        // avoid leaking on global
-        { globals: interpreter.runPython("{}") },
-    );
-    interpreter.registerJsModule("pyscript", {
-        PyWorker,
-        document,
-        window,
-        // a getter to ensure if multiple scripts with same
-        // env (py) runs, their execution code will have the correct
-        // display reference with automatic target
-        get display() {
-            const id = isScript(currentElement)
-                ? currentElement.target.id
-                : currentElement.id;
 
-            return (...args) => {
-                const last = args.at(-1);
-                let kw = { target: id, append: false };
-                if (
-                    typeof last === "object" &&
-                    last &&
-                    ("target" in last || "append" in last)
-                )
-                    kw = { ...kw, ...args.pop() };
-                pyDisplay.callKwargs(...args, kw);
-            };
+    // enrich the Python env with some JS utility for main
+    defineProperty(globalThis, "_pyscript", {
+        value: {
+            PyWorker,
+            get id() {
+                return isScript(currentElement)
+                    ? currentElement.target.id
+                    : currentElement.id;
+            },
         },
     });
+
+    interpreter.runPython(stdlib, { globals: interpreter.runPython("{}") });
 };
 
 export const hooks = {
@@ -150,25 +127,11 @@ export const hooks = {
     codeAfterRunWorkerAsync: new Set(),
 };
 
-const workerPyScriptModule = [
-    "from pathlib import Path as _Path",
-    `_Path("./pyscript.py").write_text(${JSON.stringify(
-        [
-            "from polyscript import xworker as _xworker",
-            "window=_xworker.window",
-            "document=window.document",
-            "sync=_xworker.sync",
-            display,
-        ].join("\n"),
-    )})`,
-    "del _Path",
-].join("\n");
-
 const workerHooks = {
     codeBeforeRunWorker: () =>
-        [workerPyScriptModule, ...hooks.codeBeforeRunWorker].join("\n"),
+        [stdlib, ...hooks.codeBeforeRunWorker].join("\n"),
     codeBeforeRunWorkerAsync: () =>
-        [workerPyScriptModule, ...hooks.codeBeforeRunWorkerAsync].join("\n"),
+        [stdlib, ...hooks.codeBeforeRunWorkerAsync].join("\n"),
     codeAfterRunWorker: () => [...hooks.codeAfterRunWorker].join("\n"),
     codeAfterRunWorkerAsync: () =>
         [...hooks.codeAfterRunWorkerAsync].join("\n"),
@@ -198,7 +161,10 @@ define("py", {
         bootstrapNodeAndPlugins(pyodide, element, after, "onAfterRunAsync");
     },
     async onInterpreterReady(pyodide, element) {
-        registerModule(pyodide, element);
+        if (shouldRegister) {
+            shouldRegister = false;
+            registerModule(pyodide);
+        }
         // allows plugins to do whatever they want with the element
         // before regular stuff happens in here
         for (const callback of hooks.onInterpreterReady)

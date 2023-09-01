@@ -1,5 +1,7 @@
 node_modules/
 rollup/
 test/
+src/stdlib/_pyscript
+src/stdlib/pyscript.py
 package-lock.json
 tsconfig.json

@@ -21,7 +21,7 @@
     },
     "scripts": {
         "server": "npx static-handler --cors --coep --coop --corp .",
-        "build": "rollup --config rollup/core.config.js && rollup --config rollup/core-css.config.js && npm run ts",
+        "build": "node rollup/stdlib.cjs && rollup --config rollup/core.config.js && rollup --config rollup/core-css.config.js && npm run ts",
         "ts": "tsc -p ."
     },
     "keywords": [

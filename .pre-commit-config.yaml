@@ -27,7 +27,7 @@ repos:
       rev: v0.0.257
       hooks:
           - id: ruff
-            exclude: pyscript\.core/test|pyscript\.core/src/display.py
+            exclude: pyscript\.core/test|pyscript.core/src/stdlib/pyscript.py
             args: [--fix]
 
     - repo: https://github.com/psf/black
@@ -47,7 +47,7 @@ repos:
       rev: "v3.0.0-alpha.6"
       hooks:
           - id: prettier
-            exclude: pyscript\.core/test|pyscript\.core/core.*|pyscript\.core/types/|pyscript\.sw/
+            exclude: pyscript\.core/test|pyscript\.core/core.*|pyscript\.core/types/|pyscript.core/src/stdlib/pyscript.js|pyscript\.sw/
             args: [--tab-width, "4"]
 
     - repo: https://github.com/pre-commit/mirrors-eslint

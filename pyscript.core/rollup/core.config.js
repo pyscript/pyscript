@@ -3,14 +3,8 @@
 
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
-import { string } from "rollup-plugin-string";
 
-const plugins = [
-    string({
-        // Required to be specified
-        include: "**/*.py",
-    }),
-];
+const plugins = [];
 
 export default {
     input: "./src/core.js",
