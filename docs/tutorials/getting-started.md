@@ -21,11 +21,10 @@ to edit their apps, preview it and deploy with just a link, all in the same plac
 
 ## Installation
 
-There is no installation required. In this document, we'll use
-the PyScript assets served on [https://pyscript.net](https://pyscript.net).
+There is no PyScript specific installation required in your system to start using PyScript in your browser. All you need to do is to
+simply add a reference in your application code to where your application should get PyScript from.
 
-If you want to download the source and build it yourself, follow
-the instructions in the [README.md](https://github.com/pyscript/pyscript/blob/main/README.md) file.
+If you are not an experienced developer and it all sounds very complicated, don't worry, we'll get you through it in the following steps.
 
 ## Your first PyScript HTML file
 
