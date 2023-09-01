@@ -1,10 +1,9 @@
-# ⚠️ WARNING - both `document` and `window` are added at runtime
-
 import base64
 import html
 import io
 import re
 
+from . import document, window
 
 _MIME_METHODS = {
     "__repr__": "text/plain",
