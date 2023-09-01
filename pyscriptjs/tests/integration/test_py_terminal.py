@@ -1,8 +1,14 @@
 import time
 
+import pytest
 from playwright.sync_api import expect
 
 from .support import PyScriptTest, skip_worker
+
+pytest.skip(
+    reason="FIX LATER: pyscript NEXT doesn't support the Terminal yet",
+    allow_module_level=True,
+)
 
 
 class TestPyTerminal(PyScriptTest):

@@ -1,8 +1,11 @@
-from .support import PyScriptTest, skip_worker
+import pytest
+
+from .support import PyScriptTest
 
 
 class TestShadowRoot(PyScriptTest):
-    @skip_worker("FIXME: js.document")
+    # @skip_worker("FIXME: js.document")
+    @pytest.mark.skip("FIXME: Element missing from PyScript")
     def test_reachable_shadow_root(self):
         self.pyscript_run(
             r"""

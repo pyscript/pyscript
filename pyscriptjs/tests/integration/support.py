@@ -16,7 +16,7 @@ import toml
 from playwright.sync_api import Error as PlaywrightError
 
 ROOT = py.path.local(__file__).dirpath("..", "..", "..")
-BUILD = ROOT.join("pyscriptjs", "build")
+BUILD = ROOT.join("pyscript.core")
 
 
 def params_with_marks(params):
@@ -104,6 +104,27 @@ def skip_worker(reason):
     return decorator
 
 
+def filter_inner_text(text, exclude=None):
+    return "\n".join(filter_page_content(text.splitlines(), exclude=exclude))
+
+
+def filter_page_content(lines, exclude=None):
+    """Remove lines that are not relevant for the test. By default, ignores:
+        ('', 'execution_thread = "main"', 'execution_thread = "worker"')
+
+    Args:
+        lines (list): list of strings
+        exclude (list): list of strings to exclude
+
+    Returns:
+        list: list of strings
+    """
+    if exclude is None:
+        exclude = {"", 'execution_thread = "main"', 'execution_thread = "worker"'}
+
+    return [line for line in lines if line not in exclude]
+
+
 @pytest.mark.usefixtures("init")
 @with_execution_thread("main", "worker")
 class PyScriptTest:
@@ -133,6 +154,8 @@ class PyScriptTest:
       - self.pyscript_run is the main entry point for pyscript tests: it
         creates an HTML page to run the specified snippet.
     """
+
+    DEFAULT_TIMEOUT = 20000
 
     @pytest.fixture()
     def init(self, request, tmpdir, logger, page, execution_thread):
@@ -204,7 +227,7 @@ class PyScriptTest:
         self.page = page
 
         # set default timeout to 60000 millliseconds from 30000
-        page.set_default_timeout(60000)
+        page.set_default_timeout(self.DEFAULT_TIMEOUT)
 
         self.console = ConsoleMessageCollection(self.logger)
         self._js_errors = []
@@ -381,7 +404,7 @@ class PyScriptTest:
                 return text in self.console.all.lines
 
         if timeout is None:
-            timeout = 30 * 1000
+            timeout = 10 * 1000
         # NOTE: we cannot use playwright's own page.expect_console_message(),
         # because if you call it AFTER the text has already been emitted, it
         # waits forever. Instead, we have to use our own custom logic.
@@ -418,7 +441,7 @@ class PyScriptTest:
         """
         # this is printed by interpreter.ts:Interpreter.initialize
         elapsed_ms = self.wait_for_console(
-            "[pyscript/main] PyScript page fully initialized",
+            "[pyscript/main] PyScript Ready",
             timeout=timeout,
             check_js_errors=check_js_errors,
         )
@@ -477,11 +500,14 @@ class PyScriptTest:
             snippet, py_config_maybe = self._inject_execution_thread_config(
                 snippet, execution_thread
             )
+
         doc = f"""
         <html>
           <head>
-              <link rel="stylesheet" href="{self.http_server_addr}/build/pyscript.css" />
-              <script defer src="{self.http_server_addr}/build/pyscript.js"></script>
+              <script
+                    type="module"
+                    src="{self.http_server_addr}/build/core.js"
+                ></script>
               {extra_head}
           </head>
           <body>

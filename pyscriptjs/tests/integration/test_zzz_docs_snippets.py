@@ -1,8 +1,12 @@
 import re
+import pytest
 
 from .support import PyScriptTest, skip_worker
 
 
+@pytest.mark.skip(
+    reason="SKIPPING Docs: these should be reviewed ALL TOGETHER as we fix docs"
+)
 class TestDocsSnippets(PyScriptTest):
     @skip_worker("FIXME: js.document")
     def test_tutorials_py_click(self):

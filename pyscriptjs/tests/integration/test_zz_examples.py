@@ -11,6 +11,9 @@ from PIL import Image
 from .support import ROOT, PyScriptTest, wait_for_render, with_execution_thread
 
 
+@pytest.mark.skip(
+    reason="SKIPPING EXAMPLES: these should be moved elsewhere and updated"
+)
 @with_execution_thread(None)
 @pytest.mark.usefixtures("chdir")
 class TestExamples(PyScriptTest):

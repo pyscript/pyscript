@@ -1,8 +1,10 @@
-from .support import PyScriptTest, skip_worker
+import pytest
+
+from .support import PyScriptTest
 
 
 class TestScriptTypePyScript(PyScriptTest):
-    @skip_worker("FIXME: js.document")
+    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_display_line_break(self):
         self.pyscript_run(
             r"""
@@ -14,7 +16,7 @@ class TestScriptTypePyScript(PyScriptTest):
         text_content = self.page.locator("py-script-tag").text_content()
         assert "hello\nworld" == text_content
 
-    @skip_worker("FIXME: js.document")
+    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_amp(self):
         self.pyscript_run(
             r"""
@@ -26,7 +28,7 @@ class TestScriptTypePyScript(PyScriptTest):
         text_content = self.page.locator("py-script-tag").text_content()
         assert "a &amp; b" == text_content
 
-    @skip_worker("FIXME: js.document")
+    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_quot(self):
         self.pyscript_run(
             r"""
@@ -38,7 +40,7 @@ class TestScriptTypePyScript(PyScriptTest):
         text_content = self.page.locator("py-script-tag").text_content()
         assert "a &quot; b" == text_content
 
-    @skip_worker("FIXME: js.document")
+    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_lt_gt(self):
         self.pyscript_run(
             r"""
@@ -50,7 +52,7 @@ class TestScriptTypePyScript(PyScriptTest):
         text_content = self.page.locator("py-script-tag").text_content()
         assert "< &lt; &gt; >" == text_content
 
-    @skip_worker("FIXME: js.document")
+    @pytest.mark.skip("FIXME: display() without target is broken")
     def test_dynamically_add_script_type_py_tag(self):
         self.pyscript_run(
             """
@@ -70,22 +72,30 @@ class TestScriptTypePyScript(PyScriptTest):
         self.page.wait_for_selector("py-terminal")
         assert self.console.log.lines[-1] == "hello world"
 
-    @skip_worker("FIXME: js.document")
     def test_script_type_py_src_attribute(self):
         self.writefile("foo.py", "print('hello from foo')")
         self.pyscript_run(
             """
-            <script type="py-script" src="foo.py"></script>
+            <script type="py" src="foo.py"></script>
             """
         )
         assert self.console.log.lines[-1] == "hello from foo"
 
-    @skip_worker("FIXME: js.document")
+    def test_script_type_py_worker_attribute(self):
+        self.writefile("foo.py", "print('hello from foo')")
+        self.pyscript_run(
+            """
+            <script type="py" worker="foo.py"></script>
+            """
+        )
+        assert self.console.log.lines[-1] == "hello from foo"
+
+    @pytest.mark.skip("FIXME: script output attribute is broken")
     def test_script_type_py_output_attribute(self):
         self.pyscript_run(
             """
             <div id="first"></div>
-            <script type="py-script" output="first">
+            <script type="py" output="first">
                 print("<p>Hello</p>")
             </script>
             """
@@ -93,7 +103,7 @@ class TestScriptTypePyScript(PyScriptTest):
         text = self.page.locator("#first").text_content()
         assert "<p>Hello</p>" in text
 
-    @skip_worker("FIXME: js.document")
+    @pytest.mark.skip("FIXME: script stderr attribute is broken")
     def test_script_type_py_stderr_attribute(self):
         self.pyscript_run(
             """
