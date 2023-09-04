@@ -46,7 +46,7 @@ open an HTML by double-clicking it in your file explorer.
 
 In some situations, your browser may forbid loading remote resources like `pyscript.js` and `pyscript.css` when you open an HTML file directly. When this is the case, you may see your Python code in the text of the webpage, and the [browser developer console](https://balsamiq.com/support/faqs/browserconsole/) may show an error like *"Cross origin requests are only supported for HTTP."* The fix for this is to use a [simple local server](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Tools_and_setup/set_up_a_local_testing_server) to make your html file available to the browser.
 
-If you have python installed on your system, you can use it's basic built-in server for this purpose via the command line. Change the current working directory of your terminal or command line to the folder where your HTML file is stored. From this folder, run `python -m http.server 8080 --bind 127.0.0.1` in your terminal or command line. With the server program running, point your browser to `http://localhost:8080` to view the contents of that folder. (If a file in that folder is called `index.html`, it will be displayed by default.)
+If you have python installed on your system, you can use its basic built-in server for this purpose via the command line. Change the current working directory of your terminal or command line to the folder where your HTML file is stored. From this folder, run `python -m http.server 8080 --bind 127.0.0.1` in your terminal or command line. With the server program running, point your browser to `http://localhost:8080` to view the contents of that folder. (If a file in that folder is called `index.html`, it will be displayed by default.)
 
 ## A more complex example
 
