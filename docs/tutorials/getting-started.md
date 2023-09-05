@@ -35,9 +35,11 @@ HTML file.
 To demonstrate the above, let's start from the most popular "first application example": let's write a "Hello, world!"
 example using PyScript.
 
-Using your favorite editor, create a new file called `hello.html` and paste in the following content:
+Using your favorite editor, create a new file called `hello.html` and paste in the following content and open it in your web browser. (You can typically
+open an HTML by double-clicking it in your file explorer.):
 
 ```html
+<!DOCTYPE html>
 <html>
   <head>
       <meta charset="utf-8" />
@@ -59,10 +61,9 @@ Using your favorite editor, create a new file called `hello.html` and paste in t
 </html>
 ```
 
-and open it in your web browser. (You can typically
-open an HTML by double-clicking it in your file explorer.)
+<a href="https://fpliger.pyscriptapps.com/hello-world-minimal-example/latest/" target="_blank">or open this example on pyscript.com</a>
 
-You should see "Hello World!" printed on your page and your Javascript Console (don't worry if
+You should see "Hello World!" printed in your page and in your Javascript Console (don't worry if
 you don't know what it means yet, we'll get into that later).
 
 ## Serving your application
@@ -77,21 +78,11 @@ and the [browser developer console](https://balsamiq.com/support/faqs/browsercon
 error like *"Cross origin requests are only supported for HTTP."*
 
 In short, when browsers visualize a web page, they expect them to be served by a
-web server. Here are a few options that we can use to fix this issue:
+web server.
 
-**NOTE:** If you are an experienced developer and already know how to host and serve files on a [static]
-web server, feel free to skip to the next section.
-
-### Using a Local Server
-
-A very common fix for this is to use a [simple local server](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Tools_and_setup/set_up_a_local_testing_server) to make your html file available to the browser.
-
-
-If you have python installed on your system, you can use it's basic built-in server for this purpose via the command line.
-Change the current working directory of your terminal or command line to the folder where your HTML file is stored.
-From this folder, run `python -m http.server 8080 --bind 127.0.0.1` in your terminal or command line. With the server
-program running, point your browser to `http://localhost:8080` to view the contents of that folder. (If a file in
-that folder is called `index.html`, it will be displayed by default.)
+For the rest of this documentation, we'll be presenting examples and snippets and host them on
+pyscript.com. Users can reference the [serving your application](serving-your-application.md) at
+anytime for other options.
 
 ## A more complex example
 
