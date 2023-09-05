@@ -29,7 +29,6 @@ means an editor where to edit files, installing all dependencies needed by the a
 that the application can be build and distributed. PyScript simplify these aspects for the user, reducing these needs to
 an editor, a browser and ways to serve your application files.
 
-
 PyScript does not require any specific development environment other than a web browser (we recommend using
 [Chrome](https://www.google.com/chrome/)) and a text editor ([IDE](https://en.wikipedia.org/wiki/Integrated_development_environment))
 that authors can use to write their applications. Users are free to choose according to their preference. We recommend
@@ -46,7 +45,58 @@ simply add a reference in your application code to where your application should
 
 If you are not an experienced developer and it all sounds very complicated, don't worry, we'll get you through it in the following steps.
 
-## Basic Concepts
+### Application Development Phases
+
+Just like with any Web Application, the development lifecycle of an application in 2 phases:
+
+* **development:** this is where authors write their files and application logic
+* **deployment:** in order to open your application in a browser, your application files need to be
+"uploaded" to a web server that is able to share your application with the right format when
+it's requested by a browser. This is also deferret to as "serving" web page.
+
+Before we get into the `development` topic and have some fine writing our first applications, let's talk about
+how to serve a pyscript application.
+
+## Serving your application
+
+
+While browsers are also capable of opening files from the users local system, it is not recommended because,
+for security reasons, browsers will forbid and disable many features when accessing files this way.
+(In this is the case, you may see your Python code in the text of the webpage, and the
+[browser developer console](https://balsamiq.com/support/faqs/browserconsole/) may show an
+error like *"Cross origin requests are only supported for HTTP."*)
+
+In short, when browsers visualize a web page, they expect them to be served by a
+web server.
+
+### Serving your application from your computer
+
+There are many ways you can initiate a local web server to serve files. We'll only cover one of them,
+using `Python`.
+
+Assuming you have `Python` installed in your system, `cd` in your application folder and run
+the following python command:
+
+```python
+python3 -m http.server
+```
+
+### Serving your application from a web server
+
+If there are many ways to serve a web application from your computer, there are many more
+options on how to serve your application from a hosting service on the internet. We will not cover
+this in detail and only suggest users to look into:
+
+* pyscript.com as it's a free service and makes the process of authoring and serving an
+application almost transparent.
+* github pages as it's a free service and Github is a very popular service adopted by developers.
+
+
+For the rest of this documentation, we'll be presenting examples and snippets and host them on
+pyscript.com.
+
+
+## Basic Application Concepts
 
 While we'll cover PyScript concepts and APIs more thoroughly in the PyScript Concepts and PyScript User Guide sections, it's important
 to understand the basics.
@@ -55,11 +105,11 @@ PyScript is a Software Platform that enables users to write Python Applications 
 friendly interface. For this reason, it aims to have a small and intuitive interface that triest to enable users while staying out of
 the way. In fact, there are 3 main parts of a PyScript application:
 
-1. The application skeleton and interface. Usually this is managed in a `html` file and is also where we specify that `PyScript`` needs
+1. **Presentation:** Usually this is managed in a `html` file and is also where we specify that `PyScript`` needs
 to be loaded into the application.
-2. The application configuration (for instance, dependencies, assets to be downloaded, etc...). PyScript supports configuration files written
-in TOML or JSON formats
-3. The application code/logic. These are typically Python files that host the application code. PyScript allows users to run these
+2. **Configuration:** where users can define their dependencies, assets to be downloaded, etc. PyScript configuration
+files in `TOML` or `JSON` formats
+3. **Code Logic:** These are typically Python files that host the application code. PyScript allows users to run these
 through special `html` tags (such as `<script type="py">` or `<py-script>`) properly placed in their `html` file.
 
 The `html` file acts as the entry point and center of gravity of an application.
@@ -132,6 +182,12 @@ When you open application in your browser, you should see `Hello, World!` printe
 
 Easy, right?
 
+### Using files vs. inline code
+
+In the example above we wrote our Python code for the application logic in a separate file called `main.py`.
+While this is a best practive and recommended, `PyScript` also allows users to write their code in the
+`html` file, within the `pyscript` tag. In this case, if we rewrote the same example in a single file using
+this feature, we'd have the following:
 
 ```html title="hello_world.py"
 <!DOCTYPE html>
@@ -144,36 +200,36 @@ Easy, right?
       <script
           type="module"
           src="https://esm.sh/@pyscript/core@latest/core.js"
-      ></script> <!-- (1)-->
+      ></script> <!-- (1) Load PyScript -->
   </head>
   <body>
-    <py-script>  <!-- (2)-->
-        # this block is normal python
-        from pyscript import display
-        print('Hello, World!') # some more
-        display('Hello, World!')
-    </py-script>
+    <!-- (2) In this case were using the default config, so don't need to specify a `<py-config>` tag -->
+
+    <!-- (3) run the code that is defined within the <script type="py"> tag-->
+    <script type="py" src="main.py">
+      from pyscript import display # (1)
+      print('Hello, World!') # print "Hello, World!" to the console
+      display('Hello, World!') # displays "Hello, World!" in the main page
+    </script>
   </body>
 </html>
 ```
+3.  🐍 Noticed anything different? Yes, we are passing the python code within the tag itself instead
+of a separate `main.py` file.
 
-## Serving your application
+If you noticed, above we are using `<script type="...">` instead of `<py-script>`. That is another way you
+can run code logic in PyScript. The reason we are using `script` in this case is that the `<py-script>`
+does not support inline code due to how the browser treats one vs. the other. For all use cases where
+the code is defined in a separate file, both tags are equivalent
 
-Now what we have written our first application, it's important talk about how we can access it.
+**⚠️ Important:** While very convenient, we recommend always defining your code in a separate
+`.py` file as a best practice for the following reasons:
 
-In the example above, we were able to visualize it by simply opening the local file from our
-system directly with the browser. While that's a very simple and fast way to open our application,
-it is not very recommended because browsers will forbid many features when accessing files this way,
-for security reasons. When this is the case, you may see your Python code in the text of the webpage,
-and the [browser developer console](https://balsamiq.com/support/faqs/browserconsole/) may show an
-error like *"Cross origin requests are only supported for HTTP."*
+* editors don't have good support for inline code
+* it's really hard to test, lint or QA code define within tags
+* code can be easily exported
+* both your `html` and `python` code will be easier to read and better organized
 
-In short, when browsers visualize a web page, they expect them to be served by a
-web server.
-
-For the rest of this documentation, we'll be presenting examples and snippets and host them on
-pyscript.com. Users can reference the [serving your application](serving-your-application.md) at
-anytime for other options.
 
 ## A more complex example
 
