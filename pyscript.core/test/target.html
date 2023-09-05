@@ -8,27 +8,27 @@
         <script type="module" src="../core.js"></script>
     </head>
     <body>
-        <py-script id="first" style="background: red">
+        <py-script id="first">
             import pyscript
             from pyscript import display
             display("Hello", append=True) # Appears in a DIV that is a child of this py-script tag
             pyscript.display("same", append=True) # Appears in another DIV that is a child of this py-script tag
         </py-script>
-        <py-script id="second" style="background: green">
+        <py-script id="second">
             # Appears in a DIV that is a child of this py-script tag, no need to re-import
             display("World", append=True)
         </py-script>
-        <py-script id="third" style="background: blue">
+        <py-script id="third">
             # Appears in a DIV that is a child of this py-script tag
             # Re-importing has no effect in the essential behavior
             from pyscript import display
             display("A part", append=True)
         </py-script>
-        <py-script id="fourth" style="background: purple">
+        <py-script id="fourth">
             # Use the 'target' element to specify the ID of an element in the DOM to write the content to
             display("!", target="first", append=True)
         </py-script>
-        <py-script worker style="background: yellow">\
+        <py-script worker>\
             # Appears in a DIV that is a child of this py-script tag, even with the code running in a worker
             from pyscript import display
             display("worker", append=True)
