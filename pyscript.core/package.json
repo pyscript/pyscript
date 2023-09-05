@@ -33,7 +33,7 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.2.0"
+        "polyscript": "^0.2.5"
     },
     "devDependencies": {
         "@rollup/plugin-node-resolve": "^15.2.1",
