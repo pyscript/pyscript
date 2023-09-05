@@ -9,16 +9,26 @@ Luckily, PyScript makes many of these steps much easier.
 
 ## Development setup
 
-PyScript does not require any specific development environment other
-than a web browser (we recommend using [Chrome](https://www.google.com/chrome/)) and a text editor, even though using your [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment) of choice might be convenient.
+Almost all software platform like PyScript require a development environment the user needs to author their applications. That
+usually means picking an editor of choice, installing all dependencies needed by the application and setting everything up so
+that the application can be build and distributed. PyScript simplify these aspects for the user, reducing these to a bare minimum.
 
-If you're using [VSCode](https://code.visualstudio.com/), the
+**tldr;** The easiest way to get the a full PyScript development setup on your browser, in seconds, is to use [pyscript.com](pyscript.com).
+It is a free service that help users to create new projects from pre-created templates that already have all the project structure
+created, allowing user to edit, preview and deploy their apps with just a link, all in the same place.
+
+
+## Editors and Development Environment
+
+PyScript does not require any specific development environment other than a web browser (we recommend using
+[Chrome](https://www.google.com/chrome/)) and a text editor ([IDE](https://en.wikipedia.org/wiki/Integrated_development_environment))
+that authors can use to write their applications. Users are free to choose according to their preference and, as mentioned above,
+we recommend picking you faverite browser and IDE, or using pyscript.com (that includes an editor in the browser itself).
+
+**Note:** If you're using [VSCode](https://code.visualstudio.com/), the
 [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
 can be used to reload the page as you edit the HTML file.
 
-**NOTE:** The easier way to get a development setup for PyScript is to use [pyscript.com](pyscript.com). It is a free service that allows
-users to create new projects from pre-created templates that already have all the project structure created and allows users
-to edit their apps, preview it and deploy with just a link, all in the same place.
 
 ## Installation
 
