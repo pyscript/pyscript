@@ -46,7 +46,8 @@ PyScript is a Software Platform that enables users to write Python Applications 
 friendly interface. For this reason, it aims to have a small and intuitive interface that triest to enable users while staying out of
 the way. In fact, there are 3 main parts of a PyScript application:
 
-1. The application skeleton and interface. Usually this is managed in a `html` file.
+1. The application skeleton and interface. Usually this is managed in a `html` file and is also where we specify that `PyScript`` needs
+to be loaded into the application.
 2. The application configuration (for instance, dependencies, assets to be downloaded, etc...). PyScript supports configuration files written
 in TOML or JSON formats
 3. The application code/logic. These are typically Python files that host the application code. PyScript allows users to run these
@@ -55,17 +56,26 @@ through special `html` tags (such as `<script type="py">` or `<py-script>`) prop
 The `html` file acts as the entry point and center of gravity of an application.
 
 
+
+
 ## Writing your first PyScript application
 
 As we hinted earlier, writing a PyScript application means writing a web application that can run code writted in Python (and other languages)
-on the web. This means that the way we create PyScript applications starts in a very similar way to how we write web applications: from an
-HTML file.
+on the web. This means that creating PyScript applications starts in a very similar way to web applications: from an `html` file.
 
-To demonstrate the above, let's start from the most popular "first application example": let's write a "Hello, world!"
-example using PyScript.
+Let's start from the most basic and popular "first application example" possible, a "Hello, world!" application! In this case we will:
 
-Using your favorite editor, create a new file called `hello.html` and paste in the following content and open it in your web browser. (You can typically
-open an HTML by double-clicking it in your file explorer.):
+1. Include all the application presentation, logic and configuration in one single file
+2. Load `pyscript` in our application by using: `<script type="module" src="https://esm.sh/@pyscript/core@latest/core.js"></script>`
+3. Omit a configuration for our projects and use the default because we won't need to install any additional dependencies.
+4. Add an entrypoint for our Python code, that will be executed when the page loads.
+
+**NOTE:** We highly recommend users to reproduce and interact with the examples below on their own on pyscript.com or with their favorite IDE.
+
+For this first example, create a new file called `hello.html` and paste in the following content and open it in your web browser.
+
+**NOTE:** If you are using pyscript.com, it should have everything need in a single place (the editor view), if you are using your favorite
+editor on your computer, you can typically open an HTML by double-clicking it in your file explorer):
 
 ```html title="hello_world.py"
 <!DOCTYPE html>
@@ -78,10 +88,55 @@ open an HTML by double-clicking it in your file explorer.):
       <script
           type="module"
           src="https://esm.sh/@pyscript/core@latest/core.js"
-      ></script>
+      ></script> <!-- (1)-->
   </head>
-  <body> <!-- (1)-->
-    <py-script>
+  <body>
+    <!-- We don't need to load a config and keep the default since we don't need any additional configuration  -->  <!-- (2)-->
+    <py-script src="main.py"></py-script>  <!-- (3)-->
+  </body>
+</html>
+```
+
+and create a new `main.py` file with the following code:
+
+```python title="main.py"
+
+# this block is normal python
+from pyscript import display
+print('Hello, World!') # some more
+display('Hello, World!')
+```
+
+
+1.  :man_raising_hand: I'm a code annotation! I can contain `code`, __formatted
+    text__, images, ... basically anything that can be written in Markdown.
+
+2.  :man_raising_hand: I'm a code annotation! I can contain `code`, __formatted
+    text__, images, ... basically anything that can be written in Markdown.
+3.  well... just something
+
+[open this example on pyscript.com](https://fpliger.pyscriptapps.com/hello-world-minimal-example/latest/){ .md-button }
+<a href="https://fpliger.pyscriptapps.com/hello-world-minimal-example/latest/" target="_blank">or open this example on pyscript.com</a>
+
+You should see "Hello World!" printed in your page and in your Javascript Console (don't worry if
+you don't know what it means yet, we'll get into that later).
+
+
+```html title="hello_world.py"
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+      <title>My First PyScript APP: Hello World!</title>
+      <script
+          type="module"
+          src="https://esm.sh/@pyscript/core@latest/core.js"
+      ></script> <!-- (1)-->
+  </head>
+  <body>
+    <py-script>  <!-- (2)-->
         # this block is normal python
         from pyscript import display
         print('Hello, World!') # some more
@@ -90,15 +145,6 @@ open an HTML by double-clicking it in your file explorer.):
   </body>
 </html>
 ```
-
-1.  :man_raising_hand: I'm a code annotation! I can contain `code`, __formatted
-    text__, images, ... basically anything that can be written in Markdown.
-
-[open this example on pyscript.com](https://fpliger.pyscriptapps.com/hello-world-minimal-example/latest/){ .md-button }
-<a href="https://fpliger.pyscriptapps.com/hello-world-minimal-example/latest/" target="_blank">or open this example on pyscript.com</a>
-
-You should see "Hello World!" printed in your page and in your Javascript Console (don't worry if
-you don't know what it means yet, we'll get into that later).
 
 ## Serving your application
 
