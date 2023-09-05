@@ -1,4 +1,3 @@
-<base target="_blank">
 # Getting started with PyScript
 
 To start developing a PyScript, like with most applications development, you need a **development environment** where you
@@ -85,6 +84,8 @@ with their favorite Development Environment setup.
 
 First, create a new file called `hello.html` and paste in the following content and open it in your web browser.
 
+**Hint:** In the example below, click on the ➕ icon to read hints about specific sections in the code examples
+
 ```html title="hello_world.py"
 <!DOCTYPE html>
 <html>
@@ -96,38 +97,40 @@ First, create a new file called `hello.html` and paste in the following content 
       <script
           type="module"
           src="https://esm.sh/@pyscript/core@latest/core.js"
-      ></script> <!-- (1)-->
+      ></script> <!-- (1) Load PyScript -->
   </head>
   <body>
-    <!-- We don't need to load a config and keep the default since we don't need any additional configuration  -->  <!-- (2)-->
-    <py-script src="main.py"></py-script>  <!-- (3)-->
+    <!-- (2) In this case were using the default config, so don't need to specify a `<py-config>` tag -->
+
+    <!-- (3) run the code in the `main.py` file -->
+    <py-script src="main.py"></py-script>
   </body>
 </html>
 ```
 
+1.  ⚡️ we use a `<script>` tag to load `PyScript` in the `head` of our `HTML` document so it can
+    load as soon as possible
+2.  if needed to install any packages we could load a config in this point, so that any python code
+    can have their dependencies installed before they run
+3.  🐍 the code in `main.py` will run inside the default `Python` interpreter as soon as it's ready
+
 and create a new `main.py` file with the following code:
 
 ```python title="main.py"
-
-# this block is normal python
-from pyscript import display
-print('Hello, World!') # some more
-display('Hello, World!')
+from pyscript import display # (1)
+print('Hello, World!') # print "Hello, World!" to the console
+display('Hello, World!') # displays "Hello, World!" in the main page
 ```
 
+1.  pyscript provides the `display` funcition that can be used to display any variable on the page,
+    while the Python `print` statement will automatically print objects on the browser `console`.
 
-1.  :man_raising_hand: I'm a code annotation! I can contain `code`, __formatted
-    text__, images, ... basically anything that can be written in Markdown.
+<a href="https://fpliger.pyscriptapps.com/hello-world-minimal-example/latest/" class="md-button" target="_blank">open this example on pyscript.com</a>
 
-2.  :man_raising_hand: I'm a code annotation! I can contain `code`, __formatted
-    text__, images, ... basically anything that can be written in Markdown.
-3.  well... just something
+When you open application in your browser, you should see `Hello, World!` printed in your page and in your Javascript Console
+(if you are new to web development and don't know what it means yet, don't worry,t, we'll get into that later).
 
-[open this example on pyscript.com](https://fpliger.pyscriptapps.com/hello-world-minimal-example/latest/){ .md-button }
-<a href="https://fpliger.pyscriptapps.com/hello-world-minimal-example/latest/" target="_blank">or open this example on pyscript.com</a>
-
-You should see "Hello World!" printed in your page and in your Javascript Console (don't worry if
-you don't know what it means yet, we'll get into that later).
+Easy, right?
 
 
 ```html title="hello_world.py"
