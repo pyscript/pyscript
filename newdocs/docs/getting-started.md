@@ -136,7 +136,7 @@ First, create a new file called `hello.html` and paste in the following content 
 
 **Hint:** In the example below, click on the ➕ icon to read hints about specific sections in the code examples
 
-```html title="hello_world.py"
+```html title="hello_world.html"
 <!DOCTYPE html>
 <html>
   <head>
@@ -144,10 +144,7 @@ First, create a new file called `hello.html` and paste in the following content 
       <meta name="viewport" content="width=device-width,initial-scale=1" />
 
       <title>My First PyScript APP: Hello World!</title>
-      <script
-          type="module"
-          src="https://esm.sh/@pyscript/core@latest/core.js"
-      ></script> <!-- (1) Load PyScript -->
+      <script type="module" src="https://esm.sh/@pyscript/core@latest/core.js"></script> <!-- (1) Load PyScript -->
   </head>
   <body>
     <!-- (2) In this case were using the default config, so don't need to specify a `<py-config>` tag -->
@@ -197,15 +194,12 @@ this feature, we'd have the following:
       <meta name="viewport" content="width=device-width,initial-scale=1" />
 
       <title>My First PyScript APP: Hello World!</title>
-      <script
-          type="module"
-          src="https://esm.sh/@pyscript/core@latest/core.js"
-      ></script> <!-- (1) Load PyScript -->
+      <script type="module" src="https://esm.sh/@pyscript/core@latest/core.js"></script> <!-- Load PyScript -->
   </head>
   <body>
-    <!-- (2) In this case were using the default config, so don't need to specify a `<py-config>` tag -->
+    <!-- In this case were using the default config, so don't need to specify a `<py-config>` tag -->
 
-    <!-- (3) run the code that is defined within the <script type="py"> tag-->
+    <!-- (1) run the code that is defined within the <script type="py"> tag-->
     <script type="py" src="main.py">
       from pyscript import display # (1)
       print('Hello, World!') # print "Hello, World!" to the console
@@ -214,8 +208,10 @@ this feature, we'd have the following:
   </body>
 </html>
 ```
-3.  🐍 Noticed anything different? Yes, we are passing the python code within the tag itself instead
+1.  🐍 Noticed anything different? Yes, we are passing the python code within the tag itself instead
 of a separate `main.py` file.
+
+<a href="https://fpliger.pyscriptapps.com/hello-world-minimal-example/latest/" class="md-button" target="_blank">open this example on pyscript.com</a>
 
 If you noticed, above we are using `<script type="...">` instead of `<py-script>`. That is another way you
 can run code logic in PyScript. The reason we are using `script` in this case is that the `<py-script>`
@@ -233,205 +229,29 @@ the code is defined in a separate file, both tags are equivalent
 
 ## A more complex example
 
-Now that we know how you can create a simple 'Hello, World!' example, let's see a more complex example.
-This example will use the Demo created by [Cheuk Ting Ho](https://github.com/Cheukting). In this example, we will use more features from PyScript.
+Now that we know how you can create a simple 'Hello, World!' example, let's use everything
+we've learned above  see a more complex example.
 
 ### Setting up the base index file
 
-Let's create a new file called `index.html` and add the following content:
+Just like before, let's create a new `html` file that will contain our application template
+and interface. We'll call this file `index.html` and add the following content:
 
-```html
+```html title="index.html"
+<!DOCTYPE html>
 <html>
   <head>
-    <title>Ice Cream Picker</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+      <title>Ice Cream Picker</title>
+      <script type="module" src="https://esm.sh/@pyscript/core@latest/core.js"></script> <!-- (1) Load PyScript -->
   </head>
   <body>
+    <py-config src="pyscript.toml"></py-config>
 
-  </body>
-</html>
-```
-
-In this first step, we have created the index file, imported `pyscript.css` and `pyscript.js`. We are ready to start adding the elements we need for our application.
-
-### Importing the needed libraries
-
-For this example, we will need to install `pandas` and `matplotlib`. We can install libraries using the `<py-config>` tag so we can import them later. Please refer to the [`<py-config>`](../reference/elements/py-config.md) documentation for more information.
-
-```html
-<html>
-  <head>
-    <title>Ice Cream Picker</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-  </head>
-  <body>
-
-    <py-config>
-      packages = ["matplotlib", "pandas"]
-    </py-config>
-
-  </body>
-</html>
-```
-
-### Importing the data and exploring
-
-Now that we have installed the needed libraries, we can import and explore the data. In this step, we need to create a `<py-script>` tag to import our dependencies, read the data with pandas and then use `py-repl` to explore the data.
-
-You may want to read the [`<py-script>`](../reference/elements/py-script.md) and [`<py-repl>`](../reference/elements/py-repl.md) documentation for more information about these elements.
-
-
-```html
-<html>
-  <head>
-    <title>Ice Cream Picker</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-  </head>
-  <body>
-
-    <py-config>
-      packages = ["matplotlib", "pandas"]
-    </py-config>
-
-    <py-script>
-      import pandas as pd
-
-      from pyodide.http import open_url
-
-      url = (
-          "https://raw.githubusercontent.com/Cheukting/pyscript-ice-cream/main/bj-products.csv"
-      )
-      ice_data = pd.read_csv(open_url(url))
-    </py-script>
-
-    <py-repl>
-      ice_data
-    </py-repl>
-  </body>
-</html>
-```
-
-Note that we are adding `ice_data` to `py-repl` to pre-populate the REPL with this variable, so you don't have to type it yourself.
-
-### Creating the plot
-
-Now that we have the data, we can create the plot. We will use the `matplotlib` library to make the plot. We will use the `display` API to display the plot on the page. You may want to read the [`display`](../reference/API/display.md) documentation for more information.
-
-```html
-<html>
-  <head>
-    <title>Ice Cream Picker</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-  </head>
-  <body>
-
-    <py-config>
-      packages = ["matplotlib", "pandas"]
-    </py-config>
-
-    <py-script>
-      import pandas as pd
-      import matplotlib.pyplot as plt
-
-      from pyodide.http import open_url
-
-      url = (
-          "https://raw.githubusercontent.com/Cheukting/pyscript-ice-cream/main/bj-products.csv"
-      )
-      ice_data = pd.read_csv(open_url(url))
-
-      def plot(data):
-        plt.rcParams["figure.figsize"] = (22,20)
-        fig, ax = plt.subplots()
-        bars = ax.barh(data["name"], data["rating"], height=0.7)
-        ax.bar_label(bars)
-        plt.title("Rating of ice cream flavours of your choice")
-        display(fig, target="graph-area", append=False)
-
-      plot(ice_data)
-    </py-script>
-
-    <py-repl>
-      ice_data
-    </py-repl>
-
-    <div id="graph-area"></div>
-  </body>
-</html>
-```
-
-### Select specific flavours
-
-Now that we have a way to explore the data using `py-repl` and a way to create the plot using all of the data, it's time for us to add a way to select specific flavours.
-
-```html
-<html>
-  <head>
-    <title>Ice Cream Picker</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-  </head>
-  <body>
-
-    <py-config>
-      packages = ["matplotlib", "pandas"]
-    </py-config>
-
-    <py-script>
-      import js
-      import pandas as pd
-      import matplotlib.pyplot as plt
-
-      from pyodide.http import open_url
-      from pyodide.ffi import create_proxy
-
-      url = (
-          "https://raw.githubusercontent.com/Cheukting/pyscript-ice-cream/main/bj-products.csv"
-      )
-      ice_data = pd.read_csv(open_url(url))
-
-      current_selected = []
-      flavour_elements = js.document.getElementsByName("flavour")
-
-      def plot(data):
-          plt.rcParams["figure.figsize"] = (22,20)
-          fig, ax = plt.subplots()
-          bars = ax.barh(data["name"], data["rating"], height=0.7)
-          ax.bar_label(bars)
-          plt.title("Rating of ice cream flavours of your choice")
-          display(fig, target="graph-area", append=False)
-
-      def select_flavour(event):
-          for ele in flavour_elements:
-              if ele.checked:
-                  current_selected = ele.value
-                  break
-          if current_selected == "ALL":
-              plot(ice_data)
-          else:
-              filter = ice_data.apply(lambda x: ele.value in x["ingredients"], axis=1)
-              plot(ice_data[filter])
-
-      ele_proxy = create_proxy(select_flavour)
-
-      for ele in flavour_elements:
-          if ele.value == "ALL":
-            ele.checked = True
-            current_selected = ele.value
-          ele.addEventListener("change", ele_proxy)
-
-      plot(ice_data)
-
-    </py-script>
+    <!-- (3) run the code in the `main.py` file -->
+    <py-script src="main.py"></py-script>
 
     <div id="input" style="margin: 20px;">
       Select your 🍨 flavour: <br/>
@@ -449,11 +269,81 @@ Now that we have a way to explore the data using `py-repl` and a way to create t
       <label for="peanut"> Peanut 🥜</label>
     </div>
 
-    <py-repl>
-      ice_data
-    </py-repl>
-
     <div id="graph-area"></div>
   </body>
 </html>
 ```
+
+This creates a solid base for our application and we are ready to start adding the elements we need for our application.
+
+### Importing the needed libraries
+
+For this example, we will need to install `pandas` and `matplotlib`. We can install libraries using the `<py-config>` tag
+we already added to the `index.html` file above. All we have to do now is to create the `pyscript.toml` file with the
+right dependencies:
+
+```toml title="pyscript.toml"
+packages = ["matplotlib", "pandas"]
+```
+
+For more information on the configuration files, please refer to the [`<py-config>` documentation](../reference/elements/py-config.md)
+
+### Importing and plotting the data
+
+Now that we have installed the needed libraries, we can import and explore the data. In this step, we need
+to create a `<py-script>` tag to import our dependencies, read the data with pandas and then use `py-repl`
+to explore the data.
+
+You may want to read the [`<py-script>`](../reference/elements/py-script.md) documentation for more information about it.
+
+
+```python title="main.py"
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from pyodide.http import open_url
+from pyodide.ffi import create_proxy
+from pyscript import display
+import js
+
+
+url = (
+    "https://raw.githubusercontent.com/Cheukting/pyscript-ice-cream/main/bj-products.csv"
+)
+ice_data = pd.read_csv(open_url(url))
+
+current_selected = []
+flavour_elements = js.document.getElementsByName("flavour")
+
+def plot(data):
+    plt.rcParams["figure.figsize"] = (22,20)
+    fig, ax = plt.subplots()
+    bars = ax.barh(data["name"], data["rating"], height=0.7)
+    ax.bar_label(bars)
+    plt.title("Rating of ice cream flavours of your choice")
+    display(fig, target="graph-area", append=False)
+
+def select_flavour(event):
+    for ele in flavour_elements:
+        if ele.checked:
+            current_selected = ele.value
+            break
+    if current_selected == "ALL":
+        plot(ice_data)
+    else:
+        filter = ice_data.apply(lambda x: ele.value in x["ingredients"], axis=1)
+        plot(ice_data[filter])
+
+ele_proxy = create_proxy(select_flavour)
+
+for ele in flavour_elements:
+    if ele.value == "ALL":
+      ele.checked = True
+      current_selected = ele.value
+    ele.addEventListener("change", ele_proxy)
+
+plot(ice_data)
+
+```
+
+<a href="https://fpliger.pyscriptapps.com/hello-world-minimal-example/latest/" class="md-button" target="_blank">open this example on pyscript.com</a>
