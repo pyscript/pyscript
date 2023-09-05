@@ -9,13 +9,14 @@ Luckily, PyScript makes many of these steps much easier.
 
 ## Development setup
 
-Almost all software platform like PyScript require a development environment the user needs to author their applications. That
-usually means picking an editor of choice, installing all dependencies needed by the application and setting everything up so
-that the application can be build and distributed. PyScript simplify these aspects for the user, reducing these to a bare minimum.
+Like most software platforms, PyScript requires a development environment where the user can write their applications. That
+means an editor where to edit files, installing all dependencies needed by the application and setting everything up so
+that the application can be build and distributed. PyScript simplify these aspects for the user, reducing these needs to
+an editor, a browser and ways to serve your application files.
 
-**tldr;** The easiest way to get the a full PyScript development setup on your browser, in seconds, is to use [pyscript.com](pyscript.com).
-It is a free service that help users to create new projects from pre-created templates that already have all the project structure
-created, allowing user to edit, preview and deploy their apps with just a link, all in the same place.
+**tldr;** The easiest way to get the a full PyScript development setup in seconds, is to use [pyscript.com](pyscript.com) on your browser.
+It is a free service that helps users create new projects from pre-created templates already structured using best practices
+allowing user to edit, preview and deploy their apps with just a link, all in the same place.
 
 
 ## Editors and Development Environment
@@ -54,8 +55,6 @@ in TOML or JSON formats
 through special `html` tags (such as `<script type="py">` or `<py-script>`) properly placed in their `html` file.
 
 The `html` file acts as the entry point and center of gravity of an application.
-
-
 
 
 ## Writing your first PyScript application
