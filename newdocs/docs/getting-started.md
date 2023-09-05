@@ -7,29 +7,38 @@ your application.
 
 Luckily, PyScript makes many of these steps much easier.
 
-## Development setup
+## Requirements
 
-Like most software platforms, PyScript requires a development environment where the user can write their applications. That
+To visualize a PyScript application, users only need a modern web browser.
+
+To distribute a PyScript application, the only requirement is for the application to be hosted somewhere a browser can reach.
+
+To create a PyScript application, users need a Development Environment, often also called [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment)
+where they can write their code.
+
+
+**Note:** The easiest way to get the a full PyScript development environment and application hosting setup in seconds,
+is to use [pyscript.com](pyscript.com) on your browser. It is a free service that helps users create new projects from
+pre-created templates already structured using best practices allowing user to edit, preview and deploy their apps with
+just a link, all in the same place.
+
+
+### Development Environment
+
+Like most software platforms, PyScript requires a development environment where the user can write their applications. This
 means an editor where to edit files, installing all dependencies needed by the application and setting everything up so
 that the application can be build and distributed. PyScript simplify these aspects for the user, reducing these needs to
 an editor, a browser and ways to serve your application files.
 
-**tldr;** The easiest way to get the a full PyScript development setup in seconds, is to use [pyscript.com](pyscript.com) on your browser.
-It is a free service that helps users create new projects from pre-created templates already structured using best practices
-allowing user to edit, preview and deploy their apps with just a link, all in the same place.
-
-
-## Editors and Development Environment
 
 PyScript does not require any specific development environment other than a web browser (we recommend using
 [Chrome](https://www.google.com/chrome/)) and a text editor ([IDE](https://en.wikipedia.org/wiki/Integrated_development_environment))
-that authors can use to write their applications. Users are free to choose according to their preference and, as mentioned above,
-we recommend picking you faverite browser and IDE, or using pyscript.com (that includes an editor in the browser itself).
+that authors can use to write their applications. Users are free to choose according to their preference. We recommend
+picking youR favorite browser and IDE, or using pyscript.com (that includes an editor in the browser itself).
 
 **Note:** If you're using [VSCode](https://code.visualstudio.com/), the
 [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
 can be used to reload the page as you edit the HTML file.
-
 
 ## Installation
 
@@ -59,22 +68,22 @@ The `html` file acts as the entry point and center of gravity of an application.
 
 ## Writing your first PyScript application
 
-As we hinted earlier, writing a PyScript application means writing a web application that can run code writted in Python (and other languages)
-on the web. This means that creating PyScript applications starts in a very similar way to web applications: from an `html` file.
+As we hinted earlier, writing a PyScript application means writing a web application that
+can run code writted in Python (and other languages) on the web. This means that creating
+PyScript applications starts in a very similar way to web applications: from an `html` file.
 
-Let's start from the most basic and popular "first application example" possible, a "Hello, world!" application! In this case we will:
+Let's start from the most basic and popular "first application example" possible, a
+"Hello, world!" application! In this case we will:
 
-1. Include all the application presentation, logic and configuration in one single file
+1. Write an `html` file that is the main entry point for our application.
 2. Load `pyscript` in our application by using: `<script type="module" src="https://esm.sh/@pyscript/core@latest/core.js"></script>`
-3. Omit a configuration for our projects and use the default because we won't need to install any additional dependencies.
-4. Add an entrypoint for our Python code, that will be executed when the page loads.
+3. Skip a configuration file for our projects and use the default since we won't need to install any additional dependencies.
+4. Add a `<py-script>` tag to use as entrypoint for our Python code, that will be executed when the page loads.
 
-**NOTE:** We highly recommend users to reproduce and interact with the examples below on their own on pyscript.com or with their favorite IDE.
+**NOTE:** We highly recommend users to reproduce and interact with the examples below on their own on pyscript.com or
+with their favorite Development Environment setup.
 
-For this first example, create a new file called `hello.html` and paste in the following content and open it in your web browser.
-
-**NOTE:** If you are using pyscript.com, it should have everything need in a single place (the editor view), if you are using your favorite
-editor on your computer, you can typically open an HTML by double-clicking it in your file explorer):
+First, create a new file called `hello.html` and paste in the following content and open it in your web browser.
 
 ```html title="hello_world.py"
 <!DOCTYPE html>
