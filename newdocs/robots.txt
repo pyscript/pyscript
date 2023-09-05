@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /review/
+
+Sitemap: https://docs.pyscript.net/sitemap.xml
+Host: docs.pyscript.net

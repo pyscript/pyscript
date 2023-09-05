@@ -1,0 +1,7 @@
+channels:
+    - conda-forge
+    - defaults
+dependencies:
+    - python=3.9
+    - pip=20.2.2
+    - mkdocs-material=9.2.6
