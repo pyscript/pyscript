@@ -141,3 +141,6 @@ coverage/
 
 # junit xml for test results
 test_results
+
+# @pyscript/core npm artifacts
+pyscript.core/core.*
