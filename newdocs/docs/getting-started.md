@@ -37,6 +37,24 @@ simply add a reference in your application code to where your application should
 
 If you are not an experienced developer and it all sounds very complicated, don't worry, we'll get you through it in the following steps.
 
+## Basic Concepts
+
+While we'll cover PyScript concepts and APIs more thoroughly in the PyScript Concepts and PyScript User Guide sections, it's important
+to understand the basics.
+
+PyScript is a Software Platform that enables users to write Python Applications that run in the Browser, with a simple and user
+friendly interface. For this reason, it aims to have a small and intuitive interface that triest to enable users while staying out of
+the way. In fact, there are 3 main parts of a PyScript application:
+
+1. The application skeleton and interface. Usually this is managed in a `html` file.
+2. The application configuration (for instance, dependencies, assets to be downloaded, etc...). PyScript supports configuration files written
+in TOML or JSON formats
+3. The application code/logic. These are typically Python files that host the application code. PyScript allows users to run these
+through special `html` tags (such as `<script type="py">` or `<py-script>`) properly placed in their `html` file.
+
+The `html` file acts as the entry point and center of gravity of an application.
+
+
 ## Writing your first PyScript application
 
 As we hinted earlier, writing a PyScript application means writing a web application that can run code writted in Python (and other languages)
