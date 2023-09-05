@@ -36,7 +36,7 @@ else {
 if (/^https?:\/\//.test(config)) config = await fetch(config).then(getText);
 
 // generic helper to disambiguate between custom element and script
-const isScript = (element) => element.tagName === "SCRIPT";
+const isScript = ({ tagName }) => tagName === "SCRIPT";
 
 // helper for all script[type="py"] out there
 const before = (script) => {
@@ -91,14 +91,12 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
     }
 
     // enrich the Python env with some JS utility for main
-    defineProperty(globalThis, "_pyscript", {
-        value: {
-            PyWorker,
-            get id() {
-                return isScript(currentElement)
-                    ? currentElement.target.id
-                    : currentElement.id;
-            },
+    interpreter.registerJsModule("_pyscript_js", {
+        PyWorker,
+        get target() {
+            return isScript(currentElement)
+                ? currentElement.target.id
+                : currentElement.id;
         },
     });
 
