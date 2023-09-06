@@ -3,25 +3,21 @@
     "version": "0.1.7",
     "type": "module",
     "description": "PyScript",
-    "main": "./core.js",
-    "module": "./core.js",
-    "unpkg": "./core.js",
+    "module": "./dist/core.js",
+    "unpkg": "./dist/core.js",
     "exports": {
         ".": {
-            "types": "./types/esm/core.d.ts",
-            "import": "./esm/core.js"
-        },
-        "./js": {
-            "import": "./core.js"
+            "types": "./types/core.d.ts",
+            "import": "./src/core.js"
         },
         "./css": {
-            "import": "./core.css"
+            "import": "./dist/core.css"
         },
         "./package.json": "./package.json"
     },
     "scripts": {
         "server": "npx static-handler --cors --coep --coop --corp .",
-        "build": "node rollup/stdlib.cjs && rollup --config rollup/core.config.js && rollup --config rollup/core-css.config.js && npm run ts",
+        "build": "node rollup/stdlib.cjs && node rollup/plugins.cjs && rollup --config rollup/core.config.js && npm run ts",
         "ts": "tsc -p ."
     },
     "keywords": [

@@ -144,3 +144,4 @@ test_results
 
 # @pyscript/core npm artifacts
 pyscript.core/core.*
+pyscript.core/dist
