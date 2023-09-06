@@ -73,6 +73,7 @@ instance/
 # Sphinx documentation
 docs/_build/
 docs/_env/
+newdocs/_env/
 
 # PyBuilder
 target/
