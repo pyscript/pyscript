@@ -215,10 +215,11 @@ class PyScriptElement extends HTMLElement {
     async connectedCallback() {
         if (!this.executed) {
             this.executed = true;
-            const { io, run } = await this._pyodide.promise;
+            const { io, run, runAsync } = await this._pyodide.promise;
+            const runner = this.hasAttribute("async") ? runAsync : run;
             this.srcCode = await fetchSource(this, io, !this.childElementCount);
             this.replaceChildren();
-            run(this.srcCode);
+            runner(this.srcCode);
             this.style.display = "block";
         }
     }
