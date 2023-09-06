@@ -20,14 +20,14 @@ repos:
           - id: check-yaml
           - id: detect-private-key
           - id: end-of-file-fixer
-            exclude: pyscript\.core/core.*|\.min\.js$
+            exclude: pyscript\.core/dist|\.min\.js$
           - id: trailing-whitespace
 
     - repo: https://github.com/charliermarsh/ruff-pre-commit
       rev: v0.0.257
       hooks:
           - id: ruff
-            exclude: pyscript\.core/test|pyscript.core/src/stdlib/pyscript.py
+            exclude: pyscript\.core/test|pyscript\.core/dist|pyscript.core/src/stdlib/pyscript.py
             args: [--fix]
 
     - repo: https://github.com/psf/black
@@ -47,7 +47,7 @@ repos:
       rev: "v3.0.0-alpha.6"
       hooks:
           - id: prettier
-            exclude: pyscript\.core/test|pyscript\.core/core.*|pyscript\.core/types/|pyscript.core/src/stdlib/pyscript.js|pyscript\.sw/
+            exclude: pyscript\.core/test|pyscript\.core/dist|pyscript\.core/types|pyscript.core/src/stdlib/pyscript.js|pyscript\.sw/
             args: [--tab-width, "4"]
 
     - repo: https://github.com/pre-commit/mirrors-eslint

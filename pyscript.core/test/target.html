@@ -4,8 +4,8 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>@pyscript/core</title>
-        <link rel="stylesheet" href="../core.css" />
-        <script type="module" src="../core.js"></script>
+        <link rel="stylesheet" href="../dist/core.css">
+        <script type="module" src="../dist/core.js"></script>
     </head>
     <body>
         <py-script id="first">
@@ -28,7 +28,7 @@
             # Use the 'target' element to specify the ID of an element in the DOM to write the content to
             display("!", target="first", append=True)
         </py-script>
-        <py-script worker>\
+        <py-script worker>
             # Appears in a DIV that is a child of this py-script tag, even with the code running in a worker
             from pyscript import display
             display("worker", append=True)

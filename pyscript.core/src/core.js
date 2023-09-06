@@ -5,6 +5,7 @@ import { htmlDecode } from "./utils.js";
 import sync from "./sync.js";
 
 import stdlib from "./stdlib.js";
+import plugins from "./plugins.js";
 
 // TODO: this is not strictly polyscript related but handy ... not sure
 //       we should factor this utility out a part but this works anyway.
@@ -13,7 +14,7 @@ import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
 
 import { robustFetch as fetch } from "./fetch.js";
 
-const { assign, defineProperty } = Object;
+const { assign, defineProperty, entries } = Object;
 
 const getText = (body) => body.text();
 
@@ -163,6 +164,16 @@ define("py", {
             shouldRegister = false;
             registerModule(pyodide);
         }
+
+        // load plugins unless specified otherwise
+        const toBeAwaited = [];
+        for (const [key, value] of entries(plugins)) {
+            if (!pyodide.config?.plugins?.includes(`!${key}`))
+                toBeAwaited.push(value());
+        }
+
+        if (toBeAwaited.length) await Promise.all(toBeAwaited);
+
         // allows plugins to do whatever they want with the element
         // before regular stuff happens in here
         for (const callback of hooks.onInterpreterReady)

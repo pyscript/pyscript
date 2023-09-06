@@ -3,16 +3,37 @@
 
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
+import postcss from "rollup-plugin-postcss";
 
 const plugins = [];
 
-export default {
-    input: "./src/core.js",
-    plugins: plugins.concat(
-        process.env.NO_MIN ? [nodeResolve()] : [nodeResolve(), terser()],
-    ),
-    output: {
-        esModule: true,
-        file: "./core.js",
+export default [
+    {
+        input: "./src/core.js",
+        plugins: plugins.concat(
+            process.env.NO_MIN ? [nodeResolve()] : [nodeResolve(), terser()],
+        ),
+        output: {
+            esModule: true,
+            dir: "./dist",
+        },
     },
-};
+    {
+        input: "./src/core.css",
+        plugins: [
+            postcss({
+                extract: true,
+                sourceMap: false,
+                minimize: !process.env.NO_MIN,
+                plugins: [],
+            }),
+        ],
+        output: {
+            file: "./dist/core.css",
+        },
+        onwarn(warning, warn) {
+            if (warning.code === "FILE_NAME_CONFLICT") return;
+            warn(warning);
+        },
+    },
+];
