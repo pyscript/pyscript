@@ -17,6 +17,11 @@ hooks.onBeforeRun.add(function override(pyScript) {
         // still let other plugins or PyScript itself do the rest
         return stderr(...args);
     };
+
+    // be sure uncaught Python errors are also visible
+    addEventListener("error", ({ message }) => {
+        if (message.startsWith("Uncaught PythonError")) notify(message);
+    });
 });
 
 // Error hook utilities
