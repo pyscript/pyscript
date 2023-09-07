@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.1.8",
+    "version": "0.1.9",
     "type": "module",
     "description": "PyScript",
     "module": "./dist/core.js",
@@ -17,7 +17,7 @@
     },
     "scripts": {
         "server": "npx static-handler --cors --coep --coop --corp .",
-        "build": "node rollup/stdlib.cjs && node rollup/plugins.cjs && rollup --config rollup/core.config.js && npm run ts",
+        "build": "node rollup/stdlib.cjs && node rollup/plugins.cjs && rm -rf dist && rollup --config rollup/core.config.js && npm run ts",
         "ts": "tsc -p ."
     },
     "keywords": [
@@ -29,7 +29,7 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.3.0"
+        "polyscript": "^0.3.1"
     },
     "devDependencies": {
         "@rollup/plugin-node-resolve": "^15.2.1",
