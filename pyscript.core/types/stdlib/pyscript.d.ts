@@ -4,5 +4,9 @@ declare const _default: {
         "display.py": string;
     };
     "pyscript.py": string;
+    pyweb: {
+        "base.py": string;
+        "pydom.py": string;
+    };
 };
 export default _default;
