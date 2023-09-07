@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript Next Plugin</title>
+  <link rel="stylesheet" href="../dist/core.css">
+  <script type="module" src="../dist/core.js"></script>
+  <script type="py">
+    import random
+    from pyscript import display
+    from pyweb import pydom
+    from pyweb.base import when
+    from datetime import datetime as dt
+
+    @pydom.when('click', '#just-a-button')
+    def on_click(event):
+      print(f"Hello from Python! {dt.now()}")
+      display(f"Hello from Python! {dt.now()}", append=False, target='result')
+
+    @when('click', '#color-button')
+    def on_color_click(event):
+      btn = pydom["#result"]
+      btn.style['background-color'] = f"#{random.randrange(0x1000000):06x}"
+
+    def reset_color():
+      pydom["#result"].style['background-color'] = "white"
+
+    btn_reset = pydom["#color-reset-button"][0].when('click', reset_color)
+  </script>
+
+  <button id="just-a-button">Click For Time</button>
+  <button id="color-button">Click For Color</button>
+  <button id="color-reset-button">Reset Color</button>
+
+  <div id="result"></div>
+</head>
+</html>
