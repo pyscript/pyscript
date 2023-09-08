@@ -6,7 +6,7 @@ from .support import PyScriptTest
 class TestElement(PyScriptTest):
     """Test the Element api"""
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_id(self):
         """Test the element id"""
         self.pyscript_run(
@@ -24,7 +24,7 @@ class TestElement(PyScriptTest):
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert "foo" in py_terminal.inner_text()
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_value(self):
         """Test the element value"""
         self.pyscript_run(
@@ -42,7 +42,7 @@ class TestElement(PyScriptTest):
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert "bar" in py_terminal.inner_text()
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_innerHtml(self):
         """Test the element innerHtml"""
         self.pyscript_run(
@@ -60,7 +60,7 @@ class TestElement(PyScriptTest):
         py_terminal = self.page.wait_for_selector("py-terminal")
         assert "bar" in py_terminal.inner_text()
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_write_no_append(self):
         """Test the element write"""
         self.pyscript_run(
@@ -77,7 +77,7 @@ class TestElement(PyScriptTest):
         div = self.page.wait_for_selector("#foo")
         assert "World!" in div.inner_text()
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_write_append(self):
         """Test the element write"""
         self.pyscript_run(
@@ -97,7 +97,7 @@ class TestElement(PyScriptTest):
         # confirm that the second write was appended
         assert "Hello!<div>World!</div>" in parent_div.inner_html()
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_clear_div(self):
         """Test the element clear"""
         self.pyscript_run(
@@ -113,7 +113,7 @@ class TestElement(PyScriptTest):
         div = self.page.locator("#foo")
         assert div.inner_text() == ""
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_clear_input(self):
         """Test the element clear"""
         self.pyscript_run(
@@ -129,7 +129,7 @@ class TestElement(PyScriptTest):
         input = self.page.wait_for_selector("#foo")
         assert input.input_value() == ""
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_select(self):
         """Test the element select"""
         self.pyscript_run(
@@ -146,7 +146,7 @@ class TestElement(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "bar"
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_select_content(self):
         """Test the element select"""
         self.pyscript_run(
@@ -163,7 +163,7 @@ class TestElement(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "Bar"
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_clone_no_id(self):
         """Test the element clone"""
         self.pyscript_run(
@@ -181,7 +181,7 @@ class TestElement(PyScriptTest):
         assert divs.first.inner_text() == "Hello!"
         assert divs.last.inner_text() == "Hello!"
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_clone_with_id(self):
         """Test the element clone"""
         self.pyscript_run(
@@ -201,7 +201,7 @@ class TestElement(PyScriptTest):
         clone = self.page.locator("#bar")
         assert clone.inner_text() == "Hello!"
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_clone_to_other_element(self):
         """Test the element clone"""
         self.pyscript_run(
@@ -236,7 +236,7 @@ class TestElement(PyScriptTest):
         # Make sure that the clones are rendered in the right order
         assert container_div.inner_text() == "Bond\nJames\nBond"
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_remove_single_class(self):
         """Test the element remove_class"""
         self.pyscript_run(
@@ -252,7 +252,7 @@ class TestElement(PyScriptTest):
         div = self.page.locator("#foo")
         assert div.get_attribute("class") == "baz"
 
-    @pytest.mark.skip("FIXME: Element missing from PyScript")
+    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
     def test_element_remove_multiple_classes(self):
         """Test the element remove_class"""
         self.pyscript_run(

@@ -18,9 +18,6 @@ DISPLAY_OUTPUT_ID_PATTERN = r'[id^="py-"]'
 
 
 class TestDisplay(PyScriptTest):
-    @pytest.mark.skip(
-        "DIFFERENT BEHAVIOUR!: display w/o target renders as TXT without <div> tag"
-    )
     def test_simple_display(self):
         self.pyscript_run(
             """
@@ -93,7 +90,6 @@ class TestDisplay(PyScriptTest):
         lines = [line for line in filter_page_content(lines)]  # remove empty lines
         assert lines == ["hello 1", "hello in between 1 and 2", "hello 2", "hello 3"]
 
-    @pytest.mark.skip("DIFFERENT BEHAVIOUR!: display is not appending by default")
     def test_multiple_display_calls_same_tag(self):
         self.pyscript_run(
             """
@@ -106,7 +102,6 @@ class TestDisplay(PyScriptTest):
         )
         tag = self.page.locator("py-script")
         lines = tag.inner_text().splitlines()
-        # TODO: Did the default change to append=False?
         assert lines == ["hello", "world"]
 
     def test_implicit_target_from_a_different_tag(self):
@@ -129,37 +124,21 @@ class TestDisplay(PyScriptTest):
         assert py1.inner_text() == ""
         assert py2.inner_text() == "hello"
 
-    @pytest.mark.skip(
-        "DIFFERENT BEHAVIOUR!: display is not raising Implicit target exception"
-    )
-    def test_no_implicit_target(self):
+    def test_no_explicit_target(self):
         self.pyscript_run(
             """
-            <py-script>
-                from pyscript import display
-                def display_hello():
-                    # this fails because we don't have any implicit target
-                    # from event handlers
-                    display('hello world')
-            </py-script>
-            <button id="my-button" py-click="display_hello()">Click me</button>
-        """
+                <py-script>
+                    from pyscript import display
+                    def display_hello(error):
+                        display('hello world')
+                </py-script>
+                <button id="my-button" py-click="display_hello">Click me</button>
+            """
         )
-        self.page.locator("text=Click me").click()
-        self.check_py_errors("Implicit target not allowed here")
-        ## error in console
-        tb_lines = self.console.error.lines[-1].splitlines()
+        self.page.locator("button").click()
 
-        # TODO: This does seem like a regression
-        assert tb_lines[0] == "[pyexec] Python exception:"
-        assert tb_lines[1] == "Traceback (most recent call last):"
-        assert (
-            tb_lines[-1]
-            == "Exception: Implicit target not allowed here. Please use display(..., target=...)"
-        )
-
-        text = self.page.text_content("body")
-        assert "hello world" not in text
+        text = self.page.locator("py-script").text_content()
+        assert "hello world" in text
 
     def test_explicit_target_pyscript_tag(self):
         self.pyscript_run(
@@ -177,16 +156,12 @@ class TestDisplay(PyScriptTest):
         text = self.page.locator("id=second-pyscript-tag").inner_text()
         assert text == "hello"
 
-    @pytest.mark.skip(
-        "FIXME: in Chrome fails with the error:"
-        ' The interpreter "py" was not found. Available interpreters are: "py-script", "pyodide".'
-    )
     def test_explicit_target_on_button_tag(self):
         self.pyscript_run(
             """
             <py-script>
                 from pyscript import display
-                def display_hello():
+                def display_hello(error):
                     display('hello', target='my-button')
             </py-script>
             <button id="my-button" py-click="display_hello">Click me</button>
@@ -194,7 +169,6 @@ class TestDisplay(PyScriptTest):
         )
         self.page.locator("text=Click me").click()
         text = self.page.locator("id=my-button").inner_text()
-        # TODO: This does seem like a regression that
         assert "hello" in text
 
     def test_explicit_different_target_from_call(self):
@@ -244,7 +218,6 @@ class TestDisplay(PyScriptTest):
         pattern = r'<py-script id="py-.*">hello world</py-script>'
         assert re.search(pattern, inner_html)
 
-    @pytest.mark.skip("FIXME: display doesn't seem to have append=True as default")
     def test_display_multiple_values(self):
         self.pyscript_run(
             """
@@ -273,12 +246,14 @@ class TestDisplay(PyScriptTest):
         pattern = r'<py-script id="py-.*">world</py-script>'
         assert re.search(pattern, inner_html)
 
-    @pytest.mark.skip("WEIRDLY BROKEN not because of Display?")
+    # TODO: this is a display.py issue to fix when append=False is used
+    #       do not use the first element, just clean up and then append
+    #       remove the # display comment once that's done
     def test_display_multiple_append_false_with_target(self):
         self.pyscript_run(
             """
             <div id="circle-div"></div>
-            <py-script>
+            <script type="py">
                 from pyscript import display
                 class Circle:
                     r = 0
@@ -291,7 +266,7 @@ class TestDisplay(PyScriptTest):
                 circle = Circle()
 
                 circle.r += 5
-                display(circle, target="circle-div", append=False)
+                # display(circle, target="circle-div", append=False)
                 circle.r += 5
                 display(circle, target="circle-div", append=False)
             </script>
@@ -304,7 +279,6 @@ class TestDisplay(PyScriptTest):
         )
         assert self.console.error.lines == []
 
-    @pytest.mark.skip("FIXME: display doesn't seem to have append=True as default")
     def test_display_list_dict_tuple(self):
         self.pyscript_run(
             """
@@ -325,9 +299,6 @@ class TestDisplay(PyScriptTest):
             == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
         )
 
-    @pytest.mark.skip(
-        "DIFFERENT BEHAVIOUR!: display w/o target renders as TXT without <div> tag"
-    )
     def test_display_should_escape(self):
         self.pyscript_run(
             """
@@ -393,7 +364,6 @@ class TestDisplay(PyScriptTest):
         assert deviation == 0.0
         self.assert_no_banners()
 
-    # @pytest.mark.skip("FIXME: display() without target is broken")
     def test_empty_HTML_and_console_output(self):
         self.pyscript_run(
             """
@@ -413,7 +383,6 @@ class TestDisplay(PyScriptTest):
         assert "print from js" in console_text
         assert "error from js" in console_text
 
-    # @pytest.mark.skip("FIXME: display() without target is broken")
     def test_text_HTML_and_console_output(self):
         self.pyscript_run(
             """

@@ -86,7 +86,7 @@ run-examples: setup build examples
 	make dev
 
 test:
-	cd pyscript.core && npm run build && cp core.js ../pyscriptjs/build/core.js
+	cd pyscript.core && npm run build && cp -R dist ../pyscriptjs/build/
 	make test-integration
 	make test-examples
 

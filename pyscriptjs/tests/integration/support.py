@@ -504,9 +504,10 @@ class PyScriptTest:
         doc = f"""
         <html>
           <head>
+              <link rel="stylesheet" href="{self.http_server_addr}/build/dist/core.css">
               <script
                     type="module"
-                    src="{self.http_server_addr}/build/core.js"
+                    src="{self.http_server_addr}/build/dist/core.js"
                 ></script>
               {extra_head}
           </head>
