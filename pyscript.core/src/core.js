@@ -79,7 +79,8 @@ const fetchSource = async (tag, io, asText) => {
 
 // common life-cycle handlers for any node
 const bootstrapNodeAndPlugins = (pyodide, element, callback, hook) => {
-    if (isScript(element)) callback(element);
+    // make it possible to reach the current target node via Python
+    callback(element);
     for (const fn of hooks[hook]) fn(pyodide, element);
 };
 
@@ -110,7 +111,7 @@ export const hooks = {
     /** @type {Set<function>} */
     onBeforeRun: new Set(),
     /** @type {Set<function>} */
-    onBeforeRunAync: new Set(),
+    onBeforeRunAsync: new Set(),
     /** @type {Set<function>} */
     onAfterRun: new Set(),
     /** @type {Set<function>} */
@@ -156,9 +157,9 @@ define("py", {
         currentElement = element;
         bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRun");
     },
-    onBeforeRunAync(pyodide, element) {
+    onBeforeRunAsync(pyodide, element) {
         currentElement = element;
-        bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRunAync");
+        bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRunAsync");
     },
     onAfterRun(pyodide, element) {
         bootstrapNodeAndPlugins(pyodide, element, after, "onAfterRun");

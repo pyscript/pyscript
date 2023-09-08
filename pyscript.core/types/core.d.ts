@@ -12,7 +12,7 @@ export function PyWorker(file: string, options?: {
 };
 export namespace hooks {
     let onBeforeRun: Set<Function>;
-    let onBeforeRunAync: Set<Function>;
+    let onBeforeRunAsync: Set<Function>;
     let onAfterRun: Set<Function>;
     let onAfterRunAsync: Set<Function>;
     let onInterpreterReady: Set<Function>;
