@@ -1,3 +1,5 @@
+/*! (c) PyScript Development Team */
+
 import "@ungap/with-resolvers";
 import { $ } from "basic-devtools";
 import { define, XWorker } from "polyscript";

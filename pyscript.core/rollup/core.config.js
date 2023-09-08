@@ -16,6 +16,7 @@ export default [
         output: {
             esModule: true,
             dir: "./dist",
+            sourcemap: true,
         },
     },
     {
