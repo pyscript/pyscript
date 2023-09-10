@@ -57,6 +57,7 @@ Docs
 ----
 
 - Add docs for event handlers
+- Add Chinese Readme
 
 2023.03.1
 =========
