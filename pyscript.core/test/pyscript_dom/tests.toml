@@ -1,0 +1,8 @@
+packages = [
+    "pytest"
+]
+
+[[fetch]]
+from = "tests/"
+files = ["__init__.py", "conftest.py", "test_dom.py"]
+to_folder = "tests"

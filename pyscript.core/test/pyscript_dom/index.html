@@ -1,0 +1,57 @@
+<html lang="en">
+  <head>
+    <title>PyperCard PyTest Suite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="../../dist/core.css">
+    <script type="module" src="../../dist/core.js"></script>
+
+  </head>
+  <body>
+    <script type="py" src="run_tests.py" config="tests.toml"></script>
+    <!-- <py-script src="run_tests.py"></py-script> -->
+    <template id="test_card_with_element_template">
+      <p>This is a test. {foo}</p>
+    </template>
+
+    <div id="test_id_selector" style="visibility: hidden;">You found test_id_selector</div>
+    <div id="test_class_selector" class="a-test-class" style="visibility: hidden;">You found test_class_selector</div>
+    <div id="test_selector_w_children" class="a-test-class" style="visibility: hidden;">
+      <div id="test_selector_w_children_child_1" class="a-test-class" style="visibility: hidden;">Child 1</div>
+      <div id="test_selector_w_children_child_2" style="visibility: hidden;">Child 2</div>
+    </div>
+    <div id="div-no-classes"></div>
+    <div id="tests-terminal"></div>
+
+    <div style="visibility: hidden;">
+      <h2>Test Read and Write</h2>
+      <div id="test_rr_div">Content test_rr_div</div>
+      <h3 id="test_rr_h3">Content test_rr_h3</h3>
+
+      <form>
+        <input id="test_rr_input_txt" type="text" value="Content test_rr_input_txt">
+        <input id="test_rr_input_btn" type="button" value="Content test_rr_input_btn">
+        <input id="test_rr_input_email" type="email" value="Content test_rr_input_email">
+        <input id="test_rr_input_password" type="password" value="Content test_rr_input_password">
+      </form>
+    </div>
+
+    <script defer>
+      console.log("remapping console.log")
+      const terminalDiv = document.getElementById("tests-terminal");
+      const log = console.log.bind(console)
+      let testsStarted = false;
+      console.log = (...args) => {
+        if (testsStarted)
+          terminalDiv.innerHTML += args.join(" ") + "<br>";
+
+        log(...args)
+
+        // if we got the flag that tests are starting, then we can start logging
+        if (args.join(" ") == "tests starting")
+          testsStarted = true;
+      }
+
+    </script>
+  </body>
+</html>
