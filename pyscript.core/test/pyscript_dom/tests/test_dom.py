@@ -14,25 +14,37 @@ class TestDocument:
 
     def test_create_element(self):
         new_el = pydom.create("div")
-        assert isinstance(new_el, el.CoreElement)
+        assert isinstance(new_el, pydom.BaseElement)
         assert new_el._element.tagName == "DIV"
         # EXPECT the new element to be associated with the document
         assert new_el.parent == None
 
 
-def test_query_by_id():
+def test_getitem_by_id():
+    # GIVEN an existing element on the page with a known text content
     id_ = "test_id_selector"
     txt = "You found test_id_selector"
-    div = el.query(f"#{id_}")
-    assert div.innerHTML == txt
-    assert document.querySelector(f"#{id_}").innerHTML == txt
-    assert isinstance(div, el.CoreElement)
+    selector = f"#{id_}"
+    # EXPECT the element to be found by id
+    result = pydom[selector]
+    div = result[0]
+    # EXPECT the element text value to match what we expect and what
+    # the JS document.querySelector API would return
+    assert document.querySelector(selector).innerHTML == div.html == txt
+    # EXPECT the results to be of the right types
+    assert isinstance(div, pydom.BaseElement)
+    assert isinstance(result, pydom.ElementCollection)
 
 
 def test_query_by_class():
     id_ = "test_class_selector"
     expected_class = "a-test-class"
-    div = el.query(f".{expected_class}")
+    result = pydom[f".{expected_class}"]
+    div = result[0]
+
+    # EXPECT to find exact number of elements with the class in the page (== 1)
+    assert len(result) == 1
+    # EXPECT the element id to match what we expect
     assert div.id == id_
 
 
