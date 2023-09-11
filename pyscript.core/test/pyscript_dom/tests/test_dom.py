@@ -48,16 +48,18 @@ def test_getitem_by_class():
     assert div.id == id_
 
 
-def test_read_n_write_elements():
-    ids = [f"#test_rr_input_{x}" for x in ["txt", "btn", "email", "password"]]
-    values = el.read_elements(ids)
-    for k, v in values.items():
-        assert v == f"Content {k.replace('#', '')}"
+def test_read_n_write_collection_elements():
+    elements = pydom[".multi-elem-div"]
 
-    new_values = {k: f"New Content {k.replace('#', '')}" for k in values.keys()}
-    el.write_elements(new_values)
-    for k, v in new_values.items():
-        assert el.query(k).value == v
+    # ids = [f"#test_rr_input_{x}" for x in ["txt", "btn", "email", "password"]]
+    # values = el.read_elements(ids)
+    for element in elements:
+        assert element.text == f"Content {element.id.replace('#', '')}"
+
+    new_content = "New Content"
+    elements.text = new_content
+    for element in elements:
+        assert element.text == new_content
 
 
 class TestElement:
