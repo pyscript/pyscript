@@ -78,20 +78,21 @@ class Element(BaseElement):
     def from_js(self, js_element):
         return self.__class__(js_element.tagName, parent=self)
 
-    def query(self, selector):
-        """The querySelector() method of the Element interface returns the first
-        element that is a descendant of the element on which it is invoked that
-        matches the specified group of selectors.
-        """
-        return self.__class__(self._element.querySelector(selector))
+    # TODO: These 2 should align with what we provide in Pydom.__get_item__
+    # def query(self, selector):
+    #     """The querySelector() method of the Element interface returns the first
+    #     element that is a descendant of the element on which it is invoked that
+    #     matches the specified group of selectors.
+    #     """
+    #     return self.__class__(self._element.querySelector(selector))
 
-    def query_all(self, selector):
-        """The querySelectorAll() method of the Element interface returns a static
-        (not live) NodeList representing a list of the document's elements that
-        match the specified group of selectors.
-        """
-        for element in self._element.querySelectorAll(selector):
-            yield self.__class__(element)
+    # def query_all(self, selector):
+    #     """The querySelectorAll() method of the Element interface returns a static
+    #     (not live) NodeList representing a list of the document's elements that
+    #     match the specified group of selectors.
+    #     """
+    #     for element in self._element.querySelectorAll(selector):
+    #         yield self.__class__(element)
 
     # -------- Boilerplate Proxy for the Element API -------- #
     @property
