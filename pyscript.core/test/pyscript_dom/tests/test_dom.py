@@ -135,6 +135,20 @@ class TestCollection:
             assert el == elements[i]
         assert elements[:] == elements
 
-        # display(f"Slicing.. like: h2s[:] --> {h2s[:]}")
-        # display(f"or like h2s[:] --> {h2s[:1]}")
-        # display(f"or h2s[1] --> {h2s[1]}")
+    def test_style_rule(self):
+        selector = ".multi-elems"
+        elements = pydom[selector]
+        for el in elements:
+            assert el.style["background-color"] != "red"
+
+        elements.style["background-color"] = "red"
+
+        for i, el in enumerate(pydom[selector]):
+            assert elements[i].style["background-color"] == "red"
+            assert el.style["background-color"] == "red"
+
+        elements.style.remove("background-color")
+
+        for i, el in enumerate(pydom[selector]):
+            assert el.style["background-color"] != "red"
+            assert elements[i].style["background-color"] != "red"
