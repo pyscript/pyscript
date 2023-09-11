@@ -418,4 +418,4 @@ def query_all(selector):
         yield Element(element)
 
 
-sys.modules[__name__] = document
+sys.modules[__name__] = dom
