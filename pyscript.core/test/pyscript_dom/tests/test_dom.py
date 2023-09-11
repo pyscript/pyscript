@@ -36,7 +36,7 @@ def test_getitem_by_id():
     assert isinstance(result, pydom.ElementCollection)
 
 
-def test_query_by_class():
+def test_getitem_by_class():
     id_ = "test_class_selector"
     expected_class = "a-test-class"
     result = pydom[f".{expected_class}"]
