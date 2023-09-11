@@ -3,16 +3,13 @@ import sys
 from functools import cached_property
 from typing import Any
 
-import js
-
-# from js import document as js_document
 from pyodide.ffi import JsProxy
 from pyodide.ffi.wrappers import add_event_listener
-from pyscript import display
+from pyscript import display, document, window
 
 # from pyscript import when as _when
 
-alert = js.alert
+alert = window.alert
 
 
 class BaseElement:
@@ -41,7 +38,7 @@ class BaseElement:
         return self.__class__ if self.__class__ != PyDom else Element
 
     def create(self, type_, is_child=True, classes=None, html=None, label=None):
-        js_el = js.document.createElement(type_)
+        js_el = document.createElement(type_)
         element = self.__class(js_el)
 
         if classes:
@@ -79,7 +76,7 @@ class Element(BaseElement):
             return child
 
     def from_js(self, js_element):
-        return self.__class__(js.tagName, parent=self)
+        return self.__class__(js_element.tagName, parent=self)
 
     def query(self, selector):
         """The querySelector() method of the Element interface returns the first
@@ -199,7 +196,7 @@ class Element(BaseElement):
     #     # if isinstance(element, Element):
     #     #     element = [element]
     #     def decorator(func):
-    #         # elements = js.document.querySelectorAll(selector)
+    #         # elements = document.querySelectorAll(selector)
     #         sig = inspect.signature(func)
 
     #         # Function doesn't receive events
@@ -352,7 +349,7 @@ class DomScope:
 
 class PyDom(BaseElement):
     def __init__(self):
-        super().__init__(js.document)
+        super().__init__(document)
         self.ids = DomScope()
 
     def create(self, type_, parent=None, classes=None, html=None):
@@ -380,7 +377,7 @@ class PyDom(BaseElement):
             if isinstance(selector, Element):
                 elements = [selector._element]
             else:
-                elements = js.document.querySelectorAll(selector)
+                elements = document.querySelectorAll(selector)
             print("Elements....", elements)
             sig = inspect.signature(func)
             # Function doesn't receive events
@@ -399,13 +396,13 @@ class PyDom(BaseElement):
         return decorator
 
 
-document = PyDom()
+dom = PyDom()
 
 
 def query(selector):
     """The querySelector() method of the Element interface returns the first element
     that matches the specified group of selectors."""
-    return Element(js.document.querySelector(selector))
+    return Element(document.querySelector(selector))
 
 
 def query_all(selector):
@@ -413,7 +410,7 @@ def query_all(selector):
     NodeList representing a list of the document's elements that match the specified
     group of selectors.
     """
-    for element in js.document.querySelectorAll(selector):
+    for element in document.querySelectorAll(selector):
         yield Element(element)
 
 
