@@ -118,3 +118,23 @@ class TestElement:
         assert div.classes == [classname] == same_div.classes
         div.remove_class(classname)
         assert div.classes == [] == same_div.classes
+
+
+class TestCollection:
+    def test_iter_eq_children(self):
+        elements = pydom[".multi-elems"]
+        assert [el for el in elements] == [el for el in elements.children]
+        assert len(elements) == 3
+
+    def test_slices(self):
+        elements = pydom[".multi-elems"]
+        assert elements[0]
+        _slice = elements[:2]
+        assert len(_slice) == 2
+        for i, el in enumerate(_slice):
+            assert el == elements[i]
+        assert elements[:] == elements
+
+        # display(f"Slicing.. like: h2s[:] --> {h2s[:]}")
+        # display(f"or like h2s[:] --> {h2s[:1]}")
+        # display(f"or h2s[1] --> {h2s[1]}")
