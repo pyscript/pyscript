@@ -234,12 +234,12 @@ class StyleProxy(dict):
         return self._element._element.style
 
     def __getitem__(self, key):
-        self._style[key]
+        return self._style.getPropertyValue(key)
 
     def __setitem__(self, key, value):
         self._style.setProperty(key, value)
 
-    def pop(self, key):
+    def remove(self, key):
         self._style.removeProperty(key)
 
     def set(self, **kws):
@@ -300,9 +300,9 @@ class StyleCollection:
         for element in self._collection._elements:
             element.style[key] = value
 
-    def pop(self, key):
+    def remove(self, key):
         for element in self._collection._elements:
-            element.style.pop(key)
+            element.style.remove(key)
 
 
 class ElementCollection:
@@ -343,10 +343,6 @@ class ElementCollection:
     @html.setter
     def html(self, value):
         self._set_attribute("html", value)
-
-    # @property
-    # def style(self):
-    #     return self._get_attribute("style")
 
     @property
     def children(self):
