@@ -323,6 +323,11 @@ class ElementCollection:
     def __len__(self):
         return len(self._elements)
 
+    def __eq__(self, obj):
+        """Check if the element is the same as the other element by comparing
+        the underlying JS element"""
+        return isinstance(obj, ElementCollection) and obj._elements == self._elements
+
     def _get_attribute(self, attr):
         # As JQuery, when getting an attr, only return it for the first element
         return getattr(self._elements[0], attr)
