@@ -56,9 +56,24 @@ class BaseElement:
 
         return element
 
+    def find(self, selector):
+        """Return an ElementCollection representing all the child elements that
+        match the specified selector.
+
+        Args:
+            selector (str): A string containing a selector expression
+
+        Returns:
+            ElementCollection: A collection of elements matching the selector
+        """
+        elements = self._element.querySelectorAll(selector)
+        if not elements:
+            return None
+        return ElementCollection([Element(el) for el in elements])
+
     # -------- Boilerplate Proxy for the Element API -------- #
     @property
-    def appendChild(self):
+    def append(self):
         return self._element.appendChild
 
 
@@ -85,14 +100,6 @@ class Element(BaseElement):
     #     matches the specified group of selectors.
     #     """
     #     return self.__class__(self._element.querySelector(selector))
-
-    # def query_all(self, selector):
-    #     """The querySelectorAll() method of the Element interface returns a static
-    #     (not live) NodeList representing a list of the document's elements that
-    #     match the specified group of selectors.
-    #     """
-    #     for element in self._element.querySelectorAll(selector):
-    #         yield self.__class__(element)
 
     # -------- Boilerplate Proxy for the Element API -------- #
     @property
