@@ -313,6 +313,9 @@ class ElementCollection:
         elements = self._element.querySelectorAll(key)
         return ElementCollection([Element(el) for el in elements])
 
+    def __len__(self):
+        return len(self._elements)
+
     def _get_attribute(self, attr):
         # As JQuery, when getting an attr, only return it for the first element
         return getattr(self._elements[0], attr)
