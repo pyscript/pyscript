@@ -352,6 +352,10 @@ class DomScope:
 
 
 class PyDom(BaseElement):
+    BaseElement = BaseElement
+    Element = Element
+    ElementCollection = ElementCollection
+
     def __init__(self):
         super().__init__(document)
         self.ids = DomScope()
