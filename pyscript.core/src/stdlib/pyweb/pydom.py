@@ -105,10 +105,13 @@ class Element(BaseElement):
 
     @property
     def content(self):
+        # TODO: This breaks with with standard template elements. Define how to best
+        #       handle this specifica use case. Just not support for now?
         return self._element.innerHTML
 
     @content.setter
     def content(self, value):
+        # TODO: (same comment as above)
         display(value, target=self.id)
 
     @property
