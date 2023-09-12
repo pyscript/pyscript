@@ -184,3 +184,19 @@ class TestCreation:
         assert pydom[selector][0].children[0] == new_el
 
     # TODO: when decorator and event handlers have been left out until we add when to pyscript
+    def test_when_decorator(self):
+        called = False
+
+        just_a_button = pydom["#a-test-button"][0]
+
+        @pydom.when("click", just_a_button)
+        def on_click(event):
+            nonlocal called
+            called = True
+
+        # Now let's simulate a click on the button (using the low level JS API)
+        # so we don't risk pydom getting in the way
+        assert not called
+        just_a_button._element.click()
+
+        assert called
