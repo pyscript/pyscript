@@ -1,7 +1,8 @@
 # export only what we want to expose as `pyscript` module
 # but not what is WORKER/MAIN dependent
 from _pyscript import window, document, IS_WORKER
-from _pyscript.display import display as _display
+from _pyscript.display import HTML, display as _display
+from _pyscript.event_handling import when
 
 # this part is needed to disambiguate between MAIN and WORKER
 if IS_WORKER:
