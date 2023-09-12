@@ -11,11 +11,12 @@ def when(event_type=None, selector=None):
     """
 
     def decorator(func):
+        _selector = selector
         if not isinstance(selector, str):
             if hasattr(selector, "id"):
-                selector = "#" + selector.id  # noqa: F823
+                _selector = "#" + selector.id  # noqa: F823
 
-        elements = document.querySelectorAll(selector)
+        elements = document.querySelectorAll(_selector)
         sig = inspect.signature(func)
         # Function doesn't receive events
         if not sig.parameters:

@@ -117,45 +117,6 @@ class Element(BaseElement):
     def id(self, value):
         self._element.id = value
 
-    @property
-    def checked(self):
-        return self._element.checked
-
-    @checked.setter
-    def checked(self, value):
-        self._element.checked = value
-
-    @property
-    def value(self):
-        tag = self._element.tagName
-        if tag == "INPUT":
-            if self._element.type == "checkbox":
-                return self._element.checked
-            elif self._element.type == "number":
-                return float(self._element.value)
-            else:
-                return self._element.value
-        return self._element.innerHTML
-
-    @value.setter
-    def value(self, value):
-        # TODO: This needs a bit more thinking. SHould we set .innerHTML or .text for instance?
-        tag = self._element.tagName
-        # print(f"Writing ({tag} )---> {self._selector} ---> {value}")
-        if tag == "INPUT":
-            # print(f"Writing ({tag} | {self._element.type})---> {self._selector} ---> {value}")
-            if self._element.type == "checkbox":
-                self._element.checked = value
-            elif self._element.type == "number":
-                self._element.value = float(value)
-            else:
-                self._element.value = value
-        else:
-            self._element.innerHTML = value
-
-    def clear(self):
-        self.value = ""
-
     def clone(self, new_id=None):
         clone = Element(self._element.cloneNode(True))
         clone.id = new_id

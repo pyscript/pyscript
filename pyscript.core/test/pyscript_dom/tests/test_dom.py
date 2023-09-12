@@ -1,5 +1,5 @@
 import pytest
-from pyscript import document
+from pyscript import document, when
 from unittest import mock
 
 from pyweb import pydom
@@ -56,8 +56,6 @@ def test_getitem_by_class():
 def test_read_n_write_collection_elements():
     elements = pydom[".multi-elems"]
 
-    # ids = [f"#test_rr_input_{x}" for x in ["txt", "btn", "email", "password"]]
-    # values = el.read_elements(ids)
     for element in elements:
         assert element.html == f"Content {element.id.replace('#', '')}"
 
@@ -183,13 +181,12 @@ class TestCreation:
 
         assert pydom[selector][0].children[0] == new_el
 
-    # TODO: when decorator and event handlers have been left out until we add when to pyscript
     def test_when_decorator(self):
         called = False
 
         just_a_button = pydom["#a-test-button"][0]
 
-        @pydom.when("click", just_a_button)
+        @when("click", just_a_button)
         def on_click(event):
             nonlocal called
             called = True
