@@ -1,4 +1,7 @@
 print("tests starting")
 import pytest
+from pyscript import window
 
-pytest.main(["--color=no"])
+args = window.location.search.replace("?", "").split("&")
+
+pytest.main(args)

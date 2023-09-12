@@ -6,10 +6,41 @@
     <link rel="stylesheet" href="../../dist/core.css">
     <script type="module" src="../../dist/core.js"></script>
 
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=Roboto:100,400");
+     * {
+       margin: 0;
+       padding: 0;
+       box-sizing: border-box;
+     }
+     *:before, *:after {
+       box-sizing: inherit;
+       -webkit-font-smoothing: antialiased;
+     }
+
+     body {
+          font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+          font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 20px;
+        }
+
+     h1 { font-size: 24px; font-weight: 700; line-height: 26.4px; }
+     h2 { font-size: 14px; font-weight: 700; line-height: 15.4px; }
+
+     #tests-terminal{
+      padding: 20px;
+     }
+     </style>
   </head>
   <body>
     <script type="py" src="run_tests.py" config="tests.toml"></script>
-    <!-- <py-script src="run_tests.py"></py-script> -->
+
+    <h1>pyscript.dom Tests</h1>
+    <p>You can pass test parameters to this test suite by passing them as query params on the url.
+      For instance, to pass "-v -s --pdb" to pytest, you would use the following url:
+      <label style="color: blue">?-v&-s&--pdb</label>
+    </p>
+    <div id="tests-terminal"></div>
+
     <template id="test_card_with_element_template">
       <p>This is a test. {foo}</p>
     </template>
@@ -22,7 +53,6 @@
     </div>
 
     <div id="div-no-classes"></div>
-    <div id="tests-terminal"></div>
 
     <div style="visibility: hidden;">
       <h2>Test Read and Write</h2>
@@ -50,6 +80,7 @@
       const log = console.log.bind(console)
       let testsStarted = false;
       console.log = (...args) => {
+        log("---IN---");
         if (testsStarted)
           terminalDiv.innerHTML += args.join(" ") + "<br>";
 

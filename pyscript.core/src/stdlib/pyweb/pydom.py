@@ -307,6 +307,8 @@ class DomScope:
 
 
 class PyDom(BaseElement):
+    # Add objects we want to expose to the DOM namespace since this class instance is being
+    # remapped as "the module" itself
     BaseElement = BaseElement
     Element = Element
     ElementCollection = ElementCollection
@@ -336,14 +338,13 @@ class PyDom(BaseElement):
         Decorates a function and passes py-* events to the decorated function
         The events might or not be an argument of the decorated function
         """
-        print("Inside when...")
 
         def decorator(func):
             if isinstance(selector, Element):
                 elements = [selector._element]
             else:
                 elements = document.querySelectorAll(selector)
-            print("Elements....", elements)
+
             sig = inspect.signature(func)
             # Function doesn't receive events
             if not sig.parameters:
@@ -362,21 +363,5 @@ class PyDom(BaseElement):
 
 
 dom = PyDom()
-
-
-def query(selector):
-    """The querySelector() method of the Element interface returns the first element
-    that matches the specified group of selectors."""
-    return Element(document.querySelector(selector))
-
-
-def query_all(selector):
-    """The querySelectorAll() method of the Element interface returns a static (not live)
-    NodeList representing a list of the document's elements that match the specified
-    group of selectors.
-    """
-    for element in document.querySelectorAll(selector):
-        yield Element(element)
-
 
 sys.modules[__name__] = dom
