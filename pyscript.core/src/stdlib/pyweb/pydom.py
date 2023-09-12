@@ -71,11 +71,6 @@ class BaseElement:
             return None
         return ElementCollection([Element(el) for el in elements])
 
-    # -------- Boilerplate Proxy for the Element API -------- #
-    @property
-    def append(self):
-        return self._element.appendChild
-
 
 class Element(BaseElement):
     def append(self, child):
@@ -86,7 +81,7 @@ class Element(BaseElement):
             return self.append(self.from_js(child))
 
         elif isinstance(child, Element):
-            self.appendChild(child._element)
+            self._element.appendChild(child._element)
 
             return child
 
@@ -370,6 +365,8 @@ class PyDom(BaseElement):
     def __init__(self):
         super().__init__(document)
         self.ids = DomScope()
+        self.body = Element(document.body)
+        self.head = Element(document.head)
 
     def create(self, type_, parent=None, classes=None, html=None):
         return super().create(type_, is_child=False)
