@@ -216,36 +216,12 @@ class StyleProxy(dict):
     # Following prperties automatically generated from the above reference using
     # tools/codegen_css_proxy.py
     @property
-    def visibility(self):
+    def visible(self):
         return self._element._element.style.visibility
 
-    @visibility.setter
-    def visibility(self, value):
+    @visible.setter
+    def visible(self, value):
         self._element._element.style.visibility = value
-
-    @property
-    def background(self):
-        return self._element._element.style.background
-
-    @background.setter
-    def background(self, value):
-        self._element._element.style.background = value
-
-    @property
-    def color(self):
-        return self._element._element.style.color
-
-    @color.setter
-    def color(self, value):
-        self._element._element.style.color = value
-
-    @property
-    def backgroundColor(self):
-        return self._element._element.style.backgroundColor
-
-    @backgroundColor.setter
-    def backgroundColor(self, value):
-        self._element._element.style.backgroundColor = value
 
 
 class StyleCollection:
@@ -255,9 +231,6 @@ class StyleCollection:
     def __get__(self, obj, objtype=None):
         return obj._get_attribute("style")
 
-    # def __set__(self, obj, value):
-    #     logging.info('Updating %r to %r', 'age', value)
-    #     obj._age = value
     def __getitem__(self, key):
         return self._collection._get_attribute("style")[key]
 
@@ -276,12 +249,15 @@ class ElementCollection:
         self.style = StyleCollection(self)
 
     def __getitem__(self, key):
+        # If it's an integer we use it to access the elements in the collection
         if isinstance(key, int):
             return self._elements[key]
+        # If it's a slice we use it to support slice operations over the elements
+        # in the collection
         elif isinstance(key, slice):
             return ElementCollection(self._elements[key])
 
-        # TODO: In this case what do we expect??
+        # If it's anything else (basically a string) we use it as a selector
         elements = self._element.querySelectorAll(key)
         return ElementCollection([Element(el) for el in elements])
 
@@ -293,9 +269,12 @@ class ElementCollection:
         the underlying JS element"""
         return isinstance(obj, ElementCollection) and obj._elements == self._elements
 
-    def _get_attribute(self, attr):
+    def _get_attribute(self, attr, index=None):
+        if index is None:
+            return [getattr(el, attr) for el in self._elements]
+
         # As JQuery, when getting an attr, only return it for the first element
-        return getattr(self._elements[0], attr)
+        return getattr(self._elements[index], attr)
 
     def _set_attribute(self, attr, value):
         for el in self._elements:
