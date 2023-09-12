@@ -152,3 +152,16 @@ class TestCollection:
         for i, el in enumerate(pydom[selector]):
             assert el.style["background-color"] != "red"
             assert elements[i].style["background-color"] != "red"
+
+
+class TestCreation:
+    def test_create_document_element(self):
+        new_el = pydom.create("div")
+        new_el.id = "new_el_id"
+        assert isinstance(new_el, pydom.BaseElement)
+        assert new_el._element.tagName == "DIV"
+        # EXPECT the new element to be associated with the document
+        assert new_el.parent == None
+        pydom.body.append(new_el)
+
+        assert pydom["#new_el_id"][0].parent == pydom.body
