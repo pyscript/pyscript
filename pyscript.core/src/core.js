@@ -1,7 +1,8 @@
+/*! (c) PyScript Development Team */
+
 import "@ungap/with-resolvers";
 import { $ } from "basic-devtools";
 import { define, XWorker } from "polyscript";
-import { htmlDecode } from "./utils.js";
 import sync from "./sync.js";
 
 import stdlib from "./stdlib.js";
@@ -10,6 +11,7 @@ import plugins from "./plugins.js";
 // TODO: this is not strictly polyscript related but handy ... not sure
 //       we should factor this utility out a part but this works anyway.
 import { queryTarget } from "../node_modules/polyscript/esm/script-handler.js";
+import { dedent } from "../node_modules/polyscript/esm/utils.js";
 import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
 
 import { robustFetch as fetch } from "./fetch.js";
@@ -65,19 +67,20 @@ const fetchSource = async (tag, io, asText) => {
         }
     }
 
-    if (asText) return tag.textContent;
+    if (asText) return dedent(tag.textContent);
 
     console.warn(
         'Deprecated: use <script type="py"> for an always safe content parsing:\n',
         tag.innerHTML,
     );
 
-    return htmlDecode(tag.innerHTML);
+    return dedent(tag.innerHTML);
 };
 
 // common life-cycle handlers for any node
 const bootstrapNodeAndPlugins = (pyodide, element, callback, hook) => {
-    if (isScript(element)) callback(element);
+    // make it possible to reach the current target node via Python
+    callback(element);
     for (const fn of hooks[hook]) fn(pyodide, element);
 };
 
@@ -108,7 +111,7 @@ export const hooks = {
     /** @type {Set<function>} */
     onBeforeRun: new Set(),
     /** @type {Set<function>} */
-    onBeforeRunAync: new Set(),
+    onBeforeRunAsync: new Set(),
     /** @type {Set<function>} */
     onAfterRun: new Set(),
     /** @type {Set<function>} */
@@ -128,13 +131,18 @@ export const hooks = {
 
 const workerHooks = {
     codeBeforeRunWorker: () =>
-        [stdlib, ...hooks.codeBeforeRunWorker].join("\n"),
+        [stdlib, ...hooks.codeBeforeRunWorker].map(dedent).join("\n"),
     codeBeforeRunWorkerAsync: () =>
-        [stdlib, ...hooks.codeBeforeRunWorkerAsync].join("\n"),
-    codeAfterRunWorker: () => [...hooks.codeAfterRunWorker].join("\n"),
+        [stdlib, ...hooks.codeBeforeRunWorkerAsync].map(dedent).join("\n"),
+    codeAfterRunWorker: () =>
+        [...hooks.codeAfterRunWorker].map(dedent).join("\n"),
     codeAfterRunWorkerAsync: () =>
-        [...hooks.codeAfterRunWorkerAsync].join("\n"),
+        [...hooks.codeAfterRunWorkerAsync].map(dedent).join("\n"),
 };
+
+// avoid running further script if the previous one had
+// some import that would inevitably delay its execution
+let queuePlugins;
 
 // define the module as both `<script type="py">` and `<py-script>`
 define("py", {
@@ -149,9 +157,9 @@ define("py", {
         currentElement = element;
         bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRun");
     },
-    onBeforeRunAync(pyodide, element) {
+    onBeforeRunAsync(pyodide, element) {
         currentElement = element;
-        bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRunAync");
+        bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRunAsync");
     },
     onAfterRun(pyodide, element) {
         bootstrapNodeAndPlugins(pyodide, element, after, "onAfterRun");
@@ -172,7 +180,14 @@ define("py", {
                 toBeAwaited.push(value());
         }
 
-        if (toBeAwaited.length) await Promise.all(toBeAwaited);
+        // this grants queued results when first script/tag has plugins
+        // and the second one *might* rely on first tag execution
+        if (toBeAwaited.length) {
+            const all = Promise.all(toBeAwaited);
+            queuePlugins = queuePlugins ? queuePlugins.then(() => all) : all;
+        }
+
+        if (queuePlugins) await queuePlugins;
 
         // allows plugins to do whatever they want with the element
         // before regular stuff happens in here

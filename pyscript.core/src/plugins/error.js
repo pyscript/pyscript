@@ -9,14 +9,16 @@ hooks.onBeforeRun.add(function override(pyScript) {
     const { stderr } = pyScript.io;
 
     // override it with our own logic
-    pyScript.io.stderr = (...args) => {
-        // grab the message of the first argument (Error)
-        const [{ message }] = args;
-        // show it
-        notify(message);
-        // still let other plugins or PyScript itself do the rest
-        return stderr(...args);
+    pyScript.io.stderr = (error, ...rest) => {
+        notify(error.message || error);
+        // let other plugins or stderr hook, if any, do the rest
+        return stderr(error, ...rest);
     };
+
+    // be sure uncaught Python errors are also visible
+    addEventListener("error", ({ message }) => {
+        if (message.startsWith("Uncaught PythonError")) notify(message);
+    });
 });
 
 // Error hook utilities

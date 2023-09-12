@@ -50,28 +50,22 @@ def unzip(location, extract_to="."):
 #      of config
 @with_execution_thread(None)
 class TestConfig(PyScriptTest):
-    @pytest.mark.skip(
-        "FIXME: API has changed and there's no pyscript_get_config anymore"
-    )
     def test_py_config_inline(self):
         self.pyscript_run(
             """
-        <py-config type="toml">
+        <py-config>
             name = "foobar"
         </py-config>
 
-        <py-script>
-            import js
-            config = js.pyscript_get_config()
-            js.console.log("config name:", config.name)
+        <py-script async>
+            from pyscript import window, document
+            promise = await document.currentScript._pyodide.promise
+            window.console.log("config name:", promise.config.name)
         </py-script>
         """
         )
         assert self.console.log.lines[-1] == "config name: foobar"
 
-    @pytest.mark.skip(
-        "FIXME: API has changed and there's no pyscript_get_config anymore"
-    )
     def test_py_config_external(self):
         pyconfig_toml = """
             name = "app with external config"
@@ -79,13 +73,12 @@ class TestConfig(PyScriptTest):
         self.writefile("pyconfig.toml", pyconfig_toml)
         self.pyscript_run(
             """
-        <py-config src="pyconfig.toml" type="toml">
-        </py-config>
+        <py-config src="pyconfig.toml"></py-config>
 
-        <py-script>
-            import js
-            config = js.pyscript_get_config()
-            js.console.log("config name:", config.name)
+        <py-script async>
+            from pyscript import window, document
+            promise = await document.currentScript._pyodide.promise
+            window.console.log("config name:", promise.config.name)
         </py-script>
         """
         )
@@ -121,38 +114,6 @@ class TestConfig(PyScriptTest):
         )
 
         assert self.console.log.lines[-1] == f"version {PYODIDE_VERSION}"
-
-    @pytest.mark.skip("FIXME: We need to restore the banner.")
-    def test_runtime_still_works_but_shows_deprecation_warning(self, pyodide_tar):
-        unzip(pyodide_tar, extract_to=self.tmpdir)
-        self.pyscript_run(
-            """
-            <py-config type="json">
-                {
-                    "runtimes": [{
-                        "src": "/pyodide/pyodide.js",
-                        "name": "my-own-pyodide",
-                        "lang": "python"
-                    }]
-                }
-            </py-config>
-
-            <py-script>
-                import sys, js
-                pyodide_version = sys.modules["pyodide"].__version__
-                js.console.log("version", pyodide_version)
-            </py-script>
-        """,
-        )
-
-        assert self.console.log.lines[-1] == f"version {PYODIDE_VERSION}"
-
-        deprecation_banner = self.page.wait_for_selector(".alert-banner")
-        expected_message = (
-            "The configuration option `config.runtimes` is deprecated. "
-            "Please use `config.interpreters` instead."
-        )
-        assert deprecation_banner.inner_text() == expected_message
 
     @pytest.mark.skip("FIXME: We need to restore the banner.")
     def test_invalid_json_config(self):

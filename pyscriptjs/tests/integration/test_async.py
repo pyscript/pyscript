@@ -1,5 +1,3 @@
-import pytest
-
 from .support import PyScriptTest, filter_inner_text
 
 
@@ -123,21 +121,16 @@ class TestAsync(PyScriptTest):
         inner_text = self.page.inner_text("html")
         assert "A0\nA1\nB0\nB1" in filter_inner_text(inner_text)
 
-    @pytest.mark.skip("FIXME: display in implicit target WAS not allowed")
     def test_async_display_untargeted(self):
         self.pyscript_run(
             """
-                <py-script id='pyA'>
+                <py-script>
                     from pyscript import display
                     import asyncio
                     import js
 
                     async def a_func():
-                        try:
-                            display('A')
-                            await asyncio.sleep(0.1)
-                        except Exception as err:
-                            js.console.error(str(err))
+                        display('A')
                         await asyncio.sleep(1)
                         js.console.log("DONE")
 
@@ -146,10 +139,7 @@ class TestAsync(PyScriptTest):
             """
         )
         self.wait_for_console("DONE")
-        assert (
-            self.console.error.lines[-1]
-            == "Implicit target not allowed here. Please use display(..., target=...)"
-        )
+        assert self.page.locator("py-script").inner_text() == "A"
 
     def test_sync_and_async_order(self):
         """
