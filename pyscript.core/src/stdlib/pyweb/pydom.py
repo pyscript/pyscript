@@ -89,15 +89,7 @@ class Element(BaseElement):
 
             return child
 
-    # TODO: These 2 should align with what we provide in Pydom.__get_item__
-    # def query(self, selector):
-    #     """The querySelector() method of the Element interface returns the first
-    #     element that is a descendant of the element on which it is invoked that
-    #     matches the specified group of selectors.
-    #     """
-    #     return self.__class__(self._element.querySelector(selector))
-
-    # -------- Boilerplate Proxy for the Element API -------- #
+    # -------- Pythonic Interface to Element -------- #
     @property
     def html(self):
         return self._element.innerHTML
@@ -196,29 +188,6 @@ class Element(BaseElement):
 
     def when(self, event, handler):
         document.when(event, selector=self)(handler)
-
-    # @staticmethod
-    # def when(element, event_type):
-    #     # TODO: Ideally, we should have that implemented in PyScript not patched here
-    #     # if isinstance(element, Element):
-    #     #     element = [element]
-    #     def decorator(func):
-    #         # elements = document.querySelectorAll(selector)
-    #         sig = inspect.signature(func)
-
-    #         # Function doesn't receive events
-    #         if not sig.parameters:
-
-    #             def wrapper(*args, **kwargs):
-    #                 func()
-
-    #             # for el in element:
-    #             add_event_listener(element._element, event_type, wrapper)
-    #         else:
-    #             # for el in element:
-    #             add_event_listener(element._element, event_type, func)
-    #         return func
-    #     return decorator
 
 
 class StyleProxy(dict):
