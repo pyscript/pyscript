@@ -7,7 +7,7 @@ from pyweb import pydom
 
 class TestDocument:
     def test__element(self):
-        assert pydom._element == document
+        assert pydom._js == document
 
     def test_no_parent(self):
         assert pydom.parent is None
@@ -15,7 +15,7 @@ class TestDocument:
     def test_create_element(self):
         new_el = pydom.create("div")
         assert isinstance(new_el, pydom.BaseElement)
-        assert new_el._element.tagName == "DIV"
+        assert new_el._js.tagName == "DIV"
         # EXPECT the new element to be associated with the document
         assert new_el.parent == None
 
@@ -98,7 +98,7 @@ class TestElement:
         assert div.html == div2.html
         div.html = "some value"
 
-        assert div.value == div2.value == "some value"
+        assert div.html == div2.html == "some value"
 
     def test_read_classes(self):
         id_ = "test_class_selector"
@@ -157,7 +157,7 @@ class TestCreation:
         new_el = pydom.create("div")
         new_el.id = "new_el_id"
         assert isinstance(new_el, pydom.BaseElement)
-        assert new_el._element.tagName == "DIV"
+        assert new_el._js.tagName == "DIV"
         # EXPECT the new element to be associated with the document
         assert new_el.parent == None
         pydom.body.append(new_el)
@@ -175,7 +175,7 @@ class TestCreation:
         )
 
         assert isinstance(new_el, pydom.BaseElement)
-        assert new_el._element.tagName == "P"
+        assert new_el._js.tagName == "P"
         # EXPECT the new element to be associated with the document
         assert new_el.parent == parent_div
 
@@ -194,6 +194,6 @@ class TestCreation:
         # Now let's simulate a click on the button (using the low level JS API)
         # so we don't risk pydom getting in the way
         assert not called
-        just_a_button._element.click()
+        just_a_button._js.click()
 
         assert called
