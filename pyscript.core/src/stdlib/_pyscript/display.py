@@ -55,6 +55,18 @@ _MIME_RENDERERS = {
 }
 
 
+class HTML:
+    """
+    Wrap a string so that display() can render it as plain HTML
+    """
+
+    def __init__(self, html):
+        self._html = html
+
+    def _repr_html_(self):
+        return self._html
+
+
 def _eval_formatter(obj, print_method):
     """
     Evaluates a formatter method.

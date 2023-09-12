@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Next: When Decorator</title>
+        <link rel="stylesheet" href="../dist/core.css">
+        <script type="module" src="../dist/core.js"></script>
+    </head>
+    <body>
+        <p>Click for a hi!</p>
+
+        <py-script>
+            from pyscript import window, when
+            @when("click", selector="#say-hi")
+
+            def say_hi(event):
+                window.alert("Hi! 🤗")
+        </py-script>
+
+        <button id="say-hi">Click Me</button>
+
+    </body>
+</html>
