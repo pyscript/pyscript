@@ -165,3 +165,22 @@ class TestCreation:
         pydom.body.append(new_el)
 
         assert pydom["#new_el_id"][0].parent == pydom.body
+
+    def test_create_element_child(self):
+        selector = "#element-creation-test"
+        parent_div = pydom[selector][0]
+
+        # Creating an element from another element automatically creates that element
+        # as a child of the original element
+        new_el = parent_div.create(
+            "p", classes=["code-description"], html="Ciao PyScripters!"
+        )
+
+        assert isinstance(new_el, pydom.BaseElement)
+        assert new_el._element.tagName == "P"
+        # EXPECT the new element to be associated with the document
+        assert new_el.parent == parent_div
+
+        assert pydom[selector][0].children[0] == new_el
+
+    # TODO: when decorator and event handlers have been left out until we add when to pyscript
