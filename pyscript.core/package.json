@@ -1,11 +1,11 @@
 {
     "name": "@pyscript/core",
-    "version": "0.1.15",
+    "version": "0.1.17",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
     "unpkg": "./index.js",
-    "jsdelivr": "./index.js",
+    "jsdelivr": "./jsdelivr.js",
     "browser": "./index.js",
     "main": "./index.js",
     "exports": {
