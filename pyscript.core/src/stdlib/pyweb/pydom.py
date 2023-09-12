@@ -73,6 +73,10 @@ class BaseElement:
 
 
 class Element(BaseElement):
+    @property
+    def children(self):
+        return [self.__class__(el) for el in self._element.children]
+
     def append(self, child):
         # TODO: this is Pyodide specific for now!!!!!!
         # if we get passed a JSProxy Element directly we just map it to the
@@ -84,9 +88,6 @@ class Element(BaseElement):
             self._element.appendChild(child._element)
 
             return child
-
-    def from_js(self, js_element):
-        return self.__class__(js_element.tagName, parent=self)
 
     # TODO: These 2 should align with what we provide in Pydom.__get_item__
     # def query(self, selector):
