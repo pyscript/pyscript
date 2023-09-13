@@ -117,6 +117,23 @@ class TestElement:
         div.remove_class(classname)
         assert div.classes == [] == same_div.classes
 
+    def test_when_decorator(self):
+        called = False
+
+        just_a_button = pydom["#a-test-button"][0]
+
+        @when("click", just_a_button)
+        def on_click(event):
+            nonlocal called
+            called = True
+
+        # Now let's simulate a click on the button (using the low level JS API)
+        # so we don't risk pydom getting in the way
+        assert not called
+        just_a_button._js.click()
+
+        assert called
+
 
 class TestCollection:
     def test_iter_eq_children(self):
@@ -151,6 +168,24 @@ class TestCollection:
             assert el.style["background-color"] != "red"
             assert elements[i].style["background-color"] != "red"
 
+    def test_when_decorator(self):
+        called = False
+
+        buttons_collection = pydom["button"]
+
+        @when("click", buttons_collection)
+        def on_click(event):
+            nonlocal called
+            called = True
+
+        # Now let's simulate a click on the button (using the low level JS API)
+        # so we don't risk pydom getting in the way
+        assert not called
+        for button in buttons_collection:
+            button._js.click()
+            assert called
+            called = False
+
 
 class TestCreation:
     def test_create_document_element(self):
@@ -180,20 +215,3 @@ class TestCreation:
         assert new_el.parent == parent_div
 
         assert pydom[selector][0].children[0] == new_el
-
-    def test_when_decorator(self):
-        called = False
-
-        just_a_button = pydom["#a-test-button"][0]
-
-        @when("click", just_a_button)
-        def on_click(event):
-            nonlocal called
-            called = True
-
-        # Now let's simulate a click on the button (using the low level JS API)
-        # so we don't risk pydom getting in the way
-        assert not called
-        just_a_button._js.click()
-
-        assert called
