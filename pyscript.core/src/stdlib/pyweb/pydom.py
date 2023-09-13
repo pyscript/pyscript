@@ -1,4 +1,5 @@
 import sys
+import warnings
 from functools import cached_property
 from typing import Any
 
@@ -104,11 +105,22 @@ class Element(BaseElement):
     def content(self):
         # TODO: This breaks with with standard template elements. Define how to best
         #       handle this specifica use case. Just not support for now?
+        if self._js.tagName == "TEMPLATE":
+            warnings.warn(
+                "Content attribute not supported for template elements.", stacklevel=2
+            )
+            return None
         return self._js.innerHTML
 
     @content.setter
     def content(self, value):
         # TODO: (same comment as above)
+        if self._js.tagName == "TEMPLATE":
+            warnings.warn(
+                "Content attribute not supported for template elements.", stacklevel=2
+            )
+            return
+
         display(value, target=self.id)
 
     @property
