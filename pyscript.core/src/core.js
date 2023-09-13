@@ -224,7 +224,13 @@ define("py", {
     },
 });
 
-class PyScriptElement extends HTMLElement {
+class PyConfigElement extends HTMLElement {
+    constructor() {
+        super().style.display = "none";
+    }
+}
+
+class PyScriptElement extends PyConfigElement {
     constructor() {
         assign(super(), {
             _pyodide: Promise.withResolvers(),
@@ -251,6 +257,7 @@ class PyScriptElement extends HTMLElement {
     }
 }
 
+customElements.define("py-config", PyConfigElement);
 customElements.define("py-script", PyScriptElement);
 
 /**
