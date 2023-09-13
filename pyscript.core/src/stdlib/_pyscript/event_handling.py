@@ -11,9 +11,8 @@ def when(event_type=None, selector=None):
     """
 
     def decorator(func):
-        _selector = selector
         if isinstance(selector, str):
-            elements = document.querySelectorAll(_selector)
+            elements = document.querySelectorAll(selector)
         else:
             # TODO: This is a hack that will be removed when pyscript becomes a package
             #       and we can better manage the imports without circular dependencies
