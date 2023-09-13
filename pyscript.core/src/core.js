@@ -11,7 +11,7 @@ import plugins from "./plugins.js";
 // TODO: this is not strictly polyscript related but handy ... not sure
 //       we should factor this utility out a part but this works anyway.
 import { queryTarget } from "../node_modules/polyscript/esm/script-handler.js";
-import { dedent } from "../node_modules/polyscript/esm/utils.js";
+import { dedent, dispatch } from "../node_modules/polyscript/esm/utils.js";
 import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
 
 import { robustFetch as fetch } from "./fetch.js";
@@ -193,6 +193,7 @@ define("py", {
         // before regular stuff happens in here
         for (const callback of hooks.onInterpreterReady)
             callback(pyodide, element);
+
         if (isScript(element)) {
             const {
                 attributes: { async: isAsync, target },
@@ -213,6 +214,8 @@ define("py", {
             // document.currentScript.target if needed
             defineProperty(element, "target", { value: show });
 
+            // notify before the code runs
+            dispatch(element, "py");
             pyodide[`run${isAsync ? "Async" : ""}`](
                 await fetchSource(element, pyodide.io, true),
             );
@@ -245,6 +248,8 @@ class PyScriptElement extends HTMLElement {
             const runner = this.hasAttribute("async") ? runAsync : run;
             this.srcCode = await fetchSource(this, io, !this.childElementCount);
             this.replaceChildren();
+            // notify before the code runs
+            dispatch(this, "py");
             runner(this.srcCode);
             this.style.display = "block";
         }
