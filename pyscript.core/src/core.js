@@ -1,12 +1,7 @@
 /*! (c) PyScript Development Team */
 
 import "@ungap/with-resolvers";
-import { $ } from "basic-devtools";
 import { define, XWorker } from "polyscript";
-import sync from "./sync.js";
-
-import stdlib from "./stdlib.js";
-import plugins from "./plugins.js";
 
 // TODO: this is not strictly polyscript related but handy ... not sure
 //       we should factor this utility out a part but this works anyway.
@@ -14,29 +9,21 @@ import { queryTarget } from "../node_modules/polyscript/esm/script-handler.js";
 import { dedent, dispatch } from "../node_modules/polyscript/esm/utils.js";
 import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
 
-import { robustFetch as fetch } from "./fetch.js";
+import sync from "./sync.js";
+import stdlib from "./stdlib.js";
+import { config, plugins } from "./config.js";
+import { robustFetch as fetch, getText } from "./fetch.js";
 
 const { assign, defineProperty, entries } = Object;
 
-const getText = (body) => body.text();
+const TYPE = "py";
 
 // allows lazy element features on code evaluation
 let currentElement;
 
 // create a unique identifier when/if needed
 let id = 0;
-const getID = (prefix = "py") => `${prefix}-${id++}`;
-
-// find the shared config for all py-script elements
-let config;
-let pyConfig = $("py-config");
-if (pyConfig) config = pyConfig.getAttribute("src") || pyConfig.textContent;
-else {
-    pyConfig = $('script[type="py"]');
-    config = pyConfig?.getAttribute("config");
-}
-
-if (/^https?:\/\//.test(config)) config = await fetch(config).then(getText);
+const getID = (prefix = TYPE) => `${prefix}-${id++}`;
 
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
@@ -70,7 +57,7 @@ const fetchSource = async (tag, io, asText) => {
     if (asText) return dedent(tag.textContent);
 
     console.warn(
-        'Deprecated: use <script type="py"> for an always safe content parsing:\n',
+        `Deprecated: use <script type="${TYPE}"> for an always safe content parsing:\n`,
         tag.innerHTML,
     );
 
@@ -140,14 +127,10 @@ const workerHooks = {
         [...hooks.codeAfterRunWorkerAsync].map(dedent).join("\n"),
 };
 
-// avoid running further script if the previous one had
-// some import that would inevitably delay its execution
-let queuePlugins;
-
 // define the module as both `<script type="py">` and `<py-script>`
-define("py", {
+define(TYPE, {
     config,
-    env: "py-script",
+    env: `${TYPE}-script`,
     interpreter: "pyodide",
     ...workerHooks,
     onWorkerReady(_, xworker) {
@@ -173,21 +156,8 @@ define("py", {
             registerModule(pyodide);
         }
 
-        // load plugins unless specified otherwise
-        const toBeAwaited = [];
-        for (const [key, value] of entries(plugins)) {
-            if (!pyodide.config?.plugins?.includes(`!${key}`))
-                toBeAwaited.push(value());
-        }
-
-        // this grants queued results when first script/tag has plugins
-        // and the second one *might* rely on first tag execution
-        if (toBeAwaited.length) {
-            const all = Promise.all(toBeAwaited);
-            queuePlugins = queuePlugins ? queuePlugins.then(() => all) : all;
-        }
-
-        if (queuePlugins) await queuePlugins;
+        // ensure plugins are bootstrapped already
+        if (plugins) await plugins;
 
         // allows plugins to do whatever they want with the element
         // before regular stuff happens in here
@@ -215,7 +185,7 @@ define("py", {
             defineProperty(element, "target", { value: show });
 
             // notify before the code runs
-            dispatch(element, "py");
+            dispatch(element, TYPE);
             pyodide[`run${isAsync ? "Async" : ""}`](
                 await fetchSource(element, pyodide.io, true),
             );
@@ -249,7 +219,7 @@ class PyScriptElement extends HTMLElement {
             this.srcCode = await fetchSource(this, io, !this.childElementCount);
             this.replaceChildren();
             // notify before the code runs
-            dispatch(this, "py");
+            dispatch(this, TYPE);
             runner(this.srcCode);
             this.style.display = "block";
         }

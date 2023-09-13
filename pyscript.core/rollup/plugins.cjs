@@ -10,7 +10,11 @@ for (const file of readdirSync(join(__dirname, "..", "src", "plugins"))) {
             ? name
             : `[${JSON.stringify(name)}]`;
         const value = JSON.stringify(`./plugins/${file}`);
-        plugins.push(`    ${key}: () => import(${value}),`);
+        plugins.push(
+            // this comment is needed to avoid bundlers eagerly embedding lazy
+            // dependencies, causing all sort of issues once in production
+            `    ${key}: () => import(/* webpackIgnore: true */ ${value}),`,
+        );
     }
 }
 
