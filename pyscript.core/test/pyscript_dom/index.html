@@ -75,6 +75,11 @@
       <button id="a-test-button">I'm a button to be clicked</button>
       <button>I'm another button you can click</button>
       <button id="a-third-button">2 is better than 3 :)</button>
+
+      <div id="element-append-tests"></div>
+      <p class="collection"></p>
+      <div class="collection"></div>
+      <h3 class="collection"></h3>
     </div>
 
 
@@ -85,8 +90,14 @@
       let testsStarted = false;
       console.log = (...args) => {
         log("---IN---");
+        let txt = args.join(" ");
+        let token = "<br>";
+        if (txt.endsWith("FAILED"))
+          token = " ❌<br>";
+        else if (txt.endsWith("PASSED"))
+          token = " ✅<br>";
         if (testsStarted)
-          terminalDiv.innerHTML += args.join(" ") + "<br>";
+          terminalDiv.innerHTML += args.join(" ") + token;
 
         log(...args)
 
