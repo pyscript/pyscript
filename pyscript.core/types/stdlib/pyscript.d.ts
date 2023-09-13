@@ -6,7 +6,6 @@ declare const _default: {
     };
     "pyscript.py": string;
     pyweb: {
-        "base.py": string;
         "pydom.py": string;
     };
 };

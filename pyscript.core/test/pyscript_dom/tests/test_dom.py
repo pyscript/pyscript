@@ -100,6 +100,35 @@ class TestElement:
 
         assert div.html == div2.html == "some value"
 
+    def test_append_element(self):
+        id_ = "element-append-tests"
+        div = pydom[f"#{id_}"][0]
+        len_children_before = len(div.children)
+        new_el = div.create("p")
+        div.append(new_el)
+        assert len(div.children) == len_children_before + 1
+        assert div.children[-1] == new_el
+
+    def test_append_js_element(self):
+        id_ = "element-append-tests"
+        div = pydom[f"#{id_}"][0]
+        len_children_before = len(div.children)
+        new_el = div.create("p")
+        div.append(new_el._js)
+        assert len(div.children) == len_children_before + 1
+        assert div.children[-1] == new_el
+
+    def test_append_collection(self):
+        id_ = "element-append-tests"
+        div = pydom[f"#{id_}"][0]
+        len_children_before = len(div.children)
+        collection = pydom[".collection"]
+        div.append(collection)
+        assert len(div.children) == len_children_before + len(collection)
+
+        for i in range(len(collection)):
+            assert div.children[-1 - i] == collection[-1 - i]
+
     def test_read_classes(self):
         id_ = "test_class_selector"
         expected_class = "a-test-class"

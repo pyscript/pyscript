@@ -80,12 +80,16 @@ class Element(BaseElement):
         # if we get passed a JSProxy Element directly we just map it to the
         # higher level Python element
         if isinstance(child, JsProxy):
-            return self.append(self.from_js(child))
+            return self.append(Element(child))
 
         elif isinstance(child, Element):
             self._js.appendChild(child._js)
 
             return child
+
+        elif isinstance(child, ElementCollection):
+            for el in child:
+                self.append(el)
 
     # -------- Pythonic Interface to Element -------- #
     @property
