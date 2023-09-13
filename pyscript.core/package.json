@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.1.17",
+    "version": "0.1.18",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -32,12 +32,12 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.3.1"
+        "polyscript": "^0.3.6"
     },
     "devDependencies": {
         "@rollup/plugin-node-resolve": "^15.2.1",
         "@rollup/plugin-terser": "^0.4.3",
-        "rollup": "^3.29.0",
+        "rollup": "^3.29.1",
         "rollup-plugin-postcss": "^4.0.2",
         "rollup-plugin-string": "^3.0.0",
         "static-handler": "^0.4.2",
