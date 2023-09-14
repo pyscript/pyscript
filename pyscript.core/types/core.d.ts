@@ -21,6 +21,5 @@ export namespace hooks {
     let codeAfterRunWorker: Set<string>;
     let codeAfterRunWorkerAsync: Set<string>;
 }
-declare let config: any;
+import { config } from "./config.js";
 import sync from "./sync.js";
-export {};

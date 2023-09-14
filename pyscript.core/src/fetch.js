@@ -1,4 +1,7 @@
 import { FetchError, ErrorCode } from "./exceptions.js";
+import { getText } from "../node_modules/polyscript/esm/fetch-utils.js";
+
+export { getText };
 
 /**
  * This is a fetch wrapper that handles any non 200 responses and throws a
