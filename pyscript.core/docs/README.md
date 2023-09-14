@@ -14,7 +14,7 @@ Accordingly, this is the bare minimum required output to bootstrap *PyScript Nex
 
 ```html
 <!-- Option 1: based on esm.sh which in turns is jsdlvr -->
-<script type="module" src="https://esm.sh/@pyscript/core@latest/core.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@pyscript/core"></script>
 
 <!-- Option 2: based on unpkg.com -->
 <script type="module" src="https://unpkg.com/@pyscript/core"></script>
@@ -28,11 +28,13 @@ If no `<script type="py">` or `<py-script>` tag is present, it is still possible
 
 ```html
 <script type="module">
-  import { PyWorker } from "https://unpkg.com/@pyscript/core";
+  import { PyWorker } from "https://cdn.jsdelivr.net/npm/@pyscript/core";
 
   const worker = PyWorker("./code.py", { config: "./config.toml" /* optional */ });
 </script>
 ```
+
+Alternatively, it is possible to specify a `worker` attribute to either run embedded code or the provided `src` file.
 
 #### CSS
 
@@ -40,10 +42,10 @@ If you are planning to use either `<py-config>` or `<py-script>` tags on the pag
 
 ```html
 <!-- Option 1: based on esm.sh which in turns is jsdlvr -->
-<link rel="stylesheet" href="https://esm.sh/@pyscript/core@latest/core.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.css">
 
 <!-- Option 2: based on unpkg.com -->
-<link rel="stylesheet" href="https://unpkg.com/@pyscript/core/css">
+<link rel="stylesheet" href="https://unpkg.com/@pyscript/core/dist/core.css">
 
 <!-- Option X: any CDN that uses npmjs registry should work -->
 ```
@@ -58,6 +60,30 @@ Once again, if you use `<script type="py">` instead, you won't need CSS unless y
 
   display("Hello PyScript Next")
 </script>
+```
+
+#### HTML Example
+
+This is a complete reference to bootstrap *PyScript* in a HTML document.
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>PyScript Next</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.css">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@pyscript/core"></script>
+  </head>
+  <body>
+    <script type="py">
+      from pyscript import document
+
+      document.body.textContent = "PyScript Next"
+    </script>
+  </body>
+</html>
 ```
 
 
@@ -81,7 +107,7 @@ The module itself is currently exporting the following utilities:
   * **hooks**, which allows plugins to define *ASAP* callbacks or strings that should be executed either in the main thread or the worker before, or after, the code has been executed.
 
 ```js
-import { hooks } from "https://unpkg.com/@pyscript/core";
+import { hooks } from "https://cdn.jsdelivr.net/npm/@pyscript/core";
 
 // example
 hooks.onInterpreterReady.add((utils, element) => {
@@ -146,7 +172,7 @@ The commonly shared utilities are:
 
 ```html
 <script type="module">
-  import { PyWorker } from "https://unpkg.com/@pyscript/core";
+  import { PyWorker } from "https://cdn.jsdelivr.net/npm/@pyscript/core";
 
   const worker = PyWorker("./worker.py");
 
