@@ -52,6 +52,14 @@ jobs:
                   aws-region: ${{ secrets.AWS_REGION }}
                   role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
 
+
+            - name: Generate index.html in snapshot
+              working-directory: .
+              run: |
+                  URL="https://pyscript.net/snapshots/${{ inputs.snapshot_version }}/"
+                  cp ./public/index.html ./pyscript.core/dist/index.html
+                  sed -i 's/[[PATH]]/${URL}/' ./pyscript.core/dist/index.html
+
             - name: Copy to Snapshot
               working-directory: ./pyscript.core/dist
               run: >
