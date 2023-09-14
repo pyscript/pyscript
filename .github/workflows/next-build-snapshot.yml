@@ -56,7 +56,7 @@ jobs:
               working-directory: .
               run: |
                   cp ./public/index.html ./pyscript.core/dist/index.html
-                  sed -i 's#[[PATH]]#https://pyscript.net/snapshots/${{ inputs.snapshot_version }}/#' ./pyscript.core/dist/index.html
+                  sed -i 's#_PATH#https://pyscript.net/snapshots/${{ inputs.snapshot_version }}/#' ./pyscript.core/dist/index.html
 
             - name: Copy to Snapshot
               working-directory: ./pyscript.core/dist
