@@ -233,7 +233,7 @@ class ElementCollection:
             return ElementCollection(self._elements[key])
 
         # If it's anything else (basically a string) we use it as a selector
-        # TODO: THIS IS BUGGED!! Write tests!
+        # TODO: Write tests!
         elements = self._element.querySelectorAll(key)
         return ElementCollection([Element(el) for el in elements])
 
