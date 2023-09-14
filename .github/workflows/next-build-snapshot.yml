@@ -52,7 +52,6 @@ jobs:
                   aws-region: ${{ secrets.AWS_REGION }}
                   role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
 
-
             - name: Generate index.html in snapshot
               working-directory: .
               run: |
