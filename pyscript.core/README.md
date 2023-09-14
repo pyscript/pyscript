@@ -27,6 +27,22 @@ Accordingly, whenever a file contains this warning at its first line, please do 
 // ⚠️ This file is an artifact: DO NOT MODIFY
 ```
 
+### Running tests
+
+Before running the tests, we need to create a tests environment first. To do so make sure you are in the `pyscript.core` folder and run the following command:
+
+```
+make setup
+```
+
+This will create a tests environment and install all the dependencies needed to run the tests.
+
+Now that the tests environment has been created, you can run the **integration tests** with the following command:
+
+```
+make test-integration
+```
+
 ## Python stdlib
 
 The `pyscript` module available in _Python_ defines its exported utilities via `src/stdlib/pyscript.py`. Any file that would like to provide an export should be placed into `src/stdlib/_pyscript` folder (see the `display.py` as example) and its public functionalities should be explicit in the `src/stdlib/pyscript.py` file.
