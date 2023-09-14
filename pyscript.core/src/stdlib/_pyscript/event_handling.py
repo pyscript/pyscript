@@ -11,7 +11,23 @@ def when(event_type=None, selector=None):
     """
 
     def decorator(func):
-        elements = document.querySelectorAll(selector)
+        if isinstance(selector, str):
+            elements = document.querySelectorAll(selector)
+        else:
+            # TODO: This is a hack that will be removed when pyscript becomes a package
+            #       and we can better manage the imports without circular dependencies
+            from pyweb import pydom
+
+            if isinstance(selector, pydom.Element):
+                elements = [selector._js]
+            elif isinstance(selector, pydom.ElementCollection):
+                elements = [el._js for el in selector]
+            else:
+                raise ValueError(
+                    f"Invalid selector: {selector}. Selector must"
+                    " be a string, a pydom.Element or a pydom.ElementCollection."
+                )
+
         sig = inspect.signature(func)
         # Function doesn't receive events
         if not sig.parameters:

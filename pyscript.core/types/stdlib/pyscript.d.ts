@@ -5,5 +5,8 @@ declare const _default: {
         "event_handling.py": string;
     };
     "pyscript.py": string;
+    pyweb: {
+        "pydom.py": string;
+    };
 };
 export default _default;
