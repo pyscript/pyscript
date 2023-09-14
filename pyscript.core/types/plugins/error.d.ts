@@ -1,1 +1,1 @@
-export {};
+export function notify(message: any): void;
