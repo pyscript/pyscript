@@ -54,9 +54,7 @@ jobs:
 
             - name: Generate index.html in snapshot
               working-directory: .
-              run: |
-                  cp ./public/index.html ./pyscript.core/dist/index.html
-                  sed -i 's#[[PATH]]#https://pyscript.net/snapshots/${{ inputs.snapshot_version }}/#' ./pyscript.core/dist/index.html
+              run: sed 's#_PATH_#https://pyscript.net/snapshots/${{ inputs.snapshot_version }}/#' ./public/index.html > ./pyscript.core/dist/index.html
 
             - name: Copy to Snapshot
               working-directory: ./pyscript.core/dist
