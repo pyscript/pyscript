@@ -11,7 +11,7 @@ import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
 
 import sync from "./sync.js";
 import stdlib from "./stdlib.js";
-import { config, plugins } from "./config.js";
+import { config, plugins, error } from "./config.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
 
 const { assign, defineProperty, entries } = Object;
@@ -128,74 +128,81 @@ const workerHooks = {
 };
 
 // define the module as both `<script type="py">` and `<py-script>`
-define(TYPE, {
-    config,
-    env: `${TYPE}-script`,
-    interpreter: "pyodide",
-    ...workerHooks,
-    onWorkerReady(_, xworker) {
-        assign(xworker.sync, sync);
-    },
-    onBeforeRun(pyodide, element) {
-        currentElement = element;
-        bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRun");
-    },
-    onBeforeRunAsync(pyodide, element) {
-        currentElement = element;
-        bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRunAsync");
-    },
-    onAfterRun(pyodide, element) {
-        bootstrapNodeAndPlugins(pyodide, element, after, "onAfterRun");
-    },
-    onAfterRunAsync(pyodide, element) {
-        bootstrapNodeAndPlugins(pyodide, element, after, "onAfterRunAsync");
-    },
-    async onInterpreterReady(pyodide, element) {
-        if (shouldRegister) {
-            shouldRegister = false;
-            registerModule(pyodide);
-        }
-
-        // ensure plugins are bootstrapped already
-        if (plugins) await plugins;
-
-        // allows plugins to do whatever they want with the element
-        // before regular stuff happens in here
-        for (const callback of hooks.onInterpreterReady)
-            callback(pyodide, element);
-
-        if (isScript(element)) {
-            const {
-                attributes: { async: isAsync, target },
-            } = element;
-            const hasTarget = !!target?.value;
-            const show = hasTarget
-                ? queryTarget(target.value)
-                : document.createElement("script-py");
-
-            if (!hasTarget) {
-                const { head, body } = document;
-                if (head.contains(element)) body.append(show);
-                else element.after(show);
-            }
-            if (!show.id) show.id = getID();
-
-            // allows the code to retrieve the target element via
-            // document.currentScript.target if needed
-            defineProperty(element, "target", { value: show });
-
-            // notify before the code runs
-            dispatch(element, TYPE);
-            pyodide[`run${isAsync ? "Async" : ""}`](
-                await fetchSource(element, pyodide.io, true),
+// but only if the config didn't throw an error
+error ||
+    define(TYPE, {
+        config,
+        env: `${TYPE}-script`,
+        interpreter: "pyodide",
+        ...workerHooks,
+        onWorkerReady(_, xworker) {
+            assign(xworker.sync, sync);
+        },
+        onBeforeRun(pyodide, element) {
+            currentElement = element;
+            bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRun");
+        },
+        onBeforeRunAsync(pyodide, element) {
+            currentElement = element;
+            bootstrapNodeAndPlugins(
+                pyodide,
+                element,
+                before,
+                "onBeforeRunAsync",
             );
-        } else {
-            // resolve PyScriptElement to allow connectedCallback
-            element._pyodide.resolve(pyodide);
-        }
-        console.debug("[pyscript/main] PyScript Ready");
-    },
-});
+        },
+        onAfterRun(pyodide, element) {
+            bootstrapNodeAndPlugins(pyodide, element, after, "onAfterRun");
+        },
+        onAfterRunAsync(pyodide, element) {
+            bootstrapNodeAndPlugins(pyodide, element, after, "onAfterRunAsync");
+        },
+        async onInterpreterReady(pyodide, element) {
+            if (shouldRegister) {
+                shouldRegister = false;
+                registerModule(pyodide);
+            }
+
+            // ensure plugins are bootstrapped already
+            if (plugins) await plugins;
+
+            // allows plugins to do whatever they want with the element
+            // before regular stuff happens in here
+            for (const callback of hooks.onInterpreterReady)
+                callback(pyodide, element);
+
+            if (isScript(element)) {
+                const {
+                    attributes: { async: isAsync, target },
+                } = element;
+                const hasTarget = !!target?.value;
+                const show = hasTarget
+                    ? queryTarget(target.value)
+                    : document.createElement("script-py");
+
+                if (!hasTarget) {
+                    const { head, body } = document;
+                    if (head.contains(element)) body.append(show);
+                    else element.after(show);
+                }
+                if (!show.id) show.id = getID();
+
+                // allows the code to retrieve the target element via
+                // document.currentScript.target if needed
+                defineProperty(element, "target", { value: show });
+
+                // notify before the code runs
+                dispatch(element, TYPE);
+                pyodide[`run${isAsync ? "Async" : ""}`](
+                    await fetchSource(element, pyodide.io, true),
+                );
+            } else {
+                // resolve PyScriptElement to allow connectedCallback
+                element._pyodide.resolve(pyodide);
+            }
+            console.debug("[pyscript/main] PyScript Ready");
+        },
+    });
 
 class PyScriptElement extends HTMLElement {
     constructor() {
@@ -226,7 +233,8 @@ class PyScriptElement extends HTMLElement {
     }
 }
 
-customElements.define("py-script", PyScriptElement);
+// define py-script only if the config didn't throw an error
+error || customElements.define("py-script", PyScriptElement);
 
 /**
  * A `Worker` facade able to bootstrap on the worker thread only a PyScript module.

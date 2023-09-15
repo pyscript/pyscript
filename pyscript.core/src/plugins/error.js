@@ -24,7 +24,7 @@ hooks.onBeforeRun.add(function override(pyScript) {
 // Error hook utilities
 
 // Custom function to show notifications
-function notify(message) {
+export function notify(message) {
     const div = document.createElement("div");
     div.className = "py-error";
     div.textContent = message;
