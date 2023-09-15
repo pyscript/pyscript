@@ -53,16 +53,20 @@ jobs:
               uses: conda-incubator/setup-miniconda@v2
 
             - name: Setup Environment
+              working-directory: ./pyscriptjs
               run: make setup
 
             - name: Python Tests
-              run: make test-py
+              working-directory: ./pyscriptjs
+              run: make test
 
             - name: Integration Tests
+              working-directory: ./pyscriptjs
               run: make test-integration
               #run: make test-integration-parallel
 
             - name: Examples Tests
+              working-directory: ./pyscriptjs
               run: make test-examples
 
             - uses: actions/upload-artifact@v3
