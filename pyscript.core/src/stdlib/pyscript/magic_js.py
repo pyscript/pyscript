@@ -1,3 +1,4 @@
+from pyscript.util import NotSupported
 import js as globalThis
 
 RUNNING_IN_WORKER = not hasattr(globalThis, "document")
@@ -5,10 +6,9 @@ RUNNING_IN_WORKER = not hasattr(globalThis, "document")
 if RUNNING_IN_WORKER:
     import polyscript
 
-    # XXX we should use a "smarter" object which emits a clearer error message
-    # if you try to access it
-    PyWorker = None
-
+    PyWorker = NotSupported(
+        'pyscript.PyWorker',
+        'pyscript.PyWorker works only when running in the main thread')
     window = polyscript.xworker.window
     document = window.document
     sync = polyscript.xworker.sync
@@ -21,12 +21,11 @@ if RUNNING_IN_WORKER:
 else:
     import _pyscript
     from _pyscript import PyWorker
-
     window = globalThis
     document = globalThis.document
-    # XXX we should use a "smarter" object which emits a clearer error message
-    # if you try to access it
-    sync = None
+    sync = NotSupported(
+        'pyscript.sync',
+        'pyscript.sync works only when running in a worker')
 
     # in MAIN the current element target exist, just use it
     def current_target():
