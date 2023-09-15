@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.1.18",
+    "version": "0.1.19",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -21,6 +21,7 @@
     "scripts": {
         "server": "npx static-handler --cors --coep --coop --corp .",
         "build": "node rollup/stdlib.cjs && node rollup/plugins.cjs && rm -rf dist && rollup --config rollup/core.config.js && npm run ts",
+        "size": "echo -e \"\\033[1mdist/*.js file size\\033[0m\"; for js in $(ls dist/*.js); do echo -e \"\\033[2m$js:\\033[0m $(cat $js | brotli | wc -c) bytes\"; done",
         "ts": "tsc -p ."
     },
     "keywords": [

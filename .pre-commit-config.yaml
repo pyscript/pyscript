@@ -16,6 +16,7 @@ repos:
           - id: check-json
             exclude: tsconfig\.json
           - id: check-toml
+            exclude: bad\.toml
           - id: check-xml
           - id: check-yaml
           - id: detect-private-key

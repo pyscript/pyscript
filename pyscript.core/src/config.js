@@ -7,38 +7,96 @@ import { $ } from "basic-devtools";
 
 import allPlugins from "./plugins.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
+import { ErrorCode } from "./exceptions.js";
 
-// TODO: this is not strictly polyscript related but handy ... not sure
-//       we should factor this utility out a part but this works anyway.
-import { parse } from "../node_modules/polyscript/esm/toml.js";
+const badURL = (url, expected = "") => {
+    let message = `(${ErrorCode.BAD_CONFIG}): Invalid URL: ${url}`;
+    if (expected) message += `\nexpected ${expected} content`;
+    throw new Error(message);
+};
+
+/**
+ * Given a string, returns its trimmed content as text,
+ * fetching it from a file if the content is a URL.
+ * @param {string} config either JSON, TOML, or a file to fetch
+ * @returns {{json: boolean, toml: boolean, text: string}}
+ */
+const configDetails = async (config) => {
+    let text = config?.trim();
+    // we only support an object as root config
+    let url = "",
+        toml = false,
+        json = /^{/.test(text) && /}$/.test(text);
+    // handle files by extension (relaxing urls parts after)
+    if (!json && /\.(\w+)(?:\?\S*)?$/.test(text)) {
+        const ext = RegExp.$1;
+        if (ext === "json" && type !== "toml") json = true;
+        else if (ext === "toml" && type !== "json") toml = true;
+        else badURL(text, type);
+        url = text;
+        text = (await fetch(url).then(getText)).trim();
+    }
+    return { json, toml: toml || (!json && !!text), text, url };
+};
+
+const syntaxError = (type, url, { message }) => {
+    let str = `(${ErrorCode.BAD_CONFIG}): Invalid ${type}`;
+    if (url) str += ` @ ${url}`;
+    return new SyntaxError(`${str}\n${message}`);
+};
 
 // find the shared config for all py-script elements
-let config, plugins, parsed;
+let config, plugins, parsed, error, type;
 let pyConfig = $("py-config");
 if (pyConfig) config = pyConfig.getAttribute("src") || pyConfig.textContent;
 else {
     pyConfig = $('script[type="py"][config]');
     if (pyConfig) config = pyConfig.getAttribute("config");
 }
+if (pyConfig) type = pyConfig.getAttribute("type");
 
-// load its content if remote
-if (/^https?:\/\//.test(config)) config = await fetch(config).then(getText);
-
-// parse config only if not empty
-if (config?.trim()) {
-    try {
-        parsed = JSON.parse(config);
-    } catch (_) {
-        parsed = await parse(config);
+// catch possible fetch errors
+try {
+    const { json, toml, text, url } = await configDetails(config);
+    config = text;
+    if (json || type === "json") {
+        try {
+            parsed = JSON.parse(text);
+        } catch (e) {
+            error = syntaxError("JSON", url, e);
+        }
+    } else if (toml || type === "toml") {
+        try {
+            const { parse } = await import(
+                /* webpackIgnore: true */
+                "https://cdn.jsdelivr.net/npm/@webreflection/toml-j0.4/toml.js"
+            );
+            parsed = parse(text);
+        } catch (e) {
+            error = syntaxError("TOML", url, e);
+        }
     }
+} catch (e) {
+    error = e;
 }
 
 // parse all plugins and optionally ignore only
 // those flagged as "undesired" via `!` prefix
 const toBeAwaited = [];
 for (const [key, value] of Object.entries(allPlugins)) {
-    if (!parsed?.plugins?.includes(`!${key}`)) toBeAwaited.push(value());
+    if (error) {
+        if (key === "error") {
+            // show on page the config is broken, meaning that
+            // it was not possible to disable error plugin neither
+            // as that part wasn't correctly parsed anyway
+            value().then(({ notify }) => notify(error.message));
+        }
+    } else if (!parsed?.plugins?.includes(`!${key}`)) {
+        toBeAwaited.push(value());
+    }
 }
+
+// assign plugins as Promise.all only if needed
 if (toBeAwaited.length) plugins = Promise.all(toBeAwaited);
 
-export { config, plugins };
+export { config, plugins, error };

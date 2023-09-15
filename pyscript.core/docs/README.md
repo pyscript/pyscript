@@ -111,7 +111,7 @@ import { hooks } from "https://cdn.jsdelivr.net/npm/@pyscript/core";
 
 // example
 hooks.onInterpreterReady.add((utils, element) => {
-  console.lot(element, 'found', 'pyscript is ready');
+  console.log(element, 'found', 'pyscript is ready');
 });
 
 // the hooks namespace
@@ -148,9 +148,9 @@ Please note that a *worker* is a completely different environment and it's not p
 
 However, each worker string can use `from pyscript import x, y, z` as that will be available out of the box.
 
-## PyScript Module API
+## PyScript Python API
 
-The python module offers various utilities in either the main thread or the worker.
+The `pyscript` python package offers various utilities in either the main thread or the worker.
 
 The commonly shared utilities are:
 
@@ -253,15 +253,6 @@ The *JSON* standard doesn't require new lines or indentation so it felt quick an
 It's true that HTML attributes can be multi-line too, if properly embedded, but that looked too awkward and definitively harder to explain to me.
 
 We might decide to allow TOML too in the future, but the direct config as attribute, instead of a proper file, or the usage of `<py-config>`, is meant for quick and simple packages or files dependencies and not much else.
-
-  </div>
-</details>
-
-<details>
-  <summary><strong>why worker attribute needs an external file?</strong></summary>
-  <div markdown=1>
-
-It would create confusion to have worker code embedded directly in the page and let *PyScript* forward the content to be executed as worker, but the separation of concerns felt more aligned with the meaning of bootstrapping a worker: it inevitably happens elsewhere and with little caveats or features here and there, so it's OK for now to keep that separation explicit.
 
   </div>
 </details>
