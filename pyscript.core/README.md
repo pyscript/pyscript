@@ -29,15 +29,16 @@ Accordingly, whenever a file contains this warning at its first line, please do 
 
 ### Running tests
 
-Before running the tests, we need to create a tests environment first. To do so make sure you are in the `pyscript.core` folder and run the following command:
+Before running the tests, we need to create a tests environment first. To do so run the following command from the root folder of the project:
 
 ```
 make setup
 ```
 
-This will create a tests environment and install all the dependencies needed to run the tests.
+This will create a tests environment [in the root of the project, named `./env`]and install all the dependencies needed to run the tests.
 
-Now that the tests environment has been created, you can run the **integration tests** with the following command:
+After the command has completed and the tests environment has been created, you can run the **integration tests** with
+the following command:
 
 ```
 make test-integration
