@@ -27,9 +27,9 @@ Accordingly, whenever a file contains this warning at its first line, please do 
 // ⚠️ This file is an artifact: DO NOT MODIFY
 ```
 
-## Python stdlib
+## `pyscript` python package
 
-The `pyscript` module available in _Python_ defines its exported utilities via `src/stdlib/pyscript.py`. Any file that would like to provide an export should be placed into `src/stdlib/_pyscript` folder (see the `display.py` as example) and its public functionalities should be explicit in the `src/stdlib/pyscript.py` file.
+The `pyscript` package available in _Python_ lives in the folder `src/stdlib/pyscript/`.
 
 All _Python_ files will be embedded automatically whenever `npm run build` happens and reflected into the `src/stdlib/pyscript.js` file.
 

@@ -3,7 +3,7 @@ import html
 import io
 import re
 
-from . import document, window
+from pyscript.magic_js import document, window, current_target
 
 _MIME_METHODS = {
     "__repr__": "text/plain",
@@ -146,6 +146,9 @@ def _write(element, value, append=False):
 
 
 def display(*values, target=None, append=True):
+    if target is None:
+        target = current_target()
+
     element = document.getElementById(target)
     for v in values:
         _write(element, v, append=append)

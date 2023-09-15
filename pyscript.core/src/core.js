@@ -82,7 +82,7 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
     }
 
     // enrich the Python env with some JS utility for main
-    interpreter.registerJsModule("_pyscript_js", {
+    interpreter.registerJsModule("_pyscript", {
         PyWorker,
         get target() {
             return isScript(currentElement)
