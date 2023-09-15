@@ -73,8 +73,7 @@ jobs:
               run: npm i
 
             - name: Run next tests
-              working-directory: pyscript.core
-              run: npm test
+              run: make test
 
             - name: Integration Tests
               run: make test-integration-parallel
