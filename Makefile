@@ -36,7 +36,7 @@ check-npm:
 setup:
 	make check-node
 	make check-npm
-	# npm install
+	cd pyscript.core && npm install && cd ..
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
 	$(CONDA_EXE) install -c anaconda pytest -y
@@ -91,9 +91,11 @@ test:
 	make test-examples
 
 # run all integration tests *including examples* sequentially
+# TODO: (fpliger) The cd pyscript.core before running the tests shouldn't be needed but for
+# 		but for some reason it seems to bother pytest tmppaths (or test cache?). Unclear.
 test-integration:
 	mkdir -p test_results
-	$(PYTEST_EXE) -vv $(ARGS) pyscriptjs/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
+	cd pyscript.core && $(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning --junitxml=../integration.xml
 
 # run all integration tests *except examples* in parallel (examples use too much memory)
 test-integration-parallel:

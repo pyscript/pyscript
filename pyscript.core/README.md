@@ -27,6 +27,23 @@ Accordingly, whenever a file contains this warning at its first line, please do 
 // ⚠️ This file is an artifact: DO NOT MODIFY
 ```
 
+### Running tests
+
+Before running the tests, we need to create a tests environment first. To do so run the following command from the root folder of the project:
+
+```
+make setup
+```
+
+This will create a tests environment [in the root of the project, named `./env`]and install all the dependencies needed to run the tests.
+
+After the command has completed and the tests environment has been created, you can run the **integration tests** with
+the following command:
+
+```
+make test-integration
+```
+
 ## `pyscript` python package
 
 The `pyscript` package available in _Python_ lives in the folder `src/stdlib/pyscript/`.

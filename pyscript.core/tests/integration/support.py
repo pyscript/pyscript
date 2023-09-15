@@ -16,7 +16,7 @@ import toml
 from playwright.sync_api import Error as PlaywrightError
 
 ROOT = py.path.local(__file__).dirpath("..", "..", "..")
-BUILD = ROOT.join("pyscript.core")
+BUILD = ROOT.join("pyscript.core").join("dist")
 
 
 def params_with_marks(params):
@@ -504,10 +504,10 @@ class PyScriptTest:
         doc = f"""
         <html>
           <head>
-              <link rel="stylesheet" href="{self.http_server_addr}/build/dist/core.css">
+              <link rel="stylesheet" href="{self.http_server_addr}/build/core.css">
               <script
                     type="module"
-                    src="{self.http_server_addr}/build/dist/core.js"
+                    src="{self.http_server_addr}/build/core.js"
                 ></script>
               {extra_head}
           </head>
