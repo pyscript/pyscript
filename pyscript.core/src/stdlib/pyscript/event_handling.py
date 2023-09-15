@@ -1,7 +1,7 @@
 import inspect
 
 from pyodide.ffi.wrappers import add_event_listener
-from pyscript import document
+from pyscript.magic_js import document
 
 
 def when(event_type=None, selector=None):
