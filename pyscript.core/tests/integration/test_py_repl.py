@@ -386,7 +386,7 @@ class TestPyRepl(PyScriptTest):
         self.pyscript_run(
             """
             <div id="repl-target"></div>
-            <py-script>
+            <script type="py">
                 import asyncio
                 import js
 
@@ -402,7 +402,7 @@ class TestPyRepl(PyScriptTest):
                 async def done():
                     await asyncio.sleep(3)
                     js.console.log("DONE")
-            </py-script>
+            </script>
 
             <py-repl output="repl-target">
                 asyncio.ensure_future(print_it());
@@ -544,7 +544,7 @@ class TestPyRepl(PyScriptTest):
 
                 this_tag.setAttribute("output", "third")
                 print("three.")
-            </py-script>
+            </script>
             """
         )
 
