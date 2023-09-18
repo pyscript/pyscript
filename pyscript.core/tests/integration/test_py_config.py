@@ -66,7 +66,7 @@ class TestConfig(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "config name: foobar"
 
-    @pytest.mark.skip("This fails, but works with <py-script>")
+    @pytest.mark.skip("ERROR_SCRIPT: works with <py-script> not with <script>")
     def test_py_config_inline_scriptpy(self):
         self.pyscript_run(
             """
@@ -84,7 +84,7 @@ class TestConfig(PyScriptTest):
         assert self.console.log.lines[-1] == "config name: foobar"
 
 
-    @pytest.mark.skip("This fails, but works with <py-script>")
+    @pytest.mark.skip("ERROR_SCRIPT: works with <py-script> not with <script>")
     def test_py_config_external(self):
         pyconfig_toml = """
             name = "app with external config"
