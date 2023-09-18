@@ -145,3 +145,6 @@ test_results
 # @pyscript/core npm artifacts
 pyscript.core/core.*
 pyscript.core/dist
+pyscript.core/dist
+pyscript.core/src/plugins.js
+pyscript.core/src/stdlib/pyscript.js
