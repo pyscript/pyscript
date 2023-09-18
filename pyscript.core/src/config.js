@@ -48,36 +48,44 @@ const syntaxError = (type, url, { message }) => {
 // find the shared config for all py-script elements
 let config, plugins, parsed, error, type;
 let pyConfig = $("py-config");
-if (pyConfig) config = pyConfig.getAttribute("src") || pyConfig.textContent;
-else {
-    pyConfig = $('script[type="py"][config]');
+if (pyConfig) {
+    config = pyConfig.getAttribute("src") || pyConfig.textContent;
+    type = pyConfig.getAttribute("type");
+} else {
+    pyConfig = $(
+        [
+            'script[type="py"][config]:not([worker])',
+            "py-script[config]:not([worker])",
+        ].join(","),
+    );
     if (pyConfig) config = pyConfig.getAttribute("config");
 }
-if (pyConfig) type = pyConfig.getAttribute("type");
 
 // catch possible fetch errors
-try {
-    const { json, toml, text, url } = await configDetails(config);
-    config = text;
-    if (json || type === "json") {
-        try {
-            parsed = JSON.parse(text);
-        } catch (e) {
-            error = syntaxError("JSON", url, e);
+if (config) {
+    try {
+        const { json, toml, text, url } = await configDetails(config);
+        config = text;
+        if (json || type === "json") {
+            try {
+                parsed = JSON.parse(text);
+            } catch (e) {
+                error = syntaxError("JSON", url, e);
+            }
+        } else if (toml || type === "toml") {
+            try {
+                const { parse } = await import(
+                    /* webpackIgnore: true */
+                    "https://cdn.jsdelivr.net/npm/@webreflection/toml-j0.4/toml.js"
+                );
+                parsed = parse(text);
+            } catch (e) {
+                error = syntaxError("TOML", url, e);
+            }
         }
-    } else if (toml || type === "toml") {
-        try {
-            const { parse } = await import(
-                /* webpackIgnore: true */
-                "https://cdn.jsdelivr.net/npm/@webreflection/toml-j0.4/toml.js"
-            );
-            parsed = parse(text);
-        } catch (e) {
-            error = syntaxError("TOML", url, e);
-        }
+    } catch (e) {
+        error = e;
     }
-} catch (e) {
-    error = e;
 }
 
 // parse all plugins and optionally ignore only
