@@ -110,11 +110,11 @@ class TestScriptTypePyScript(PyScriptTest):
             """
             <div id="stdout-div"></div>
             <div id="stderr-div"></div>
-            <py-script output="stdout-div" stderr="stderr-div">
+            <script type="py" output="stdout-div" stderr="stderr-div">
                 import sys
                 print("one.", file=sys.stderr)
                 print("two.")
-            </py-script>
+            </script>
             """
         )
         assert self.page.locator("#stdout-div").text_content() == "one.two."

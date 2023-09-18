@@ -28,10 +28,10 @@ class TestImportmap(PyScriptTest):
                 say_hello("JS");
             </script>
 
-            <py-script>
+            <script type="py">
                 import mymod
                 mymod.say_hello("Python")
-            </py-script>
+            </script>
             """
         )
         assert self.console.log.lines == [
@@ -46,9 +46,9 @@ class TestImportmap(PyScriptTest):
             this is not valid JSON
             </script>
 
-            <py-script>
+            <script type="py">
                 print("hello world")
-            </py-script>
+            </script>
             """,
             wait_for_pyscript=False,
         )

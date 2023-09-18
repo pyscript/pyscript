@@ -5,7 +5,7 @@ class TestAsync(PyScriptTest):
     # ensure_future() and create_task() should behave similarly;
     # we'll use the same source code to test both
     coroutine_script = """
-        <py-script>
+        <script type="py">
         import js
         import asyncio
         js.console.log("first")
@@ -14,7 +14,7 @@ class TestAsync(PyScriptTest):
             js.console.log("third")
         asyncio.{func}(main())
         js.console.log("second")
-        </py-script>
+        </script>
         """
 
     def test_asyncio_ensure_future(self):
@@ -30,7 +30,7 @@ class TestAsync(PyScriptTest):
     def test_asyncio_gather(self):
         self.pyscript_run(
             """
-            <py-script id="pys">
+            <script type="py" id="pys">
             import asyncio
             import js
             from pyodide.ffi import to_js
@@ -45,7 +45,7 @@ class TestAsync(PyScriptTest):
                 js.console.log("DONE")
 
             asyncio.ensure_future(get_results())
-            </py-script>
+            </script>
             """
         )
         self.wait_for_console("DONE")
@@ -54,7 +54,7 @@ class TestAsync(PyScriptTest):
     def test_multiple_async(self):
         self.pyscript_run(
             """
-        <py-script>
+        <script type="py">
             import js
             import asyncio
             async def a_func():
@@ -62,9 +62,9 @@ class TestAsync(PyScriptTest):
                     js.console.log('A', i)
                     await asyncio.sleep(0.1)
             asyncio.ensure_future(a_func())
-        </py-script>
+        </script>
 
-        <py-script>
+        <script type="py">
             import js
             import asyncio
             async def b_func():
@@ -73,7 +73,7 @@ class TestAsync(PyScriptTest):
                     await asyncio.sleep(0.1)
                 js.console.log('b func done')
             asyncio.ensure_future(b_func())
-        </py-script>
+        </script>
         """
         )
         self.wait_for_console("b func done")
@@ -90,7 +90,7 @@ class TestAsync(PyScriptTest):
     def test_multiple_async_multiple_display_targeted(self):
         self.pyscript_run(
             """
-                <py-script id='pyA'>
+                <script type="py" id='pyA'>
                     from pyscript import display
                     import js
                     import asyncio
@@ -101,8 +101,8 @@ class TestAsync(PyScriptTest):
                             await asyncio.sleep(0.1)
                     asyncio.ensure_future(a_func())
 
-                </py-script>
-                <py-script id='pyB'>
+                </script>
+                <script type="py" id='pyB'>
                     from pyscript import display
                     import js
                     import asyncio
@@ -114,7 +114,7 @@ class TestAsync(PyScriptTest):
                         js.console.log("B DONE")
 
                     asyncio.ensure_future(a_func())
-                </py-script>
+                </script>
             """
         )
         self.wait_for_console("B DONE")
@@ -124,7 +124,7 @@ class TestAsync(PyScriptTest):
     def test_async_display_untargeted(self):
         self.pyscript_run(
             """
-                <py-script>
+                <script type="py">
                     from pyscript import display
                     import asyncio
                     import js
@@ -135,16 +135,16 @@ class TestAsync(PyScriptTest):
                         js.console.log("DONE")
 
                     asyncio.ensure_future(a_func())
-                </py-script>
+                </script>
             """
         )
         self.wait_for_console("DONE")
-        assert self.page.locator("py-script").inner_text() == "A"
+        assert self.page.locator("script-py").inner_text() == "A"
 
     def test_sync_and_async_order(self):
         """
         The order of execution is defined as follows:
-          1. first, we execute all the py-script tag in order
+          1. first, we execute all the script tags in order
           2. then, we start all the tasks which were scheduled with create_task
 
         Note that tasks are started *AFTER* all py-script tags have been
@@ -152,12 +152,12 @@ class TestAsync(PyScriptTest):
         executed after e.g. js.console.log("6").
         """
         src = """
-                <py-script>
+                <script type="py">
                     import js
                     js.console.log("1")
-                </py-script>
+                </script>
 
-                <py-script>
+                <script type="py">
                     import asyncio
                     import js
 
@@ -169,14 +169,14 @@ class TestAsync(PyScriptTest):
                     js.console.log("2")
                     asyncio.create_task(mytask1())
                     js.console.log("3")
-                </py-script>
+                </script>
 
-                <py-script>
+                <script type="py">
                     import js
                     js.console.log("4")
-                </py-script>
+                </script>
 
-                <py-script>
+                <script type="py">
                     import asyncio
                     import js
 
@@ -189,7 +189,7 @@ class TestAsync(PyScriptTest):
                     js.console.log("5")
                     asyncio.create_task(mytask2())
                     js.console.log("6")
-                </py-script>
+                </script>
             """
         self.pyscript_run(src, wait_for_pyscript=False)
         self.wait_for_console("DONE")

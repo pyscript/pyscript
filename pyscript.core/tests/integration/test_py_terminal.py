@@ -22,12 +22,12 @@ class TestPyTerminal(PyScriptTest):
             """
             <py-terminal></py-terminal>
 
-            <py-script>
+            <script type="py">
                 import sys
                 print('hello world')
                 print('this goes to stderr', file=sys.stderr)
                 print('this goes to stdout')
-            </py-script>
+            </script>
             """
         )
         term = self.page.locator("py-terminal")
@@ -54,7 +54,7 @@ class TestPyTerminal(PyScriptTest):
             """
             <py-terminal id="term1"></py-terminal>
 
-            <py-script>
+            <script type="py">
                 import js
                 print('one')
                 term2 = js.document.createElement('py-terminal')
@@ -63,7 +63,7 @@ class TestPyTerminal(PyScriptTest):
 
                 print('two')
                 print('three')
-            </py-script>
+            </script>
             """
         )
         term1 = self.page.locator("#term1")
@@ -115,9 +115,9 @@ class TestPyTerminal(PyScriptTest):
                 terminal = true
             </py-config>
 
-            <py-script>
+            <script type="py">
                 print('hello world')
-            </py-script>
+            </script>
             """
         )
         term = self.page.locator("py-terminal")
@@ -167,13 +167,13 @@ class TestPyTerminal(PyScriptTest):
             <py-config>
                 xterm = true
             </py-config>
-            <py-script>
+            <script type="py">
                 print("\x1b[33mYellow\x1b[0m")
                 print("\x1b[4mUnderline\x1b[24m")
                 print("\x1b[1mBold\x1b[22m")
                 print("\x1b[3mItalic\x1b[23m")
                 print("done")
-            </py-script>
+            </script>
             """
         )
 
@@ -242,10 +242,10 @@ class TestPyTerminal(PyScriptTest):
             <py-config>
                 xterm = true
             </py-config>
-            <py-script>
+            <script type="py">
                 print("\x1b[33mYellow\x1b[0m")
                 print("done")
-            </py-script>
+            </script>
             <py-terminal id="a"></py-terminal>
             <py-terminal id="b" data-testid="b"></py-terminal>
             """

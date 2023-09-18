@@ -12,11 +12,11 @@ class TestElement(PyScriptTest):
         self.pyscript_run(
             """
             <div id="foo"></div>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             print(el.id)
-            </py-script>
+            </script>
             """
         )
         assert self.console.log.lines[-1] == "foo"
@@ -30,11 +30,11 @@ class TestElement(PyScriptTest):
         self.pyscript_run(
             """
             <input id="foo" value="bar">
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             print(el.value)
-            </py-script>
+            </script>
             """
         )
         assert self.console.log.lines[-1] == "bar"
@@ -48,11 +48,11 @@ class TestElement(PyScriptTest):
         self.pyscript_run(
             """
             <div id="foo"><b>bar</b></div>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             print(el.innerHtml)
-            </py-script>
+            </script>
             """
         )
         assert self.console.log.lines[-1] == "<b>bar</b>"
@@ -66,12 +66,12 @@ class TestElement(PyScriptTest):
         self.pyscript_run(
             """
             <div id="foo"></div>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             el.write("Hello!")
             el.write("World!")
-            </py-script>
+            </script>
             """
         )
         div = self.page.wait_for_selector("#foo")
@@ -83,12 +83,12 @@ class TestElement(PyScriptTest):
         self.pyscript_run(
             """
             <div id="foo"></div>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             el.write("Hello!")
             el.write("World!", append=True)
-            </py-script>
+            </script>
             """
         )
         parent_div = self.page.wait_for_selector("#foo")
@@ -103,11 +103,11 @@ class TestElement(PyScriptTest):
         self.pyscript_run(
             """
             <div id="foo">Hello!</div>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             el.clear()
-            </py-script>
+            </script>
             """
         )
         div = self.page.locator("#foo")
@@ -119,11 +119,11 @@ class TestElement(PyScriptTest):
         self.pyscript_run(
             """
             <input id="foo" value="bar">
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             el.clear()
-            </py-script>
+            </script>
             """
         )
         input = self.page.wait_for_selector("#foo")
@@ -137,11 +137,11 @@ class TestElement(PyScriptTest):
             <select id="foo">
                 <option value="bar">Bar</option>
             </select>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             js.console.log(el.select("option").value)
-            </py-script>
+            </script>
             """
         )
         assert self.console.log.lines[-1] == "bar"
@@ -154,11 +154,11 @@ class TestElement(PyScriptTest):
             <template id="foo">
                 <div>Bar</div>
             </template>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             js.console.log(el.select("div", from_content=True).innerHtml)
-            </py-script>
+            </script>
             """
         )
         assert self.console.log.lines[-1] == "Bar"
@@ -169,11 +169,11 @@ class TestElement(PyScriptTest):
         self.pyscript_run(
             """
             <div id="foo">Hello!</div>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             el.clone()
-            </py-script>
+            </script>
             """
         )
         divs = self.page.locator("#foo")
@@ -187,11 +187,11 @@ class TestElement(PyScriptTest):
         self.pyscript_run(
             """
             <div id="foo">Hello!</div>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             el.clone(new_id="bar")
-            </py-script>
+            </script>
             """
         )
         divs = self.page.locator("#foo")
@@ -214,14 +214,14 @@ class TestElement(PyScriptTest):
                     James
                 </div>
             </div>
-            <py-script>
+            <script type="py">
                 from pyscript import Element
 
                 bond_div = Element("bond")
                 james_div = Element("james")
 
                 bond_div.clone(new_id="bond-2", to=james_div)
-            </py-script>
+            </script>
             """
         )
         bond_divs = self.page.locator("#bond")
@@ -242,11 +242,11 @@ class TestElement(PyScriptTest):
         self.pyscript_run(
             """
             <div id="foo" class="bar baz"></div>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             el.remove_class("bar")
-            </py-script>
+            </script>
             """
         )
         div = self.page.locator("#foo")
@@ -258,11 +258,11 @@ class TestElement(PyScriptTest):
         self.pyscript_run(
             """
             <div id="foo" class="foo bar baz"></div>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             el.remove_class(["foo", "baz", "bar"])
-            </py-script>
+            </script>
             """
         )
         div = self.page.locator("#foo")
@@ -275,11 +275,11 @@ class TestElement(PyScriptTest):
             """
             <style> .red { color: red; } </style>
             <div id="foo">Hi!</div>
-            <py-script>
+            <script type="py">
             from pyscript import Element
             el = Element("foo")
             el.add_class("red")
-            </py-script>
+            </script>
             """
         )
         div = self.page.locator("#foo")
@@ -292,11 +292,11 @@ class TestElement(PyScriptTest):
             """
             <style> .red { color: red; } .bold { font-weight: bold; } </style>
             <div id="foo">Hi!</div>
-            <py-script>
+            <script type="py">
                 from pyscript import Element
                 el = Element("foo")
                 el.add_class(["red", "bold"])
-            </py-script>
+            </script>
             """
         )
         div = self.page.locator("#foo")

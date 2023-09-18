@@ -20,11 +20,11 @@ class TestOutputHandling(PyScriptTest):
                 <div id="second"></div>
                 <div id="third"></div>
             </div>
-            <py-script output="first">print("first 1.")</py-script>
-            <py-script output="second">print("second.")</py-script>
-            <py-script output="third">print("third.")</py-script>
-            <py-script output="first">print("first 2.")</py-script>
-            <py-script>print("no output.")</py-script>
+            <script type="py" output="first">print("first 1.")</script>
+            <script type="py" output="second">print("second.")</script>
+            <script type="py" output="third">print("third.")</script>
+            <script type="py" output="first">print("first 2.")</script>
+            <script type="py">print("no output.")</script>
             """
         )
 
@@ -63,10 +63,10 @@ class TestOutputHandling(PyScriptTest):
         self.pyscript_run(
             """
             <div id="first"></div>
-            <py-script output="first">
+            <script type="py" output="first">
                 print("<p>Hello</p>")
                 print('<img src="https://example.net">')
-            </py-script>
+            </script>
             """
         )
 
@@ -81,16 +81,16 @@ class TestOutputHandling(PyScriptTest):
         self.pyscript_run(
             """
             <div id="first"></div>
-            <py-script output="first">
+            <script type="py" output="first">
                 print("one.")
                 print("two.")
                 print("three.")
-            </py-script>
+            </script>
 
             <div id="second"></div>
-            <py-script output="second">
+            <script type="py" output="second">
                 print("one.\\ntwo.\\nthree.")
-            </py-script>
+            </script>
             """
         )
 
@@ -106,7 +106,7 @@ class TestOutputHandling(PyScriptTest):
         # Test the behavior of stdio capture in async contexts
         self.pyscript_run(
             """
-            <py-script>
+            <script type="py">
                 import asyncio
                 import js
 
@@ -114,36 +114,36 @@ class TestOutputHandling(PyScriptTest):
                     print(value)
                     await asyncio.sleep(delay)
                     js.console.log(f"DONE {value}")
-            </py-script>
+            </script>
 
             <div id="first"></div>
-            <py-script>
+            <script type="py">
                 asyncio.ensure_future(coro("first", 1))
-            </py-script>
+            </script>
 
             <div id="second"></div>
-            <py-script output="second">
+            <script type="py" output="second">
                 asyncio.ensure_future(coro("second", 1))
-            </py-script>
+            </script>
 
             <div id="third"></div>
-            <py-script output="third">
+            <script type="py" output="third">
                 asyncio.ensure_future(coro("third", 0))
-            </py-script>
+            </script>
 
-            <py-script output="third">
+            <script type="py" output="third">
                 asyncio.ensure_future(coro("DONE", 3))
-            </py-script>
+            </script>
             """
         )
 
         self.wait_for_console("DONE DONE")
 
-        # py-script tags without output parameter should not send
+        # script tags without output parameter should not send
         # stdout to element
         assert self.page.locator("#first").text_content() == ""
 
-        # py-script tags with output parameter not expected to send
+        # script tags with output parameter not expected to send
         # std to element in coroutine
         assert self.page.locator("#second").text_content() == ""
         assert self.page.locator("#third").text_content() == ""
@@ -157,7 +157,7 @@ class TestOutputHandling(PyScriptTest):
             """
             <div id="good"></div>
             <div id="bad"></div>
-            <py-script output="good">
+            <script type="py" output="good">
                 import asyncio
                 import js
 
@@ -172,7 +172,7 @@ class TestOutputHandling(PyScriptTest):
                 print("three.")
                 asyncio.ensure_future(coro_bad("badthree.", 0))
                 asyncio.ensure_future(coro_bad("DONE", 1))
-            </py-script>
+            </script>
             """
         )
 
@@ -196,7 +196,7 @@ class TestOutputHandling(PyScriptTest):
             """
             <div id="first"></div>
             <div id="second"></div>
-            <py-script output="first">
+            <script type="py" output="first">
                 print("first.")
 
                 import js
@@ -206,7 +206,7 @@ class TestOutputHandling(PyScriptTest):
                 js.document.body.appendChild(tag)
 
                 print("first.")
-            </py-script>
+            </script>
             """
         )
 
@@ -224,18 +224,18 @@ class TestOutputHandling(PyScriptTest):
         # Attribute creates exactly 1 warning banner per missing id
         self.pyscript_run(
             """
-            <py-script output="not-on-page">
+            <script type="py" output="not-on-page">
                 print("bad.")
-            </py-script>
+            </script>
 
             <div id="on-page"></div>
-            <py-script>
+            <script type="py">
                 print("good.")
-            </py-script>
+            </script>
 
-            <py-script output="not-on-page">
+            <script type="py" output="not-on-page">
                 print("bad.")
-            </py-script>
+            </script>
             """
         )
 
@@ -253,19 +253,19 @@ class TestOutputHandling(PyScriptTest):
         # attribute creates exactly 1 warning banner per missing id
         self.pyscript_run(
             """
-            <py-script stderr="not-on-page">
+            <script type="py" stderr="not-on-page">
                 import sys
                 print("bad.", file=sys.stderr)
-            </py-script>
+            </script>
 
             <div id="on-page"></div>
-            <py-script>
+            <script type="py">
                 print("good.", file=sys.stderr)
-            </py-script>
+            </script>
 
-            <py-script stderr="not-on-page">
+            <script type="py" stderr="not-on-page">
                 print("bad.", file=sys.stderr)
-            </py-script>
+            </script>
             """
         )
 
@@ -285,11 +285,11 @@ class TestOutputHandling(PyScriptTest):
             """
             <div id="stdout-div"></div>
             <div id="stderr-div"></div>
-            <py-script output="stdout-div" stderr="stderr-div">
+            <script type="py" output="stdout-div" stderr="stderr-div">
                 import sys
                 print("one.", file=sys.stderr)
                 print("two.")
-            </py-script>
+            </script>
             """
         )
 
@@ -299,14 +299,14 @@ class TestOutputHandling(PyScriptTest):
 
     @skip_worker("FIXME: js.document")
     def test_stdio_output_attribute_change(self):
-        # If the user changes the 'output' attribute of a <py-script> tag mid-execution,
+        # If the user changes the 'output' attribute of a <script type="py"> tag mid-execution,
         # Output should no longer go to the selected div and a warning should appear
         self.pyscript_run(
             """
             <div id="first"></div>
             <div id="second"></div>
             <!-- There is no tag with id "third" -->
-            <py-script id="pyscript-tag" output="first">
+            <script type="py" id="pyscript-tag" output="first">
                 print("one.")
 
                 # Change the 'output' attribute of this tag
@@ -318,7 +318,7 @@ class TestOutputHandling(PyScriptTest):
 
                 this_tag.setAttribute("output", "third")
                 print("three.")
-            </py-script>
+            </script>
             """
         )
 
@@ -340,7 +340,7 @@ class TestOutputHandling(PyScriptTest):
             <div id="first"></div>
             <div id="second"></div>
             <!-- There is no tag with id "third" -->
-            <py-script id="pyscript-tag" output="first">
+            <script type="py" id="pyscript-tag" output="first">
                 print("one.")
 
                 # Change the ID of the targeted DIV to something else
@@ -356,7 +356,7 @@ class TestOutputHandling(PyScriptTest):
                 target_tag.setAttribute("id", "third")
                 js.document.getElementById("pyscript-tag").setAttribute("output", "third")
                 print("three.")
-            </py-script>
+            </script>
             """
         )
 

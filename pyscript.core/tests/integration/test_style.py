@@ -19,7 +19,7 @@ class TestStyle(PyScriptTest):
           </head>
           <body>
             <py-config>hello</py-config>
-            <py-script>hello</py-script>
+            <script type="py">hello</script>
             <py-repl>hello</py-repl>
           </body>
         </html>
@@ -38,7 +38,7 @@ class TestStyle(PyScriptTest):
             <py-config>
             name = "foo"
             </py-config>
-            <py-script>display("hello")</py-script>
+            <script type="py">display("hello")</script>
             <py-repl>display("hello")</py-repl>
             """
         )

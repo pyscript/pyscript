@@ -9,7 +9,7 @@ class TestPyScriptRuntimeAttributes(PyScriptTest):
         self.pyscript_run(
             r"""
             <div id="py-button-container"></div>
-            <py-script>
+            <script type="py">
               import js
 
               py_button = Element("py-button-container")
@@ -17,7 +17,7 @@ class TestPyScriptRuntimeAttributes(PyScriptTest):
 
               def print_hello():
                 js.console.log("hello pyscript")
-            </py-script>
+            </script>
             """
         )
         self.page.locator("button").click()
@@ -28,7 +28,7 @@ class TestPyScriptRuntimeAttributes(PyScriptTest):
         self.pyscript_run(
             r"""
             <button id="py-button"></button>
-            <py-script>
+            <script type="py">
               import js
 
               py_button = Element("py-button")
@@ -36,7 +36,7 @@ class TestPyScriptRuntimeAttributes(PyScriptTest):
 
               def print_hello():
                 js.console.log("hello pyscript")
-            </py-script>
+            </script>
             """
         )
         self.page.locator("button").click()
@@ -47,7 +47,7 @@ class TestPyScriptRuntimeAttributes(PyScriptTest):
         self.pyscript_run(
             r"""
             <button id="py-button">live content</button>
-            <py-script>
+            <script type="py">
               import js
 
               py_button = Element("py-button")
@@ -56,7 +56,7 @@ class TestPyScriptRuntimeAttributes(PyScriptTest):
               def print_hello():
                 js.console.log("hello pyscript")
                 py_button.element.removeAttribute("py-click")
-            </py-script>
+            </script>
             """
         )
         self.page.locator("button").click()

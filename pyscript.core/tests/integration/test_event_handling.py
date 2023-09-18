@@ -15,12 +15,12 @@ class TestEventHandler(PyScriptTest):
         self.pyscript_run(
             """
             <button id="foo_id">foo_button</button>
-            <py-script>
+            <script type="py">
                 from pyscript import when
                 @when("click", selector="#foo_id")
                 def foo(evt):
                     print(f"I've clicked {evt.target} with id {evt.target.id}")
-            </py-script>
+            </script>
         """
         )
         self.page.locator("text=foo_button").click()
@@ -36,12 +36,12 @@ class TestEventHandler(PyScriptTest):
         self.pyscript_run(
             """
             <button id="foo_id">foo_button</button>
-            <py-script>
+            <script type="py">
                 from pyscript import when
                 @when("click", selector="#foo_id")
                 def foo():
                     print("The button was clicked")
-            </py-script>
+            </script>
         """
         )
         self.page.locator("text=foo_button").click()
@@ -54,7 +54,7 @@ class TestEventHandler(PyScriptTest):
             """
             <button id="foo_id">foo_button</button>
             <button id="bar_id">bar_button</button>
-            <py-script>
+            <script type="py">
                 from pyscript import when
                 @when("click", selector="#foo_id")
                 def foo(evt):
@@ -62,7 +62,7 @@ class TestEventHandler(PyScriptTest):
                 @when("click", selector="#bar_id")
                 def foo(evt):
                     print(f"I've clicked {evt.target} with id {evt.target.id}")
-            </py-script>
+            </script>
         """
         )
         self.page.locator("text=foo_button").click()
@@ -82,13 +82,13 @@ class TestEventHandler(PyScriptTest):
             """
             <button id="foo_id">foo_button</button>
             <button class="bar_class">bar_button</button>
-            <py-script>
+            <script type="py">
                 from pyscript import when
                 @when("click", selector="#foo_id")
                 @when("mouseover", selector=".bar_class")
                 def foo(evt):
                     print(f"An event of type {evt.type} happened")
-            </py-script>
+            </script>
         """
         )
         self.page.locator("text=bar_button").hover()
@@ -103,13 +103,13 @@ class TestEventHandler(PyScriptTest):
         self.pyscript_run(
             """
             <button id="foo_id">foo_button</button>
-            <py-script>
+            <script type="py">
                 from pyscript import when
                 @when("click", selector="#foo_id")
                 @when("mouseover", selector="#foo_id")
                 def foo(evt):
                     print(f"An event of type {evt.type} happened")
-            </py-script>
+            </script>
         """
         )
         self.page.locator("text=foo_button").hover()
@@ -127,12 +127,12 @@ class TestEventHandler(PyScriptTest):
             """
             <button class="bar_class">button1</button>
             <button class="bar_class">button2</button>
-            <py-script>
+            <script type="py">
                 from pyscript import when
                 @when("click", selector=".bar_class")
                 def foo(evt):
                     print(f"{evt.target.innerText} was clicked")
-            </py-script>
+            </script>
         """
         )
         self.page.locator("text=button1").click()
@@ -147,13 +147,13 @@ class TestEventHandler(PyScriptTest):
         self.pyscript_run(
             """
             <button id="foo_id">foo_button</button>
-            <py-script>
+            <script type="py">
                 from pyscript import when
                 @when("click", selector="#foo_id")
                 @when("click", selector="#foo_id")
                 def foo(evt):
                     print(f"I've clicked {evt.target} with id {evt.target.id}")
-            </py-script>
+            </script>
         """
         )
         self.page.locator("text=foo_button").click()
@@ -170,12 +170,12 @@ class TestEventHandler(PyScriptTest):
         self.pyscript_run(
             """
             <button id="foo_id">foo_button</button>
-            <py-script>
+            <script type="py">
                 from pyscript import when
                 @when("click", selector="#.bad")
                 def foo(evt):
                     ...
-            </py-script>
+            </script>
         """
         )
         self.page.locator("text=foo_button").click()
