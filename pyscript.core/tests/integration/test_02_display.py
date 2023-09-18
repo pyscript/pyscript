@@ -74,11 +74,12 @@ class TestDisplay(PyScriptTest):
                 from pyscript import display
                 display('hello 1')
             </script>
-                <p>hello in between 1 and 2</p>
-            <script type="py" id="second">
+            <p>hello in between 1 and 2</p>
+            <script type="py">
                 from pyscript import display
                 display('hello 2', target="second")
             </script>
+            <p id="second"></p>
             <script type="py" id="third">
                 from pyscript import display
                 display('hello 3')
