@@ -108,22 +108,23 @@ class TestDisplay(PyScriptTest):
     def test_implicit_target_from_a_different_tag(self):
         self.pyscript_run(
             """
-                <script type="py" id="py1">
+                <script type="py">
                     from pyscript import display
                     def say_hello():
                         display('hello')
                 </script>
 
-                <script type="py" id="py2">
+                <script type="py">
                     from pyscript import display
                     say_hello()
                 </script>
             """
         )
-        py1 = self.page.locator("#py1")
-        py2 = self.page.locator("#py2")
-        assert py1.inner_text() == ""
-        assert py2.inner_text() == "hello"
+        elems = self.page.locator("script-py")
+        py0 = elems.nth(0)
+        py1 = elems.nth(1)
+        assert py0.inner_text() == ""
+        assert py1.inner_text() == "hello"
 
     def test_no_explicit_target(self):
         self.pyscript_run(
