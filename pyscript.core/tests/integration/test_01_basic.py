@@ -6,16 +6,22 @@ from .support import PyScriptTest
 
 
 class TestBasic(PyScriptTest):
-    def test_pyscript_hello(self):
+    def test_script_py_hello(self):
         self.pyscript_run(
             """
             <script type="py">
                 import js
-                js.console.log('hello pyscript')
+                js.console.log('hello from script py')
             </script>
+
+            <py-script>
+                import js
+                js.console.log('hello from py-script')
+            </py-script>
             """
         )
-        assert self.console.log.lines == ["hello pyscript"]
+        assert self.console.log.lines == ["hello from script py",
+                                          "hello from py-script"]
 
     def test_execution_thread(self):
         self.pyscript_run(
