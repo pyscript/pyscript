@@ -7,19 +7,20 @@ const CLOSEBUTTON =
  */
 export const ErrorCode = {
     GENERIC: "PY0000", // Use this only for development then change to a more specific error code
-    FETCH_ERROR: "PY0001",
-    FETCH_NAME_ERROR: "PY0002",
-    // Currently these are created depending on error code received from fetching
-    FETCH_UNAUTHORIZED_ERROR: "PY0401",
-    FETCH_FORBIDDEN_ERROR: "PY0403",
-    FETCH_NOT_FOUND_ERROR: "PY0404",
-    FETCH_SERVER_ERROR: "PY0500",
-    FETCH_UNAVAILABLE_ERROR: "PY0503",
+    CONFLICTING_CODE: "PY0409",
     BAD_CONFIG: "PY1000",
     MICROPIP_INSTALL_ERROR: "PY1001",
     BAD_PLUGIN_FILE_EXTENSION: "PY2000",
     NO_DEFAULT_EXPORT: "PY2001",
     TOP_LEVEL_AWAIT: "PY9000",
+    // Currently these are created depending on error code received from fetching
+    FETCH_ERROR: "PY0001",
+    FETCH_NAME_ERROR: "PY0002",
+    FETCH_UNAUTHORIZED_ERROR: "PY0401",
+    FETCH_FORBIDDEN_ERROR: "PY0403",
+    FETCH_NOT_FOUND_ERROR: "PY0404",
+    FETCH_SERVER_ERROR: "PY0500",
+    FETCH_UNAVAILABLE_ERROR: "PY0503",
 };
 
 export class UserError extends Error {
