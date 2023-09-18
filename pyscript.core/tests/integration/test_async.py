@@ -123,9 +123,9 @@ class TestAsync(PyScriptTest):
         inner_text = self.page.inner_text("html")
         assert "A0\nA1\nB0\nB1" in filter_inner_text(inner_text)
 
-    @pytest.mark.skip("it seems that the 2nd task is never created, "
-                      "but note that it works if you use <py-script> instead. "
-                      "Investigate.")
+    @pytest.mark.skip("ERROR_SCRIPT: works with <py-script> not with <script>. "
+                      "it seems that the 2nd task is never created, "
+                      "but note that it works if you use <py-script> instead")
     def test_multiple_async_multiple_display_targeted_script_py(self):
         self.pyscript_run(
             """
