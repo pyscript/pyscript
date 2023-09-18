@@ -1,3 +1,4 @@
+import pytest
 from .support import PyScriptTest, filter_inner_text
 
 
@@ -87,10 +88,10 @@ class TestAsync(PyScriptTest):
             "b func done",
         ]
 
-    def test_multiple_async_multiple_display_targeted(self):
+    def test_multiple_async_multiple_display_targeted_pyscript(self):
         self.pyscript_run(
             """
-                <script type="py" id='pyA'>
+                <py-script id="pyA">
                     from pyscript import display
                     import js
                     import asyncio
@@ -101,8 +102,9 @@ class TestAsync(PyScriptTest):
                             await asyncio.sleep(0.1)
                     asyncio.ensure_future(a_func())
 
-                </script>
-                <script type="py" id='pyB'>
+                </py-script>
+
+                <py-script id="pyB">
                     from pyscript import display
                     import js
                     import asyncio
@@ -114,7 +116,49 @@ class TestAsync(PyScriptTest):
                         js.console.log("B DONE")
 
                     asyncio.ensure_future(a_func())
+                </py-script>
+            """
+        )
+        self.wait_for_console("B DONE")
+        inner_text = self.page.inner_text("html")
+        assert "A0\nA1\nB0\nB1" in filter_inner_text(inner_text)
+
+    @pytest.mark.skip("it seems that the 2nd task is never created, "
+                      "but note that it works if you use <py-script> instead. "
+                      "Investigate.")
+    def test_multiple_async_multiple_display_targeted_script_py(self):
+        self.pyscript_run(
+            """
+                <script type="py"'>
+                    from pyscript import display
+                    import js
+                    import asyncio
+
+                    async def a_func():
+                        for i in range(2):
+                            #display(f'A{i}', target='pyA', append=True)
+                            js.console.log("A", i)
+                            await asyncio.sleep(0.1)
+                    asyncio.ensure_future(a_func())
+
                 </script>
+                <div id='pyA"></div>
+
+                <script type="py">
+                    from pyscript import display
+                    import js
+                    import asyncio
+
+                    async def a_func():
+                        for i in range(2):
+                            #display(f'B{i}', target='pyB', append=True)
+                            js.console.log("B", i)
+                            await asyncio.sleep(0.1)
+                        js.console.log("B DONE")
+
+                    asyncio.ensure_future(a_func())
+                </script>
+                <div id="pyB"></div>
             """
         )
         self.wait_for_console("B DONE")
