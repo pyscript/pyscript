@@ -148,14 +148,15 @@ class TestDisplay(PyScriptTest):
             <script type="py">
                 from pyscript import display
                 def display_hello():
-                    display('hello', target='second-pyscript-tag')
+                    display('hello', target='output')
             </script>
-            <script type="py" id="second-pyscript-tag">
+            <script type="py">
                 display_hello()
             </script>
+            <div id="output"></div>
             """
         )
-        text = self.page.locator("id=second-pyscript-tag").inner_text()
+        text = self.page.locator("id=output").inner_text()
         assert text == "hello"
 
     def test_explicit_target_on_button_tag(self):
@@ -173,52 +174,31 @@ class TestDisplay(PyScriptTest):
         text = self.page.locator("id=my-button").inner_text()
         assert "hello" in text
 
-    def test_explicit_different_target_from_call(self):
-        self.pyscript_run(
-            """
-            <script type="py" id="first-pyscript-tag">
-                from pyscript import display
-                def display_hello():
-                    display('hello', target='second-pyscript-tag')
-            </script>
-            <script type="py" id="second-pyscript-tag">
-                print('nothing to see here')
-            </script>
-            <script type="py">
-                display_hello()
-            </script>
-        """
-        )
-        text = self.page.locator("id=second-pyscript-tag").all_inner_texts()
-        assert "hello" in text
-
     def test_append_true(self):
         self.pyscript_run(
             """
             <script type="py">
                 from pyscript import display
-                display('hello world', append=True)
+                display('AAA', append=True)
+                display('BBB', append=True)
             </script>
         """
         )
-        node_list = self.page.query_selector_all(DISPLAY_OUTPUT_ID_PATTERN)
-        pattern = r"<div>hello world</div>"
-
-        assert node_list[0].inner_html() == pattern
-        assert len(node_list) == 1
+        output = self.page.locator('script-py')
+        assert output.inner_text() == 'AAA\nBBB'
 
     def test_append_false(self):
         self.pyscript_run(
             """
             <script type="py">
                 from pyscript import display
-                display('hello world', append=False)
+                display('AAA', append=False)
+                display('BBB', append=False)
             </script>
         """
         )
-        inner_html = self.page.content()
-        pattern = r'<script type="py" id="py-.*">hello world</script>'
-        assert re.search(pattern, inner_html)
+        output = self.page.locator('script-py')
+        assert output.inner_text() == 'BBB'
 
     def test_display_multiple_values(self):
         self.pyscript_run(
@@ -231,8 +211,8 @@ class TestDisplay(PyScriptTest):
             </script>
             """
         )
-        inner_text = self.page.inner_text("html")
-        assert inner_text == "hello\nworld"
+        output = self.page.locator('script-py')
+        assert output.inner_text() == "hello\nworld"
 
     def test_display_multiple_append_false(self):
         self.pyscript_run(
@@ -244,9 +224,8 @@ class TestDisplay(PyScriptTest):
             </script>
         """
         )
-        inner_html = self.page.content()
-        pattern = r'<script type="py" id="py-.*">world</script>'
-        assert re.search(pattern, inner_html)
+        output = self.page.locator('script-py')
+        assert output.inner_text() == "world"
 
     # TODO: this is a display.py issue to fix when append=False is used
     #       do not use the first element, just clean up and then append
