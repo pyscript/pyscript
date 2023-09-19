@@ -107,4 +107,4 @@ for (const [key, value] of Object.entries(allPlugins)) {
 // assign plugins as Promise.all only if needed
 if (toBeAwaited.length) plugins = Promise.all(toBeAwaited);
 
-export { config, plugins, error };
+export { parsed as config, plugins, error };
