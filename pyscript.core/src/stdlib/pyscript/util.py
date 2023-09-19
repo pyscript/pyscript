@@ -5,12 +5,11 @@ class NotSupported:
     """
 
     def __init__(self, name, error):
-        # we set attributes using self.__dict__ to bypass the __setattr__
-        self.__dict__['name'] = name
-        self.__dict__['error'] = error
+        object.__setattr__(self, "name", name)
+        object.__setattr__(self, "error", error)
 
     def __repr__(self):
-        return f'<NotSupported {self.name} [{self.error}]>'
+        return f"<NotSupported {self.name} [{self.error}]>"
 
     def __getattr__(self, attr):
         raise AttributeError(self.error)

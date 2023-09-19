@@ -15,16 +15,15 @@ import stdlib from "./stdlib.js";
 import { config, plugins, error } from "./config.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
 
-const { assign, defineProperty, entries } = Object;
-
-const TYPE = "py";
+const { assign, defineProperty } = Object;
 
 // allows lazy element features on code evaluation
 let currentElement;
 
-// create a unique identifier when/if needed
-let id = 0;
-const getID = (prefix = TYPE) => `${prefix}-${id++}`;
+const TYPES = new Map([
+    ["py", "pyodide"],
+    ["mpy", "micropython"],
+]);
 
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
@@ -41,35 +40,11 @@ const after = () => {
     delete document.currentScript;
 };
 
-/**
- * Given a generic DOM Element, tries to fetch the 'src' attribute, if present.
- * It either throws an error if the 'src' can't be fetched or it returns a fallback
- * content as source.
- */
-const fetchSource = async (tag, io, asText) => {
-    if (tag.hasAttribute("src")) {
-        try {
-            return await fetch(tag.getAttribute("src")).then(getText);
-        } catch (error) {
-            io.stderr(error);
-        }
-    }
-
-    if (asText) return dedent(tag.textContent);
-
-    console.warn(
-        `Deprecated: use <script type="${TYPE}"> for an always safe content parsing:\n`,
-        tag.innerHTML,
-    );
-
-    return dedent(tag.innerHTML);
-};
-
 // common life-cycle handlers for any node
-const bootstrapNodeAndPlugins = (pyodide, element, callback, hook) => {
+const bootstrapNodeAndPlugins = (wrap, element, callback, hook) => {
     // make it possible to reach the current target node via Python
     callback(element);
-    for (const fn of hooks[hook]) fn(pyodide, element);
+    for (const fn of hooks[hook]) fn(wrap, element);
 };
 
 let shouldRegister = true;
@@ -128,132 +103,180 @@ const workerHooks = {
         [...hooks.codeAfterRunWorkerAsync].map(dedent).join("\n"),
 };
 
-// possible early errors sent by polyscript
-const errors = new Map();
+for (const [TYPE, interpreter] of TYPES) {
+    // create a unique identifier when/if needed
+    let id = 0;
+    const getID = (prefix = TYPE) => `${prefix}-${id++}`;
 
-// define the module as both `<script type="py">` and `<py-script>`
-// but only if the config didn't throw an error
-error ||
-    define(TYPE, {
-        config,
-        env: `${TYPE}-script`,
-        interpreter: "pyodide",
-        onerror(error, element) {
-            errors.set(element, error);
-        },
-        ...workerHooks,
-        onWorkerReady(_, xworker) {
-            assign(xworker.sync, sync);
-        },
-        onBeforeRun(pyodide, element) {
-            currentElement = element;
-            bootstrapNodeAndPlugins(pyodide, element, before, "onBeforeRun");
-        },
-        onBeforeRunAsync(pyodide, element) {
-            currentElement = element;
-            bootstrapNodeAndPlugins(
-                pyodide,
-                element,
-                before,
-                "onBeforeRunAsync",
-            );
-        },
-        onAfterRun(pyodide, element) {
-            bootstrapNodeAndPlugins(pyodide, element, after, "onAfterRun");
-        },
-        onAfterRunAsync(pyodide, element) {
-            bootstrapNodeAndPlugins(pyodide, element, after, "onAfterRunAsync");
-        },
-        async onInterpreterReady(pyodide, element) {
-            if (shouldRegister) {
-                shouldRegister = false;
-                registerModule(pyodide);
+    /**
+     * Given a generic DOM Element, tries to fetch the 'src' attribute, if present.
+     * It either throws an error if the 'src' can't be fetched or it returns a fallback
+     * content as source.
+     */
+    const fetchSource = async (tag, io, asText) => {
+        if (tag.hasAttribute("src")) {
+            try {
+                return await fetch(tag.getAttribute("src")).then(getText);
+            } catch (error) {
+                io.stderr(error);
             }
+        }
 
-            // ensure plugins are bootstrapped already
-            if (plugins) await plugins;
+        if (asText) return dedent(tag.textContent);
 
-            // allows plugins to do whatever they want with the element
-            // before regular stuff happens in here
-            for (const callback of hooks.onInterpreterReady)
-                callback(pyodide, element);
+        console.warn(
+            `Deprecated: use <script type="${TYPE}"> for an always safe content parsing:\n`,
+            tag.innerHTML,
+        );
 
-            // now that all possible plugins are configured,
-            // bail out if polyscript encountered an error
-            if (errors.has(element)) {
-                let { message } = errors.get(element);
-                errors.delete(element);
-                const clone = message === INVALID_CONTENT;
-                message = `(${ErrorCode.CONFLICTING_CODE}) ${message} for `;
-                message += element.cloneNode(clone).outerHTML;
-                pyodide.io.stderr(message);
-                return;
-            }
+        return dedent(tag.innerHTML);
+    };
 
-            if (isScript(element)) {
-                const {
-                    attributes: { async: isAsync, target },
-                } = element;
-                const hasTarget = !!target?.value;
-                const show = hasTarget
-                    ? queryTarget(target.value)
-                    : document.createElement("script-py");
+    // define the module as both `<script type="py">` and `<py-script>`
+    // but only if the config didn't throw an error
+    if (!error) {
+        // possible early errors sent by polyscript
+        const errors = new Map();
 
-                if (!hasTarget) {
-                    const { head, body } = document;
-                    if (head.contains(element)) body.append(show);
-                    else element.after(show);
-                }
-                if (!show.id) show.id = getID();
-
-                // allows the code to retrieve the target element via
-                // document.currentScript.target if needed
-                defineProperty(element, "target", { value: show });
-
-                // notify before the code runs
-                dispatch(element, TYPE);
-                pyodide[`run${isAsync ? "Async" : ""}`](
-                    await fetchSource(element, pyodide.io, true),
+        define(TYPE, {
+            config,
+            interpreter,
+            env: `${TYPE}-script`,
+            onerror(error, element) {
+                errors.set(element, error);
+            },
+            ...workerHooks,
+            onWorkerReady(_, xworker) {
+                assign(xworker.sync, sync);
+            },
+            onBeforeRun(wrap, element) {
+                currentElement = element;
+                bootstrapNodeAndPlugins(wrap, element, before, "onBeforeRun");
+            },
+            onBeforeRunAsync(wrap, element) {
+                currentElement = element;
+                bootstrapNodeAndPlugins(
+                    wrap,
+                    element,
+                    before,
+                    "onBeforeRunAsync",
                 );
-            } else {
-                // resolve PyScriptElement to allow connectedCallback
-                element._pyodide.resolve(pyodide);
-            }
-            console.debug("[pyscript/main] PyScript Ready");
-        },
-    });
+            },
+            onAfterRun(wrap, element) {
+                bootstrapNodeAndPlugins(wrap, element, after, "onAfterRun");
+            },
+            onAfterRunAsync(wrap, element) {
+                bootstrapNodeAndPlugins(
+                    wrap,
+                    element,
+                    after,
+                    "onAfterRunAsync",
+                );
+            },
+            async onInterpreterReady(wrap, element) {
+                if (shouldRegister) {
+                    shouldRegister = false;
+                    registerModule(wrap);
+                }
 
-class PyScriptElement extends HTMLElement {
-    constructor() {
-        assign(super(), {
-            _pyodide: Promise.withResolvers(),
-            srcCode: "",
-            executed: false,
+                // ensure plugins are bootstrapped already
+                if (plugins) await plugins;
+
+                // allows plugins to do whatever they want with the element
+                // before regular stuff happens in here
+                for (const callback of hooks.onInterpreterReady)
+                    callback(wrap, element);
+
+                // now that all possible plugins are configured,
+                // bail out if polyscript encountered an error
+                if (errors.has(element)) {
+                    let { message } = errors.get(element);
+                    errors.delete(element);
+                    const clone = message === INVALID_CONTENT;
+                    message = `(${ErrorCode.CONFLICTING_CODE}) ${message} for `;
+                    message += element.cloneNode(clone).outerHTML;
+                    wrap.io.stderr(message);
+                    return;
+                }
+
+                if (isScript(element)) {
+                    const {
+                        attributes: { async: isAsync, target },
+                    } = element;
+                    const hasTarget = !!target?.value;
+                    const show = hasTarget
+                        ? queryTarget(target.value)
+                        : document.createElement("script-py");
+
+                    if (!hasTarget) {
+                        const { head, body } = document;
+                        if (head.contains(element)) body.append(show);
+                        else element.after(show);
+                    }
+                    if (!show.id) show.id = getID();
+
+                    // allows the code to retrieve the target element via
+                    // document.currentScript.target if needed
+                    defineProperty(element, "target", { value: show });
+
+                    // notify before the code runs
+                    dispatch(element, TYPE);
+                    wrap[`run${isAsync ? "Async" : ""}`](
+                        await fetchSource(element, wrap.io, true),
+                    );
+                } else {
+                    // resolve PyScriptElement to allow connectedCallback
+                    element._wrap.resolve(wrap);
+                }
+                console.debug("[pyscript/main] PyScript Ready");
+            },
         });
     }
-    get id() {
-        return super.id || (super.id = getID());
-    }
-    set id(value) {
-        super.id = value;
-    }
-    async connectedCallback() {
-        if (!this.executed) {
-            this.executed = true;
-            const { io, run, runAsync } = await this._pyodide.promise;
-            const runner = this.hasAttribute("async") ? runAsync : run;
-            this.srcCode = await fetchSource(this, io, !this.childElementCount);
-            this.replaceChildren();
-            // notify before the code runs
-            dispatch(this, TYPE);
-            runner(this.srcCode);
-            this.style.display = "block";
+
+    class PyScriptElement extends HTMLElement {
+        constructor() {
+            assign(super(), {
+                _wrap: Promise.withResolvers(),
+                srcCode: "",
+                executed: false,
+            });
+        }
+        get _pyodide() {
+            // TODO: deprecate this hidden attribute already
+            //       currently used by integration tests
+            return this._wrap;
+        }
+        get id() {
+            return super.id || (super.id = getID());
+        }
+        set id(value) {
+            super.id = value;
+        }
+        async connectedCallback() {
+            if (!this.executed) {
+                this.executed = true;
+                const { io, run, runAsync } = await this._wrap.promise;
+                const runner = this.hasAttribute("async") ? runAsync : run;
+                this.srcCode = await fetchSource(
+                    this,
+                    io,
+                    !this.childElementCount,
+                );
+                this.replaceChildren();
+                // notify before the code runs
+                dispatch(this, TYPE);
+                runner(this.srcCode);
+                this.style.display = "block";
+            }
         }
     }
+
+    // define py-script only if the config didn't throw an error
+    if (!error) customElements.define(`${TYPE}-script`, PyScriptElement);
 }
 
-// define py-script only if the config didn't throw an error
-error || customElements.define("py-script", PyScriptElement);
+// TBD: I think manual worker cases are interesting in pyodide only
+//      so for the time being we should be fine with this export.
 
 /**
  * A `Worker` facade able to bootstrap on the worker thread only a PyScript module.
