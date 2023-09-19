@@ -26,17 +26,17 @@ class TestBasic(PyScriptTest):
     def test_execution_thread(self):
         self.pyscript_run(
             """
-            <!-- we don't really need anything here, we just want to check that
-                 pyscript does not bootstrap -->
+            <script type="py">
+                import pyscript
+                import js
+                js.console.log("worker?", pyscript.RUNNING_IN_WORKER)
+            </script>
             """,
-            wait_for_pyscript=False,
         )
         assert self.execution_thread in ("main", "worker")
-        if self.execution_thread == "main":
-            pass
-        elif self.execution_thread == "worker":
-            pass
-        assert self.console.log.lines == []
+        in_worker = self.execution_thread == "worker"
+        in_worker = str(in_worker).lower()
+        assert self.console.log.lines[-1] == f"worker? {in_worker}"
 
     # TODO: if there's no py-script there are surely no plugins neither
     #       this test must be discussed or rewritten to make sense now

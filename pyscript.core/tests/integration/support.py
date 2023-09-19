@@ -494,13 +494,11 @@ class PyScriptTest:
         #
         return snippet, py_config_maybe
 
+    SCRIPT_WORKER_REGEX = re.compile('<script type="py"')
+
     def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
-        if execution_thread is None:
-            py_config_maybe = ""
-        else:
-            snippet, py_config_maybe = self._inject_execution_thread_config(
-                snippet, execution_thread
-            )
+        if execution_thread == 'worker':
+            snippet = self.SCRIPT_WORKER_REGEX.sub('<script type="py" worker', snippet)
 
         doc = f"""
         <html>
@@ -513,7 +511,6 @@ class PyScriptTest:
               {extra_head}
           </head>
           <body>
-            {py_config_maybe}
             {snippet}
           </body>
         </html>
