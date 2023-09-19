@@ -335,7 +335,7 @@ class TestBasic(PyScriptTest):
 
         assert self.page.locator(".py-error").inner_text() == "hello world"
 
-    @pytest.mark.skip("ERROR_SCRIPT: works with <py-script> not with <script>")
+    #@pytest.mark.skip("ERROR_SCRIPT: works with <py-script> not with <script>")
     def test_getPySrc_returns_source_code(self):
         self.pyscript_run(
             """
@@ -346,8 +346,10 @@ class TestBasic(PyScriptTest):
         pyscript_tag = self.page.locator("py-script")
         assert pyscript_tag.inner_html() == ""
         assert pyscript_tag.evaluate("node => node.srcCode") == 'print("hello from py-script")'
+        assert "'srcCode' Attribute is Deprecated: use the 'textContent' attribute to retrieve code from a <py-script> or <script type='py'> tag." in self.console.warning.lines
+
         script_py_tag = self.page.locator('script[type="py"]')
-        assert script_py_tag.evaluate("node => node.srcCode") == 'print("hello from script py")'
+        assert script_py_tag.evaluate("node => node.textContent") == 'print("hello from script py")'
 
 
     @pytest.mark.skip(reason="FIX TEST: works in chrome!")

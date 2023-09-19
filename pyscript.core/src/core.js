@@ -208,7 +208,7 @@ class PyScriptElement extends HTMLElement {
     constructor() {
         assign(super(), {
             _pyodide: Promise.withResolvers(),
-            srcCode: "",
+            _srcCode: "",
             executed: false,
         });
     }
@@ -218,16 +218,28 @@ class PyScriptElement extends HTMLElement {
     set id(value) {
         super.id = value;
     }
+
+    get srcCode(){
+        console.warn(
+            `'srcCode' Attribute is Deprecated: use the 'textContent' attribute to retrieve code from a <py-script> or <script type='py'> tag.`,
+        );
+        return this._srcCode;
+    }
+
+    set srcCode(code){
+        this._srcCode = code;
+    }
+
     async connectedCallback() {
         if (!this.executed) {
             this.executed = true;
             const { io, run, runAsync } = await this._pyodide.promise;
             const runner = this.hasAttribute("async") ? runAsync : run;
-            this.srcCode = await fetchSource(this, io, !this.childElementCount);
+            this._srcCode = await fetchSource(this, io, !this.childElementCount);
             this.replaceChildren();
             // notify before the code runs
             dispatch(this, TYPE);
-            runner(this.srcCode);
+            runner(this._srcCode);
             this.style.display = "block";
         }
     }
