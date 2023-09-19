@@ -67,6 +67,24 @@ class TestDisplay(PyScriptTest):
         mydiv = self.page.locator("#mydiv")
         assert mydiv.inner_text() == "hello world"
 
+    def test_target_script_py(self):
+        self.pyscript_run(
+            """
+            <div>ONE</div>
+            <script type="py" id="two">
+                # just a placeholder
+            </script>
+            <div>THREE</div>
+
+            <script type="py">
+                from pyscript import display
+                display('TWO', target="two")
+            </script>
+            """
+        )
+        text = self.page.inner_text("body")
+        assert text == 'ONE\nTWO\nTHREE'
+
     def test_consecutive_display_target(self):
         self.pyscript_run(
             """
