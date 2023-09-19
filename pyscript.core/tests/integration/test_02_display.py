@@ -165,15 +165,14 @@ class TestDisplay(PyScriptTest):
             <script type="py">
                 from pyscript import display
                 def display_hello():
-                    display('hello', target='output')
+                    display('hello', target='second-pyscript-tag')
             </script>
-            <script type="py">
+            <script type="py" id="second-pyscript-tag">
                 display_hello()
             </script>
-            <div id="output"></div>
             """
         )
-        text = self.page.locator("id=output").inner_text()
+        text = self.page.locator("script-py").nth(1).inner_text()
         assert text == "hello"
 
     def test_explicit_target_on_button_tag(self):
