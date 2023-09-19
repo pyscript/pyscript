@@ -24,10 +24,10 @@ class TestShadowRoot(PyScriptTest):
                 });
             </script>
             <s-r></s-r>
-            <py-script>
+            <script type="py">
                 import js
                 js.console.log(Element("shadowed").innerHtml)
-            </py-script>
+            </script>
             """
         )
         assert self.console.log.lines[-1] == "OK"

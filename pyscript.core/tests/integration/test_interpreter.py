@@ -14,11 +14,11 @@ class TestInterpreterAccess(PyScriptTest):
     def test_interpreter_python_access(self):
         self.pyscript_run(
             """
-            <py-script>
+            <script type="py">
                 x = 1
                 def py_func():
                     return 2
-            </py-script>
+            </script>
             """
         )
 
@@ -74,11 +74,11 @@ class TestInterpreterAccess(PyScriptTest):
         """Test accessing Python objects from JS via pyscript.runtime"""
         self.pyscript_run(
             """
-            <py-script>
+            <script type="py">
                 x = 1
                 def py_func():
                     return 2
-            </py-script>
+            </script>
             """
         )
 

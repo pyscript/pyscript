@@ -150,5 +150,12 @@ def display(*values, target=None, append=True):
         target = current_target()
 
     element = document.getElementById(target)
+
+    # if element is a <script type="py">, it has a 'target' attribute which
+    # points to the visual element holding the displayed values. In that case,
+    # use that.
+    if element.tagName == 'SCRIPT' and hasattr(element, 'target'):
+        element = element.target
+
     for v in values:
         _write(element, v, append=append)

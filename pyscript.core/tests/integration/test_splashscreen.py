@@ -22,9 +22,9 @@ class TestSplashscreen(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <py-script>
+            <script type="py">
                 print('hello pyscript')
-            </py-script>
+            </script>
             """,
             wait_for_pyscript=False,
         )
@@ -49,9 +49,9 @@ class TestSplashscreen(PyScriptTest):
                 [splashscreen]
                 autoclose = false
             </py-config>
-            <py-script>
+            <script type="py">
                 print('hello pyscript')
-            </py-script>
+            </script>
             """,
         )
         div = self.page.locator("py-splashscreen > div")
@@ -66,9 +66,9 @@ class TestSplashscreen(PyScriptTest):
             <py-config>
                 autoclose_loader = false
             </py-config>
-            <py-script>
+            <script type="py">
                 print('hello pyscript')
-            </py-script>
+            </script>
             """,
         )
         warning = self.page.locator(".py-warning")
@@ -89,11 +89,11 @@ class TestSplashscreen(PyScriptTest):
                 enabled = false
             </py-config>
 
-            <py-script>
+            <script type="py">
                 def test():
                     print("Hello pyscript!")
                 test()
-            </py-script>
+            </script>
             """,
         )
         assert self.page.locator("py-splashscreen").count() == 0
@@ -110,12 +110,12 @@ class TestSplashscreen(PyScriptTest):
                     autoclose = false
             </py-config>
 
-            <py-script>
+            <script type="py">
                 from js import document
 
                 splashscreen = document.querySelector("py-splashscreen")
                 splashscreen.log("Hello, world!")
-            </py-script>
+            </script>
             """,
         )
 

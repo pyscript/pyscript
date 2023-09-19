@@ -12,13 +12,13 @@ class TestWarningsAndBanners(PyScriptTest):
         # Use a script tag with an invalid output attribute to generate a warning, but only one
         self.pyscript_run(
             """
-            <py-script output="foo">
+            <script type="py" output="foo">
                 print("one.")
                 print("two.")
-            </py-script>
-            <py-script output="foo">
+            </script>
+            <script type="py" output="foo">
                 print("three.")
-            </py-script>
+            </script>
             """
         )
 

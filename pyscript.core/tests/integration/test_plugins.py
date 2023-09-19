@@ -250,11 +250,11 @@ class TestPlugin(PyScriptTest):
     @prepare_test(
         "exec_test_logger",
         PYSCRIPT_HOOKS_PLUGIN_CODE,
-        template=HTML_TEMPLATE_NO_TAG + "\n<py-script id='pyid'>x=2; x</py-script>",
+        template=HTML_TEMPLATE_NO_TAG + "\n<script type='py' id='pyid'>x=2; x</script>",
     )
     def test_pyscript_exec_hooks(self):
         """Test that the beforePyScriptExec and afterPyScriptExec hooks work as intended"""
-        assert self.page.locator("py-script") is not None
+        assert self.page.locator("script") is not None
 
         log_lines: list[str] = self.console.log.lines
 

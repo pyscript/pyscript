@@ -19,7 +19,7 @@ class TestDocsSnippets(PyScriptTest):
             </button>
             <p id="current-time"></p>
 
-            <py-script>
+            <script type="py">
                 from pyscript import Element
                 import datetime
 
@@ -31,7 +31,7 @@ class TestDocsSnippets(PyScriptTest):
 
                     # Add current time to the paragraph element
                     paragraph.write(now.strftime("%Y-%m-%d %H:%M:%S"))
-            </py-script>
+            </script>
             """
         )
 
@@ -51,7 +51,7 @@ class TestDocsSnippets(PyScriptTest):
                 packages = ["requests", "pyodide-http"]
             </py-config>
 
-            <py-script>
+            <script type="py">
                 import requests
                 import pyodide_http
 
@@ -61,7 +61,7 @@ class TestDocsSnippets(PyScriptTest):
                 # Make a request to the JSON Placeholder API
                 response = requests.get("https://jsonplaceholder.typicode.com/todos")
                 print(response.json())
-            </py-script>
+            </script>
             """
         )
 
@@ -83,9 +83,9 @@ class TestDocsSnippets(PyScriptTest):
                 from = "https://gist.githubusercontent.com/FabioRosado/faba0b7f6ad4438b07c9ac567c73b864/raw/37603b76dc7ef7997bf36781ea0116150f727f44/"
                 files = ["todo.py"]
                 </py-config>
-                <py-script>
+                <script type="py">
                     from todo import add_task, add_task_event
-                </py-script>
+                </script>
                 <section>
                 <div class="text-center w-full mb-8">
                     <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-tight">
@@ -143,10 +143,10 @@ class TestDocsSnippets(PyScriptTest):
                     name = "pyodide-0.23.0"
                     lang = "python"
             </py-config>
-            <py-script>
+            <script type="py">
                 import pyodide
                 print(pyodide.__version__)
-            </py-script>
+            </script>
             """
         )
 
@@ -167,7 +167,7 @@ class TestDocsSnippets(PyScriptTest):
             </div>
             <button py-click="print_to_page()" id="print">Print Things!</button>
 
-            <py-script>
+            <script type="py">
             def write_to_page():
                 manual_div = Element("manual-write")
                 manual_div.element.innerHTML = "<p><b>Hello World</b></p>"
@@ -177,7 +177,7 @@ class TestDocsSnippets(PyScriptTest):
 
             def print_to_page():
                 print("I print things!")
-            </py-script>
+            </script>
             """
         )
         btn_manual = self.page.wait_for_selector("#manual")
@@ -200,7 +200,7 @@ class TestDocsSnippets(PyScriptTest):
     def test_guides_asyncio(self):
         self.pyscript_run(
             """
-            <py-script>
+            <script type="py">
                 import asyncio
 
                 async def main():
@@ -208,7 +208,7 @@ class TestDocsSnippets(PyScriptTest):
                         print(i)
 
                 asyncio.ensure_future(main())
-            </py-script>
+            </script>
             """
         )
         py_terminal = self.page.wait_for_selector("py-terminal")
@@ -222,7 +222,7 @@ class TestDocsSnippets(PyScriptTest):
             <py-config>
                 xterm = true
             </py-config>
-            <py-script>
+            <script type="py">
                 print("HELLO!")
                 import js
                 import asyncio
@@ -233,7 +233,7 @@ class TestDocsSnippets(PyScriptTest):
                     print("test-done")
 
                 asyncio.ensure_future(adjust_term_size(40, 10))
-                </py-script>
+                </script>
             """
         )
         self.page.get_by_text("test-done").wait_for()
@@ -249,12 +249,12 @@ class TestDocsSnippets(PyScriptTest):
         self.pyscript_run(
             """
             <button id="my_btn">Click Me to Say Hi</button>
-            <py-script>
+            <script type="py">
                 from pyscript import when
                 @when("click", selector="#my_btn")
                 def say_hello():
                     print(f"Hello, world!")
-            </py-script>
+            </script>
             """
         )
         self.page.get_by_text("Click Me to Say Hi").click()
@@ -270,7 +270,7 @@ class TestDocsSnippets(PyScriptTest):
                 <button>Second</button>
                 <button>Third</button>
             </div>
-            <py-script>
+            <script type="py">
                 from pyscript import when
                 import js
 
@@ -285,7 +285,7 @@ class TestDocsSnippets(PyScriptTest):
                         button.style.backgroundColor = 'red'
 
                     print("set") # Test Only
-            </py-script>
+            </script>
             """
         )
 

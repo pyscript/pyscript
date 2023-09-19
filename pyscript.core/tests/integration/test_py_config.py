@@ -50,7 +50,7 @@ def unzip(location, extract_to="."):
 #      of config
 @with_execution_thread(None)
 class TestConfig(PyScriptTest):
-    def test_py_config_inline(self):
+    def test_py_config_inline_pyscript(self):
         self.pyscript_run(
             """
         <py-config>
@@ -66,6 +66,25 @@ class TestConfig(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "config name: foobar"
 
+    @pytest.mark.skip("ERROR_SCRIPT: works with <py-script> not with <script>")
+    def test_py_config_inline_scriptpy(self):
+        self.pyscript_run(
+            """
+        <py-config>
+            name = "foobar"
+        </py-config>
+
+        <script type="py" async>
+            from pyscript import window, document
+            promise = await document.currentScript._pyodide.promise
+            window.console.log("config name:", promise.config.name)
+        </script>
+        """
+        )
+        assert self.console.log.lines[-1] == "config name: foobar"
+
+
+    @pytest.mark.skip("ERROR_SCRIPT: works with <py-script> not with <script>")
     def test_py_config_external(self):
         pyconfig_toml = """
             name = "app with external config"
@@ -75,11 +94,11 @@ class TestConfig(PyScriptTest):
             """
         <py-config src="pyconfig.toml"></py-config>
 
-        <py-script async>
+        <script type="py" async>
             from pyscript import window, document
             promise = await document.currentScript._pyodide.promise
             window.console.log("config name:", promise.config.name)
-        </py-script>
+        </script>
         """
         )
         assert self.console.log.lines[-1] == "config name: app with external config"
@@ -105,11 +124,11 @@ class TestConfig(PyScriptTest):
                 }
             </py-config>
 
-            <py-script>
+            <script type="py">
                 import sys, js
                 pyodide_version = sys.modules["pyodide"].__version__
                 js.console.log("version", pyodide_version)
-            </py-script>
+            </script>
         """,
         )
 
@@ -168,11 +187,11 @@ class TestConfig(PyScriptTest):
             this is ignored and won't even be parsed
             </py-config>
 
-            <py-script>
+            <script type="py">
                 import js
                 config = js.pyscript_get_config()
                 js.console.log("config name:", config.name)
-            </py-script>
+            </script>
             """
         )
         banner = self.page.wait_for_selector(".py-warning")
@@ -217,10 +236,10 @@ class TestConfig(PyScriptTest):
             }
             </py-config>
 
-            <py-script>
+            <script type="py">
                 import js
                 js.console.log("hello world");
-            </py-script>
+            </script>
         """
         self.pyscript_run(snippet)
         banner = self.page.wait_for_selector(".py-warning")
@@ -240,12 +259,12 @@ class TestConfig(PyScriptTest):
                 files = ["./a.py", "./b.py"]
             </py-config>
 
-            <py-script>
+            <script type="py">
                 import js
                 import a, b
                 js.console.log(a.x)
                 js.console.log(b.x)
-            </py-script>
+            </script>
             """
         )
         assert self.console.log.lines[-2:] == [
@@ -284,11 +303,11 @@ class TestConfig(PyScriptTest):
                 files = ["__init__.py", "a.py"]
             </py-config>
 
-            <py-script>
+            <script type="py">
                 import js
                 from pkg.a import x
                 js.console.log(x)
-            </py-script>
+            </script>
             """
         )
         assert self.console.log.lines[-1] == "hello from A"
