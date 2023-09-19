@@ -9,6 +9,7 @@ import { queryTarget } from "../node_modules/polyscript/esm/script-handler.js";
 import { dedent, dispatch } from "../node_modules/polyscript/esm/utils.js";
 import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
 
+import { ErrorCode } from "./exceptions.js";
 import sync from "./sync.js";
 import stdlib from "./stdlib.js";
 import { config, plugins, error } from "./config.js";
@@ -38,6 +39,36 @@ const before = (script) => {
 
 const after = () => {
     delete document.currentScript;
+};
+
+/**
+ * Some content that might contain Python/JS comments only.
+ * @param {string} text some content to evaluate
+ * @returns {boolean}
+ */
+const hasCommentsOnly = (text) =>
+    !text
+        .replace(/\/\*[\s\S]*?\*\//g, "")
+        .replace(/^\s*(?:\/\/|#).*/gm, "")
+        .trim();
+
+/**
+ *
+ * @param {Element} scriptOrPyScript the element with possible `src` or `worker` content
+ * @returns {boolean}
+ */
+const hasAmbiguousContent = (
+    io,
+    { localName, textContent, attributes: { src, worker } },
+) => {
+    // any `src` or a non-empty `worker` attribute + not just comments
+    if ((src || worker?.value) && !hasCommentsOnly(textContent)) {
+        io.stderr(
+            `(${ErrorCode.CONFLICTING_CODE}) a ${localName} tag has content shadowed by attributes`,
+        );
+        return true;
+    }
+    return false;
 };
 
 /**
@@ -172,6 +203,7 @@ error ||
                 callback(pyodide, element);
 
             if (isScript(element)) {
+                if (hasAmbiguousContent(pyodide.io, element)) return;
                 const {
                     attributes: { async: isAsync, target },
                 } = element;
@@ -222,6 +254,7 @@ class PyScriptElement extends HTMLElement {
         if (!this.executed) {
             this.executed = true;
             const { io, run, runAsync } = await this._pyodide.promise;
+            if (hasAmbiguousContent(io, this)) return;
             const runner = this.hasAttribute("async") ? runAsync : run;
             this.srcCode = await fetchSource(this, io, !this.childElementCount);
             this.replaceChildren();
