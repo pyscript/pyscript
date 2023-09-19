@@ -335,7 +335,6 @@ class TestBasic(PyScriptTest):
 
         assert self.page.locator(".py-error").inner_text() == "hello world"
 
-    #@pytest.mark.skip("ERROR_SCRIPT: works with <py-script> not with <script>")
     def test_getPySrc_returns_source_code(self):
         self.pyscript_run(
             """
