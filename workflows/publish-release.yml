@@ -4,23 +4,19 @@ on:
     release:
         types: [published]
 
-env:
-    MINICONDA_PYTHON_VERSION: py38
-    MINICONDA_VERSION: 4.11.0
-
 defaults:
     run:
-        working-directory: pyscriptjs
+        working-directory: pyscript.core
 
 jobs:
-    build:
+    publish-release:
         runs-on: ubuntu-latest
         permissions:
             contents: read
             id-token: write
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Install node
               uses: actions/setup-node@v3
@@ -40,16 +36,16 @@ jobs:
                       ${{ runner.os }}-build-
                       ${{ runner.os }}-
 
-            - name: setup Miniconda
-              uses: conda-incubator/setup-miniconda@v2
+            - name: npm install
+              run: npm install
 
-            - name: Setup Environment
-              run: make setup
+            - name: build
+              run: npm run build
+            
+            - name: Generate index.html in snapshot
+              working-directory: .
+              run: sed 's#_PATH_#https://pyscript.net/snapshots/${{ inputs.snapshot_version }}/#' ./public/index.html > ./pyscript.core/dist/index.html
 
-            - name: Build and Test
-              run: make test
-
-              # Upload to S3
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v1.6.1
               with:
@@ -59,5 +55,5 @@ jobs:
             - name: Sync to S3
               run:
                   | # Update /latest and create an explicitly versioned directory under releases/YYYY.MM.MICRO/
-                  aws s3 sync --quiet ./build/ s3://pyscript.net/latest/
-                  aws s3 sync --quiet ./build/ s3://pyscript.net/releases/${{ github.ref_name }}/
+                  aws s3 sync --quiet ./dist/ s3://pyscript.net/latest/
+                  aws s3 sync --quiet ./dist/ s3://pyscript.net/releases/${{ github.ref_name }}/
