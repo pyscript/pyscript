@@ -1,4 +1,4 @@
-name: "[CI] Prepare Release"
+name: "Prepare Release"
 
 on:
     push:
@@ -7,7 +7,7 @@ on:
 
 defaults:
     run:
-        working-directory: pyscript.core
+        working-directory: ./pyscript.core
 
 jobs:
     prepare-release:
@@ -42,7 +42,7 @@ jobs:
 
             - name: Generate index.html
               working-directory: .
-              run: sed 's#_PATH_#https://pyscript.net/snapshots/${{ inputs.snapshot_version }}/#' ./public/index.html > ./pyscript.core/dist/index.html
+              run: sed 's#_PATH_#./#' ./public/index.html > ./pyscript.core/dist/index.html
 
             - name: Zip dist folder
               run: zip -r -q ./build.zip ./dist

@@ -59,7 +59,7 @@ jobs:
               run: sed 's#_PATH_#https://pyscript.net/unstable/#' ./public/index.html > ./pyscript.core/dist/index.html
 
             - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v1.6.1
+              uses: aws-actions/configure-aws-credentials@v4
               with:
                   aws-region: ${{ secrets.AWS_REGION }}
                   role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
