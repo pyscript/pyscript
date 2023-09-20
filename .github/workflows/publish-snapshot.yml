@@ -8,6 +8,10 @@ on:
                 type: string
                 required: true
 
+defaults:
+    run:
+        working-directory: pyscript.core
+
 jobs:
     publish-snapshot:
         runs-on: ubuntu-latest
@@ -17,8 +21,6 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-              with:
-                ref: main
 
             - name: Install node
               uses: actions/setup-node@v3
@@ -38,12 +40,10 @@ jobs:
                       ${{ runner.os }}-build-
                       ${{ runner.os }}-
             
-            - name: Install Dependencies  
-              working-directory: ./pyscript.core
+            - name: Install Dependencies
               run: npm install
             
             - name: Build Pyscript.core
-              working-directory: ./pyscript.core
               run: npm run build
             
             - name: Configure AWS credentials
@@ -57,6 +57,5 @@ jobs:
               run: sed 's#_PATH_#https://pyscript.net/snapshots/${{ inputs.snapshot_version }}/#' ./public/index.html > ./pyscript.core/dist/index.html
 
             - name: Copy to Snapshot
-              working-directory: ./pyscript.core/dist
               run: >
-                  aws s3 sync . s3://pyscript.net/snapshots/${{ inputs.snapshot_version }}/
+                  aws s3 sync ./dist/ s3://pyscript.net/snapshots/${{ inputs.snapshot_version }}/
