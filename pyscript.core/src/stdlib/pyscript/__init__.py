@@ -31,4 +31,13 @@
 
 from pyscript.magic_js import RUNNING_IN_WORKER, window, document, sync
 from pyscript.display import HTML, display
-from pyscript.event_handling import when
+
+try:
+    from pyscript.event_handling import when
+except:
+    from pyscript.util import NotSupported
+
+    when = NotSupported(
+        "pyscript.when",
+        "pyscript.when currently not available with this interpreter"
+    )

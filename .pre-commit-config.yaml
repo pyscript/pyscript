@@ -28,13 +28,14 @@ repos:
       rev: v0.0.257
       hooks:
           - id: ruff
-            exclude: pyscript\.core/test|pyscript\.core/dist|pyscript.core/src/stdlib/pyscript.py
+            exclude: pyscript\.core/src/stdlib/pyscript/__init__\.py|pyscript\.core/test|pyscript\.core/dist|pyscript\.core/src/stdlib/pyscript\.py
             args: [--fix]
 
     - repo: https://github.com/psf/black
       rev: 23.1.0
       hooks:
           - id: black
+            exclude: pyscript\.core/src/stdlib/pyscript/__init__\.py
 
     - repo: https://github.com/codespell-project/codespell
       rev: v2.2.4
