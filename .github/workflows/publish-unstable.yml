@@ -18,7 +18,7 @@ on:
     workflow_dispatch:
 
 jobs:
-    build-unstable:
+    publish-unstable:
         runs-on: ubuntu-latest
         defaults:
             run:
@@ -55,7 +55,6 @@ jobs:
               working-directory: .
               run: sed 's#_PATH_#https://pyscript.net/unstable/#' ./public/index.html > ./pyscript.core/dist/index.html
 
-              # Deploy to S3
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v1.6.1
               with:
