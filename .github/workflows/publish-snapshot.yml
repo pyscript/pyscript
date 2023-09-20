@@ -1,4 +1,4 @@
-name: "Next Build Snapshot"
+name: "Build Snapshot"
 
 on:
     workflow_dispatch:
@@ -9,7 +9,7 @@ on:
                 required: true
 
 jobs:
-    next-build-snapshot:
+    build-snapshot:
         runs-on: ubuntu-latest
         permissions:
             contents: read
