@@ -20,6 +20,9 @@ on:
 jobs:
     publish-unstable:
         runs-on: ubuntu-latest
+        permissions:
+            id-token: write
+            contents: read
         defaults:
             run:
                 working-directory: ./pyscript.core
