@@ -1,7 +1,7 @@
 /*! (c) PyScript Development Team */
 
 import "@ungap/with-resolvers";
-import { define, XWorker } from "polyscript";
+import { INVALID_CONTENT, define, XWorker } from "polyscript";
 
 // TODO: this is not strictly polyscript related but handy ... not sure
 //       we should factor this utility out a part but this works anyway.
@@ -39,36 +39,6 @@ const before = (script) => {
 
 const after = () => {
     delete document.currentScript;
-};
-
-/**
- * Some content that might contain Python/JS comments only.
- * @param {string} text some content to evaluate
- * @returns {boolean}
- */
-const hasCommentsOnly = (text) =>
-    !text
-        .replace(/\/\*[\s\S]*?\*\//g, "")
-        .replace(/^\s*(?:\/\/|#).*/gm, "")
-        .trim();
-
-/**
- *
- * @param {Element} scriptOrPyScript the element with possible `src` or `worker` content
- * @returns {boolean}
- */
-const hasAmbiguousContent = (
-    io,
-    { localName, textContent, attributes: { src, worker } },
-) => {
-    // any `src` or a non-empty `worker` attribute + not just comments
-    if ((src || worker?.value) && !hasCommentsOnly(textContent)) {
-        io.stderr(
-            `(${ErrorCode.CONFLICTING_CODE}) a ${localName} tag has content shadowed by attributes`,
-        );
-        return true;
-    }
-    return false;
 };
 
 /**
@@ -158,6 +128,9 @@ const workerHooks = {
         [...hooks.codeAfterRunWorkerAsync].map(dedent).join("\n"),
 };
 
+// possible early errors sent by polyscript
+const errors = new Map();
+
 // define the module as both `<script type="py">` and `<py-script>`
 // but only if the config didn't throw an error
 error ||
@@ -165,6 +138,9 @@ error ||
         config,
         env: `${TYPE}-script`,
         interpreter: "pyodide",
+        onerror(error, element) {
+            errors.set(element, error);
+        },
         ...workerHooks,
         onWorkerReady(_, xworker) {
             assign(xworker.sync, sync);
@@ -202,8 +178,19 @@ error ||
             for (const callback of hooks.onInterpreterReady)
                 callback(pyodide, element);
 
+            // now that all possible plugins are configured,
+            // bail out if polyscript encountered an error
+            if (errors.has(element)) {
+                let { message } = errors.get(element);
+                errors.delete(element);
+                const clone = message === INVALID_CONTENT;
+                message = `(${ErrorCode.CONFLICTING_CODE}) ${message} for `;
+                message += element.cloneNode(clone).outerHTML;
+                pyodide.io.stderr(message);
+                return;
+            }
+
             if (isScript(element)) {
-                if (hasAmbiguousContent(pyodide.io, element)) return;
                 const {
                     attributes: { async: isAsync, target },
                 } = element;
@@ -254,7 +241,6 @@ class PyScriptElement extends HTMLElement {
         if (!this.executed) {
             this.executed = true;
             const { io, run, runAsync } = await this._pyodide.promise;
-            if (hasAmbiguousContent(io, this)) return;
             const runner = this.hasAttribute("async") ? runAsync : run;
             this.srcCode = await fetchSource(this, io, !this.childElementCount);
             this.replaceChildren();
