@@ -1,4 +1,4 @@
-name: "Build Unstable"
+name: "Publish Unstable"
 
 on:
     push: # Only run on merges into main that modify files under pyscriptjs/ and examples/
@@ -97,7 +97,7 @@ jobs:
             - name: Eslint
               run: npx eslint src -c .eslintrc.js
 
-    Deploy:
+    publish-unstable:
         runs-on: ubuntu-latest
         defaults:
             run:
