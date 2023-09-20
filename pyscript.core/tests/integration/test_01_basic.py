@@ -351,7 +351,6 @@ class TestBasic(PyScriptTest):
         assert script_py_tag.evaluate("node => node.srcCode") == 'print("hello from script py")'
 
 
-    @pytest.mark.skip(reason="FIX TEST: works in chrome!")
     def test_py_attribute_without_id(self):
         self.pyscript_run(
             """

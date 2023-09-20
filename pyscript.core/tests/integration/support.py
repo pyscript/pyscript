@@ -179,6 +179,7 @@ class PyScriptTest:
         # create a symlink to BUILD inside tmpdir
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
+        self.tmpdir.join('favicon.ico').write("")
         self.logger = logger
         self.execution_thread = execution_thread
         self.dev_server = None
