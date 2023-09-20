@@ -167,7 +167,6 @@ class TestBasic(PyScriptTest):
                                                "C true false",
                                                "D <div></div>"]
 
-    @pytest.mark.skip(reason="FIX TEST: Works on CHROME")
     def test_packages(self):
         self.pyscript_run(
             """
@@ -188,8 +187,6 @@ class TestBasic(PyScriptTest):
             "hello asciitree",  # printed by us
         ]
 
-    # TODO: if there's no <script type="py"> there are surely no plugins neither
-    #       this test must be discussed or rewritten to make sense now
     @pytest.mark.skip("FIXME: No banner")
     def test_non_existent_package(self):
         self.pyscript_run(
@@ -197,6 +194,9 @@ class TestBasic(PyScriptTest):
             <py-config>
                 packages = ["i-dont-exist"]
             </py-config>
+            <script type="py">
+                print('hello')
+            </script>
             """,
             wait_for_pyscript=False,
         )
@@ -211,8 +211,6 @@ class TestBasic(PyScriptTest):
         assert expected_alert_banner_msg in alert_banner.inner_text()
         self.check_py_errors("Can't fetch metadata for 'i-dont-exist'")
 
-    # TODO: if there's no <script type="py"> there are surely no plugins neither
-    #       this test must be discussed or rewritten to make sense now
     @pytest.mark.skip("FIXME: No banner")
     def test_no_python_wheel(self):
         self.pyscript_run(
@@ -220,6 +218,9 @@ class TestBasic(PyScriptTest):
             <py-config>
                 packages = ["opsdroid"]
             </py-config>
+            <script type="py">
+                print('hello')
+            </script>
             """,
             wait_for_pyscript=False,
         )
