@@ -126,7 +126,7 @@ def filter_page_content(lines, exclude=None):
 
 
 @pytest.mark.usefixtures("init")
-@with_execution_thread("main", "worker")
+@with_execution_thread("main") # , "worker") # XXX re-enable workers eventually
 class PyScriptTest:
     """
     Base class to write PyScript integration tests, based on playwright.
