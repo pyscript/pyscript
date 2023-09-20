@@ -7,7 +7,6 @@ on:
         paths:
             - pyscript.core/**
             - examples/**
-            - .github/workflows/build-unstable.yml # Test that workflow works when changed
 
     pull_request: # Run on any PR that modifies files under pyscriptjs/ and examples/
         branches:
@@ -15,7 +14,7 @@ on:
         paths:
             - pyscriptjs/**
             - examples/**
-            - .github/workflows/build-unstable.yml # Test that workflow works when changed
+
     workflow_dispatch:
 
 jobs:
