@@ -7,7 +7,7 @@ on:
 
 defaults:
     run:
-        working-directory: pyscript.core
+        working-directory: ./pyscript.core
 
 jobs:
     prepare-release:
