@@ -1,2 +1,4 @@
-export default configs;
-declare const configs: Map<any, any>;
+declare let parsed: any;
+export let plugins: any;
+export let error: any;
+export { parsed as config };
