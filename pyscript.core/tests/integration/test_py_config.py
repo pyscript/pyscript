@@ -1,44 +1,8 @@
 import os
-import tarfile
-import tempfile
-from pathlib import Path
 
 import pytest
-import requests
 
 from .support import PyScriptTest, with_execution_thread
-
-PYODIDE_VERSION = "0.23.4"
-
-
-@pytest.fixture
-def pyodide_tar(request):
-    """
-    Fixture which returns a local copy of pyodide. It uses pytest-cache to
-    avoid re-downloading it between runs.
-    """
-    URL = (
-        f"https://github.com/pyodide/pyodide/releases/download/{PYODIDE_VERSION}/"
-        f"pyodide-core-{PYODIDE_VERSION}.tar.bz2"
-    )
-    tar_name = Path(URL).name
-
-    val = request.config.cache.get(tar_name, None)
-    if val is None:
-        response = requests.get(URL, stream=True)
-        TMP_DIR = tempfile.mkdtemp()
-        TMP_TAR_LOCATION = os.path.join(TMP_DIR, tar_name)
-        with open(TMP_TAR_LOCATION, "wb") as f:
-            f.write(response.raw.read())
-        val = TMP_TAR_LOCATION
-        request.config.cache.set(tar_name, val)
-    return val
-
-
-def unzip(location, extract_to="."):
-    file = tarfile.open(name=location, mode="r:bz2")
-    file.extractall(path=extract_to)
-
 
 # Disable the main/worker dual testing, for two reasons:
 #
@@ -103,36 +67,6 @@ class TestConfig(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "config name: app with external config"
 
-    # The default pyodide version is newer than
-    # the one we are loading below (after downloading locally)
-    # which is 0.22.0
-
-    # The test checks if loading a different interpreter is possible
-    # and that too from a locally downloaded file without needing
-    # the use of explicit `indexURL` calculation.
-    def test_interpreter_config(self, pyodide_tar):
-        unzip(pyodide_tar, extract_to=self.tmpdir)
-        self.pyscript_run(
-            """
-            <py-config type="json">
-                {
-                    "interpreters": [{
-                        "src": "/pyodide/pyodide.js",
-                        "name": "my-own-pyodide",
-                        "lang": "python"
-                    }]
-                }
-            </py-config>
-
-            <script type="py">
-                import sys, js
-                pyodide_version = sys.modules["pyodide"].__version__
-                js.console.log("version", pyodide_version)
-            </script>
-        """,
-        )
-
-        assert self.console.log.lines[-1] == f"version {PYODIDE_VERSION}"
 
     @pytest.mark.skip("FIXME: We need to restore the banner.")
     def test_invalid_json_config(self):
