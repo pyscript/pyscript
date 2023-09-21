@@ -323,11 +323,9 @@ class TestDisplay(PyScriptTest):
         assert out.inner_html() == "<p>hello world</p>"
         assert out.inner_text() == "hello world"
 
-    @pytest.mark.skip(
-        "FIX TEST: Works correctly in Chrome, but fails in TEST with the error:\n\n"
-        "It's likely that the Test framework injections in config are causing"
-        "this error."
-    )
+    # waiit_for_pyscript is broken: it waits until the python code is about to
+    # start, to until the python code has finished execution
+    @pytest.mark.skip("FIXME: wait_for_pyscript is broken")
     def test_image_display(self):
         self.pyscript_run(
             """
@@ -411,11 +409,6 @@ class TestDisplay(PyScriptTest):
         assert console_text.index("1print") == (console_text.index("2print") - 1)
         assert console_text.index("1console") == (console_text.index("2console") - 1)
 
-    @pytest.mark.skip(
-        "FIX TEST: Works correctly in Chrome, but fails in TEST with the error:\n\n"
-        "It's likely that the Test framework injections in config are causing"
-        "this error."
-    )
     def test_image_renders_correctly(self):
         """This is just a sanity check to make sure that images are rendered correctly."""
         buffer = io.BytesIO()
