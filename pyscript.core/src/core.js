@@ -9,21 +9,17 @@ import { queryTarget } from "../node_modules/polyscript/esm/script-handler.js";
 import { dedent, dispatch } from "../node_modules/polyscript/esm/utils.js";
 import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
 
-import { ErrorCode } from "./exceptions.js";
+import TYPES from "./types.js";
+import configs from "./config.js";
 import sync from "./sync.js";
 import stdlib from "./stdlib.js";
-import { config, plugins, error } from "./config.js";
+import { ErrorCode } from "./exceptions.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
 
 const { assign, defineProperty } = Object;
 
 // allows lazy element features on code evaluation
 let currentElement;
-
-const TYPES = new Map([
-    ["py", "pyodide"],
-    ["mpy", "micropython"],
-]);
 
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
@@ -103,7 +99,12 @@ const workerHooks = {
         [...hooks.codeAfterRunWorkerAsync].map(dedent).join("\n"),
 };
 
+const exportedConfig = {};
+export { exportedConfig as config };
+
 for (const [TYPE, interpreter] of TYPES) {
+    const { config, plugins, error } = configs.get(TYPE);
+
     // create a unique identifier when/if needed
     let id = 0;
     const getID = (prefix = TYPE) => `${prefix}-${id++}`;
@@ -273,6 +274,9 @@ for (const [TYPE, interpreter] of TYPES) {
 
     // define py-script only if the config didn't throw an error
     if (!error) customElements.define(`${TYPE}-script`, PyScriptElement);
+
+    // export the used config without allowing leaks through it
+    exportedConfig[TYPE] = structuredClone(config);
 }
 
 // TBD: I think manual worker cases are interesting in pyodide only
