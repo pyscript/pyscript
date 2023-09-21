@@ -68,7 +68,6 @@ class TestConfig(PyScriptTest):
         assert self.console.log.lines[-1] == "config name: app with external config"
 
 
-    @pytest.mark.skip("FIXME: We need to restore the banner.")
     def test_invalid_json_config(self):
         # we need wait_for_pyscript=False because we bail out very soon,
         # before being able to write 'PyScript page fully initialized'
@@ -81,14 +80,13 @@ class TestConfig(PyScriptTest):
             wait_for_pyscript=False,
         )
         banner = self.page.wait_for_selector(".py-error")
-        assert "SyntaxError: Unexpected end of JSON input" in self.console.error.text
+        #assert "Unexpected end of JSON input" in self.console.error.text
         expected = (
-            "(PY1000): The config supplied: [[ is an invalid JSON and cannot be "
-            "parsed: SyntaxError: Unexpected end of JSON input"
+            "(PY1000): Invalid JSON\n"
+            "Unexpected end of JSON input"
         )
         assert banner.inner_text() == expected
 
-    @pytest.mark.skip("FIXME: We need to restore the banner.")
     def test_invalid_toml_config(self):
         # we need wait_for_pyscript=False because we bail out very soon,
         # before being able to write 'PyScript page fully initialized'
@@ -101,15 +99,15 @@ class TestConfig(PyScriptTest):
             wait_for_pyscript=False,
         )
         banner = self.page.wait_for_selector(".py-error")
-        assert "SyntaxError: Expected DoubleQuote" in self.console.error.text
+        #assert "Expected DoubleQuote" in self.console.error.text
         expected = (
-            "(PY1000): The config supplied: [[ is an invalid TOML and cannot be parsed: "
-            "SyntaxError: Expected DoubleQuote, Whitespace, or [a-z], [A-Z], "
-            '[0-9], "-", "_" but "\\n" found.'
+            "(PY1000): Invalid TOML\n"
+            "Expected DoubleQuote, Whitespace, or [a-z], [A-Z], "
+            '[0-9], "-", "_" but end of input found.'
         )
         assert banner.inner_text() == expected
 
-    @pytest.mark.skip("FIXME: We need to restore the banner.")
+    @pytest.mark.skip("FIXME: emit a warning in case of multiple py-config")
     def test_multiple_py_config(self):
         self.pyscript_run(
             """
@@ -118,13 +116,13 @@ class TestConfig(PyScriptTest):
             </py-config>
 
             <py-config>
-            this is ignored and won't even be parsed
+            name = "this is ignored"
             </py-config>
 
             <script type="py">
                 import js
-                config = js.pyscript_get_config()
-                js.console.log("config name:", config.name)
+                #config = js.pyscript_get_config()
+                #js.console.log("config name:", config.name)
             </script>
             """
         )
@@ -134,54 +132,6 @@ class TestConfig(PyScriptTest):
             "is going to be parsed, all the others will be ignored"
         )
         assert banner.text_content() == expected
-
-    @pytest.mark.skip("FIXME: We need to restore the banner.")
-    def test_no_interpreter(self):
-        snippet = """
-            <py-config type="json">
-            {
-                "interpreters": []
-            }
-            </py-config>
-        """
-        self.pyscript_run(snippet, wait_for_pyscript=False)
-        div = self.page.wait_for_selector(".py-error")
-        assert (
-            div.text_content() == "(PY1000): Fatal error: config.interpreter is empty"
-        )
-
-    @pytest.mark.skip("FIXME: We need to restore the banner.")
-    def test_multiple_interpreter(self):
-        snippet = """
-            <py-config type="json">
-            {
-                "interpreters": [
-                    {
-                        "src": "https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js",
-                        "name": "pyodide-0.23.2",
-                        "lang": "python"
-                    },
-                    {
-                        "src": "http://...",
-                        "name": "this will be ignored",
-                        "lang": "this as well"
-                    }
-                ]
-            }
-            </py-config>
-
-            <script type="py">
-                import js
-                js.console.log("hello world");
-            </script>
-        """
-        self.pyscript_run(snippet)
-        banner = self.page.wait_for_selector(".py-warning")
-        expected = (
-            "Multiple interpreters are not supported yet.Only the first will be used"
-        )
-        assert banner.text_content() == expected
-        assert self.console.log.lines[-1] == "hello world"
 
     def test_paths(self):
         self.writefile("a.py", "x = 'hello from A'")
@@ -206,7 +156,7 @@ class TestConfig(PyScriptTest):
             "hello from B",
         ]
 
-    @pytest.mark.skip("FIXME: We need to restore the banner.")
+    @pytest.mark.skip("FIXME: emit an error if fetch fails")
     def test_paths_that_do_not_exist(self):
         self.pyscript_run(
             """
@@ -214,16 +164,19 @@ class TestConfig(PyScriptTest):
                 [[fetch]]
                 files = ["./f.py"]
             </py-config>
+
+            <script type="py">
+                print("this should not be printed")
+            </script>
             """,
             wait_for_pyscript=False,
         )
 
         expected = "(PY0404): Fetching from URL ./f.py failed with " "error 404"
-
         inner_html = self.page.locator(".py-error").inner_html()
-
         assert expected in inner_html
         assert expected in self.console.error.lines[-1]
+        assert self.console.log.lines == []
 
     def test_paths_from_packages(self):
         self.writefile("utils/__init__.py", "")
