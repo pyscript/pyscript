@@ -2,6 +2,7 @@ import base64
 import io
 import os
 import re
+import html
 
 import numpy as np
 import pytest
@@ -296,7 +297,6 @@ class TestDisplay(PyScriptTest):
             == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
         )
 
-    @pytest.mark.skip("The asserts are commented out. Investigate")
     def test_display_should_escape(self):
         self.pyscript_run(
             """
@@ -306,13 +306,10 @@ class TestDisplay(PyScriptTest):
             </script>
             """
         )
-        # out = self.page.locator("script-py > div")
-        node_list = self.page.query_selector_all(DISPLAY_OUTPUT_ID_PATTERN)
-        node_list[0]
-        # assert out.inner_html() == html.escape("<p>hello world</p>")
-        # assert out.inner_text() == "<p>hello world</p>"
+        out = self.page.locator("script-py > div")
+        assert out.inner_html() == html.escape("<p>hello world</p>")
+        assert out.inner_text() == '<p>hello world</p>'
 
-    @pytest.mark.skip("The asserts are commented out. Investigate")
     def test_display_HTML(self):
         self.pyscript_run(
             """
@@ -322,11 +319,9 @@ class TestDisplay(PyScriptTest):
             </script>
             """
         )
-        # out = self.page.locator("script-py > div")
-        node_list = self.page.query_selector_all(DISPLAY_OUTPUT_ID_PATTERN)
-        node_list[0]
-        # assert out.inner_html() == "<p>hello world</p>"
-        # assert out.inner_text() == "hello world"
+        out = self.page.locator("script-py > div")
+        assert out.inner_html() == "<p>hello world</p>"
+        assert out.inner_text() == "hello world"
 
     @pytest.mark.skip(
         "FIX TEST: Works correctly in Chrome, but fails in TEST with the error:\n\n"
