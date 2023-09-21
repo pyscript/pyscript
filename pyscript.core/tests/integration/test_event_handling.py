@@ -2,10 +2,6 @@ import pytest
 
 from .support import PyScriptTest
 
-pytest.skip(
-    reason="FIXME: @when decorator missing from pyscript", allow_module_level=True
-)
-
 
 class TestEventHandler(PyScriptTest):
     def test_when_decorator_with_event(self):
