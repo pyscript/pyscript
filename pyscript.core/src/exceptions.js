@@ -23,7 +23,17 @@ export const ErrorCode = {
     FETCH_UNAVAILABLE_ERROR: "PY0503",
 };
 
+/**
+ * Keys of the ErrorCode 'enum'
+ * @typedef {keyof ErrorCode} ErrorCodes
+ * */
+
 export class UserError extends Error {
+    /**
+     * @param {ErrorCodes} errorCode
+     * @param {string} message
+     * @param {string} messageType
+     * */
     constructor(errorCode, message = "", messageType = "text") {
         super(`(${errorCode}): ${message}`);
         this.errorCode = errorCode;
@@ -33,6 +43,10 @@ export class UserError extends Error {
 }
 
 export class FetchError extends UserError {
+    /**
+     * @param {ErrorCodes} errorCode
+     * @param {string} message
+     * */
     constructor(errorCode, message) {
         super(errorCode, message);
         this.name = "FetchError";
@@ -40,12 +54,24 @@ export class FetchError extends UserError {
 }
 
 export class InstallError extends UserError {
+    /**
+     * @param {ErrorCodes} errorCode
+     * @param {string} message
+     * */
     constructor(errorCode, message) {
         super(errorCode, message);
         this.name = "InstallError";
     }
 }
 
+/**
+ * Internal function for creating alert banners on the page
+ * @param {string} message
+ * @param {string} level
+ * @param {string} messageType="text"
+ * @param {any} logMessage=true
+ * @returns {undefined}
+ */
 export function _createAlertBanner(
     message,
     level,
