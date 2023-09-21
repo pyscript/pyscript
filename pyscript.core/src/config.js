@@ -5,6 +5,7 @@
  */
 import { $ } from "basic-devtools";
 
+import TYPES from "./types.js";
 import allPlugins from "./plugins.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
 import { ErrorCode } from "./exceptions.js";
@@ -45,66 +46,72 @@ const syntaxError = (type, url, { message }) => {
     return new SyntaxError(`${str}\n${message}`);
 };
 
-// find the shared config for all py-script elements
-let config, plugins, parsed, error, type;
-let pyConfig = $("py-config");
-if (pyConfig) {
-    config = pyConfig.getAttribute("src") || pyConfig.textContent;
-    type = pyConfig.getAttribute("type");
-} else {
-    pyConfig = $(
-        [
-            'script[type="py"][config]:not([worker])',
-            "py-script[config]:not([worker])",
-        ].join(","),
-    );
-    if (pyConfig) config = pyConfig.getAttribute("config");
-}
+const configs = new Map();
 
-// catch possible fetch errors
-if (config) {
-    try {
-        const { json, toml, text, url } = await configDetails(config);
-        config = text;
-        if (json || type === "json") {
-            try {
-                parsed = JSON.parse(text);
-            } catch (e) {
-                error = syntaxError("JSON", url, e);
-            }
-        } else if (toml || type === "toml") {
-            try {
-                const { parse } = await import(
-                    /* webpackIgnore: true */
-                    "https://cdn.jsdelivr.net/npm/@webreflection/toml-j0.4/toml.js"
-                );
-                parsed = parse(text);
-            } catch (e) {
-                error = syntaxError("TOML", url, e);
-            }
-        }
-    } catch (e) {
-        error = e;
+for (const [TYPE] of TYPES) {
+    // find the shared config for all py-script elements
+    let config, plugins, parsed, error, type;
+    let pyConfig = $(`${TYPE}-config`);
+    if (pyConfig) {
+        config = pyConfig.getAttribute("src") || pyConfig.textContent;
+        type = pyConfig.getAttribute("type");
+    } else {
+        pyConfig = $(
+            [
+                `script[type="${TYPE}"][config]:not([worker])`,
+                `${TYPE}-script[config]:not([worker])`,
+            ].join(","),
+        );
+        if (pyConfig) config = pyConfig.getAttribute("config");
     }
-}
 
-// parse all plugins and optionally ignore only
-// those flagged as "undesired" via `!` prefix
-const toBeAwaited = [];
-for (const [key, value] of Object.entries(allPlugins)) {
-    if (error) {
-        if (key === "error") {
-            // show on page the config is broken, meaning that
-            // it was not possible to disable error plugin neither
-            // as that part wasn't correctly parsed anyway
-            value().then(({ notify }) => notify(error.message));
+    // catch possible fetch errors
+    if (config) {
+        try {
+            const { json, toml, text, url } = await configDetails(config);
+            config = text;
+            if (json || type === "json") {
+                try {
+                    parsed = JSON.parse(text);
+                } catch (e) {
+                    error = syntaxError("JSON", url, e);
+                }
+            } else if (toml || type === "toml") {
+                try {
+                    const { parse } = await import(
+                        /* webpackIgnore: true */
+                        "https://cdn.jsdelivr.net/npm/@webreflection/toml-j0.4/toml.js"
+                    );
+                    parsed = parse(text);
+                } catch (e) {
+                    error = syntaxError("TOML", url, e);
+                }
+            }
+        } catch (e) {
+            error = e;
         }
-    } else if (!parsed?.plugins?.includes(`!${key}`)) {
-        toBeAwaited.push(value());
     }
+
+    // parse all plugins and optionally ignore only
+    // those flagged as "undesired" via `!` prefix
+    const toBeAwaited = [];
+    for (const [key, value] of Object.entries(allPlugins)) {
+        if (error) {
+            if (key === "error") {
+                // show on page the config is broken, meaning that
+                // it was not possible to disable error plugin neither
+                // as that part wasn't correctly parsed anyway
+                value().then(({ notify }) => notify(error.message));
+            }
+        } else if (!parsed?.plugins?.includes(`!${key}`)) {
+            toBeAwaited.push(value());
+        }
+    }
+
+    // assign plugins as Promise.all only if needed
+    if (toBeAwaited.length) plugins = Promise.all(toBeAwaited);
+
+    configs.set(TYPE, { config: parsed, plugins, error });
 }
 
-// assign plugins as Promise.all only if needed
-if (toBeAwaited.length) plugins = Promise.all(toBeAwaited);
-
-export { parsed as config, plugins, error };
+export default configs;
