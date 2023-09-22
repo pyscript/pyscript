@@ -46,16 +46,14 @@ const syntaxError = (type, url, { message }) => {
 };
 
 // find the shared config for all py-script elements
-let config;
+let config, type;
 
-/** @type {Promise<any> | undefined} A Promise wrapping any plugins which should be loaded */
+/** @type {Promise<any> | undefined} A Promise wrapping any plugins which should be loaded. */
 let plugins;
-/** @type {any} The configuration parsed as a JSON object*. May be any of the return types of JSON.parse() ( {number | string | boolean | null | object | Array}*/
+/** @type {any} The PyScript configuration parsed as a JSON object*. May be any of the return types of JSON.parse() ( {number | string | boolean | null | object | Array} */
 let parsed;
-/** @type {SyntaxError | undefined} The error thrown when parsing the config, if any.*/
+/** @type {SyntaxError | undefined} The error thrown when parsing the PyScript config, if any.*/
 let error;
-/** @type {string | null} The Custom Type or Interpreter Type specified in the config, if any*/
-let type;
 
 let pyConfig = $("py-config");
 if (pyConfig) {
