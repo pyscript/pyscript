@@ -24,7 +24,7 @@ export const ErrorCode = {
 };
 
 /**
- * Keys of the ErrorCode 'enum'
+ * Keys of the ErrorCode object
  * @typedef {keyof ErrorCode} ErrorCodes
  * */
 

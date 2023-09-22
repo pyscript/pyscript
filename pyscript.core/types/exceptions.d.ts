@@ -24,7 +24,7 @@ export namespace ErrorCode {
     let FETCH_UNAVAILABLE_ERROR: string;
 }
 /**
- * Keys of the ErrorCode 'enum'
+ * Keys of the ErrorCode object
  * @typedef {keyof ErrorCode} ErrorCodes
  * */
 export class UserError extends Error {
@@ -52,7 +52,7 @@ export class InstallError extends UserError {
     constructor(errorCode: ErrorCodes, message: string);
 }
 /**
- * Keys of the ErrorCode 'enum'
+ * Keys of the ErrorCode object
  */
 export type ErrorCodes = keyof {
     GENERIC: string;
