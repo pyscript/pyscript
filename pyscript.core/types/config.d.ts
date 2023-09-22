@@ -1,4 +1,4 @@
-/** @type {any} The PyScript configuration parsed as a JSON object*. May be any of the return types of JSON.parse() ( {number | string | boolean | null | object | Array} */
+/** @type {any} The PyScript configuration parsed from the JSON or TOML object*. May be any of the return types of JSON.parse() ( {number | string | boolean | null | object | Array} */
 declare let parsed: any;
 /** @type {Promise<any> | undefined} A Promise wrapping any plugins which should be loaded. */
 export let plugins: Promise<any> | undefined;

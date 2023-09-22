@@ -66,11 +66,10 @@ export class InstallError extends UserError {
 
 /**
  * Internal function for creating alert banners on the page
- * @param {string} message
- * @param {string} level
- * @param {string} messageType="text"
- * @param {any} logMessage=true
- * @returns {undefined}
+ * @param {string} message The message to be displayed to the user
+ * @param {string} level The alert level of the message. Can be any string; 'error' or 'warning' cause matching messages to be emitted to the console
+ * @param {string} [messageType="text"] If set to "html", the message content will be assigned to the banner's innerHTML directly, instead of its textContent
+ * @param {any} [logMessage=true] An additional flag for whether the message should be sent to the console log.
  */
 export function _createAlertBanner(
     message,
