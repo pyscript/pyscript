@@ -24,6 +24,11 @@ hooks.onInterpreterReady.add(function override(pyScript) {
 // Error hook utilities
 
 // Custom function to show notifications
+
+/**
+ * Add a banner to the top of the page, notifying the user of an error
+ * @param {string} message
+ */
 export function notify(message) {
     const div = document.createElement("div");
     div.className = "py-error";

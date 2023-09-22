@@ -23,7 +23,17 @@ export const ErrorCode = {
     FETCH_UNAVAILABLE_ERROR: "PY0503",
 };
 
+/**
+ * Keys of the ErrorCode object
+ * @typedef {keyof ErrorCode} ErrorCodes
+ * */
+
 export class UserError extends Error {
+    /**
+     * @param {ErrorCodes} errorCode
+     * @param {string} message
+     * @param {string} messageType
+     * */
     constructor(errorCode, message = "", messageType = "text") {
         super(`(${errorCode}): ${message}`);
         this.errorCode = errorCode;
@@ -33,6 +43,10 @@ export class UserError extends Error {
 }
 
 export class FetchError extends UserError {
+    /**
+     * @param {ErrorCodes} errorCode
+     * @param {string} message
+     * */
     constructor(errorCode, message) {
         super(errorCode, message);
         this.name = "FetchError";
@@ -40,12 +54,23 @@ export class FetchError extends UserError {
 }
 
 export class InstallError extends UserError {
+    /**
+     * @param {ErrorCodes} errorCode
+     * @param {string} message
+     * */
     constructor(errorCode, message) {
         super(errorCode, message);
         this.name = "InstallError";
     }
 }
 
+/**
+ * Internal function for creating alert banners on the page
+ * @param {string} message The message to be displayed to the user
+ * @param {string} level The alert level of the message. Can be any string; 'error' or 'warning' cause matching messages to be emitted to the console
+ * @param {string} [messageType="text"] If set to "html", the message content will be assigned to the banner's innerHTML directly, instead of its textContent
+ * @param {any} [logMessage=true] An additional flag for whether the message should be sent to the console log.
+ */
 export function _createAlertBanner(
     message,
     level,
