@@ -110,6 +110,7 @@ class TestConfig(PyScriptTest):
     # The test checks if loading a different interpreter is possible
     # and that too from a locally downloaded file without needing
     # the use of explicit `indexURL` calculation.
+    @pytest.mark.skip("Interpreters key is not implemented in PyScript Next")
     def test_interpreter_config(self, pyodide_tar):
         unzip(pyodide_tar, extract_to=self.tmpdir)
         self.pyscript_run(
@@ -201,7 +202,7 @@ class TestConfig(PyScriptTest):
         )
         assert banner.text_content() == expected
 
-    @pytest.mark.skip("FIXME: We need to restore the banner.")
+    @pytest.mark.skip("Interpreters key is not implemented in PyScript Next")
     def test_no_interpreter(self):
         snippet = """
             <py-config type="json">
@@ -216,7 +217,7 @@ class TestConfig(PyScriptTest):
             div.text_content() == "(PY1000): Fatal error: config.interpreter is empty"
         )
 
-    @pytest.mark.skip("FIXME: We need to restore the banner.")
+    @pytest.mark.skip("Interpreters key is not implemented in PyScript Next")
     def test_multiple_interpreter(self):
         snippet = """
             <py-config type="json">
