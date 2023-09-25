@@ -70,9 +70,9 @@ def with_execution_thread(*values):
         for value in values:
             assert value in ("main", "worker")
 
-            @pytest.fixture(params=params_with_marks(values))
-            def execution_thread(self, request):
-                return request.param
+        @pytest.fixture(params=params_with_marks(values))
+        def execution_thread(self, request):
+            return request.param
 
     def with_execution_thread_decorator(cls):
         cls.execution_thread = execution_thread
@@ -102,6 +102,17 @@ def skip_worker(reason):
         return decorated
 
     return decorator
+
+def only_main(fn):
+    """
+    Decorator to mark a test which make sense only in the main thread
+    """
+    @functools.wraps(fn)
+    def decorated(self, *args):
+        if self.execution_thread == "worker":
+            return
+        return fn(self, *args)
+    return decorated
 
 
 def filter_inner_text(text, exclude=None):
@@ -552,7 +563,7 @@ class PyScriptTest:
         Ensure that there is an alert banner on the page with the given message.
         Currently it only handles a single.
         """
-        banner = self.page.wait_for_selector(".alert-banner")
+        banner = self.page.wait_for_selector(".py-error")
         banner_text = banner.inner_text()
 
         if expected_message not in banner_text:

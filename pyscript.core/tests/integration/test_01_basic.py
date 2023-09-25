@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker, only_main
 
 
 class TestBasic(PyScriptTest):
@@ -49,7 +49,7 @@ class TestBasic(PyScriptTest):
     # TODO: if there's no py-script there are surely no plugins neither
     #       this test must be discussed or rewritten to make sense now
     @pytest.mark.skip(
-        reason="FIXME: No banner and should also add a WARNING about CORS"
+        reason="NEXT: No banner and should also add a WARNING about CORS"
     )
     def test_no_cors_headers(self):
         self.disable_cors_headers()
@@ -85,6 +85,7 @@ class TestBasic(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "hello pyscript"
 
+    @skip_worker("NEXT: exceptions should be displayed in the DOM")
     def test_python_exception(self):
         self.pyscript_run(
             """
@@ -110,6 +111,7 @@ class TestBasic(PyScriptTest):
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
 
+    @skip_worker("NEXT: py-click doesn't work inside workers")
     def test_python_exception_in_event_handler(self):
         self.pyscript_run(
             """
@@ -137,6 +139,7 @@ class TestBasic(PyScriptTest):
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error inside handler"
 
+    @only_main
     def test_execution_in_order(self):
         """
         Check that they script py tags are executed in the same order they are
@@ -164,9 +167,9 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <script type="py">import js; js.console.log("A", 1<2, 1>2)</script>
-            <script type="py">js.console.log("B <div></div>")</script>
+            <script type="py">import js; js.console.log("B <div></div>")</script>
             <py-script>import js; js.console.log("C", 1<2, 1>2)</py-script>
-            <py-script>js.console.log("D <div></div>")</py-script>
+            <py-script>import js; js.console.log("D <div></div>")</py-script>
 
         """
         )
@@ -195,7 +198,7 @@ class TestBasic(PyScriptTest):
             "hello asciitree",  # printed by us
         ]
 
-    @pytest.mark.skip("FIXME: No banner")
+    @pytest.mark.skip("NEXT: No banner")
     def test_non_existent_package(self):
         self.pyscript_run(
             """
@@ -219,7 +222,7 @@ class TestBasic(PyScriptTest):
         assert expected_alert_banner_msg in alert_banner.inner_text()
         self.check_py_errors("Can't fetch metadata for 'i-dont-exist'")
 
-    @pytest.mark.skip("FIXME: No banner")
+    @pytest.mark.skip("NEXT: No banner")
     def test_no_python_wheel(self):
         self.pyscript_run(
             """
@@ -242,6 +245,7 @@ class TestBasic(PyScriptTest):
         assert expected_alert_banner_msg in alert_banner.inner_text()
         self.check_py_errors("Can't find a pure Python 3 wheel for 'opsdroid'")
 
+    @only_main
     def test_dynamically_add_py_script_tag(self):
         self.pyscript_run(
             """
@@ -279,17 +283,13 @@ class TestBasic(PyScriptTest):
         assert "Failed to load resource" in self.console.error.lines[0]
 
         # TODO: we need to be sure errors make sense from both main and worker worlds
-        # expected_msg = "(PY0404): Fetching from URL foo.py failed with error 404"
-        # assert any((expected_msg in line) for line in self.console.js_error.lines)
-        # assert self.assert_banner_message(expected_msg)
-
-        # pyscript_tag = self.page.locator("script-py")
-        # assert pyscript_tag.inner_html() == ""
-
-        # self.check_js_errors(expected_msg)
+        expected_msg = "(PY0404): Fetching from URL foo.py failed with error 404"
+        assert any((expected_msg in line) for line in self.console.error.lines)
+        assert self.assert_banner_message(expected_msg)
+        #self.check_js_errors(expected_msg)
 
     # TODO: ... and we shouldn't: it's a module and we better don't leak in global
-    @pytest.mark.skip("DIFFERENT BEHAVIOUR: we don't expose pyscript on window")
+    @pytest.mark.skip("NEXT: we don't expose pyscript on window")
     def test_js_version(self):
         self.pyscript_run(
             """
@@ -305,7 +305,7 @@ class TestBasic(PyScriptTest):
         )
 
     # TODO: ... and we shouldn't: it's a module and we better don't leak in global
-    @pytest.mark.skip("DIFFERENT BEHAVIOUR: we don't expose pyscript on window")
+    @pytest.mark.skip("NEXT: we don't expose pyscript on window")
     def test_python_version(self):
         self.pyscript_run(
             """
@@ -344,7 +344,7 @@ class TestBasic(PyScriptTest):
 
         assert self.page.locator(".py-error").inner_text() == "hello world"
 
-    @pytest.mark.skip("ERROR_SCRIPT: works with <py-script> not with <script>")
+    @pytest.mark.skip("NEXT: works with <py-script> not with <script>")
     def test_getPySrc_returns_source_code(self):
         self.pyscript_run(
             """
@@ -359,6 +359,7 @@ class TestBasic(PyScriptTest):
         assert script_py_tag.evaluate("node => node.srcCode") == 'print("hello from script py")'
 
 
+    @skip_worker("NEXT: py-click doesn't work inside workers")
     def test_py_attribute_without_id(self):
         self.pyscript_run(
             """
