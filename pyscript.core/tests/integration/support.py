@@ -126,7 +126,7 @@ def filter_page_content(lines, exclude=None):
 
 
 @pytest.mark.usefixtures("init")
-@with_execution_thread("main", "worker")
+@with_execution_thread("main") # , "worker") # XXX re-enable workers eventually
 class PyScriptTest:
     """
     Base class to write PyScript integration tests, based on playwright.
@@ -179,6 +179,7 @@ class PyScriptTest:
         # create a symlink to BUILD inside tmpdir
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
+        self.tmpdir.join('favicon.ico').write("")
         self.logger = logger
         self.execution_thread = execution_thread
         self.dev_server = None

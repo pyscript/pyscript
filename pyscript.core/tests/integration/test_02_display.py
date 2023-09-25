@@ -2,6 +2,7 @@ import base64
 import io
 import os
 import re
+import html
 
 import numpy as np
 import pytest
@@ -315,7 +316,6 @@ class TestDisplay(PyScriptTest):
             == "['A', 1, '!']\n{'B': 2, 'List': ['A', 1, '!']}\n('C', 3, '!')"
         )
 
-    @pytest.mark.skip("The asserts are commented out. Investigate")
     def test_display_should_escape(self):
         self.pyscript_run(
             """
@@ -325,13 +325,10 @@ class TestDisplay(PyScriptTest):
             </script>
             """
         )
-        # out = self.page.locator("script-py > div")
-        node_list = self.page.query_selector_all(DISPLAY_OUTPUT_ID_PATTERN)
-        node_list[0]
-        # assert out.inner_html() == html.escape("<p>hello world</p>")
-        # assert out.inner_text() == "<p>hello world</p>"
+        out = self.page.locator("script-py > div")
+        assert out.inner_html() == html.escape("<p>hello world</p>")
+        assert out.inner_text() == '<p>hello world</p>'
 
-    @pytest.mark.skip("The asserts are commented out. Investigate")
     def test_display_HTML(self):
         self.pyscript_run(
             """
@@ -341,17 +338,13 @@ class TestDisplay(PyScriptTest):
             </script>
             """
         )
-        # out = self.page.locator("script-py > div")
-        node_list = self.page.query_selector_all(DISPLAY_OUTPUT_ID_PATTERN)
-        node_list[0]
-        # assert out.inner_html() == "<p>hello world</p>"
-        # assert out.inner_text() == "hello world"
+        out = self.page.locator("script-py > div")
+        assert out.inner_html() == "<p>hello world</p>"
+        assert out.inner_text() == "hello world"
 
-    @pytest.mark.skip(
-        "FIX TEST: Works correctly in Chrome, but fails in TEST with the error:\n\n"
-        "It's likely that the Test framework injections in config are causing"
-        "this error."
-    )
+    # waiit_for_pyscript is broken: it waits until the python code is about to
+    # start, to until the python code has finished execution
+    @pytest.mark.skip("FIXME: wait_for_pyscript is broken")
     def test_image_display(self):
         self.pyscript_run(
             """
@@ -435,11 +428,6 @@ class TestDisplay(PyScriptTest):
         assert console_text.index("1print") == (console_text.index("2print") - 1)
         assert console_text.index("1console") == (console_text.index("2console") - 1)
 
-    @pytest.mark.skip(
-        "FIX TEST: Works correctly in Chrome, but fails in TEST with the error:\n\n"
-        "It's likely that the Test framework injections in config are causing"
-        "this error."
-    )
     def test_image_renders_correctly(self):
         """This is just a sanity check to make sure that images are rendered correctly."""
         buffer = io.BytesIO()

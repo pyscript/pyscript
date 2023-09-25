@@ -81,12 +81,12 @@ class TestScriptTypePyScript(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "hello from foo"
 
-    @pytest.mark.skip("FIXME: test failure is unrelated")
+    @pytest.mark.skip("FIXME: wait_for_pyscript is broken")
     def test_script_type_py_worker_attribute(self):
         self.writefile("foo.py", "print('hello from foo')")
         self.pyscript_run(
             """
-            <script type="py" worker="foo.py"></script>
+            <script type="py" src="foo.py" worker></script>
             """
         )
         assert self.console.log.lines[-1] == "hello from foo"
