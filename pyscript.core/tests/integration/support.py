@@ -442,7 +442,7 @@ class PyScriptTest:
         """
         # this is printed by interpreter.ts:Interpreter.initialize
         elapsed_ms = self.wait_for_console(
-            "[pyscript/main] PyScript Ready",
+            "---PyScript init done---",
             timeout=timeout,
             check_js_errors=check_js_errors,
         )
@@ -494,11 +494,11 @@ class PyScriptTest:
         #
         return snippet, py_config_maybe
 
-    SCRIPT_WORKER_REGEX = re.compile('<script type="py"')
+    SCRIPT_WORKER_REGEX = re.compile('(<script type="py"|<py-script)')
 
     def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
         if execution_thread == 'worker':
-            snippet = self.SCRIPT_WORKER_REGEX.sub('<script type="py" worker', snippet)
+            snippet = self.SCRIPT_WORKER_REGEX.sub(r'\1 worker', snippet)
 
         doc = f"""
         <html>
