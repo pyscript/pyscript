@@ -342,9 +342,6 @@ class TestDisplay(PyScriptTest):
         assert out.inner_html() == "<p>hello world</p>"
         assert out.inner_text() == "hello world"
 
-    # waiit_for_pyscript is broken: it waits until the python code is about to
-    # start, to until the python code has finished execution
-    @pytest.mark.skip("FIXME: wait_for_pyscript is broken")
     def test_image_display(self):
         self.pyscript_run(
             """
@@ -357,7 +354,8 @@ class TestDisplay(PyScriptTest):
                     plt.plot(xpoints, ypoints)
                     display(plt)
                 </script>
-            """
+            """,
+            timeout=30*1000,
         )
         wait_for_render(self.page, "*", "<img src=['\"]data:image")
         test = self.page.wait_for_selector("img")
