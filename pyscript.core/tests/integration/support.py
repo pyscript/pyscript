@@ -376,7 +376,7 @@ class PyScriptTest:
         self.page.goto(url, timeout=0)
 
     def wait_for_console(
-        self, text, *, match_substring=False, timeout=None, check_js_errors=True
+        self, text, *, match_substring=False, repeat=None, timeout=None, check_js_errors=True
     ):
         """
         Wait until the given message appear in the console. If the message was
@@ -386,6 +386,10 @@ class PyScriptTest:
         call to e.g. console.log. If match_substring is True, it is enough
         that the console contains the given text anywhere.
 
+        If repeat is not None, it will wait until the specified amount of
+        occurences of "text" appears in the log. This implies
+        match_substring=True.
+
         timeout is expressed in milliseconds. If it's None, it will use
         the same default as playwright, which is 30 seconds.
 
@@ -394,7 +398,13 @@ class PyScriptTest:
 
         Return the elapsed time in ms.
         """
-        if match_substring:
+        if repeat is not None:
+
+            def find_text():
+                n = self.console.all.text.count(text)
+                return n >= repeat
+
+        elif match_substring:
 
             def find_text():
                 return text in self.console.all.text
@@ -440,9 +450,14 @@ class PyScriptTest:
         If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
-        # this is printed by interpreter.ts:Interpreter.initialize
+        scripts = (self.page.locator('script[type=py]').all() +
+                   self.page.locator('py-script').all())
+        n_scripts = len(scripts)
+
+        # this is printed by core.js:onAfterRun
         elapsed_ms = self.wait_for_console(
-            "---PyScript init done---",
+            "---pyscript: done---",
+            repeat=n_scripts,
             timeout=timeout,
             check_js_errors=check_js_errors,
         )

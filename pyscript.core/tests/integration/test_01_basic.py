@@ -17,7 +17,6 @@ class TestBasic(PyScriptTest):
             <py-script>
                 import js
                 js.console.log('2. hello from py-script')
-                js.console.debug("---PyScript init done---")
             </py-script>
             """
         )
@@ -39,7 +38,6 @@ class TestBasic(PyScriptTest):
                 import pyscript
                 import js
                 js.console.log("worker?", pyscript.RUNNING_IN_WORKER)
-                js.console.debug("---PyScript init done---")
             </script>
             """,
         )

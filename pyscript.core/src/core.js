@@ -165,6 +165,7 @@ for (const [TYPE, interpreter] of TYPES) {
             },
             onAfterRun(wrap, element) {
                 bootstrapNodeAndPlugins(wrap, element, after, "onAfterRun");
+                console.debug("---pyscript: done---");
             },
             onAfterRunAsync(wrap, element) {
                 bootstrapNodeAndPlugins(
@@ -173,6 +174,7 @@ for (const [TYPE, interpreter] of TYPES) {
                     after,
                     "onAfterRunAsync",
                 );
+                console.debug("---pyscript: done---");
             },
             async onInterpreterReady(wrap, element) {
                 if (shouldRegister) {
