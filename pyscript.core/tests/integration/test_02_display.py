@@ -55,7 +55,7 @@ class TestDisplay(PyScriptTest):
         lines = [line for line in filter_page_content(lines)]  # remove empty lines
         assert lines == ["hello 1", "hello 2", "hello 3"]
 
-    def test_target_attribute(self):
+    def test_target_parameter(self):
         self.pyscript_run(
             """
             <script type="py">
@@ -67,6 +67,25 @@ class TestDisplay(PyScriptTest):
         )
         mydiv = self.page.locator("#mydiv")
         assert mydiv.inner_text() == "hello world"
+
+    def test_tag_target_attribute(self):
+        self.pyscript_run(
+            """
+            <script type="py" target="hello">
+                from pyscript import display
+                display('hello')
+                display("goodbye world", target="goodbye")
+                display('world')
+            </script>
+            <div id="hello"></div>
+            <div id="goodbye"></div>
+            """
+        )
+        hello = self.page.locator("#hello")
+        assert hello.inner_text() == "hello\nworld"
+
+        goodbye = self.page.locator("#goodbye")
+        assert goodbye.inner_text() == "goodbye world"
 
     def test_target_script_py(self):
         self.pyscript_run(
@@ -84,7 +103,7 @@ class TestDisplay(PyScriptTest):
             """
         )
         text = self.page.inner_text("body")
-        assert text == 'ONE\nTWO\nTHREE'
+        assert text == "ONE\nTWO\nTHREE"
 
     def test_consecutive_display_target(self):
         self.pyscript_run(
@@ -201,8 +220,8 @@ class TestDisplay(PyScriptTest):
             </script>
         """
         )
-        output = self.page.locator('script-py')
-        assert output.inner_text() == 'AAA\nBBB'
+        output = self.page.locator("script-py")
+        assert output.inner_text() == "AAA\nBBB"
 
     def test_append_false(self):
         self.pyscript_run(
@@ -214,8 +233,8 @@ class TestDisplay(PyScriptTest):
             </script>
         """
         )
-        output = self.page.locator('script-py')
-        assert output.inner_text() == 'BBB'
+        output = self.page.locator("script-py")
+        assert output.inner_text() == "BBB"
 
     def test_display_multiple_values(self):
         self.pyscript_run(
@@ -228,7 +247,7 @@ class TestDisplay(PyScriptTest):
             </script>
             """
         )
-        output = self.page.locator('script-py')
+        output = self.page.locator("script-py")
         assert output.inner_text() == "hello\nworld"
 
     def test_display_multiple_append_false(self):
@@ -241,7 +260,7 @@ class TestDisplay(PyScriptTest):
             </script>
         """
         )
-        output = self.page.locator('script-py')
+        output = self.page.locator("script-py")
         assert output.inner_text() == "world"
 
     # TODO: this is a display.py issue to fix when append=False is used
