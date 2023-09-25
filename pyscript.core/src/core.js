@@ -88,15 +88,18 @@ export const hooks = {
     codeAfterRunWorkerAsync: new Set(),
 };
 
+// XXX (antocuni): this is a hack, we need to find a better way to do this
+const afterRunWorker = "import js; js.console.debug('---pyscript: done---')"
+
 const workerHooks = {
     codeBeforeRunWorker: () =>
         [stdlib, ...hooks.codeBeforeRunWorker].map(dedent).join("\n"),
     codeBeforeRunWorkerAsync: () =>
         [stdlib, ...hooks.codeBeforeRunWorkerAsync].map(dedent).join("\n"),
     codeAfterRunWorker: () =>
-        [...hooks.codeAfterRunWorker].map(dedent).join("\n"),
+        [...hooks.codeAfterRunWorker, afterRunWorker].map(dedent).join("\n"),
     codeAfterRunWorkerAsync: () =>
-        [...hooks.codeAfterRunWorkerAsync].map(dedent).join("\n"),
+        [...hooks.codeAfterRunWorkerAsync, afterRunWorker].map(dedent).join("\n"),
 };
 
 const exportedConfig = {};
