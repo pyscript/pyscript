@@ -468,52 +468,14 @@ class PyScriptTest:
         # events aren't being triggered in the tests.
         self.page.wait_for_timeout(100)
 
-    def _parse_py_config(self, doc):
-        configs = re.findall("<py-config>(.*?)</py-config>", doc, flags=re.DOTALL)
-        configs = [cfg.strip() for cfg in configs]
-        if len(configs) == 0:
-            return None
-        elif len(configs) == 1:
-            return toml.loads(configs[0])
-        else:
-            raise AssertionError("Too many <py-config>")
 
-    def _inject_execution_thread_config(self, snippet, execution_thread):
-        """
-        If snippet already contains a py-config, let's try to inject
-        execution_thread automatically. Note that this works only for plain
-        <py-config> with inline config: type="json" and src="..." are not
-        supported by this logic, which should remain simple.
-        """
-        cfg = self._parse_py_config(snippet)
-        if cfg is None:
-            # we don't have any <py-config>, let's add one
-            py_config_maybe = f"""
-            <py-config>
-                execution_thread = "{execution_thread}"
-            </py-config>
-            """
-        else:
-            cfg["execution_thread"] = execution_thread
-            dumped_cfg = toml.dumps(cfg)
-            new_py_config = f"""
-            <py-config>
-                {dumped_cfg}
-            </py-config>
-            """
-            snippet = re.sub(
-                "<py-config>.*</py-config>", new_py_config, snippet, flags=re.DOTALL
-            )
-            # no need for extra config, it's already in the snippet
-            py_config_maybe = ""
-        #
-        return snippet, py_config_maybe
-
-    SCRIPT_WORKER_REGEX = re.compile('(<script type="py"|<py-script)')
+    SCRIPT_TAG_REGEX = re.compile('(<script type="py"|<py-script)')
 
     def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
         if execution_thread == 'worker':
-            snippet = self.SCRIPT_WORKER_REGEX.sub(r'\1 worker', snippet)
+            # turn <script type="py"> into <script type="py" worker>, and
+            # similarly for <py-script>
+            snippet = self.SCRIPT_TAG_REGEX.sub(r'\1 worker', snippet)
 
         doc = f"""
         <html>
