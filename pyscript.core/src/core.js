@@ -1,16 +1,21 @@
 /*! (c) PyScript Development Team */
 
 import "@ungap/with-resolvers";
-import { INVALID_CONTENT, define, XWorker } from "polyscript";
 
-// TODO: this is not strictly polyscript related but handy ... not sure
-//       we should factor this utility out a part but this works anyway.
+// These imports can hook more than usual and help debugging possible polyscript issues
+import {
+    INVALID_CONTENT,
+    define,
+    XWorker,
+} from "../node_modules/polyscript/esm/index.js";
 import { queryTarget } from "../node_modules/polyscript/esm/script-handler.js";
 import { dedent, dispatch } from "../node_modules/polyscript/esm/utils.js";
 import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
 
+import "./all-done.js";
 import TYPES from "./types.js";
 import configs from "./config.js";
+import hooks from "./hooks.js";
 import sync from "./sync.js";
 import stdlib from "./stdlib.js";
 import { ErrorCode } from "./exceptions.js";
@@ -66,28 +71,6 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
     interpreter.runPython(stdlib, { globals: interpreter.runPython("{}") });
 };
 
-export const hooks = {
-    /** @type {Set<function>} */
-    onBeforeRun: new Set(),
-    /** @type {Set<function>} */
-    onBeforeRunAsync: new Set(),
-    /** @type {Set<function>} */
-    onAfterRun: new Set(),
-    /** @type {Set<function>} */
-    onAfterRunAsync: new Set(),
-    /** @type {Set<function>} */
-    onInterpreterReady: new Set(),
-
-    /** @type {Set<string>} */
-    codeBeforeRunWorker: new Set(),
-    /** @type {Set<string>} */
-    codeBeforeRunWorkerAsync: new Set(),
-    /** @type {Set<string>} */
-    codeAfterRunWorker: new Set(),
-    /** @type {Set<string>} */
-    codeAfterRunWorkerAsync: new Set(),
-};
-
 const workerHooks = {
     codeBeforeRunWorker: () =>
         [stdlib, ...hooks.codeBeforeRunWorker].map(dedent).join("\n"),
@@ -100,7 +83,7 @@ const workerHooks = {
 };
 
 const exportedConfig = {};
-export { exportedConfig as config };
+export { exportedConfig as config, hooks };
 
 for (const [TYPE, interpreter] of TYPES) {
     const { config, plugins, error } = configs.get(TYPE);

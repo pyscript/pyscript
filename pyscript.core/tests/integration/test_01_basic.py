@@ -20,8 +20,10 @@ class TestBasic(PyScriptTest):
             </py-script>
             """
         )
-        assert self.console.log.lines == ["hello from script py",
-                                          "hello from py-script"]
+        assert self.console.log.lines == [
+            "hello from script py",
+            "hello from py-script",
+        ]
 
     def test_execution_thread(self):
         self.pyscript_run(
@@ -162,10 +164,12 @@ class TestBasic(PyScriptTest):
 
         """
         )
-        assert self.console.log.lines[-4:] == ["A true false",
-                                               "B <div></div>",
-                                               "C true false",
-                                               "D <div></div>"]
+        assert self.console.log.lines[-4:] == [
+            "A true false",
+            "B <div></div>",
+            "C true false",
+            "D <div></div>",
+        ]
 
     def test_packages(self):
         self.pyscript_run(
@@ -346,10 +350,15 @@ class TestBasic(PyScriptTest):
         )
         pyscript_tag = self.page.locator("py-script")
         assert pyscript_tag.inner_html() == ""
-        assert pyscript_tag.evaluate("node => node.srcCode") == 'print("hello from py-script")'
+        assert (
+            pyscript_tag.evaluate("node => node.srcCode")
+            == 'print("hello from py-script")'
+        )
         script_py_tag = self.page.locator('script[type="py"]')
-        assert script_py_tag.evaluate("node => node.srcCode") == 'print("hello from script py")'
-
+        assert (
+            script_py_tag.evaluate("node => node.srcCode")
+            == 'print("hello from script py")'
+        )
 
     def test_py_attribute_without_id(self):
         self.pyscript_run(
@@ -365,4 +374,21 @@ class TestBasic(PyScriptTest):
         btn.click()
         self.wait_for_console("hello world!")
         assert self.console.log.lines[-1] == "hello world!"
+        assert self.console.error.lines == []
+
+    def test_py_all_done_event(self):
+        self.pyscript_run(
+            """
+            <script>
+                addEventListener("py:all-done", () => console.log("2"))
+            </script>
+            <script type="py">
+                print("1")
+            </script>
+            """
+        )
+        btn = self.page.wait_for_selector("button")
+        btn.click()
+        self.wait_for_console("1")
+        assert self.console.log.lines[-1] == "2"
         assert self.console.error.lines == []
