@@ -206,7 +206,7 @@ for (const [TYPE, interpreter] of TYPES) {
                     } = element;
                     const hasTarget = !!target?.value;
                     const show = hasTarget
-                        ? queryTarget(target.value)
+                        ? queryTarget(element, target.value)
                         : document.createElement("script-py");
 
                     if (!hasTarget) {
