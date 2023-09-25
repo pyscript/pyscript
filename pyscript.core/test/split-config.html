@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Config</title>
+        <script type="module">
+          import { config } from "../dist/core.js";
+          console.log(config.mpy);
+        </script>
+        <link rel="stylesheet" href="../dist/core.css">
+        <mpy-config>
+          [[fetch]]
+          files = ["a.py"]
+        </mpy-config>
+        <script type="mpy">
+          import a
+        </script>
+    </head>
+</html>
