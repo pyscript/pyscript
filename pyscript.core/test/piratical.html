@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <title>Arrr - Piratical PyScript</title>
+      <link rel="stylesheet" href="../dist/core.css" />
+      <script type="module" src="../dist/core.js"></script>
+  </head>
+  <body>
+    <h1>Arrr</h1>
+    <p>Translate English into Pirate speak...</p>
+    <input type="text" id="english" placeholder="Type English here..." />
+    <button py-click="translate_english">Translate</button>
+    <div id="output"></div>
+    <script type="py" src="./piratical.py" config="./piratical.toml"></script>
+  </body>
+</html>

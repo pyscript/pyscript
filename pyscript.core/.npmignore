@@ -1,3 +1,4 @@
+.pytest_cache/
 node_modules/
 rollup/
 test/
