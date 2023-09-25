@@ -134,57 +134,6 @@ class TestConfig(PyScriptTest):
         )
         assert banner.text_content() == expected
 
-<<<<<<< HEAD
-=======
-    @pytest.mark.skip("Interpreters key is not implemented in PyScript Next")
-    def test_no_interpreter(self):
-        snippet = """
-            <py-config type="json">
-            {
-                "interpreters": []
-            }
-            </py-config>
-        """
-        self.pyscript_run(snippet, wait_for_pyscript=False)
-        div = self.page.wait_for_selector(".py-error")
-        assert (
-            div.text_content() == "(PY1000): Fatal error: config.interpreter is empty"
-        )
-
-    @pytest.mark.skip("Interpreters key is not implemented in PyScript Next")
-    def test_multiple_interpreter(self):
-        snippet = """
-            <py-config type="json">
-            {
-                "interpreters": [
-                    {
-                        "src": "https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js",
-                        "name": "pyodide-0.23.2",
-                        "lang": "python"
-                    },
-                    {
-                        "src": "http://...",
-                        "name": "this will be ignored",
-                        "lang": "this as well"
-                    }
-                ]
-            }
-            </py-config>
-
-            <script type="py">
-                import js
-                js.console.log("hello world");
-            </script>
-        """
-        self.pyscript_run(snippet)
-        banner = self.page.wait_for_selector(".py-warning")
-        expected = (
-            "Multiple interpreters are not supported yet.Only the first will be used"
-        )
-        assert banner.text_content() == expected
-        assert self.console.log.lines[-1] == "hello world"
-
->>>>>>> origin/main
     def test_paths(self):
         self.writefile("a.py", "x = 'hello from A'")
         self.writefile("b.py", "x = 'hello from B'")
