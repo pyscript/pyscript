@@ -13,9 +13,11 @@ from .support import (
     filter_inner_text,
     filter_page_content,
     wait_for_render,
+    skip_worker,
+    only_main
 )
 
-DISPLAY_OUTPUT_ID_PATTERN = r'[id^="py-"]'
+DISPLAY_OUTPUT_ID_PATTERN = r'script-py[id^="py-"]'
 
 
 class TestDisplay(PyScriptTest):
@@ -68,6 +70,7 @@ class TestDisplay(PyScriptTest):
         mydiv = self.page.locator("#mydiv")
         assert mydiv.inner_text() == "hello world"
 
+    @skip_worker("NEXT: display(target=...) does not work")
     def test_tag_target_attribute(self):
         self.pyscript_run(
             """
@@ -87,6 +90,7 @@ class TestDisplay(PyScriptTest):
         goodbye = self.page.locator("#goodbye")
         assert goodbye.inner_text() == "goodbye world"
 
+    @skip_worker("NEXT: display(target=...) does not work")
     def test_target_script_py(self):
         self.pyscript_run(
             """
@@ -105,6 +109,7 @@ class TestDisplay(PyScriptTest):
         text = self.page.inner_text("body")
         assert text == "ONE\nTWO\nTHREE"
 
+    @skip_worker("NEXT: display(target=...) does not work")
     def test_consecutive_display_target(self):
         self.pyscript_run(
             """
@@ -142,6 +147,7 @@ class TestDisplay(PyScriptTest):
         lines = tag.inner_text().splitlines()
         assert lines == ["hello", "world"]
 
+    @only_main # with workers, two tags are two separate interpreters
     def test_implicit_target_from_a_different_tag(self):
         self.pyscript_run(
             """
@@ -163,6 +169,7 @@ class TestDisplay(PyScriptTest):
         assert py0.inner_text() == ""
         assert py1.inner_text() == "hello"
 
+    @skip_worker("NEXT: py-click doesn't work")
     def test_no_explicit_target(self):
         self.pyscript_run(
             """
@@ -179,6 +186,7 @@ class TestDisplay(PyScriptTest):
         text = self.page.locator("script-py").text_content()
         assert "hello world" in text
 
+    @skip_worker("NEXT: display(target=...) does not work")
     def test_explicit_target_pyscript_tag(self):
         self.pyscript_run(
             """
@@ -195,6 +203,7 @@ class TestDisplay(PyScriptTest):
         text = self.page.locator("script-py").nth(1).inner_text()
         assert text == "hello"
 
+    @skip_worker("NEXT: display(target=...) does not work")
     def test_explicit_target_on_button_tag(self):
         self.pyscript_run(
             """
@@ -342,6 +351,7 @@ class TestDisplay(PyScriptTest):
         assert out.inner_html() == "<p>hello world</p>"
         assert out.inner_text() == "hello world"
 
+    @skip_worker("NEXT: matplotlib-pyodide backend does not work")
     def test_image_display(self):
         self.pyscript_run(
             """
@@ -426,6 +436,7 @@ class TestDisplay(PyScriptTest):
         assert console_text.index("1print") == (console_text.index("2print") - 1)
         assert console_text.index("1console") == (console_text.index("2console") - 1)
 
+    @skip_worker("NEXT: display(target=...) does not work")
     def test_image_renders_correctly(self):
         """This is just a sanity check to make sure that images are rendered correctly."""
         buffer = io.BytesIO()
