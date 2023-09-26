@@ -2,7 +2,7 @@ import pytest
 
 from .support import PyScriptTest
 
-pytest.skip(reason="FIXME: Restore the banner", allow_module_level=True)
+pytest.skip(reason="NEXT: Restore the banner", allow_module_level=True)
 
 
 class TestWarningsAndBanners(PyScriptTest):

@@ -5,7 +5,7 @@ import pytest
 from .support import PyScriptTest, skip_worker
 
 pytest.skip(
-    reason="FIX LATER: pyscript NEXT doesn't support the REPL yet",
+    reason="NEXT: pyscript NEXT doesn't support the REPL yet",
     allow_module_level=True,
 )
 

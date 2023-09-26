@@ -4,7 +4,7 @@ from playwright.sync_api import expect
 from .support import PyScriptTest, skip_worker
 
 pytest.skip(
-    reason="DECIDE: Should we remove the splashscreen?", allow_module_level=True
+    reason="NEXT: Should we remove the splashscreen?", allow_module_level=True
 )
 
 

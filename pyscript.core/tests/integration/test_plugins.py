@@ -3,7 +3,7 @@ import pytest
 from .support import PyScriptTest, skip_worker
 
 pytest.skip(
-    reason="FIX LATER: pyscript NEXT doesn't support plugins yet",
+    reason="NEXT: plugins not supported",
     allow_module_level=True,
 )
 
