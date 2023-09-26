@@ -381,8 +381,5 @@ class TestBasic(PyScriptTest):
             </script>
             """
         )
-        btn = self.page.wait_for_selector("button")
-        btn.click()
-        self.wait_for_console("1")
-        assert self.console.log.lines[-1] == "2"
+        assert self.console.log.lines == ["1", "2"]
         assert self.console.error.lines == []
