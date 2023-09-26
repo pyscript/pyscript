@@ -1,3 +1,5 @@
+################################################################################
+
 import base64
 import io
 import os
@@ -90,7 +92,7 @@ class TestDisplay(PyScriptTest):
         goodbye = self.page.locator("#goodbye")
         assert goodbye.inner_text() == "goodbye world"
 
-    @skip_worker("NEXT: display(target=...) does not work")
+    @skip_worker("NEXT: display target does not work properly")
     def test_target_script_py(self):
         self.pyscript_run(
             """
@@ -109,7 +111,7 @@ class TestDisplay(PyScriptTest):
         text = self.page.inner_text("body")
         assert text == "ONE\nTWO\nTHREE"
 
-    @skip_worker("NEXT: display(target=...) does not work")
+    @skip_worker("NEXT: display target does not work properly")
     def test_consecutive_display_target(self):
         self.pyscript_run(
             """
@@ -186,7 +188,7 @@ class TestDisplay(PyScriptTest):
         text = self.page.locator("script-py").text_content()
         assert "hello world" in text
 
-    @skip_worker("NEXT: display(target=...) does not work")
+    @skip_worker("NEXT: display target does not work properly")
     def test_explicit_target_pyscript_tag(self):
         self.pyscript_run(
             """
@@ -203,7 +205,7 @@ class TestDisplay(PyScriptTest):
         text = self.page.locator("script-py").nth(1).inner_text()
         assert text == "hello"
 
-    @skip_worker("NEXT: display(target=...) does not work")
+    @skip_worker("NEXT: display target does not work properly")
     def test_explicit_target_on_button_tag(self):
         self.pyscript_run(
             """
@@ -436,7 +438,7 @@ class TestDisplay(PyScriptTest):
         assert console_text.index("1print") == (console_text.index("2print") - 1)
         assert console_text.index("1console") == (console_text.index("2console") - 1)
 
-    @skip_worker("NEXT: display(target=...) does not work")
+    @skip_worker("NEXT: display target does not work properly")
     def test_image_renders_correctly(self):
         """This is just a sanity check to make sure that images are rendered correctly."""
         buffer = io.BytesIO()
