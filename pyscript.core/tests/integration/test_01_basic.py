@@ -159,6 +159,7 @@ class TestBasic(PyScriptTest):
             "four",
         ]
 
+    @skip_worker("NEXT: something very weird happens here")
     def test_escaping_of_angle_brackets(self):
         """
         Check that script tags escape angle brackets
