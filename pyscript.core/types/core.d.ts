@@ -10,17 +10,7 @@ export function PyWorker(file: string, options?: {
 }): Worker & {
     sync: ProxyHandler<object>;
 };
-export namespace hooks {
-    let onBeforeRun: Set<Function>;
-    let onBeforeRunAsync: Set<Function>;
-    let onAfterRun: Set<Function>;
-    let onAfterRunAsync: Set<Function>;
-    let onInterpreterReady: Set<Function>;
-    let codeBeforeRunWorker: Set<string>;
-    let codeBeforeRunWorkerAsync: Set<string>;
-    let codeAfterRunWorker: Set<string>;
-    let codeAfterRunWorkerAsync: Set<string>;
-}
-export { exportedConfig as config };
 import sync from "./sync.js";
 declare const exportedConfig: {};
+import hooks from "./hooks.js";
+export { exportedConfig as config, hooks };
