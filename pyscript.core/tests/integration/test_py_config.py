@@ -4,6 +4,7 @@ import pytest
 
 from .support import PyScriptTest, with_execution_thread
 
+
 # Disable the main/worker dual testing, for two reasons:
 #
 #   1. the <py-config> logic happens before we start the worker, so there is
@@ -47,7 +48,6 @@ class TestConfig(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "config name: foobar"
 
-
     @pytest.mark.skip("NEXT: works with <py-script> not with <script>")
     def test_py_config_external(self):
         pyconfig_toml = """
@@ -67,7 +67,6 @@ class TestConfig(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "config name: app with external config"
 
-
     @pytest.mark.skip("NEXT: We need to restore the banner.")
     def test_invalid_json_config(self):
         # we need wait_for_pyscript=False because we bail out very soon,
@@ -81,11 +80,8 @@ class TestConfig(PyScriptTest):
             wait_for_pyscript=False,
         )
         banner = self.page.wait_for_selector(".py-error")
-        #assert "Unexpected end of JSON input" in self.console.error.text
-        expected = (
-            "(PY1000): Invalid JSON\n"
-            "Unexpected end of JSON input"
-        )
+        # assert "Unexpected end of JSON input" in self.console.error.text
+        expected = "(PY1000): Invalid JSON\n" "Unexpected end of JSON input"
         assert banner.inner_text() == expected
 
     def test_invalid_toml_config(self):
@@ -100,7 +96,7 @@ class TestConfig(PyScriptTest):
             wait_for_pyscript=False,
         )
         banner = self.page.wait_for_selector(".py-error")
-        #assert "Expected DoubleQuote" in self.console.error.text
+        # assert "Expected DoubleQuote" in self.console.error.text
         expected = (
             "(PY1000): Invalid TOML\n"
             "Expected DoubleQuote, Whitespace, or [a-z], [A-Z], "

@@ -22,14 +22,15 @@ class TestBasic(PyScriptTest):
         )
         if self.execution_thread == "main":
             # in main, the order of execution is guaranteed
-            assert self.console.log.lines == ["1. hello from script py",
-                                              "2. hello from py-script"]
+            assert self.console.log.lines == [
+                "1. hello from script py",
+                "2. hello from py-script",
+            ]
         else:
             # in workers, each tag is executed by its own worker, so they can
             # come out of order
             lines = sorted(self.console.log.lines)
-            assert lines == ["1. hello from script py",
-                             "2. hello from py-script"]
+            assert lines == ["1. hello from script py", "2. hello from py-script"]
 
     def test_execution_thread(self):
         self.pyscript_run(
@@ -48,9 +49,7 @@ class TestBasic(PyScriptTest):
 
     # TODO: if there's no py-script there are surely no plugins neither
     #       this test must be discussed or rewritten to make sense now
-    @pytest.mark.skip(
-        reason="NEXT: No banner and should also add a WARNING about CORS"
-    )
+    @pytest.mark.skip(reason="NEXT: No banner and should also add a WARNING about CORS")
     def test_no_cors_headers(self):
         self.disable_cors_headers()
         self.pyscript_run(
@@ -175,10 +174,12 @@ class TestBasic(PyScriptTest):
         )
         # in workers the order of execution is not guaranteed, better to play safe
         lines = sorted(self.console.log.lines[-4:])
-        assert lines  == ["A true false",
-                          "B <div></div>",
-                          "C true false",
-                          "D <div></div>"]
+        assert lines == [
+            "A true false",
+            "B <div></div>",
+            "C true false",
+            "D <div></div>",
+        ]
 
     def test_packages(self):
         self.pyscript_run(
@@ -341,10 +342,15 @@ class TestBasic(PyScriptTest):
         )
         pyscript_tag = self.page.locator("py-script")
         assert pyscript_tag.inner_html() == ""
-        assert pyscript_tag.evaluate("node => node.srcCode") == 'print("hello from py-script")'
+        assert (
+            pyscript_tag.evaluate("node => node.srcCode")
+            == 'print("hello from py-script")'
+        )
         script_py_tag = self.page.locator('script[type="py"]')
-        assert script_py_tag.evaluate("node => node.srcCode") == 'print("hello from script py")'
-
+        assert (
+            script_py_tag.evaluate("node => node.srcCode")
+            == 'print("hello from script py")'
+        )
 
     @skip_worker("NEXT: py-click doesn't work inside workers")
     def test_py_attribute_without_id(self):

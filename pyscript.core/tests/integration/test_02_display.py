@@ -16,7 +16,7 @@ from .support import (
     filter_page_content,
     wait_for_render,
     skip_worker,
-    only_main
+    only_main,
 )
 
 DISPLAY_OUTPUT_ID_PATTERN = r'script-py[id^="py-"]'
@@ -149,7 +149,7 @@ class TestDisplay(PyScriptTest):
         lines = tag.inner_text().splitlines()
         assert lines == ["hello", "world"]
 
-    @only_main # with workers, two tags are two separate interpreters
+    @only_main  # with workers, two tags are two separate interpreters
     def test_implicit_target_from_a_different_tag(self):
         self.pyscript_run(
             """
@@ -338,7 +338,7 @@ class TestDisplay(PyScriptTest):
         )
         out = self.page.locator("script-py > div")
         assert out.inner_html() == html.escape("<p>hello world</p>")
-        assert out.inner_text() == '<p>hello world</p>'
+        assert out.inner_text() == "<p>hello world</p>"
 
     def test_display_HTML(self):
         self.pyscript_run(
@@ -367,7 +367,7 @@ class TestDisplay(PyScriptTest):
                     display(plt)
                 </script>
             """,
-            timeout=30*1000,
+            timeout=30 * 1000,
         )
         wait_for_render(self.page, "*", "<img src=['\"]data:image")
         test = self.page.wait_for_selector("img")

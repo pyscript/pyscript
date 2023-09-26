@@ -103,15 +103,18 @@ def skip_worker(reason):
 
     return decorator
 
+
 def only_main(fn):
     """
     Decorator to mark a test which make sense only in the main thread
     """
+
     @functools.wraps(fn)
     def decorated(self, *args):
         if self.execution_thread == "worker":
             return
         return fn(self, *args)
+
     return decorated
 
 
@@ -190,7 +193,7 @@ class PyScriptTest:
         # create a symlink to BUILD inside tmpdir
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
-        self.tmpdir.join('favicon.ico').write("")
+        self.tmpdir.join("favicon.ico").write("")
         self.logger = logger
         self.execution_thread = execution_thread
         self.dev_server = None
@@ -387,7 +390,13 @@ class PyScriptTest:
         self.page.goto(url, timeout=0)
 
     def wait_for_console(
-        self, text, *, match_substring=False, repeat=None, timeout=None, check_js_errors=True
+        self,
+        text,
+        *,
+        match_substring=False,
+        repeat=None,
+        timeout=None,
+        check_js_errors=True,
     ):
         """
         Wait until the given message appear in the console. If the message was
@@ -461,8 +470,10 @@ class PyScriptTest:
         If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
-        scripts = (self.page.locator('script[type=py]').all() +
-                   self.page.locator('py-script').all())
+        scripts = (
+            self.page.locator("script[type=py]").all()
+            + self.page.locator("py-script").all()
+        )
         n_scripts = len(scripts)
 
         # this is printed by core.js:onAfterRun
@@ -479,14 +490,13 @@ class PyScriptTest:
         # events aren't being triggered in the tests.
         self.page.wait_for_timeout(100)
 
-
     SCRIPT_TAG_REGEX = re.compile('(<script type="py"|<py-script)')
 
     def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
-        if execution_thread == 'worker':
+        if execution_thread == "worker":
             # turn <script type="py"> into <script type="py" worker>, and
             # similarly for <py-script>
-            snippet = self.SCRIPT_TAG_REGEX.sub(r'\1 worker', snippet)
+            snippet = self.SCRIPT_TAG_REGEX.sub(r"\1 worker", snippet)
 
         doc = f"""
         <html>

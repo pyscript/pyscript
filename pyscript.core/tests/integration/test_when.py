@@ -4,7 +4,6 @@ from .support import PyScriptTest, skip_worker
 
 
 class TestEventHandler(PyScriptTest):
-
     def test_when_decorator_with_event(self):
         """When the decorated function takes a single parameter,
         it should be passed the event object

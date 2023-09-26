@@ -2,6 +2,7 @@ import pytest
 
 from .support import PyScriptTest, with_execution_thread
 
+
 # these tests don't need to run in 'main' and 'worker' modes: the workers are
 # already tested explicitly by some of them (see e.g.
 # test_script_type_py_worker_attribute)
