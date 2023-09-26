@@ -394,7 +394,6 @@ class PyScriptTest:
         text,
         *,
         match_substring=False,
-        repeat=None,
         timeout=None,
         check_js_errors=True,
     ):
@@ -406,10 +405,6 @@ class PyScriptTest:
         call to e.g. console.log. If match_substring is True, it is enough
         that the console contains the given text anywhere.
 
-        If repeat is not None, it will wait until the specified amount of
-        occurences of "text" appears in the log. This implies
-        match_substring=True.
-
         timeout is expressed in milliseconds. If it's None, it will use
         the same default as playwright, which is 30 seconds.
 
@@ -418,13 +413,7 @@ class PyScriptTest:
 
         Return the elapsed time in ms.
         """
-        if repeat is not None:
-
-            def find_text():
-                n = self.console.all.text.count(text)
-                return n >= repeat
-
-        elif match_substring:
+        if match_substring:
 
             def find_text():
                 return text in self.console.all.text
@@ -478,8 +467,7 @@ class PyScriptTest:
 
         # this is printed by core.js:onAfterRun
         elapsed_ms = self.wait_for_console(
-            "---pyscript: done---",
-            repeat=n_scripts,
+            "---py:all-done---",
             timeout=timeout,
             check_js_errors=check_js_errors,
         )
@@ -506,6 +494,16 @@ class PyScriptTest:
                     type="module"
                     src="{self.http_server_addr}/build/core.js"
                 ></script>
+              <script type="module">
+                addEventListener(
+                  'py:all-done',
+                  () => {{
+                    console.debug('---py:all-done---')
+                  }},
+                  {{ once: true }}
+                );
+              </script>
+
               {extra_head}
           </head>
           <body>
