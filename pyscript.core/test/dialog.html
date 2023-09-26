@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Next</title>
+        <link rel="stylesheet" href="../dist/core.css">
+        <script type="module" src="../dist/core.js"></script>
+        <script type="module">
+          const loader = document.querySelector('#loader');
+          loader.showModal();
+          addEventListener(
+            'py:all-done',
+            () => {
+              loader.close();
+            },
+            { once: true }
+          );
+        </script>
+        <script type="py">
+          from pyscript import document
+
+          document.body.textContent = "PyScript Ready";
+      </script>
+    </head>
+    <body>
+      <dialog id="loader">
+        Loading PyScript ...
+      </dialog>
+    </body>
+</html>

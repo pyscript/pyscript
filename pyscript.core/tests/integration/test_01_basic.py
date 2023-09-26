@@ -172,7 +172,8 @@ class TestBasic(PyScriptTest):
 
         """
         )
-        # in workers the order of execution is not guaranteed, better to play safe
+        # in workers the order of execution is not guaranteed, better to play
+        # safe
         lines = sorted(self.console.log.lines[-4:])
         assert lines == [
             "A true false",
@@ -367,4 +368,21 @@ class TestBasic(PyScriptTest):
         btn.click()
         self.wait_for_console("hello world!")
         assert self.console.log.lines[-1] == "hello world!"
+        assert self.console.error.lines == []
+
+    def test_py_all_done_event(self):
+        self.pyscript_run(
+            """
+            <script>
+                addEventListener("py:all-done", () => console.log("2"))
+            </script>
+            <script type="py">
+                print("1")
+            </script>
+            """
+        )
+        btn = self.page.wait_for_selector("button")
+        btn.click()
+        self.wait_for_console("1")
+        assert self.console.log.lines[-1] == "2"
         assert self.console.error.lines == []

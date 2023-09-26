@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../dist/core.css">
+  <script type="module">
+    import '../dist/core.js';
+
+    document.body.append('loading ...', document.createElement('br'));
+
+    addEventListener(
+      'py:all-done',
+      () => {
+        document.body.append('all executed');
+      },
+      { once: true }
+    );
+
+  </script>
+</head>
+<body>
+  <script type="py">
+    print(1)
+  </script>
+  <py-script>
+    print(2)
+  </py-script>
+  <py-script async>
+    print(3)
+  </py-script>
+  <script type="py" worker>
+    print(4)
+  </script>
+  <py-script async worker>
+    print(5)
+  </py-script>
+</body>
+</html>
