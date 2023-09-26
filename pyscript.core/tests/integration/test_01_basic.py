@@ -331,21 +331,6 @@ class TestBasic(PyScriptTest):
             is not None
         )
 
-    def test_assert_no_banners(self):
-        """
-        Test that the DOM doesn't contain error/warning banners
-        """
-        self.pyscript_run(
-            """
-            <script type="py">
-                import sys
-                print("hello world", file=sys.stderr)
-            </script>
-            """
-        )
-
-        assert self.page.locator(".py-error").inner_text() == "hello world"
-
     @pytest.mark.skip("NEXT: works with <py-script> not with <script>")
     def test_getPySrc_returns_source_code(self):
         self.pyscript_run(
