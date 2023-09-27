@@ -43,20 +43,25 @@ class TestBasic(PyScriptTest):
         in_worker = str(in_worker).lower()
         assert self.console.log.lines[-1] == f"worker? {in_worker}"
 
-    # TODO: if there's no py-script there are surely no plugins neither
-    #       this test must be discussed or rewritten to make sense now
-    @pytest.mark.skip(reason="NEXT: No banner and should also add a WARNING about CORS")
+    @skip_worker('NEXT: it should show a nice error on the page')
     def test_no_cors_headers(self):
         self.disable_cors_headers()
         self.pyscript_run(
             """
-            <!-- we don't really need anything here, we just want to check that
-                 pyscript starts -->
+            <script type="py">
+                import js
+                js.console.log("hello")
+            </script>
             """,
             wait_for_pyscript=False,
         )
         assert self.headers == {}
-        if self.execution_thread == "worker":
+        if self.execution_thread == "main":
+            self.wait_for_pyscript()
+            assert self.console.log.lines == ['hello']
+            self.assert_no_banners()
+        else:
+            # XXX adapt and fix the test
             expected_alert_banner_msg = (
                 '(PY1000): When execution_thread is "worker", the site must be cross origin '
                 "isolated, but crossOriginIsolated is false. To be cross origin isolated, "
@@ -67,8 +72,7 @@ class TestBasic(PyScriptTest):
             )
             alert_banner = self.page.wait_for_selector(".alert-banner")
             assert expected_alert_banner_msg in alert_banner.inner_text()
-        else:
-            self.assert_no_banners()
+
 
     def test_print(self):
         self.pyscript_run(
