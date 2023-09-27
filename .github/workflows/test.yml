@@ -25,7 +25,14 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                fetch-depth: 3
 
+            # display a git log: when you run CI on PRs, github automatically
+            # merges the PR into main and run the CI on that commit. The idea
+            # here is to show enough of git log to understand what is the
+            # actual commit (in the PR) that we are using. See also
+            # 'fetch-depth: 3' above.
             - name: git log
               run: git log --graph -3
 
