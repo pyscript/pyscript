@@ -7,12 +7,13 @@ examples ?=  ../$(base_dir)/examples
 app_dir ?= $(shell git rev-parse --show-prefix)
 
 CONDA_EXE := conda
-CONDA_ENV ?= $(base_dir)/pyscriptjs/env
+CONDA_ENV ?= $(base_dir)/env
 env := $(CONDA_ENV)
 conda_run := $(CONDA_EXE) run -p $(env)
 PYTEST_EXE := $(CONDA_ENV)/bin/pytest
-GOOD_NODE_VER := 14
-GOOD_NPM_VER := 6
+
+MIN_NODE_VER := 14
+MIN_NPM_VER := 6
 NODE_VER    := $(shell node -v | cut -d. -f1 | sed 's/^v\(.*\)/\1/')
 NPM_VER     := $(shell npm -v | cut -d. -f1)
 
@@ -22,20 +23,21 @@ else
     SED_I_ARG := -i
 endif
 
-GOOD_NODE   := $(shell if [ $(NODE_VER) -ge $(GOOD_NODE_VER) ]; then echo true; else echo false; fi)
-GOOD_NPM    := $(shell if [ $(NPM_VER) -ge $(GOOD_NPM_VER) ]; then echo true; else echo false; fi)
-
 .PHONY: check-node
 check-node:
-	@echo Build requires Node $(GOOD_NODE_VER).x or higher: $(NODE_VER) detected && $(GOOD_NODE)
+	@if [ $(NODE_VER) -lt $(MIN_NODE_VER) ]; then \
+		echo "Build requires Node $(MIN_NODE_VER).x or higher: $(NODE_VER) detected"; \
+		false; \
+	fi
 
 .PHONY: check-npm
 check-npm:
-	@echo Build requires npm $(GOOD_NPM_VER).x or higher: $(NPM_VER) detected && $(GOOD_NPM)
+	@if [ $(NPM_VER) -lt $(MIN_NPM_VER) ]; then \
+		echo "Build requires Node $(MIN_NPM_VER).x or higher: $(NPM_VER) detected"; \
+		false; \
+	fi
 
-setup:
-	make check-node
-	make check-npm
+setup: check-node check-npm
 	cd pyscript.core && npm install && cd ..
 	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
 	$(conda_run) playwright install
@@ -53,13 +55,10 @@ shell:
 	@echo 'conda activate $(env)'
 
 dev:
-	npm run dev
+	cd pyscript.core && npm run dev
 
 build:
-	npm run build
-
-build-fast:
-	node esbuild.mjs
+	cd pyscript.core && npm run build
 
 # use the following rule to do all the checks done by precommit: in
 # particular, use this if you want to run eslint.
@@ -85,27 +84,22 @@ run-examples: setup build examples
 	npm install
 	make dev
 
-test:
-	cd pyscript.core && npm run build && cp -R dist ../pyscriptjs/build/
-	make test-integration
-	make test-examples
-
 # run all integration tests *including examples* sequentially
 # TODO: (fpliger) The cd pyscript.core before running the tests shouldn't be needed but for
 # 		but for some reason it seems to bother pytest tmppaths (or test cache?). Unclear.
 test-integration:
 	mkdir -p test_results
-	cd pyscript.core && $(PYTEST_EXE) -vv $(ARGS) tests/integration/ --log-cli-level=warning --junitxml=../integration.xml
+	$(PYTEST_EXE) -vv $(ARGS) pyscript.core/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
 
 # run all integration tests *except examples* in parallel (examples use too much memory)
 test-integration-parallel:
 	mkdir -p test_results
-	$(PYTEST_EXE) --numprocesses auto -vv $(ARGS) pyscript/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml -k 'not zz_examples'
+	$(PYTEST_EXE) --numprocesses auto -vv $(ARGS) pyscript.core/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
 
 # run integration tests on only examples sequentially (to avoid running out of memory)
 test-examples:
 	mkdir -p test_results
-	$(PYTEST_EXE) -vv $(ARGS) pyscript/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml -k 'zz_examples'
+	$(PYTEST_EXE) -vv $(ARGS) pyscript.core/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml -k 'zz_examples'
 
 test-py:
 	@echo "Tests from $(src_dir)"

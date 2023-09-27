@@ -457,7 +457,7 @@ class TestDisplay(PyScriptTest):
                 img = Image.new("RGB", (4, 4), color=(0, 0, 0))
                 display(img, target='img-target', append=False)
             </script>
-            """
+            """,
         )
 
         img_src = self.page.locator("img").get_attribute("src")
