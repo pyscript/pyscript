@@ -1,6 +1,6 @@
 import pytest
 
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker
 
 
 class TestEventHandler(PyScriptTest):
@@ -15,14 +15,12 @@ class TestEventHandler(PyScriptTest):
                 from pyscript import when
                 @when("click", selector="#foo_id")
                 def foo(evt):
-                    print(f"I've clicked {evt.target} with id {evt.target.id}")
+                    print(f"clicked {evt.target.id}")
             </script>
         """
         )
         self.page.locator("text=foo_button").click()
-        console_text = self.console.all.lines
-        self.wait_for_console("I've clicked [object HTMLButtonElement] with id foo_id")
-        assert "I've clicked [object HTMLButtonElement] with id foo_id" in console_text
+        self.wait_for_console("clicked foo_id")
         self.assert_no_banners()
 
     def test_when_decorator_without_event(self):
@@ -42,7 +40,6 @@ class TestEventHandler(PyScriptTest):
         )
         self.page.locator("text=foo_button").click()
         self.wait_for_console("The button was clicked")
-        assert "The button was clicked" in self.console.log.lines
         self.assert_no_banners()
 
     def test_multiple_when_decorators_with_event(self):
@@ -53,23 +50,18 @@ class TestEventHandler(PyScriptTest):
             <script type="py">
                 from pyscript import when
                 @when("click", selector="#foo_id")
-                def foo(evt):
-                    print(f"I've clicked {evt.target} with id {evt.target.id}")
+                def foo_click(evt):
+                    print(f"foo_click! id={evt.target.id}")
                 @when("click", selector="#bar_id")
-                def foo(evt):
-                    print(f"I've clicked {evt.target} with id {evt.target.id}")
+                def bar_click(evt):
+                    print(f"bar_click! id={evt.target.id}")
             </script>
         """
         )
         self.page.locator("text=foo_button").click()
-        console_text = self.console.all.lines
-        self.wait_for_console("I've clicked [object HTMLButtonElement] with id foo_id")
-        assert "I've clicked [object HTMLButtonElement] with id foo_id" in console_text
-
+        self.wait_for_console("foo_click! id=foo_id")
         self.page.locator("text=bar_button").click()
-        console_text = self.console.all.lines
-        self.wait_for_console("I've clicked [object HTMLButtonElement] with id bar_id")
-        assert "I've clicked [object HTMLButtonElement] with id bar_id" in console_text
+        self.wait_for_console("bar_click! id=bar_id")
         self.assert_no_banners()
 
     def test_two_when_decorators(self):
@@ -83,15 +75,14 @@ class TestEventHandler(PyScriptTest):
                 @when("click", selector="#foo_id")
                 @when("mouseover", selector=".bar_class")
                 def foo(evt):
-                    print(f"An event of type {evt.type} happened")
+                    print(f"got event: {evt.type}")
             </script>
         """
         )
         self.page.locator("text=bar_button").hover()
+        self.wait_for_console("got event: mouseover")
         self.page.locator("text=foo_button").click()
-        self.wait_for_console("An event of type click happened")
-        assert "An event of type mouseover happened" in self.console.log.lines
-        assert "An event of type click happened" in self.console.log.lines
+        self.wait_for_console("got event: click")
         self.assert_no_banners()
 
     def test_two_when_decorators_same_element(self):
@@ -104,15 +95,14 @@ class TestEventHandler(PyScriptTest):
                 @when("click", selector="#foo_id")
                 @when("mouseover", selector="#foo_id")
                 def foo(evt):
-                    print(f"An event of type {evt.type} happened")
+                    print(f"got event: {evt.type}")
             </script>
         """
         )
         self.page.locator("text=foo_button").hover()
+        self.wait_for_console("got event: mouseover")
         self.page.locator("text=foo_button").click()
-        self.wait_for_console("An event of type click happened")
-        assert "An event of type mouseover happened" in self.console.log.lines
-        assert "An event of type click happened" in self.console.log.lines
+        self.wait_for_console("got event: click")
         self.assert_no_banners()
 
     def test_when_decorator_multiple_elements(self):
@@ -148,19 +138,18 @@ class TestEventHandler(PyScriptTest):
                 @when("click", selector="#foo_id")
                 @when("click", selector="#foo_id")
                 def foo(evt):
-                    print(f"I've clicked {evt.target} with id {evt.target.id}")
+                    foo.n += 1
+                    print(f"click {foo.n} on {evt.target.id}")
+                foo.n = 0
             </script>
         """
         )
         self.page.locator("text=foo_button").click()
-        console_text = self.console.all.lines
-        self.wait_for_console("I've clicked [object HTMLButtonElement] with id foo_id")
-        assert (
-            console_text.count("I've clicked [object HTMLButtonElement] with id foo_id")
-            == 2
-        )
+        self.wait_for_console("click 1 on foo_id")
+        self.wait_for_console("click 2 on foo_id")
         self.assert_no_banners()
 
+    @skip_worker("NEXT: error banner not shown")
     def test_when_decorator_invalid_selector(self):
         """When the selector parameter of @when is invalid, it should show an error"""
         self.pyscript_run(

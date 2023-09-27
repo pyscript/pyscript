@@ -4,8 +4,7 @@ from .support import PyScriptTest
 
 
 class TestShadowRoot(PyScriptTest):
-    # @skip_worker("FIXME: js.document")
-    @pytest.mark.skip("FIXME: Element interface is gone. Replace with PyDom")
+    @pytest.mark.skip("NEXT: Element interface is gone. Replace with PyDom")
     def test_reachable_shadow_root(self):
         self.pyscript_run(
             r"""

@@ -1,5 +1,5 @@
 import pytest
-from .support import PyScriptTest, filter_inner_text
+from .support import PyScriptTest, filter_inner_text, only_main
 
 
 class TestAsync(PyScriptTest):
@@ -52,6 +52,7 @@ class TestAsync(PyScriptTest):
         self.wait_for_console("DONE")
         assert self.console.log.lines[-2:] == ["[3, 2, 1]", "DONE"]
 
+    @only_main
     def test_multiple_async(self):
         self.pyscript_run(
             """
@@ -88,6 +89,7 @@ class TestAsync(PyScriptTest):
             "b func done",
         ]
 
+    @only_main
     def test_multiple_async_multiple_display_targeted(self):
         self.pyscript_run(
             """
@@ -145,6 +147,7 @@ class TestAsync(PyScriptTest):
         self.wait_for_console("DONE")
         assert self.page.locator("script-py").inner_text() == "A"
 
+    @only_main
     def test_sync_and_async_order(self):
         """
         The order of execution is defined as follows:

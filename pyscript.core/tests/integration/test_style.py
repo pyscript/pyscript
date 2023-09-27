@@ -1,9 +1,10 @@
 import pytest
 from playwright.sync_api import expect
 
-from .support import PyScriptTest, skip_worker
+from .support import PyScriptTest, with_execution_thread
 
 
+@with_execution_thread(None)
 class TestStyle(PyScriptTest):
     def test_pyscript_not_defined(self):
         """Test raw elements that are not defined for display:none"""

@@ -1,8 +1,12 @@
 import pytest
 
-from .support import PyScriptTest
+from .support import PyScriptTest, with_execution_thread
 
 
+# these tests don't need to run in 'main' and 'worker' modes: the workers are
+# already tested explicitly by some of them (see e.g.
+# test_script_type_py_worker_attribute)
+@with_execution_thread(None)
 class TestScriptTypePyScript(PyScriptTest):
     def test_display_line_break(self):
         self.pyscript_run(
@@ -81,7 +85,6 @@ class TestScriptTypePyScript(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "hello from foo"
 
-    @pytest.mark.skip("FIXME: wait_for_pyscript is broken")
     def test_script_type_py_worker_attribute(self):
         self.writefile("foo.py", "print('hello from foo')")
         self.pyscript_run(

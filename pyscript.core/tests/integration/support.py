@@ -70,9 +70,9 @@ def with_execution_thread(*values):
         for value in values:
             assert value in ("main", "worker")
 
-            @pytest.fixture(params=params_with_marks(values))
-            def execution_thread(self, request):
-                return request.param
+        @pytest.fixture(params=params_with_marks(values))
+        def execution_thread(self, request):
+            return request.param
 
     def with_execution_thread_decorator(cls):
         cls.execution_thread = execution_thread
@@ -104,6 +104,20 @@ def skip_worker(reason):
     return decorator
 
 
+def only_main(fn):
+    """
+    Decorator to mark a test which make sense only in the main thread
+    """
+
+    @functools.wraps(fn)
+    def decorated(self, *args):
+        if self.execution_thread == "worker":
+            return
+        return fn(self, *args)
+
+    return decorated
+
+
 def filter_inner_text(text, exclude=None):
     return "\n".join(filter_page_content(text.splitlines(), exclude=exclude))
 
@@ -126,7 +140,7 @@ def filter_page_content(lines, exclude=None):
 
 
 @pytest.mark.usefixtures("init")
-@with_execution_thread("main") # , "worker") # XXX re-enable workers eventually
+@with_execution_thread("main", "worker")
 class PyScriptTest:
     """
     Base class to write PyScript integration tests, based on playwright.
@@ -179,7 +193,7 @@ class PyScriptTest:
         # create a symlink to BUILD inside tmpdir
         tmpdir.join("build").mksymlinkto(BUILD)
         self.tmpdir.chdir()
-        self.tmpdir.join('favicon.ico').write("")
+        self.tmpdir.join("favicon.ico").write("")
         self.logger = logger
         self.execution_thread = execution_thread
         self.dev_server = None
@@ -376,7 +390,12 @@ class PyScriptTest:
         self.page.goto(url, timeout=0)
 
     def wait_for_console(
-        self, text, *, match_substring=False, timeout=None, check_js_errors=True
+        self,
+        text,
+        *,
+        match_substring=False,
+        timeout=None,
+        check_js_errors=True,
     ):
         """
         Wait until the given message appear in the console. If the message was
@@ -440,9 +459,15 @@ class PyScriptTest:
         If check_js_errors is True (the default), it also checks that no JS
         errors were raised during the waiting.
         """
-        # this is printed by interpreter.ts:Interpreter.initialize
+        scripts = (
+            self.page.locator("script[type=py]").all()
+            + self.page.locator("py-script").all()
+        )
+        n_scripts = len(scripts)
+
+        # this is printed by core.js:onAfterRun
         elapsed_ms = self.wait_for_console(
-            "[pyscript/main] PyScript Ready",
+            "---py:all-done---",
             timeout=timeout,
             check_js_errors=check_js_errors,
         )
@@ -453,54 +478,13 @@ class PyScriptTest:
         # events aren't being triggered in the tests.
         self.page.wait_for_timeout(100)
 
-    def _parse_py_config(self, doc):
-        configs = re.findall("<py-config>(.*?)</py-config>", doc, flags=re.DOTALL)
-        configs = [cfg.strip() for cfg in configs]
-        if len(configs) == 0:
-            return None
-        elif len(configs) == 1:
-            return toml.loads(configs[0])
-        else:
-            raise AssertionError("Too many <py-config>")
-
-    def _inject_execution_thread_config(self, snippet, execution_thread):
-        """
-        If snippet already contains a py-config, let's try to inject
-        execution_thread automatically. Note that this works only for plain
-        <py-config> with inline config: type="json" and src="..." are not
-        supported by this logic, which should remain simple.
-        """
-        cfg = self._parse_py_config(snippet)
-        if cfg is None:
-            # we don't have any <py-config>, let's add one
-            py_config_maybe = f"""
-            <py-config>
-                execution_thread = "{execution_thread}"
-            </py-config>
-            """
-        else:
-            cfg["execution_thread"] = execution_thread
-            dumped_cfg = toml.dumps(cfg)
-            new_py_config = f"""
-            <py-config>
-                {dumped_cfg}
-            </py-config>
-            """
-            snippet = re.sub(
-                "<py-config>.*</py-config>", new_py_config, snippet, flags=re.DOTALL
-            )
-            # no need for extra config, it's already in the snippet
-            py_config_maybe = ""
-        #
-        return snippet, py_config_maybe
+    SCRIPT_TAG_REGEX = re.compile('(<script type="py"|<py-script)')
 
     def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
-        if execution_thread is None:
-            py_config_maybe = ""
-        else:
-            snippet, py_config_maybe = self._inject_execution_thread_config(
-                snippet, execution_thread
-            )
+        if execution_thread == "worker":
+            # turn <script type="py"> into <script type="py" worker>, and
+            # similarly for <py-script>
+            snippet = self.SCRIPT_TAG_REGEX.sub(r"\1 worker", snippet)
 
         doc = f"""
         <html>
@@ -510,10 +494,19 @@ class PyScriptTest:
                     type="module"
                     src="{self.http_server_addr}/build/core.js"
                 ></script>
+              <script type="module">
+                addEventListener(
+                  'py:all-done',
+                  () => {{
+                    console.debug('---py:all-done---')
+                  }},
+                  {{ once: true }}
+                );
+              </script>
+
               {extra_head}
           </head>
           <body>
-            {py_config_maybe}
             {snippet}
           </body>
         </html>
@@ -578,7 +571,7 @@ class PyScriptTest:
         Ensure that there is an alert banner on the page with the given message.
         Currently it only handles a single.
         """
-        banner = self.page.wait_for_selector(".alert-banner")
+        banner = self.page.wait_for_selector(".py-error")
         banner_text = banner.inner_text()
 
         if expected_message not in banner_text:

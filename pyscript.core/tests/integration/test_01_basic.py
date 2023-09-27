@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from .support import PyScriptTest
+from .support import PyScriptTest, skip_worker, only_main
 
 
 class TestBasic(PyScriptTest):
@@ -11,40 +11,45 @@ class TestBasic(PyScriptTest):
             """
             <script type="py">
                 import js
-                js.console.log('hello from script py')
+                js.console.log('1. hello from script py')
             </script>
 
             <py-script>
                 import js
-                js.console.log('hello from py-script')
+                js.console.log('2. hello from py-script')
             </py-script>
             """
         )
-        assert self.console.log.lines == [
-            "hello from script py",
-            "hello from py-script",
-        ]
+        if self.execution_thread == "main":
+            # in main, the order of execution is guaranteed
+            assert self.console.log.lines == [
+                "1. hello from script py",
+                "2. hello from py-script",
+            ]
+        else:
+            # in workers, each tag is executed by its own worker, so they can
+            # come out of order
+            lines = sorted(self.console.log.lines)
+            assert lines == ["1. hello from script py", "2. hello from py-script"]
 
     def test_execution_thread(self):
         self.pyscript_run(
             """
-            <!-- we don't really need anything here, we just want to check that
-                 pyscript does not bootstrap -->
+            <script type="py">
+                import pyscript
+                import js
+                js.console.log("worker?", pyscript.RUNNING_IN_WORKER)
+            </script>
             """,
-            wait_for_pyscript=False,
         )
         assert self.execution_thread in ("main", "worker")
-        if self.execution_thread == "main":
-            pass
-        elif self.execution_thread == "worker":
-            pass
-        assert self.console.log.lines == []
+        in_worker = self.execution_thread == "worker"
+        in_worker = str(in_worker).lower()
+        assert self.console.log.lines[-1] == f"worker? {in_worker}"
 
     # TODO: if there's no py-script there are surely no plugins neither
     #       this test must be discussed or rewritten to make sense now
-    @pytest.mark.skip(
-        reason="FIXME: No banner and should also add a WARNING about CORS"
-    )
+    @pytest.mark.skip(reason="NEXT: No banner and should also add a WARNING about CORS")
     def test_no_cors_headers(self):
         self.disable_cors_headers()
         self.pyscript_run(
@@ -79,6 +84,7 @@ class TestBasic(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "hello pyscript"
 
+    @skip_worker("NEXT: exceptions should be displayed in the DOM")
     def test_python_exception(self):
         self.pyscript_run(
             """
@@ -104,6 +110,7 @@ class TestBasic(PyScriptTest):
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error"
 
+    @skip_worker("NEXT: py-click doesn't work inside workers")
     def test_python_exception_in_event_handler(self):
         self.pyscript_run(
             """
@@ -131,6 +138,7 @@ class TestBasic(PyScriptTest):
         assert tb_lines[0] == "Traceback (most recent call last):"
         assert tb_lines[-1] == "Exception: this is an error inside handler"
 
+    @only_main
     def test_execution_in_order(self):
         """
         Check that they script py tags are executed in the same order they are
@@ -151,6 +159,7 @@ class TestBasic(PyScriptTest):
             "four",
         ]
 
+    @skip_worker("NEXT: something very weird happens here")
     def test_escaping_of_angle_brackets(self):
         """
         Check that script tags escape angle brackets
@@ -158,13 +167,16 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <script type="py">import js; js.console.log("A", 1<2, 1>2)</script>
-            <script type="py">js.console.log("B <div></div>")</script>
+            <script type="py">import js; js.console.log("B <div></div>")</script>
             <py-script>import js; js.console.log("C", 1<2, 1>2)</py-script>
-            <py-script>js.console.log("D <div></div>")</py-script>
+            <py-script>import js; js.console.log("D <div></div>")</py-script>
 
         """
         )
-        assert self.console.log.lines[-4:] == [
+        # in workers the order of execution is not guaranteed, better to play
+        # safe
+        lines = sorted(self.console.log.lines[-4:])
+        assert lines == [
             "A true false",
             "B <div></div>",
             "C true false",
@@ -191,7 +203,7 @@ class TestBasic(PyScriptTest):
             "hello asciitree",  # printed by us
         ]
 
-    @pytest.mark.skip("FIXME: No banner")
+    @pytest.mark.skip("NEXT: No banner")
     def test_non_existent_package(self):
         self.pyscript_run(
             """
@@ -215,7 +227,7 @@ class TestBasic(PyScriptTest):
         assert expected_alert_banner_msg in alert_banner.inner_text()
         self.check_py_errors("Can't fetch metadata for 'i-dont-exist'")
 
-    @pytest.mark.skip("FIXME: No banner")
+    @pytest.mark.skip("NEXT: No banner")
     def test_no_python_wheel(self):
         self.pyscript_run(
             """
@@ -238,6 +250,7 @@ class TestBasic(PyScriptTest):
         assert expected_alert_banner_msg in alert_banner.inner_text()
         self.check_py_errors("Can't find a pure Python 3 wheel for 'opsdroid'")
 
+    @only_main
     def test_dynamically_add_py_script_tag(self):
         self.pyscript_run(
             """
@@ -265,6 +278,7 @@ class TestBasic(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "hello from foo"
 
+    @skip_worker("NEXT: banner not shown")
     def test_py_script_src_not_found(self):
         self.pyscript_run(
             """
@@ -275,17 +289,12 @@ class TestBasic(PyScriptTest):
         assert "Failed to load resource" in self.console.error.lines[0]
 
         # TODO: we need to be sure errors make sense from both main and worker worlds
-        # expected_msg = "(PY0404): Fetching from URL foo.py failed with error 404"
-        # assert any((expected_msg in line) for line in self.console.js_error.lines)
-        # assert self.assert_banner_message(expected_msg)
-
-        # pyscript_tag = self.page.locator("script-py")
-        # assert pyscript_tag.inner_html() == ""
-
-        # self.check_js_errors(expected_msg)
+        expected_msg = "(PY0404): Fetching from URL foo.py failed with error 404"
+        assert any((expected_msg in line) for line in self.console.error.lines)
+        assert self.assert_banner_message(expected_msg)
 
     # TODO: ... and we shouldn't: it's a module and we better don't leak in global
-    @pytest.mark.skip("DIFFERENT BEHAVIOUR: we don't expose pyscript on window")
+    @pytest.mark.skip("NEXT: we don't expose pyscript on window")
     def test_js_version(self):
         self.pyscript_run(
             """
@@ -301,7 +310,7 @@ class TestBasic(PyScriptTest):
         )
 
     # TODO: ... and we shouldn't: it's a module and we better don't leak in global
-    @pytest.mark.skip("DIFFERENT BEHAVIOUR: we don't expose pyscript on window")
+    @pytest.mark.skip("NEXT: we don't expose pyscript on window")
     def test_python_version(self):
         self.pyscript_run(
             """
@@ -325,22 +334,7 @@ class TestBasic(PyScriptTest):
             is not None
         )
 
-    def test_assert_no_banners(self):
-        """
-        Test that the DOM doesn't contain error/warning banners
-        """
-        self.pyscript_run(
-            """
-            <script type="py">
-                import sys
-                print("hello world", file=sys.stderr)
-            </script>
-            """
-        )
-
-        assert self.page.locator(".py-error").inner_text() == "hello world"
-
-    @pytest.mark.skip("ERROR_SCRIPT: works with <py-script> not with <script>")
+    @pytest.mark.skip("NEXT: works with <py-script> not with <script>")
     def test_getPySrc_returns_source_code(self):
         self.pyscript_run(
             """
@@ -360,6 +354,7 @@ class TestBasic(PyScriptTest):
             == 'print("hello from script py")'
         )
 
+    @skip_worker("NEXT: py-click doesn't work inside workers")
     def test_py_attribute_without_id(self):
         self.pyscript_run(
             """
@@ -387,8 +382,5 @@ class TestBasic(PyScriptTest):
             </script>
             """
         )
-        btn = self.page.wait_for_selector("button")
-        btn.click()
-        self.wait_for_console("1")
-        assert self.console.log.lines[-1] == "2"
+        assert self.console.log.lines == ["1", "2"]
         assert self.console.error.lines == []

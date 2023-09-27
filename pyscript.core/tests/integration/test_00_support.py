@@ -474,22 +474,3 @@ class TestSupport(PyScriptTest):
         assert [
             "Failed to load resource: the server responded with a status of 404 (Not Found)"
         ] == self.console.all.lines
-
-    def test__pyscript_format_inject_execution_thread(self):
-        """
-        This is slightly different than other tests: it doesn't use playwright, it
-        just tests that our own internal helper works
-        """
-        doc = self._pyscript_format("<b>Hello</b>", execution_thread="main")
-        cfg = self._parse_py_config(doc)
-        assert cfg == {"execution_thread": "main"}
-
-    def test__pyscript_format_modify_existing_py_config(self):
-        src = """
-        <py-config>
-            hello = 42
-        </py-config>
-        """
-        doc = self._pyscript_format(src, execution_thread="main")
-        cfg = self._parse_py_config(doc)
-        assert cfg == {"execution_thread": "main", "hello": 42}
