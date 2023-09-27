@@ -11,26 +11,22 @@ class TestBasic(PyScriptTest):
             """
             <script type="py">
                 import js
-                js.console.log('1. hello from script py')
+                js.console.log('hello from script py')
             </script>
+            """
+        )
+        assert self.console.log.lines == ["hello from script py"]
 
+    def test_py_script_hello(self):
+        self.pyscript_run(
+            """
             <py-script>
                 import js
-                js.console.log('2. hello from py-script')
+                js.console.log('hello from py-script')
             </py-script>
             """
         )
-        if self.execution_thread == "main":
-            # in main, the order of execution is guaranteed
-            assert self.console.log.lines == [
-                "1. hello from script py",
-                "2. hello from py-script",
-            ]
-        else:
-            # in workers, each tag is executed by its own worker, so they can
-            # come out of order
-            lines = sorted(self.console.log.lines)
-            assert lines == ["1. hello from script py", "2. hello from py-script"]
+        assert self.console.log.lines == ["hello from py-script"]
 
     def test_execution_thread(self):
         self.pyscript_run(
