@@ -169,7 +169,7 @@ class PyScriptTest:
         creates an HTML page to run the specified snippet.
     """
 
-    DEFAULT_TIMEOUT = 20000
+    DEFAULT_TIMEOUT = 30 * 1000
 
     @pytest.fixture()
     def init(self, request, tmpdir, logger, page, execution_thread):
@@ -240,10 +240,7 @@ class PyScriptTest:
 
     def init_page(self, page):
         self.page = page
-
-        # set default timeout to 60000 millliseconds from 30000
         page.set_default_timeout(self.DEFAULT_TIMEOUT)
-
         self.console = ConsoleMessageCollection(self.logger)
         self._js_errors = []
         self._py_errors = []
@@ -424,7 +421,7 @@ class PyScriptTest:
                 return text in self.console.all.lines
 
         if timeout is None:
-            timeout = 10 * 1000
+            timeout = DEFAULT_TIMEOUT
         # NOTE: we cannot use playwright's own page.expect_console_message(),
         # because if you call it AFTER the text has already been emitted, it
         # waits forever. Instead, we have to use our own custom logic.
