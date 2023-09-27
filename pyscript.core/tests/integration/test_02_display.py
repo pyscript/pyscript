@@ -458,7 +458,6 @@ class TestDisplay(PyScriptTest):
                 display(img, target='img-target', append=False)
             </script>
             """,
-            timeout = 30 * 1000,
         )
 
         img_src = self.page.locator("img").get_attribute("src")
