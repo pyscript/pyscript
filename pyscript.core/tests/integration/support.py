@@ -421,7 +421,7 @@ class PyScriptTest:
                 return text in self.console.all.lines
 
         if timeout is None:
-            timeout = DEFAULT_TIMEOUT
+            timeout = self.DEFAULT_TIMEOUT
         # NOTE: we cannot use playwright's own page.expect_console_message(),
         # because if you call it AFTER the text has already been emitted, it
         # waits forever. Instead, we have to use our own custom logic.
