@@ -67,7 +67,6 @@ class TestConfig(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "config name: app with external config"
 
-    @pytest.mark.skip("NEXT: We need to restore the banner.")
     def test_invalid_json_config(self):
         # we need wait_for_pyscript=False because we bail out very soon,
         # before being able to write 'PyScript page fully initialized'
