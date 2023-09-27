@@ -7,7 +7,7 @@ examples ?=  ../$(base_dir)/examples
 app_dir ?= $(shell git rev-parse --show-prefix)
 
 CONDA_EXE := conda
-CONDA_ENV ?= $(base_dir)/pyscriptjs/env
+CONDA_ENV ?= $(base_dir)/env
 env := $(CONDA_ENV)
 conda_run := $(CONDA_EXE) run -p $(env)
 PYTEST_EXE := $(CONDA_ENV)/bin/pytest
