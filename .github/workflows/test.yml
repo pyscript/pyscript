@@ -27,7 +27,7 @@ jobs:
               uses: actions/checkout@v4
 
             - name: git log
-              run: git log --graph --limit 3
+              run: git log --graph -3
 
             - name: Install node
               uses: actions/setup-node@v3
