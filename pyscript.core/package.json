@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -33,7 +33,7 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.4.7"
+        "polyscript": "^0.4.8"
     },
     "devDependencies": {
         "@rollup/plugin-node-resolve": "^15.2.1",
