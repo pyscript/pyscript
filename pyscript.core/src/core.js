@@ -9,7 +9,11 @@ import {
     XWorker,
 } from "../node_modules/polyscript/esm/index.js";
 import { queryTarget } from "../node_modules/polyscript/esm/script-handler.js";
-import { dedent, dispatch } from "../node_modules/polyscript/esm/utils.js";
+import {
+    dedent,
+    dispatch,
+    unescape,
+} from "../node_modules/polyscript/esm/utils.js";
 import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
 
 import "./all-done.js";
@@ -108,12 +112,12 @@ for (const [TYPE, interpreter] of TYPES) {
 
         if (asText) return dedent(tag.textContent);
 
+        const code = dedent(unescape(tag.innerHTML));
         console.warn(
             `Deprecated: use <script type="${TYPE}"> for an always safe content parsing:\n`,
-            tag.innerHTML,
+            code,
         );
-
-        return dedent(tag.innerHTML);
+        return code;
     };
 
     // define the module as both `<script type="py">` and `<py-script>`

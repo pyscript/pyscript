@@ -43,7 +43,7 @@ class TestBasic(PyScriptTest):
         in_worker = str(in_worker).lower()
         assert self.console.log.lines[-1] == f"worker? {in_worker}"
 
-    @skip_worker('NEXT: it should show a nice error on the page')
+    @skip_worker("NEXT: it should show a nice error on the page")
     def test_no_cors_headers(self):
         self.disable_cors_headers()
         self.pyscript_run(
@@ -58,7 +58,7 @@ class TestBasic(PyScriptTest):
         assert self.headers == {}
         if self.execution_thread == "main":
             self.wait_for_pyscript()
-            assert self.console.log.lines == ['hello']
+            assert self.console.log.lines == ["hello"]
             self.assert_no_banners()
         else:
             # XXX adapt and fix the test
@@ -72,7 +72,6 @@ class TestBasic(PyScriptTest):
             )
             alert_banner = self.page.wait_for_selector(".alert-banner")
             assert expected_alert_banner_msg in alert_banner.inner_text()
-
 
     def test_print(self):
         self.pyscript_run(
@@ -159,18 +158,22 @@ class TestBasic(PyScriptTest):
             "four",
         ]
 
-    @skip_worker("NEXT: something very weird happens here")
     def test_escaping_of_angle_brackets(self):
         """
         Check that script tags escape angle brackets
         """
         self.pyscript_run(
             """
-            <script type="py">import js; js.console.log("A", 1<2, 1>2)</script>
-            <script type="py">import js; js.console.log("B <div></div>")</script>
-            <py-script>import js; js.console.log("C", 1<2, 1>2)</py-script>
-            <py-script>import js; js.console.log("D <div></div>")</py-script>
-
+            <script type="py">
+                import js
+                js.console.log("A", 1<2, 1>2)
+                js.console.log("B <div></div>")
+            </script>
+            <py-script>
+                import js
+                js.console.log("C", 1<2, 1>2)
+                js.console.log("D <div></div>")
+            </py-script>
         """
         )
         # in workers the order of execution is not guaranteed, better to play

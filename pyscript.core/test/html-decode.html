@@ -7,7 +7,29 @@
   <body>
     <body>
       <py-script>import js; js.console.log(1<2, 1>2)</py-script>
-      <py-script>js.console.log("<div></div>")</py-script>
+      <py-script>import js; js.console.log("<div></div>")</py-script>
+      <script type="py">
+        import js
+        js.console.log("A", 1<2, 1>2)
+        js.console.log("B <div></div>")
+      </script>
+      <py-script>
+        import js
+        js.console.log("C", 1<2, 1>2)
+        js.console.log("D <div></div>")
+      </py-script>
+      <py-script worker>import js; js.console.log(1<2, 1>2)</py-script>
+      <py-script worker>import js; js.console.log("<div></div>")</py-script>
+      <script type="py" worker>
+        import js
+        js.console.log("A", 1<2, 1>2)
+        js.console.log("B <div></div>")
+      </script>
+      <py-script worker>
+        import js
+        js.console.log("C", 1<2, 1>2)
+        js.console.log("D <div></div>")
+      </py-script>
     </body>
   </body>
 </html>
