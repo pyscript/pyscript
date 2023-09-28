@@ -130,6 +130,7 @@ for (const [TYPE, interpreter] of TYPES) {
             config,
             interpreter,
             env: `${TYPE}-script`,
+            version: config?.interpreter,
             onerror(error, element) {
                 errors.set(element, error);
             },
