@@ -51,21 +51,17 @@ hooks.onInterpreterReady.add(function override(pyScript) {
         console.log("<py-terminal> not found, nothing to do");
         return;
     }
-    const { stdout, stderr } = pyScript.io;
-
-    pyScript.io.stdout = (s, ...rest) => {
-        // XXX: the + "\n" is conceptually wrong.
-        // We probably need to configure pyodide's stdout as "raw mode"
-        // instead of "batched mode":
-        // https://pyodide.org/en/stable/usage/streams.html#a-raw-handler
-        t.write(s + "\n");
-        stdout(s, ...rest);
+    // XXX: we should investigate pyodide "write handler", it should be more
+    // efficient:
+    // https://pyodide.org/en/stable/usage/streams.html#a-write-handler
+    //
+    // Also: should the stdout/stderr go ALSO to the JS console?
+    function myStdout(byte) {
+        t.write(String.fromCharCode(byte));
     }
-
-    pyScript.io.stderr = (s, ...rest) => {
-        t.write(s + "\n"); // see above for the "\n"
-        stderr(s, ...rest);
-    }
+    const pyodide = pyScript.interpreter;
+    pyodide.setStdout({ raw: myStdout });
+    pyodide.setStderr({ raw: myStdout });
 });
 
 
