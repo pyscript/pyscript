@@ -89,14 +89,15 @@ addEventListener("py:ready", (event) => {
     xworker.sync.pyterminal_write = t.write;
 
     // XXX: I know that the following lines don't work, but this is more or
-    // lesswhat I would like to happen
-    pyScript.io.stdout = (s, ...rest) => {
+    // less what I would like to happen
+    const something = ???;
+    something.io.stdout = (s, ...rest) => {
         // this is JS code, and we cannot send arbitrary JS code from the main
         // to the worker. So maybe a solution is to hardcode this logic
         // directly inside the worker code?
         xworker.sync.pyterminal_write(s);
     }
-    pyScript.io.stderr = (s, ...rest) => {
+    something.io.stderr = (s, ...rest) => {
         xworker.sync.pyterminal_write(s);
     }
     something.runPython(`
