@@ -4,10 +4,10 @@ import { hooks } from "../core.js";
 // XXX TODO:
 // 1. these imports should be lazy?
 // 2. would be nice to automatically add xterm.css on demand
-import { Terminal } from 'https://cdn.jsdelivr.net/npm/xterm@5.3.0/+esm'
-import { Readline } from 'https://cdn.jsdelivr.net/npm/xterm-readline@1.1.1/+esm'
+import { Terminal } from "https://cdn.jsdelivr.net/npm/xterm@5.3.0/+esm";
+import { Readline } from "https://cdn.jsdelivr.net/npm/xterm-readline@1.1.1/+esm";
 const makePyTerminal = () => {
-    const element = document.querySelector('py-terminal');
+    const element = document.querySelector("py-terminal");
     if (element === null) {
         return false;
     }
@@ -19,7 +19,7 @@ const makePyTerminal = () => {
         },
         cursorBlink: true,
         cursorStyle: "block",
-        rows: 50
+        rows: 50,
     });
 
     const rl = new Readline();
@@ -40,7 +40,7 @@ const makePyTerminal = () => {
 
     console.log("PyTerminal made?");
     return { term, readline, write };
-}
+};
 
 // this is ONLY for non-workers, correct?
 // TODO: how to make it working for workers?
@@ -64,6 +64,15 @@ hooks.onInterpreterReady.add(function override(pyScript) {
     pyodide.setStderr({ raw: myStdout });
 });
 
+hooks.onWorkerReady.add(function override(pyScript) {
+    console.log("hello onWorkerReady");
+    const t = makePyTerminal();
+    if (!t) {
+        console.log("<py-terminal> not found, nothing to do");
+        return;
+    }
+    console.log(pyScript);
+});
 
 // this is mostly pseudo-code for what it *should* happen for the workers case
 /*
