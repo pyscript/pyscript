@@ -1,21 +1,28 @@
+import { typedSet } from "type-checked-collections";
+
+const SetFunction = typedSet({ typeof: "function" });
+const SetString = typedSet({ typeof: "string" });
+
 export default {
     /** @type {Set<function>} */
-    onBeforeRun: new Set(),
+    onInterpreterReady: new SetFunction(),
     /** @type {Set<function>} */
-    onBeforeRunAsync: new Set(),
+    onBeforeRun: new SetFunction(),
     /** @type {Set<function>} */
-    onAfterRun: new Set(),
+    onBeforeRunAsync: new SetFunction(),
     /** @type {Set<function>} */
-    onAfterRunAsync: new Set(),
+    onAfterRun: new SetFunction(),
     /** @type {Set<function>} */
-    onInterpreterReady: new Set(),
+    onAfterRunAsync: new SetFunction(),
 
+    /** @type {Set<function>} */
+    onWorkerReady: new SetFunction(),
     /** @type {Set<string>} */
-    codeBeforeRunWorker: new Set(),
+    codeBeforeRunWorker: new SetString(),
     /** @type {Set<string>} */
-    codeBeforeRunWorkerAsync: new Set(),
+    codeBeforeRunWorkerAsync: new SetString(),
     /** @type {Set<string>} */
-    codeAfterRunWorker: new Set(),
+    codeAfterRunWorker: new SetString(),
     /** @type {Set<string>} */
-    codeAfterRunWorkerAsync: new Set(),
+    codeAfterRunWorkerAsync: new SetString(),
 };
