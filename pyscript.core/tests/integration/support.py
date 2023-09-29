@@ -471,9 +471,7 @@ class PyScriptTest:
         self.logger.log(
             "wait_for_pyscript", f"Waited for {elapsed_ms/1000:.2f} s", color="yellow"
         )
-        # We still don't know why this wait is necessary, but without it
-        # events aren't being triggered in the tests.
-        self.page.wait_for_timeout(100)
+        self.page.wait_for_selector("html.all-done")
 
     SCRIPT_TAG_REGEX = re.compile('(<script type="py"|<py-script)')
 
@@ -487,15 +485,15 @@ class PyScriptTest:
         <html>
           <head>
               <link rel="stylesheet" href="{self.http_server_addr}/build/core.css">
-              <script
-                    type="module"
-                    src="{self.http_server_addr}/build/core.js"
-                ></script>
               <script type="module">
+                import {{ config }} from "{self.http_server_addr}/build/core.js";
+                globalThis.pyConfig = config.py;
+                globalThis.mpyConfig = config.mpy;
                 addEventListener(
                   'py:all-done',
                   () => {{
-                    console.debug('---py:all-done---')
+                    console.debug('---py:all-done---');
+                    document.documentElement.classList.add('all-done');
                   }},
                   {{ once: true }}
                 );
