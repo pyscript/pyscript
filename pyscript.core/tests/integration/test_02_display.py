@@ -461,4 +461,4 @@ class TestDisplay(PyScriptTest):
         )
 
         img_src = self.page.locator("img").get_attribute("src")
-        assert img_src.startswith('data:image/png;charset=utf-8;base64')
+        assert img_src.startswith("data:image/png;charset=utf-8;base64")
