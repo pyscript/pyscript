@@ -23,9 +23,8 @@ class TestConfig(PyScriptTest):
         </py-config>
 
         <py-script async>
-            from pyscript import window, document
-            promise = await document.currentScript._pyodide.promise
-            window.console.log("config name:", promise.config.name)
+            from pyscript import window
+            window.console.log("config name:", window.pyConfig.name)
         </py-script>
         """
         )
@@ -40,9 +39,8 @@ class TestConfig(PyScriptTest):
         </py-config>
 
         <script type="py" async>
-            from pyscript import window, document
-            promise = await document.currentScript._pyodide.promise
-            window.console.log("config name:", promise.config.name)
+            from pyscript import window
+            window.console.log("config name:", window.pyConfig.name)
         </script>
         """
         )
@@ -59,9 +57,8 @@ class TestConfig(PyScriptTest):
         <py-config src="pyconfig.toml"></py-config>
 
         <script type="py" async>
-            from pyscript import window, document
-            promise = await document.currentScript._pyodide.promise
-            window.console.log("config name:", promise.config.name)
+            from pyscript import window
+            window.console.log("config name:", window.pyConfig.name)
         </script>
         """
         )
