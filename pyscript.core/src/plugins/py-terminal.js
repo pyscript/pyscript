@@ -64,52 +64,14 @@ hooks.onInterpreterReady.add(function override(pyScript) {
     pyodide.setStderr({ raw: myStdout });
 });
 
-hooks.onWorkerReady.add(function override(pyScript) {
+hooks.onWorkerReady.add(function (_, xworker) {
     console.log("hello onWorkerReady");
     const t = makePyTerminal();
     if (!t) {
         console.log("<py-terminal> not found, nothing to do");
         return;
     }
-    console.log(pyScript);
-});
-
-// this is mostly pseudo-code for what it *should* happen for the workers case
-/*
-addEventListener("py:ready", (event) => {
-    console.log("hello py:ready");
-    if (!event.detail.worker) {
-        return;
-    }
-
-    const t = makePyTerminal();
-    if (!t) {
-        console.log("<py-terminal> not found, nothing to do");
-        return;
-    }
-
-    const xworker = event.target.xworker;
 
     xworker.sync.pyterminal_readline = t.readline;
     xworker.sync.pyterminal_write = t.write;
-
-    // XXX: I know that the following lines don't work, but this is more or
-    // less what I would like to happen
-    const something = ???;
-    something.io.stdout = (s, ...rest) => {
-        // this is JS code, and we cannot send arbitrary JS code from the main
-        // to the worker. So maybe a solution is to hardcode this logic
-        // directly inside the worker code?
-        xworker.sync.pyterminal_write(s);
-    }
-    something.io.stderr = (s, ...rest) => {
-        xworker.sync.pyterminal_write(s);
-    }
-    something.runPython(`
-        import builtins
-        import pyscript
-        builtins.input = sync.pyterminal_readline
-    `)
-
 });
-*/

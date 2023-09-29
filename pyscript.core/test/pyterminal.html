@@ -24,6 +24,9 @@
             # XXX we have a problem with the error plugin: this line should
             # just go to the terminal, NOT to the red box in the DOM
             print("this goes to stderr", file=sys.stderr)
+
+            import code
+            code.interact()
         </script>
 
         <py-terminal></py-terminal>
