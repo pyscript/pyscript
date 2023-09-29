@@ -137,6 +137,8 @@ for (const [TYPE, interpreter] of TYPES) {
             ...workerHooks,
             onWorkerReady(_, xworker) {
                 assign(xworker.sync, sync);
+                for (const callback of hooks.onWorkerReady)
+                    callback(_, xworker);
             },
             onBeforeRun(wrap, element) {
                 currentElement = element;
