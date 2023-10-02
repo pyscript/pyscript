@@ -90,6 +90,11 @@ const exportedConfig = {};
 export { exportedConfig as config, hooks };
 
 for (const [TYPE, interpreter] of TYPES) {
+    const dispatchDone = (element, isAsync, result) => {
+        if (isAsync) result.then(() => dispatch(element, TYPE, "done"));
+        else dispatch(element, TYPE, "done");
+    };
+
     const { config, plugins, error } = configs.get(TYPE);
 
     // create a unique identifier when/if needed
@@ -211,9 +216,13 @@ for (const [TYPE, interpreter] of TYPES) {
                     defineProperty(element, "target", { value: show });
 
                     // notify before the code runs
-                    dispatch(element, TYPE);
-                    wrap[`run${isAsync ? "Async" : ""}`](
-                        await fetchSource(element, wrap.io, true),
+                    dispatch(element, TYPE, "ready");
+                    dispatchDone(
+                        element,
+                        isAsync,
+                        wrap[`run${isAsync ? "Async" : ""}`](
+                            await fetchSource(element, wrap.io, true),
+                        ),
                     );
                 } else {
                     // resolve PyScriptElement to allow connectedCallback
@@ -246,18 +255,21 @@ for (const [TYPE, interpreter] of TYPES) {
         async connectedCallback() {
             if (!this.executed) {
                 this.executed = true;
+                const isAsync = this.hasAttribute("async");
                 const { io, run, runAsync } = await this._wrap.promise;
-                const runner = this.hasAttribute("async") ? runAsync : run;
                 this.srcCode = await fetchSource(
                     this,
                     io,
                     !this.childElementCount,
                 );
                 this.replaceChildren();
-                // notify before the code runs
-                dispatch(this, TYPE);
-                runner(this.srcCode);
                 this.style.display = "block";
+                dispatch(this, TYPE, "ready");
+                dispatchDone(
+                    this,
+                    isAsync,
+                    (isAsync ? runAsync : run)(this.srcCode),
+                );
             }
         }
     }
