@@ -6,6 +6,16 @@ from .support import PyScriptTest, skip_worker, only_main
 
 
 class TestBasic(PyScriptTest):
+    def test_pyscript_exports(self):
+        self.pyscript_run(
+            """
+            <script type="py">
+                from pyscript import RUNNING_IN_WORKER, PyWorker, window, document, sync, current_target
+            </script>
+            """
+        )
+        assert self.console.error.lines == []
+
     def test_script_py_hello(self):
         self.pyscript_run(
             """
