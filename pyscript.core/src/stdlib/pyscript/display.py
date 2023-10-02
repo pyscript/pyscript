@@ -3,7 +3,7 @@ import html
 import io
 import re
 
-from pyscript.magic_js import document, window, current_target
+from pyscript.magic_js import current_target, document, window
 
 _MIME_METHODS = {
     "__repr__": "text/plain",
@@ -154,8 +154,10 @@ def display(*values, target=None, append=True):
     # if element is a <script type="py">, it has a 'target' attribute which
     # points to the visual element holding the displayed values. In that case,
     # use that.
-    if element.tagName == 'SCRIPT' and hasattr(element, 'target'):
+    if element.tagName == "SCRIPT" and hasattr(element, "target"):
         element = element.target
 
     for v in values:
+        if not append:
+            element.replaceChildren()
         _write(element, v, append=append)
