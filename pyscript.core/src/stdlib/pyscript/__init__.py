@@ -29,7 +29,14 @@
 #     pyscript.magic_js. This is the blessed way to access them from pyscript,
 #     as it works transparently in both the main thread and worker cases.
 
-from pyscript.magic_js import RUNNING_IN_WORKER, PyWorker, window, document, sync, current_target
+from pyscript.magic_js import (
+    RUNNING_IN_WORKER,
+    PyWorker,
+    window,
+    document,
+    sync,
+    current_target,
+)
 from pyscript.display import HTML, display
 
 try:
@@ -38,6 +45,5 @@ except:
     from pyscript.util import NotSupported
 
     when = NotSupported(
-        "pyscript.when",
-        "pyscript.when currently not available with this interpreter"
+        "pyscript.when", "pyscript.when currently not available with this interpreter"
     )
