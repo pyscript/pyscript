@@ -148,8 +148,22 @@ def _write(element, value, append=False):
 def display(*values, target=None, append=True):
     if target is None:
         target = current_target()
+    elif not isinstance(target, str):
+        raise TypeError(f"target must be str or None, not {target.__class__.__name__}")
+    elif target == "":
+        raise ValueError("Cannot have an empty target")
+    elif target.startswith("#"):
+        # note: here target is str and not None!
+        # align with @when behavior
+        target = target[1:]
 
     element = document.getElementById(target)
+
+    # If target cannot be found on the page, a ValueError is raised
+    if element is None:
+        raise ValueError(
+            f"Invalid selector with id={target}. Cannot be found in the page."
+        )
 
     # if element is a <script type="py">, it has a 'target' attribute which
     # points to the visual element holding the displayed values. In that case,

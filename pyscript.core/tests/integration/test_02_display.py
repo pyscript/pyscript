@@ -11,6 +11,7 @@ import pytest
 from PIL import Image
 
 from .support import (
+    PageErrors,
     PyScriptTest,
     filter_inner_text,
     filter_page_content,
@@ -71,6 +72,79 @@ class TestDisplay(PyScriptTest):
         )
         mydiv = self.page.locator("#mydiv")
         assert mydiv.inner_text() == "hello world"
+
+    def test_target_parameter_with_sharp(self):
+        self.pyscript_run(
+            """
+            <script type="py">
+                from pyscript import display
+                display('hello world', target="#mydiv")
+            </script>
+            <div id="mydiv"></div>
+            """
+        )
+        mydiv = self.page.locator("#mydiv")
+        assert mydiv.inner_text() == "hello world"
+
+    def test_non_existing_id_target_raises_value_error(self):
+        self.pyscript_run(
+            """
+            <script type="py">
+                from pyscript import display
+                display('hello world', target="non-existing")
+            </script>
+            """
+        )
+        error_msg = (
+            f"Invalid selector with id=non-existing. Cannot be found in the page."
+        )
+        self.check_py_errors(f"ValueError: {error_msg}")
+        # Check Console error
+        tb_lines = self.console.error.lines[-1].splitlines()
+        assert tb_lines[0] == "PythonError: Traceback (most recent call last):"
+
+    def test_empty_string_target_raises_value_error(self):
+        self.pyscript_run(
+            """
+            <script type="py">
+                from pyscript import display
+                display('hello world', target="")
+            </script>
+            """
+        )
+        self.check_py_errors(f"ValueError: Cannot have an empty target")
+        # Check Console error
+        tb_lines = self.console.error.lines[-1].splitlines()
+        assert tb_lines[0] == "PythonError: Traceback (most recent call last):"
+
+    def test_non_string_target_values_raise_typerror(self):
+        self.pyscript_run(
+            """
+            <script type="py">
+                from pyscript import display
+                display("hello False", target=False)
+            </script>
+            """
+        )
+        error_msg = f"target must be str or None, not bool"
+        self.check_py_errors(f"TypeError: {error_msg}")
+        # Check Console error
+        tb_lines = self.console.error.lines[-1].splitlines()
+        assert tb_lines[0] == "PythonError: Traceback (most recent call last):"
+
+        self.pyscript_run(
+            """
+            <script type="py">
+                from pyscript import display
+                display("hello False", target=123)
+            </script>
+            """
+        )
+        error_msg = f"target must be str or None, not int"
+        self.check_py_errors(f"TypeError: {error_msg}")
+        # Check Console error
+        tb_lines = self.console.error.lines[-1].splitlines()
+        assert tb_lines[0] == "PythonError: Traceback (most recent call last):"
 
     @skip_worker("NEXT: display(target=...) does not work")
     def test_tag_target_attribute(self):
