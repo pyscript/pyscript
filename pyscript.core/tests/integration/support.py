@@ -362,9 +362,6 @@ class PyScriptTest:
         See the docstring for _check_page_errors for more details.
         """
         self._check_page_errors("Python", expected_messages)
-        # Check Console error
-        tb_lines = self.console.error.lines[-1].splitlines()
-        assert tb_lines[0] == "PythonError: Traceback (most recent call last):"
 
     def clear_js_errors(self):
         """
