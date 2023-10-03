@@ -7,8 +7,9 @@ if RUNNING_IN_WORKER:
     import polyscript
 
     PyWorker = NotSupported(
-        'pyscript.PyWorker',
-        'pyscript.PyWorker works only when running in the main thread')
+        "pyscript.PyWorker",
+        "pyscript.PyWorker works only when running in the main thread",
+    )
     window = polyscript.xworker.window
     document = window.document
     sync = polyscript.xworker.sync
@@ -21,11 +22,12 @@ if RUNNING_IN_WORKER:
 else:
     import _pyscript
     from _pyscript import PyWorker
+
     window = globalThis
     document = globalThis.document
     sync = NotSupported(
-        'pyscript.sync',
-        'pyscript.sync works only when running in a worker')
+        "pyscript.sync", "pyscript.sync works only when running in a worker"
+    )
 
     # in MAIN the current element target exist, just use it
     def current_target():
