@@ -51,15 +51,3 @@ repos:
           - id: prettier
             exclude: pyscript\.core/test|pyscript\.core/dist|pyscript\.core/types|pyscript.core/src/stdlib/pyscript.js|pyscript\.sw/
             args: [--tab-width, "4"]
-
-    - repo: https://github.com/pre-commit/mirrors-eslint
-      rev: v8.36.0
-      hooks:
-          - id: eslint
-            files: pyscriptjs/src/.*\.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
-            types: [file]
-            additional_dependencies:
-                - eslint@8.25.0
-                - typescript@5.0.4
-                - "@typescript-eslint/eslint-plugin@5.58.0"
-                - "@typescript-eslint/parser@5.58.0"

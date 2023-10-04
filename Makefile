@@ -2,7 +2,6 @@ tag := latest
 git_hash ?= $(shell git log -1 --pretty=format:%h)
 
 base_dir ?= $(shell git rev-parse --show-toplevel)
-src_dir ?= $(base_dir)/pyscriptjs/src
 examples ?=  ../$(base_dir)/examples
 app_dir ?= $(shell git rev-parse --show-prefix)
 
@@ -100,14 +99,6 @@ test-integration-parallel:
 test-examples:
 	mkdir -p test_results
 	$(PYTEST_EXE) -vv $(ARGS) pyscript.core/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml -k 'zz_examples'
-
-test-py:
-	@echo "Tests from $(src_dir)"
-	mkdir -p test_results
-	$(PYTEST_EXE) -vv $(ARGS) tests/py-unit/ --log-cli-level=warning --junitxml=test_results/py-unit.xml
-
-test-ts:
-	npm run test
 
 fmt: fmt-py fmt-ts
 	@echo "Format completed"

@@ -1,18 +1,11 @@
 name: "Publish Unstable"
 
 on:
-    push: # Only run on merges into main that modify files under pyscriptjs/ and examples/
+    push: # Only run on merges into main that modify files under pyscript.core/ and examples/
         branches:
             - main
         paths:
             - pyscript.core/**
-            - examples/**
-
-    pull_request: # Run on any PR that modifies files under pyscriptjs/ and examples/
-        branches:
-            - main
-        paths:
-            - pyscriptjs/**
             - examples/**
 
     workflow_dispatch:

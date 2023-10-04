@@ -15,7 +15,6 @@ from .support import ROOT, PyScriptTest, wait_for_render, with_execution_thread
     reason="SKIPPING EXAMPLES: these should be moved elsewhere and updated"
 )
 @with_execution_thread(None)
-@pytest.mark.usefixtures("chdir")
 class TestExamples(PyScriptTest):
     """
     Each example requires the same three tests:
@@ -25,11 +24,6 @@ class TestExamples(PyScriptTest):
         - Testing that pyscript is loading properly
         - Testing that the page contains appropriate content after rendering
     """
-
-    @pytest.fixture()
-    def chdir(self):
-        # make sure that the http server serves from the right directory
-        ROOT.join("pyscriptjs").chdir()
 
     def test_hello_world(self):
         self.goto("examples/hello_world.html")
