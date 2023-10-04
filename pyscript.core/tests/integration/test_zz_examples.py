@@ -29,7 +29,7 @@ class TestExamples(PyScriptTest):
     @pytest.fixture()
     def chdir(self):
         # make sure that the http server serves from the right directory
-        ROOT.join("pyscriptjs").chdir()
+        ROOT.join("examples").chdir()
 
     def test_hello_world(self):
         self.goto("examples/hello_world.html")

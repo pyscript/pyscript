@@ -7,7 +7,6 @@ dynamic = ["version"]
 
 [tool.codespell]
 ignore-words-list = "afterall"
-skip = "pyscriptjs/node_modules/*,*.js,*.json"
 
 [tool.ruff]
 builtins = [
