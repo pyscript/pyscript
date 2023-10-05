@@ -1,5 +1,6 @@
-from pyscript.util import NotSupported
 import js as globalThis
+
+from pyscript.util import NotSupported
 
 RUNNING_IN_WORKER = not hasattr(globalThis, "document")
 
@@ -21,7 +22,6 @@ if RUNNING_IN_WORKER:
 
 else:
     import _pyscript
-    from _pyscript import PyWorker
 
     window = globalThis
     document = globalThis.document

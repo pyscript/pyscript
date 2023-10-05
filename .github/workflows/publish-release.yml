@@ -41,7 +41,7 @@ jobs:
 
             - name: build
               run: npm run build
-            
+
             - name: Generate index.html in snapshot
               working-directory: .
               run: sed 's#_PATH_#https://pyscript.net/releases/${{ github.ref_name }}/#' ./public/index.html > ./pyscript.core/dist/index.html
