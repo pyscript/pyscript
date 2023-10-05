@@ -22,6 +22,7 @@ if RUNNING_IN_WORKER:
 
 else:
     import _pyscript
+    from _pyscript import PyWorker
 
     window = globalThis
     document = globalThis.document
