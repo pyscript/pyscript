@@ -50,7 +50,7 @@ const syntaxError = (type, url, { message }) => {
 const configs = new Map();
 
 for (const [TYPE] of TYPES) {
-    /** @type {Promise<any> | undefined} A Promise wrapping any plugins which should be loaded. */
+    /** @type {Promise<[...any]>} A Promise wrapping any plugins which should be loaded. */
     let plugins;
 
     /** @type {any} The PyScript configuration parsed from the JSON or TOML object*. May be any of the return types of JSON.parse() or toml-j0.4's parse() ( {number | string | boolean | null | object | Array} ) */
@@ -119,7 +119,7 @@ for (const [TYPE] of TYPES) {
     }
 
     // assign plugins as Promise.all only if needed
-    if (toBeAwaited.length) plugins = Promise.all(toBeAwaited);
+    plugins = Promise.all(toBeAwaited);
 
     configs.set(TYPE, { config: parsed, plugins, error });
 }
