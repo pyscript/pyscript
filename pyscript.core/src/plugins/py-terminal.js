@@ -75,3 +75,8 @@ hooks.onWorkerReady.add(function (_, xworker) {
     xworker.sync.pyterminal_readline = t.readline;
     xworker.sync.pyterminal_write = t.write;
 });
+
+hooks.codeBeforeRunWorker.add(`
+from pyscript import pyterminal
+pyterminal.init()
+`);

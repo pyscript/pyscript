@@ -75,19 +75,9 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
     interpreter.runPython(stdlib, { globals: interpreter.runPython("{}") });
 };
 
-// this is a super-ugly workaround for a polyscript issue: in theory I should
-// define a codeBeforeRunWorker hook inside py-terminal.js, but since it's a
-// lazy plugin, it is too late: https://github.com/pyscript/polyscript/issues/52
-const py_terminal_codeBeforeRunner = `
-from pyscript import pyterminal
-pyterminal.init()
-`;
-
 const workerHooks = {
     codeBeforeRunWorker: () =>
-        [stdlib, py_terminal_codeBeforeRunner, ...hooks.codeBeforeRunWorker]
-            .map(dedent)
-            .join("\n"),
+        [stdlib, ...hooks.codeBeforeRunWorker].map(dedent).join("\n"),
     codeBeforeRunWorkerAsync: () =>
         [stdlib, ...hooks.codeBeforeRunWorkerAsync].map(dedent).join("\n"),
     codeAfterRunWorker: () =>
