@@ -3,7 +3,6 @@ import builtins
 import sys
 
 from pyodide.code import eval_code
-
 from pyscript import sync
 
 sys.stdout = sync

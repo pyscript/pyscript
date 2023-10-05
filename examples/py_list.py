@@ -3,7 +3,6 @@ from datetime import datetime as dt
 from textwrap import dedent
 
 import js
-
 from pyscript import Element, Plugin, create
 
 plugin = Plugin("PyList")

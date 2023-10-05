@@ -1,5 +1,4 @@
 import a
-
 from pyscript import display, sync
 
 display("Hello World", target="test", append=True)
