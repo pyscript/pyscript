@@ -54,7 +54,7 @@ def pytest_configure(config):
     --no-fake-server, but because of how pytest works, they are available only
     if this is the "root conftest" for the test session.
 
-    This means that if you are in the pyscriptjs directory:
+    This means that if you are in the pyscript.core directory:
 
     $ py.test                       # does NOT work
     $ py.test tests/integration/    # works
@@ -70,10 +70,9 @@ def pytest_configure(config):
     """
     if not hasattr(config.option, "dev"):
         msg = """
-        Running a bare "pytest" command from the pyscriptjs directory
+        Running a bare "pytest" command from the pyscript.core directory
         is not supported. Please use one of the following commands:
             - pytest tests/integration
-            - pytest tests/py-unit
             - pytest tests/*
             - cd tests/integration; pytest
         """

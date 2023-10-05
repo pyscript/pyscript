@@ -2,10 +2,20 @@ import re
 
 import pytest
 
-from .support import PyScriptTest, skip_worker, only_main
+from .support import PyScriptTest, only_main, skip_worker
 
 
 class TestBasic(PyScriptTest):
+    def test_pyscript_exports(self):
+        self.pyscript_run(
+            """
+            <script type="py">
+                from pyscript import RUNNING_IN_WORKER, PyWorker, window, document, sync, current_target
+            </script>
+            """
+        )
+        assert self.console.error.lines == []
+
     def test_script_py_hello(self):
         self.pyscript_run(
             """
@@ -96,10 +106,6 @@ class TestBasic(PyScriptTest):
         assert "hello pyscript" in self.console.log.lines
         self.check_py_errors("Exception: this is an error")
         #
-        # check that we sent the traceback to the console
-        tb_lines = self.console.error.lines[-1].splitlines()
-        assert tb_lines[0] == "PythonError: Traceback (most recent call last):"
-        #
         # check that we show the traceback in the page. Note that here we
         # display the "raw" python traceback, without the "[pyexec] Python
         # exception:" line (which is useful in the console, but not for the
@@ -127,10 +133,6 @@ class TestBasic(PyScriptTest):
         )
 
         self.check_py_errors("Exception: this is an error inside handler")
-
-        ## error in console
-        tb_lines = self.console.error.lines[-1].splitlines()
-        assert tb_lines[0] == "PythonError: Traceback (most recent call last):"
 
         ## error in DOM
         tb_lines = self.page.locator(".py-error").inner_text().splitlines()

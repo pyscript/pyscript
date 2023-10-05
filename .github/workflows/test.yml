@@ -26,7 +26,7 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
               with:
-                fetch-depth: 3
+                  fetch-depth: 3
 
             # display a git log: when you run CI on PRs, github automatically
             # merges the PR into main and run the CI on that commit. The idea
