@@ -4,6 +4,7 @@ from functools import cached_property
 from typing import Any
 
 from pyodide.ffi import JsProxy
+
 from pyscript import display, document, window
 
 # from pyscript import when as _when

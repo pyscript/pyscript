@@ -1,4 +1,5 @@
 import js as globalThis
+
 from pyscript.util import NotSupported
 
 RUNNING_IN_WORKER = not hasattr(globalThis, "document")
