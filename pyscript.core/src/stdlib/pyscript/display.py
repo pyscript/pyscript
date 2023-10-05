@@ -6,7 +6,7 @@ import re
 from pyscript.magic_js import current_target, document, window
 
 _MIME_METHODS = {
-    "__repr__": "text/plain",
+    "__repr__": 'text/plain',
     "_repr_html_": "text/html",
     "_repr_markdown_": "text/markdown",
     "_repr_svg_": "image/svg+xml",
