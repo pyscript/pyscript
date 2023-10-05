@@ -9,30 +9,5 @@ dynamic = ["version"]
 ignore-words-list = "afterall"
 skip = "*.js,*.json"
 
-[tool.ruff]
-builtins = [
-    "Element",
-    "pyscript",
-]
-ignore = [
-    "S101",
-    "S113",
-]
-line-length = 100
-select = [
-    "B",
-    "C9",
-    "E",
-    "F",
-    "I",
-    "S",
-    "UP",
-    "W",
-]
-target-version = "py310"
-
-[tool.ruff.mccabe]
-max-complexity = 10
-
 [tool.setuptools]
 include-package-data = false

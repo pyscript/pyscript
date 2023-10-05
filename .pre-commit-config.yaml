@@ -24,13 +24,6 @@ repos:
             exclude: pyscript\.core/dist|\.min\.js$
           - id: trailing-whitespace
 
-    - repo: https://github.com/charliermarsh/ruff-pre-commit
-      rev: v0.0.257
-      hooks:
-          - id: ruff
-            exclude: pyscript\.core/src/stdlib/pyscript/__init__\.py|pyscript\.core/test|pyscript\.core/dist|pyscript\.core/src/stdlib/pyscript\.py
-            args: [--fix]
-
     - repo: https://github.com/psf/black
       rev: 23.1.0
       hooks:
@@ -51,3 +44,10 @@ repos:
           - id: prettier
             exclude: pyscript\.core/test|pyscript\.core/dist|pyscript\.core/types|pyscript.core/src/stdlib/pyscript.js|pyscript\.sw/
             args: [--tab-width, "4"]
+
+    - repo: https://github.com/pycqa/isort
+      rev: 5.12.0
+      hooks:
+          - id: isort
+            name: isort (python)
+            args: [--profile, black]
