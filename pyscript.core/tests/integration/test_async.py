@@ -1,4 +1,5 @@
 import pytest
+
 from .support import PyScriptTest, filter_inner_text, only_main
 
 

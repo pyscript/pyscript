@@ -46,7 +46,7 @@ jobs:
 
             - name: Build
               run: npm run build
-            
+
             - name: Generate index.html in snapshot
               working-directory: .
               run: sed 's#_PATH_#https://pyscript.net/unstable/#' ./public/index.html > ./pyscript.core/dist/index.html
