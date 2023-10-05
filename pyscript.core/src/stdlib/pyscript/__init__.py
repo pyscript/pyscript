@@ -29,15 +29,15 @@
 #     pyscript.magic_js. This is the blessed way to access them from pyscript,
 #     as it works transparently in both the main thread and worker cases.
 
+from pyscript.display import HTML, display
 from pyscript.magic_js import (
     RUNNING_IN_WORKER,
     PyWorker,
-    window,
+    current_target,
     document,
     sync,
-    current_target,
+    window,
 )
-from pyscript.display import HTML, display
 
 try:
     from pyscript.event_handling import when

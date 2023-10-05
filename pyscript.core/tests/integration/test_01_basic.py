@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from .support import PyScriptTest, skip_worker, only_main
+from .support import PyScriptTest, only_main, skip_worker
 
 
 class TestBasic(PyScriptTest):

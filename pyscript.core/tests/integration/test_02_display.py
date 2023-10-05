@@ -1,10 +1,10 @@
 ################################################################################
 
 import base64
+import html
 import io
 import os
 import re
-import html
 
 import numpy as np
 import pytest
@@ -15,9 +15,9 @@ from .support import (
     PyScriptTest,
     filter_inner_text,
     filter_page_content,
-    wait_for_render,
-    skip_worker,
     only_main,
+    skip_worker,
+    wait_for_render,
 )
 
 DISPLAY_OUTPUT_ID_PATTERN = r'script-py[id^="py-"]'
