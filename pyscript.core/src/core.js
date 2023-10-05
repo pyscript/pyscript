@@ -145,8 +145,7 @@ for (const [TYPE, interpreter] of TYPES) {
                 errors.set(element, error);
             },
             ...workerHooks,
-            async onWorkerReady(_, xworker) {
-                await plugins; // workaround for a polyscript bug
+            onWorkerReady(_, xworker) {
                 assign(xworker.sync, sync);
                 for (const callback of hooks.onWorkerReady)
                     callback(_, xworker);
