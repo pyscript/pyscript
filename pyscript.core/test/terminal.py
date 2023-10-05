@@ -1,8 +1,9 @@
 ###### magic monkey patching ######
-import sys
 import builtins
-from pyscript import sync
+import sys
+
 from pyodide.code import eval_code
+from pyscript import sync
 
 sys.stdout = sync
 builtins.input = sync.readline
