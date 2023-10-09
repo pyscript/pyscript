@@ -652,7 +652,7 @@ TEST_ITERATIONS = math.ceil(
 )  # 120 iters of 1/4 second
 
 
-def wait_for_render(page, selector, pattern, timeout_seconds: int | None = None):
+def wait_for_render(page, selector, pattern, timeout_seconds=None):
     """
     Assert that rendering inserts data into the page as expected: search the
     DOM from within the timing loop for a string that is not present in the

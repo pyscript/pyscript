@@ -1,122 +1,92 @@
-tag := latest
-git_hash ?= $(shell git log -1 --pretty=format:%h)
+MIN_NODE_VER := 20
+MIN_NPM_VER  := 6
+MIN_PY3_VER  := 8
+NODE_VER     := $(shell node -v | cut -d. -f1 | sed 's/^v\(.*\)/\1/')
+NPM_VER      := $(shell npm -v | cut -d. -f1)
+PY3_VER      := $(shell python3 -c "import sys;t='{v[1]}'.format(v=list(sys.version_info[:2]));print(t)")
+PY_OK        := $(shell python3 -c "print(int($(PY3_VER) >= $(MIN_PY3_VER)))")
 
-base_dir ?= $(shell git rev-parse --show-toplevel)
-examples ?=  ../$(base_dir)/examples
-app_dir ?= $(shell git rev-parse --show-prefix)
-
-CONDA_EXE := conda
-CONDA_ENV ?= $(base_dir)/env
-env := $(CONDA_ENV)
-conda_run := $(CONDA_EXE) run -p $(env)
-PYTEST_EXE := $(CONDA_ENV)/bin/pytest
-
-MIN_NODE_VER := 14
-MIN_NPM_VER := 6
-NODE_VER    := $(shell node -v | cut -d. -f1 | sed 's/^v\(.*\)/\1/')
-NPM_VER     := $(shell npm -v | cut -d. -f1)
-
-ifeq ($(shell uname -s), Darwin)
-    SED_I_ARG := -i ''
-else
-    SED_I_ARG := -i
-endif
+all:
+	@echo "\nThere is no default Makefile target right now. Try:\n"
+	@echo "make setup - check your environment and install the dependencies."
+	@echo "make clean - clean up auto-generated assets."
+	@echo "make build - build PyScript."
+	@echo "make precommit-check - run the precommit checks (run eslint)."
+	@echo "make test-integration - run all integration tests sequentially."
+	@echo "make fmt - format the code."
+	@echo "make fmt-check - check the code formatting.\n"
 
 .PHONY: check-node
 check-node:
 	@if [ $(NODE_VER) -lt $(MIN_NODE_VER) ]; then \
-		echo "Build requires Node $(MIN_NODE_VER).x or higher: $(NODE_VER) detected"; \
+		echo "\033[0;31mBuild requires Node $(MIN_NODE_VER).x or higher: $(NODE_VER) detected.\033[0m"; \
 		false; \
 	fi
 
 .PHONY: check-npm
 check-npm:
 	@if [ $(NPM_VER) -lt $(MIN_NPM_VER) ]; then \
-		echo "Build requires Node $(MIN_NPM_VER).x or higher: $(NPM_VER) detected"; \
+		echo "\033[0;31mBuild requires Node $(MIN_NPM_VER).x or higher: $(NPM_VER) detected.\033[0m"; \
 		false; \
 	fi
 
-setup: check-node check-npm
-	cd pyscript.core && npm install && cd ..
-	$(CONDA_EXE) env $(shell [ -d $(env) ] && echo update || echo create) -p $(env) --file environment.yml
-	$(conda_run) playwright install
-	$(CONDA_EXE) install -c anaconda pytest -y
+.PHONY: check-python
+check-python:
+	@if [ $(PY_OK) -eq 0 ]; then \
+		echo "\033[0;31mRequires Python 3.$(MIN_PY3_VER).x or higher: 3.$(PY3_VER) detected.\033[0m"; \
+		false; \
+	fi
 
+# Check the environment, install the dependencies.
+setup: check-node check-npm check-python
+	cd pyscript.core && npm install && cd ..
+ifeq ($(VIRTUAL_ENV),)
+	echo "\n\n\033[0;31mCannot install Python dependencies. Your virtualenv is not activated.\033[0m"
+	false
+else
+	python -m pip install -r requirements.txt
+	playwright install
+endif
+
+# Clean up generated assets.
 clean:
 	find . -name \*.py[cod] -delete
+	rm -rf $(env) *.egg-info
 	rm -rf .pytest_cache .coverage coverage.xml
 
-clean-all: clean
-	rm -rf $(env) *.egg-info
-
-shell:
-	@export CONDA_ENV_PROMPT='<{name}>'
-	@echo 'conda activate $(env)'
-
-dev:
-	cd pyscript.core && npm run dev
-
+# Build PyScript.
 build:
 	cd pyscript.core && npm run build
 
-# use the following rule to do all the checks done by precommit: in
-# particular, use this if you want to run eslint.
+# Run the precommit checks (run eslint).
 precommit-check:
 	pre-commit run --all-files
 
-examples:
-	mkdir -p ./examples
-	cp -r ../examples/* ./examples
-	chmod -R 755 examples
-	find ./examples/toga -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../build/+g {} \;
-	find ./examples/webgl -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../../../build/+g {} \;
-	find ./examples -type f -name '*.html' -exec sed $(SED_I_ARG) s+https://pyscript.net/latest/+../build/+g {} \;
-	npm run build
-	rm -rf ./examples/build
-	mkdir -p ./examples/build
-	cp -R ./build/* ./examples/build
-	@echo "To serve examples run: $(conda_run) python -m http.server 8080 --directory examples"
-
-# run prerequisites and serve pyscript examples at http://localhost:8000/examples/
-run-examples: setup build examples
-	make examples
-	npm install
-	make dev
-
-# run all integration tests *including examples* sequentially
-# TODO: (fpliger) The cd pyscript.core before running the tests shouldn't be needed but for
-# 		but for some reason it seems to bother pytest tmppaths (or test cache?). Unclear.
+# Run all integration tests sequentially.
 test-integration:
 	mkdir -p test_results
-	$(PYTEST_EXE) -vv $(ARGS) pyscript.core/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
+	pytest -vv $(ARGS) pyscript.core/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
 
-# run all integration tests *except examples* in parallel (examples use too much memory)
+# Run all integration tests in parallel.
 test-integration-parallel:
 	mkdir -p test_results
-	$(PYTEST_EXE) --numprocesses auto -vv $(ARGS) pyscript.core/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
+	pytest --numprocesses auto -vv $(ARGS) pyscript.core/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
 
-# run integration tests on only examples sequentially (to avoid running out of memory)
-test-examples:
-	mkdir -p test_results
-	$(PYTEST_EXE) -vv $(ARGS) pyscript.core/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml -k 'zz_examples'
-
-fmt: fmt-py fmt-ts
+# Format the code.
+fmt: fmt-py
 	@echo "Format completed"
 
-fmt-check: fmt-ts-check fmt-py-check
+# Check the code formatting.
+fmt-check: fmt-py-check
 	@echo "Format check completed"
 
-fmt-ts:
-	npm run format
-
-fmt-ts-check:
-	npm run format:check
-
+# Format Python code.
 fmt-py:
-	$(conda_run) black --skip-string-normalization .
-	$(conda_run) isort --profile black .
+	black -l 88 --skip-string-normalization .
+	isort --profile black .
 
+# Check the format of Python code.
 fmt-py-check:
-	$(conda_run) black -l 88 --check .
+	black -l 88 --check .
 
 .PHONY: $(MAKECMDGOALS)
