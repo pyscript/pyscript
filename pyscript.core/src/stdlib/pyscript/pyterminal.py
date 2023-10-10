@@ -2,7 +2,6 @@ import builtins
 import sys
 
 import js
-
 from pyscript import sync
 
 
