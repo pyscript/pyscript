@@ -1,5 +1,5 @@
 import { FetchError, ErrorCode } from "./exceptions.js";
-import { getText } from "../node_modules/polyscript/esm/fetch-utils.js";
+import { getText } from "polyscript/exports";
 
 export { getText };
 
