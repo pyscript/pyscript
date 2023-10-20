@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.2.8",
+    "version": "0.2.9",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -20,7 +20,7 @@
     },
     "scripts": {
         "server": "npx static-handler --coi .",
-        "build": "node rollup/stdlib.cjs && node rollup/plugins.cjs && rm -rf dist && rollup --config rollup/core.config.js && eslint src/ && npm run ts",
+        "build": "node rollup/toml.cjs && node rollup/stdlib.cjs && node rollup/plugins.cjs && rm -rf dist && rollup --config rollup/core.config.js && eslint src/ && npm run ts",
         "size": "echo -e \"\\033[1mdist/*.js file size\\033[0m\"; for js in $(ls dist/*.js); do echo -e \"\\033[2m$js:\\033[0m $(cat $js | brotli | wc -c) bytes\"; done",
         "ts": "tsc -p ."
     },
@@ -33,14 +33,15 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.4.13",
+        "polyscript": "^0.4.20",
         "type-checked-collections": "^0.1.7"
     },
     "devDependencies": {
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
+        "@webreflection/toml-j0.4": "^1.1.3",
         "eslint": "^8.51.0",
-        "rollup": "^4.0.2",
+        "rollup": "^4.1.4",
         "rollup-plugin-postcss": "^4.0.2",
         "rollup-plugin-string": "^3.0.0",
         "static-handler": "^0.4.3",
