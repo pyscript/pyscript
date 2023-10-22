@@ -145,7 +145,7 @@ def _write(element, value, append=False):
         out_element.innerHTML = html
 
 
-def display(*values, target=None, append=True):
+def display(*values, target=None, append=False):
     if target is None:
         target = current_target()
     elif not isinstance(target, str):
