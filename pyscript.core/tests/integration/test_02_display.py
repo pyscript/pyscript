@@ -30,7 +30,7 @@ class TestDisplay(PyScriptTest):
             <script type="py">
                 print('ciao')
                 from pyscript import display
-                display("hello world")
+                display("hello world", append=True)
             </script>
             """,
             timeout=20000,
@@ -140,9 +140,9 @@ class TestDisplay(PyScriptTest):
             """
             <script type="py" target="hello">
                 from pyscript import display
-                display('hello')
-                display("goodbye world", target="goodbye")
-                display('world')
+                display('hello', append=True)
+                display("goodbye world", target="goodbye", append=True)
+                display('world', append=True)
             </script>
             <div id="hello"></div>
             <div id="goodbye"></div>
@@ -179,16 +179,16 @@ class TestDisplay(PyScriptTest):
             """
             <script type="py" id="first">
                 from pyscript import display
-                display('hello 1')
+                display('hello 1', append=True)
             </script>
                 <p>hello in between 1 and 2</p>
             <script type="py" id="second">
                 from pyscript import display
-                display('hello 2', target="second")
+                display('hello 2', target="second", append=True)
             </script>
             <script type="py" id="third">
                 from pyscript import display
-                display('hello 3')
+                display('hello 3', append=True)
             </script>
             """
         )
@@ -202,8 +202,8 @@ class TestDisplay(PyScriptTest):
             """
             <script type="py">
                 from pyscript import display
-                display('hello')
-                display('world')
+                display('hello', append=True)
+                display('world', append=True)
             </script>
         """
         )
@@ -316,7 +316,7 @@ class TestDisplay(PyScriptTest):
                 from pyscript import display
                 hello = 'hello'
                 world = 'world'
-                display(hello, world)
+                display(hello, world, append=True)
             </script>
             """
         )
@@ -377,7 +377,7 @@ class TestDisplay(PyScriptTest):
                 l = ['A', 1, '!']
                 d = {'B': 2, 'List': l}
                 t = ('C', 3, '!')
-                display(l, d, t)
+                display(l, d, t, append=True)
             </script>
             """
         )
@@ -394,7 +394,7 @@ class TestDisplay(PyScriptTest):
             """
             <script type="py">
                 from pyscript import display
-                display("<p>hello world</p>")
+                display("<p>hello world</p>", append=True)
             </script>
             """
         )
@@ -407,7 +407,7 @@ class TestDisplay(PyScriptTest):
             """
             <script type="py">
                 from pyscript import display, HTML
-                display(HTML("<p>hello world</p>"))
+                display(HTML("<p>hello world</p>"), append=True)
             </script>
             """
         )
