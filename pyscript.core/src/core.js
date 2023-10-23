@@ -1,20 +1,20 @@
 /*! (c) PyScript Development Team */
 
+import stickyModule from "sticky-module";
 import "@ungap/with-resolvers";
 
-// These imports can hook more than usual and help debugging possible polyscript issues
 import {
     INVALID_CONTENT,
-    define,
+    Hook,
     XWorker,
-} from "../node_modules/polyscript/esm/index.js";
-import { queryTarget } from "../node_modules/polyscript/esm/script-handler.js";
-import {
+    assign,
     dedent,
+    define,
+    defineProperty,
     dispatch,
+    queryTarget,
     unescape,
-} from "../node_modules/polyscript/esm/utils.js";
-import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
+} from "polyscript/exports";
 
 import "./all-done.js";
 import TYPES from "./types.js";
@@ -24,8 +24,6 @@ import sync from "./sync.js";
 import stdlib from "./stdlib.js";
 import { ErrorCode } from "./exceptions.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
-
-const { assign, defineProperty } = Object;
 
 // allows lazy element features on code evaluation
 let currentElement;
@@ -86,10 +84,26 @@ const workerHooks = {
         [...hooks.codeAfterRunWorkerAsync].map(dedent).join("\n"),
 };
 
-const exportedConfig = {};
-export { exportedConfig as config, hooks };
+// avoid multiple initialization of the same library
+const [
+    {
+        PyWorker: exportedPyWorker,
+        hooks: exportedHooks,
+        config: exportedConfig,
+    },
+    alreadyLive,
+] = stickyModule("@pyscript/core", { PyWorker, hooks, config: {} });
+
+export {
+    exportedPyWorker as PyWorker,
+    exportedHooks as hooks,
+    exportedConfig as config,
+};
 
 for (const [TYPE, interpreter] of TYPES) {
+    // avoid any dance if the module already landed
+    if (alreadyLive) break;
+
     const dispatchDone = (element, isAsync, result) => {
         if (isAsync) result.then(() => dispatch(element, TYPE, "done"));
         else dispatch(element, TYPE, "done");
@@ -290,7 +304,7 @@ for (const [TYPE, interpreter] of TYPES) {
  * @param {{config?: string | object, async?: boolean}} [options] optional configuration for the worker.
  * @returns {Worker & {sync: ProxyHandler<object>}}
  */
-export function PyWorker(file, options) {
+function PyWorker(file, options) {
     // this propagates pyscript worker hooks without needing a pyscript
     // bootstrap + it passes arguments and enforces `pyodide`
     // as the interpreter to use in the worker, as all hooks assume that
