@@ -21,8 +21,10 @@
     "scripts": {
         "server": "npx static-handler --coi .",
         "build": "node rollup/toml.cjs && node rollup/stdlib.cjs && node rollup/plugins.cjs && rm -rf dist && rollup --config rollup/core.config.js && eslint src/ && npm run ts",
+        "release": "npm run build && npm run zip",
         "size": "echo -e \"\\033[1mdist/*.js file size\\033[0m\"; for js in $(ls dist/*.js); do echo -e \"\\033[2m$js:\\033[0m $(cat $js | brotli | wc -c) bytes\"; done",
-        "ts": "tsc -p ."
+        "ts": "tsc -p .",
+        "zip": "zip -r dist.zip ./dist"
     },
     "keywords": [
         "pyscript",
