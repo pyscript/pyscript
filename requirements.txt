@@ -1,0 +1,13 @@
+black
+isort
+pytest==7.1.2
+pre-commit
+playwright==1.33.0
+pytest-playwright==0.3.3
+pytest-xdist==3.3.0
+pexpect
+pyodide_py==0.24.1
+micropip
+toml
+numpy
+pillow

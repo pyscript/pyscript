@@ -57,15 +57,24 @@ jobs:
             - name: setup Miniconda
               uses: conda-incubator/setup-miniconda@v2
 
-            - name: Setup Environment
-              run: make setup
+            - name: Create and activate virtual environment
+              run: |
+                  python3 -m venv test_venv
+                  source test_venv/bin/activate
+                  echo PATH=$PATH >> $GITHUB_ENV
+                  echo VIRTUAL_ENV=$VIRTUAL_ENV >> $GITHUB_ENV
+
+            - name: Setup dependencies in virtual environment
+              run: |
+                  make setup
 
             - name: Build
               run: make build
 
             - name: Integration Tests
               #run: make test-integration-parallel
-              run: make test-integration
+              run: |
+                  make test-integration
 
             - uses: actions/upload-artifact@v3
               with:
