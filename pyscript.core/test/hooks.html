@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript Next Plugin Bug?</title>
+  <link rel="stylesheet" href="../dist/core.css">
+  <script type="module">
+    import { hooks } from "../dist/core.js";
+    hooks.worker.onReady.add((wrap, xworker) => {
+      console.log("onReady");
+      console.log("wrap", wrap);
+      console.log("xworker", xworker);
+    });
+    hooks.worker.onBeforeRun.add(() => {
+      console.log("onBeforeRun");
+    });
+    hooks.worker.codeBeforeRun.add('print("codeBeforeRun")');
+    hooks.worker.codeAfterRun.add('print("codeAfterRun")');
+    hooks.worker.onAfterRun.add(() => {
+      console.log("onAfterRun");
+    });
+  </script>
+</head>
+<body>
+  <script type="mpy" worker>
+    print("actual code")
+  </script>
+</body>
+</html>
