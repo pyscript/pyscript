@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript Next Plugin Bug?</title>
+  <link rel="stylesheet" href="../dist/core.css">
+  <script type="module">
+    import { hooks } from "../dist/core.js";
+
+    // Worker
+    hooks.worker.onReady.add((wrap, xworker) => {
+      console.log("worker", "onReady");
+      console.log("worker", "wrap", wrap);
+      console.log("worker", "xworker", xworker);
+    });
+    hooks.worker.onBeforeRun.add(() => {
+      console.log("worker", "onBeforeRun");
+    });
+    hooks.worker.codeBeforeRun.add('print("worker", "codeBeforeRun")');
+    hooks.worker.codeAfterRun.add('print("worker", "codeAfterRun")');
+    hooks.worker.onAfterRun.add(() => {
+      console.log("worker", "onAfterRun");
+    });
+
+    // Main
+    hooks.main.onReady.add((wrap, element) => {
+      console.log("main", "onReady");
+      console.log("main", "wrap", wrap);
+      console.log("main", "element", element);
+    });
+    hooks.main.onBeforeRun.add(() => {
+      console.log("main", "onBeforeRun");
+    });
+    hooks.main.codeBeforeRun.add('print("main", "codeBeforeRun")');
+    hooks.main.codeAfterRun.add('print("main", "codeAfterRun")');
+    hooks.main.onAfterRun.add(() => {
+      console.log("main", "onAfterRun");
+    });
+  </script>
+</head>
+<body>
+  <script type="py" worker>
+    print("actual code in worker")
+  </script>
+  <script type="py">
+    print("actual code in main")
+  </script>
+</body>
+</html>
