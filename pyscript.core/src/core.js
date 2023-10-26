@@ -21,7 +21,6 @@ import "./all-done.js";
 import TYPES from "./types.js";
 import configs from "./config.js";
 import sync from "./sync.js";
-import stdlib from "./stdlib.js";
 import bootstrapNodeAndPlugins from "./plugins-helper.js";
 import { ErrorCode } from "./exceptions.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
@@ -52,8 +51,6 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
                 : currentElement.id;
         },
     });
-
-    interpreter.runPython(stdlib, { globals: interpreter.runPython("{}") });
 };
 
 // avoid multiple initialization of the same library
