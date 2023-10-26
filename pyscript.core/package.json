@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.2.10",
+    "version": "0.3.0",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -40,9 +40,9 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.5.0",
+        "polyscript": "^0.5.1",
         "sticky-module": "^0.1.0",
-        "to-json-callback": "^0.1.0",
+        "to-json-callback": "^0.1.1",
         "type-checked-collections": "^0.1.7"
     },
     "devDependencies": {

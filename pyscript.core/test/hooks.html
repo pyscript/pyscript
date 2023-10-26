@@ -7,24 +7,44 @@
   <link rel="stylesheet" href="../dist/core.css">
   <script type="module">
     import { hooks } from "../dist/core.js";
+
+    // Worker
     hooks.worker.onReady.add((wrap, xworker) => {
-      console.log("onReady");
-      console.log("wrap", wrap);
-      console.log("xworker", xworker);
+      console.log("worker", "onReady");
+      console.log("worker", "wrap", wrap);
+      console.log("worker", "xworker", xworker);
     });
     hooks.worker.onBeforeRun.add(() => {
-      console.log("onBeforeRun");
+      console.log("worker", "onBeforeRun");
     });
-    hooks.worker.codeBeforeRun.add('print("codeBeforeRun")');
-    hooks.worker.codeAfterRun.add('print("codeAfterRun")');
+    hooks.worker.codeBeforeRun.add('print("worker", "codeBeforeRun")');
+    hooks.worker.codeAfterRun.add('print("worker", "codeAfterRun")');
     hooks.worker.onAfterRun.add(() => {
-      console.log("onAfterRun");
+      console.log("worker", "onAfterRun");
+    });
+
+    // Main
+    hooks.main.onReady.add((wrap, element) => {
+      console.log("main", "onReady");
+      console.log("main", "wrap", wrap);
+      console.log("main", "element", element);
+    });
+    hooks.main.onBeforeRun.add(() => {
+      console.log("main", "onBeforeRun");
+    });
+    hooks.main.codeBeforeRun.add('print("main", "codeBeforeRun")');
+    hooks.main.codeAfterRun.add('print("main", "codeAfterRun")');
+    hooks.main.onAfterRun.add(() => {
+      console.log("main", "onAfterRun");
     });
   </script>
 </head>
 <body>
-  <script type="mpy" worker>
-    print("actual code")
+  <script type="py" worker>
+    print("actual code in worker")
+  </script>
+  <script type="py">
+    print("actual code in main")
   </script>
 </body>
 </html>
