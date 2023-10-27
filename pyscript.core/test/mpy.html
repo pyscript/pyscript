@@ -22,8 +22,9 @@
             display("Hello", "M-PyScript Main 2", append=False)
         </mpy-script>
         <mpy-script worker>
-            from pyscript import display
+            from pyscript import display, document
             display("Hello", "M-PyScript Worker", append=False)
+            document.documentElement.classList.add('worker')
         </mpy-script>
     </body>
 </html>

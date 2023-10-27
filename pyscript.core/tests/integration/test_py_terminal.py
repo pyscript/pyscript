@@ -1,17 +1,12 @@
 import time
 
-import pytest
 from playwright.sync_api import expect
 
 from .support import PyScriptTest, skip_worker
 
-pytest.skip(
-    reason="FIX LATER: pyscript NEXT doesn't support the Terminal yet",
-    allow_module_level=True,
-)
-
 
 class TestPyTerminal(PyScriptTest):
+    @skip_worker("FIXME: the auto worker dance removes terminal")
     def test_py_terminal(self):
         """
         1. <py-terminal> should redirect stdout and stderr to the DOM
@@ -20,9 +15,7 @@ class TestPyTerminal(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <py-terminal></py-terminal>
-
-            <script type="py">
+            <script type="py" terminal>
                 import sys
                 print('hello world')
                 print('this goes to stderr', file=sys.stderr)
@@ -32,127 +25,32 @@ class TestPyTerminal(PyScriptTest):
         )
         term = self.page.locator("py-terminal")
         term_lines = term.inner_text().splitlines()
-        assert term_lines == [
-            "hello world",
-            "this goes to stderr",
-            "this goes to stdout",
-        ]
-        assert self.console.log.lines[-3:] == [
+        assert term_lines[0:3] == [
             "hello world",
             "this goes to stderr",
             "this goes to stdout",
         ]
 
-    @skip_worker("FIXME: js.document")
-    def test_two_terminals(self):
-        """
-        Multiple <py-terminal>s can cohexist.
-        A <py-terminal> receives only output from the moment it is added to
-        the DOM.
-        """
+    @skip_worker("FIXME: the auto worker dance removes terminal")
+    def test_button_action(self):
         self.pyscript_run(
             """
-            <py-terminal id="term1"></py-terminal>
-
             <script type="py">
-                import js
-                print('one')
-                term2 = js.document.createElement('py-terminal')
-                term2.id = 'term2'
-                js.document.body.append(term2)
-
-                print('two')
-                print('three')
+                def greetings(event):
+                    print('hello world')
             </script>
-            """
-        )
-        term1 = self.page.locator("#term1")
-        term2 = self.page.locator("#term2")
-        term1_lines = term1.inner_text().splitlines()
-        term2_lines = term2.inner_text().splitlines()
-        assert term1_lines == ["one", "two", "three"]
-        assert term2_lines == ["two", "three"]
+            <script type="py" terminal></script>
 
-    def test_auto_attribute(self):
-        self.pyscript_run(
-            """
-            <py-terminal auto></py-terminal>
-
-            <button id="my-button" py-click="print('hello world')">Click me</button>
-            """
-        )
-        term = self.page.locator("py-terminal")
-        expect(term).to_be_hidden()
-        self.page.locator("button").click()
-        expect(term).to_be_visible()
-        assert term.inner_text() == "hello world\n"
-
-    def test_config_auto(self):
-        """
-        config.terminal == "auto" is the default: a <py-terminal auto> is
-        automatically added to the page
-        """
-        self.pyscript_run(
-            """
-            <button id="my-button" py-click="print('hello world')">Click me</button>
-            """
-        )
-        term = self.page.locator("py-terminal")
-        expect(term).to_be_hidden()
-        assert "No <py-terminal> found, adding one" in self.console.info.text
-        #
-        self.page.locator("button").click()
-        expect(term).to_be_visible()
-        assert term.inner_text() == "hello world\n"
-
-    def test_config_true(self):
-        """
-        If we set config.terminal == true, a <py-terminal> is automatically added
-        """
-        self.pyscript_run(
-            """
-            <py-config>
-                terminal = true
-            </py-config>
-
-            <script type="py">
-                print('hello world')
-            </script>
-            """
-        )
-        term = self.page.locator("py-terminal")
-        expect(term).to_be_visible()
-        assert term.inner_text() == "hello world\n"
-
-    def test_config_false(self):
-        """
-        If we set config.terminal == false, no <py-terminal> is added
-        """
-        self.pyscript_run(
-            """
-            <py-config>
-                terminal = false
-            </py-config>
-            """
-        )
-        term = self.page.locator("py-terminal")
-        assert term.count() == 0
-
-    def test_config_docked(self):
-        """
-        config.docked == "docked" is also the default: a <py-terminal auto docked> is
-        automatically added to the page
-        """
-        self.pyscript_run(
-            """
-            <button id="my-button" py-click="print('hello world')">Click me</button>
+            <button id="my-button" py-click="greetings">Click me</button>
             """
         )
         term = self.page.locator("py-terminal")
         self.page.locator("button").click()
-        expect(term).to_be_visible()
-        assert term.get_attribute("docked") == ""
+        last_line = self.page.get_by_text("hello world")
+        last_line.wait_for()
+        assert term.inner_text().rstrip() == "hello world"
 
+    @skip_worker("FIXME: the auto worker dance removes terminal")
     def test_xterm_function(self):
         """Test a few basic behaviors of the xtermjs terminal.
 
@@ -164,10 +62,7 @@ class TestPyTerminal(PyScriptTest):
         """
         self.pyscript_run(
             """
-            <py-config>
-                xterm = true
-            </py-config>
-            <script type="py">
+            <script type="py" terminal>
                 print("\x1b[33mYellow\x1b[0m")
                 print("\x1b[4mUnderline\x1b[24m")
                 print("\x1b[1mBold\x1b[22m")
@@ -234,37 +129,3 @@ class TestPyTerminal(PyScriptTest):
             "(element) => getComputedStyle(element).getPropertyValue('font-style')"
         )
         assert font_style == "italic"
-
-    def test_xterm_multiple(self):
-        """Test whether multiple x-terms on the page all function"""
-        self.pyscript_run(
-            """
-            <py-config>
-                xterm = true
-            </py-config>
-            <script type="py">
-                print("\x1b[33mYellow\x1b[0m")
-                print("done")
-            </script>
-            <py-terminal id="a"></py-terminal>
-            <py-terminal id="b" data-testid="b"></py-terminal>
-            """
-        )
-
-        # Wait for "done" to actually appear in the xterm; may be delayed,
-        # since xtermjs processes its input buffer in chunks
-        last_line = self.page.get_by_test_id("b").get_by_text("done")
-        last_line.wait_for()
-
-        # Yes, this is not ideal. See note in `test_xterm_function`
-        time.sleep(1)
-
-        rows = self.page.locator("#a .xterm-rows")
-
-        # First line should be yellow
-        first_line = rows.locator("div").nth(0)
-        first_char = first_line.locator("span").nth(0)
-        color = first_char.evaluate(
-            "(element) => getComputedStyle(element).getPropertyValue('color')"
-        )
-        assert color == "rgb(196, 160, 0)"

@@ -113,7 +113,7 @@ for (const [TYPE] of TYPES) {
                 value().then(({ notify }) => notify(error.message));
             }
         } else if (!parsed?.plugins?.includes(`!${key}`)) {
-            toBeAwaited.push(value());
+            toBeAwaited.push(value().then(({ default: p }) => p));
         }
     }
 
