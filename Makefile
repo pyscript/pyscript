@@ -56,7 +56,7 @@ clean:
 
 # Build PyScript.
 build:
-	cd pyscript.core && npm run build
+	cd pyscript.core && npx playwright install && npm run build
 
 # Run the precommit checks (run eslint).
 precommit-check:

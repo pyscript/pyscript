@@ -6,28 +6,19 @@
   <title>PyScript Next Plugin Bug?</title>
   <link rel="stylesheet" href="../dist/core.css">
   <script type="module">
-    import { hooks } from "../dist/core.js";
+    addEventListener('mpy:done', () => {
+      document.documentElement.classList.add('done');
+    });
 
-    // Worker
-    hooks.worker.onReady.add((wrap, xworker) => {
-      console.log("worker", "onReady");
-      console.log("worker", "wrap", wrap);
-      console.log("worker", "xworker", xworker);
-    });
-    hooks.worker.onBeforeRun.add(() => {
-      console.log("worker", "onBeforeRun");
-    });
-    hooks.worker.codeBeforeRun.add('print("worker", "codeBeforeRun")');
-    hooks.worker.codeAfterRun.add('print("worker", "codeAfterRun")');
-    hooks.worker.onAfterRun.add(() => {
-      console.log("worker", "onAfterRun");
-    });
+    import { hooks } from "../dist/core.js";
 
     // Main
     hooks.main.onReady.add((wrap, element) => {
       console.log("main", "onReady");
-      console.log("main", "wrap", wrap);
-      console.log("main", "element", element);
+      if (location.search === '?debug') {
+        console.debug("main", "wrap", wrap);
+        console.debug("main", "element", element);
+      }
     });
     hooks.main.onBeforeRun.add(() => {
       console.log("main", "onBeforeRun");
@@ -37,13 +28,30 @@
     hooks.main.onAfterRun.add(() => {
       console.log("main", "onAfterRun");
     });
+
+    // Worker
+    hooks.worker.onReady.add((wrap, xworker) => {
+      console.log("worker", "onReady");
+      if (location.search === '?debug') {
+        console.debug("worker", "wrap", wrap);
+        console.debug("worker", "xworker", xworker);
+      }
+    });
+    hooks.worker.onBeforeRun.add(() => {
+      console.log("worker", "onBeforeRun");
+    });
+    hooks.worker.codeBeforeRun.add('print("worker", "codeBeforeRun")');
+    hooks.worker.codeAfterRun.add('print("worker", "codeAfterRun")');
+    hooks.worker.onAfterRun.add(() => {
+      console.log("worker", "onAfterRun");
+    });
   </script>
 </head>
 <body>
-  <script type="py" worker>
+  <script type="mpy" worker>
     print("actual code in worker")
   </script>
-  <script type="py">
+  <script type="mpy">
     print("actual code in main")
   </script>
 </body>
