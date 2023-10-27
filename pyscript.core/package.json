@@ -20,11 +20,12 @@
     },
     "scripts": {
         "server": "npx static-handler --coi .",
-        "build": "npm run build:toml && npm run build:stdlib && npm run build:plugins && npm run build:core && eslint src/ && npm run ts",
+        "build": "npm run build:toml && npm run build:stdlib && npm run build:plugins && npm run build:core && eslint src/ && npm run ts && npm run test:mpy",
         "build:core": "rm -rf dist && rollup --config rollup/core.config.js",
         "build:plugins": "node rollup/plugins.cjs",
         "build:stdlib": "node rollup/stdlib.cjs",
         "build:toml": "node rollup/toml.cjs",
+        "test:mpy": "static-handler --coi . 2>/dev/null & SH_PID=$!; EXIT_CODE=0; playwright test --fully-parallel test/ || EXIT_CODE=$?; kill $SH_PID 2>/dev/null; exit $EXIT_CODE",
         "dev": "node dev.cjs",
         "release": "npm run build && npm run zip",
         "size": "echo -e \"\\033[1mdist/*.js file size\\033[0m\"; for js in $(ls dist/*.js); do echo -e \"\\033[2m$js:\\033[0m $(cat $js | brotli | wc -c) bytes\"; done",
@@ -46,6 +47,7 @@
         "type-checked-collections": "^0.1.7"
     },
     "devDependencies": {
+        "@playwright/test": "^1.39.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
         "@webreflection/toml-j0.4": "^1.1.3",
