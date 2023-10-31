@@ -247,20 +247,43 @@ class TestCreation:
 
 
 class TestInput:
+    input_ids = ["test_rr_input_text", "test_rr_input_button",
+                "test_rr_input_email", "test_rr_input_password"]
     def test_value(self):
-        id_ = "test_rr_input_txt"
-        expected_type = "text"
-        result = pydom[f"#{id_}"]
-        input_el = result[0]
-        assert input_el._js.type == expected_type
-        assert input_el.value == f"Content {id_}"
+        for id_ in self.input_ids:
+            expected_type = id_.split("_")[-1]
+            result = pydom[f"#{id_}"]
+            input_el = result[0]
+            assert input_el._js.type == expected_type
+            assert input_el.value == f"Content {id_}" == input_el._js.value
 
-    def test_missing_value(self):
+            # Check that we can set the value
+            new_value = f"New Value {expected_type}"
+            input_el.value = new_value
+            assert input_el.value == new_value
+
+            # Check that we can set the value back to the original using
+            # the collection
+            new_value = f"Content {id_}"
+            result.value = new_value
+            assert input_el.value == new_value
+
+    def test_set_value_collection(self):
+        for id_ in self.input_ids:
+            input_el = pydom[f"#{id_}"]
+
+            assert input_el.value[0] == f"Content {id_}" == input_el[0].value
+
+            new_value = f"New Value {id_}"
+            input_el.value = new_value
+            assert input_el.value[0] == new_value == input_el[0].value
+
+    def test_element_without_value(self):
         result = pydom[f"#tests-terminal"][0]
         with pytest.raises(AttributeError):
             result.value = "some value"
 
-    def test_missing_value_collection(self):
+    def test_element_without_collection(self):
         result = pydom[f"#tests-terminal"]
         with pytest.raises(AttributeError):
             result.value = "some value"

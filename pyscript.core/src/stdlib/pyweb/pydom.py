@@ -281,6 +281,15 @@ class ElementCollection:
         self._set_attribute("html", value)
 
     @property
+    def value(self):
+        return self._get_attribute("value")
+
+    @value.setter
+    def value(self, value):
+        self._set_attribute("value", value)
+
+
+    @property
     def children(self):
         return self._elements
 
