@@ -131,6 +131,14 @@ class Element(BaseElement):
     def id(self, value):
         self._js.id = value
 
+    @property
+    def value(self):
+        return self._js.value
+
+    @value.setter
+    def value(self, value):
+        self._js.value = value
+
     def clone(self, new_id=None):
         clone = Element(self._js.cloneNode(True))
         clone.id = new_id
