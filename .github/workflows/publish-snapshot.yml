@@ -42,7 +42,7 @@ jobs:
 
             - name: Install Dependencies
               run: make setup
-              
+
             - name: Build Pyscript.core
               run: npm run build
 
