@@ -256,6 +256,11 @@ class TestInput:
         assert input_el.value == f"Content {id_}"
 
     def test_missing_value(self):
+        result = pydom[f"#tests-terminal"][0]
+        with pytest.raises(AttributeError):
+            result.value = "some value"
+
+    def test_missing_value_collection(self):
         result = pydom[f"#tests-terminal"]
         with pytest.raises(AttributeError):
             result.value = "some value"
