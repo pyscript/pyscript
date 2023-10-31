@@ -254,3 +254,8 @@ class TestInput:
         input_el = result[0]
         assert input_el._js.type == expected_type
         assert input_el.value == f"Content {id_}"
+
+    def test_missing_value(self):
+        result = pydom[f"#tests-terminal"]
+        with pytest.raises(AttributeError):
+            result.value = "some value"
