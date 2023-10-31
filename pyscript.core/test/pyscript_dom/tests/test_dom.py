@@ -247,8 +247,13 @@ class TestCreation:
 
 
 class TestInput:
-    input_ids = ["test_rr_input_text", "test_rr_input_button",
-                "test_rr_input_email", "test_rr_input_password"]
+    input_ids = [
+        "test_rr_input_text",
+        "test_rr_input_button",
+        "test_rr_input_email",
+        "test_rr_input_password",
+    ]
+
     def test_value(self):
         for id_ in self.input_ids:
             expected_type = id_.split("_")[-1]

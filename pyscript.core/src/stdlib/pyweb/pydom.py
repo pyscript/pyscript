@@ -288,7 +288,6 @@ class ElementCollection:
     def value(self, value):
         self._set_attribute("value", value)
 
-
     @property
     def children(self):
         return self._elements
