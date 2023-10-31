@@ -57,7 +57,7 @@ const pyTerminal = async () => {
                 document.querySelector(selector);
             if (!target) throw new Error(`Unknown target ${selector}`);
         } else {
-            target = document.createElement(`${element.type}-terminal`);
+            target = document.createElement("py-terminal");
             target.style.display = "block";
             element.after(target);
         }
