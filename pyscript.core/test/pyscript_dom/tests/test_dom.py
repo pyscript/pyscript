@@ -244,3 +244,13 @@ class TestCreation:
         assert new_el.parent == parent_div
 
         assert pydom[selector][0].children[0] == new_el
+
+
+class TestInput:
+    def test_value(self):
+        id_ = "test_rr_input_txt"
+        expected_type = "text"
+        result = pydom[f"#{id_}"]
+        input_el = result[0]
+        assert input_el._js.type == expected_type
+        assert input_el.value == f"Content {id_}"
