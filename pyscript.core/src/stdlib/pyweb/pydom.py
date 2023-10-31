@@ -137,6 +137,14 @@ class Element(BaseElement):
 
     @value.setter
     def value(self, value):
+        # in order to avoid confusion to the user, we don't allow setting the
+        # value of elements that don't have a value attribute
+        if not hasattr(self._js, "value"):
+            raise AttributeError(
+                f"Element {self._js.tagName} has no value attribute. If you want to "
+                "force a value attribute, set it directly using the `_js.value = <value>` "
+                "javascript API attribute instead."
+            )
         self._js.value = value
 
     def clone(self, new_id=None):
