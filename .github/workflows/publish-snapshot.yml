@@ -41,11 +41,8 @@ jobs:
                       ${{ runner.os }}-
 
             - name: Install Dependencies
-              run: npm install
-
-            - name: Install playwright browsers
-              run: npx playwright install --with-deps
-
+              run: make setup
+              
             - name: Build Pyscript.core
               run: npm run build
 
