@@ -43,6 +43,9 @@ jobs:
             - name: Install Dependencies
               run: npm install
 
+            - name: Install playwright browsers
+              run: npx playwright install --with-deps
+
             - name: Build Pyscript.core
               run: npm run build
 
