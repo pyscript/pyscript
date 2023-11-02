@@ -89,7 +89,7 @@ for (const [TYPE] of TYPES) {
             } else if (toml || type === "toml") {
                 try {
                     const { parse } = await import(
-                        /* webpackIgnore: true */ "./toml.js"
+                        /* webpackIgnore: true */ "./3rd-party/toml.js"
                     );
                     parsed = parse(text);
                 } catch (e) {

@@ -1,9 +1,6 @@
 // PyScript py-terminal plugin
 import { TYPES, hooks } from "../core.js";
 
-const CDN = "https://cdn.jsdelivr.net/npm/xterm";
-const XTERM = "5.3.0";
-const XTERM_READLINE = "1.1.1";
 const SELECTOR = [...TYPES.keys()]
     .map((type) => `script[type="${type}"][terminal],${type}-script[terminal]`)
     .join(",");
@@ -26,22 +23,18 @@ const pyTerminal = async () => {
     if (element.matches('script[type="mpy"],mpy-script'))
         throw new Error("Unsupported terminal");
 
-    // import styles once and lazily (only on valid terminal)
-    if (!document.querySelector(`link[href^="${CDN}"]`)) {
-        document.head.append(
-            Object.assign(document.createElement("link"), {
-                rel: "stylesheet",
-                href: `${CDN}@${XTERM}/css/xterm.min.css`,
-            }),
-        );
-    }
+    // import styles lazily
+    document.head.append(
+        Object.assign(document.createElement("link"), {
+            rel: "stylesheet",
+            href: new URL("./xterm.css", import.meta.url),
+        }),
+    );
 
     // lazy load these only when a valid terminal is found
     const [{ Terminal }, { Readline }] = await Promise.all([
-        import(/* webpackIgnore: true */ `${CDN}@${XTERM}/+esm`),
-        import(
-            /* webpackIgnore: true */ `${CDN}-readline@${XTERM_READLINE}/+esm`
-        ),
+        import(/* webpackIgnore: true */ "../3rd-party/xterm.js"),
+        import(/* webpackIgnore: true */ "../3rd-party/xterm-readline.js"),
     ]);
 
     const readline = new Readline();
