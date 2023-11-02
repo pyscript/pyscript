@@ -1,12 +1,45 @@
 import time
 
+import pytest
 from playwright.sync_api import expect
 
-from .support import PyScriptTest, skip_worker
+from .support import PageErrors, PyScriptTest, only_worker, skip_worker
 
 
 class TestPyTerminal(PyScriptTest):
-    @skip_worker("FIXME: the auto worker dance removes terminal")
+    def test_multiple_terminals(self):
+        """
+        Multiple terminals are not currently supported
+        """
+        self.pyscript_run(
+            """
+            <script type="py" terminal></script>
+            <script type="py" terminal></script>
+            """,
+            wait_for_pyscript=False,
+            check_js_errors=False,
+        )
+        assert self.assert_banner_message("You can use at most 1 terminal")
+
+        with pytest.raises(PageErrors, match="You can use at most 1 terminal"):
+            self.check_js_errors()
+
+    @only_worker
+    def test_py_terminal_input(self):
+        """
+        Only worker py-terminal accepts an input
+        """
+        self.pyscript_run(
+            """
+            <script type="py" terminal></script>
+            """,
+            wait_for_pyscript=False,
+        )
+        self.page.get_by_text(">>> ", exact=True).wait_for()
+        self.page.keyboard.type("'the answer is ' + str(6 * 7)")
+        self.page.keyboard.press("Enter")
+        self.page.get_by_text("the answer is 42").wait_for()
+
     def test_py_terminal(self):
         """
         1. <py-terminal> should redirect stdout and stderr to the DOM
@@ -21,8 +54,10 @@ class TestPyTerminal(PyScriptTest):
                 print('this goes to stderr', file=sys.stderr)
                 print('this goes to stdout')
             </script>
-            """
+            """,
+            wait_for_pyscript=False,
         )
+        self.page.get_by_text("hello world").wait_for()
         term = self.page.locator("py-terminal")
         term_lines = term.inner_text().splitlines()
         assert term_lines[0:3] == [
@@ -31,7 +66,9 @@ class TestPyTerminal(PyScriptTest):
             "this goes to stdout",
         ]
 
-    @skip_worker("FIXME: the auto worker dance removes terminal")
+    @skip_worker(
+        "Workers don't have events + two different workers don't share the same I/O"
+    )
     def test_button_action(self):
         self.pyscript_run(
             """
@@ -50,7 +87,6 @@ class TestPyTerminal(PyScriptTest):
         last_line.wait_for()
         assert term.inner_text().rstrip() == "hello world"
 
-    @skip_worker("FIXME: the auto worker dance removes terminal")
     def test_xterm_function(self):
         """Test a few basic behaviors of the xtermjs terminal.
 
@@ -69,7 +105,8 @@ class TestPyTerminal(PyScriptTest):
                 print("\x1b[3mItalic\x1b[23m")
                 print("done")
             </script>
-            """
+            """,
+            wait_for_pyscript=False,
         )
 
         # Wait for "done" to actually appear in the xterm; may be delayed,
