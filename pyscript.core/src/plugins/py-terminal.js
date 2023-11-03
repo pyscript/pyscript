@@ -1,9 +1,17 @@
 // PyScript py-terminal plugin
 import { TYPES, hooks } from "../core.js";
+import { notify } from "./error.js";
 
 const SELECTOR = [...TYPES.keys()]
     .map((type) => `script[type="${type}"][terminal],${type}-script[terminal]`)
     .join(",");
+
+// show the error on main and
+// stops the module from keep executing
+const notifyAndThrow = (message) => {
+    notify(message);
+    throw new Error(message);
+};
 
 const pyTerminal = async () => {
     const terminals = document.querySelectorAll(SELECTOR);
@@ -11,17 +19,17 @@ const pyTerminal = async () => {
     // no results will look further for runtime nodes
     if (!terminals.length) return;
 
-    // we currently support only one terminal as in "classic"
-    if (terminals.length > 1)
-        console.warn("Unable to satisfy multiple terminals");
-
     // if we arrived this far, let's drop the MutationObserver
+    // as we only support one terminal per page (right now).
     mo.disconnect();
+
+    // we currently support only one terminal as in "classic"
+    if (terminals.length > 1) notifyAndThrow("You can use at most 1 terminal.");
 
     const [element] = terminals;
     // hopefully to be removed in the near future!
     if (element.matches('script[type="mpy"],mpy-script'))
-        throw new Error("Unsupported terminal");
+        notifyAndThrow("Unsupported terminal.");
 
     // import styles lazily
     document.head.append(

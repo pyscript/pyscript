@@ -118,6 +118,20 @@ def only_main(fn):
     return decorated
 
 
+def only_worker(fn):
+    """
+    Decorator to mark a test which make sense only in the worker thread
+    """
+
+    @functools.wraps(fn)
+    def decorated(self, *args):
+        if self.execution_thread != "worker":
+            return
+        return fn(self, *args)
+
+    return decorated
+
+
 def filter_inner_text(text, exclude=None):
     return "\n".join(filter_page_content(text.splitlines(), exclude=exclude))
 
