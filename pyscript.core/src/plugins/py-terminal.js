@@ -81,25 +81,22 @@ const pyTerminal = async () => {
         const workerReady = ({ interpreter }, { sync }) => {
             sync.pyterminal_drop_hooks();
             const decoder = new TextDecoder();
+            let data = "";
             const generic = {
                 isatty: true,
                 write(buffer) {
-                    sync.pyterminal_write(decoder.decode(buffer));
+                    data = decoder.decode(buffer);
+                    sync.pyterminal_write(data);
                     return buffer.length;
                 },
             };
             interpreter.setStdout(generic);
             interpreter.setStderr(generic);
+            interpreter.setStdin({
+                isatty: true,
+                stdin: () => sync.pyterminal_read(data),
+            });
         };
-
-        // run in python code able to replace builtins.input
-        // using the xworker.sync non blocking prompt
-        const codeBefore = `
-            import builtins
-            from pyscript import sync as _sync
-
-            builtins.input = lambda prompt: _sync.pyterminal_read(prompt)
-        `;
 
         // at the end of the code, make the terminal interactive
         const codeAfter = `
@@ -121,7 +118,6 @@ const pyTerminal = async () => {
             // allow a worker to drop main thread hooks ASAP
             xworker.sync.pyterminal_drop_hooks = () => {
                 hooks.worker.onReady.delete(workerReady);
-                hooks.worker.codeBeforeRun.delete(codeBefore);
                 hooks.worker.codeAfterRun.delete(codeAfter);
             };
         });
@@ -129,7 +125,6 @@ const pyTerminal = async () => {
         // setup remote thread JS/Python code for whenever the
         // worker is ready to become a terminal
         hooks.worker.onReady.add(workerReady);
-        hooks.worker.codeBeforeRun.add(codeBefore);
         hooks.worker.codeAfterRun.add(codeAfter);
     } else {
         // in the main case, just bootstrap XTerm without

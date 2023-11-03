@@ -40,6 +40,24 @@ class TestPyTerminal(PyScriptTest):
         self.page.keyboard.press("Enter")
         self.page.get_by_text("the answer is 42").wait_for()
 
+    @only_worker
+    def test_py_terminal_os_write(self):
+        """
+        An `os.write("text")` should land in the terminal
+        """
+        self.pyscript_run(
+            """
+            <script type="py" terminal>
+                import os
+                os.write(1, str.encode("hello\\n"))
+                os.write(2, str.encode("world\\n"))
+            </script>
+            """,
+            wait_for_pyscript=False,
+        )
+        self.page.get_by_text("hello\n").wait_for()
+        self.page.get_by_text("world\n").wait_for()
+
     def test_py_terminal(self):
         """
         1. <py-terminal> should redirect stdout and stderr to the DOM
