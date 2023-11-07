@@ -2,6 +2,7 @@
 // the default exported as npm entry.
 
 import { nodeResolve } from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
 import terser from "@rollup/plugin-terser";
 import postcss from "rollup-plugin-postcss";
 
@@ -11,7 +12,9 @@ export default [
     {
         input: "./src/core.js",
         plugins: plugins.concat(
-            process.env.NO_MIN ? [nodeResolve()] : [nodeResolve(), terser()],
+            process.env.NO_MIN
+                ? [nodeResolve(), commonjs()]
+                : [nodeResolve(), commonjs(), terser()],
         ),
         output: {
             esModule: true,

@@ -80,7 +80,7 @@ class TestBasic(PyScriptTest):
                 '"Cross-Origin-Opener-Policy":"same-origin"}. '
                 "The problem may be that one or both of these are missing."
             )
-            alert_banner = self.page.wait_for_selector(".alert-banner")
+            alert_banner = self.page.wait_for_selector(".py-error")
             assert expected_alert_banner_msg in alert_banner.inner_text()
 
     def test_print(self):

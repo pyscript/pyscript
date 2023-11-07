@@ -1,56 +1,36 @@
 /*! (c) PyScript Development Team */
 
+import stickyModule from "sticky-module";
 import "@ungap/with-resolvers";
 
-// These imports can hook more than usual and help debugging possible polyscript issues
 import {
     INVALID_CONTENT,
-    define,
+    Hook,
     XWorker,
-} from "../node_modules/polyscript/esm/index.js";
-import { queryTarget } from "../node_modules/polyscript/esm/script-handler.js";
-import {
+    assign,
     dedent,
+    define,
+    defineProperty,
     dispatch,
+    queryTarget,
     unescape,
-} from "../node_modules/polyscript/esm/utils.js";
-import { Hook } from "../node_modules/polyscript/esm/worker/hooks.js";
+    whenDefined,
+} from "polyscript/exports";
 
 import "./all-done.js";
 import TYPES from "./types.js";
 import configs from "./config.js";
-import hooks from "./hooks.js";
 import sync from "./sync.js";
-import stdlib from "./stdlib.js";
+import bootstrapNodeAndPlugins from "./plugins-helper.js";
 import { ErrorCode } from "./exceptions.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
-
-const { assign, defineProperty } = Object;
+import { hooks, main, worker, codeFor, createFunction } from "./hooks.js";
 
 // allows lazy element features on code evaluation
 let currentElement;
 
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
-
-// helper for all script[type="py"] out there
-const before = (script) => {
-    defineProperty(document, "currentScript", {
-        configurable: true,
-        get: () => script,
-    });
-};
-
-const after = () => {
-    delete document.currentScript;
-};
-
-// common life-cycle handlers for any node
-const bootstrapNodeAndPlugins = (wrap, element, callback, hook) => {
-    // make it possible to reach the current target node via Python
-    callback(element);
-    for (const fn of hooks[hook]) fn(wrap, element);
-};
 
 let shouldRegister = true;
 const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
@@ -71,25 +51,38 @@ const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
                 : currentElement.id;
         },
     });
-
-    interpreter.runPython(stdlib, { globals: interpreter.runPython("{}") });
 };
 
-const workerHooks = {
-    codeBeforeRunWorker: () =>
-        [stdlib, ...hooks.codeBeforeRunWorker].map(dedent).join("\n"),
-    codeBeforeRunWorkerAsync: () =>
-        [stdlib, ...hooks.codeBeforeRunWorkerAsync].map(dedent).join("\n"),
-    codeAfterRunWorker: () =>
-        [...hooks.codeAfterRunWorker].map(dedent).join("\n"),
-    codeAfterRunWorkerAsync: () =>
-        [...hooks.codeAfterRunWorkerAsync].map(dedent).join("\n"),
+// avoid multiple initialization of the same library
+const [
+    {
+        PyWorker: exportedPyWorker,
+        hooks: exportedHooks,
+        config: exportedConfig,
+        whenDefined: exportedWhenDefined,
+    },
+    alreadyLive,
+] = stickyModule("@pyscript/core", {
+    PyWorker,
+    hooks,
+    config: {},
+    whenDefined,
+});
+
+export {
+    TYPES,
+    exportedPyWorker as PyWorker,
+    exportedHooks as hooks,
+    exportedConfig as config,
+    exportedWhenDefined as whenDefined,
 };
 
-const exportedConfig = {};
-export { exportedConfig as config, hooks };
+const hooked = new Map();
 
 for (const [TYPE, interpreter] of TYPES) {
+    // avoid any dance if the module already landed
+    if (alreadyLive) break;
+
     const dispatchDone = (element, isAsync, result) => {
         if (isAsync) result.then(() => dispatch(element, TYPE, "done"));
         else dispatch(element, TYPE, "done");
@@ -135,106 +128,140 @@ for (const [TYPE, interpreter] of TYPES) {
             // possible early errors sent by polyscript
             const errors = new Map();
 
+            // specific main and worker hooks
+            const hooks = {
+                main: {
+                    ...codeFor(main),
+                    async onReady(wrap, element) {
+                        if (shouldRegister) {
+                            shouldRegister = false;
+                            registerModule(wrap);
+                        }
+
+                        // allows plugins to do whatever they want with the element
+                        // before regular stuff happens in here
+                        for (const callback of main("onReady"))
+                            await callback(wrap, element);
+
+                        // now that all possible plugins are configured,
+                        // bail out if polyscript encountered an error
+                        if (errors.has(element)) {
+                            let { message } = errors.get(element);
+                            errors.delete(element);
+                            const clone = message === INVALID_CONTENT;
+                            message = `(${ErrorCode.CONFLICTING_CODE}) ${message} for `;
+                            message += element.cloneNode(clone).outerHTML;
+                            wrap.io.stderr(message);
+                            return;
+                        }
+
+                        if (isScript(element)) {
+                            const {
+                                attributes: { async: isAsync, target },
+                            } = element;
+                            const hasTarget = !!target?.value;
+                            const show = hasTarget
+                                ? queryTarget(element, target.value)
+                                : document.createElement("script-py");
+
+                            if (!hasTarget) {
+                                const { head, body } = document;
+                                if (head.contains(element)) body.append(show);
+                                else element.after(show);
+                            }
+                            if (!show.id) show.id = getID();
+
+                            // allows the code to retrieve the target element via
+                            // document.currentScript.target if needed
+                            defineProperty(element, "target", { value: show });
+
+                            // notify before the code runs
+                            dispatch(element, TYPE, "ready");
+                            dispatchDone(
+                                element,
+                                isAsync,
+                                wrap[`run${isAsync ? "Async" : ""}`](
+                                    await fetchSource(element, wrap.io, true),
+                                ),
+                            );
+                        } else {
+                            // resolve PyScriptElement to allow connectedCallback
+                            element._wrap.resolve(wrap);
+                        }
+                        console.debug("[pyscript/main] PyScript Ready");
+                    },
+                    onWorker(_, xworker) {
+                        assign(xworker.sync, sync);
+                        for (const callback of main("onWorker"))
+                            callback(_, xworker);
+                    },
+                    onBeforeRun(wrap, element) {
+                        currentElement = element;
+                        bootstrapNodeAndPlugins(
+                            main,
+                            wrap,
+                            element,
+                            "onBeforeRun",
+                        );
+                    },
+                    onBeforeRunAsync(wrap, element) {
+                        currentElement = element;
+                        return bootstrapNodeAndPlugins(
+                            main,
+                            wrap,
+                            element,
+                            "onBeforeRunAsync",
+                        );
+                    },
+                    onAfterRun(wrap, element) {
+                        bootstrapNodeAndPlugins(
+                            main,
+                            wrap,
+                            element,
+                            "onAfterRun",
+                        );
+                    },
+                    onAfterRunAsync(wrap, element) {
+                        return bootstrapNodeAndPlugins(
+                            main,
+                            wrap,
+                            element,
+                            "onAfterRunAsync",
+                        );
+                    },
+                },
+                worker: {
+                    ...codeFor(worker),
+                    // these are lazy getters that returns a composition
+                    // of the current hooks or undefined, if no hook is present
+                    get onReady() {
+                        return createFunction(this, "onReady", true);
+                    },
+                    get onBeforeRun() {
+                        return createFunction(this, "onBeforeRun", false);
+                    },
+                    get onBeforeRunAsync() {
+                        return createFunction(this, "onBeforeRunAsync", true);
+                    },
+                    get onAfterRun() {
+                        return createFunction(this, "onAfterRun", false);
+                    },
+                    get onAfterRunAsync() {
+                        return createFunction(this, "onAfterRunAsync", true);
+                    },
+                },
+            };
+
+            hooked.set(TYPE, hooks);
+
             define(TYPE, {
                 config,
                 interpreter,
+                hooks,
                 env: `${TYPE}-script`,
                 version: config?.interpreter,
                 onerror(error, element) {
                     errors.set(element, error);
-                },
-                ...workerHooks,
-                onWorkerReady(_, xworker) {
-                    assign(xworker.sync, sync);
-                    for (const callback of hooks.onWorkerReady)
-                        callback(_, xworker);
-                },
-                onBeforeRun(wrap, element) {
-                    currentElement = element;
-                    bootstrapNodeAndPlugins(
-                        wrap,
-                        element,
-                        before,
-                        "onBeforeRun",
-                    );
-                },
-                onBeforeRunAsync(wrap, element) {
-                    currentElement = element;
-                    bootstrapNodeAndPlugins(
-                        wrap,
-                        element,
-                        before,
-                        "onBeforeRunAsync",
-                    );
-                },
-                onAfterRun(wrap, element) {
-                    bootstrapNodeAndPlugins(wrap, element, after, "onAfterRun");
-                },
-                onAfterRunAsync(wrap, element) {
-                    bootstrapNodeAndPlugins(
-                        wrap,
-                        element,
-                        after,
-                        "onAfterRunAsync",
-                    );
-                },
-                async onInterpreterReady(wrap, element) {
-                    if (shouldRegister) {
-                        shouldRegister = false;
-                        registerModule(wrap);
-                    }
-
-                    // allows plugins to do whatever they want with the element
-                    // before regular stuff happens in here
-                    for (const callback of hooks.onInterpreterReady)
-                        callback(wrap, element);
-
-                    // now that all possible plugins are configured,
-                    // bail out if polyscript encountered an error
-                    if (errors.has(element)) {
-                        let { message } = errors.get(element);
-                        errors.delete(element);
-                        const clone = message === INVALID_CONTENT;
-                        message = `(${ErrorCode.CONFLICTING_CODE}) ${message} for `;
-                        message += element.cloneNode(clone).outerHTML;
-                        wrap.io.stderr(message);
-                        return;
-                    }
-
-                    if (isScript(element)) {
-                        const {
-                            attributes: { async: isAsync, target },
-                        } = element;
-                        const hasTarget = !!target?.value;
-                        const show = hasTarget
-                            ? queryTarget(element, target.value)
-                            : document.createElement("script-py");
-
-                        if (!hasTarget) {
-                            const { head, body } = document;
-                            if (head.contains(element)) body.append(show);
-                            else element.after(show);
-                        }
-                        if (!show.id) show.id = getID();
-
-                        // allows the code to retrieve the target element via
-                        // document.currentScript.target if needed
-                        defineProperty(element, "target", { value: show });
-
-                        // notify before the code runs
-                        dispatch(element, TYPE, "ready");
-                        dispatchDone(
-                            element,
-                            isAsync,
-                            wrap[`run${isAsync ? "Async" : ""}`](
-                                await fetchSource(element, wrap.io, true),
-                            ),
-                        );
-                    } else {
-                        // resolve PyScriptElement to allow connectedCallback
-                        element._wrap.resolve(wrap);
-                    }
-                    console.debug("[pyscript/main] PyScript Ready");
                 },
             });
 
@@ -290,13 +317,14 @@ for (const [TYPE, interpreter] of TYPES) {
  * @param {{config?: string | object, async?: boolean}} [options] optional configuration for the worker.
  * @returns {Worker & {sync: ProxyHandler<object>}}
  */
-export function PyWorker(file, options) {
+function PyWorker(file, options) {
+    const hooks = hooked.get("py");
     // this propagates pyscript worker hooks without needing a pyscript
     // bootstrap + it passes arguments and enforces `pyodide`
     // as the interpreter to use in the worker, as all hooks assume that
     // and as `pyodide` is the only default interpreter that can deal with
     // all the features we need to deliver pyscript out there.
-    const xworker = XWorker.call(new Hook(null, workerHooks), file, {
+    const xworker = XWorker.call(new Hook(null, hooks), file, {
         type: "pyodide",
         ...options,
     });

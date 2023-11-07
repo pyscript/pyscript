@@ -89,8 +89,7 @@ for (const [TYPE] of TYPES) {
             } else if (toml || type === "toml") {
                 try {
                     const { parse } = await import(
-                        /* webpackIgnore: true */
-                        "https://cdn.jsdelivr.net/npm/@webreflection/toml-j0.4/toml.js"
+                        /* webpackIgnore: true */ "./3rd-party/toml.js"
                     );
                     parsed = parse(text);
                 } catch (e) {
@@ -114,7 +113,7 @@ for (const [TYPE] of TYPES) {
                 value().then(({ notify }) => notify(error.message));
             }
         } else if (!parsed?.plugins?.includes(`!${key}`)) {
-            toBeAwaited.push(value());
+            toBeAwaited.push(value().then(({ default: p }) => p));
         }
     }
 

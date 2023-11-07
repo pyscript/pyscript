@@ -144,6 +144,8 @@ test_results
 # @pyscript/core npm artifacts
 pyscript.core/core.*
 pyscript.core/dist
-pyscript.core/dist
+pyscript.core/dist.zip
 pyscript.core/src/plugins.js
 pyscript.core/src/stdlib/pyscript.js
+pyscript.core/src/3rd-party/*
+!pyscript.core/src/3rd-party/READMEmd

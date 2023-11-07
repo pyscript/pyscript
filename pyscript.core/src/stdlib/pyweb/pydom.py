@@ -131,6 +131,22 @@ class Element(BaseElement):
     def id(self, value):
         self._js.id = value
 
+    @property
+    def value(self):
+        return self._js.value
+
+    @value.setter
+    def value(self, value):
+        # in order to avoid confusion to the user, we don't allow setting the
+        # value of elements that don't have a value attribute
+        if not hasattr(self._js, "value"):
+            raise AttributeError(
+                f"Element {self._js.tagName} has no value attribute. If you want to "
+                "force a value attribute, set it directly using the `_js.value = <value>` "
+                "javascript API attribute instead."
+            )
+        self._js.value = value
+
     def clone(self, new_id=None):
         clone = Element(self._js.cloneNode(True))
         clone.id = new_id
@@ -263,6 +279,14 @@ class ElementCollection:
     @html.setter
     def html(self, value):
         self._set_attribute("html", value)
+
+    @property
+    def value(self):
+        return self._get_attribute("value")
+
+    @value.setter
+    def value(self, value):
+        self._set_attribute("value", value)
 
     @property
     def children(self):

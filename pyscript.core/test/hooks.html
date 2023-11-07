@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript Next Plugin Bug?</title>
+  <link rel="stylesheet" href="../dist/core.css">
+  <script type="module">
+    addEventListener('mpy:done', () => {
+      document.documentElement.classList.add('done');
+    });
+
+    import { hooks } from "../dist/core.js";
+
+    // Main
+    hooks.main.onReady.add((wrap, element) => {
+      console.log("main", "onReady");
+      if (location.search === '?debug') {
+        console.debug("main", "wrap", wrap);
+        console.debug("main", "element", element);
+      }
+    });
+    hooks.main.onBeforeRun.add(() => {
+      console.log("main", "onBeforeRun");
+    });
+    hooks.main.codeBeforeRun.add('print("main", "codeBeforeRun")');
+    hooks.main.codeAfterRun.add('print("main", "codeAfterRun")');
+    hooks.main.onAfterRun.add(() => {
+      console.log("main", "onAfterRun");
+    });
+
+    // Worker
+    hooks.worker.onReady.add((wrap, xworker) => {
+      console.log("worker", "onReady");
+      if (location.search === '?debug') {
+        console.debug("worker", "wrap", wrap);
+        console.debug("worker", "xworker", xworker);
+      }
+    });
+    hooks.worker.onBeforeRun.add(() => {
+      console.log("worker", "onBeforeRun");
+    });
+    hooks.worker.codeBeforeRun.add('print("worker", "codeBeforeRun")');
+    hooks.worker.codeAfterRun.add('print("worker", "codeAfterRun")');
+    hooks.worker.onAfterRun.add(() => {
+      console.log("worker", "onAfterRun");
+    });
+  </script>
+</head>
+<body>
+  <script type="mpy" worker>
+    from pyscript import document
+    print("actual code in worker")
+    document.documentElement.classList.add('worker')
+  </script>
+  <script type="mpy">
+    print("actual code in main")
+  </script>
+</body>
+</html>
