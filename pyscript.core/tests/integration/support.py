@@ -489,7 +489,7 @@ class PyScriptTest:
 
     SCRIPT_TAG_REGEX = re.compile('(<script type="py"|<py-script)')
 
-    def _pyscript_format(self, snippet, *, execution_thread, extra_head=""):
+    def _pyscript_format(self, snippet, *, execution_thread, extra_head="", extra_pre_head=""):
         if execution_thread == "worker":
             # turn <script type="py"> into <script type="py" worker>, and
             # similarly for <py-script>
@@ -498,6 +498,7 @@ class PyScriptTest:
         doc = f"""
         <html>
           <head>
+              {extra_pre_head}
               <link rel="stylesheet" href="{self.http_server_addr}/build/core.css">
               <script type="module">
                 import {{ config }} from "{self.http_server_addr}/build/core.js";
@@ -530,6 +531,7 @@ class PyScriptTest:
         wait_for_pyscript=True,
         timeout=None,
         check_js_errors=True,
+        extra_pre_head="",
     ):
         """
         Main entry point for pyscript tests.
@@ -545,7 +547,8 @@ class PyScriptTest:
           - wait until pyscript has been fully loaded
         """
         doc = self._pyscript_format(
-            snippet, execution_thread=self.execution_thread, extra_head=extra_head
+            snippet, execution_thread=self.execution_thread, extra_head=extra_head,
+            extra_pre_head=extra_pre_head
         )
         if not wait_for_pyscript and timeout is not None:
             raise ValueError("Cannot set a timeout if wait_for_pyscript=False")
