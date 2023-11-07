@@ -15,13 +15,14 @@
         </script>
         <py-script worker terminal>
             import sys
-            from pyscript import display
+            from pyscript import display, document
             display("Hello", "PyScript Next - PyTerminal", append=False)
             print("this should go to the terminal")
             print("another line")
 
             # this works as expected
             print("this goes to stderr", file=sys.stderr)
+            document.addEventListener('click', lambda event: print(event.type));
         </py-script>
         <button id="my-button" py-click="greetings">Click me</button>
     </body>

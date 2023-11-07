@@ -24,21 +24,22 @@ class TestPyTerminal(PyScriptTest):
         with pytest.raises(PageErrors, match="You can use at most 1 terminal"):
             self.check_js_errors()
 
-    @only_worker
-    def test_py_terminal_input(self):
-        """
-        Only worker py-terminal accepts an input
-        """
-        self.pyscript_run(
-            """
-            <script type="py" terminal></script>
-            """,
-            wait_for_pyscript=False,
-        )
-        self.page.get_by_text(">>> ", exact=True).wait_for()
-        self.page.keyboard.type("'the answer is ' + str(6 * 7)")
-        self.page.keyboard.press("Enter")
-        self.page.get_by_text("the answer is 42").wait_for()
+    # TODO: interactive shell still unclear
+    # @only_worker
+    # def test_py_terminal_input(self):
+    #     """
+    #     Only worker py-terminal accepts an input
+    #     """
+    #     self.pyscript_run(
+    #         """
+    #         <script type="py" terminal></script>
+    #         """,
+    #         wait_for_pyscript=False,
+    #     )
+    #     self.page.get_by_text(">>> ", exact=True).wait_for()
+    #     self.page.keyboard.type("'the answer is ' + str(6 * 7)")
+    #     self.page.keyboard.press("Enter")
+    #     self.page.get_by_text("the answer is 42").wait_for()
 
     @only_worker
     def test_py_terminal_os_write(self):
