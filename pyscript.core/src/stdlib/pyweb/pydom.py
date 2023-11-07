@@ -313,8 +313,8 @@ class PyDom(BaseElement):
         self.body = Element(document.body)
         self.head = Element(document.head)
 
-    def create(self, type_, parent=None, classes=None, html=None):
-        return super().create(type_, is_child=False)
+    def create(self, type_, classes=None, html=None):
+        return super().create(type_, is_child=False, classes=classes, html=html)
 
     def __getitem__(self, key):
         if isinstance(key, int):
