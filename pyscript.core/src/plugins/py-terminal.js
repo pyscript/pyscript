@@ -98,12 +98,6 @@ const pyTerminal = async () => {
             });
         };
 
-        // at the end of the code, make the terminal interactive
-        const codeAfter = `
-            import code as _code
-            _code.interact()
-        `;
-
         // add a hook on the main thread to setup all sync helpers
         // also bootstrapping the XTerm target on main
         hooks.main.onWorker.add(function worker(_, xworker) {
@@ -118,14 +112,12 @@ const pyTerminal = async () => {
             // allow a worker to drop main thread hooks ASAP
             xworker.sync.pyterminal_drop_hooks = () => {
                 hooks.worker.onReady.delete(workerReady);
-                hooks.worker.codeAfterRun.delete(codeAfter);
             };
         });
 
         // setup remote thread JS/Python code for whenever the
         // worker is ready to become a terminal
         hooks.worker.onReady.add(workerReady);
-        hooks.worker.codeAfterRun.add(codeAfter);
     } else {
         // in the main case, just bootstrap XTerm without
         // allowing any input as that's not possible / awkward
