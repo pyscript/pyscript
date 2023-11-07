@@ -6,8 +6,6 @@ from typing import Any
 from pyodide.ffi import JsProxy
 from pyscript import display, document, window
 
-# from pyscript import when as _when
-
 alert = window.alert
 
 
@@ -176,10 +174,6 @@ class Element(BaseElement):
 
     def show_me(self):
         self._js.scrollIntoView()
-
-    def when(self, event, handler):
-        document.when(event, selector=self)(handler)
-
 
 class StyleProxy(dict):
     def __init__(self, element: Element) -> None:
