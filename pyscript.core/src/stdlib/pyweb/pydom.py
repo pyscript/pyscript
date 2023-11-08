@@ -175,6 +175,7 @@ class Element(BaseElement):
     def show_me(self):
         self._js.scrollIntoView()
 
+
 class StyleProxy(dict):
     def __init__(self, element: Element) -> None:
         self._element = element
