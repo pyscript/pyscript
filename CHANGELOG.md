@@ -1,6 +1,6 @@
 # Release Notes
 
-## 2023.XX.X
+## 2023.05.01
 
 ### Features
 
