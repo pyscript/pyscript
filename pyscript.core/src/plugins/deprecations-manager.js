@@ -11,8 +11,7 @@ hooks.main.onWorker.add(checkDeprecations);
  */
 function checkDeprecations() {
     const scripts = document.querySelectorAll("script");
-    for (const script of scripts)
-        checkLoadingScriptsFromLatest(script.src);
+    for (const script of scripts) checkLoadingScriptsFromLatest(script.src);
 }
 
 /**
