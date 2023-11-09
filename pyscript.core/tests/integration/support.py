@@ -489,7 +489,9 @@ class PyScriptTest:
 
     SCRIPT_TAG_REGEX = re.compile('(<script type="py"|<py-script)')
 
-    def _pyscript_format(self, snippet, *, execution_thread, extra_head="", extra_pre_head=""):
+    def _pyscript_format(
+        self, snippet, *, execution_thread, extra_head="", extra_pre_head=""
+    ):
         if execution_thread == "worker":
             # turn <script type="py"> into <script type="py" worker>, and
             # similarly for <py-script>
@@ -547,8 +549,10 @@ class PyScriptTest:
           - wait until pyscript has been fully loaded
         """
         doc = self._pyscript_format(
-            snippet, execution_thread=self.execution_thread, extra_head=extra_head,
-            extra_pre_head=extra_pre_head
+            snippet,
+            execution_thread=self.execution_thread,
+            extra_head=extra_head,
+            extra_pre_head=extra_pre_head,
         )
         if not wait_for_pyscript and timeout is not None:
             raise ValueError("Cannot set a timeout if wait_for_pyscript=False")
