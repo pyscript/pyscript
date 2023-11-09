@@ -35,7 +35,7 @@ jobs:
                       ${{ runner.os }}-
 
             - name: NPM Install
-              run: npm install
+              run: npm install && npx playwright install
 
             - name: Build
               run: npm run build
