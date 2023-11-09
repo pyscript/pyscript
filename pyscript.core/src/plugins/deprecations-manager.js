@@ -2,12 +2,18 @@
 import { hooks } from "../core.js";
 import { notify } from "./error.js";
 
-// eslint-disable-next-line no-unused-vars
-hooks.main.onReady.add(function checkDeprecations(pyScript) {
+// react lazily on PyScript bootstrap
+hooks.main.onReady.add(checkDeprecations);
+hooks.main.onWorker.add(checkDeprecations);
+
+/**
+ * Check that there are no scripts loading from pyscript.net/latest
+ */
+function checkDeprecations() {
     const scripts = document.querySelectorAll("script");
-    for (const script of scripts) checkLoadingScriptsFromLatest(script.src);
-});
-// eslint-disable-next-line no-unused-vars
+    for (const script of scripts)
+        checkLoadingScriptsFromLatest(script.src);
+}
 
 /**
  * Check if src being loaded from pyscript.net/latest and display a notification if true
