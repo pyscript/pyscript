@@ -2,15 +2,10 @@ import pytest
 
 from .support import PyScriptTest, skip_worker
 
-# pytest.skip(reason="NEXT: Restore the banner", allow_module_level=True)
-
 
 class TestWarningsAndBanners(PyScriptTest):
     # Test the behavior of generated warning banners
 
-    @skip_worker(
-        "TODO: unsure if notifications bubble up in workers or not. Skipping for now"
-    )
     def test_deprecate_loading_scripts_from_latest(self):
         # Use a script tag with an invalid output attribute to generate a warning, but only one
         self.pyscript_run(
