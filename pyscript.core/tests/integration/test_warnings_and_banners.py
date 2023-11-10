@@ -2,6 +2,7 @@ import pytest
 
 from .support import PyScriptTest, skip_worker
 
+
 class TestWarningsAndBanners(PyScriptTest):
     # Test the behavior of generated warning banners
 
