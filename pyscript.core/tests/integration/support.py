@@ -545,7 +545,9 @@ class PyScriptTest:
           - wait until pyscript has been fully loaded
         """
         doc = self._pyscript_format(
-            snippet, execution_thread=self.execution_thread, extra_head=extra_head
+            snippet,
+            execution_thread=self.execution_thread,
+            extra_head=extra_head,
         )
         if not wait_for_pyscript and timeout is not None:
             raise ValueError("Cannot set a timeout if wait_for_pyscript=False")
