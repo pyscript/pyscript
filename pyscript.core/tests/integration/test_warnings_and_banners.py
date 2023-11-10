@@ -14,7 +14,7 @@ class TestWarningsAndBanners(PyScriptTest):
                 print("whatever..")
             </script>
             """,
-            extra_pre_head='<script type="module" src="https://pyscript.net/latest/core.js"></script>',
+            extra_head='<script type="ignore-me" src="https://pyscript.net/latest/any-path-triggers-the-warning-anyway.js"></script>',
         )
 
         # wait for the banner to appear (we could have a page.locater call but for some reason
