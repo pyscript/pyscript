@@ -1,9 +1,9 @@
 // PyScript Error Plugin
 import { hooks } from "../core.js";
 
-hooks.onInterpreterReady.add(function override(pyScript) {
+hooks.main.onReady.add(function override(pyScript) {
     // be sure this override happens only once
-    hooks.onInterpreterReady.delete(override);
+    hooks.main.onReady.delete(override);
 
     // trap generic `stderr` to propagate to it regardless
     const { stderr } = pyScript.io;

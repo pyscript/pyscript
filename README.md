@@ -20,8 +20,14 @@ To try PyScript, import the appropriate pyscript files into the `<head>` tag of 
 
 ```html
 <head>
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <link
+        rel="stylesheet"
+        href="https://pyscript.net/releases/2023.11.1/core.css"
+    />
+    <script
+        type="module"
+        src="https://pyscript.net/releases/2023.11.1/core.js"
+    ></script>
 </head>
 ```
 

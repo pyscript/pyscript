@@ -159,7 +159,7 @@ The commonly shared utilities are:
   * **display** in both main and worker, refers to the good old `display` utility except:
     * in the *main* it automatically uses the current script `target` to display content
     * in the *worker* it still needs to know *where* to display content using the `target="dom-id"` named argument, as workers don't get a default target attached
-    * in both main and worker, the `append=Flase` is the *default* behavior, which is a breaking change compared to classic PyScript, but because there is no `Element` with its `write(content)` utility, which would have used that `append=False` behind the scene, we've decided that `false` as append default is more desired, specially after porting most examples in *PyScript Next*, where `append=True` is the exception, not the norm.
+    * in both main and worker, the `append=True` is the *default* behavior, which is inherited from the classic PyScript.
 
 #### Extra main-only features
 

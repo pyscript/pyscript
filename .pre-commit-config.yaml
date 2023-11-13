@@ -42,7 +42,7 @@ repos:
       rev: "v3.0.0-alpha.6"
       hooks:
           - id: prettier
-            exclude: pyscript\.core/test|pyscript\.core/dist|pyscript\.core/types|pyscript.core/src/stdlib/pyscript.js|pyscript\.sw/|pyscript.core/src/toml\.js
+            exclude: pyscript\.core/test|pyscript\.core/dist|pyscript\.core/types|pyscript.core/src/stdlib/pyscript.js|pyscript\.sw/|pyscript.core/src/3rd-party
             args: [--tab-width, "4"]
 
     - repo: https://github.com/pycqa/isort

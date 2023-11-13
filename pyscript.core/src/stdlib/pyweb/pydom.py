@@ -6,8 +6,6 @@ from typing import Any
 from pyodide.ffi import JsProxy
 from pyscript import display, document, window
 
-# from pyscript import when as _when
-
 alert = window.alert
 
 
@@ -131,6 +129,22 @@ class Element(BaseElement):
     def id(self, value):
         self._js.id = value
 
+    @property
+    def value(self):
+        return self._js.value
+
+    @value.setter
+    def value(self, value):
+        # in order to avoid confusion to the user, we don't allow setting the
+        # value of elements that don't have a value attribute
+        if not hasattr(self._js, "value"):
+            raise AttributeError(
+                f"Element {self._js.tagName} has no value attribute. If you want to "
+                "force a value attribute, set it directly using the `_js.value = <value>` "
+                "javascript API attribute instead."
+            )
+        self._js.value = value
+
     def clone(self, new_id=None):
         clone = Element(self._js.cloneNode(True))
         clone.id = new_id
@@ -160,9 +174,6 @@ class Element(BaseElement):
 
     def show_me(self):
         self._js.scrollIntoView()
-
-    def when(self, event, handler):
-        document.when(event, selector=self)(handler)
 
 
 class StyleProxy(dict):
@@ -265,6 +276,14 @@ class ElementCollection:
         self._set_attribute("html", value)
 
     @property
+    def value(self):
+        return self._get_attribute("value")
+
+    @value.setter
+    def value(self, value):
+        self._set_attribute("value", value)
+
+    @property
     def children(self):
         return self._elements
 
@@ -295,8 +314,8 @@ class PyDom(BaseElement):
         self.body = Element(document.body)
         self.head = Element(document.head)
 
-    def create(self, type_, parent=None, classes=None, html=None):
-        return super().create(type_, is_child=False)
+    def create(self, type_, classes=None, html=None):
+        return super().create(type_, is_child=False, classes=classes, html=html)
 
     def __getitem__(self, key):
         if isinstance(key, int):
