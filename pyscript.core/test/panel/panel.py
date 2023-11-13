@@ -1,13 +1,12 @@
-import js
 import json
-from pyscript import window, document
-from polyscript import xworker
 
+import js
 import panel as pn
-from panel.io.pyodide import init_doc, write_doc
-
 from js import JSON
+from panel.io.pyodide import init_doc, write_doc
+from polyscript import xworker
 from pyodide.ffi import create_once_callable, create_proxy, to_js
+from pyscript import document, window
 
 js.document = document
 init_doc()
