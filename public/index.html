@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="https://unpkg.com/mvp.css@1.12/mvp.css" />
+        <link rel="stylesheet" href="_PATH_core.css" />
+        <script type="module" src="_PATH_core.js"></script>
+        <title>PyScript</title>
+    </head>
+
+    <body>
+        <main>
+            <h1>&lt;py-script&gt;</h1>
+            <ul>
+                <li><a href="core.js">core.js</a></li>
+                <li><a href="core.js.map">core.js.map</a></li>
+                <li><a href="core.css">core.css</a></li>
+            </ul>
+            <div id="out"></div>
+            <py-script>
+                from pyscript import display
+                import sys
+                display(sys.version)
+            </py-script>
+
+            <h2>Example</h2>
+            <pre style="padding: 1em; border: 1px solid #000000">
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot; /&gt;
+    &lt;title&gt;PyScript Hello World&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;_PATH_core.css&quot; /&gt;
+    &lt;script type=&quot;module&quot; src=&quot;_PATH_core.js&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+    Hello world! &lt;br&gt;
+    This is the current date and time, as computed by Python:
+    &lt;py-script&gt;
+from pyscript import display
+from datetime import datetime
+now = datetime.now()
+display(now.strftime(&quot;%m/%d/%Y, %H:%M:%S&quot;))
+    &lt;/py-script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre
+            >
+        </main>
+    </body>
+</html>

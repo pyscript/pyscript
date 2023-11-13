@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript Next Plugin Bug?</title>
+  <link rel="stylesheet" href="../dist/core.css">
+  <script type="module" src="../dist/core.js"></script>
+</head>
+<body>
+  <script type="py">
+    from pyscript import display, document
+    from datetime import datetime as dt
+    from pyodide.ffi.wrappers import add_event_listener
+
+    element = document.querySelector("#just-a-button")
+
+    def on_click(event):
+      print(f"Hello from Python! {dt.now()}")
+      display(f"Hello from Python! {dt.now()}", append=False, target='result')
+
+    add_event_listener(element, "click", on_click)
+  </script>
+
+  <button id="just-a-button">click and check the console</button>
+
+  <div id="result"></div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+name: "[CI] Test"
+
+on:
+    push: # Only run on merges into main that modify certain files
+        branches:
+            - main
+        paths:
+            - pyscript.core/**
+            - .github/workflows/test.yml
+
+    pull_request: # Only run on merges into main that modify certain files
+        branches:
+            - main
+        paths:
+            - pyscript.core/**
+            - .github/workflows/test.yml
+    workflow_dispatch:
+
+jobs:
+    BuildAndTest:
+        runs-on: ubuntu-latest-8core
+        env:
+            MINICONDA_PYTHON_VERSION: py38
+            MINICONDA_VERSION: 4.11.0
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 3
+
+            # display a git log: when you run CI on PRs, github automatically
+            # merges the PR into main and run the CI on that commit. The idea
+            # here is to show enough of git log to understand what is the
+            # actual commit (in the PR) that we are using. See also
+            # 'fetch-depth: 3' above.
+            - name: git log
+              run: git log --graph -3
+
+            - name: Install node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20.x
+
+            - name: Cache node modules
+              uses: actions/cache@v3
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  # npm cache files are stored in `~/.npm` on Linux/macOS
+                  path: ~/.npm
+                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-build-${{ env.cache-name }}-
+                      ${{ runner.os }}-build-
+                      ${{ runner.os }}-
+
+            - name: setup Miniconda
+              uses: conda-incubator/setup-miniconda@v2
+
+            - name: Create and activate virtual environment
+              run: |
+                  python3 -m venv test_venv
+                  source test_venv/bin/activate
+                  echo PATH=$PATH >> $GITHUB_ENV
+                  echo VIRTUAL_ENV=$VIRTUAL_ENV >> $GITHUB_ENV
+
+            - name: Setup dependencies in virtual environment
+              run: |
+                  make setup
+
+            - name: Build
+              run: make build
+
+            - name: Integration Tests
+              #run: make test-integration-parallel
+              run: |
+                  make test-integration
+
+            - uses: actions/upload-artifact@v3
+              with:
+                  name: pyscript
+                  path: |
+                      pyscript.core/dist/
+                  if-no-files-found: error
+                  retention-days: 7
+
+            - uses: actions/upload-artifact@v3
+              if: success() || failure()
+              with:
+                  name: test_results
+                  path: test_results/
+                  if-no-files-found: error

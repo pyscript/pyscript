@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript Next No Plugin</title>
+  <link rel="stylesheet" href="../dist/core.css">
+  <script type="module" src="../dist/core.js"></script>
+  <py-config>plugins = ['!error']</py-config>
+  <script type="py">
+    print(1, 2, 3)
+    first()
+  </script>
+  <py-script>
+    print(4, 5, 6)
+    second()
+  </py-script>
+  <py-script src="whatever.py">
+    print(4, 5, 6)
+    second()
+  </py-script>
+</head>
+</html>

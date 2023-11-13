@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Error</title>
+        <script type="module" src="../dist/core.js"></script>
+        <link rel="stylesheet" href="../dist/core.css">
+        <py-config>
+          [[fetch]]
+          files = ["a.py"]
+        </py-config>
+        <script type="py" worker>
+          import a
+        </script>
+    </head>
+</html>

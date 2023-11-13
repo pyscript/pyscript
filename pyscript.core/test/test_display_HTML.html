@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Next: Display HTML</title>
+        <link rel="stylesheet" href="../dist/core.css">
+        <script type="module" src="../dist/core.js"></script>
+    </head>
+    <body>
+        <py-script>
+            from pyscript import display, HTML
+            display(HTML('<p><label style="color: red;">hello</label> world</p>'))
+        </py-script>
+    </body>
+</html>

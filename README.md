@@ -20,8 +20,14 @@ To try PyScript, import the appropriate pyscript files into the `<head>` tag of 
 
 ```html
 <head>
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <link
+        rel="stylesheet"
+        href="https://pyscript.net/releases/2023.11.1/core.css"
+    />
+    <script
+        type="module"
+        src="https://pyscript.net/releases/2023.11.1/core.js"
+    ></script>
 </head>
 ```
 
@@ -36,7 +42,7 @@ Check out the [the examples directory](examples) folder for more examples on how
 
 Read the [contributing guide](CONTRIBUTING.md) to learn about our development process, reporting bugs and improvements, creating issues and asking questions.
 
-Check out the [developing process](https://docs.pyscript.net/latest/development/developing.html) documentation for more information on how to setup your development environment.
+Check out the [developing process](https://docs.pyscript.net/latest/contributing) documentation for more information on how to setup your development environment.
 
 ## Resources
 

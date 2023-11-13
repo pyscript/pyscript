@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Next</title>
+        <script>
+            addEventListener('mpy:done', () => {
+                document.documentElement.classList.add('done');
+            });
+        </script>
+        <link rel="stylesheet" href="../dist/core.css">
+        <script type="module" src="../dist/core.js"></script>
+    </head>
+    <body>
+        <script type="mpy">
+            from pyscript import display
+            display("Hello", "M-PyScript Main 1", append=False)
+        </script>
+        <mpy-script>
+            from pyscript import display
+            display("Hello", "M-PyScript Main 2", append=False)
+        </mpy-script>
+        <mpy-script worker>
+            from pyscript import display, document
+            display("Hello", "M-PyScript Worker", append=False)
+            document.documentElement.classList.add('worker')
+        </mpy-script>
+    </body>
+</html>

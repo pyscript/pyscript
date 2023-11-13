@@ -1,7 +1,7 @@
 # This is the configuration for pre-commit, a local framework for managing pre-commit hooks
 #   Check out the docs at: https://pre-commit.com/
 ci:
-    skip: [eslint]
+    #skip: [eslint]
     autoupdate_schedule: monthly
 
 default_stages: [commit]
@@ -16,24 +16,19 @@ repos:
           - id: check-json
             exclude: tsconfig\.json
           - id: check-toml
+            exclude: bad\.toml
           - id: check-xml
           - id: check-yaml
           - id: detect-private-key
           - id: end-of-file-fixer
-            exclude: pyscript\.core/core.*|\.min\.js$
+            exclude: pyscript\.core/dist|\.min\.js$
           - id: trailing-whitespace
-
-    - repo: https://github.com/charliermarsh/ruff-pre-commit
-      rev: v0.0.257
-      hooks:
-          - id: ruff
-            exclude: pyscript\.core/test|pyscript\.core/src/display.py
-            args: [--fix]
 
     - repo: https://github.com/psf/black
       rev: 23.1.0
       hooks:
           - id: black
+            exclude: pyscript\.core/src/stdlib/pyscript/__init__\.py
 
     - repo: https://github.com/codespell-project/codespell
       rev: v2.2.4
@@ -47,17 +42,12 @@ repos:
       rev: "v3.0.0-alpha.6"
       hooks:
           - id: prettier
-            exclude: pyscript\.core/test|pyscript\.core/core.*|pyscript\.core/types/|pyscript\.sw/
+            exclude: pyscript\.core/test|pyscript\.core/dist|pyscript\.core/types|pyscript.core/src/stdlib/pyscript.js|pyscript\.sw/|pyscript.core/src/3rd-party
             args: [--tab-width, "4"]
 
-    - repo: https://github.com/pre-commit/mirrors-eslint
-      rev: v8.36.0
+    - repo: https://github.com/pycqa/isort
+      rev: 5.12.0
       hooks:
-          - id: eslint
-            files: pyscriptjs/src/.*\.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
-            types: [file]
-            additional_dependencies:
-                - eslint@8.25.0
-                - typescript@5.0.4
-                - "@typescript-eslint/eslint-plugin@5.58.0"
-                - "@typescript-eslint/parser@5.58.0"
+          - id: isort
+            name: isort (python)
+            args: [--profile, black]

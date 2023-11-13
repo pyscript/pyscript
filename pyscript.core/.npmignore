@@ -1,5 +1,10 @@
+.eslintrc.cjs
+.pytest_cache/
 node_modules/
 rollup/
 test/
+tests/
+src/stdlib/_pyscript
+src/stdlib/pyscript.py
 package-lock.json
 tsconfig.json

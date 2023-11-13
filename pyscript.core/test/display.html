@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Next</title>
+        <script>
+            addEventListener("py:all-done", ({ type }) => console.log(type));
+        </script>
+        <link rel="stylesheet" href="../dist/core.css">
+        <script type="module" src="../dist/core.js"></script>
+    </head>
+    <body>
+      <script type="py" worker async>
+          from pyscript import display
+          display('hello 1')
+
+          import js
+          import time
+          js.console.log('sleeping...')
+          time.sleep(2)
+          js.console.log('...done')
+      </script>
+      <p>hello 2</p>
+      <script type="py" worker async>
+          from pyscript import display
+          display('hello 3')
+      </script>
+    </body>
+</html>

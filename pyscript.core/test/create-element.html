@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/core.css">
+    <script type="module" src="../dist/core.js"></script>
+    <script type="module">
+      customElements.whenDefined('py-script').then(PyScript => {
+        const textContent = `
+          from pyscript import display
+
+          display("Hello World")
+        `;
+
+        document.body.append(
+          // test <script type="py">
+          Object.assign(
+            document.createElement('script'),
+            { type: "py", textContent }
+          ),
+
+          // test <py-script>
+          Object.assign(
+            document.createElement('py-script'),
+            { textContent }
+          ),
+
+          // test PyScript class
+          Object.assign(
+            new PyScript(),
+            { textContent }
+          )
+        );
+      });
+    </script>
+  </head>
+</html>

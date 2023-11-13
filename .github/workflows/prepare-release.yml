@@ -1,24 +1,20 @@
-name: "[CI] Prepare Release"
+name: "Prepare Release"
 
 on:
     push:
         tags:
             - "[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9]+" # YYYY.MM.MICRO
 
-env:
-    MINICONDA_PYTHON_VERSION: py38
-    MINICONDA_VERSION: 4.11.0
-
 defaults:
     run:
-        working-directory: pyscriptjs
+        working-directory: ./pyscript.core
 
 jobs:
-    build:
+    prepare-release:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Install node
               uses: actions/setup-node@v3
@@ -38,17 +34,18 @@ jobs:
                       ${{ runner.os }}-build-
                       ${{ runner.os }}-
 
-            - name: setup Miniconda
-              uses: conda-incubator/setup-miniconda@v2
+            - name: NPM Install
+              run: npm install && npx playwright install
 
-            - name: Setup Environment
-              run: make setup
+            - name: Build
+              run: npm run build
 
-            - name: Build and Test
-              run: make test
+            - name: Generate index.html
+              working-directory: .
+              run: sed 's#_PATH_#./#' ./public/index.html > ./pyscript.core/dist/index.html
 
-            - name: Zip build folder
-              run: zip -r -q ./build.zip ./build
+            - name: Zip dist folder
+              run: zip -r -q ./build.zip ./dist
 
             - name: Prepare Release
               uses: softprops/action-gh-release@v1
