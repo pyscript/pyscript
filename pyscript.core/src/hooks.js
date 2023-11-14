@@ -45,6 +45,19 @@ export const createFunction = (self, name) => {
 const SetFunction = typedSet({ typeof: "function" });
 const SetString = typedSet({ typeof: "string" });
 
+const inputFailure = `
+    import builtins
+    def input(prompt=""):
+        raise Exception("\\n           ".join([
+            "input() doesn't work when PyScript runs in the main thread.",
+            "Consider using the worker attribute: https://docs.pyscript.net/2023.11.1/user-guide/workers/"
+        ]))
+
+    builtins.input = input
+    del builtins
+    del input
+`;
+
 export const hooks = {
     main: {
         /** @type {Set<function>} */
@@ -60,7 +73,7 @@ export const hooks = {
         /** @type {Set<function>} */
         onAfterRunAsync: new SetFunction(),
         /** @type {Set<string>} */
-        codeBeforeRun: new SetString(),
+        codeBeforeRun: new SetString([inputFailure]),
         /** @type {Set<string>} */
         codeBeforeRunAsync: new SetString(),
         /** @type {Set<string>} */

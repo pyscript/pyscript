@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Next</title>
+        <script>
+            addEventListener("py:ready", console.log);
+        </script>
+        <link rel="stylesheet" href="../dist/core.css">
+        <script type="module" src="../dist/core.js"></script>
+    </head>
+    <body>
+        <py-script>
+            input("what's your name?")
+        </py-script>
+        <mpy-script>
+            input("what's your name?")
+        </mpy-script>
+    </body>
+</html>
