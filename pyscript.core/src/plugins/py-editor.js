@@ -1,5 +1,4 @@
 // PyScript py-editor plugin
-import { TYPES, hooks } from "../core.js";
 import { notify } from "./error.js";
 
 
@@ -39,7 +38,7 @@ const pyEditor = async () => {
 
     // lazy load these only when a valid terminal is found
     // TODO: Replace all JS below
-    const [{ Terminal }, { Readline }] = await Promise.all([
+    await Promise.all([
         import(/* webpackIgnore: true */ "../3rd-party/xterm.js"),
         import(/* webpackIgnore: true */ "../3rd-party/xterm-readline.js"),
     ]);
@@ -47,7 +46,7 @@ const pyEditor = async () => {
 
     // common main thread initialization for both worker
     // or main case, bootstrapping the terminal on its target
-    const init = (options) => {
+    const init = () => {
         
         let target = element;
         const selector = element.getAttribute("target");
