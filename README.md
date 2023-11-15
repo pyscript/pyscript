@@ -57,9 +57,9 @@ Check out the [developing process](https://docs.pyscript.net/latest/contributing
 
 ## Community calls and events
 
-Every Tuesday at 15:30 UTC there is the *PyScript Community Call* on zoom, where we can talk about PyScript development in the open. Most of the maintainers regularly participate in the call, and everybody is welcome to join.
+Every Tuesday at 15:30 UTC there is the _PyScript Community Call_ on zoom, where we can talk about PyScript development in the open. Most of the maintainers regularly participate in the call, and everybody is welcome to join.
 
-Every other Thurday at 16:00 UTC there is the *PyScript FUN* call: this is a call in which everybody is encouraged to show what they did with PyScript.
+Every other Thurday at 16:00 UTC there is the _PyScript FUN_ call: this is a call in which everybody is encouraged to show what they did with PyScript.
 
 For more details on how to join the calls and up to date schedule, consult the official [Google calendar](https://calendar.google.com/calendar/u/0/embed?src=d3afdd81f9c132a8c8f3290f5cc5966adebdf61017fca784eef0f6be9fd519e0@group.calendar.google.com&ctz=Europe/Berlin) page (also available in [iCal format](https://calendar.google.com/calendar/ical/d3afdd81f9c132a8c8f3290f5cc5966adebdf61017fca784eef0f6be9fd519e0%40group.calendar.google.com/public/basic.ics)).
 
