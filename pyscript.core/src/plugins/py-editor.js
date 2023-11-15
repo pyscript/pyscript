@@ -63,7 +63,7 @@ const pyEditor = async () => {
         }
         
     };
-
+    init();
    
 };
 
