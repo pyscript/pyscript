@@ -4,7 +4,7 @@
 
 ### Summary
 
-PyScript is a framework that allows users to create rich Python applications in the browser using HTML's interface and the power of [Pyodide](https://pyodide.org/en/stable/), [WASM](https://webassembly.org/), and modern web technologies.
+PyScript is a framework that allows users to create rich Python applications in the browser using HTML's interface and the power of [Pyodide](https://pyodide.org/en/stable/), [MicroPython](https://micropython.org/) and [WASM](https://webassembly.org/), and modern web technologies.
 
 To get started see the [getting started tutorial](docs/tutorials/getting-started.md).
 
@@ -61,7 +61,10 @@ Every Tuesday at 15:30 UTC there is the _PyScript Community Call_ on zoom, where
 
 Every other Thursday at 16:00 UTC there is the _PyScript FUN_ call: this is a call in which everybody is encouraged to show what they did with PyScript.
 
-For more details on how to join the calls and up to date schedule, consult the official [Google calendar](https://calendar.google.com/calendar/u/0/embed?src=d3afdd81f9c132a8c8f3290f5cc5966adebdf61017fca784eef0f6be9fd519e0@group.calendar.google.com&ctz=Europe/Berlin) page (also available in [iCal format](https://calendar.google.com/calendar/ical/d3afdd81f9c132a8c8f3290f5cc5966adebdf61017fca784eef0f6be9fd519e0%40group.calendar.google.com/public/basic.ics)).
+For more details on how to join the calls and up to date schedule, consult the official calendar:
+
+-   [Google calendar](https://calendar.google.com/calendar/u/0/embed?src=d3afdd81f9c132a8c8f3290f5cc5966adebdf61017fca784eef0f6be9fd519e0@group.calendar.google.com&ctz=UTC) in UTC time;
+-   [iCal format](https://calendar.google.com/calendar/ical/d3afdd81f9c132a8c8f3290f5cc5966adebdf61017fca784eef0f6be9fd519e0%40group.calendar.google.com/public/basic.ics).
 
 ## Resources
 
