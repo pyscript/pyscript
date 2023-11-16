@@ -170,6 +170,7 @@ const init = async (script, type, interpreter) => {
             keymap.of([
                 ...defaultKeymap,
                 { key: "Ctrl-Enter", run: listener, preventDefault: true },
+                { key: "Cmd-Enter", run: listener, preventDefault: true },
                 { key: "Shift-Enter", run: listener, preventDefault: true },
             ]),
             basicSetup,
