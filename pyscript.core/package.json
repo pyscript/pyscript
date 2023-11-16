@@ -29,7 +29,7 @@
         "test:mpy": "static-handler --coi . 2>/dev/null & SH_PID=$!; EXIT_CODE=0; playwright test --fully-parallel test/ || EXIT_CODE=$?; kill $SH_PID 2>/dev/null; exit $EXIT_CODE",
         "dev": "node dev.cjs",
         "release": "npm run build && npm run zip",
-        "size": "echo -e \"\\033[1mdist/*.js file size\\033[0m\"; for js in $(ls dist/*.js); do echo -e \"\\033[2m$js:\\033[0m $(cat $js | brotli | wc -c) bytes\"; done",
+        "size": "echo -e \"\\033[1mdist/*.js file size\\033[0m\"; for js in $(ls dist/*.js); do cat $js | brotli > ._; echo -e \"\\033[2m$js:\\033[0m $(du -h --apparent-size ._ | sed -e 's/[[:space:]]*._//')\"; rm ._; done",
         "ts": "rm -rf types && tsc -p .",
         "zip": "zip -r dist.zip ./dist"
     },
