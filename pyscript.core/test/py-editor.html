@@ -6,20 +6,46 @@
         <title>PyTerminal</title>
         <link rel="stylesheet" href="../dist/core.css">
         <script type="module" src="../dist/core.js"></script>
-        <style>.xterm { padding: .5rem; }</style>
+        <style>
+        .py-editor-box, .mpy-editor-box {
+            padding: .5rem;
+            position: relative;
+        }
+        .py-editor-run-button, .mpy-editor-run-button {
+            position: absolute;
+            right: .5rem;
+            bottom: .5rem;
+            opacity: 0;
+            transition: opacity .25s;
+        }
+        .py-editor-box:hover .py-editor-run-button,
+        .mpy-editor-box:hover .mpy-editor-run-button,
+        .py-editor-run-button:focus,
+        .mpy-editor-run-button:focus {
+            opacity: 1;
+        }
+        </style>
     </head>
     <body>
-        <div>
-            <script type="py-editor">
-                import sys
-                print(sys.version)
-            </script>
-        </div>
-        <div>
-            <script type="mpy-editor">
-                import sys
-                print(sys.version)
-            </script>
-        </div>
+        <script type="py-editor">
+            import sys
+            print(sys.version)
+        </script>
+        <script type="mpy-editor">
+            import sys
+            print(sys.version)
+            a = 42
+        </script>
+        <script type="mpy-editor" env="shared">
+            if not 'a' in globals():
+                a = 1
+            else:
+                a += 1
+            print(a)
+        </script>
+        <script type="mpy-editor" env="shared">
+            # doubled a
+            print(a * 2)
+        </script>
     </body>
 </html>
