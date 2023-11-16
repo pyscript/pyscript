@@ -1,72 +1,73 @@
 // PyScript py-editor plugin
 import { Hook, XWorker, dedent } from "polyscript/exports";
+import { TYPES } from "../core.js";
 
 const RUN_BUTTON = `<svg style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>`;
-const SELECTOR = `script[type="py-editor"]`;
 
 let id = 0;
-const getID = () => `py-editor-${id++}`;
+const getID = (type) => `${type}-editor-${id++}`;
 
 const hooks = {
     worker: {
-        // TODO or TBD: do we want our stdlib in here too?
-        codeBeforeRun: () => `
-            from polyscript import xworker
-            import sys
-
-            class MyStdout:
-                def write(self, line):
-                    xworker.sync.write(line)
-
-            class MyStderr:
-                def write(self, line):
-                    xworker.sync.writeErr(line)
-
-            sys.stdout = MyStdout()
-            sys.stderr = MyStderr()
-        `,
+        // works on both Pyodide and MicroPython
+        onReady: ({ run, io }, { sync }) => {
+            io.stdout = (line) => sync.write(line);
+            io.stderr = (line) => sync.writeErr(line);
+            sync.revoke();
+            sync.eval = (data) => {
+                run(data);
+            };
+        },
     },
 };
 
 async function execute() {
-    const { pySrc, outDiv } = this;
+    const { interpreter, xworker, pySrc, outDiv } = this;
 
-    const srcLink = URL.createObjectURL(new Blob([pySrc]));
     outDiv.innerHTML = "";
 
-    // TODO or TBD: are we sure we want a new pyodide per every single Run ???
-    const xworker = XWorker.call(new Hook(null, hooks), srcLink, {
-        type: "pyodide",
-    });
-    xworker.sync.write = (str) => {
-        outDiv.innerText += str;
-    };
-    xworker.sync.writeErr = (str) => {
-        outDiv.innerHTML += `<span style='color:red'>${str}</span>`;
-    };
-    xworker.onerror = ({ error }) => {
-        outDiv.innerHTML += `<span style='color:red'>${
-            error.message || error
-        }</span>`;
-        console.log(error);
-    };
+    if (xworker) {
+        xworker.sync.eval(pySrc);
+    } else {
+        const srcLink = URL.createObjectURL(new Blob([pySrc]));
+        this.xworker = XWorker.call(new Hook(null, hooks), srcLink, {
+            type: interpreter,
+        });
+        this.xworker.onerror = ({ error }) => {
+            outDiv.innerHTML += `<span style='color:red'>${
+                error.message || error
+            }</span>`;
+            console.log(error);
+        };
+
+        const { sync } = this.xworker;
+        sync.revoke = () => {
+            URL.revokeObjectURL(srcLink);
+        };
+        sync.write = (str) => {
+            outDiv.innerText += str;
+        };
+        sync.writeErr = (str) => {
+            outDiv.innerHTML += `<span style='color:red'>${str}</span>`;
+        };
+    }
 }
 
-const makeRunButton = (listener) => {
+const makeRunButton = (listener, type) => {
     const runButton = document.createElement("button");
-    runButton.className = "absolute py-editor-run-button";
+    runButton.className = `absolute ${type}-editor-run-button`;
     runButton.innerHTML = RUN_BUTTON;
     runButton.setAttribute("aria-label", "Python Script Run Button");
     runButton.addEventListener("click", listener);
     return runButton;
 };
 
-const makeEditorDiv = (listener) => {
+const makeEditorDiv = (listener, type) => {
     const editorDiv = document.createElement("div");
-    editorDiv.className = "py-editor-input";
+    editorDiv.className = `${type}-editor-input`;
     editorDiv.setAttribute("aria-label", "Python Script Area");
 
-    const runButton = makeRunButton(listener);
+    const runButton = makeRunButton(listener, type);
     const editorShadowContainer = document.createElement("div");
 
     // avoid outer elements intercepting key events (reveal as example)
@@ -79,25 +80,25 @@ const makeEditorDiv = (listener) => {
     return editorDiv;
 };
 
-const makeOutDiv = () => {
+const makeOutDiv = (type) => {
     const outDiv = document.createElement("div");
-    outDiv.className = "py-editor-output";
-    outDiv.id = getID() + "-output";
+    outDiv.className = `${type}-editor-output`;
+    outDiv.id = `${getID(type)}-output`;
     return outDiv;
 };
 
-const makeBoxDiv = (listener) => {
+const makeBoxDiv = (listener, type) => {
     const boxDiv = document.createElement("div");
-    boxDiv.className = "py-editor-box";
+    boxDiv.className = `${type}-editor-box`;
 
-    const editorDiv = makeEditorDiv(listener);
-    const outDiv = makeOutDiv();
+    const editorDiv = makeEditorDiv(listener, type);
+    const outDiv = makeOutDiv(type);
     boxDiv.append(editorDiv, outDiv);
 
     return [boxDiv, outDiv];
 };
 
-const init = async (script) => {
+const init = async (script, type, interpreter) => {
     const [
         { basicSetup, EditorView },
         { Compartment },
@@ -126,17 +127,19 @@ const init = async (script) => {
             document.querySelector(selector);
         if (!target) throw new Error(`Unknown target ${selector}`);
     } else {
-        target = document.createElement("py-editor");
+        target = document.createElement(`${type}-editor`);
         target.style.display = "block";
         script.after(target);
     }
 
-    if (!target.id) target.id = getID();
+    if (!target.id) target.id = getID(type);
     if (!target.hasAttribute("exec-id")) target.setAttribute("exec-id", 0);
     if (!target.hasAttribute("root")) target.setAttribute("root", target.id);
 
     // @see https://github.com/JeffersGlass/mkdocs-pyscript/blob/main/mkdocs_pyscript/js/makeblocks.js
     const context = {
+        interpreter,
+        xworker: null,
         get pySrc() {
             return editor.state.doc.toString();
         },
@@ -146,9 +149,9 @@ const init = async (script) => {
     };
 
     const listener = execute.bind(context);
-    const [boxDiv, outDiv] = makeBoxDiv(listener);
+    const [boxDiv, outDiv] = makeBoxDiv(listener, type);
 
-    const inputChild = boxDiv.querySelector(".py-editor-input > div");
+    const inputChild = boxDiv.querySelector(`.${type}-editor-input > div`);
     const parent = inputChild.attachShadow({ mode: "open" });
     // avoid inheriting styles from the outer component
     parent.innerHTML = `<style> :host { all: initial; }</style>`;
@@ -191,10 +194,13 @@ const resetInterval = () => {
 const pyEditor = async () => {
     if (interval) return;
     interval = setInterval(resetInterval, 250);
-    for (const script of document.querySelectorAll(SELECTOR)) {
-        // avoid any further bootstrap
-        script.type += "-active";
-        await init(script);
+    for (const [type, interpreter] of TYPES) {
+        const selector = `script[type="${type}-editor"]`;
+        for (const script of document.querySelectorAll(selector)) {
+            // avoid any further bootstrap
+            script.type += "-active";
+            await init(script, type, interpreter);
+        }
     }
 };
 
