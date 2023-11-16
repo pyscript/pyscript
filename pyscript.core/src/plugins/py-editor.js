@@ -197,18 +197,18 @@ const init = async (script, type, interpreter) => {
 };
 
 // avoid too greedy MutationObserver operations at distance
-let interval = 0;
+let timeout = 0;
 
 // reset interval value then check for new scripts
 const resetInterval = () => {
-    interval = 0;
+    timeout = 0;
     pyEditor();
 };
 
 // triggered both ASAP on the living DOM and via MutationObserver later
 const pyEditor = async () => {
-    if (interval) return;
-    interval = setInterval(resetInterval, 250);
+    if (timeout) return;
+    timeout = setTimeout(resetInterval, 250);
     for (const [type, interpreter] of TYPES) {
         const selector = `script[type="${type}-editor"]`;
         for (const script of document.querySelectorAll(selector)) {
