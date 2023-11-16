@@ -34,6 +34,7 @@ const resolve = (name) => {
         );
 };
 
+// create a file rollup can then process and understand
 const reBundle = (name) => Promise.resolve(`export * from "${name}";\n`);
 
 // key/value pairs as:
