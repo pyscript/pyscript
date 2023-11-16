@@ -34,6 +34,8 @@ const resolve = (name) => {
         );
 };
 
+const reBundle = (name) => Promise.resolve(`export * from "${name}";\n`);
+
 // key/value pairs as:
 //  "3rd-party/file-name.js"
 //    string as content or
@@ -49,13 +51,13 @@ const modules = {
         (b) => b.text(),
     ),
 
-    // codemirror - TODO: this is not enough to resolve all dependencies
-    // "codemirror.js": resolve("codemirror"),
-    // "codemirror_state.js": resolve("@codemirror/state"),
-    // "codemirror_lang-python.js": resolve("@codemirror/lang-python"),
-    // "codemirror_language.js": resolve("@codemirror/language"),
-    // "codemirror_view.js": resolve("@codemirror/view"),
-    // "codemirror_commands.js": resolve("@codemirror/commands"),
+    // codemirror
+    "codemirror.js": reBundle("codemirror"),
+    "codemirror_state.js": reBundle("@codemirror/state"),
+    "codemirror_lang-python.js": reBundle("@codemirror/lang-python"),
+    "codemirror_language.js": reBundle("@codemirror/language"),
+    "codemirror_view.js": reBundle("@codemirror/view"),
+    "codemirror_commands.js": reBundle("@codemirror/commands"),
 };
 
 for (const [target, source] of Object.entries(modules)) {

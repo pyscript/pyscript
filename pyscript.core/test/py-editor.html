@@ -14,14 +14,16 @@
         .py-editor-run-button, .mpy-editor-run-button {
             position: absolute;
             right: .5rem;
-            bottom: .5rem;
+            top: .5rem;
             opacity: 0;
             transition: opacity .25s;
         }
         .py-editor-box:hover .py-editor-run-button,
         .mpy-editor-box:hover .mpy-editor-run-button,
         .py-editor-run-button:focus,
-        .mpy-editor-run-button:focus {
+        .py-editor-run-button:disabled,
+        .mpy-editor-run-button:focus,
+        .mpy-editor-run-button:disabled {
             opacity: 1;
         }
         </style>

@@ -121,14 +121,14 @@ const init = async (script, type, interpreter) => {
         { defaultKeymap },
     ] = await Promise.all([
         // TODO: find a way to actually produce these bundles locally
-        import("https://cdn.jsdelivr.net/npm/codemirror@6.0.1/+esm"),
-        import("https://cdn.jsdelivr.net/npm/@codemirror/state@6.3.1/+esm"),
+        import(/* webpackIgnore: true */ "../3rd-party/codemirror.js"),
+        import(/* webpackIgnore: true */ "../3rd-party/codemirror_state.js"),
         import(
-            "https://cdn.jsdelivr.net/npm/@codemirror/lang-python@6.1.3/+esm"
+            /* webpackIgnore: true */ "../3rd-party/codemirror_lang-python.js"
         ),
-        import("https://cdn.jsdelivr.net/npm/@codemirror/language@6.9.2/+esm"),
-        import("https://cdn.jsdelivr.net/npm/@codemirror/view@6.22.0/+esm"),
-        import("https://cdn.jsdelivr.net/npm/@codemirror/commands@6.3.0/+esm"),
+        import(/* webpackIgnore: true */ "../3rd-party/codemirror_language.js"),
+        import(/* webpackIgnore: true */ "../3rd-party/codemirror_view.js"),
+        import(/* webpackIgnore: true */ "../3rd-party/codemirror_commands.js"),
     ]);
 
     const selector = script.getAttribute("target");
@@ -200,7 +200,7 @@ const init = async (script, type, interpreter) => {
 let timeout = 0;
 
 // reset interval value then check for new scripts
-const resetInterval = () => {
+const resetTimeout = () => {
     timeout = 0;
     pyEditor();
 };
@@ -208,7 +208,7 @@ const resetInterval = () => {
 // triggered both ASAP on the living DOM and via MutationObserver later
 const pyEditor = async () => {
     if (timeout) return;
-    timeout = setTimeout(resetInterval, 250);
+    timeout = setTimeout(resetTimeout, 250);
     for (const [type, interpreter] of TYPES) {
         const selector = `script[type="${type}-editor"]`;
         for (const script of document.querySelectorAll(selector)) {
