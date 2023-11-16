@@ -7,50 +7,63 @@ const RUN_BUTTON = `<svg style="height:20px;width:20px;vertical-align:-.125em;tr
 let id = 0;
 const getID = (type) => `${type}-editor-${id++}`;
 
+const envs = new Map();
+
 const hooks = {
     worker: {
         // works on both Pyodide and MicroPython
-        onReady: ({ run, io }, { sync }) => {
+        onReady: ({ runAsync, io }, { sync }) => {
             io.stdout = (line) => sync.write(line);
             io.stderr = (line) => sync.writeErr(line);
             sync.revoke();
-            sync.eval = (data) => {
-                run(data);
-            };
+            sync.runAsync = runAsync;
         },
     },
 };
 
-async function execute() {
-    const { interpreter, xworker, pySrc, outDiv } = this;
+async function execute({ currentTarget }) {
+    const { env, pySrc, outDiv } = this;
 
+    currentTarget.disabled = true;
     outDiv.innerHTML = "";
 
-    if (xworker) {
-        xworker.sync.eval(pySrc);
-    } else {
-        const srcLink = URL.createObjectURL(new Blob([pySrc]));
-        this.xworker = XWorker.call(new Hook(null, hooks), srcLink, {
-            type: interpreter,
+    if (!envs.has(env)) {
+        const srcLink = URL.createObjectURL(new Blob([""]));
+        const xworker = XWorker.call(new Hook(null, hooks), srcLink, {
+            type: this.interpreter,
         });
-        this.xworker.onerror = ({ error }) => {
+
+        const { sync } = xworker;
+        const { promise, resolve } = Promise.withResolvers();
+        envs.set(env, promise);
+        sync.revoke = () => {
+            URL.revokeObjectURL(srcLink);
+            resolve(xworker);
+        };
+    }
+
+    // wait for the env then set the target div
+    // before executing the current code
+    envs.get(env).then((xworker) => {
+        xworker.onerror = ({ error }) => {
             outDiv.innerHTML += `<span style='color:red'>${
                 error.message || error
             }</span>`;
             console.log(error);
         };
 
-        const { sync } = this.xworker;
-        sync.revoke = () => {
-            URL.revokeObjectURL(srcLink);
+        const enable = () => {
+            currentTarget.disabled = false;
         };
+        const { sync } = xworker;
         sync.write = (str) => {
             outDiv.innerText += str;
         };
         sync.writeErr = (str) => {
             outDiv.innerHTML += `<span style='color:red'>${str}</span>`;
         };
-    }
+        sync.runAsync(pySrc).then(enable, enable);
+    });
 }
 
 const makeRunButton = (listener, type) => {
@@ -136,10 +149,10 @@ const init = async (script, type, interpreter) => {
     if (!target.hasAttribute("exec-id")) target.setAttribute("exec-id", 0);
     if (!target.hasAttribute("root")) target.setAttribute("root", target.id);
 
-    // @see https://github.com/JeffersGlass/mkdocs-pyscript/blob/main/mkdocs_pyscript/js/makeblocks.js
+    const env = `${interpreter}-${script.getAttribute("env") || getID(type)}`;
     const context = {
         interpreter,
-        xworker: null,
+        env,
         get pySrc() {
             return editor.state.doc.toString();
         },
@@ -148,6 +161,7 @@ const init = async (script, type, interpreter) => {
         },
     };
 
+    // @see https://github.com/JeffersGlass/mkdocs-pyscript/blob/main/mkdocs_pyscript/js/makeblocks.js
     const listener = execute.bind(context);
     const [boxDiv, outDiv] = makeBoxDiv(listener, type);
 
