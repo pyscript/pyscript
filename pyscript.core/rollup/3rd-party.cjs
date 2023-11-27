@@ -42,6 +42,9 @@ const modules = {
         (b) => b.text(),
     ),
     "xterm-readline.js": resolve("xterm-readline"),
+    "xterm_addon-fit.js": fetch(`${CDN}/@xterm/addon-fit/+esm`).then((b) =>
+        b.text(),
+    ),
 };
 
 for (const [target, source] of Object.entries(modules)) {
