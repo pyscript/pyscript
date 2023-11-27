@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "module": "ES2022",
-        "target": "ES2022",
-        "moduleResolution": "Classic",
+        "module": "NodeNext",
+        "target": "esnext",
+        "moduleResolution": "nodenext",
         "allowJs": true,
         "declaration": true,
         "emitDeclarationOnly": true,

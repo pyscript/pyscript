@@ -19,7 +19,7 @@ module.exports = {
         ecmaVersion: "latest",
         sourceType: "module",
     },
-    ignorePatterns: ["toml.js"],
+    ignorePatterns: ["3rd-party"],
     rules: {
         "no-implicit-globals": ["error"],
     },

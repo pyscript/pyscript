@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('MicroPython display', async ({ page }) => {
   await page.goto('http://localhost:8080/test/mpy.html');
-  await page.waitForSelector('html.done');
+  await page.waitForSelector('html.done.worker');
   const body = await page.evaluate(() => document.body.innerText);
   await expect(body.trim()).toBe([
     'M-PyScript Main 1',
@@ -19,7 +19,7 @@ test('MicroPython hooks', async ({ page }) => {
       logs.push(text);
   });
   await page.goto('http://localhost:8080/test/hooks.html');
-  await page.waitForSelector('html.done');
+  await page.waitForSelector('html.done.worker');
   await expect(logs.join('\n')).toBe([
     'main onReady',
     'main onBeforeRun',

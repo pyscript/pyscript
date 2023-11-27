@@ -80,7 +80,7 @@ class TestBasic(PyScriptTest):
                 '"Cross-Origin-Opener-Policy":"same-origin"}. '
                 "The problem may be that one or both of these are missing."
             )
-            alert_banner = self.page.wait_for_selector(".alert-banner")
+            alert_banner = self.page.wait_for_selector(".py-error")
             assert expected_alert_banner_msg in alert_banner.inner_text()
 
     def test_print(self):
@@ -92,6 +92,19 @@ class TestBasic(PyScriptTest):
             """
         )
         assert self.console.log.lines[-1] == "hello pyscript"
+
+    @only_main
+    def test_input_exception(self):
+        self.pyscript_run(
+            """
+            <script type="py">
+                input("what's your name?")
+            </script>
+            """
+        )
+        self.check_py_errors(
+            "Exception: input() doesn't work when PyScript runs in the main thread."
+        )
 
     @skip_worker("NEXT: exceptions should be displayed in the DOM")
     def test_python_exception(self):

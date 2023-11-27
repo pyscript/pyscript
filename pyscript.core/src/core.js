@@ -70,6 +70,7 @@ const [
 });
 
 export {
+    TYPES,
     exportedPyWorker as PyWorker,
     exportedHooks as hooks,
     exportedConfig as config,

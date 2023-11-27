@@ -64,8 +64,8 @@
       <h2 id="multi-elem-h2" class="multi-elems">Content multi-elem-h2</h2>
 
       <form>
-        <input id="test_rr_input_txt" type="text" value="Content test_rr_input_txt">
-        <input id="test_rr_input_btn" type="button" value="Content test_rr_input_btn">
+        <input id="test_rr_input_text" type="text" value="Content test_rr_input_text">
+        <input id="test_rr_input_button" type="button" value="Content test_rr_input_button">
         <input id="test_rr_input_email" type="email" value="Content test_rr_input_email">
         <input id="test_rr_input_password" type="password" value="Content test_rr_input_password">
       </form>
@@ -89,7 +89,6 @@
       const log = console.log.bind(console)
       let testsStarted = false;
       console.log = (...args) => {
-        log("---IN---");
         let txt = args.join(" ");
         let token = "<br>";
         if (txt.endsWith("FAILED"))
