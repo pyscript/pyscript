@@ -43,7 +43,7 @@ You can then use PyScript components in your html page. PyScript currently offer
 -   `<script type="py">`: can be used to define python code that is executable within the web page.
 -   `<script type="py" src="hello.py">`: same as above, but the python source is fetched from the given URL.
 -   `<script type="py" terminal>`: same as above, but also creates a terminal where to display stdout and stderr (e.g., the output of `print()`); `input()` does not work.
--   `<script type="py" terminal worker>`: run Python inside a web worker: the terminal if fully functional and `input()` works.
+-   `<script type="py" terminal worker>`: run Python inside a web worker: the terminal is fully functional and `input()` works.
 -   `<py-script>`: same as `<script type="py">`, but it is not recommended because if the code contains HTML tags, they could be parsed wrongly.
 -   `<script type="mpy">`: same as above but use MicroPython instead of Python.
 
