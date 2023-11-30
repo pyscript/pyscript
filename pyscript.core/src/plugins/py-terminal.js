@@ -40,9 +40,10 @@ const pyTerminal = async () => {
     );
 
     // lazy load these only when a valid terminal is found
-    const [{ Terminal }, { Readline }] = await Promise.all([
+    const [{ Terminal }, { Readline }, { FitAddon }] = await Promise.all([
         import(/* webpackIgnore: true */ "../3rd-party/xterm.js"),
         import(/* webpackIgnore: true */ "../3rd-party/xterm-readline.js"),
+        import(/* webpackIgnore: true */ "../3rd-party/xterm_addon-fit.js"),
     ]);
 
     const readline = new Readline();
@@ -69,8 +70,11 @@ const pyTerminal = async () => {
             },
             ...options,
         });
+        const fitAddon = new FitAddon();
+        terminal.loadAddon(fitAddon);
         terminal.loadAddon(readline);
         terminal.open(target);
+        fitAddon.fit();
         terminal.focus();
     };
 

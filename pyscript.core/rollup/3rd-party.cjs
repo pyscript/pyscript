@@ -48,6 +48,9 @@ const modules = {
     // xterm
     "xterm.js": resolve("xterm"),
     "xterm-readline.js": resolve("xterm-readline"),
+    "xterm_addon-fit.js": fetch(`${CDN}/@xterm/addon-fit/+esm`).then((b) =>
+        b.text(),
+    ),
     "xterm.css": fetch(`${CDN}/xterm@${v("xterm")}/css/xterm.min.css`).then(
         (b) => b.text(),
     ),
