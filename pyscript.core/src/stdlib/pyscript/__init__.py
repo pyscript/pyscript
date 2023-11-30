@@ -35,6 +35,7 @@ from pyscript.magic_js import (
     PyWorker,
     current_target,
     document,
+    js_modules,
     sync,
     window,
 )
