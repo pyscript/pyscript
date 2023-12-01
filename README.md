@@ -53,7 +53,7 @@ Check out the [official docs](https://docs.pyscript.net) for more detailed docum
 
 Read the [contributing guide](CONTRIBUTING.md) to learn about our development process, reporting bugs and improvements, creating issues and asking questions.
 
-Check out the [developing process](https://docs.pyscript.net/latest/contributing) documentation for more information on how to setup your development environment.
+Check out the [developing process](https://docs.pyscript.net/docs/latest/contributing) documentation for more information on how to setup your development environment.
 
 ## Community calls and events
 
