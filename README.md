@@ -6,7 +6,7 @@
 
 PyScript is a framework that allows users to create rich Python applications in the browser using HTML's interface and the power of [Pyodide](https://pyodide.org/en/stable/), [MicroPython](https://micropython.org/) and [WASM](https://webassembly.org/), and modern web technologies.
 
-To get started see the [getting started tutorial](docs/tutorials/getting-started.md).
+To get started see the [Beginning PyScript tutorial](https://pyscript.github.io/docs/latest/beginning-pyscript/).
 
 For examples see [here](examples).
 
