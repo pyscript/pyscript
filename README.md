@@ -47,13 +47,13 @@ You can then use PyScript components in your html page. PyScript currently offer
 -   `<py-script>`: same as `<script type="py">`, but it is not recommended because if the code contains HTML tags, they could be parsed wrongly.
 -   `<script type="mpy">`: same as above but use MicroPython instead of Python.
 
-Check out the [official docs](https://docs.pyscript.net) for more detailed documentation.
+Check out the [official docs](https://pyscript.github.io) for more detailed documentation.
 
 ## How to Contribute
 
 Read the [contributing guide](CONTRIBUTING.md) to learn about our development process, reporting bugs and improvements, creating issues and asking questions.
 
-Check out the [developing process](https://docs.pyscript.net/latest/contributing) documentation for more information on how to setup your development environment.
+Check out the [developing process](https://pyscript.github.io/docs/latest/contributing) documentation for more information on how to setup your development environment.
 
 ## Community calls and events
 
@@ -68,7 +68,7 @@ For more details on how to join the calls and up to date schedule, consult the o
 
 ## Resources
 
--   [Official docs](https://docs.pyscript.net)
+-   [Official docs](https://pyscript.github.io)
 -   [Discussion board](https://community.anaconda.cloud/c/tech-topics/pyscript)
 -   [Home Page](https://pyscript.net/)
 -   [Blog Post](https://engineering.anaconda.com/2022/04/welcome-pyscript.html)
