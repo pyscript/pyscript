@@ -50,7 +50,7 @@ const inputFailure = `
     def input(prompt=""):
         raise Exception("\\n           ".join([
             "input() doesn't work when PyScript runs in the main thread.",
-            "Consider using the worker attribute: https://docs.pyscript.net/docs/2023.11.2/user-guide/workers/"
+            "Consider using the worker attribute: https://pyscript.github.io/docs/2023.11.2/user-guide/workers/"
         ]))
 
     builtins.input = input

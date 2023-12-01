@@ -24,7 +24,7 @@ This is the bare minimal example of an `index.html` file at the root of the site
 
   * **src** is where the PyScript Service Worker is located.
   * **handler** is where Python code is located. This *must* provide a `handle_request` method that will be invoked per each browsing *fetch* operation. Such method should return a `[body, status, headers]` tuple where *body* is the content of the page, *status* is its *HTTP* status and *headers* contain the `content-type` or any other useful header.
-  * **config** is an *optional* attribute that indicates packages to load, files to fetch, and all other usual [py-config goodness](https://docs.pyscript.net/docs/latest/reference/elements/py-config.html).
+  * **config** is an *optional* attribute that indicates packages to load, files to fetch, and all other usual [py-config goodness](https://pyscript.github.io/docs/latest/reference/elements/py-config.html).
   * **scope** (advanced use-case) is an *optional* attribute that indicates [where the Service Worker operates](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope). By default it operates from the same folder, and any subfolder, the `pyscript.sw.js` is.
 
 #### How to update `handle_request`
