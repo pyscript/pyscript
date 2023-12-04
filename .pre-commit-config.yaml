@@ -7,7 +7,7 @@ ci:
 default_stages: [commit]
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v4.4.0
+      rev: v4.5.0
       hooks:
           - id: check-builtin-literals
           - id: check-case-conflict
@@ -25,13 +25,13 @@ repos:
           - id: trailing-whitespace
 
     - repo: https://github.com/psf/black
-      rev: 23.1.0
+      rev: 23.11.0
       hooks:
           - id: black
             exclude: pyscript\.core/src/stdlib/pyscript/__init__\.py
 
     - repo: https://github.com/codespell-project/codespell
-      rev: v2.2.4
+      rev: v2.2.6
       hooks:
           - id: codespell # See 'pyproject.toml' for args
             exclude: \.js\.map$
