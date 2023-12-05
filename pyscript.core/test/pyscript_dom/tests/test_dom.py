@@ -292,3 +292,40 @@ class TestInput:
         result = pydom[f"#tests-terminal"]
         with pytest.raises(AttributeError):
             result.value = "some value"
+
+    def test_element_without_collection(self):
+        result = pydom[f"#tests-terminal"]
+        with pytest.raises(AttributeError):
+            result.value = "some value"
+
+
+class TestInput:
+    def test_select_options_iter(self):
+        select = pydom[f"#test_select_element_w_options"][0]
+
+        for i, option in enumerate(select.options,  1):
+            assert option.value == f"{i}"
+            assert option.html == f"Option {i}"
+
+    def test_select_options_len(self):
+        select = pydom[f"#test_select_element_w_options"][0]
+        assert len(select.options) == 2
+
+    def test_select_options_clear(self):
+        select = pydom[f"#test_select_element_w_options"][0]
+        assert len(select.options) == 3
+
+        select.options.clear()
+
+        assert len(select.options) == 0
+
+    def test_select_element_add(self):
+        select = pydom[f"#test_select_element"][0]
+        assert len(select.options) == 0
+
+        select.options.add({"value": "3", "html": "Option 3"})
+        assert len(select.options) == 1
+        assert select.options[0].value == "3"
+        assert select.options[0].html == "Option 3"
+
+        select.options.clear()
