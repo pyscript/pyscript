@@ -1,9 +1,8 @@
 from unittest import mock
 
 import pytest
-from pyweb import pydom
-
 from pyscript import document, when
+from pyweb import pydom
 
 
 class TestDocument:

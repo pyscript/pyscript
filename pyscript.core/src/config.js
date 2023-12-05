@@ -43,6 +43,8 @@ const configDetails = async (config, type) => {
     return { json, toml: toml || (!json && !!text), text, url };
 };
 
+const conflictError = (reason) => new Error(`(${CONFLICTING_CODE}): ${reason}`);
+
 const syntaxError = (type, url, { message }) => {
     let str = `(${BAD_CONFIG}): Invalid ${type}`;
     if (url) str += ` @ ${url}`;
@@ -58,7 +60,7 @@ for (const [TYPE] of TYPES) {
     /** @type {any} The PyScript configuration parsed from the JSON or TOML object*. May be any of the return types of JSON.parse() or toml-j0.4's parse() ( {number | string | boolean | null | object | Array} ) */
     let parsed;
 
-    /** @type {SyntaxError | undefined} The error thrown when parsing the PyScript config, if any.*/
+    /** @type {Error | undefined} The error thrown when parsing the PyScript config, if any.*/
     let error;
 
     let config,
@@ -73,31 +75,28 @@ for (const [TYPE] of TYPES) {
         );
 
     // throw an error if there are multiple <py-config> or <mpy-config>
-    if (pyConfigs.length > 1)
-        throw new Error(`(${CONFLICTING_CODE}): Too many ${TYPE}-config`);
-
-    // throw an error if there are <x-config> and config="x" attributes
-    if (pyConfigs.length && attrConfigs.length)
-        throw new Error(
-            `(${CONFLICTING_CODE}): Ambiguous ${TYPE}-config VS config attribute`,
-        );
-
-    if (pyConfigs.length) {
-        [pyElement] = pyConfigs;
-        config = pyElement.getAttribute("src") || pyElement.textContent;
-        type = pyElement.getAttribute("type");
-    } else if (attrConfigs.length) {
-        [pyElement, ...attrConfigs] = attrConfigs;
-        config = pyElement.getAttribute("config");
-        // throw an error if dirrent scripts use different configs
-        if (attrConfigs.some((el) => el.getAttribute("config") !== config))
-            throw new Error(
-                `(${CONFLICTING_CODE}): Unable to use different configs on main`,
-            );
+    if (pyConfigs.length > 1) {
+        error = conflictError(`Too many ${TYPE}-config`);
+    } else {
+        // throw an error if there are <x-config> and config="x" attributes
+        if (pyConfigs.length && attrConfigs.length) {
+            error = conflictError(`Ambiguous ${TYPE}-config VS config attribute`);
+        } else if (pyConfigs.length) {
+            [pyElement] = pyConfigs;
+            config = pyElement.getAttribute("src") || pyElement.textContent;
+            type = pyElement.getAttribute("type");
+        } else if (attrConfigs.length) {
+            [pyElement, ...attrConfigs] = attrConfigs;
+            config = pyElement.getAttribute("config");
+            // throw an error if dirrent scripts use different configs
+            if (attrConfigs.some((el) => el.getAttribute("config") !== config)) {
+                error = conflictError("Unable to use different configs on main");
+            }
+        }
     }
 
     // catch possible fetch errors
-    if (config) {
+    if (!error && config) {
         try {
             const { json, toml, text, url } = await configDetails(config, type);
             config = text;

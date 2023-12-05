@@ -100,7 +100,29 @@ class TestConfig(PyScriptTest):
         )
         assert banner.inner_text() == expected
 
-    @pytest.mark.skip("NEXT: emit a warning in case of multiple py-config")
+    def test_ambiguous_py_config(self):
+        self.pyscript_run(
+            """
+            <py-config>name = "first"</py-config>
+
+            <script type="py" config="second.toml"></script>
+            """
+        )
+        banner = self.page.wait_for_selector(".py-error")
+        expected = "(PY0409): Ambiguous py-config VS config attribute"
+        assert banner.text_content() == expected
+
+    def test_multiple_attributes_py_config(self):
+        self.pyscript_run(
+            """
+            <script type="py" config="first.toml"></script>
+            <script type="py" config="second.toml"></script>
+            """
+        )
+        banner = self.page.wait_for_selector(".py-error")
+        expected = "(PY0409): Unable to use different configs on main"
+        assert banner.text_content() == expected
+
     def test_multiple_py_config(self):
         self.pyscript_run(
             """
@@ -119,11 +141,8 @@ class TestConfig(PyScriptTest):
             </script>
             """
         )
-        banner = self.page.wait_for_selector(".py-warning")
-        expected = (
-            "Multiple <py-config> tags detected. Only the first "
-            "is going to be parsed, all the others will be ignored"
-        )
+        banner = self.page.wait_for_selector(".py-error")
+        expected = "(PY0409): Too many py-config"
         assert banner.text_content() == expected
 
     def test_paths(self):
