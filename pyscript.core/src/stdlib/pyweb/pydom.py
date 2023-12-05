@@ -202,12 +202,13 @@ class OptionsProxy:
 
     def add(self, before: Element|int=None, **kws) -> None:
         """Add a new option to the select element"""
-        _kws = {'item': Option(**kws)}
+        _kws = {}
+        item = Option(**kws)
 
         if before:
             _kws['before'] = before
 
-        self._element._js.add(**kws)
+        self._element._js.add(item, **_kws)
 
     def remove(self, index: int):
         """Remove the option at the specified index"""
