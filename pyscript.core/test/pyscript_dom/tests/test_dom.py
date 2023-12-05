@@ -299,7 +299,7 @@ class TestInput:
             result.value = "some value"
 
 
-class TestInput:
+class TestSelect:
     def test_select_options_iter(self):
         select = pydom[f"#test_select_element_w_options"][0]
 
@@ -312,7 +312,7 @@ class TestInput:
         assert len(select.options) == 2
 
     def test_select_options_clear(self):
-        select = pydom[f"#test_select_element_w_options"][0]
+        select = pydom[f"#test_select_element_to_clear"][0]
         assert len(select.options) == 3
 
         select.options.clear()
@@ -323,7 +323,7 @@ class TestInput:
         select = pydom[f"#test_select_element"][0]
         assert len(select.options) == 0
 
-        select.options.add({"value": "3", "html": "Option 3"})
+        select.options.add(value = "3", html = "Option 3")
         assert len(select.options) == 1
         assert select.options[0].value == "3"
         assert select.options[0].html == "Option 3"

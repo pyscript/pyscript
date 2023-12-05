@@ -200,16 +200,23 @@ class OptionsProxy:
                 f"Element {self._element._js.tagName} has no options attribute."
             )
 
-    def add(self, option, before=None):
+    def add(self, before: Element|int=None, **kws) -> None:
         """Add a new option to the select element"""
-        kws = {'option': option}
+        _kws = {'item': Option(**kws)}
+
         if before:
-            kws['before'] = before
+            _kws['before'] = before
+
         self._element._js.add(**kws)
 
     def remove(self, index: int):
         """Remove the option at the specified index"""
         self._element._js.remove(index)
+
+    def clear(self):
+        """Remove all the options"""
+        for i in range(len(self)):
+            self.remove(0)
 
     @property
     def options(self):
