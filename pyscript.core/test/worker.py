@@ -1,8 +1,9 @@
 import js
+
 js.document.body.append("document patch ")
 
 import a
-from pyscript import display, sync, RUNNING_IN_WORKER
+from pyscript import RUNNING_IN_WORKER, display, sync
 
 display("Hello World", target="test", append=True)
 

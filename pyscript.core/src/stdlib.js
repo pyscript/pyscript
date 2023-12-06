@@ -37,7 +37,9 @@ write(".", pyscript);
 // we need to bootstrap pyscript module ASAP
 python.push("import pyscript as _pyscript");
 
-python.push(...["_Path", "_path", "_os", "_pyscript"].map(ref => `del ${ref}`));
+python.push(
+    ...["_Path", "_path", "_os", "_pyscript"].map((ref) => `del ${ref}`),
+);
 python.push("\n");
 
 export default python.join("\n");
