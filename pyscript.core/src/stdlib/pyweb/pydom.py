@@ -200,15 +200,27 @@ class OptionsProxy:
                 f"Element {self._element._js.tagName} has no options attribute."
             )
 
-    def add(self, before: Element|int=None, **kws) -> None:
+    def add(self, value: Any=None, html: str=None, text: str=None, before: Element|int=None, **kws) -> None:
         """Add a new option to the select element"""
-        _kws = {}
-        item = Option(**kws)
+        # create the option element and set the attributes
+        option = document.createElement('option')
+        if value is not None:
+            kws['value'] = value
+        if html is not None:
+            option.innerHTML = html
+        if text is not None:
+            kws['text'] = text
 
+        for (key, value) in kws.items():
+            option.setAttribute(key, value)
+
+        _kws = {}
         if before:
+            if isinstance(before, Element):
+                before = before._js
             _kws['before'] = before
 
-        self._element._js.add(item, **_kws)
+        self._element._js.add(option, **_kws)
 
     def remove(self, index: int):
         """Remove the option at the specified index"""
@@ -233,15 +245,9 @@ class OptionsProxy:
     def __repr__(self):
         return f"{self.__class__.__name__} (length: {len(self)}) {self.options}"
 
+    def __getitem__(self, key):
+        return self.options[key]
 
-def Option(value=None, html=None, **kws):
-    """Add a new option to the select element"""
-    option = document.createElement('option')
-
-    for (key, value) in kws.items():
-        option[key] = value
-
-    return option
 
 class StyleProxy(dict):
     def __init__(self, element: Element) -> None:
