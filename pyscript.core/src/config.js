@@ -80,7 +80,9 @@ for (const [TYPE] of TYPES) {
     } else {
         // throw an error if there are <x-config> and config="x" attributes
         if (pyConfigs.length && attrConfigs.length) {
-            error = conflictError(`Ambiguous ${TYPE}-config VS config attribute`);
+            error = conflictError(
+                `Ambiguous ${TYPE}-config VS config attribute`,
+            );
         } else if (pyConfigs.length) {
             [pyElement] = pyConfigs;
             config = pyElement.getAttribute("src") || pyElement.textContent;
@@ -89,8 +91,12 @@ for (const [TYPE] of TYPES) {
             [pyElement, ...attrConfigs] = attrConfigs;
             config = pyElement.getAttribute("config");
             // throw an error if dirrent scripts use different configs
-            if (attrConfigs.some((el) => el.getAttribute("config") !== config)) {
-                error = conflictError("Unable to use different configs on main");
+            if (
+                attrConfigs.some((el) => el.getAttribute("config") !== config)
+            ) {
+                error = conflictError(
+                    "Unable to use different configs on main",
+                );
             }
         }
     }

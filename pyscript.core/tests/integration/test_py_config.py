@@ -106,7 +106,8 @@ class TestConfig(PyScriptTest):
             <py-config>name = "first"</py-config>
 
             <script type="py" config="second.toml"></script>
-            """
+            """,
+            wait_for_pyscript=False,
         )
         banner = self.page.wait_for_selector(".py-error")
         expected = "(PY0409): Ambiguous py-config VS config attribute"
@@ -117,7 +118,8 @@ class TestConfig(PyScriptTest):
             """
             <script type="py" config="first.toml"></script>
             <script type="py" config="second.toml"></script>
-            """
+            """,
+            wait_for_pyscript=False,
         )
         banner = self.page.wait_for_selector(".py-error")
         expected = "(PY0409): Unable to use different configs on main"
@@ -139,7 +141,8 @@ class TestConfig(PyScriptTest):
                 #config = js.pyscript_get_config()
                 #js.console.log("config name:", config.name)
             </script>
-            """
+            """,
+            wait_for_pyscript=False,
         )
         banner = self.page.wait_for_selector(".py-error")
         expected = "(PY0409): Too many py-config"
