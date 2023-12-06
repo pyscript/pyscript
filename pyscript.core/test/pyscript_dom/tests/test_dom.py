@@ -320,12 +320,29 @@ class TestSelect:
         assert len(select.options) == 0
 
     def test_select_element_add(self):
+        # GIVEN the existing select element with no options
         select = pydom[f"#test_select_element"][0]
+
+        # EXPECT the select element to have no options
         assert len(select.options) == 0
 
+        # WHEN we add an option
         select.options.add(value = "3", html = "Option 3")
+
+        # EXPECT the select element to have 1 option matching the attributes
+        # we passed in
         assert len(select.options) == 1
         assert select.options[0].value == "3"
         assert select.options[0].html == "Option 3"
+
+        # WHEN we add another option (blank this time)
+        select.options.add()
+        
+        # EXPECT the select element to have 2 options
+        assert len(select.options) == 2
+
+        # EXPECT the last option to have an empty value and html
+        assert select.options[1].value == ""
+        assert select.options[1].html == ""
 
         select.options.clear()
