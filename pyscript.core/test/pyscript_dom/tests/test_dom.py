@@ -303,7 +303,7 @@ class TestSelect:
     def test_select_options_iter(self):
         select = pydom[f"#test_select_element_w_options"][0]
 
-        for i, option in enumerate(select.options,  1):
+        for i, option in enumerate(select.options, 1):
             assert option.value == f"{i}"
             assert option.html == f"Option {i}"
 
@@ -327,7 +327,7 @@ class TestSelect:
         assert len(select.options) == 0
 
         # WHEN we add an option
-        select.options.add(value = "1", html = "Option 1")
+        select.options.add(value="1", html="Option 1")
 
         # EXPECT the select element to have 1 option matching the attributes
         # we passed in
@@ -337,7 +337,7 @@ class TestSelect:
 
         # WHEN we add another option (blank this time)
         select.options.add()
-        
+
         # EXPECT the select element to have 2 options
         assert len(select.options) == 2
 
@@ -347,7 +347,7 @@ class TestSelect:
 
         # WHEN we add another option (this time adding it in between the other 2
         # options by using an integer index)
-        select.options.add(value = "2", html = "Option 2", before = 1)
+        select.options.add(value="2", html="Option 2", before=1)
 
         # EXPECT the select element to have 3 options
         assert len(select.options) == 3
@@ -362,7 +362,9 @@ class TestSelect:
 
         # WHEN we add another option (this time adding it in between the other 2
         # options but using the option itself)
-        select.options.add(value = "3", html = "Option 3", before = select.options[2], selected = True)
+        select.options.add(
+            value="3", html="Option 3", before=select.options[2], selected=True
+        )
 
         # EXPECT the select element to have 3 options
         assert len(select.options) == 4
@@ -381,7 +383,7 @@ class TestSelect:
 
         # WHEN we add another option (this time adding it in between the other 2
         # options but using the JS element of the option itself)
-        select.options.add(value = "2a", html = "Option 2a", before = select.options[2]._js)
+        select.options.add(value="2a", html="Option 2a", before=select.options[2]._js)
 
         # EXPECT the select element to have 3 options
         assert len(select.options) == 5
@@ -431,4 +433,3 @@ class TestSelect:
         assert selected_option.value == "2"
         assert selected_option.html == "Option 2"
         assert selected_option.selected == selected_option._js.selected == True
-

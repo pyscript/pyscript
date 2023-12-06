@@ -132,15 +132,15 @@ class Element(BaseElement):
 
     @property
     def options(self):
-        if 'options' in self._proxies:
-            return self._proxies['options']
+        if "options" in self._proxies:
+            return self._proxies["options"]
 
         if not self._js.tagName.lower() in {"select", "datalist", "optgroup"}:
             raise AttributeError(
                 f"Element {self._js.tagName} has no options attribute."
             )
-        self._proxies['options'] = OptionsProxy(self)
-        return self._proxies['options']
+        self._proxies["options"] = OptionsProxy(self)
+        return self._proxies["options"]
 
     @property
     def value(self):
@@ -209,6 +209,7 @@ class OptionsProxy:
     """This class represents the options of a select element. It
     allows to access to add and remove options by using the `add` and `remove` methods.
     """
+
     def __init__(self, element: Element) -> None:
         self._element = element
         if self._element._js.tagName.lower() != "select":
@@ -216,18 +217,25 @@ class OptionsProxy:
                 f"Element {self._element._js.tagName} has no options attribute."
             )
 
-    def add(self, value: Any=None, html: str=None, text: str=None, before: Element|int=None, **kws) -> None:
+    def add(
+        self,
+        value: Any = None,
+        html: str = None,
+        text: str = None,
+        before: Element | int = None,
+        **kws,
+    ) -> None:
         """Add a new option to the select element"""
         # create the option element and set the attributes
-        option = document.createElement('option')
+        option = document.createElement("option")
         if value is not None:
-            kws['value'] = value
+            kws["value"] = value
         if html is not None:
             option.innerHTML = html
         if text is not None:
-            kws['text'] = text
+            kws["text"] = text
 
-        for (key, value) in kws.items():
+        for key, value in kws.items():
             option.setAttribute(key, value)
 
         if before:
