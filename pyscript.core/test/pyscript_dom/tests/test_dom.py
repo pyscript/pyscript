@@ -365,17 +365,7 @@ class TestSelect:
         select.options.add(value = "3", html = "Option 3", before = select.options[2])
 
         # EXPECT the select element to have 3 options
-        assert len(select.options) == 3
-
-        # EXPECT the middle option to have the value and html we passed in
-        assert select.options[0].value == "1"
-        assert select.options[0].html == "Option 1"
-        assert select.options[1].value == "2"
-        assert select.options[1].html == "Option 2"
-        select.options.add(value = "2", html = "Option 2", before = 1)
-
-        # EXPECT the select element to have 3 options
-        assert len(select.options) == 3
+        assert len(select.options) == 4
 
         # EXPECT the middle option to have the value and html we passed in
         assert select.options[0].value == "1"
@@ -387,4 +377,33 @@ class TestSelect:
         assert select.options[3].value == ""
         assert select.options[3].html == ""
 
-        select.options.clear()
+        # WHEN we add another option (this time adding it in between the other 2
+        # options but using the JS element of the option itself)
+        select.options.add(value = "2a", html = "Option 2a", before = select.options[2]._js)
+
+        # EXPECT the select element to have 3 options
+        assert len(select.options) == 5
+
+        # EXPECT the middle option to have the value and html we passed in
+        assert select.options[0].value == "1"
+        assert select.options[0].html == "Option 1"
+        assert select.options[1].value == "2"
+        assert select.options[1].html == "Option 2"
+        assert select.options[2].value == "2a"
+        assert select.options[2].html == "Option 2a"
+        assert select.options[3].value == "3"
+        assert select.options[3].html == "Option 3"
+        assert select.options[4].value == ""
+        assert select.options[4].html == ""
+
+    def test_select_options_remove(self):
+        select = pydom[f"#test_select_element_to_remove"][0]
+        assert len(select.options) == 3
+
+        assert select.options[0].value == "1"
+        assert select.options[1].value == "2"
+        assert select.options[2].value == "3"
+
+        select.options.remove(2)
+
+        assert len(select.options) == 2
