@@ -373,5 +373,18 @@ class TestSelect:
         assert select.options[1].value == "2"
         assert select.options[1].html == "Option 2"
         select.options.add(value = "2", html = "Option 2", before = 1)
-        
+
+        # EXPECT the select element to have 3 options
+        assert len(select.options) == 3
+
+        # EXPECT the middle option to have the value and html we passed in
+        assert select.options[0].value == "1"
+        assert select.options[0].html == "Option 1"
+        assert select.options[1].value == "2"
+        assert select.options[1].html == "Option 2"
+        assert select.options[2].value == "3"
+        assert select.options[2].html == "Option 3"
+        assert select.options[3].value == ""
+        assert select.options[3].html == ""
+
         select.options.clear()
