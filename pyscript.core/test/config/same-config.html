@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Next</title>
+        <script>
+            addEventListener("error", ({ message }) => {
+                document.body.innerHTML += `<p>${message}</p>`;
+            });
+        </script>
+        <link rel="stylesheet" href="../../dist/core.css">
+        <script type="module" src="../../dist/core.js"></script>
+    </head>
+    <body>
+        OK
+        <script type="py" config='{"name":"OK"}'></script>
+        <script type="py" config='{"name":"OK"}'></script>
+    </body>
+</html>
