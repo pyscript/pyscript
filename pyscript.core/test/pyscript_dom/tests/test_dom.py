@@ -362,7 +362,7 @@ class TestSelect:
 
         # WHEN we add another option (this time adding it in between the other 2
         # options but using the option itself)
-        select.options.add(value = "3", html = "Option 3", before = select.options[2])
+        select.options.add(value = "3", html = "Option 3", before = select.options[2], selected = True)
 
         # EXPECT the select element to have 3 options
         assert len(select.options) == 4
@@ -370,10 +370,12 @@ class TestSelect:
         # EXPECT the middle option to have the value and html we passed in
         assert select.options[0].value == "1"
         assert select.options[0].html == "Option 1"
+        assert select.options[0].selected == select.options[0]._js.selected == False
         assert select.options[1].value == "2"
         assert select.options[1].html == "Option 2"
         assert select.options[2].value == "3"
         assert select.options[2].html == "Option 3"
+        assert select.options[2].selected == select.options[2]._js.selected == True
         assert select.options[3].value == ""
         assert select.options[3].html == ""
 
@@ -397,13 +399,36 @@ class TestSelect:
         assert select.options[4].html == ""
 
     def test_select_options_remove(self):
+        # GIVEN the existing select element with 3 options
         select = pydom[f"#test_select_element_to_remove"][0]
-        assert len(select.options) == 3
 
+        # EXPECT the select element to have 3 options
+        assert len(select.options) == 4
+        # EXPECT the options to have the values originally set
         assert select.options[0].value == "1"
         assert select.options[1].value == "2"
         assert select.options[2].value == "3"
+        assert select.options[3].value == "4"
 
-        select.options.remove(2)
+        # WHEN we remove the second option (index starts at 0)
+        select.options.remove(1)
 
-        assert len(select.options) == 2
+        # EXPECT the select element to have 2 options
+        assert len(select.options) == 3
+        # EXPECT the options to have the values originally set but the second
+        assert select.options[0].value == "1"
+        assert select.options[1].value == "3"
+        assert select.options[2].value == "4"
+
+    def test_select_get_selected_option(self):
+        # GIVEN the existing select element with one selected option
+        select = pydom[f"#test_select_element_w_options"][0]
+
+        # WHEN we get the selected option
+        selected_option = select.options.selected
+
+        # EXPECT the selected option to be correct
+        assert selected_option.value == "2"
+        assert selected_option.html == "Option 2"
+        assert selected_option.selected == selected_option._js.selected == True
+

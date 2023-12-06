@@ -158,6 +158,22 @@ class Element(BaseElement):
             )
         self._js.value = value
 
+    @property
+    def selected(self):
+        return self._js.selected
+
+    @selected.setter
+    def selected(self, value):
+        # in order to avoid confusion to the user, we don't allow setting the
+        # value of elements that don't have a value attribute
+        if not hasattr(self._js, "selected"):
+            raise AttributeError(
+                f"Element {self._js.tagName} has no value attribute. If you want to "
+                "force a value attribute, set it directly using the `_js.value = <value>` "
+                "javascript API attribute instead."
+            )
+        self._js.selected = value
+
     def clone(self, new_id=None):
         clone = Element(self._js.cloneNode(True))
         clone.id = new_id
@@ -220,11 +236,11 @@ class OptionsProxy:
 
         self._element._js.add(option, before)
 
-    def remove(self, index: int):
+    def remove(self, item: int) -> None:
         """Remove the option at the specified index"""
-        self._element._js.remove(index)
+        self._element._js.remove(item)
 
-    def clear(self):
+    def clear(self) -> None:
         """Remove all the options"""
         for i in range(len(self)):
             self.remove(0)
@@ -233,6 +249,11 @@ class OptionsProxy:
     def options(self):
         """Return the list of options"""
         return [Element(opt) for opt in self._element._js.options]
+
+    @property
+    def selected(self):
+        """Return the selected option"""
+        return self.options[self._element._js.selectedIndex]
 
     def __iter__(self):
         yield from self.options
