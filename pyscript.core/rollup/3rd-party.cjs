@@ -10,6 +10,9 @@ const { devDependencies } = require(join(__dirname, "..", "package.json"));
 
 const v = (name) => devDependencies[name].replace(/[^\d.]/g, "");
 
+const dropSourceMap = (str) =>
+    str.replace(/^\/.+? sourceMappingURL=\/.+$/m, "");
+
 // Fetch a module via jsdelivr CDN `/+esm` orchestration
 // then sanitize the resulting outcome to avoid importing
 // anything via `/npm/...` through Rollup
@@ -31,25 +34,41 @@ const resolve = (name) => {
         );
 };
 
+// create a file rollup can then process and understand
+const reBundle = (name) => Promise.resolve(`export * from "${name}";\n`);
+
 // key/value pairs as:
 //  "3rd-party/file-name.js"
 //    string as content or
 //    Promise<string> as resolved content
 const modules = {
+    // toml
     "toml.js": join(node_modules, "@webreflection", "toml-j0.4", "toml.js"),
+
+    // xterm
     "xterm.js": resolve("xterm"),
-    "xterm.css": fetch(`${CDN}/xterm@${v("xterm")}/css/xterm.min.css`).then(
-        (b) => b.text(),
-    ),
     "xterm-readline.js": resolve("xterm-readline"),
     "xterm_addon-fit.js": fetch(`${CDN}/@xterm/addon-fit/+esm`).then((b) =>
         b.text(),
     ),
+    "xterm.css": fetch(`${CDN}/xterm@${v("xterm")}/css/xterm.min.css`).then(
+        (b) => b.text(),
+    ),
+
+    // codemirror
+    "codemirror.js": reBundle("codemirror"),
+    "codemirror_state.js": reBundle("@codemirror/state"),
+    "codemirror_lang-python.js": reBundle("@codemirror/lang-python"),
+    "codemirror_language.js": reBundle("@codemirror/language"),
+    "codemirror_view.js": reBundle("@codemirror/view"),
+    "codemirror_commands.js": reBundle("@codemirror/commands"),
 };
 
 for (const [target, source] of Object.entries(modules)) {
     if (typeof source === "string") copyFileSync(source, join(targets, target));
     else {
-        source.then((text) => writeFileSync(join(targets, target), text));
+        source.then((text) =>
+            writeFileSync(join(targets, target), dropSourceMap(text)),
+        );
     }
 }
