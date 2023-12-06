@@ -3,15 +3,17 @@
  * to use as base config for all py-script elements, importing
  * also a queue of plugins *before* the interpreter (if any) resolves.
  */
-import { $ } from "basic-devtools";
+import { $$ } from "basic-devtools";
 
 import TYPES from "./types.js";
 import allPlugins from "./plugins.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
 import { ErrorCode } from "./exceptions.js";
 
+const { BAD_CONFIG, CONFLICTING_CODE } = ErrorCode;
+
 const badURL = (url, expected = "") => {
-    let message = `(${ErrorCode.BAD_CONFIG}): Invalid URL: ${url}`;
+    let message = `(${BAD_CONFIG}): Invalid URL: ${url}`;
     if (expected) message += `\nexpected ${expected} content`;
     throw new Error(message);
 };
@@ -41,8 +43,10 @@ const configDetails = async (config, type) => {
     return { json, toml: toml || (!json && !!text), text, url };
 };
 
+const conflictError = (reason) => new Error(`(${CONFLICTING_CODE}): ${reason}`);
+
 const syntaxError = (type, url, { message }) => {
-    let str = `(${ErrorCode.BAD_CONFIG}): Invalid ${type}`;
+    let str = `(${BAD_CONFIG}): Invalid ${type}`;
     if (url) str += ` @ ${url}`;
     return new SyntaxError(`${str}\n${message}`);
 };
@@ -56,27 +60,49 @@ for (const [TYPE] of TYPES) {
     /** @type {any} The PyScript configuration parsed from the JSON or TOML object*. May be any of the return types of JSON.parse() or toml-j0.4's parse() ( {number | string | boolean | null | object | Array} ) */
     let parsed;
 
-    /** @type {SyntaxError | undefined} The error thrown when parsing the PyScript config, if any.*/
+    /** @type {Error | undefined} The error thrown when parsing the PyScript config, if any.*/
     let error;
 
     let config,
         type,
-        pyConfig = $(`${TYPE}-config`);
-    if (pyConfig) {
-        config = pyConfig.getAttribute("src") || pyConfig.textContent;
-        type = pyConfig.getAttribute("type");
-    } else {
-        pyConfig = $(
+        pyElement,
+        pyConfigs = $$(`${TYPE}-config`),
+        attrConfigs = $$(
             [
                 `script[type="${TYPE}"][config]:not([worker])`,
                 `${TYPE}-script[config]:not([worker])`,
             ].join(","),
         );
-        if (pyConfig) config = pyConfig.getAttribute("config");
+
+    // throw an error if there are multiple <py-config> or <mpy-config>
+    if (pyConfigs.length > 1) {
+        error = conflictError(`Too many ${TYPE}-config`);
+    } else {
+        // throw an error if there are <x-config> and config="x" attributes
+        if (pyConfigs.length && attrConfigs.length) {
+            error = conflictError(
+                `Ambiguous ${TYPE}-config VS config attribute`,
+            );
+        } else if (pyConfigs.length) {
+            [pyElement] = pyConfigs;
+            config = pyElement.getAttribute("src") || pyElement.textContent;
+            type = pyElement.getAttribute("type");
+        } else if (attrConfigs.length) {
+            [pyElement, ...attrConfigs] = attrConfigs;
+            config = pyElement.getAttribute("config");
+            // throw an error if dirrent scripts use different configs
+            if (
+                attrConfigs.some((el) => el.getAttribute("config") !== config)
+            ) {
+                error = conflictError(
+                    "Unable to use different configs on main",
+                );
+            }
+        }
     }
 
     // catch possible fetch errors
-    if (config) {
+    if (!error && config) {
         try {
             const { json, toml, text, url } = await configDetails(config, type);
             config = text;
