@@ -12,10 +12,10 @@ For examples see [here](https://pyscript.com/@examples).
 
 Other useful resources:
 
-- The [official technical docs](https://docs.pyscript.net/).
-- Our current [Home Page](https://pyscript.net/) on the web.
-- A free-to-use [online editor](https://pyscript.com/) for trying PyScript.
-- Our community [Discord Channel](https://discord.gg/BYB2kvyFwm), to keep in touch .
+-   The [official technical docs](https://docs.pyscript.net/).
+-   Our current [Home Page](https://pyscript.net/) on the web.
+-   A free-to-use [online editor](https://pyscript.com/) for trying PyScript.
+-   Our community [Discord Channel](https://discord.gg/BYB2kvyFwm), to keep in touch .
 
 Every Tuesday at 15:30 UTC there is the _PyScript Community Call_ on zoom, where we can talk about PyScript development in the open. Most of the maintainers regularly participate in the call, and everybody is welcome to join.
 
