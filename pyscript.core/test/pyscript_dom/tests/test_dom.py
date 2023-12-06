@@ -327,13 +327,13 @@ class TestSelect:
         assert len(select.options) == 0
 
         # WHEN we add an option
-        select.options.add(value = "3", html = "Option 3")
+        select.options.add(value = "1", html = "Option 1")
 
         # EXPECT the select element to have 1 option matching the attributes
         # we passed in
         assert len(select.options) == 1
-        assert select.options[0].value == "3"
-        assert select.options[0].html == "Option 3"
+        assert select.options[0].value == "1"
+        assert select.options[0].html == "Option 1"
 
         # WHEN we add another option (blank this time)
         select.options.add()
@@ -345,4 +345,33 @@ class TestSelect:
         assert select.options[1].value == ""
         assert select.options[1].html == ""
 
+        # WHEN we add another option (this time adding it in between the other 2
+        # options by using an integer index)
+        select.options.add(value = "2", html = "Option 2", before = 1)
+
+        # EXPECT the select element to have 3 options
+        assert len(select.options) == 3
+
+        # EXPECT the middle option to have the value and html we passed in
+        assert select.options[0].value == "1"
+        assert select.options[0].html == "Option 1"
+        assert select.options[1].value == "2"
+        assert select.options[1].html == "Option 2"
+        assert select.options[2].value == ""
+        assert select.options[2].html == ""
+
+        # WHEN we add another option (this time adding it in between the other 2
+        # options but using the option itself)
+        select.options.add(value = "3", html = "Option 3", before = select.options[2])
+
+        # EXPECT the select element to have 3 options
+        assert len(select.options) == 3
+
+        # EXPECT the middle option to have the value and html we passed in
+        assert select.options[0].value == "1"
+        assert select.options[0].html == "Option 1"
+        assert select.options[1].value == "2"
+        assert select.options[1].html == "Option 2"
+        select.options.add(value = "2", html = "Option 2", before = 1)
+        
         select.options.clear()

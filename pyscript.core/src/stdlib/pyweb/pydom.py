@@ -214,13 +214,11 @@ class OptionsProxy:
         for (key, value) in kws.items():
             option.setAttribute(key, value)
 
-        _kws = {}
         if before:
             if isinstance(before, Element):
                 before = before._js
-            _kws['before'] = before
 
-        self._element._js.add(option, **_kws)
+        self._element._js.add(option, before)
 
     def remove(self, index: int):
         """Remove the option at the specified index"""
