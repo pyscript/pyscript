@@ -101,6 +101,14 @@ class Element(BaseElement):
         self._js.innerHTML = value
 
     @property
+    def text(self):
+        return self._js.textContent
+
+    @text.setter
+    def text(self, value):
+        self._js.textContent = value
+
+    @property
     def content(self):
         # TODO: This breaks with with standard template elements. Define how to best
         #       handle this specifica use case. Just not support for now?

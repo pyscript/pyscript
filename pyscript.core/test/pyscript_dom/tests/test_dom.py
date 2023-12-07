@@ -184,7 +184,7 @@ class TestElement:
         
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
-        assert div.html == div._js.innerHTML == "<b>New Content</b>"
+        assert div.html == div._js.innerHTML == '&lt;b&gt;New Content&lt;/b&gt;'
         assert div.text == div._js.textContent == "<b>New Content</b>"
 
 
