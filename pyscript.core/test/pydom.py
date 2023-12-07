@@ -1,10 +1,9 @@
 import random
 from datetime import datetime as dt
 
+from pyscript import display
 from pyweb import pydom
 from pyweb.base import when
-
-from pyscript import display
 
 
 @when("click", "#just-a-button")

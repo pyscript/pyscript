@@ -1,7 +1,6 @@
 import inspect
 
 from pyodide.ffi.wrappers import add_event_listener
-
 from pyscript.magic_js import document
 
 
