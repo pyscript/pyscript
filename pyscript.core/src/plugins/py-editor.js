@@ -48,8 +48,8 @@ async function execute({ currentTarget }) {
         xworker.onerror = ({ error }) => {
             outDiv.innerHTML += `<span style='color:red'>${
                 error.message || error
-            }</span>`;
-            console.log(error);
+            }</span>\n`;
+            console.error(error);
         };
 
         const enable = () => {
@@ -57,10 +57,10 @@ async function execute({ currentTarget }) {
         };
         const { sync } = xworker;
         sync.write = (str) => {
-            outDiv.innerText += str;
+            outDiv.innerText += `${str}\n`;
         };
         sync.writeErr = (str) => {
-            outDiv.innerHTML += `<span style='color:red'>${str}</span>`;
+            outDiv.innerHTML += `<span style='color:red'>${str}</span>\n`;
         };
         sync.runAsync(pySrc).then(enable, enable);
     });
@@ -88,7 +88,7 @@ const makeEditorDiv = (listener, type) => {
         event.stopPropagation();
     });
 
-    editorDiv.append(editorShadowContainer, runButton);
+    editorDiv.append(runButton, editorShadowContainer);
 
     return editorDiv;
 };
@@ -164,6 +164,7 @@ const init = async (script, type, interpreter) => {
     // @see https://github.com/JeffersGlass/mkdocs-pyscript/blob/main/mkdocs_pyscript/js/makeblocks.js
     const listener = execute.bind(context);
     const [boxDiv, outDiv] = makeBoxDiv(listener, type);
+    boxDiv.dataset.env = script.hasAttribute("env") ? env : interpreter;
 
     const inputChild = boxDiv.querySelector(`.${type}-editor-input > div`);
     const parent = inputChild.attachShadow({ mode: "open" });
