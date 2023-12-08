@@ -33,9 +33,13 @@ const write = (base, literal) => {
 
 write(".", pyscript);
 
-python.push("del _Path");
-python.push("del _path");
-python.push("del _os");
+// in order to fix js.document in the Worker case
+// we need to bootstrap pyscript module ASAP
+python.push("import pyscript as _pyscript");
+
+python.push(
+    ...["_Path", "_path", "_os", "_pyscript"].map((ref) => `del ${ref}`),
+);
 python.push("\n");
 
 export default python.join("\n");

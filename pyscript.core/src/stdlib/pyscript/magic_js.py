@@ -1,9 +1,11 @@
 import js as globalThis
+from polyscript import js_modules
 from pyscript.util import NotSupported
 
 RUNNING_IN_WORKER = not hasattr(globalThis, "document")
 
 if RUNNING_IN_WORKER:
+    import js
     import polyscript
 
     PyWorker = NotSupported(
@@ -12,6 +14,7 @@ if RUNNING_IN_WORKER:
     )
     window = polyscript.xworker.window
     document = window.document
+    js.document = document
     sync = polyscript.xworker.sync
 
     # in workers the display does not have a default ID

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyTerminal</title>
+        <link rel="stylesheet" href="../dist/core.css">
+        <script type="module" src="../dist/core.js"></script>
+    </head>
+    <body>
+        <script type="py-editor">
+            import sys
+            print(sys.version)
+        </script>
+        <script type="mpy-editor">
+            import sys
+            print(sys.version)
+            a = 42
+            print(a)
+        </script>
+        <script type="mpy-editor" env="shared">
+            if not 'a' in globals():
+                a = 1
+            else:
+                a += 1
+            print(a)
+        </script>
+        <script type="mpy-editor" env="shared">
+            # doubled a
+            print(a * 2)
+        </script>
+    </body>
+</html>
