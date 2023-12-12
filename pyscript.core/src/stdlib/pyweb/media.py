@@ -1,0 +1,36 @@
+from pyscript import window
+
+
+async def list_devices() -> list[dict]:
+    """
+    Return the list of the currently available media input and output devices,
+    such as microphones, cameras, headsets, and so forth. 
+
+    Output:
+
+        list(dict) - list of dictionaries representing the available media devices.
+            Each dictionary has the following keys:
+            * deviceId: a string that is an identifier for the represented device
+                that is persisted across sessions. It is un-guessable by other
+                applications and unique to the origin of the calling application.
+                It is reset when the user clears cookies (for Private Browsing, a
+                different identifier is used that is not persisted across sessions).
+
+            * groupId: a string that is a group identifier. Two devices have the same
+                group identifier if they belong to the same physical device — for
+                example a monitor with both a built-in camera and a microphone.
+
+            * kind: an enumerated value that is either "videoinput", "audioinput"
+                or "audiooutput".
+
+            * label: a string describing this device (for example "External USB
+                Webcam").
+
+    Note: the returned list will omit any devices that are blocked by the document
+    Permission Policy: microphone, camera, speaker-selection (for output devices),
+    and so on. Access to particular non-default devices is also gated by the
+    Permissions API, and the list will omit devices for which the user has not
+    granted explicit permission.
+    """
+    # https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
+    return await window.navigator.mediaDevices.enumerateDevices()
