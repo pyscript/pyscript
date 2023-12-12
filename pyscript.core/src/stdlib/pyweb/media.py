@@ -1,6 +1,30 @@
 from pyscript import window
 
 
+class Device:
+    def __init__(self, device):
+        self._js = device
+
+    @property
+    def id(self):
+        return self._js.deviceId
+
+    @property
+    def group(self):
+        return self._js.groupId
+
+    @property
+    def kind(self):
+        return self._js.kind
+
+    @property
+    def label(self):
+        return self._js.label
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
 async def list_devices() -> list[dict]:
     """
     Return the list of the currently available media input and output devices,
@@ -33,4 +57,4 @@ async def list_devices() -> list[dict]:
     granted explicit permission.
     """
     # https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
-    return await window.navigator.mediaDevices.enumerateDevices()
+    return [Device(obj) for obj in await window.navigator.mediaDevices.enumerateDevices()]
