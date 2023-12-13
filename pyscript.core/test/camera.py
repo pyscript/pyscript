@@ -8,7 +8,7 @@ video = pydom["video"][0]
 devices = {}
 
 @when("click", "#list-devices")
-async def list_media_devices(event):
+async def list_media_devices(event=None):
     global devices
     for i, device in enumerate(await media.list_devices()):
         devices[device.id] = device
@@ -26,3 +26,5 @@ async def connect_to_device(e):
 @when("click", "#snap")
 async def camera_click(e):
     video.snap().download()
+
+await list_media_devices()
