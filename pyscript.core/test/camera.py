@@ -7,7 +7,6 @@ devicesSelect = pydom['#devices'][0]
 video = pydom["video"][0]
 devices = {}
 
-@when("click", "#list-devices")
 async def list_media_devices(event=None):
     global devices
     for i, device in enumerate(await media.list_devices()):

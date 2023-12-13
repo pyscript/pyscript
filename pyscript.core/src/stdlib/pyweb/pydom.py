@@ -228,7 +228,8 @@ class Element(BaseElement):
             if canvas._js.tagName != "CANVAS":
                 raise TypeError("Element to snap to must a canvas.")
 
-        canvas._js.getContext('2d').drawImage(self._js, 0, 0, width, height)
+        canvas.draw(self, width, height)
+
         return canvas
 
     def download(self, filename="gotcha.png"):
@@ -239,6 +240,15 @@ class Element(BaseElement):
         link._js.download = filename
         link._js.href = self._js.toDataURL()
         link._js.click()
+
+    def draw(self, what, width, height):
+        if self._js.tagName != 'CANVAS':
+            raise AttributeError("The draw method is only available for canvas Elements")
+
+        if isinstance(what, Element):
+            what = what._js
+
+        self._js.getContext('2d').drawImage(what, 0, 0, width, height)
 
 class OptionsProxy:
     """This class represents the options of a select element. It
