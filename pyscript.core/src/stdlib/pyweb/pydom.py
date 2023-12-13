@@ -204,6 +204,41 @@ class Element(BaseElement):
     def show_me(self):
         self._js.scrollIntoView()
 
+    def snap(self, to=None, width=None, height=None):
+        if self._js.tagName != 'VIDEO':
+            raise AttributeError("Snap method is only available for video Elements")
+
+        if to is None:
+            canvas = self.create('canvas')
+            if width is None:
+                width = self._js.width
+            if height is None:
+                height = self._js.height
+            canvas._js.setAttribute('width', width)
+            canvas._js.setAttribute('height', height)
+
+        elif isistance(to, Element):
+            if to._js.tagName != "CANVAS":
+                raise TypeError("Element to snap to must a canvas.")
+            canvas = to
+        elif getattr(to, 'tagName', '') == "CANVAS":
+            canvas = Element(to)
+        elif isinstance(to, str):
+            canvas = pydom[to][0]
+            if canvas._js.tagName != "CANVAS":
+                raise TypeError("Element to snap to must a canvas.")
+
+        canvas._js.getContext('2d').drawImage(self._js, 0, 0, width, height)
+        return canvas
+
+    def download(self, filename="gotcha.png"):
+        if self._js.tagName != 'CANVAS':
+            raise AttributeError("The download method is only available for canvas Elements")
+
+        link = self.create('a')
+        link._js.download = filename
+        link._js.href = self._js.toDataURL()
+        link._js.click()
 
 class OptionsProxy:
     """This class represents the options of a select element. It

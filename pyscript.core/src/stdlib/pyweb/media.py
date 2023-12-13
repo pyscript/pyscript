@@ -1,5 +1,6 @@
 from pyscript import window
 
+from pyodide.ffi import to_js
 
 class Device:
     def __init__(self, device):
@@ -23,6 +24,32 @@ class Device:
 
     def __getitem__(self, key):
         return getattr(self, key)
+
+    @classmethod
+    async def load(cls, audio=False, video=True):
+        options = window.Object.new()
+        options.audio = audio
+        if isinstance(video, bool):
+            options.video = video
+        else:
+            # TODO: Think this can be simplified but need to check it on the pyodide side
+
+            # TODO: this is pyodide specific. shouldn't be!
+            options.video = window.Object.new()
+            for k in video:
+                setattr(options.video, k, to_js(video[k], dict_converter=window.Object.fromEntries))
+
+        stream = await window.navigator.mediaDevices.getUserMedia(options)
+        return stream
+
+    async def get_stream(self):
+        key = self.kind.replace("input", "").replace("output", "")
+        options = {
+            key: {"deviceId": {"exact": self.id}}
+        }
+
+        print("optioniiiiii", options)
+        return await self.load(**options)
 
 
 async def list_devices() -> list[dict]:
