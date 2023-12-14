@@ -251,6 +251,14 @@ class Element(BaseElement):
         link._js.click()
 
     def draw(self, what, width, height):
+        """Draw `what` on the current element  (only available for canvas elements).
+
+        Inputs:
+
+            * what (canvas image source): An element to draw into the context. The specification permits any canvas
+                image source, specifically, an HTMLImageElement, an SVGImageElement, an HTMLVideoElement,
+                an HTMLCanvasElement, an ImageBitmap, an OffscreenCanvas, or a VideoFrame.
+        """
         if self._js.tagName != 'CANVAS':
             raise AttributeError("The draw method is only available for canvas Elements")
 
