@@ -232,7 +232,16 @@ class Element(BaseElement):
 
         return canvas
 
-    def download(self, filename="gotcha.png"):
+    def download(self, filename: str="snapped.png") --> None:
+        """Download the current element (only available for canvas elements) with the filename
+        provided in input.
+        
+        Inputs:
+            * filename (str): name of the file being donwloaded
+
+        Output:
+            None
+        """
         if self._js.tagName != 'CANVAS':
             raise AttributeError("The download method is only available for canvas Elements")
 
@@ -249,6 +258,7 @@ class Element(BaseElement):
             what = what._js
 
         self._js.getContext('2d').drawImage(what, 0, 0, width, height)
+
 
 class OptionsProxy:
     """This class represents the options of a select element. It
