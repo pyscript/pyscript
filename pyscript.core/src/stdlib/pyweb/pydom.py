@@ -204,7 +204,19 @@ class Element(BaseElement):
     def show_me(self):
         self._js.scrollIntoView()
 
-    def snap(self, to=None, width=None, height=None):
+    def snap(self, to: Element | str = None, width: int | None = None, height int | None = None):
+        """
+        Captures a snapshot of a video element. (Only available for video elements)
+
+        Inputs:
+
+            * to: element where to save the snapshot of the video frame to
+            * width: width of the image
+            * height: height of the image
+        
+        Output:
+            (Element) canvas element where the video frame snapshot was drawn into
+        """
         if self._js.tagName != 'VIDEO':
             raise AttributeError("Snap method is only available for video Elements")
 
@@ -265,6 +277,7 @@ class Element(BaseElement):
         if isinstance(what, Element):
             what = what._js
 
+        # https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
         self._js.getContext('2d').drawImage(what, 0, 0, width, height)
 
 
