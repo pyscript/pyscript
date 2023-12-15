@@ -1,5 +1,4 @@
 import sys
-from types import ModuleType
 
 import js as globalThis
 from polyscript import js_modules
@@ -15,7 +14,7 @@ class JSModule(object):
 
     def __getattr__(self, field):
         # avoid pyodide looking for non existent fields
-        if field[0] != "_":
+        if not field.startswith("_"):
             return getattr(getattr(js_modules, self.name), field)
 
 
