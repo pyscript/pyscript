@@ -213,7 +213,7 @@ class Element(BaseElement):
             * to: element where to save the snapshot of the video frame to
             * width: width of the image
             * height: height of the image
-        
+
         Output:
             (Element) canvas element where the video frame snapshot was drawn into
         """
@@ -247,7 +247,7 @@ class Element(BaseElement):
     def download(self, filename: str="snapped.png") --> None:
         """Download the current element (only available for canvas elements) with the filename
         provided in input.
-        
+
         Inputs:
             * filename (str): name of the file being donwloaded
 
