@@ -14,6 +14,7 @@ class BaseElement:
         self._js = js_element
         self._parent = None
         self.style = StyleProxy(self)
+        self._proxies = {}
 
     def __eq__(self, obj):
         """Check if the element is the same as the other element by comparing
@@ -130,6 +131,18 @@ class Element(BaseElement):
         self._js.id = value
 
     @property
+    def options(self):
+        if "options" in self._proxies:
+            return self._proxies["options"]
+
+        if not self._js.tagName.lower() in {"select", "datalist", "optgroup"}:
+            raise AttributeError(
+                f"Element {self._js.tagName} has no options attribute."
+            )
+        self._proxies["options"] = OptionsProxy(self)
+        return self._proxies["options"]
+
+    @property
     def value(self):
         return self._js.value
 
@@ -144,6 +157,22 @@ class Element(BaseElement):
                 "javascript API attribute instead."
             )
         self._js.value = value
+
+    @property
+    def selected(self):
+        return self._js.selected
+
+    @selected.setter
+    def selected(self, value):
+        # in order to avoid confusion to the user, we don't allow setting the
+        # value of elements that don't have a value attribute
+        if not hasattr(self._js, "selected"):
+            raise AttributeError(
+                f"Element {self._js.tagName} has no value attribute. If you want to "
+                "force a value attribute, set it directly using the `_js.value = <value>` "
+                "javascript API attribute instead."
+            )
+        self._js.selected = value
 
     def clone(self, new_id=None):
         clone = Element(self._js.cloneNode(True))
@@ -174,6 +203,77 @@ class Element(BaseElement):
 
     def show_me(self):
         self._js.scrollIntoView()
+
+
+class OptionsProxy:
+    """This class represents the options of a select element. It
+    allows to access to add and remove options by using the `add` and `remove` methods.
+    """
+
+    def __init__(self, element: Element) -> None:
+        self._element = element
+        if self._element._js.tagName.lower() != "select":
+            raise AttributeError(
+                f"Element {self._element._js.tagName} has no options attribute."
+            )
+
+    def add(
+        self,
+        value: Any = None,
+        html: str = None,
+        text: str = None,
+        before: Element | int = None,
+        **kws,
+    ) -> None:
+        """Add a new option to the select element"""
+        # create the option element and set the attributes
+        option = document.createElement("option")
+        if value is not None:
+            kws["value"] = value
+        if html is not None:
+            option.innerHTML = html
+        if text is not None:
+            kws["text"] = text
+
+        for key, value in kws.items():
+            option.setAttribute(key, value)
+
+        if before:
+            if isinstance(before, Element):
+                before = before._js
+
+        self._element._js.add(option, before)
+
+    def remove(self, item: int) -> None:
+        """Remove the option at the specified index"""
+        self._element._js.remove(item)
+
+    def clear(self) -> None:
+        """Remove all the options"""
+        for i in range(len(self)):
+            self.remove(0)
+
+    @property
+    def options(self):
+        """Return the list of options"""
+        return [Element(opt) for opt in self._element._js.options]
+
+    @property
+    def selected(self):
+        """Return the selected option"""
+        return self.options[self._element._js.selectedIndex]
+
+    def __iter__(self):
+        yield from self.options
+
+    def __len__(self):
+        return len(self.options)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} (length: {len(self)}) {self.options}"
+
+    def __getitem__(self, key):
+        return self.options[key]
 
 
 class StyleProxy(dict):

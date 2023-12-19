@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.3.8",
+    "version": "0.3.10",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -66,7 +66,7 @@
         "rollup-plugin-postcss": "^4.0.2",
         "rollup-plugin-string": "^3.0.0",
         "static-handler": "^0.4.3",
-        "typescript": "^5.3.2",
+        "typescript": "^5.3.3",
         "xterm": "^5.3.0",
         "xterm-readline": "^1.1.1"
     },
