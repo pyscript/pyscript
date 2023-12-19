@@ -112,7 +112,7 @@ class TestPyTerminal(PyScriptTest):
         This test isn't meant to capture all of the behaviors of an xtermjs terminal;
         rather, it confirms with a few basic formatting sequences that (1) the xtermjs
         terminal is functioning/loaded correctly and (2) that output toward that terminal
-        isn't being escaped in a way that prevents it reacting to escape seqeunces. The
+        isn't being escaped in a way that prevents it reacting to escape sequences. The
         main goal is preventing regressions.
         """
         self.pyscript_run(
