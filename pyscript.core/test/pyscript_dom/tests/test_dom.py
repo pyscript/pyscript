@@ -169,22 +169,22 @@ class TestElement:
 
         # WHEN we set the html attribute
         div.html = "<b>New Content</b>"
-        
+
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
         assert div.html == div._js.innerHTML == "<b>New Content</b>"
         assert div.text == div._js.textContent == "New Content"
-        
+
     def test_text_attribute(self):
         # GIVEN an existing element on the page with a known empty text content
         div = pydom["#element_attribute_tests"][0]
 
         # WHEN we set the html attribute
         div.text = "<b>New Content</b>"
-        
+
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
-        assert div.html == div._js.innerHTML == '&lt;b&gt;New Content&lt;/b&gt;'
+        assert div.html == div._js.innerHTML == "&lt;b&gt;New Content&lt;/b&gt;"
         assert div.text == div._js.textContent == "<b>New Content</b>"
 
 
