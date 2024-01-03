@@ -77,7 +77,7 @@ const pyTerminal = async () => {
         terminal.open(target);
         fitAddon.fit();
         terminal.focus();
-        defineProperty(element, 'terminal', { value: terminal });
+        defineProperty(element, "terminal", { value: terminal });
     };
 
     // branch logic for the worker
