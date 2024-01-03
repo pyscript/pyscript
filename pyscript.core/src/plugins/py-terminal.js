@@ -1,6 +1,7 @@
 // PyScript py-terminal plugin
 import { TYPES, hooks } from "../core.js";
 import { notify } from "./error.js";
+import { defineProperty } from "polyscript/exports";
 
 const SELECTOR = [...TYPES.keys()]
     .map((type) => `script[type="${type}"][terminal],${type}-script[terminal]`)
@@ -76,6 +77,7 @@ const pyTerminal = async () => {
         terminal.open(target);
         fitAddon.fit();
         terminal.focus();
+        defineProperty(element, "terminal", { value: terminal });
     };
 
     // branch logic for the worker
