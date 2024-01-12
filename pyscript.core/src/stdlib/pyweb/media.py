@@ -1,6 +1,6 @@
+from pyodide.ffi import to_js
 from pyscript import window
 
-from pyodide.ffi import to_js
 
 class Device:
     def __init__(self, device):
@@ -37,16 +37,18 @@ class Device:
             # TODO: this is pyodide specific. shouldn't be!
             options.video = window.Object.new()
             for k in video:
-                setattr(options.video, k, to_js(video[k], dict_converter=window.Object.fromEntries))
+                setattr(
+                    options.video,
+                    k,
+                    to_js(video[k], dict_converter=window.Object.fromEntries),
+                )
 
         stream = await window.navigator.mediaDevices.getUserMedia(options)
         return stream
 
     async def get_stream(self):
         key = self.kind.replace("input", "").replace("output", "")
-        options = {
-            key: {"deviceId": {"exact": self.id}}
-        }
+        options = {key: {"deviceId": {"exact": self.id}}}
 
         print("optioniiiiii", options)
         return await self.load(**options)
@@ -55,7 +57,7 @@ class Device:
 async def list_devices() -> list[dict]:
     """
     Return the list of the currently available media input and output devices,
-    such as microphones, cameras, headsets, and so forth. 
+    such as microphones, cameras, headsets, and so forth.
 
     Output:
 
@@ -84,4 +86,6 @@ async def list_devices() -> list[dict]:
     granted explicit permission.
     """
     # https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
-    return [Device(obj) for obj in await window.navigator.mediaDevices.enumerateDevices()]
+    return [
+        Device(obj) for obj in await window.navigator.mediaDevices.enumerateDevices()
+    ]

@@ -1,11 +1,11 @@
-from pyscript import display, when, window, document
-from pyweb import pydom, media
 from pyodide.ffi import create_proxy
+from pyscript import display, document, when, window
+from pyweb import media, pydom
 
-
-devicesSelect = pydom['#devices'][0]
+devicesSelect = pydom["#devices"][0]
 video = pydom["video"][0]
 devices = {}
+
 
 async def list_media_devices(event=None):
     global devices
@@ -17,13 +17,19 @@ async def list_media_devices(event=None):
 
         devicesSelect.options.add(value=device.id, html=label)
 
+
 @when("click", "#pick-device")
 async def connect_to_device(e):
     device = devices[devicesSelect.value]
     video._js.srcObject = await device.get_stream()
 
+
 @when("click", "#snap")
 async def camera_click(e):
     video.snap().download()
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c07a63bb9093b0f3db3767ab5d28cf64905124f2
 await list_media_devices()
