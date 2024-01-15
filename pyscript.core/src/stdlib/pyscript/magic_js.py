@@ -8,7 +8,7 @@ RUNNING_IN_WORKER = not hasattr(globalThis, "document")
 
 
 # allow `from pyscript.js_modules.xxx import yyy`
-class JSModule(object):
+class JSModule:
     def __init__(self, name):
         self.name = name
 

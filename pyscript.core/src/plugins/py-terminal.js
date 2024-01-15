@@ -86,6 +86,10 @@ const pyTerminal = async () => {
         // setup the interpreter stdout and stderr
         const workerReady = ({ interpreter }, { sync }) => {
             sync.pyterminal_drop_hooks();
+
+            // This part is inevitably duplicated as external scope
+            // can't be reached by workers out of the box.
+            // The detail is that here we use sync though, not readline.
             const decoder = new TextDecoder();
             let data = "";
             const generic = {
@@ -127,7 +131,7 @@ const pyTerminal = async () => {
     } else {
         // in the main case, just bootstrap XTerm without
         // allowing any input as that's not possible / awkward
-        hooks.main.onReady.add(function main({ io }) {
+        hooks.main.onReady.add(function main({ interpreter }) {
             console.warn("py-terminal is read only on main thread");
             hooks.main.onReady.delete(main);
             init({
@@ -135,12 +139,26 @@ const pyTerminal = async () => {
                 cursorBlink: false,
                 cursorStyle: "underline",
             });
-            io.stdout = (value) => {
-                readline.write(`${value}\n`);
+
+            // This part is inevitably duplicated as external scope
+            // can't be reached by workers out of the box.
+            // The detail is that here we use readline here, not sync.
+            const decoder = new TextDecoder();
+            let data = "";
+            const generic = {
+                isatty: true,
+                write(buffer) {
+                    data = decoder.decode(buffer);
+                    readline.write(data);
+                    return buffer.length;
+                },
             };
-            io.stderr = (error) => {
-                readline.write(`${error.message || error}\n`);
-            };
+            interpreter.setStdout(generic);
+            interpreter.setStderr(generic);
+            interpreter.setStdin({
+                isatty: true,
+                stdin: () => readline.read(data),
+            });
         });
     }
 };
