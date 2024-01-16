@@ -84,7 +84,7 @@ const pyTerminal = async () => {
     if (element.hasAttribute("worker")) {
         // when the remote thread onReady triggers:
         // setup the interpreter stdout and stderr
-        const workerReady = ({ interpreter }, { sync }) => {
+        const workerReady = ({ interpreter, io }, { sync }) => {
             sync.pyterminal_drop_hooks();
 
             // This part is inevitably duplicated as external scope
@@ -106,6 +106,10 @@ const pyTerminal = async () => {
                 isatty: true,
                 stdin: () => sync.pyterminal_read(data),
             });
+
+            io.stderr = (error) => {
+                sync.pyterminal_write(`${error.message || error}\n`);
+            };
         };
 
         // add a hook on the main thread to setup all sync helpers
@@ -131,7 +135,7 @@ const pyTerminal = async () => {
     } else {
         // in the main case, just bootstrap XTerm without
         // allowing any input as that's not possible / awkward
-        hooks.main.onReady.add(function main({ interpreter }) {
+        hooks.main.onReady.add(function main({ interpreter, io }) {
             console.warn("py-terminal is read only on main thread");
             hooks.main.onReady.delete(main);
             init({
@@ -159,6 +163,10 @@ const pyTerminal = async () => {
                 isatty: true,
                 stdin: () => readline.read(data),
             });
+
+            io.stderr = (error) => {
+                readline.write(`${error.message || error}\n`);
+            };
         });
     }
 };
