@@ -51,3 +51,14 @@ test('MicroPython + Pyodide js_modules', async ({ page }) => {
   await expect(logs[3]).toBe(logs[4]);
   await expect(logs[4]).toBe(logs[5]);
 });
+
+test('MicroPython + configURL', async ({ page }) => {
+  const logs = [];
+  page.on('console', msg => {
+    const text = msg.text();
+    if (!text.startsWith('['))
+      logs.push(text);
+  });
+  await page.goto('http://localhost:8080/test/config-url.html');
+  await page.waitForSelector('html.main.worker');
+});

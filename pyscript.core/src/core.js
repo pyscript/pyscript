@@ -64,7 +64,7 @@ for (const [TYPE, interpreter] of TYPES) {
         else dispatch(element, TYPE, "done");
     };
 
-    const { config, plugins, error } = configs.get(TYPE);
+    const { config, configURL, plugins, error } = configs.get(TYPE);
 
     // create a unique identifier when/if needed
     let id = 0;
@@ -259,6 +259,7 @@ for (const [TYPE, interpreter] of TYPES) {
 
             define(TYPE, {
                 config,
+                configURL,
                 interpreter,
                 hooks,
                 env: `${TYPE}-script`,

@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.3.16",
+    "version": "0.3.17",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -42,7 +42,7 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.6.11",
+        "polyscript": "^0.6.13",
         "sticky-module": "^0.1.1",
         "to-json-callback": "^0.1.1",
         "type-checked-collections": "^0.1.7"
@@ -53,7 +53,7 @@
         "@codemirror/language": "^6.10.0",
         "@codemirror/state": "^6.4.0",
         "@codemirror/view": "^6.23.0",
-        "@playwright/test": "^1.40.1",
+        "@playwright/test": "^1.41.0",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
