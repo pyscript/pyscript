@@ -29,6 +29,14 @@ import { hooks, main, worker, codeFor, createFunction } from "./hooks.js";
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
 
+const firstMainScript = (wrap, element) => {
+    wrap.run(`
+        from js import document as _
+        __script__ = _.getElementById("${element.id}")
+        del _
+    `);
+};
+
 // avoid multiple initialization of the same library
 const [
     {
@@ -199,6 +207,7 @@ for (const [TYPE, interpreter] of TYPES) {
                             callback(_, xworker);
                     },
                     onBeforeRun(wrap, element) {
+                        if (!currentElement) firstMainScript(wrap, element);
                         currentElement = element;
                         bootstrapNodeAndPlugins(
                             main,
@@ -208,6 +217,7 @@ for (const [TYPE, interpreter] of TYPES) {
                         );
                     },
                     onBeforeRunAsync(wrap, element) {
+                        if (!currentElement) firstMainScript(wrap, element);
                         currentElement = element;
                         return bootstrapNodeAndPlugins(
                             main,

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript Next Plugin</title>
+  <link rel="stylesheet" href="../../dist/core.css">
+  <script type="module" src="../../dist/core.js"></script>
+</head>
+<body>
+  <script id="main0" type="mpy" src="./test.py"></script>
+  <!-- on main, first come first serves ... this ID will not be added -->
+  <script id="main1" type="mpy" src="./test.py"></script>
+  <script id="worker0" type="py" src="./test.py" worker></script>
+  <script id="worker1" type="py" src="./test.py" worker></script>
+</body>
+</html>
