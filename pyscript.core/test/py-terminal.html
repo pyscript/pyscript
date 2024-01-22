@@ -14,6 +14,9 @@
                 print('hello world')
         </script>
         <py-script worker terminal>
+            # works on both worker and main scripts
+            print("__terminal__", __terminal__)
+
             import sys
             from pyscript import display, document
             display("Hello", "PyScript Next - PyTerminal", append=False)
