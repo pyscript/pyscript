@@ -78,13 +78,18 @@ const pyTerminal = async () => {
         fitAddon.fit();
         terminal.focus();
         defineProperty(element, "terminal", { value: terminal });
+        return terminal;
     };
 
     // branch logic for the worker
     if (element.hasAttribute("worker")) {
         // when the remote thread onReady triggers:
         // setup the interpreter stdout and stderr
-        const workerReady = ({ interpreter, io }, { sync }) => {
+        const workerReady = ({ interpreter, io, run }, { sync }) => {
+            // in workers it's always safe to grab the polyscript currentScript
+            run(
+                "from polyscript.currentScript import terminal as __terminal__",
+            );
             sync.pyterminal_drop_hooks();
 
             // This part is inevitably duplicated as external scope
@@ -135,14 +140,18 @@ const pyTerminal = async () => {
     } else {
         // in the main case, just bootstrap XTerm without
         // allowing any input as that's not possible / awkward
-        hooks.main.onReady.add(function main({ interpreter, io }) {
+        hooks.main.onReady.add(function main({ interpreter, io, run }) {
             console.warn("py-terminal is read only on main thread");
             hooks.main.onReady.delete(main);
-            init({
+
+            // on main, it's easy to trash and clean the current terminal
+            globalThis.__py_terminal__ = init({
                 disableStdin: true,
                 cursorBlink: false,
                 cursorStyle: "underline",
             });
+            run("from js import __py_terminal__ as __terminal__");
+            delete globalThis.__py_terminal__;
 
             // This part is inevitably duplicated as external scope
             // can't be reached by workers out of the box.

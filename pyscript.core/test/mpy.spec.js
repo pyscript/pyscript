@@ -62,3 +62,14 @@ test('MicroPython + configURL', async ({ page }) => {
   await page.goto('http://localhost:8080/test/config-url.html');
   await page.waitForSelector('html.main.worker');
 });
+
+test('Pyodide + terminal on Main', async ({ page }) => {
+  await page.goto('http://localhost:8080/test/py-terminal-main.html');
+  await page.waitForSelector('html.ok');
+});
+
+
+test('Pyodide + terminal on Worker', async ({ page }) => {
+  await page.goto('http://localhost:8080/test/py-terminal-worker.html');
+  await page.waitForSelector('html.ok');
+});
