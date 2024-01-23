@@ -1,8 +1,27 @@
+import sys
+
 import js as globalThis
 from polyscript import js_modules
 from pyscript.util import NotSupported
 
 RUNNING_IN_WORKER = not hasattr(globalThis, "document")
+
+
+# allow `from pyscript.js_modules.xxx import yyy`
+class JSModule:
+    def __init__(self, name):
+        self.name = name
+
+    def __getattr__(self, field):
+        # avoid pyodide looking for non existent fields
+        if not field.startswith("_"):
+            return getattr(getattr(js_modules, self.name), field)
+
+
+# generate N modules in the system that will proxy the real value
+for name in globalThis.Reflect.ownKeys(js_modules):
+    sys.modules[f"pyscript.js_modules.{name}"] = JSModule(name)
+sys.modules["pyscript.js_modules"] = js_modules
 
 if RUNNING_IN_WORKER:
     import js

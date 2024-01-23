@@ -35,3 +35,41 @@ test('MicroPython hooks', async ({ page }) => {
     'worker onAfterRun',
   ].join('\n'));
 });
+
+test('MicroPython + Pyodide js_modules', async ({ page }) => {
+  const logs = [];
+  page.on('console', msg => {
+    const text = msg.text();
+    if (!text.startsWith('['))
+      logs.push(text);
+  });
+  await page.goto('http://localhost:8080/test/js_modules.html');
+  await page.waitForSelector('html.done');
+  await expect(logs.length).toBe(6);
+  await expect(logs[0]).toBe(logs[1]);
+  await expect(logs[1]).toBe(logs[2]);
+  await expect(logs[3]).toBe(logs[4]);
+  await expect(logs[4]).toBe(logs[5]);
+});
+
+test('MicroPython + configURL', async ({ page }) => {
+  const logs = [];
+  page.on('console', msg => {
+    const text = msg.text();
+    if (!text.startsWith('['))
+      logs.push(text);
+  });
+  await page.goto('http://localhost:8080/test/config-url.html');
+  await page.waitForSelector('html.main.worker');
+});
+
+test('Pyodide + terminal on Main', async ({ page }) => {
+  await page.goto('http://localhost:8080/test/py-terminal-main.html');
+  await page.waitForSelector('html.ok');
+});
+
+
+test('Pyodide + terminal on Worker', async ({ page }) => {
+  await page.goto('http://localhost:8080/test/py-terminal-worker.html');
+  await page.waitForSelector('html.ok');
+});

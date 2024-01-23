@@ -26,32 +26,8 @@ import { ErrorCode } from "./exceptions.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
 import { hooks, main, worker, codeFor, createFunction } from "./hooks.js";
 
-// allows lazy element features on code evaluation
-let currentElement;
-
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
-
-let shouldRegister = true;
-const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
-    // automatically use the pyscript stderr (when/if defined)
-    // this defaults to console.error
-    function PyWorker(...args) {
-        const worker = $XWorker(...args);
-        worker.onerror = ({ error }) => io.stderr(error);
-        return worker;
-    }
-
-    // enrich the Python env with some JS utility for main
-    interpreter.registerJsModule("_pyscript", {
-        PyWorker,
-        get target() {
-            return isScript(currentElement)
-                ? currentElement.target.id
-                : currentElement.id;
-        },
-    });
-};
 
 // avoid multiple initialization of the same library
 const [
@@ -88,7 +64,7 @@ for (const [TYPE, interpreter] of TYPES) {
         else dispatch(element, TYPE, "done");
     };
 
-    const { config, plugins, error } = configs.get(TYPE);
+    const { config, configURL, plugins, error } = configs.get(TYPE);
 
     // create a unique identifier when/if needed
     let id = 0;
@@ -118,6 +94,36 @@ for (const [TYPE, interpreter] of TYPES) {
         return code;
     };
 
+    // register once any interpreter
+    let alreadyRegistered = false;
+
+    // allows lazy element features on code evaluation
+    let currentElement;
+
+    const registerModule = ({ XWorker, interpreter, io }) => {
+        // avoid multiple registration of the same interpreter
+        if (alreadyRegistered) return;
+        alreadyRegistered = true;
+
+        // automatically use the pyscript stderr (when/if defined)
+        // this defaults to console.error
+        function PyWorker(...args) {
+            const worker = XWorker(...args);
+            worker.onerror = ({ error }) => io.stderr(error);
+            return worker;
+        }
+
+        // enrich the Python env with some JS utility for main
+        interpreter.registerJsModule("_pyscript", {
+            PyWorker,
+            get target() {
+                return isScript(currentElement)
+                    ? currentElement.target.id
+                    : currentElement.id;
+            },
+        });
+    };
+
     // define the module as both `<script type="py">` and `<py-script>`
     // but only if the config didn't throw an error
     if (!error) {
@@ -133,10 +139,7 @@ for (const [TYPE, interpreter] of TYPES) {
                 main: {
                     ...codeFor(main),
                     async onReady(wrap, element) {
-                        if (shouldRegister) {
-                            shouldRegister = false;
-                            registerModule(wrap);
-                        }
+                        registerModule(wrap);
 
                         // allows plugins to do whatever they want with the element
                         // before regular stuff happens in here
@@ -256,6 +259,7 @@ for (const [TYPE, interpreter] of TYPES) {
 
             define(TYPE, {
                 config,
+                configURL,
                 interpreter,
                 hooks,
                 env: `${TYPE}-script`,
@@ -320,7 +324,7 @@ for (const [TYPE, interpreter] of TYPES) {
 function PyWorker(file, options) {
     const hooks = hooked.get("py");
     // this propagates pyscript worker hooks without needing a pyscript
-    // bootstrap + it passes arguments and enforces `pyodide`
+    // bootstrap + it passes arguments and it defaults to `pyodide`
     // as the interpreter to use in the worker, as all hooks assume that
     // and as `pyodide` is the only default interpreter that can deal with
     // all the features we need to deliver pyscript out there.
