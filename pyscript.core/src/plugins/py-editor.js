@@ -148,7 +148,7 @@ const init = async (script, type, interpreter) => {
     if (!target.id) target.id = getID(type);
     if (!target.hasAttribute("exec-id")) target.setAttribute("exec-id", 0);
     if (!target.hasAttribute("root")) target.setAttribute("root", target.id);
-    if (target.hasChildNodes()){
+    if (target.hasChildNodes()) {
         // A temporary fix to prevent the object from loading multiple times..
         return;
     }
