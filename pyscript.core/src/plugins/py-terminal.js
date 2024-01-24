@@ -22,13 +22,14 @@ const bootstrapped = new WeakSet();
 
 let addStyle = true;
 
+// this callback will be serialized as string and it never needs
+// to be invoked multiple times. Each xworker here is bootstrapped
+// only once thanks to the `sync.is_pyterminal()` check.
 const workerReady = ({ interpreter, io, run }, { sync }) => {
     if (!sync.is_pyterminal()) return;
 
     // in workers it's always safe to grab the polyscript currentScript
-    run(
-        "from polyscript.currentScript import terminal as __terminal__",
-    );
+    run("from polyscript.currentScript import terminal as __terminal__");
 
     // This part is inevitably duplicated as external scope
     // can't be reached by workers out of the box.
@@ -68,7 +69,7 @@ const pyTerminal = async () => {
 
     // we currently support only one terminal as in "classic"
     if ([].filter.call(terminals, onceOnMain).length > 1)
-        notifyAndThrow("You can use at most 1 main terminal.");
+        notifyAndThrow("You can use at most 1 main terminal");
 
     // import styles lazily
     if (addStyle) {
