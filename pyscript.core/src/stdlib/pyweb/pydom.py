@@ -243,7 +243,7 @@ class Element(BaseElement):
         elif isinstance(to, str):
             canvas = pydom[to][0]
             if canvas._js.tagName != "CANVAS":
-                raise TypeError("Element to snap to must a canvas.")
+                raise TypeError("Element to snap to must a be canvas.")
 
         canvas.draw(self, width, height)
 
