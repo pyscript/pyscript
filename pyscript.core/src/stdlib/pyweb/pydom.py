@@ -204,7 +204,7 @@ class Element(BaseElement):
     def show_me(self):
         self._js.scrollIntoView()
 
-    def snap(self, to: Element | str = None, width: int | None = None, height int | None = None):
+    def snap(self, to: BaseElement | str = None, width: int | None = None, height: int | None = None):
         """
         Captures a snapshot of a video element. (Only available for video elements)
 
@@ -244,7 +244,7 @@ class Element(BaseElement):
 
         return canvas
 
-    def download(self, filename: str="snapped.png") --> None:
+    def download(self, filename: str="snapped.png") -> None:
         """Download the current element (only available for canvas elements) with the filename
         provided in input.
 
