@@ -73,3 +73,8 @@ test('Pyodide + terminal on Worker', async ({ page }) => {
   await page.goto('http://localhost:8080/test/py-terminal-worker.html');
   await page.waitForSelector('html.ok');
 });
+
+test('Pyodide + multiple terminals via Worker', async ({ page }) => {
+  await page.goto('http://localhost:8080/test/py-terminals.html');
+  await page.waitForSelector('html.first.second');
+});
