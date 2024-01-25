@@ -25,4 +25,5 @@ async def connect_to_device(e):
 async def camera_click(e):
     video.snap().download()
 
+
 await list_media_devices()
