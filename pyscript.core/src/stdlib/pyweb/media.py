@@ -1,5 +1,6 @@
 from pyodide.ffi import to_js
 from pyscript import window
+from pyweb
 
 
 class Device:
@@ -50,7 +51,6 @@ class Device:
         key = self.kind.replace("input", "").replace("output", "")
         options = {key: {"deviceId": {"exact": self.id}}}
 
-        print("optioniiiiii", options)
         return await self.load(**options)
 
 
