@@ -254,7 +254,7 @@ class Element(BaseElement):
         provided in input.
 
         Inputs:
-            * filename (str): name of the file being donwloaded
+            * filename (str): name of the file being downloaded
 
         Output:
             None
