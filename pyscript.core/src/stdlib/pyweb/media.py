@@ -6,6 +6,7 @@ class Device:
     """Device represents a media input or output device, such as a microphone,
     camera, or headset.
     """
+
     def __init__(self, device):
         self._js = device
 
