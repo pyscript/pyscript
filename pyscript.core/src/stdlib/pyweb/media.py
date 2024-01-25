@@ -1,10 +1,11 @@
 from pyodide.ffi import to_js
 from pyscript import window
 
-from pyweb
-
 
 class Device:
+    """Device represents a media input or output device, such as a microphone,
+    camera, or headset.
+    """
     def __init__(self, device):
         self._js = device
 
@@ -29,6 +30,7 @@ class Device:
 
     @classmethod
     async def load(cls, audio=False, video=True):
+        """Load the device stream."""
         options = window.Object.new()
         options.audio = audio
         if isinstance(video, bool):
