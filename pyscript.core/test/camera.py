@@ -28,4 +28,5 @@ async def camera_click(e):
     """Take a picture and download it."""
     video.snap().download()
 
+
 await list_media_devices()
