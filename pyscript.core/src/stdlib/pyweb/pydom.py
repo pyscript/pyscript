@@ -231,8 +231,8 @@ class Element(BaseElement):
                 width = self._js.width
             if height is None:
                 height = self._js.height
-            canvas._js.setAttribute("width", width)
-            canvas._js.setAttribute("height", height)
+            canvas._js.width = width
+            canvas._js.height = height
 
         elif isistance(to, Element):
             if to._js.tagName != "CANVAS":
