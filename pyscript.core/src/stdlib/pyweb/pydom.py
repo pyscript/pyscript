@@ -1,4 +1,5 @@
 import sys
+
 try:
     import warnings
 except ImportError:
@@ -9,6 +10,7 @@ except ImportError:
         @staticmethod
         def warn(*args, **kwargs):
             print("WARNING: ", *args, **kwargs)
+
     warnings = None
 
 try:
@@ -297,7 +299,7 @@ class OptionsProxy:
         return self.options[key]
 
 
-class StyleProxy:#(dict):
+class StyleProxy:  # (dict):
     def __init__(self, element: Element) -> None:
         self._element = element
 
@@ -456,6 +458,7 @@ class PyDom(BaseElement):
         if not elements:
             return None
         return ElementCollection([Element(el) for el in elements])
+
 
 dom = PyDom()
 

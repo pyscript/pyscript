@@ -1,9 +1,12 @@
 import inspect
+
 try:
     from pyodide.ffi.wrappers import add_event_listener
 except ImportError:
+
     def add_event_listener(el, event_type, func):
         el.addEventListener(event_type, func)
+
 
 from pyscript.magic_js import document
 
