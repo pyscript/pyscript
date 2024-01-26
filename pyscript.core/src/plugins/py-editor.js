@@ -200,6 +200,9 @@ const init = async (script, type, interpreter) => {
 // avoid too greedy MutationObserver operations at distance
 let timeout = 0;
 
+// avoid delayed initialization
+let queue = Promise.resolve();
+
 // reset interval value then check for new scripts
 const resetTimeout = () => {
     timeout = 0;
@@ -213,11 +216,14 @@ const pyEditor = async () => {
     for (const [type, interpreter] of TYPES) {
         const selector = `script[type="${type}-editor"]`;
         for (const script of document.querySelectorAll(selector)) {
-            // avoid any further bootstrap
+            // avoid any further bootstrap by changing the type as active
             script.type += "-active";
-            await init(script, type, interpreter);
+            // don't await in here or multiple calls might happen
+            // while the first script is being initialized
+            queue = queue.then(() => init(script, type, interpreter));
         }
     }
+    return queue;
 };
 
 new MutationObserver(pyEditor).observe(document, {
