@@ -1,6 +1,10 @@
 import inspect
+try:
+    from pyodide.ffi.wrappers import add_event_listener
+except ImportError:
+    def add_event_listener(el, event_type, func):
+        el.addEventListener(event_type, func)
 
-from pyodide.ffi.wrappers import add_event_listener
 from pyscript.magic_js import document
 
 
@@ -27,19 +31,26 @@ def when(event_type=None, selector=None):
                     f"Invalid selector: {selector}. Selector must"
                     " be a string, a pydom.Element or a pydom.ElementCollection."
                 )
+        try:
+            sig = inspect.signature(func)
+            # Function doesn't receive events
+            if not sig.parameters:
 
-        sig = inspect.signature(func)
-        # Function doesn't receive events
-        if not sig.parameters:
+                def wrapper(*args, **kwargs):
+                    func()
 
-            def wrapper(*args, **kwargs):
-                func()
+                for el in elements:
+                    add_event_listener(el, event_type, wrapper)
+            else:
+                for el in elements:
+                    add_event_listener(el, event_type, func)
+        except AttributeError:
+            # def wrapper(*args, **kwargs):
+            #     func()
 
-            for el in elements:
-                add_event_listener(el, event_type, wrapper)
-        else:
             for el in elements:
                 add_event_listener(el, event_type, func)
+
         return func
 
     return decorator
