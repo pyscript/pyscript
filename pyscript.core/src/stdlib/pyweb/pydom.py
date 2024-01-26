@@ -1,9 +1,30 @@
 import sys
-import warnings
-from functools import cached_property
-from typing import Any
+try:
+    import warnings
+except ImportError:
+    # TODO: For now it probably means we are in MicroPython. We shuold figure
+    # out the "right" way to handle this. For now we just ignore the warning
+    # and logging to console
+    class warnings:
+        @staticmethod
+        def warn(*args, **kwargs):
+            print("WARNING: ", *args, **kwargs)
+    warnings = None
 
-from pyodide.ffi import JsProxy
+try:
+    from functools import cached_property
+except ImportError:
+    # TODO: same comment about micropython as above
+    cached_property = property
+
+try:
+    from pyodide.ffi import JsProxy
+except ImportError:
+    # TODO: same comment about micropython as above
+    def JsProxy(obj):
+        return obj
+
+
 from pyscript import display, document, window
 
 alert = window.alert
@@ -219,7 +240,7 @@ class OptionsProxy:
 
     def add(
         self,
-        value: Any = None,
+        value: None,
         html: str = None,
         text: str = None,
         before: Element | int = None,
@@ -276,7 +297,7 @@ class OptionsProxy:
         return self.options[key]
 
 
-class StyleProxy(dict):
+class StyleProxy:#(dict):
     def __init__(self, element: Element) -> None:
         self._element = element
 
@@ -395,7 +416,7 @@ class ElementCollection:
 
 
 class DomScope:
-    def __getattr__(self, __name: str) -> Any:
+    def __getattr__(self, __name: str):
         element = document[f"#{__name}"]
         if element:
             return element[0]
@@ -409,7 +430,11 @@ class PyDom(BaseElement):
     ElementCollection = ElementCollection
 
     def __init__(self):
-        super().__init__(document)
+        # super().__init__(document)
+        self._js = document
+        self._parent = None
+        # self.style = StyleProxy(self)
+        self._proxies = {}
         self.ids = DomScope()
         self.body = Element(document.body)
         self.head = Element(document.head)
@@ -419,15 +444,19 @@ class PyDom(BaseElement):
 
     def __getitem__(self, key):
         if isinstance(key, int):
-            indices = range(*key.indices(len(self.list)))
-            return [self.list[i] for i in indices]
+            out = []
+            for el in self._js.children:
+                out.append(Element(el))
+            return out[key]
+            # return [Element(el) for el in self._js.children][key]
+            # indices = range(*key.indices(len(self.list)))
+            # return [self.list[i] for i in indices]
 
         elements = self._js.querySelectorAll(key)
         if not elements:
             return None
         return ElementCollection([Element(el) for el in elements])
 
-
 dom = PyDom()
 
-sys.modules[__name__] = dom
+# sys.modules[__name__] = dom
