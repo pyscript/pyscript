@@ -336,7 +336,7 @@ class TestSelect:
         assert select.options[0].html == "Option 1"
 
         # WHEN we add another option (blank this time)
-        select.options.add()
+        select.options.add("")
 
         # EXPECT the select element to have 2 options
         assert len(select.options) == 2
