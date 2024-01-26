@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript Media Example</title>
+  <link rel="stylesheet" href="../dist/core.css">
+  <script type="module" src="../dist/core.js"></script>
+</head>
+<body>
+  <script type="py" src="camera.py" async></script>
+
+  <label for="cars">Choose a device:</label>
+
+  <select name="devices" id="devices"></select>
+
+  <button id="pick-device">Select the device</button>
+  <button id="snap">Snap</button>
+
+  <div id="result"></div>
+
+  <video id="video" width="600" height="400" autoplay></video>
+</body>
+</html>
