@@ -17,6 +17,7 @@ from playwright.sync_api import Error as PlaywrightError
 
 ROOT = py.path.local(__file__).dirpath("..", "..", "..")
 BUILD = ROOT.join("pyscript.core").join("dist")
+TEST = ROOT.join("pyscript.core").join("test")
 
 
 def params_with_marks(params):
@@ -206,6 +207,15 @@ class PyScriptTest:
         self.tmpdir = tmpdir
         # create a symlink to BUILD inside tmpdir
         tmpdir.join("build").mksymlinkto(BUILD)
+        # create a symlink ALSO to dist folder so we can run the tests in
+        # the test folder
+        tmpdir.join("dist").mksymlinkto(BUILD)
+        # create a symlink to TEST inside tmpdir so we can run tests in that
+        # manual test folder
+        tmpdir.join("test").mksymlinkto(TEST)
+
+
+        # create a symlink to the favicon, so that we can use it in the HTML
         self.tmpdir.chdir()
         self.tmpdir.join("favicon.ico").write("")
         self.logger = logger
