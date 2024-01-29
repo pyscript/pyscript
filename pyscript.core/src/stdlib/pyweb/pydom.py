@@ -3,7 +3,7 @@ import sys
 try:
     import warnings
 except ImportError:
-    # TODO: For now it probably means we are in MicroPython. We shuold figure
+    # TODO: For now it probably means we are in MicroPython. We should figure
     # out the "right" way to handle this. For now we just ignore the warning
     # and logging to console
     class warnings:

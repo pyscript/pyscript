@@ -214,7 +214,6 @@ class PyScriptTest:
         # manual test folder
         tmpdir.join("test").mksymlinkto(TEST)
 
-
         # create a symlink to the favicon, so that we can use it in the HTML
         self.tmpdir.chdir()
         self.tmpdir.join("favicon.ico").write("")

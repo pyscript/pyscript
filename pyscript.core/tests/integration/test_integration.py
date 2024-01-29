@@ -1,5 +1,6 @@
 from .support import PyScriptTest, with_execution_thread
 
+
 @with_execution_thread(None)
 class TestSmokeTests(PyScriptTest):
     """
@@ -17,11 +18,13 @@ class TestSmokeTests(PyScriptTest):
         assert self.page.title() == "PyDom Test Suite"
 
         # wait for the test suite to finish
-        self.wait_for_console('============================= test session starts ==============================')
+        self.wait_for_console(
+            "============================= test session starts =============================="
+        )
 
         self.assert_no_banners()
 
-        results =  self.page.inner_html("#tests-terminal")
+        results = self.page.inner_html("#tests-terminal")
         assert results
         assert "PASSED" in results
         assert "FAILED" not in results
