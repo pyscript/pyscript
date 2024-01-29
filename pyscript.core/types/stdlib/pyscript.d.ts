@@ -8,6 +8,7 @@ declare namespace _default {
     };
     let pyweb: {
         "__init__.py": string;
+        "media.py": string;
         "pydom.py": string;
     };
 }

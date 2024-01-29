@@ -227,6 +227,91 @@ class Element(BaseElement):
     def show_me(self):
         self._js.scrollIntoView()
 
+    def snap(
+        self,
+        to: BaseElement | str = None,
+        width: int | None = None,
+        height: int | None = None,
+    ):
+        """
+        Captures a snapshot of a video element. (Only available for video elements)
+
+        Inputs:
+
+            * to: element where to save the snapshot of the video frame to
+            * width: width of the image
+            * height: height of the image
+
+        Output:
+            (Element) canvas element where the video frame snapshot was drawn into
+        """
+        if self._js.tagName != "VIDEO":
+            raise AttributeError("Snap method is only available for video Elements")
+
+        if to is None:
+            canvas = self.create("canvas")
+            if width is None:
+                width = self._js.width
+            if height is None:
+                height = self._js.height
+            canvas._js.width = width
+            canvas._js.height = height
+
+        elif isistance(to, Element):
+            if to._js.tagName != "CANVAS":
+                raise TypeError("Element to snap to must a canvas.")
+            canvas = to
+        elif getattr(to, "tagName", "") == "CANVAS":
+            canvas = Element(to)
+        elif isinstance(to, str):
+            canvas = pydom[to][0]
+            if canvas._js.tagName != "CANVAS":
+                raise TypeError("Element to snap to must a be canvas.")
+
+        canvas.draw(self, width, height)
+
+        return canvas
+
+    def download(self, filename: str = "snapped.png") -> None:
+        """Download the current element (only available for canvas elements) with the filename
+        provided in input.
+
+        Inputs:
+            * filename (str): name of the file being downloaded
+
+        Output:
+            None
+        """
+        if self._js.tagName != "CANVAS":
+            raise AttributeError(
+                "The download method is only available for canvas Elements"
+            )
+
+        link = self.create("a")
+        link._js.download = filename
+        link._js.href = self._js.toDataURL()
+        link._js.click()
+
+    def draw(self, what, width, height):
+        """Draw `what` on the current element  (only available for canvas elements).
+
+        Inputs:
+
+            * what (canvas image source): An element to draw into the context. The specification permits any canvas
+                image source, specifically, an HTMLImageElement, an SVGImageElement, an HTMLVideoElement,
+                an HTMLCanvasElement, an ImageBitmap, an OffscreenCanvas, or a VideoFrame.
+        """
+        if self._js.tagName != "CANVAS":
+            raise AttributeError(
+                "The draw method is only available for canvas Elements"
+            )
+
+        if isinstance(what, Element):
+            what = what._js
+
+        # https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+        self._js.getContext("2d").drawImage(what, 0, 0, width, height)
+
 
 class OptionsProxy:
     """This class represents the options of a select element. It
