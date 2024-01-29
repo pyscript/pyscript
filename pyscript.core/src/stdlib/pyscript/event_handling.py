@@ -38,15 +38,10 @@ def when(event_type=None, selector=None):
             sig = inspect.signature(func)
             # Function doesn't receive events
             if not sig.parameters:
-
                 def wrapper(*args, **kwargs):
                     func()
-
-                for el in elements:
-                    add_event_listener(el, event_type, wrapper)
             else:
-                for el in elements:
-                    add_event_listener(el, event_type, func)
+                wrapper = func
 
         except AttributeError:
             # TODO: this is currently an quick hack to get micropython working but we need
@@ -60,8 +55,8 @@ def when(event_type=None, selector=None):
 
                     raise
 
-            for el in elements:
-                add_event_listener(el, event_type, wrapper)
+        for el in elements:
+            add_event_listener(el, event_type, wrapper)
 
         return func
 
