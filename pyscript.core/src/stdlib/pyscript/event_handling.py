@@ -2,8 +2,8 @@ import inspect
 
 try:
     from pyodide.ffi.wrappers import add_event_listener
-except ImportError:
 
+except ImportError:
     def add_event_listener(el, event_type, func):
         el.addEventListener(event_type, func)
 
@@ -47,10 +47,10 @@ def when(event_type=None, selector=None):
             else:
                 for el in elements:
                     add_event_listener(el, event_type, func)
-        except AttributeError:
-            # def wrapper(*args, **kwargs):
-            #     func()
 
+        except AttributeError:
+            # TODO: this is currently an quick hack to get micropython working but we need
+            #       to actually properly replace inspect.signature with something else
             for el in elements:
                 add_event_listener(el, event_type, func)
 
