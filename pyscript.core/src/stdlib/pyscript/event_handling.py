@@ -51,8 +51,17 @@ def when(event_type=None, selector=None):
         except AttributeError:
             # TODO: this is currently an quick hack to get micropython working but we need
             #       to actually properly replace inspect.signature with something else
+            def wrapper(*args, **kwargs):
+                try:
+                    return func(*args, **kwargs)
+                except TypeError as e:
+                    if "takes 0 positional arguments" in str(e):
+                        return func()
+
+                    raise
+
             for el in elements:
-                add_event_listener(el, event_type, func)
+                add_event_listener(el, event_type, wrapper)
 
         return func
 

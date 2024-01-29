@@ -7,7 +7,7 @@ from pyweb import pydom
 
 
 @when("click", "#just-a-button")
-def on_click(event):
+def on_click():
     try:
         timenow = dt.now()
     except NotImplementedError:
