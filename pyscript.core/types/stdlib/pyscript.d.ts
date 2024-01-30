@@ -10,6 +10,11 @@ declare namespace _default {
         "__init__.py": string;
         "media.py": string;
         "pydom.py": string;
+        ui: {
+            "__init__.py": string;
+            "elements.py": string;
+            "shoelace.py": string;
+        };
     };
 }
 export default _default;
