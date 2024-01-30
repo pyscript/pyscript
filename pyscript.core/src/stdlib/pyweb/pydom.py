@@ -34,6 +34,44 @@ from pyscript import display, document, window
 alert = window.alert
 
 
+class JSProperty:
+    """JS property descriptor that directly maps to the property with the same
+    name in the underlying Shoelace JS component."""
+
+
+def js_property(name: str, allow_nones: bool=False):
+    """Create a property that maps to the property with the same name in the underlying
+    JS component.
+
+    Args:
+        name (str): The name of the property to map to.
+        allow_nones (bool): Whether to allow None values to be set. Defaults to False.
+
+    Example:
+        class Button(ElementBase):
+            tag = 'sl-button'
+            # the JS property is called 'variant'
+            variant = js_property('variant')
+
+        button = Button("Click me")
+        # This will set the property 'variant' on the underlying JS element to 'primary'
+        button.variant = 'primary'
+
+    Returns:
+        the property created
+    """
+    class CustomProperty(JSProperty):
+        def __get__(self, obj, objtype=None):
+            return getattr(obj._js, name)
+
+        def __set__(self, obj, value):
+            if not allow_nones and value is None:
+                return
+            setattr(obj._js, name, value)
+
+    return CustomProperty()
+
+
 class BaseElement:
     def __init__(self, js_element):
         self._js = js_element
