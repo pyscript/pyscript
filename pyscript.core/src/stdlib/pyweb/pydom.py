@@ -531,15 +531,6 @@ class PyDom(BaseElement):
         return super().create(type_, is_child=False, classes=classes, html=html)
 
     def __getitem__(self, key):
-        if isinstance(key, int):
-            out = []
-            for el in self._js.children:
-                out.append(Element(el))
-            return out[key]
-            # return [Element(el) for el in self._js.children][key]
-            # indices = range(*key.indices(len(self.list)))
-            # return [self.list[i] for i in indices]
-
         elements = self._js.querySelectorAll(key)
         if not elements:
             return None
