@@ -14,6 +14,7 @@ except ImportError:
         def warn(*args, **kwargs):
             print("WARNING: ", *args, **kwargs)
 
+
 try:
     from functools import cached_property
 except ImportError:
@@ -26,6 +27,7 @@ except ImportError:
     # TODO: same comment about micropython as above
     def JsProxy(obj):
         return obj
+
 
 from pyscript import display, document, window
 
@@ -518,7 +520,7 @@ class PyDom(BaseElement):
 
     def __init__(self):
         # PyDom is a special case of BaseElement where we don't want to create a new JS element
-        # and it really doesn't have a need for styleproxy or parent to to call to __init__ 
+        # and it really doesn't have a need for styleproxy or parent to to call to __init__
         # (which actually fails in MP for some reason)
         self._js = document
         self._parent = None
