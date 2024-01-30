@@ -4,6 +4,7 @@ try:
     from pyodide.ffi.wrappers import add_event_listener
 
 except ImportError:
+
     def add_event_listener(el, event_type, func):
         el.addEventListener(event_type, func)
 
@@ -38,8 +39,10 @@ def when(event_type=None, selector=None):
             sig = inspect.signature(func)
             # Function doesn't receive events
             if not sig.parameters:
+
                 def wrapper(*args, **kwargs):
                     func()
+
             else:
                 wrapper = func
 
