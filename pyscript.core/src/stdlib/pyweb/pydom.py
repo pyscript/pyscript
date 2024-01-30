@@ -540,5 +540,3 @@ class PyDom(BaseElement):
 
 
 dom = PyDom()
-
-# sys.modules[__name__] = dom
