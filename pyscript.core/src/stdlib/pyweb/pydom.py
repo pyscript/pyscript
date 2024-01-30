@@ -1,4 +1,7 @@
-import sys
+try:
+    from typing import Any
+except ImportError:
+    Any = "Any"
 
 try:
     import warnings
@@ -10,8 +13,6 @@ except ImportError:
         @staticmethod
         def warn(*args, **kwargs):
             print("WARNING: ", *args, **kwargs)
-
-    warnings = None
 
 try:
     from functools import cached_property
@@ -25,7 +26,6 @@ except ImportError:
     # TODO: same comment about micropython as above
     def JsProxy(obj):
         return obj
-
 
 from pyscript import display, document, window
 
@@ -327,7 +327,7 @@ class OptionsProxy:
 
     def add(
         self,
-        value: None,
+        value: Any = None,
         html: str = None,
         text: str = None,
         before: Element | int = None,
@@ -517,10 +517,11 @@ class PyDom(BaseElement):
     ElementCollection = ElementCollection
 
     def __init__(self):
-        # super().__init__(document)
+        # PyDom is a special case of BaseElement where we don't want to create a new JS element
+        # and it really doesn't have a need for styleproxy or parent to to call to __init__ 
+        # (which actually fails in MP for some reason)
         self._js = document
         self._parent = None
-        # self.style = StyleProxy(self)
         self._proxies = {}
         self.ids = DomScope()
         self.body = Element(document.body)
