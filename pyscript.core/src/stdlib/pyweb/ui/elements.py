@@ -1,8 +1,7 @@
-import string
 from textwrap import dedent
 
 from pyscript import document, when, window
-from pyweb import pydom
+from pyweb import pydom, js_property, JSProperty
 
 
 class ElementBase(pydom.Element):
@@ -72,18 +71,51 @@ class button(TextElementBase):
     value = js_property('value')
 
 
-class link(TextElementBase):
+class a(TextElementBase):
     tag = 'a'
     href = js_property('href')
 
     def __init__(self, content, href, style = None, **kwargs):
         super().__init__(content, href=href, style=style, **kwargs)
 
-class a(link):
-    pass
+
+class link(TextElementBase):
+    tag = 'link'
+
+    rel = js_property('rel')
+    type = js_property('type')
+    href = js_property('href')
+    media = js_property('media')
+
+    def __init__(self, content=None, rel=None, type=None, href=None, media=None, style = None, **kwargs):
+        super().__init__(content=content, rel=rel, type=type, href=href, media=media, style=style, **kwargs)
+
+
+class script(TextElementBase):
+    tag = 'script'
+
+    async_ = js_property('async')
+    defer = js_property('defer')
+    blocking = js_property('blocking')
+    crossorigin = js_property('crossorigin')
+    fetchpriority = js_property('fetchpriority')
+    src = js_property('src')
+    type = js_property('type')
+    nonce = js_property('nonce')
+    nomodule = js_property('nomodule')
+    integrity = js_property('integrity')
+
+    def __init__(self, content=None, src=None, type=None, async_=None, defer=None, blocking=None,
+                 crossorigin=None, fetchpriority=None, nonce=None, nomodule=None, integrity=None,
+                 style = None, **kwargs):
+        super().__init__(content=content, src=src, type=type, async_=async_,
+                         defer=defer, blocking=blocking, crossorigin=crossorigin,
+                         fetchpriority=fetchpriority, nonce=nonce, nomodule=nomodule,
+                         integrity=integrity, style=style, **kwargs)
 
 class p(TextElementBase):
     tag = 'p'
+
 
 class code(TextElementBase):
     tag = 'code'
