@@ -1,2 +1,2 @@
 from .pydom import dom as pydom
-from .ui import elements, shoelace
+from .pydom import JSProperty, js_property
