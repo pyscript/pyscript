@@ -373,6 +373,7 @@ class Icon(ShoeBase):
             name=name, src=src, label=label, library=library, style=style, **kwargs
         )
 
+
 # Load resources...
 # <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/themes/light.css" />
 # <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/shoelace-autoloader.js"></script>
