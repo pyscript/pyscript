@@ -5,9 +5,7 @@ from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
 
-# from marked import Markdown
-# import element as el
-
+from pyweb.ui.markdown import markdown
 
 # Style dictionary for code blocks
 STYLE_CODE_BLOCK = {"text-align": "left", "background-color": "#eee", "padding": "20px"}
@@ -15,15 +13,7 @@ STYLE_CODE_BLOCK = {"text-align": "left", "background-color": "#eee", "padding":
 # First thing we do is to load all the external resources we need
 shoelace.load_resources()
 
-
-def Markdown(txt):
-    # TODO: placeholder until we have a proper Markdown component
-    return el.div(txt)
-
-
 # Let's define some convenience functions first
-
-
 def create_component_details(component):
     """Create a component details card.
 
@@ -44,7 +34,7 @@ def create_component_details(component):
     div.append(el.h1(component))
     details = example.__doc__ or f"Details missing for component {component}"
 
-    div.append(Markdown(details))
+    div.append(markdown(details))
 
     # Create the example and code block
     div.append(el.h2("Example:"))
@@ -111,7 +101,7 @@ def create_example_grid(widget, code):
     # Add the widget
     grid.append(el.div(widget))
     # Add the code div
-    widget_code = Markdown(
+    widget_code = markdown(
         dedent(
             f"""
 ```python
@@ -142,7 +132,7 @@ def create_main_area():
 
     div.append(el.h2("What is PyShoes?"))
     div.append(
-        Markdown(
+        markdown(
             dedent(
                 """\
         PyDom UI is a totally immagnary exercise atm but..... imagine it is a Python library that allows you to create
@@ -158,7 +148,7 @@ def create_main_area():
     div.append(el.h2("What can I do with PyShoes?"))
 
     div.append(
-        Markdown(
+        markdown(
             dedent(
                 """\
         You can create web applications using Python only.
@@ -196,9 +186,9 @@ def create_markdown_components_page():
 
     @when("click", translate_button)
     def translate_markdown():
-        result_div.html = Markdown(markdown_txt_area.value).html
+        result_div.html = markdown(markdown_txt_area.value).html
         print("TOOOO", markdown_txt_area.value)
-        print("Translated", Markdown(markdown_txt_area.value))
+        print("Translated", markdown(markdown_txt_area.value))
 
     main_section = el.div(
         [

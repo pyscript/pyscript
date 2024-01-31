@@ -13,6 +13,7 @@ declare namespace _default {
         ui: {
             "__init__.py": string;
             "elements.py": string;
+            "markdown.py": string;
             "shoelace.py": string;
         };
     };
