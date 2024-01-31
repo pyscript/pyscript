@@ -2,9 +2,8 @@ import string
 from textwrap import dedent
 
 from pyscript import document, when, window
-from pyweb import pydom
-import element as el
-from element import JSProperty, js_property
+from pyweb import pydom, JSProperty, js_property
+from pyweb.ui import elements as el
 
 
 class ShoeBase(pydom.Element):
@@ -291,3 +290,24 @@ Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pys
     },
     
 }
+
+# Load resources...
+# <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/themes/light.css" />
+# <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/shoelace-autoloader.js"></script>
+def load_resources(parent=None):
+    print("Loading resources...")
+    if parent is None:
+        parent = pydom.body
+    parent.append(
+        el.link(
+            href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/themes/light.css",
+            rel="stylesheet",
+        )
+    )
+    parent.append(
+        el.script(
+            src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/shoelace-autoloader.js",
+            type="module",
+        ),
+    )
+    print("Resources loaded!")
