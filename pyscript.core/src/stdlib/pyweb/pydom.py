@@ -39,7 +39,7 @@ class JSProperty:
     name in the underlying Shoelace JS component."""
 
 
-def js_property(name: str, allow_nones: bool=False):
+def js_property(name: str, allow_nones: bool = False):
     """Create a property that maps to the property with the same name in the underlying
     JS component.
 
@@ -60,6 +60,7 @@ def js_property(name: str, allow_nones: bool=False):
     Returns:
         the property created
     """
+
     class CustomProperty(JSProperty):
         def __get__(self, obj, objtype=None):
             return getattr(obj._js, name)

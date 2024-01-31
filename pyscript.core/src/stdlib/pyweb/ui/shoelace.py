@@ -2,28 +2,28 @@ import string
 from textwrap import dedent
 
 from pyscript import document, when, window
-from pyweb import pydom, JSProperty, js_property
+from pyweb import JSProperty, js_property, pydom
 from pyweb.ui import elements as el
 
 
 class ShoeBase(pydom.Element):
-    tag = 'div'
+    tag = "div"
 
-    def __init__(self, style = None, **kwargs):
+    def __init__(self, style=None, **kwargs):
         super().__init__(document.createElement(self.tag))
-        
+
         # set all the style properties provided in input
         if style:
             for key, value in style.items():
                 self.style[key] = value
-                
+
         # IMPORTANT!!! This is used to auto-harvest all input arguments and set them as properties
-        kwargs['self'] = self
+        kwargs["self"] = self
         self._init_properties(**kwargs)
 
     @staticmethod
     def _init_properties(**kwargs):
-        self = kwargs.pop('self')
+        self = kwargs.pop("self")
 
         # Look at all the properties of the class and see if they were provided in kwargs
         # print(f"Looking for element properties for {self.__class__}...")
@@ -33,9 +33,10 @@ class ShoeBase(pydom.Element):
             if isinstance(attr, JSProperty) and attr_name in kwargs:
                 setattr(self, attr_name, kwargs[attr_name])
 
+
 class TextShoeBase(ShoeBase):
     def __init__(self, content, style=None, **kwargs):
-        if not style and getattr(self, 'default_style', None):
+        if not style and getattr(self, "default_style", None):
             style = self.default_style
 
         super().__init__(style=style, **kwargs)
@@ -45,47 +46,76 @@ class TextShoeBase(ShoeBase):
         else:
             self._js.innerHTML = content
 
-class Button(ShoeBase):
-    tag = 'sl-button'
-    variant = js_property('variant')
-    size = js_property('size')
-    outline = js_property('outline')
-    pill = js_property('pill')
-    circle = js_property('circle')
 
-    def __init__(self, content, variant='primary', size=None, outline=False, pill=False, circle=False, **kwargs):
+class Button(ShoeBase):
+    tag = "sl-button"
+    variant = js_property("variant")
+    size = js_property("size")
+    outline = js_property("outline")
+    pill = js_property("pill")
+    circle = js_property("circle")
+
+    def __init__(
+        self,
+        content,
+        variant="primary",
+        size=None,
+        outline=False,
+        pill=False,
+        circle=False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self._js.textContent = content
 
         # IMPORTANT!!! This is use to auto-harvest all input arguments and set them as properties
         self._init_properties(**locals())
 
+
 class Alert(TextShoeBase):
     """Alerts are used to display important messages inline or as toast notifications.
-    
-    Example: Alert("This is a standard alert. You can customize its content and even the icon.")"""
-    
 
+    Example: Alert("This is a standard alert. You can customize its content and even the icon.")
+    """
 
-    tag = 'sl-alert'
-    open = js_property('open')
-    variant = js_property('variant')
+    tag = "sl-alert"
+    open = js_property("open")
+    variant = js_property("variant")
 
     def __init__(self, content, variant=None, open=True, **kwargs):
         # TODO: Should content be appended so we can support html Elements as well?
         super().__init__(content, variant=variant, open=open, **kwargs)
 
-class Select(ShoeBase):
-    tag = 'sl-select'
-    label = js_property('label')
-    helpText = js_property('helpText')
-    placeholder = js_property('placeholder')
-    pill = js_property('pill')
-    value = js_property('value')
 
-    def __init__(self, label=None, options=None, placeholder=None, help_text=None, value=None, style=None, **kwargs):
-        super().__init__(label=label, placeholder=placeholder, help_text=help_text, value=value, style=style, **kwargs)
-        html_ = '\n'.join([f'<sl-option value="{option}">{option}</sl-option>' for option in options])
+class Select(ShoeBase):
+    tag = "sl-select"
+    label = js_property("label")
+    helpText = js_property("helpText")
+    placeholder = js_property("placeholder")
+    pill = js_property("pill")
+    value = js_property("value")
+
+    def __init__(
+        self,
+        label=None,
+        options=None,
+        placeholder=None,
+        help_text=None,
+        value=None,
+        style=None,
+        **kwargs,
+    ):
+        super().__init__(
+            label=label,
+            placeholder=placeholder,
+            help_text=help_text,
+            value=value,
+            style=style,
+            **kwargs,
+        )
+        html_ = "\n".join(
+            [f'<sl-option value="{option}">{option}</sl-option>' for option in options]
+        )
         self.html = html_
         print("options", options)
         print("HTML", html_)
@@ -93,51 +123,85 @@ class Select(ShoeBase):
         # for option in options:
         #     self.append(el.option(option))
 
+
 class Button(TextShoeBase):
     """Buttons represent actions that are available to the user."""
-    tag = 'sl-button'
-    variant = js_property('variant')
-    size = js_property('size')
-    outline = js_property('outline')
-    pill = js_property('pill')
-    circle = js_property('circle')
 
-    def __init__(self, content, variant='primary', size=None, outline=False, pill=False, circle=False, **kwargs):
-        super().__init__(content, variant=variant, size=size, outline=outline, pill=pill, circle=circle, **kwargs)
+    tag = "sl-button"
+    variant = js_property("variant")
+    size = js_property("size")
+    outline = js_property("outline")
+    pill = js_property("pill")
+    circle = js_property("circle")
+
+    def __init__(
+        self,
+        content,
+        variant="primary",
+        size=None,
+        outline=False,
+        pill=False,
+        circle=False,
+        **kwargs,
+    ):
+        super().__init__(
+            content,
+            variant=variant,
+            size=size,
+            outline=outline,
+            pill=pill,
+            circle=circle,
+            **kwargs,
+        )
 
 
 class Details(TextShoeBase):
     """Details are used as a disclosure widget from which users can retrieve additional information."""
-    tag = 'sl-details'
-    open = js_property('open')
-    summary = js_property('summary')
-    disabled = js_property('disabled')
-    update_complete = js_property('updateComplete')
 
-    def __init__(self, content, summary, open=None, disabled=None, style=None, **kwargs):
-        super().__init__(content, summary=summary, open=open, disabled=disabled, style=style, **kwargs)
+    tag = "sl-details"
+    open = js_property("open")
+    summary = js_property("summary")
+    disabled = js_property("disabled")
+    update_complete = js_property("updateComplete")
+
+    def __init__(
+        self, content, summary, open=None, disabled=None, style=None, **kwargs
+    ):
+        super().__init__(
+            content,
+            summary=summary,
+            open=open,
+            disabled=disabled,
+            style=style,
+            **kwargs,
+        )
 
 
 class Dialog(TextShoeBase):
-    tag = 'sl-dialog'
-    label = js_property('label')
-    noheader = js_property('noheader')
-    open = js_property('open')
+    tag = "sl-dialog"
+    label = js_property("label")
+    noheader = js_property("noheader")
+    open = js_property("open")
     # TODO: We should map the `modal` property as well but it's a bit of special...
-    
 
-    def __init__(self, content, label=None, open=None, disabled=None, style=None, **kwargs):
-        super().__init__(content, label=label, open=open, disabled=disabled, style=style, **kwargs)
+    def __init__(
+        self, content, label=None, open=None, disabled=None, style=None, **kwargs
+    ):
+        super().__init__(
+            content, label=label, open=open, disabled=disabled, style=style, **kwargs
+        )
 
 
 class Divider(ShoeBase):
-    tag = 'sl-divider'
+    tag = "sl-divider"
 
-    vertical = js_property('vertical')
+    vertical = js_property("vertical")
+
     def __init__(self, vertical=None, **kwargs):
         super().__init__(vertical=vertical, **kwargs)
 
         self._init_properties(**locals())
+
 
 class BaseMixin(pydom.Element):
     @property
@@ -148,12 +212,14 @@ class BaseMixin(pydom.Element):
     def label(self, value):
         self._js.label = value
 
+
 # class LabelProperty:
 #     def __get__(self, obj, objtype=None):
 #         return obj._js.label
 
 #     def __set__(self, obj, value):
 #         obj._js.label = value
+
 
 class PlaceholderProperty:
     def __get__(self, obj, objtype=None):
@@ -162,53 +228,108 @@ class PlaceholderProperty:
     def __set__(self, obj, value):
         obj._js.placeholder = value
 
+
 class Input(ShoeBase):
     tag = "sl-input"
 
-    label = js_property('label')
-    placeholder = js_property('placeholder')
-    pill = js_property('pill')
-    help_text = js_property('helpText')
-    value = js_property('value')
+    label = js_property("label")
+    placeholder = js_property("placeholder")
+    pill = js_property("pill")
+    help_text = js_property("helpText")
+    value = js_property("value")
 
-    def __init__(self, label=None, value=None, type='text', placeholder=None, help_text=None,
-                size=None, filled=False, pill=False, disabled=False, readonly=False, autofocus=False,
-                autocomplete=None, autocorrect=None, autocapitalize=None, spellcheck=None, min=None, max=None,
-                step=None, name=None, required=False, pattern=None, minlength=None, maxlength=None,
-                style=None, **kwargs):
-        super().__init__(style=style, label=label, value=value, type=type, placeholder=placeholder, help_text=help_text,
-                        size=size, filled=filled, pill=pill, disabled=disabled, readonly=readonly, autofocus=autofocus,
-                        autocomplete=autocomplete, autocorrect=autocorrect, autocapitalize=autocapitalize,
-                        spellcheck=spellcheck, min=min, max=max,
-                        step=step, name=name, required=required, pattern=pattern, minlength=minlength, maxlength=maxlength,
-                         **kwargs)
+    def __init__(
+        self,
+        label=None,
+        value=None,
+        type="text",
+        placeholder=None,
+        help_text=None,
+        size=None,
+        filled=False,
+        pill=False,
+        disabled=False,
+        readonly=False,
+        autofocus=False,
+        autocomplete=None,
+        autocorrect=None,
+        autocapitalize=None,
+        spellcheck=None,
+        min=None,
+        max=None,
+        step=None,
+        name=None,
+        required=False,
+        pattern=None,
+        minlength=None,
+        maxlength=None,
+        style=None,
+        **kwargs,
+    ):
+        super().__init__(
+            style=style,
+            label=label,
+            value=value,
+            type=type,
+            placeholder=placeholder,
+            help_text=help_text,
+            size=size,
+            filled=filled,
+            pill=pill,
+            disabled=disabled,
+            readonly=readonly,
+            autofocus=autofocus,
+            autocomplete=autocomplete,
+            autocorrect=autocorrect,
+            autocapitalize=autocapitalize,
+            spellcheck=spellcheck,
+            min=min,
+            max=max,
+            step=step,
+            name=name,
+            required=required,
+            pattern=pattern,
+            minlength=minlength,
+            maxlength=maxlength,
+            **kwargs,
+        )
 
 
 class Badge(TextShoeBase):
-    tag = 'sl-badge'
-    variant = js_property('variant')
-    pill = js_property('pill')
-    pulse = js_property('pulse')
+    tag = "sl-badge"
+    variant = js_property("variant")
+    pill = js_property("pill")
+    pulse = js_property("pulse")
 
 
 class Rating(ShoeBase):
-    tag = 'sl-rating'
-    label = js_property('label')
-    value = js_property('value')
-    max = js_property('max')
+    tag = "sl-rating"
+    label = js_property("label")
+    value = js_property("value")
+    max = js_property("max")
     # TODO: Properties missing...
 
 
 class TextArea(ShoeBase):
-    tag = 'sl-textarea'
-    label = js_property('label')
-    helpText = js_property('helpText')
+    tag = "sl-textarea"
+    label = js_property("label")
+    helpText = js_property("helpText")
     # TODO: Properties missing...
 
-class Card(TextShoeBase):
-    tag = 'sl-card'
 
-    def __init__(self, content=None, image=None, img_alt=None, header=None, footer=None, style=None, **kwargs):
+class Card(TextShoeBase):
+    tag = "sl-card"
+
+    def __init__(
+        self,
+        content=None,
+        image=None,
+        img_alt=None,
+        header=None,
+        footer=None,
+        style=None,
+        **kwargs,
+    ):
         main_div = el.div()
         if image:
             if not isinstance(image, el.img):
@@ -223,7 +344,6 @@ class Card(TextShoeBase):
                 main_div.append(el.div(content))
             main_div.append(content)
 
-    
         super().__init__(content, style=style, **kwargs)
         self._js.insertBefore(image._js, self._js.firstChild)
 
@@ -234,19 +354,25 @@ class Card(TextShoeBase):
         if footer:
             self.append(el.div(footer, slot="footer"))
 
-        self.add_class('card-overview')
+        self.add_class("card-overview")
+
 
 class Icon(ShoeBase):
-    tag = 'sl-icon'
+    tag = "sl-icon"
 
-    name = js_property('name')
-    src = js_property('src')
-    label = js_property('label')
-    library = js_property('library')
-    update_complete = js_property('updateComplete')
+    name = js_property("name")
+    src = js_property("src")
+    label = js_property("label")
+    library = js_property("library")
+    update_complete = js_property("updateComplete")
 
-    def __init__(self, name=None, src=None, label=None, library=None, style=None, **kwargs):
-        super().__init__(name=name, src=src, label=label, library=library, style=style, **kwargs)
+    def __init__(
+        self, name=None, src=None, label=None, library=None, style=None, **kwargs
+    ):
+        super().__init__(
+            name=name, src=src, label=label, library=library, style=style, **kwargs
+        )
+
 
 # ************* EXAMPLES SECTION *************
 
@@ -256,55 +382,69 @@ LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do e
 Details(LOREM_IPSUM, summary="Try me")
 """
 example_dialog_close_btn = Button("Close")
-example_dialog = Dialog(el.div([el.p(LOREM_IPSUM), example_dialog_close_btn]), label="Try me")
+example_dialog = Dialog(
+    el.div([el.p(LOREM_IPSUM), example_dialog_close_btn]), label="Try me"
+)
 example_dialog_btn = Button("Open Dialog")
+
 
 def toggle_dialog():
     example_dialog.open = not (example_dialog.open)
 
 
-when('click', example_dialog_btn)(toggle_dialog)
-when('click', example_dialog_close_btn)(toggle_dialog)
+when("click", example_dialog_btn)(toggle_dialog)
+when("click", example_dialog_close_btn)(toggle_dialog)
 
 pydom.body.append(example_dialog)
 examples = {
-    'Alert': {
-        "instance": Alert("This is a standard alert. You can customize its content and even the icon."),
-        "code": el.code("Alert('This is a standard alert. You can customize its content and even the icon.'"),
+    "Alert": {
+        "instance": Alert(
+            "This is a standard alert. You can customize its content and even the icon."
+        ),
+        "code": el.code(
+            "Alert('This is a standard alert. You can customize its content and even the icon.'"
+        ),
     },
-    'Icon': {
+    "Icon": {
         "instance": Icon(name="heart"),
         "code": el.code('Icon(name="heart")'),
     },
-    'Button': {
+    "Button": {
         "instance": Button("Try me"),
         "code": el.code('Button("Try me")'),
     },
-    'Card': {
-        "instance": Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pyscript-sticker-black.svg",
-                         footer=el.div([Button("More Info"), Rating()])),
-        "code": el.code('''
+    "Card": {
+        "instance": Card(
+            el.p("This is a cool card!"),
+            image="https://pyscript.net/assets/images/pyscript-sticker-black.svg",
+            footer=el.div([Button("More Info"), Rating()]),
+        ),
+        "code": el.code(
+            """
 Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pyscript-sticker-black.svg", footer=el.div([Button("More Info"), Rating()]))
-'''),
+"""
+        ),
     },
-    'Details': {
+    "Details": {
         "instance": Details(LOREM_IPSUM, summary="Try me"),
         "code": el.code('Details(LOREM_IPSUM, summary="Try me")'),
     },
-    'Dialog': {
+    "Dialog": {
         "instance": example_dialog_btn,
-        "code": el.code('Dialog(div([p(LOREM_IPSUM), Button("Close")]), summary="Try me")'),
+        "code": el.code(
+            'Dialog(div([p(LOREM_IPSUM), Button("Close")]), summary="Try me")'
+        ),
     },
-    'Divider': {
+    "Divider": {
         "instance": Divider(),
-        "code": el.code('Divider()'),
+        "code": el.code("Divider()"),
     },
-    'Rating': {
+    "Rating": {
         "instance": Rating(),
-        "code": el.code('Rating()'),
+        "code": el.code("Rating()"),
     },
-    
 }
+
 
 # Load resources...
 # <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/themes/light.css" />
