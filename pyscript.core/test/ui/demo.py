@@ -1,11 +1,12 @@
 from textwrap import dedent
 
 import examples
-from pyscript import when, window
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
 from pyweb.ui.markdown import markdown
+
+from pyscript import when, window
 
 # Style dictionary for code blocks
 STYLE_CODE_BLOCK = {"text-align": "left", "background-color": "#eee", "padding": "20px"}
@@ -27,29 +28,37 @@ def create_component_details(component):
 
     """
     # Get the example from the examples catalog
-    examples_gallery = examples.kits['shoelace']
+    examples_gallery = examples.kits["shoelace"]
     example = examples_gallery[component]["instance"]
     details = example.__doc__ or f"Details missing for component {component}"
 
-    div = el.div([
-        # Title and description (description is picked from the class docstring)
-        el.h1(component),
-        markdown(details),
-        # Example section
-        el.h2("Example:"),
-        el.div([
-            example,
-            shoelace.Details(
-                el.div(examples_gallery[component]["code"], style=STYLE_CODE_BLOCK),
-                summary="View Code", style={"background-color": "gainsboro"},
-                ),
-            ],
-            style={
-                "border-radius": "3px",
-                "background-color": "var(--sl-color-neutral-50)",
-                "margin-bottom": "1.5rem"
-                }
-            )], style={"margin": "20px"})
+    div = el.div(
+        [
+            # Title and description (description is picked from the class docstring)
+            el.h1(component),
+            markdown(details),
+            # Example section
+            el.h2("Example:"),
+            el.div(
+                [
+                    example,
+                    shoelace.Details(
+                        el.div(
+                            examples_gallery[component]["code"], style=STYLE_CODE_BLOCK
+                        ),
+                        summary="View Code",
+                        style={"background-color": "gainsboro"},
+                    ),
+                ],
+                style={
+                    "border-radius": "3px",
+                    "background-color": "var(--sl-color-neutral-50)",
+                    "margin-bottom": "1.5rem",
+                },
+            ),
+        ],
+        style={"margin": "20px"},
+    )
     return div
 
 
@@ -68,12 +77,14 @@ def add_component_section(component, parent_div):
         el.a(component, href="#"),
         style={"display": "block", "text-align": "center", "margin": "auto"},
     )
+
     # Create a handler that opens the component details when the link is clicked
     @when("click", div)
     def _change():
         new_main = create_component_details(component)
         main_area.html = ""
         main_area.append(new_main)
+
     # Add the new link element to the parent div (left panel)
     parent_div.append(div)
     return div
