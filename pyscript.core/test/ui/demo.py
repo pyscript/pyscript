@@ -1,13 +1,11 @@
 from textwrap import dedent
 
+import examples
 from pyscript import when, window
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
-
 from pyweb.ui.markdown import markdown
-
-import examples
 
 # Style dictionary for code blocks
 STYLE_CODE_BLOCK = {"text-align": "left", "background-color": "#eee", "padding": "20px"}
@@ -15,6 +13,7 @@ STYLE_CODE_BLOCK = {"text-align": "left", "background-color": "#eee", "padding":
 
 # First thing we do is to load all the external resources we need
 shoelace.load_resources()
+
 
 # Let's define some convenience functions first
 def create_component_details(component):
@@ -314,8 +313,8 @@ left_div.append(shoe_components_text)
 left_div.append(shoelace.Divider(style={"margin-top": "5px", "margin-bottom": "30px"}))
 
 # Create the links to the components on th left panel
-print("SHOELACE EXAMPLES", examples.kits['shoelace'])
-for component in examples.kits['shoelace']:
+print("SHOELACE EXAMPLES", examples.kits["shoelace"])
+for component in examples.kits["shoelace"]:
     add_component_section(component, left_div)
 
 
