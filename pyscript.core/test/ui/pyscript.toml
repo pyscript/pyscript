@@ -1,1 +1,4 @@
 packages = []
+
+[files]
+"./examples.py" = "./examples.py"
