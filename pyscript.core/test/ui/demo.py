@@ -8,6 +8,22 @@ from pyweb.ui.markdown import markdown
 
 from pyscript import when, window
 
+MAIN_PAGE_MARKDOWN = dedent(
+    """
+    ## What is pyweb.ui?
+    Pyweb UI is a totally immagnary exercise atm but..... imagine it is a Python library that allows you to create
+                            web applications using Python only.
+
+    It is based on base HTML/JS components but is extensible, for instance, it can have a [Shoelace](https://shoelace.style/) backend...
+
+    PyWeb is a Python library that allows you to create web applications using Python only.
+
+    ## What can I do with Pyweb.ui?
+
+    You can create web applications using Python only.
+    """
+)
+
 # Style dictionary for code blocks
 STYLE_CODE_BLOCK = {"text-align": "left", "background-color": "#eee", "padding": "20px"}
 
@@ -114,45 +130,18 @@ def create_component_example(widget, code):
 
 
 def create_main_area():
-    """Create the main area of the page.
+    """Create the main area of the right side of page, with the description of the
+    demo itself and how to use it.
 
     Returns:
         the main area
 
     """
-    div = el.div()
-    div.append(
-        el.h1(
-            "Welcome to PyDom UI!",
-            style={"text-align": "center", "margin": "20px auto 30px"},
-        )
-    )
-
-    div.append(el.h2("What is PyShoes?"))
-    div.append(
-        markdown(
-            dedent(
-                """\
-        PyDom UI is a totally immagnary exercise atm but..... imagine it is a Python library that allows you to create
-                               web applications using Python only.
-
-        It is based on base HTML/JS components but is extensible, for instance, it can have a [Shoelace](https://shoelace.style/) backend...
-
-        PyWeb is a Python library that allows you to create web applications using Python only.
-                               """
-            )
-        )
-    )
-    div.append(el.h2("What can I do with PyShoes?"))
-
-    div.append(
-        markdown(
-            dedent(
-                """\
-        You can create web applications using Python only.
-                               """
-            )
-        )
+    div = el.div(
+        [
+            el.h1("Welcome to PyDom UI!", style={"text-align": "center"}),
+            markdown(MAIN_PAGE_MARKDOWN),
+        ]
     )
 
     return div
