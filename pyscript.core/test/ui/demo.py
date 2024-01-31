@@ -12,6 +12,7 @@ import examples
 # Style dictionary for code blocks
 STYLE_CODE_BLOCK = {"text-align": "left", "background-color": "#eee", "padding": "20px"}
 
+
 # First thing we do is to load all the external resources we need
 shoelace.load_resources()
 
@@ -26,38 +27,30 @@ def create_component_details(component):
         the component created
 
     """
-    # Outer div container
-    div = el.div(style={"margin": "20px"})
-
     # Get the example from the examples catalog
-    example = shoelace.examples[component]["instance"]
-
-    # Title and description (description is picked from the class docstring)
-    div.append(el.h1(component))
+    examples_gallery = examples.kits['shoelace']
+    example = examples_gallery[component]["instance"]
     details = example.__doc__ or f"Details missing for component {component}"
 
-    div.append(markdown(details))
-
-    # Create the example and code block
-    div.append(el.h2("Example:"))
-
-    example_div = el.div(
-        example,
-        style={
-            "border-radius": "3px",
-            "background-color": "var(--sl-color-neutral-50)",
-            "margin-bottom": "1.5rem",
-        },
-    )
-    example_div.append(example)
-    example_div.append(
-        shoelace.Details(
-            el.div(shoelace.examples[component]["code"], style=STYLE_CODE_BLOCK),
-            summary="View Code",
-            style={"background-color": "gainsboro"},
-        )
-    )
-    div.append(example_div)
+    div = el.div([
+        # Title and description (description is picked from the class docstring)
+        el.h1(component),
+        markdown(details),
+        # Example section
+        el.h2("Example:"),
+        el.div([
+            example,
+            shoelace.Details(
+                el.div(examples_gallery[component]["code"], style=STYLE_CODE_BLOCK),
+                summary="View Code", style={"background-color": "gainsboro"},
+                ),
+            ],
+            style={
+                "border-radius": "3px",
+                "background-color": "var(--sl-color-neutral-50)",
+                "margin-bottom": "1.5rem"
+                }
+            )], style={"margin": "20px"})
     return div
 
 
@@ -71,18 +64,18 @@ def add_component_section(component, parent_div):
         the component created
 
     """
+    # Create the component link element
     div = el.div(
         el.a(component, href="#"),
         style={"display": "block", "text-align": "center", "margin": "auto"},
     )
-
+    # Create a handler that opens the component details when the link is clicked
+    @when("click", div)
     def _change():
         new_main = create_component_details(component)
         main_area.html = ""
         main_area.append(new_main)
-
-    when("click", div)(_change)
-    print("adding component", component)
+    # Add the new link element to the parent div (left panel)
     parent_div.append(div)
     return div
 
@@ -98,20 +91,12 @@ def create_example_grid(widget, code):
         the grid created
 
     """
-    # Create the grid
+    # Create the grid that splits the window in two columns (25% and 75%)
     grid = el.Grid("25% 75%")
     # Add the widget
     grid.append(el.div(widget))
     # Add the code div
-    widget_code = markdown(
-        dedent(
-            f"""
-```python
-{code}
-```
-"""
-        )
-    )
+    widget_code = markdown(dedent(f"""```python\n{code}\n```"""))
     grid.append(el.div(widget_code, style=STYLE_CODE_BLOCK))
 
     return grid
@@ -189,8 +174,6 @@ def create_markdown_components_page():
     @when("click", translate_button)
     def translate_markdown():
         result_div.html = markdown(markdown_txt_area.value).html
-        print("TOOOO", markdown_txt_area.value)
-        print("Translated", markdown(markdown_txt_area.value))
 
     main_section = el.div(
         [
@@ -200,32 +183,6 @@ def create_markdown_components_page():
         ]
     )
     div.append(main_section)
-    # div.append(el.h3("Buttons"))
-    # btn = el.button("Click me!")
-    # when('click', btn)(lambda: window.alert("Clicked!"))
-
-    #     btn_code = dedent("""btn = button("Click me!"})
-    # when('click', btn)(lambda: window.alert("Clicked!"))""")
-
-    #     div.append(create_example_grid(btn, btn_code))
-
-    #     # Inputs
-    #     inputs_div = el.div()
-    #     div.append(el.h3("Inputs"))
-    #     inputs_code = []
-    #     for input_type in ['text', 'password', 'email', 'number', 'date', 'time', 'color', 'range']:
-    #         inputs_div.append(el.input(type=input_type, style={'display': 'block'}))
-    #         inputs_code.append(f"input(type='{input_type}')")
-    #     inputs_code = '\n'.join(inputs_code)
-
-    #     div.append(create_example_grid(inputs_div, inputs_code))
-
-    #     # DIV
-    #     div.append(el.h3("Div"))
-    #     _div = el.div("This is a div", style={'text-align': 'center', 'width': '100%', 'margin': '0 auto 0', 'background-color': 'cornsilk'})
-    #     code = "div = div('This is a div', style={'text-align': 'center', 'margin': '0 auto 0', 'background-color': 'cornsilk'})"
-    #     div.append(create_example_grid(_div, code))
-
     return div
 
 
