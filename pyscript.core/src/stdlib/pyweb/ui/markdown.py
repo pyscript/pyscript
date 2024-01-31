@@ -1,7 +1,6 @@
 """Markdown module to generate web/HTML components from Markdown code"""
-from pyweb.ui.elements import TextElementBase
-
 from pyscript import document, window
+from pyweb.ui.elements import TextElementBase
 
 
 class markdown(TextElementBase):

@@ -1,6 +1,7 @@
 from textwrap import dedent
 
 import examples
+from pyscript import when, window
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
