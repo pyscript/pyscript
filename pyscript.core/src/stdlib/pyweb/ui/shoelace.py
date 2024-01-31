@@ -236,6 +236,17 @@ class Card(TextShoeBase):
 
         self.add_class('card-overview')
 
+class Icon(ShoeBase):
+    tag = 'sl-icon'
+
+    name = js_property('name')
+    src = js_property('src')
+    label = js_property('label')
+    library = js_property('library')
+    update_complete = js_property('updateComplete')
+
+    def __init__(self, name=None, src=None, label=None, library=None, style=None, **kwargs):
+        super().__init__(name=name, src=src, label=label, library=library, style=style, **kwargs)
 
 # ************* EXAMPLES SECTION *************
 
@@ -260,6 +271,10 @@ examples = {
     'Alert': {
         "instance": Alert("This is a standard alert. You can customize its content and even the icon."),
         "code": el.code("Alert('This is a standard alert. You can customize its content and even the icon.'"),
+    },
+    'Icon': {
+        "instance": Icon(name="heart"),
+        "code": el.code('Icon(name="heart")'),
     },
     'Button': {
         "instance": Button("Try me"),
