@@ -7,6 +7,8 @@ from pyweb.ui import shoelace
 
 from pyweb.ui.markdown import markdown
 
+import examples
+
 # Style dictionary for code blocks
 STYLE_CODE_BLOCK = {"text-align": "left", "background-color": "#eee", "padding": "20px"}
 
@@ -354,8 +356,8 @@ left_div.append(shoe_components_text)
 left_div.append(shoelace.Divider(style={"margin-top": "5px", "margin-bottom": "30px"}))
 
 # Create the links to the components on th left panel
-print("SHOELACE EXAMPLES", shoelace.examples)
-for component in shoelace.examples:
+print("SHOELACE EXAMPLES", examples.kits['shoelace'])
+for component in examples.kits['shoelace']:
     add_component_section(component, left_div)
 
 
