@@ -378,7 +378,7 @@ class Icon(ShoeBase):
 # <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/themes/light.css" />
 # <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/shoelace-autoloader.js"></script>
 def load_resources(parent=None):
-    print("Loading resources...")
+    print("Loading shoelace resources...")
     if parent is None:
         parent = pydom.body
     parent.append(
