@@ -80,8 +80,9 @@ def add_component_section(component, parent_div):
     return div
 
 
-def create_example_grid(widget, code):
-    """Create a grid with the widget and the code.
+def create_component_example(widget, code):
+    """Create a grid div with the widget on the left side and the relate code
+    on the right side.
 
     Args:
         widget (ElementBase): The widget to add to the grid.
@@ -206,7 +207,7 @@ def create_basic_components_page():
 when('click', btn)(lambda: window.alert("Clicked!"))"""
     )
 
-    div.append(create_example_grid(btn, btn_code))
+    div.append(create_component_example(btn, btn_code))
 
     # Inputs
     inputs_div = el.div()
@@ -226,7 +227,7 @@ when('click', btn)(lambda: window.alert("Clicked!"))"""
         inputs_code.append(f"input(type='{input_type}')")
     inputs_code = "\n".join(inputs_code)
 
-    div.append(create_example_grid(inputs_div, inputs_code))
+    div.append(create_component_example(inputs_div, inputs_code))
 
     # DIV
     div.append(el.h3("Div"))
@@ -240,7 +241,7 @@ when('click', btn)(lambda: window.alert("Clicked!"))"""
         },
     )
     code = "div = div('This is a div', style={'text-align': 'center', 'margin': '0 auto 0', 'background-color': 'cornsilk'})"
-    div.append(create_example_grid(_div, code))
+    div.append(create_component_example(_div, code))
 
     return div
 
