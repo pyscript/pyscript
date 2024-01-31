@@ -1,7 +1,8 @@
 from textwrap import dedent
 
-from pyscript import document, when, window
 from pyweb import JSProperty, js_property, pydom
+
+from pyscript import document, when, window
 
 
 class ElementBase(pydom.Element):
@@ -188,7 +189,7 @@ class div(TextElementBase):
 class img(ElementBase):
     tag = "img"
     src = js_property("src")
-    # TODO: This should probably go on the ElementBase class since it's a global attribtute
+    # TODO: This should probably go on the ElementBase class since it's a global attribute
     # https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/slot
     slot = js_property("slot")
 
