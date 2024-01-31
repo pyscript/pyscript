@@ -46,7 +46,7 @@ class TextElementBase(ElementBase):
         elif content is None:
             pass
         else:
-            self._js.innerHTML = content
+            self.html = content
 
 class h1(TextElementBase):
     tag = "h1"
