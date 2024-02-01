@@ -1,11 +1,11 @@
 from textwrap import dedent
 
-from pyscript import when
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
 from pyweb.ui.markdown import markdown
 
+from pyscript import when
 
 MAIN_PAGE_MARKDOWN = dedent(
     """
