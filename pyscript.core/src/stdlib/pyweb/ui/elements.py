@@ -1,7 +1,8 @@
 from textwrap import dedent
 
-from pyscript import document, when, window
 from pyweb import JSProperty, js_property, pydom
+
+from pyscript import document, when, window
 
 
 class ElementBase(pydom.Element):
@@ -128,9 +129,16 @@ class style(TextElementBase):
         style=None,
         **kwargs
     ):
-        super().__init__(content=content, blocking=blocking, title=title,
-            nonce=nonce, media=media, style=style, **kwargs
+        super().__init__(
+            content=content,
+            blocking=blocking,
+            title=title,
+            nonce=nonce,
+            media=media,
+            style=style,
+            **kwargs
         )
+
 
 class script(TextElementBase):
     tag = "script"
