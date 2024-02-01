@@ -1,9 +1,10 @@
 import string
 from textwrap import dedent
 
-from pyscript import document, when, window
 from pyweb import JSProperty, js_property, pydom
 from pyweb.ui import elements as el
+
+from pyscript import document, when, window
 
 
 class ShoeBase(pydom.Element):
@@ -390,6 +391,8 @@ CSS = """
     align-items: center;
 }
 """
+
+
 def load_resources(parent=None):
     print("Loading shoelace resources...")
     if parent is None:
