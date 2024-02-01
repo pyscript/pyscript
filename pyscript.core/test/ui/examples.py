@@ -8,6 +8,7 @@ from pyweb.ui.shoelace import (
     Dialog,
     Divider,
     Icon,
+    Radio,
     Rating,
 )
 
@@ -82,6 +83,10 @@ Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pys
         "Rating": {
             "instance": Rating(),
             "code": el.code("Rating()"),
+        },
+        "Radio": {
+            "instance": Radio(),
+            "code": el.code("Radio()"),
         },
     }
 }
