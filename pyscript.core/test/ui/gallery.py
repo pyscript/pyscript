@@ -1,10 +1,9 @@
 from textwrap import dedent
 
+from pyscript import when, window
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
-
-from pyscript import when, window
 
 # from marked import Markdown
 # import element as el
