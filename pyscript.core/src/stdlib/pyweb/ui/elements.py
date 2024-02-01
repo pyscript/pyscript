@@ -4,6 +4,30 @@ from pyweb import JSProperty, js_property, pydom
 
 from pyscript import document, when, window
 
+# Global attributes that all elements have (this list is a subset of the official one)
+# and tries to capture the most used ones
+GLOBAL_ATTRIBUTES = [
+    "accesskey",
+    "autocapitalize",
+    "autofocus",
+    "draggable",
+    "enterkeyhint",
+    "hidden",
+    "id",
+    "lang",
+    "nonce",
+    "part",
+    "popover",
+    "slot",
+    "spellcheck",
+    "tabindex",
+    "title",
+    "translate",
+    "virtualkeyboardpolicy",
+]
+
+# class and style are different ones that are handled by pydom.element directly
+
 
 class ElementBase(pydom.Element):
     tag = "div"
@@ -17,50 +41,65 @@ class ElementBase(pydom.Element):
                 self.style[key] = value
 
         # IMPORTANT!!! This is used to auto-harvest all input arguments and set them as properties
-        kwargs["self"] = self
         self._init_properties(**kwargs)
 
-    @staticmethod
-    def _init_properties(**kwargs):
-        self = kwargs.pop("self")
+    def _init_properties(self, **kwargs):
+        """Set all the properties (of type JSProperties) provided in input as properties
+        of the class instance.
 
+        Args:
+            **kwargs: The properties to set
+        """
         # Look at all the properties of the class and see if they were provided in kwargs
         for attr_name, attr in self.__class__.__dict__.items():
             # For each one, actually check if it is a property of the class and set it
             if isinstance(attr, JSProperty) and attr_name in kwargs:
                 setattr(self, attr_name, kwargs[attr_name])
 
-    # def __add__(self, other):
-    #     if isinstance(other, list):
-    #         other = div(*other)
-    #     return WidgetCollection(*self.widgets, other, separator=self.separator)
-
 
 class TextElementBase(ElementBase):
     def __init__(self, content=None, style=None, **kwargs):
         super().__init__(style=style, **kwargs)
 
+        # If it's an element, append the element
         if isinstance(content, pydom.Element):
             self.append(content)
+        # If it's a list of elements
         elif isinstance(content, list):
             for item in content:
                 self.append(item)
+        # If the content wasn't set just ignore
         elif content is None:
             pass
         else:
+            # Otherwise, set content as the html of the element
             self.html = content
 
 
-class h1(TextElementBase):
-    tag = "h1"
+def _add_js_properties(cls, *attrs):
+    """Add JSProperties to a class as `js_property` class attributes."""
+    # First we set all the properties as JSProperties
+    for attr in attrs:
+        setattr(cls, attr, JSProperty(attr))
+
+    # Now we patch the __init__ method to specify the properties
+    cls.__init__.__doc__ = f"""Class constructor.
+
+    Args:
 
 
-class h2(TextElementBase):
-    tag = "h2"
+        * content: The content of the element (can be a string, a list of elements or a single element)
+        * style: The style of the element (a dictionary)
+        * All the properties of the class: {attrs}
+
+        """
 
 
-class h3(TextElementBase):
-    tag = "h3"
+class a(TextElementBase):
+    tag = "a"
+
+
+_add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
 
 
 class button(TextElementBase):
@@ -74,12 +113,16 @@ class button(TextElementBase):
     value = js_property("value")
 
 
-class a(TextElementBase):
-    tag = "a"
-    href = js_property("href")
+class h1(TextElementBase):
+    tag = "h1"
 
-    def __init__(self, content, href, style=None, **kwargs):
-        super().__init__(content, href=href, style=style, **kwargs)
+
+class h2(TextElementBase):
+    tag = "h2"
+
+
+class h3(TextElementBase):
+    tag = "h3"
 
 
 class link(TextElementBase):
@@ -98,7 +141,7 @@ class link(TextElementBase):
         href=None,
         media=None,
         style=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             content=content,
@@ -107,7 +150,7 @@ class link(TextElementBase):
             href=href,
             media=media,
             style=style,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -127,7 +170,7 @@ class style(TextElementBase):
         nonce=None,
         media=None,
         style=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             content=content,
@@ -136,7 +179,7 @@ class style(TextElementBase):
             nonce=nonce,
             media=media,
             style=style,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -168,7 +211,7 @@ class script(TextElementBase):
         nomodule=None,
         integrity=None,
         style=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             content=content,
@@ -183,7 +226,7 @@ class script(TextElementBase):
             nomodule=nomodule,
             integrity=integrity,
             style=style,
-            **kwargs
+            **kwargs,
         )
 
 
