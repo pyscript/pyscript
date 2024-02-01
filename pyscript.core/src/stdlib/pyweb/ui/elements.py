@@ -79,7 +79,7 @@ def _add_js_properties(cls, *attrs):
     """Add JSProperties to a class as `js_property` class attributes."""
     # First we set all the properties as JSProperties
     for attr in attrs:
-        setattr(cls, attr, JSProperty(attr))
+        setattr(cls, attr, js_property(attr))
 
     # Now we patch the __init__ method to specify the properties
     cls.__init__.__doc__ = f"""Class constructor.
