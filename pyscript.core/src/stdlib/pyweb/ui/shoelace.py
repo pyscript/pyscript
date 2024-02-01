@@ -380,13 +380,12 @@ class Radio(ShoeBase):
     size = js_property("size")
     disabled = js_property("disabled")
     update_complete = js_property("updateComplete")
-    
-    def __init__(
-            self, value=None, size=None, disabled=None, style=None, **kwargs
-    ):
+
+    def __init__(self, value=None, size=None, disabled=None, style=None, **kwargs):
         super().__init__(
             value=value, size=size, disabled=disabled, style=style, **kwargs
         )
+
 
 # Load resources...
 CSS = """
