@@ -110,6 +110,28 @@ class link(TextElementBase):
         )
 
 
+class style(TextElementBase):
+    tag = "style"
+
+    blocking = js_property("blocking")
+    title = js_property("title")
+    nonce = js_property("nonce")
+    media = js_property("media")
+
+    def __init__(
+        self,
+        content=None,
+        blocking=None,
+        title=None,
+        nonce=None,
+        media=None,
+        style=None,
+        **kwargs
+    ):
+        super().__init__(content=content, blocking=blocking, title=title,
+            nonce=nonce, media=media, style=style, **kwargs
+        )
+
 class script(TextElementBase):
     tag = "script"
 

@@ -375,8 +375,21 @@ class Icon(ShoeBase):
 
 
 # Load resources...
-# <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/themes/light.css" />
-# <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/shoelace-autoloader.js"></script>
+CSS = """
+.card-overview {
+    max-width: 300px;
+}
+
+.card-overview small {
+    color: var(--sl-color-neutral-500);
+}
+
+.card-overview [slot='footer'] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+"""
 def load_resources(parent=None):
     print("Loading shoelace resources...")
     if parent is None:
@@ -393,4 +406,5 @@ def load_resources(parent=None):
             type="module",
         ),
     )
+    parent.append(el.style(CSS))
     print("Resources loaded!")
