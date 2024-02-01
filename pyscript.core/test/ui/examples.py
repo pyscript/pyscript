@@ -10,6 +10,7 @@ from pyweb.ui.shoelace import (
     Divider,
     Icon,
     Rating,
+    Radio
 )
 
 LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
@@ -81,6 +82,10 @@ Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pys
         "Rating": {
             "instance": Rating(),
             "code": el.code("Rating()"),
+        },
+        "Radio": {
+            "instance": Radio(),
+            "code": el.code("Radio()"),
         },
     }
 }
