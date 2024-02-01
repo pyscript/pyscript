@@ -143,7 +143,18 @@ def create_main_area():
         ]
     )
 
-    main = el.main(style={'padding-top': '4rem', 'padding-bottom': '7rem', 'max-width': '52rem', 'margin-left': 'auto', 'margin-right': 'auto', 'padding-left': '1.5rem', 'padding-right': '1.5rem', 'width': '100%'})
+    main = el.main(
+        style={
+            "padding-top": "4rem",
+            "padding-bottom": "7rem",
+            "max-width": "52rem",
+            "margin-left": "auto",
+            "margin-right": "auto",
+            "padding-left": "1.5rem",
+            "padding-right": "1.5rem",
+            "width": "100%",
+        }
+    )
     main.append(div)
 
     return main
@@ -274,7 +285,8 @@ def markdown_components():
 
 def create_new_section(title, parent_div):
     basic_components_text = el.h3(
-        title, style={"text-align": "left", "margin": "20px auto 0", "cursor": "pointer"}
+        title,
+        style={"text-align": "left", "margin": "20px auto 0", "cursor": "pointer"},
     )
     parent_div.append(basic_components_text)
     parent_div.append(
@@ -295,7 +307,8 @@ when("click", left_panel_title)(restore_home)
 
 # BASIC COMPONENTS
 basic_components_text = el.h3(
-    "Basic Components", style={"text-align": "left", "margin": "20px auto 0", "cursor": "pointer"}
+    "Basic Components",
+    style={"text-align": "left", "margin": "20px auto 0", "cursor": "pointer"},
 )
 left_div.append(basic_components_text)
 left_div.append(shoelace.Divider(style={"margin-top": "5px", "margin-bottom": "30px"}))
@@ -309,7 +322,8 @@ when("click", markdown_title)(markdown_components)
 
 # SHOELACE COMPONENTS
 shoe_components_text = el.h3(
-    "Shoe Components", style={"text-align": "left", "margin": "20px auto 0", "pointer": "cursor"}
+    "Shoe Components",
+    style={"text-align": "left", "margin": "20px auto 0", "pointer": "cursor"},
 )
 left_div.append(shoe_components_text)
 left_div.append(shoelace.Divider(style={"margin-top": "5px", "margin-bottom": "30px"}))

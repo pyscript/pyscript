@@ -258,7 +258,8 @@ class div(TextElementBase):
 
 
 class main(TextElementBase):
-    tag = 'main'
+    tag = "main"
+
 
 class img(ElementBase):
     tag = "img"
