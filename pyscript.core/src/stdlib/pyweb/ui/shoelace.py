@@ -374,17 +374,64 @@ class Icon(ShoeBase):
         )
 
 
-class Radio(ShoeBase):
+class Radio(TextShoeBase):
     tag = "sl-radio"
     value = js_property("value")
     size = js_property("size")
     disabled = js_property("disabled")
     update_complete = js_property("updateComplete")
-
-    def __init__(self, value=None, size=None, disabled=None, style=None, **kwargs):
+    
+    def __init__(self, content, value=None, size=None, disabled=None, style=None, **kwargs):
         super().__init__(
-            value=value, size=size, disabled=disabled, style=style, **kwargs
+            content, value=value, size=size, disabled=disabled, style=style, **kwargs
         )
+
+
+class RadioGroup(ShoeBase):
+    tag = "sl-radio-group"
+    label = js_property("label")
+    help_text = js_property("helpText")
+    name = js_property("name")
+    value = js_property("value")
+    size = js_property("size")
+    form = js_property("form")
+    required = js_property("required")
+    validity = js_property("validity")
+    validation_message = js_property("validationMessage")
+    update_complete = js_property("updateComplete")
+    
+    def __init__(
+            self,
+            children: list[Radio] = None,
+            label=None,
+            help_text=None,
+            name=None,
+            value=None,
+            size=None,
+            form=None,
+            required=None,
+            validity=None,
+            validation_message=None,
+            update_complete=None,
+            **kwargs
+    ):
+        super().__init__(
+            label=label,
+            help_text=help_text,
+            name=name,
+            value=value,
+            size=size,
+            form=form,
+            required=required,
+            validity=validity,
+            validation_message=validation_message,
+            update_complete=update_complete,
+            **kwargs
+        )
+        if children:
+            for radio in children:
+                if isinstance(radio, Radio):
+                    self.append(radio)
 
 
 # Load resources...

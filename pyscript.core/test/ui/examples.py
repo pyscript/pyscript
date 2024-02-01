@@ -11,6 +11,7 @@ from pyweb.ui.shoelace import (
     Icon,
     Radio,
     Rating,
+    RadioGroup
 )
 
 LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
@@ -84,8 +85,19 @@ Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pys
             "code": el.code("Rating()"),
         },
         "Radio": {
-            "instance": Radio(),
-            "code": el.code("Radio()"),
+            "instance": Radio("Option 42"),
+            "code": el.code('Radio("Option 42")'),
         },
+        "Radio Group": {
+            "instance": RadioGroup([Radio("radio 1", name="radio 1", value=1, style={"margin": "20px"}),
+                                    Radio("radio 2", name="radio 2", value=2, style={"margin": "20px"}),
+                                    Radio("radio 3", name="radio 3", value=3, style={"margin": "20px"})],
+                                   label="Select an option"),
+            "code": el.code("""
+                RadioGroup([Radio("radio 1", name="radio 1", value=1, style={"margin": "20px"}),
+                                     Radio("radio 2", name="radio 2", value=2, style={"margin": "20px"}),
+                                     Radio("radio 3", name="radio 3", value=3, style={"margin": "20px"})],
+                                    label="Select an option"),""")
+        }
     }
 }
