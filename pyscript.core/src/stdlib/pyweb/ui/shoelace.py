@@ -380,8 +380,10 @@ class Radio(TextShoeBase):
     size = js_property("size")
     disabled = js_property("disabled")
     update_complete = js_property("updateComplete")
-    
-    def __init__(self, content, value=None, size=None, disabled=None, style=None, **kwargs):
+
+    def __init__(
+        self, content, value=None, size=None, disabled=None, style=None, **kwargs
+    ):
         super().__init__(
             content, value=value, size=size, disabled=disabled, style=style, **kwargs
         )
@@ -399,21 +401,21 @@ class RadioGroup(ShoeBase):
     validity = js_property("validity")
     validation_message = js_property("validationMessage")
     update_complete = js_property("updateComplete")
-    
+
     def __init__(
-            self,
-            children: list[Radio] = None,
-            label=None,
-            help_text=None,
-            name=None,
-            value=None,
-            size=None,
-            form=None,
-            required=None,
-            validity=None,
-            validation_message=None,
-            update_complete=None,
-            **kwargs
+        self,
+        children: list[Radio] = None,
+        label=None,
+        help_text=None,
+        name=None,
+        value=None,
+        size=None,
+        form=None,
+        required=None,
+        validity=None,
+        validation_message=None,
+        update_complete=None,
+        **kwargs,
     ):
         super().__init__(
             label=label,
@@ -426,7 +428,7 @@ class RadioGroup(ShoeBase):
             validity=validity,
             validation_message=validation_message,
             update_complete=update_complete,
-            **kwargs
+            **kwargs,
         )
         if children:
             for radio in children:
