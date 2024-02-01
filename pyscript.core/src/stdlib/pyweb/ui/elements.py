@@ -257,6 +257,9 @@ class div(TextElementBase):
     tag = "div"
 
 
+class main(TextElementBase):
+    tag = 'main'
+
 class img(ElementBase):
     tag = "img"
     src = js_property("src")
