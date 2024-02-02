@@ -149,8 +149,8 @@ def create_markdown_components_page():
         the main area
 
     """
-    div = div()
-    div.append(h2("Markdown"))
+    div_ = div()
+    div_.append(h2("Markdown"))
 
     # Buttons
     markdown_txt_area = shoelace.TextArea(
@@ -177,8 +177,8 @@ def create_markdown_components_page():
             result_div,
         ]
     )
-    div.append(main_section)
-    return div
+    div_.append(main_section)
+    return div_
 
 
 def create_basic_components_page():
