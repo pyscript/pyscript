@@ -13,6 +13,7 @@ from pyweb.ui.shoelace import (
     Skeleton,
     Spinner,
     Switch,
+    Textarea,
 )
 
 from pyscript import when
@@ -117,6 +118,18 @@ Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pys
             "instance": Switch(name="switch", size="large"),
             "code": el.code('Switch(name="switch", size="large")'),
         },
+        "Textarea": {
+            "instance": Textarea(
+                name="textarea",
+                label="Textarea",
+                size="medium",
+                help_text="This is a textarea",
+                resize="auto",
+            ),
+            "code": el.code(
+                'Textarea(name="textarea", label="Textarea", size="medium", help_text="This is a textarea", resize="auto")'
+            ),
+        }
         # "SplitPanel": {
         #     "instance": SplitPanel(
         #         el.div("First panel"), el.div("Second panel"), orientation="vertical"
