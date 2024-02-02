@@ -2,6 +2,7 @@ from pyscript import when
 from pyweb import pydom
 from pyweb.ui.elements import (
     a,
+    br,
     button,
     code,
     div,
@@ -15,6 +16,8 @@ from pyweb.ui.elements import (
     img,
     input_,
     p,
+    small,
+    strong
 )
 from pyweb.ui.shoelace import (
     Alert,
@@ -72,6 +75,13 @@ for input_type in [
     inputs_div.append(input_(type=input_type, style={"display": "block"}))
     inputs_code.append(f"input_(type='{input_type}')")
 inputs_code = "\n".join(inputs_code)
+
+headers_div = div()
+headers_code = []
+for header in [h1, h2, h3, h4, h5, h6]:
+    headers_div.append(header(f"{header.tag.upper()} header"))
+    headers_code.append(f"{header.tag}(\"{header.tag.upper()} header\")")
+headers_code = "\n".join(headers_code)
 
 kits = {
     "shoelace": {
@@ -146,8 +156,26 @@ when('click', btn)(lambda: window.alert("Clicked!"))
         },
         "input": {"instance": inputs_div, "code": inputs_code},
         "grid": {
-            "instance": grid([div("This is a grid")]),
+            "instance": grid("30% 70%", [
+                div("This is a grid", style={"background-color": "lightblue"}),
+                p("with 2 elements", style={"background-color": "lightyellow"})
+            ]),
             "code": 'grid([div("This is a grid")])',
         },
+        "headers": {"instance": headers_div, "code": headers_code},
+        "a": {"instance": a("Click here for something awsome", href="https://pyscript.net", target="_blank"),
+              "code": 'a("Click here for something awsome", href="https://pyscript.net", target="_blank")'},
+        "br": {"instance": div([p("This is a paragraph"), br(), p("with a line break")]),
+                "code": 'div([p("This is a paragraph"), br(), p("with a line break")])'},
+        "img": {"instance": img(src="./giphy_winner.gif", style={"max-width": "200px"}),
+                "code": 'img(src="./giphy_winner.gif", style={"max-width": "200px"})'},
+        "code": {"instance": code("print('Hello, World!')"),
+                    "code": 'code("print(\'Hello, World!\')")'},
+        "p": {"instance": p("This is a paragraph"),
+                "code": 'p("This is a paragraph")'},
+        "small": {"instance": small("This is a small text"),
+                    "code": 'small("This is a small text")'},
+        "strong": {"instance": strong("This is a strong text"),
+                    "code": 'strong("This is a strong text")'},
     },
 }

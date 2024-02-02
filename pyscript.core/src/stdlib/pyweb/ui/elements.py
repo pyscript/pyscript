@@ -111,6 +111,14 @@ class a(TextElementBase):
 _add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
 
 
+class br(ElementBase):
+    tag = "br"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(br)
+
+
 class button(TextElementBase):
     tag = "button"
 
@@ -132,151 +140,12 @@ _add_js_properties(
 )
 
 
-class h1(TextElementBase):
-    tag = "h1"
-
-
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#attributes
-# Heading elements only have global attributes
-_add_js_properties(h1)
-
-
-class h2(TextElementBase):
-    tag = "h2"
-
-
-_add_js_properties(h2)
-
-
-class h3(TextElementBase):
-    tag = "h3"
-
-
-_add_js_properties(h3)
-
-
-class h4(TextElementBase):
-    tag = "h4"
-
-
-_add_js_properties(h4)
-
-
-class h5(TextElementBase):
-    tag = "h5"
-
-
-_add_js_properties(h5)
-
-
-class h6(TextElementBase):
-    tag = "h6"
-
-
-_add_js_properties(h6)
-
-
-class link(TextElementBase):
-    tag = "link"
-
-
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#attributes
-_add_js_properties(
-    link,
-    "as",
-    "crossorigin",
-    "disabled",
-    "fetchpriority",
-    "href",
-    "imagesizes",
-    "imagesrcset",
-    "integrity",
-    "media",
-    "rel",
-    "referrerpolicy",
-    "sizes",
-    "title",
-    "type",
-)
-
-
-class style(TextElementBase):
-    tag = "style"
-
-
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style#attributes
-_add_js_properties(style, "blocking", "media", "nonce", "title")
-
-
-class script(TextElementBase):
-    tag = "script"
-
-    # Let's add async manually since it's a reserved keyword in Python
-    async_ = js_property("async")
-
-
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attributes
-_add_js_properties(
-    script,
-    "blocking",
-    "crossorigin",
-    "defer",
-    "fetchpriority",
-    "integrity",
-    "nomodule",
-    "nonce",
-    "referrerpolicy",
-    "src",
-    "type",
-)
-
-
-class p(TextElementBase):
-    tag = "p"
-
-
-# p tags only have the global attributes ones
-_add_js_properties(p)
-
-
 class code(TextElementBase):
     tag = "code"
 
 
 # code tags only have the global attributes ones
 _add_js_properties(code)
-
-
-class pre(TextElementBase):
-    tag = "pre"
-
-
-# pre tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(pre)
-
-
-class strong(TextElementBase):
-    tag = "strong"
-
-
-# strong tags only have the global attributes ones
-_add_js_properties(strong)
-
-
-class small(TextElementBase):
-    tag = "small"
-
-
-# small tags only have the global attributes ones
-_add_js_properties(small)
-
-
-class br(ElementBase):
-    tag = "br"
-
-
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(br)
 
 
 class div(TextElementBase):
@@ -350,6 +219,137 @@ _add_js_properties(
     "value",
     "width",
 )
+
+
+class h1(TextElementBase):
+    tag = "h1"
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#attributes
+# Heading elements only have global attributes
+_add_js_properties(h1)
+
+
+class h2(TextElementBase):
+    tag = "h2"
+
+
+_add_js_properties(h2)
+
+
+class h3(TextElementBase):
+    tag = "h3"
+
+
+_add_js_properties(h3)
+
+
+class h4(TextElementBase):
+    tag = "h4"
+
+
+_add_js_properties(h4)
+
+
+class h5(TextElementBase):
+    tag = "h5"
+
+
+_add_js_properties(h5)
+
+
+class h6(TextElementBase):
+    tag = "h6"
+
+
+_add_js_properties(h6)
+
+
+class link(TextElementBase):
+    tag = "link"
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#attributes
+_add_js_properties(
+    link,
+    "as",
+    "crossorigin",
+    "disabled",
+    "fetchpriority",
+    "href",
+    "imagesizes",
+    "imagesrcset",
+    "integrity",
+    "media",
+    "rel",
+    "referrerpolicy",
+    "sizes",
+    "title",
+    "type",
+)
+
+
+class p(TextElementBase):
+    tag = "p"
+
+
+# p tags only have the global attributes ones
+_add_js_properties(p)
+
+
+class pre(TextElementBase):
+    tag = "pre"
+
+
+# pre tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(pre)
+
+
+class style(TextElementBase):
+    tag = "style"
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style#attributes
+_add_js_properties(style, "blocking", "media", "nonce", "title")
+
+
+class script(TextElementBase):
+    tag = "script"
+
+    # Let's add async manually since it's a reserved keyword in Python
+    async_ = js_property("async")
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attributes
+_add_js_properties(
+    script,
+    "blocking",
+    "crossorigin",
+    "defer",
+    "fetchpriority",
+    "integrity",
+    "nomodule",
+    "nonce",
+    "referrerpolicy",
+    "src",
+    "type",
+)
+
+
+class small(TextElementBase):
+    tag = "small"
+
+
+# small tags only have the global attributes ones
+_add_js_properties(small)
+
+
+class strong(TextElementBase):
+    tag = "strong"
+
+
+# strong tags only have the global attributes ones
+_add_js_properties(strong)
 
 
 # Custom Elements
