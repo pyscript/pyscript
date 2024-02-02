@@ -51,7 +51,7 @@ const [PyWorker, MPWorker] = [...TYPES.entries()].map(
             );
             assign(xworker.sync, sync);
             return xworker.ready;
-        }
+        },
 );
 
 // avoid multiple initialization of the same library
