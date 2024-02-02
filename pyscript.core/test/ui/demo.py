@@ -4,8 +4,8 @@ import examples
 import styles
 from pyweb import pydom
 from pyweb.ui import elements as el
-from pyweb.ui.elements import a, button, div, Grid, h1, h2, h3, input_
 from pyweb.ui import shoelace
+from pyweb.ui.elements import a, button, div, grid, h1, h2, h3, input_
 from pyweb.ui.markdown import markdown
 
 from pyscript import when, window
@@ -42,7 +42,7 @@ def create_component_details(component_label, component):
 
     """
     # Get the example from the examples catalog
-    example = component['instance']
+    example = component["instance"]
     details = example.__doc__ or f"Details missing for component {component_label}"
 
     div = div(
@@ -117,14 +117,14 @@ def create_component_example(widget, code):
 
     """
     # Create the grid that splits the window in two columns (25% and 75%)
-    grid = Grid("25% 75%")
+    grid_ = grid("25% 75%")
     # Add the widget
-    grid.append(div(widget))
+    grid_.append(div(widget))
     # Add the code div
     widget_code = markdown(dedent(f"""```python\n{code}\n```"""))
-    grid.append(div(widget_code, style=styles.STYLE_CODE_BLOCK))
+    grid_.append(div(widget_code, style=styles.STYLE_CODE_BLOCK))
 
-    return grid
+    return grid_
 
 
 def create_main_area():
@@ -141,6 +141,7 @@ def create_main_area():
             markdown(MAIN_PAGE_MARKDOWN),
         ]
     )
+
 
 def create_markdown_components_page():
     """Create the basic components page.
@@ -191,14 +192,14 @@ def create_basic_components_page():
 
     for component_label, component in examples.kits["elements"].items():
         div_.append(h3(component_label))
-        div_.append(create_component_example(component['instance'], component['code']))
+        div_.append(create_component_example(component["instance"], component["code"]))
 
     return div_
 
 
 # ********** CREATE ALL THE LAYOUT **********
 
-grid = Grid("140px 20px auto", style={"min-height": "100%"})
+main_grid = grid("140px 20px auto", style={"min-height": "100%"})
 
 # ********** MAIN PANEL **********
 main_area = create_main_area()
@@ -272,9 +273,7 @@ for component_label, component in examples.kits["shoelace"].items():
 
 
 # ********** ADD LEFT AND MAIN PANEL TO MAIN **********
-grid.append(left_div)
-grid.append(shoelace.Divider(vertical=True))
-grid.append(main_area)
-
-
-pydom.body.append(grid)
+main_grid.append(left_div)
+main_grid.append(shoelace.Divider(vertical=True))
+main_grid.append(main_area)
+pydom.body.append(main_grid)

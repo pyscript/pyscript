@@ -1,5 +1,20 @@
 from pyweb import pydom
-from pyweb.ui.elements import a, button, code, div, Grid, h1, h2, h3, input_, p
+from pyweb.ui.elements import (
+    a,
+    button,
+    code,
+    div,
+    grid,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    img,
+    input_,
+    p,
+)
 from pyweb.ui.shoelace import (
     Alert,
     Button,
@@ -20,9 +35,7 @@ LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do e
 Details(LOREM_IPSUM, summary="Try me")
 """
 example_dialog_close_btn = Button("Close")
-example_dialog = Dialog(
-    div([p(LOREM_IPSUM), example_dialog_close_btn]), label="Try me"
-)
+example_dialog = Dialog(div([p(LOREM_IPSUM), example_dialog_close_btn]), label="Try me")
 example_dialog_btn = Button("Open Dialog")
 
 
@@ -112,20 +125,28 @@ Card(p("This is a cool card!"), image="https://pyscript.net/assets/images/pyscri
             "code": code("Radio()"),
         },
     },
-    'elements':{
-        'button': {
-            'instance': btn,
-            'code': '''button("Click me!")
+    "elements": {
+        "button": {
+            "instance": btn,
+            "code": """button("Click me!")
 when('click', btn)(lambda: window.alert("Clicked!"))
-'''
+""",
         },
-        'div': {
-            'instance': div("This is a div", style={'text-align': 'center', 'margin': '0 auto', 'background-color': 'cornsilk'}),
-            'code': 'div("This is a div", style={"text-align": "center", "margin": "0 auto", "background-color": "cornsilk"})'
+        "div": {
+            "instance": div(
+                "This is a div",
+                style={
+                    "text-align": "center",
+                    "margin": "0 auto",
+                    "background-color": "cornsilk",
+                },
+            ),
+            "code": 'div("This is a div", style={"text-align": "center", "margin": "0 auto", "background-color": "cornsilk"})',
         },
-        'input':{
-            'instance': inputs_div,
-            'code': inputs_code
+        "input": {"instance": inputs_div, "code": inputs_code},
+        "grid": {
+            "instance": grid([div("This is a grid")]),
+            "code": 'grid([div("This is a grid")])',
         },
-    }
+    },
 }

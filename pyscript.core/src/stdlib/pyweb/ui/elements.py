@@ -308,9 +308,11 @@ _add_js_properties(
     "width",
 )
 
+
 # NOTE: Input is a reserved keyword in Python, so we use input_ instead
 class input_(ElementBase):
     tag = "input"
+
 
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attributes
 _add_js_properties(
@@ -352,11 +354,11 @@ _add_js_properties(
 
 
 # Custom Elements
-class Grid(ElementBase):
+class grid(TextElementBase):
     tag = "div"
 
-    def __init__(self, layout="", gap=None, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, layout, content=None, gap=None, **kwargs):
+        super().__init__(content, **kwargs)
         self.style["display"] = "grid"
         self.style["grid-template-columns"] = layout
 
