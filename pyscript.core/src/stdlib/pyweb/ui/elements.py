@@ -348,6 +348,10 @@ class strong(TextElementBase):
     tag = "strong"
 
 
+class main(TextElementBase):
+    tag = "main"
+
+
 # strong tags only have the global attributes ones
 _add_js_properties(strong)
 
