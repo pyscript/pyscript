@@ -247,7 +247,7 @@ when('click', btn)(lambda: window.alert("Clicked!"))"""
 
 # ********** CREATE ALL THE LAYOUT **********
 
-grid = Grid("minmax(100px, 200px) 20px auto", style={"min-height": "100%"})
+grid = Grid("minmax(150px, 200px) 20px auto", style={"min-height": "100%"})
 
 # ********** MAIN PANEL **********
 main_area = create_main_area()
