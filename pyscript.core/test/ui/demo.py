@@ -1,11 +1,12 @@
 from textwrap import dedent
 
 import examples
-from pyscript import when, window
-from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
 from pyweb.ui.markdown import markdown
+
+from pyscript import when, window
+from pyweb import pydom
 
 MAIN_PAGE_MARKDOWN = dedent(
     """
@@ -62,13 +63,14 @@ def create_component_details(component):
                             examples_gallery[component]["code"], style=STYLE_CODE_BLOCK
                         ),
                         summary="View Code",
-                        style={"background-color": "gainsboro"},
+                        style={"background-color": "gainsboro", "margin-top": "0.5rem"},
                     ),
                 ],
                 style={
                     "border-radius": "3px",
                     "background-color": "var(--sl-color-neutral-50)",
                     "margin-bottom": "1.5rem",
+                    "padding": "1.5rem",
                 },
             ),
         ],
