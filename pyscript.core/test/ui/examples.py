@@ -12,7 +12,7 @@ from pyweb.ui.shoelace import (
     Rating,
 )
 
-from pyscript import when
+from pyscript import when, window
 
 LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
 details_code = """
@@ -35,6 +35,10 @@ when("click", example_dialog_close_btn)(toggle_dialog)
 
 pydom.body.append(example_dialog)
 
+
+
+btn = el.button("Click me!")
+when("click", btn)(lambda: window.alert("Clicked!"))
 
 kits = {
     "shoelace": {
@@ -90,9 +94,15 @@ Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pys
         },
     },
     'elements':{
+        'button': {
+            'instance': btn,
+            'code': '''button("Click me!")
+when('click', btn)(lambda: window.alert("Clicked!"))
+'''
+        },
         'div': {
             'instance': el.div("This is a div"),
-            'code': el.code('div("This is a div")')
+            'code': 'div("This is a div")'
         }
     }
 }
