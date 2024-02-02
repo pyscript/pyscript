@@ -12,6 +12,9 @@ from pyweb.ui.shoelace import (
     Radio,
     Rating,
     CopyButton,
+    Skeleton,
+    Spinner,
+    
 )
 
 LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
@@ -91,6 +94,14 @@ Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pys
         "CopyButton": {
             "instance": CopyButton(value="PyShoes!", copy_label="Copy me!", sucess_label="Copied, check your clipboard!", error_label="Oops, something went wrong!", feedback_timeout=2000, tooltip_placement="top"),
             "code": el.code('CopyButton(value="PyShoes!", copy_label="Copy me!", sucess_label="Copied, check your clipboard!", error_label="Oops, something went wrong!", feedback_timeout=2000, tooltip_placement="top")'),
+        },
+        "Skeleton": {
+            "instance": Skeleton(effect="pulse"),
+            "code": el.code("Skeleton(effect='pulse')"),
+        },
+        "Spinner": {
+            "instance": Spinner(),
+            "code": el.code("Spinner()"),
+        }
         }
     }
-}

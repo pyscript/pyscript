@@ -402,6 +402,21 @@ class CopyButton(ShoeBase):
     def __init__(self, value=None, _from=None, disabled=None, copy_label=None, success_label=None, error_label=None, feedback_duration=None, tooltip_placement=None, hoist=None, style=None, **kwargs):
         super().__init__(value=value, _from=_from, disabled=disabled, copy_label=copy_label, success_label=success_label, error_label=error_label, feedback_duration=feedback_duration, tooltip_placement=tooltip_placement, hoist=hoist, style=style, **kwargs)
 
+class Skeleton(ShoeBase):
+    tag = "sl-skeleton"
+    effect = js_property("effect")
+    update_complete = js_property("updateComplete")
+
+    def __init__(self, effect=None, style=None, **kwargs):
+        super().__init__(effect=effect, style=style, **kwargs)
+
+class Spinner(ShoeBase):
+    tag = "sl-spinner"
+    update_complete = js_property("updateComplete")
+
+    def __init__(self, style=None, **kwargs):
+        super().__init__(style=style, **kwargs)
+
 
 # Load resources...
 CSS = """
