@@ -110,6 +110,7 @@ def create_component_example(widget, code):
 
     return grid_
 
+
 def create_main_area():
     """Create the main area of the right side of page, with the description of the
     demo itself and how to use it.
@@ -140,6 +141,7 @@ def create_main_area():
     main.append(div_)
 
     return main
+
 
 def create_basic_components_page(label, kit_name):
     """Create the basic components page.
@@ -209,7 +211,8 @@ when("click", left_panel_title)(restore_home)
 
 # BASIC COMPONENTS
 basic_components_text = h3(
-    "Basic Components", style={"text-align": "left", "margin": "20px auto 0", "cursor": "pointer"},
+    "Basic Components",
+    style={"text-align": "left", "margin": "20px auto 0", "cursor": "pointer"},
 )
 left_div.append(basic_components_text)
 left_div.append(shoelace.Divider(style={"margin-top": "5px", "margin-bottom": "30px"}))
