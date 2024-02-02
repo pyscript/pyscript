@@ -1,7 +1,8 @@
 from textwrap import dedent
 
-from pyscript import document, when, window
 from pyweb import JSProperty, js_property, pydom
+
+from pyscript import document, when, window
 
 # Global attributes that all elements have (this list is a subset of the official one)
 # and tries to capture the most used ones
