@@ -1,4 +1,4 @@
-from pyscript import when
+from pyscript import when, window
 from pyweb import pydom
 from pyweb.ui.elements import (
     a,
