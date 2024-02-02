@@ -1,21 +1,22 @@
-from pyscript import when
-from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui.shoelace import (
     Alert,
     Button,
     Card,
+    CopyButton,
     Details,
     Dialog,
     Divider,
     Icon,
     Radio,
     Rating,
-    CopyButton,
     Skeleton,
     Spinner,
-    
+    Switch,
 )
+
+from pyscript import when
+from pyweb import pydom
 
 LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
 details_code = """
@@ -92,8 +93,17 @@ Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pys
             "code": el.code("Radio()"),
         },
         "CopyButton": {
-            "instance": CopyButton(value="PyShoes!", copy_label="Copy me!", sucess_label="Copied, check your clipboard!", error_label="Oops, something went wrong!", feedback_timeout=2000, tooltip_placement="top"),
-            "code": el.code('CopyButton(value="PyShoes!", copy_label="Copy me!", sucess_label="Copied, check your clipboard!", error_label="Oops, something went wrong!", feedback_timeout=2000, tooltip_placement="top")'),
+            "instance": CopyButton(
+                value="PyShoes!",
+                copy_label="Copy me!",
+                sucess_label="Copied, check your clipboard!",
+                error_label="Oops, something went wrong!",
+                feedback_timeout=2000,
+                tooltip_placement="top",
+            ),
+            "code": el.code(
+                'CopyButton(value="PyShoes!", copy_label="Copy me!", sucess_label="Copied, check your clipboard!", error_label="Oops, something went wrong!", feedback_timeout=2000, tooltip_placement="top")'
+            ),
         },
         "Skeleton": {
             "instance": Skeleton(effect="pulse"),
@@ -102,6 +112,18 @@ Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pys
         "Spinner": {
             "instance": Spinner(),
             "code": el.code("Spinner()"),
-        }
-        }
+        },
+        "Switch": {
+            "instance": Switch(name="switch", size="large"),
+            "code": el.code('Switch(name="switch", size="large")'),
+        },
+        # "SplitPanel": {
+        #     "instance": SplitPanel(
+        #         el.div("First panel"), el.div("Second panel"), orientation="vertical"
+        #     ),
+        #     "code": el.code(
+        #         'SplitPanel(div("First panel"), div("Second panel"), orientation="vertical")'
+        #     ),
+        # },
     }
+}
