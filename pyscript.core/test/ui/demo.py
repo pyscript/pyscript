@@ -1,14 +1,13 @@
 from textwrap import dedent
 
+import examples
+import styles
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
 from pyweb.ui.markdown import markdown
 
 from pyscript import when, window
-
-import styles
-import examples
 
 MAIN_PAGE_MARKDOWN = dedent(
     """
@@ -58,7 +57,8 @@ def create_component_details(component):
                     example,
                     shoelace.Details(
                         el.div(
-                            examples_gallery[component]["code"], style=styles.STYLE_CODE_BLOCK
+                            examples_gallery[component]["code"],
+                            style=styles.STYLE_CODE_BLOCK,
                         ),
                         summary="View Code",
                         style={"background-color": "gainsboro"},
@@ -137,7 +137,7 @@ def create_main_area():
     """
     div = el.div(
         [
-            el.h1("Welcome to PyDom UI!", style={"text-align": "center"}),
+            el.h1("Welcome to PyWeb UI!", style={"text-align": "center"}),
             markdown(MAIN_PAGE_MARKDOWN),
         ]
     )
@@ -199,8 +199,10 @@ def create_basic_components_page():
     btn = el.button("Click me!")
     when("click", btn)(lambda: window.alert("Clicked!"))
 
-    btn_code = dedent("""btn = button("Click me!")
-when('click', btn)(lambda: window.alert("Clicked!"))""")
+    btn_code = dedent(
+        """btn = button("Click me!")
+when('click', btn)(lambda: window.alert("Clicked!"))"""
+    )
 
     div.append(create_component_example(btn, btn_code))
 

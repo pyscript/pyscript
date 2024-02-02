@@ -60,6 +60,7 @@ def js_property(name: str, allow_nones: bool = False):
     Returns:
         the property created
     """
+
     class CustomProperty(JSProperty):
         def __get__(self, obj, objtype=None):
             return getattr(obj._js, name)
@@ -162,7 +163,6 @@ class Element(BaseElement):
     @html.setter
     def html(self, value):
         self._js.innerHTML = value
-
 
     @property
     def text(self):

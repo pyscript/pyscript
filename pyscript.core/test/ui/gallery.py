@@ -1,13 +1,14 @@
-from textwrap import dedent
 import inspect
+from textwrap import dedent
 
+import styles
+import tictactoe
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
 from pyweb.ui.markdown import markdown
+
 from pyscript import when, window
-import tictactoe
-import styles
 
 MAIN_PAGE_MARKDOWN = dedent(
     """
@@ -48,13 +49,14 @@ def add_demo(demo_name, demo_creator_cb, parent_div, source=None):
             demo_div.append(el.div(widget_code, style=styles.STYLE_CODE_BLOCK))
         else:
             demo_div = demo_creator_cb()
-        demo_div.style['margin'] = '20px'
+        demo_div.style["margin"] = "20px"
         write_to_main(demo_div)
         window.hljs.highlightAll()
 
     # Add the new link element to the parent div (left panel)
     parent_div.append(div)
     return div
+
 
 def create_main_area():
     """Create the main area of the right side of page, with the description of the
@@ -64,10 +66,12 @@ def create_main_area():
         the main area
 
     """
-    return el.div([
-            el.h1("PyWeb UI Galler", style={"text-align": "center"}),
+    return el.div(
+        [
+            el.h1("PyWeb UI Gallery", style={"text-align": "center"}),
             markdown(MAIN_PAGE_MARKDOWN),
-        ])
+        ]
+    )
 
 
 def create_markdown_app():
@@ -80,16 +84,20 @@ def create_markdown_app():
     translate_button = shoelace.Button("Convert", variant="primary")
     markdown_txt_area = shoelace.TextArea(label="Use this to write your Markdown")
     result_div = el.div(style=styles.STYLE_MARKDOWN_RESULT)
+
     @when("click", translate_button)
     def translate_markdown():
         result_div.html = markdown(markdown_txt_area.value).html
 
-    return el.div([
+    return el.div(
+        [
             el.h2("Markdown"),
             markdown_txt_area,
             translate_button,
             result_div,
-        ], style={"margin": "20px"})
+        ],
+        style={"margin": "20px"},
+    )
 
 
 # ********** MAIN PANEL **********
@@ -147,8 +155,13 @@ el.div([
     result_div,
 ])
 """
-add_demo("Markdown", create_markdown_app, left_div, source = markdown_source)
-add_demo("Tic Tac Toe", tictactoe.create_tic_tac_toe, left_div, source=inspect.getsource(tictactoe))
+add_demo("Markdown", create_markdown_app, left_div, source=markdown_source)
+add_demo(
+    "Tic Tac Toe",
+    tictactoe.create_tic_tac_toe,
+    left_div,
+    source=inspect.getsource(tictactoe),
+)
 
 # ********** CREATE ALL THE LAYOUT **********
 grid = el.Grid("minmax(100px, 200px) 20px auto", style={"min-height": "100%"})
