@@ -23,6 +23,7 @@ GLOBAL_ATTRIBUTES = [
     "title",
     "translate",
     "virtualkeyboardpolicy",
+    "className",
 ]
 
 # class and style are different ones that are handled by pydom.element directly
@@ -77,9 +78,13 @@ class TextElementBase(ElementBase):
 
 def _add_js_properties(cls, *attrs):
     """Add JSProperties to a class as `js_property` class attributes."""
-    # First we set all the properties as JSProperties
+    # First we set all the global properties as JSProperties
+    for attr in GLOBAL_ATTRIBUTES:
+        setattr(cls, attr, js_property(attr))
+
+    # Now the specific class properties
     for attr in attrs:
-        setattr(cls, attr, JSProperty(attr))
+        setattr(cls, attr, js_property(attr))
 
     # Now we patch the __init__ method to specify the properties
     cls.__init__.__doc__ = f"""Class constructor.
@@ -94,209 +99,268 @@ def _add_js_properties(cls, *attrs):
         """
 
 
+# IMPORTANT: For all HTML components defined below, we are not mapping all
+# available attributes, only the global ones
+
+
 class a(TextElementBase):
     tag = "a"
 
 
+# Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attributes
 _add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
-
-
-class button(TextElementBase):
-    tag = "button"
-
-    # JS Properties
-    autofocus = js_property("autofocus")
-    disabled = js_property("disabled")
-    name = js_property("name")
-    type = js_property("type")
-    value = js_property("value")
-
-
-class h1(TextElementBase):
-    tag = "h1"
-
-
-class h2(TextElementBase):
-    tag = "h2"
-
-
-class h3(TextElementBase):
-    tag = "h3"
-
-
-class link(TextElementBase):
-    tag = "link"
-
-    rel = js_property("rel")
-    type = js_property("type")
-    href = js_property("href")
-    media = js_property("media")
-
-    def __init__(
-        self,
-        content=None,
-        rel=None,
-        type=None,
-        href=None,
-        media=None,
-        style=None,
-        **kwargs,
-    ):
-        super().__init__(
-            content=content,
-            rel=rel,
-            type=type,
-            href=href,
-            media=media,
-            style=style,
-            **kwargs,
-        )
-
-
-class style(TextElementBase):
-    tag = "style"
-
-    blocking = js_property("blocking")
-    title = js_property("title")
-    nonce = js_property("nonce")
-    media = js_property("media")
-
-    def __init__(
-        self,
-        content=None,
-        blocking=None,
-        title=None,
-        nonce=None,
-        media=None,
-        style=None,
-        **kwargs,
-    ):
-        super().__init__(
-            content=content,
-            blocking=blocking,
-            title=title,
-            nonce=nonce,
-            media=media,
-            style=style,
-            **kwargs,
-        )
-
-
-class script(TextElementBase):
-    tag = "script"
-
-    async_ = js_property("async")
-    defer = js_property("defer")
-    blocking = js_property("blocking")
-    crossorigin = js_property("crossorigin")
-    fetchpriority = js_property("fetchpriority")
-    src = js_property("src")
-    type = js_property("type")
-    nonce = js_property("nonce")
-    nomodule = js_property("nomodule")
-    integrity = js_property("integrity")
-
-    def __init__(
-        self,
-        content=None,
-        src=None,
-        type=None,
-        async_=None,
-        defer=None,
-        blocking=None,
-        crossorigin=None,
-        fetchpriority=None,
-        nonce=None,
-        nomodule=None,
-        integrity=None,
-        style=None,
-        **kwargs,
-    ):
-        super().__init__(
-            content=content,
-            src=src,
-            type=type,
-            async_=async_,
-            defer=defer,
-            blocking=blocking,
-            crossorigin=crossorigin,
-            fetchpriority=fetchpriority,
-            nonce=nonce,
-            nomodule=nomodule,
-            integrity=integrity,
-            style=style,
-            **kwargs,
-        )
-
-
-class p(TextElementBase):
-    tag = "p"
-
-
-class code(TextElementBase):
-    tag = "code"
-
-
-class pre(TextElementBase):
-    tag = "pre"
-
-
-class strong(TextElementBase):
-    tag = "strong"
-
-
-class small(TextElementBase):
-    tag = "small"
 
 
 class br(ElementBase):
     tag = "br"
 
 
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(br)
+
+
+class button(TextElementBase):
+    tag = "button"
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#attributes
+_add_js_properties(
+    button,
+    "autofocus",
+    "disabled",
+    "form",
+    "formaction",
+    "formenctype",
+    "formmethod",
+    "formnovalidate",
+    "formtarget",
+    "name",
+    "type",
+    "value",
+)
+
+
+class code(TextElementBase):
+    tag = "code"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(code)
+
+
 class div(TextElementBase):
     tag = "div"
 
 
+# div tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(div)
+
+
 class img(ElementBase):
     tag = "img"
-    src = js_property("src")
-    # TODO: This should probably go on the ElementBase class since it's a global attribute
-    # https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/slot
-    slot = js_property("slot")
-
-    def __init__(self, src, alt="", style=None, **kwargs):
-        super().__init__(src=src, alt=alt, style=style, **kwargs)
 
 
-class Grid(ElementBase):
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
+_add_js_properties(
+    img,
+    "alt",
+    "crossorigin",
+    "decoding",
+    "fetchpriority",
+    "height",
+    "ismap",
+    "loading",
+    "referrerpolicy",
+    "sizes",
+    "src",
+    "width",
+)
+
+
+# NOTE: Input is a reserved keyword in Python, so we use input_ instead
+class input_(ElementBase):
+    tag = "input"
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attributes
+_add_js_properties(
+    input_,
+    "accept",
+    "alt",
+    "autofocus",
+    "capture",
+    "checked",
+    "dirname",
+    "disabled",
+    "form",
+    "formaction",
+    "formenctype",
+    "formmethod",
+    "formnovalidate",
+    "formtarget",
+    "height",
+    "list",
+    "max",
+    "maxlength",
+    "min",
+    "minlength",
+    "multiple",
+    "name",
+    "pattern",
+    "placeholder",
+    "popovertarget",
+    "popovertargetaction",
+    "readonly",
+    "required",
+    "size",
+    "src",
+    "step",
+    "type",
+    "value",
+    "width",
+)
+
+
+class h1(TextElementBase):
+    tag = "h1"
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#attributes
+# Heading elements only have global attributes
+_add_js_properties(h1)
+
+
+class h2(TextElementBase):
+    tag = "h2"
+
+
+_add_js_properties(h2)
+
+
+class h3(TextElementBase):
+    tag = "h3"
+
+
+_add_js_properties(h3)
+
+
+class h4(TextElementBase):
+    tag = "h4"
+
+
+_add_js_properties(h4)
+
+
+class h5(TextElementBase):
+    tag = "h5"
+
+
+_add_js_properties(h5)
+
+
+class h6(TextElementBase):
+    tag = "h6"
+
+
+_add_js_properties(h6)
+
+
+class link(TextElementBase):
+    tag = "link"
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#attributes
+_add_js_properties(
+    link,
+    "as",
+    "crossorigin",
+    "disabled",
+    "fetchpriority",
+    "href",
+    "imagesizes",
+    "imagesrcset",
+    "integrity",
+    "media",
+    "rel",
+    "referrerpolicy",
+    "sizes",
+    "title",
+    "type",
+)
+
+
+class p(TextElementBase):
+    tag = "p"
+
+
+# p tags only have the global attributes ones
+_add_js_properties(p)
+
+
+class pre(TextElementBase):
+    tag = "pre"
+
+
+# pre tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(pre)
+
+
+class style(TextElementBase):
+    tag = "style"
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style#attributes
+_add_js_properties(style, "blocking", "media", "nonce", "title")
+
+
+class script(TextElementBase):
+    tag = "script"
+
+    # Let's add async manually since it's a reserved keyword in Python
+    async_ = js_property("async")
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attributes
+_add_js_properties(
+    script,
+    "blocking",
+    "crossorigin",
+    "defer",
+    "fetchpriority",
+    "integrity",
+    "nomodule",
+    "nonce",
+    "referrerpolicy",
+    "src",
+    "type",
+)
+
+
+class small(TextElementBase):
+    tag = "small"
+
+
+# small tags only have the global attributes ones
+_add_js_properties(small)
+
+
+class strong(TextElementBase):
+    tag = "strong"
+
+
+# strong tags only have the global attributes ones
+_add_js_properties(strong)
+
+
+# Custom Elements
+class grid(TextElementBase):
     tag = "div"
 
-    def __init__(self, layout="", gap=None, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, layout, content=None, gap=None, **kwargs):
+        super().__init__(content, **kwargs)
         self.style["display"] = "grid"
         self.style["grid-template-columns"] = layout
 
         # TODO: This should be a property
         if not gap is None:
             self.style["gap"] = gap
-
-
-class input(ElementBase):
-    tag = "input"
-
-    # JS Properties
-    autofocus = js_property("autofocus")
-    alt = js_property("alt")
-    autocapitalize = js_property("autocapitalize")
-    autocomplete = js_property("autocomplete")
-    checked = js_property("checked")
-    disabled = js_property("disabled")
-    name = js_property("name")
-    type = js_property("type")
-    value = js_property("value")
-    placeholder = js_property("placeholder")
-
-    # TODO: This is by anymeans complete!! We need to add more attributes
-
-    def __init__(self, style=None, **kwargs):
-        super().__init__(style=style, **kwargs)
