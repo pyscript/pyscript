@@ -24,12 +24,20 @@ from pyweb.ui.shoelace import (
     Alert,
     Button,
     Card,
+    CopyButton,
     Details,
     Dialog,
     Divider,
     Icon,
     Radio,
+    Range,
     Rating,
+    RelativeTime,
+    Skeleton,
+    Spinner,
+    Switch,
+    Tag,
+    Textarea,
 )
 
 LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
@@ -199,5 +207,62 @@ when('click', btn)(lambda: window.alert("Clicked!"))
             "instance": markdown(MARKDOWN_EXAMPLE),
             "code": f'markdown("""{MARKDOWN_EXAMPLE}""")',
         },
+        "CopyButton": {
+            "instance": CopyButton(
+                value="PyShoes!",
+                copy_label="Copy me!",
+                sucess_label="Copied, check your clipboard!",
+                error_label="Oops, something went wrong!",
+                feedback_timeout=2000,
+                tooltip_placement="top",
+            ),
+            "code": el.code(
+                'CopyButton(value="PyShoes!", copy_label="Copy me!", sucess_label="Copied, check your clipboard!", error_label="Oops, something went wrong!", feedback_timeout=2000, tooltip_placement="top")'
+            ),
+        },
+        "Skeleton": {
+            "instance": Skeleton(effect="pulse"),
+            "code": el.code("Skeleton(effect='pulse')"),
+        },
+        "Spinner": {
+            "instance": Spinner(),
+            "code": el.code("Spinner()"),
+        },
+        "Switch": {
+            "instance": Switch(name="switch", size="large"),
+            "code": el.code('Switch(name="switch", size="large")'),
+        },
+        "Textarea": {
+            "instance": Textarea(
+                name="textarea",
+                label="Textarea",
+                size="medium",
+                help_text="This is a textarea",
+                resize="auto",
+            ),
+            "code": el.code(
+                'Textarea(name="textarea", label="Textarea", size="medium", help_text="This is a textarea", resize="auto")'
+            ),
+        },
+        "Tag": {
+            "instance": Tag("Tag", variant="primary", size="medium"),
+            "code": el.code('Tag("Tag", variant="primary", size="medium")'),
+        },
+        "Range": {
+            "instance": Range(min=0, max=100, value=50),
+            "code": el.code("Range(min=0, max=100, value=50)"),
+        },
+        "RelativeTime": {
+            "instance": RelativeTime(date="2021-01-01T00:00:00Z"),
+            "code": el.code('RelativeTime(date="2021-01-01T00:00:00Z")'),
+        },
+        # "SplitPanel": {
+        #     "instance": SplitPanel(
+        #         el.div("First panel"), el.div("Second panel"), orientation="vertical"
+        #     ),
+        #     "code": el.code(
+        #         'SplitPanel(div("First panel"), div("Second panel"), orientation="vertical")'
+        #     ),
+        # },
     },
 }

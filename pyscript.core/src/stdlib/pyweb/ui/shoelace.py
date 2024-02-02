@@ -390,6 +390,295 @@ class Radio(ShoeBase):
         )
 
 
+class CopyButton(ShoeBase):
+    tag = "sl-copy-button"
+    value = js_property("value")
+    _from = js_property("from")
+    disabled = js_property("disabled")
+    copy_label = js_property("copyLabel")
+    success_label = js_property("successLabel")
+    error_label = js_property("errorLabel")
+    feedback_duration = js_property("feedbackDuration")
+    tooltip_placement = js_property("tooltipPlacement")
+    hoist = js_property("hoist")
+    update_complete = js_property("updateComplete")
+
+    def __init__(
+        self,
+        value=None,
+        _from=None,
+        disabled=None,
+        copy_label=None,
+        success_label=None,
+        error_label=None,
+        feedback_duration=None,
+        tooltip_placement=None,
+        hoist=None,
+        style=None,
+        **kwargs,
+    ):
+        super().__init__(
+            value=value,
+            _from=_from,
+            disabled=disabled,
+            copy_label=copy_label,
+            success_label=success_label,
+            error_label=error_label,
+            feedback_duration=feedback_duration,
+            tooltip_placement=tooltip_placement,
+            hoist=hoist,
+            style=style,
+            **kwargs,
+        )
+
+
+class Skeleton(ShoeBase):
+    tag = "sl-skeleton"
+    effect = js_property("effect")
+    update_complete = js_property("updateComplete")
+
+    def __init__(self, effect=None, style=None, **kwargs):
+        super().__init__(effect=effect, style=style, **kwargs)
+
+
+class Spinner(ShoeBase):
+    tag = "sl-spinner"
+    update_complete = js_property("updateComplete")
+
+    def __init__(self, style=None, **kwargs):
+        super().__init__(style=style, **kwargs)
+
+
+# # TODO: Need to make sure we can pass elements in it.
+# class SplitPanel(ShoeBase):
+#     tag = "sl-split-panel"
+#     content = js_property("content")
+#     position = js_property("position")
+#     position_in_pixels = js_property("positionInPixels")
+#     vertical = js_property("vertical")
+#     disabled = js_property("disabled")
+#     primary = js_property("primary")
+#     snap = js_property("snap")
+#     snap_threshold = js_property("snapThreshold")
+#     update_complete = js_property("updateComplete")
+
+#     def __init__(self, content, position=None, position_in_pixels=None, vertical=None, disabled=None, primary=None, snap=None, snap_threshold=None, style=None, **kwargs):
+#         super().__init__(**kwargs)
+#         self._js.InnerHTML = content
+
+#         self._init_properties(**locals())
+
+
+class Switch(ShoeBase):
+    tag = "sl-switch"
+    name = js_property("name")
+    value = js_property("value")
+    size = js_property("size")
+    disabled = js_property("disabled")
+    checked = js_property("checked")
+    default_checked = js_property("defaultChecked")
+    form = js_property("form")
+    required = js_property("required")
+    validity = js_property("validity")
+    validation_message = js_property("validationMessage")
+    update_complete = js_property("updateComplete")
+
+    def __init__(
+        self,
+        name=None,
+        value=None,
+        size=None,
+        disabled=None,
+        checked=None,
+        default_checked=None,
+        form=None,
+        required=None,
+        validity=None,
+        validation_message=None,
+        style=None,
+        **kwargs,
+    ):
+        super().__init__(
+            name=name,
+            value=value,
+            size=size,
+            disabled=disabled,
+            checked=checked,
+            default_checked=default_checked,
+            form=form,
+            required=required,
+            validity=validity,
+            validation_message=validation_message,
+            style=style,
+            **kwargs,
+        )
+
+
+class Textarea(ShoeBase):
+    tag = "sl-textarea"
+    name = js_property("name")
+    value = js_property("value")
+    size = js_property("size")
+    filled = js_property("filled")
+    label = js_property("label")
+    help_text = js_property("helpText")
+    placeholder = js_property("placeholder")
+    rows = js_property("rows")
+    resize = js_property("resize")
+    disabled = js_property("disabled")
+    readonly = js_property("readonly")
+    form = js_property("form")
+    required = js_property("required")
+    min_length = js_property("minLength")
+    max_length = js_property("maxLength")
+    autocalpitalize = js_property("autocapitalize")
+    autocomplete = js_property("autocomplete")
+    autofocus = js_property("autofocus")
+    enterkeyhint = js_property("enterkeyhint")
+    spellcheck = js_property("spellcheck")
+    inputmode = js_property("inputmode")
+    default_value = js_property("defaultValue")
+    validity = js_property("validity")
+    validatio_message = js_property("validationMessage")
+    update_complete = js_property("updateComplete")
+
+    def __init__(
+        self,
+        name=None,
+        value=None,
+        size=None,
+        filled=None,
+        label=None,
+        help_text=None,
+        placeholder=None,
+        rows=None,
+        resize=None,
+        disabled=None,
+        readonly=None,
+        form=None,
+        required=None,
+        min_length=None,
+        max_length=None,
+        autocapitalize=None,
+        autocomplete=None,
+        autofocus=None,
+        enterkeyhint=None,
+        spellcheck=None,
+        inputmode=None,
+        default_value=None,
+        validity=None,
+        validation_message=None,
+        style=None,
+        **kwargs,
+    ):
+        super().__init__(
+            name=name,
+            value=value,
+            size=size,
+            filled=filled,
+            label=label,
+            help_text=help_text,
+            placeholder=placeholder,
+            rows=rows,
+            resize=resize,
+            disabled=disabled,
+            readonly=readonly,
+            form=form,
+            required=required,
+            min_length=min_length,
+            max_length=max_length,
+            autocapitalize=autocapitalize,
+            autocomplete=autocomplete,
+            autofocus=autofocus,
+            enterkeyhint=enterkeyhint,
+            spellcheck=spellcheck,
+            inputmode=inputmode,
+            default_value=default_value,
+            validity=validity,
+            validation_message=validation_message,
+            style=style,
+            **kwargs,
+        )
+
+
+class Tag(ShoeBase):
+    tag = "sl-tag"
+    variant = js_property("variant")
+    size = js_property("size")
+    pill = js_property("pill")
+    removable = js_property("removable")
+    update_complete = js_property("updateComplete")
+
+    def __init__(
+        self,
+        content,
+        variant=None,
+        size=None,
+        pill=None,
+        removable=None,
+        style=None,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self._js.textContent = content
+
+        self._init_properties(**locals())
+
+
+class Range(ShoeBase):
+    tag = "sl-range"
+    name = js_property("name")
+    value = js_property("value")
+    label = js_property("label")
+    help_text = js_property("helpText")
+    disabled = js_property("disabled")
+    _min = js_property("min")
+    _max = js_property("max")
+    step = js_property("step")
+    tooltip = js_property("tooltip")
+    tooltip_formatter = js_property("tooltipFormatter")
+    form = js_property("form")
+    default_value = js_property("defaultValue")
+    validity = js_property("validity")
+    validation_message = js_property("validationMessage")
+    update_complete = js_property("updateComplete")
+
+    def __init__(
+        self,
+        name=None,
+        value=None,
+        label=None,
+        help_text=None,
+        disabled=None,
+        _min=None,
+        _max=None,
+        step=None,
+        tooltip=None,
+        tooltip_formatter=None,
+        form=None,
+        default_value=None,
+        validity=None,
+        validation_message=None,
+        style=None,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+
+        self._init_properties(**locals())
+
+
+class RelativeTime(ShoeBase):
+    tag = "sl-relative-time"
+    date = js_property("date")
+    _format = js_property("format")
+    numeric = js_property("numeric")
+    sync = js_property("sync")
+    update_complete = js_property("updateComplete")
+
+    def __init__(self, date=None, style=None, **kwargs):
+        super().__init__(date=date, style=style, **kwargs)
+
+
 # Load resources...
 CSS = """
 .card-overview {
