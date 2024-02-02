@@ -1,10 +1,12 @@
 from textwrap import dedent
 
 import examples
+import styles
 from pyscript import when, window
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
+from pyweb.ui.elements import a, button, div, grid, h1, h2, h3, input_
 from pyweb.ui.markdown import markdown
 
 MAIN_PAGE_MARKDOWN = dedent(
@@ -23,16 +25,12 @@ MAIN_PAGE_MARKDOWN = dedent(
     """
 )
 
-# Style dictionary for code blocks
-STYLE_CODE_BLOCK = {"text-align": "left", "background-color": "#eee", "padding": "20px"}
-
-
 # First thing we do is to load all the external resources we need
 shoelace.load_resources()
 
 
 # Let's define some convenience functions first
-def create_component_details(component):
+def create_component_details(component_label, component):
     """Create a component details card.
 
     Args:
@@ -43,42 +41,23 @@ def create_component_details(component):
 
     """
     # Get the example from the examples catalog
-    examples_gallery = examples.kits["shoelace"]
-    example = examples_gallery[component]["instance"]
-    details = example.__doc__ or f"Details missing for component {component}"
+    example = component["instance"]
+    details = example.__doc__ or f"Details missing for component {component_label}"
 
-    div = el.div(
+    return div(
         [
             # Title and description (description is picked from the class docstring)
-            el.h1(component),
+            h1(component_label),
             markdown(details),
             # Example section
-            el.h2("Example:"),
-            el.div(
-                [
-                    example,
-                    shoelace.Details(
-                        el.div(
-                            examples_gallery[component]["code"], style=STYLE_CODE_BLOCK
-                        ),
-                        summary="View Code",
-                        style={"background-color": "gainsboro", "margin-top": "0.5rem"},
-                    ),
-                ],
-                style={
-                    "border-radius": "3px",
-                    "background-color": "var(--sl-color-neutral-50)",
-                    "margin-bottom": "1.5rem",
-                    "padding": "1.5rem",
-                },
-            ),
+            h2("Example:"),
+            create_component_example(component["instance"], component["code"]),
         ],
         style={"margin": "20px"},
     )
-    return div
 
 
-def add_component_section(component, parent_div):
+def add_component_section(component_label, component, parent_div):
     """Create a link to a component and add it to the left panel.
 
     Args:
@@ -89,21 +68,21 @@ def add_component_section(component, parent_div):
 
     """
     # Create the component link element
-    div = el.div(
-        el.a(component, href="#"),
+    div_ = div(
+        a(component_label, href="#"),
         style={"display": "block", "text-align": "center", "margin": "auto"},
     )
 
     # Create a handler that opens the component details when the link is clicked
-    @when("click", div)
+    @when("click", div_)
     def _change():
-        new_main = create_component_details(component)
+        new_main = create_component_details(component_label, component)
         main_area.html = ""
         main_area.append(new_main)
 
     # Add the new link element to the parent div (left panel)
-    parent_div.append(div)
-    return div
+    parent_div.append(div_)
+    return div_
 
 
 def create_component_example(widget, code):
@@ -119,14 +98,17 @@ def create_component_example(widget, code):
 
     """
     # Create the grid that splits the window in two columns (25% and 75%)
-    grid = el.Grid("25% 75%")
+    grid_ = grid("29% 2% 74%")
+
     # Add the widget
-    grid.append(el.div(widget))
+    grid_.append(div(widget, style=styles.STYLE_EXAMPLE_INSTANCE))
+
     # Add the code div
     widget_code = markdown(dedent(f"""```python\n{code}\n```"""))
-    grid.append(el.div(widget_code, style=STYLE_CODE_BLOCK))
+    grid_.append(shoelace.Divider(vertical=True))
+    grid_.append(div(widget_code, style=styles.STYLE_CODE_BLOCK))
 
-    return grid
+    return grid_
 
 
 def create_main_area():
@@ -137,117 +119,33 @@ def create_main_area():
         the main area
 
     """
-    div = el.div(
+    return div(
         [
-            el.h1("Welcome to PyDom UI!", style={"text-align": "center"}),
+            h1("Welcome to PyWeb UI!", style={"text-align": "center"}),
             markdown(MAIN_PAGE_MARKDOWN),
         ]
     )
 
-    return div
 
-
-def create_markdown_components_page():
+def create_basic_components_page(label, kit_name):
     """Create the basic components page.
 
     Returns:
         the main area
 
     """
-    div = el.div()
-    div.append(el.h2("Markdown"))
+    div_ = div(h2(label))
 
-    # Buttons
-    markdown_txt_area = shoelace.TextArea(
-        label="Markdown",
-        help_text="Write your Mardown here and press convert to see the result",
-    )
-    translate_button = shoelace.Button("Convert", variant="primary")
-    result_div = el.div(
-        style={
-            "margin-top": "20px",
-            "min-height": "200px",
-            "background-color": "cornsilk",
-        }
-    )
+    for component_label, component in examples.kits[kit_name].items():
+        div_.append(h3(component_label))
+        div_.append(create_component_example(component["instance"], component["code"]))
 
-    @when("click", translate_button)
-    def translate_markdown():
-        result_div.html = markdown(markdown_txt_area.value).html
-
-    main_section = el.div(
-        [
-            markdown_txt_area,
-            translate_button,
-            result_div,
-        ]
-    )
-    div.append(main_section)
-    return div
-
-
-def create_basic_components_page():
-    """Create the basic components page.
-
-    Returns:
-        the main area
-
-    """
-    div = el.div()
-    div.append(el.h2("Base components:"))
-
-    # Buttons
-    div.append(el.h3("Buttons"))
-    btn = el.button("Click me!")
-    when("click", btn)(lambda: window.alert("Clicked!"))
-
-    btn_code = dedent(
-        """btn = button("Click me!"})
-when('click', btn)(lambda: window.alert("Clicked!"))"""
-    )
-
-    div.append(create_component_example(btn, btn_code))
-
-    # Inputs
-    inputs_div = el.div()
-    div.append(el.h3("Inputs"))
-    inputs_code = []
-    for input_type in [
-        "text",
-        "password",
-        "email",
-        "number",
-        "date",
-        "time",
-        "color",
-        "range",
-    ]:
-        inputs_div.append(el.input(type=input_type, style={"display": "block"}))
-        inputs_code.append(f"input(type='{input_type}')")
-    inputs_code = "\n".join(inputs_code)
-
-    div.append(create_component_example(inputs_div, inputs_code))
-
-    # DIV
-    div.append(el.h3("Div"))
-    _div = el.div(
-        "This is a div",
-        style={
-            "text-align": "center",
-            "width": "100%",
-            "margin": "0 auto 0",
-            "background-color": "cornsilk",
-        },
-    )
-    code = "div = div('This is a div', style={'text-align': 'center', 'margin': '0 auto 0', 'background-color': 'cornsilk'})"
-    div.append(create_component_example(_div, code))
-
-    return div
+    return div_
 
 
 # ********** CREATE ALL THE LAYOUT **********
 
-grid = el.Grid("minmax(100px, 200px) 20px auto", style={"min-height": "100%"})
+main_grid = grid("140px 20px auto", style={"min-height": "100%"})
 
 # ********** MAIN PANEL **********
 main_area = create_main_area()
@@ -263,15 +161,19 @@ def restore_home():
 
 
 def basic_components():
-    write_to_main(create_basic_components_page())
+    write_to_main(
+        create_basic_components_page(label="Basic Components", kit_name="elements")
+    )
+    # Make sure we highlight the code
+    window.hljs.highlightAll()
 
 
 def markdown_components():
-    write_to_main(create_markdown_components_page())
+    write_to_main(create_basic_components_page(label="", kit_name="markdown"))
 
 
 def create_new_section(title, parent_div):
-    basic_components_text = el.h3(
+    basic_components_text = h3(
         title, style={"text-align": "left", "margin": "20px auto 0"}
     )
     parent_div.append(basic_components_text)
@@ -282,8 +184,8 @@ def create_new_section(title, parent_div):
 
 
 # ********** LEFT PANEL **********
-left_div = el.div()
-left_panel_title = el.h1(
+left_div = div()
+left_panel_title = h1(
     "PyWeb.UI", style={"text-align": "center", "margin": "20px auto 30px"}
 )
 left_div.append(left_panel_title)
@@ -292,7 +194,7 @@ left_div.append(shoelace.Divider(style={"margin-bottom": "30px"}))
 when("click", left_panel_title)(restore_home)
 
 # BASIC COMPONENTS
-basic_components_text = el.h3(
+basic_components_text = h3(
     "Basic Components", style={"text-align": "left", "margin": "20px auto 0"}
 )
 left_div.append(basic_components_text)
@@ -306,7 +208,7 @@ when("click", markdown_title)(markdown_components)
 
 
 # SHOELACE COMPONENTS
-shoe_components_text = el.h3(
+shoe_components_text = h3(
     "Shoe Components", style={"text-align": "left", "margin": "20px auto 0"}
 )
 left_div.append(shoe_components_text)
@@ -314,14 +216,12 @@ left_div.append(shoelace.Divider(style={"margin-top": "5px", "margin-bottom": "3
 
 # Create the links to the components on th left panel
 print("SHOELACE EXAMPLES", examples.kits["shoelace"])
-for component in examples.kits["shoelace"]:
-    add_component_section(component, left_div)
+for component_label, component in examples.kits["shoelace"].items():
+    add_component_section(component_label, component, left_div)
 
 
 # ********** ADD LEFT AND MAIN PANEL TO MAIN **********
-grid.append(left_div)
-grid.append(shoelace.Divider(vertical=True))
-grid.append(main_area)
-
-
-pydom.body.append(grid)
+main_grid.append(left_div)
+main_grid.append(shoelace.Divider(vertical=True))
+main_grid.append(main_area)
+pydom.body.append(main_grid)
