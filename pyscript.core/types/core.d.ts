@@ -38,7 +38,11 @@ declare const exportedHooks: {
     };
     worker: {
         onReady: Set<Function>;
-        onBeforeRun: Set<Function>;
+        onBeforeRun: Set<Function>; /**
+         * Given a generic DOM Element, tries to fetch the 'src' attribute, if present.
+         * It either throws an error if the 'src' can't be fetched or it returns a fallback
+         * content as source.
+         */
         onBeforeRunAsync: Set<Function>;
         onAfterRun: Set<Function>;
         onAfterRunAsync: Set<Function>;
