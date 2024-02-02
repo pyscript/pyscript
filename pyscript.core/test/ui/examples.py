@@ -1,3 +1,5 @@
+from pyscript import when
+from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui.shoelace import (  # SplitPanel,
     Alert,
@@ -18,9 +20,6 @@ from pyweb.ui.shoelace import (  # SplitPanel,
     Tag,
     Textarea,
 )
-
-from pyscript import when
-from pyweb import pydom
 
 LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
 details_code = """

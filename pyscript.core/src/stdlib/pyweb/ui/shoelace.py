@@ -1,10 +1,9 @@
 import string
 from textwrap import dedent
 
-from pyweb.ui import elements as el
-
 from pyscript import document, when, window
 from pyweb import JSProperty, js_property, pydom
+from pyweb.ui import elements as el
 
 
 class ShoeBase(pydom.Element):
