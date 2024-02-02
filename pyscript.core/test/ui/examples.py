@@ -1,5 +1,5 @@
 from pyweb.ui import elements as el
-from pyweb.ui.shoelace import (
+from pyweb.ui.shoelace import (  # SplitPanel,
     Alert,
     Button,
     Card,
@@ -9,10 +9,13 @@ from pyweb.ui.shoelace import (
     Divider,
     Icon,
     Radio,
+    Range,
     Rating,
+    RelativeTime,
     Skeleton,
     Spinner,
     Switch,
+    Tag,
     Textarea,
 )
 
@@ -129,7 +132,19 @@ Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pys
             "code": el.code(
                 'Textarea(name="textarea", label="Textarea", size="medium", help_text="This is a textarea", resize="auto")'
             ),
-        }
+        },
+        "Tag": {
+            "instance": Tag("Tag", variant="primary", size="medium"),
+            "code": el.code('Tag("Tag", variant="primary", size="medium")'),
+        },
+        "Range": {
+            "instance": Range(min=0, max=100, value=50),
+            "code": el.code("Range(min=0, max=100, value=50)"),
+        },
+        "RelativeTime": {
+            "instance": RelativeTime(date="2021-01-01T00:00:00Z"),
+            "code": el.code('RelativeTime(date="2021-01-01T00:00:00Z")'),
+        },
         # "SplitPanel": {
         #     "instance": SplitPanel(
         #         el.div("First panel"), el.div("Second panel"), orientation="vertical"

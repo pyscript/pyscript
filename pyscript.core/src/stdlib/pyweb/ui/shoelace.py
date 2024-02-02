@@ -460,8 +460,11 @@ class Spinner(ShoeBase):
 #     snap_threshold = js_property("snapThreshold")
 #     update_complete = js_property("updateComplete")
 
-#     def __init__(self, content=content, position=None, position_in_pixels=None, vertical=None, disabled=None, primary=None, snap=None, snap_threshold=None, style=None, **kwargs):
-#         super().__init__(content=content, position=position, position_in_pixels=position_in_pixels, vertical=vertical, disabled=disabled, primary=primary, snap=snap, snap_threshold=snap_threshold, style=style, **kwargs)
+#     def __init__(self, content, position=None, position_in_pixels=None, vertical=None, disabled=None, primary=None, snap=None, snap_threshold=None, style=None, **kwargs):
+#         super().__init__(**kwargs)
+#         self._js.InnerHTML = content
+
+#         self._init_properties(**locals())
 
 
 class Switch(ShoeBase):
@@ -594,6 +597,84 @@ class Textarea(ShoeBase):
             style=style,
             **kwargs,
         )
+
+
+class Tag(ShoeBase):
+    tag = "sl-tag"
+    variant = js_property("variant")
+    size = js_property("size")
+    pill = js_property("pill")
+    removable = js_property("removable")
+    update_complete = js_property("updateComplete")
+
+    def __init__(
+        self,
+        content,
+        variant=None,
+        size=None,
+        pill=None,
+        removable=None,
+        style=None,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self._js.textContent = content
+
+        self._init_properties(**locals())
+
+
+class Range(ShoeBase):
+    tag = "sl-range"
+    name = js_property("name")
+    value = js_property("value")
+    label = js_property("label")
+    help_text = js_property("helpText")
+    disabled = js_property("disabled")
+    _min = js_property("min")
+    _max = js_property("max")
+    step = js_property("step")
+    tooltip = js_property("tooltip")
+    tooltip_formatter = js_property("tooltipFormatter")
+    form = js_property("form")
+    default_value = js_property("defaultValue")
+    validity = js_property("validity")
+    validation_message = js_property("validationMessage")
+    update_complete = js_property("updateComplete")
+
+    def __init__(
+        self,
+        name=None,
+        value=None,
+        label=None,
+        help_text=None,
+        disabled=None,
+        _min=None,
+        _max=None,
+        step=None,
+        tooltip=None,
+        tooltip_formatter=None,
+        form=None,
+        default_value=None,
+        validity=None,
+        validation_message=None,
+        style=None,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+
+        self._init_properties(**locals())
+
+
+class RelativeTime(ShoeBase):
+    tag = "sl-relative-time"
+    date = js_property("date")
+    _format = js_property("format")
+    numeric = js_property("numeric")
+    sync = js_property("sync")
+    update_complete = js_property("updateComplete")
+
+    def __init__(self, date=None, style=None, **kwargs):
+        super().__init__(date=date, style=style, **kwargs)
 
 
 # Load resources...
