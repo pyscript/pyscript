@@ -24,16 +24,33 @@ for name in globalThis.Reflect.ownKeys(js_modules):
 sys.modules["pyscript.js_modules"] = js_modules
 
 if RUNNING_IN_WORKER:
-    import js
     import polyscript
 
     PyWorker = NotSupported(
         "pyscript.PyWorker",
         "pyscript.PyWorker works only when running in the main thread",
     )
-    window = polyscript.xworker.window
-    document = window.document
-    js.document = document
+
+    try:
+        globalThis.SharedArrayBuffer.new(4)
+        import js
+
+        window = polyscript.xworker.window
+        document = window.document
+        js.document = document
+    except:
+        globalThis.console.debug("SharedArrayBuffer is not available")
+        # in this scenario none of the utilities would work
+        # as expected so we better export these as NotSupported
+        window = NotSupported(
+            "pyscript.window",
+            "pyscript.window in workers works only via SharedArrayBuffer",
+        )
+        document = NotSupported(
+            "pyscript.document",
+            "pyscript.document in workers works only via SharedArrayBuffer",
+        )
+
     sync = polyscript.xworker.sync
 
     # in workers the display does not have a default ID

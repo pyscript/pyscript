@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../dist/core.css">
+  <script type="module">
+    import { PyWorker } from '../../dist/core.js';
+    const { sync } = await PyWorker(
+      './worker.py',
+      {
+        config: {
+          sync_main_only: true
+        }
+      }
+    );
+
+    document.documentElement.classList.add(
+      await sync.get_class()
+    );
+  </script>
+</head>
+</html>
