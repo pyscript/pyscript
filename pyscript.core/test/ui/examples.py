@@ -31,6 +31,8 @@ from pyweb.ui.shoelace import (
     Rating,
 )
 
+from pyweb.ui.markdown import markdown
+
 from pyscript import when, window
 
 LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
@@ -83,23 +85,26 @@ for header in [h1, h2, h3, h4, h5, h6]:
     headers_code.append(f"{header.tag}(\"{header.tag.upper()} header\")")
 headers_code = "\n".join(headers_code)
 
+MARKDOWN_EXAMPLE = """# This is a header
+
+This is a ~~paragraph~~ text with **bold** and *italic* text in it!
+"""
+
 kits = {
     "shoelace": {
         "Alert": {
             "instance": Alert(
                 "This is a standard alert. You can customize its content and even the icon."
             ),
-            "code": code(
-                "Alert('This is a standard alert. You can customize its content and even the icon.'"
-            ),
+            "code": "Alert('This is a standard alert. You can customize its content and even the icon.'",
         },
         "Icon": {
             "instance": Icon(name="heart"),
-            "code": code('Icon(name="heart")'),
+            "code": 'Icon(name="heart")',
         },
         "Button": {
             "instance": Button("Try me"),
-            "code": code('Button("Try me")'),
+            "code": 'Button("Try me")',
         },
         "Card": {
             "instance": Card(
@@ -107,33 +112,29 @@ kits = {
                 image="https://pyscript.net/assets/images/pyscript-sticker-black.svg",
                 footer=div([Button("More Info"), Rating()]),
             ),
-            "code": code(
-                """
+            "code": """
 Card(p("This is a cool card!"), image="https://pyscript.net/assets/images/pyscript-sticker-black.svg", footer=div([Button("More Info"), Rating()]))
-"""
-            ),
+""",
         },
         "Details": {
             "instance": Details(LOREM_IPSUM, summary="Try me"),
-            "code": code('Details(LOREM_IPSUM, summary="Try me")'),
+            "code": 'Details(LOREM_IPSUM, summary="Try me")',
         },
         "Dialog": {
             "instance": example_dialog_btn,
-            "code": code(
-                'Dialog(div([p(LOREM_IPSUM), Button("Close")]), summary="Try me")'
-            ),
+            "code": 'Dialog(div([p(LOREM_IPSUM), Button("Close")]), summary="Try me")',
         },
         "Divider": {
             "instance": Divider(),
-            "code": code("Divider()"),
+            "code": "Divider()",
         },
         "Rating": {
             "instance": Rating(),
-            "code": code("Rating()"),
+            "code": "Rating()",
         },
         "Radio": {
             "instance": Radio(),
-            "code": code("Radio()"),
+            "code": "Radio()",
         },
     },
     "elements": {
@@ -178,4 +179,10 @@ when('click', btn)(lambda: window.alert("Clicked!"))
         "strong": {"instance": strong("This is a strong text"),
                     "code": 'strong("This is a strong text")'},
     },
+    "markdown": {
+        "markdown": {
+            "instance": markdown(MARKDOWN_EXAMPLE),
+            "code": f'markdown("""{MARKDOWN_EXAMPLE}""")',
+        },
+    }
 }

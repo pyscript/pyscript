@@ -51,24 +51,7 @@ def create_component_details(component_label, component):
             markdown(details),
             # Example section
             h2("Example:"),
-            div(
-                [
-                    example,
-                    shoelace.Details(
-                        div(
-                            component["code"],
-                            style=styles.STYLE_CODE_BLOCK,
-                        ),
-                        summary="View Code",
-                        style={"background-color": "gainsboro"},
-                    ),
-                ],
-                style={
-                    "border-radius": "3px",
-                    "background-color": "var(--sl-color-neutral-50)",
-                    "margin-bottom": "1.5rem",
-                },
-            ),
+            create_component_example(component["instance"], component["code"]),
         ],
         style={"margin": "20px"},
     )
@@ -114,11 +97,14 @@ def create_component_example(widget, code):
 
     """
     # Create the grid that splits the window in two columns (25% and 75%)
-    grid_ = grid("25% 75%")
+    grid_ = grid("29% 2% 74%")
+
     # Add the widget
-    grid_.append(div(widget))
+    grid_.append(div(widget, style=styles.STYLE_EXAMPLE_INSTANCE))
+
     # Add the code div
     widget_code = markdown(dedent(f"""```python\n{code}\n```"""))
+    grid_.append(shoelace.Divider(vertical=True))
     grid_.append(div(widget_code, style=styles.STYLE_CODE_BLOCK))
 
     return grid_
@@ -140,54 +126,16 @@ def create_main_area():
     )
 
 
-def create_markdown_components_page():
+def create_basic_components_page(label, kit_name):
     """Create the basic components page.
 
     Returns:
         the main area
 
     """
-    div_ = div(h2("Markdown"))
+    div_ = div(h2(label))
 
-    # Buttons
-    markdown_txt_area = shoelace.TextArea(
-        label="Markdown",
-        help_text="Write your Mardown here and press convert to see the result",
-    )
-    translate_button = shoelace.Button("Convert", variant="primary")
-    result_div = div(
-        style={
-            "margin-top": "20px",
-            "min-height": "200px",
-            "background-color": "cornsilk",
-        }
-    )
-
-    @when("click", translate_button)
-    def translate_markdown():
-        result_div.html = markdown(markdown_txt_area.value).html
-
-    main_section = div(
-        [
-            markdown_txt_area,
-            translate_button,
-            result_div,
-        ]
-    )
-    div_.append(main_section)
-    return div_
-
-
-def create_basic_components_page():
-    """Create the basic components page.
-
-    Returns:
-        the main area
-
-    """
-    div_ = div(h2("Base components:"))
-
-    for component_label, component in examples.kits["elements"].items():
+    for component_label, component in examples.kits[kit_name].items():
         div_.append(h3(component_label))
         div_.append(create_component_example(component["instance"], component["code"]))
 
@@ -212,13 +160,13 @@ def restore_home():
 
 
 def basic_components():
-    write_to_main(create_basic_components_page())
+    write_to_main(create_basic_components_page(label="Basic Components", kit_name="elements"))
     # Make sure we highlight the code
     window.hljs.highlightAll()
 
 
 def markdown_components():
-    write_to_main(create_markdown_components_page())
+    write_to_main(create_basic_components_page(label="", kit_name="markdown"))
 
 
 def create_new_section(title, parent_div):
