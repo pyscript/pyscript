@@ -149,8 +149,7 @@ def create_markdown_components_page():
         the main area
 
     """
-    div_ = div()
-    div_.append(h2("Markdown"))
+    div_ = div(h2("Markdown"))
 
     # Buttons
     markdown_txt_area = shoelace.TextArea(
@@ -188,66 +187,18 @@ def create_basic_components_page():
         the main area
 
     """
-    div_ = div()
-    div_.append(h2("Base components:"))
+    div_ = div(h2("Base components:"))
 
     for component_label, component in examples.kits["elements"].items():
-        # div.append(create_component_details(component_label, component))
         div_.append(h3(component_label))
         div_.append(create_component_example(component['instance'], component['code']))
-
-    # Buttons
-    div_.append(h3("Buttons"))
-    btn = button("Click me!")
-    when("click", btn)(lambda: window.alert("Clicked!"))
-
-    btn_code = dedent(
-        """btn = button("Click me!")
-when('click', btn)(lambda: window.alert("Clicked!"))"""
-    )
-
-    div_.append(create_component_example(btn, btn_code))
-
-    # Inputs
-    inputs_div = div()
-    div_.append(h3("Inputs"))
-    inputs_code = []
-    for input_type in [
-        "text",
-        "password",
-        "email",
-        "number",
-        "date",
-        "time",
-        "color",
-        "range",
-    ]:
-        inputs_div.append(input_(type=input_type, style={"display": "block"}))
-        inputs_code.append(f"input_(type='{input_type}')")
-    inputs_code = "\n".join(inputs_code)
-
-    div_.append(create_component_example(inputs_div, inputs_code))
-
-    # DIV
-    div_.append(h3("Div"))
-    _div = div(
-        "This is a div",
-        style={
-            "text-align": "center",
-            "width": "100%",
-            "margin": "0 auto 0",
-            "background-color": "cornsilk",
-        },
-    )
-    code = "div = div('This is a div', style={'text-align': 'center', 'margin': '0 auto 0', 'background-color': 'cornsilk'})"
-    div_.append(create_component_example(_div, code))
 
     return div_
 
 
 # ********** CREATE ALL THE LAYOUT **********
 
-grid = Grid("minmax(150px, 200px) 20px auto", style={"min-height": "100%"})
+grid = Grid("140px 20px auto", style={"min-height": "100%"})
 
 # ********** MAIN PANEL **********
 main_area = create_main_area()
@@ -264,6 +215,7 @@ def restore_home():
 
 def basic_components():
     write_to_main(create_basic_components_page())
+    # Make sure we highlight the code
     window.hljs.highlightAll()
 
 
