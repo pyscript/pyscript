@@ -1,12 +1,14 @@
 from textwrap import dedent
 
-import examples
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
 from pyweb.ui.markdown import markdown
 
 from pyscript import when, window
+
+import styles
+import examples
 
 MAIN_PAGE_MARKDOWN = dedent(
     """
@@ -23,10 +25,6 @@ MAIN_PAGE_MARKDOWN = dedent(
     You can create web applications using Python only.
     """
 )
-
-# Style dictionary for code blocks
-STYLE_CODE_BLOCK = {"text-align": "left", "background-color": "#eee", "padding": "20px"}
-
 
 # First thing we do is to load all the external resources we need
 shoelace.load_resources()
@@ -60,7 +58,7 @@ def create_component_details(component):
                     example,
                     shoelace.Details(
                         el.div(
-                            examples_gallery[component]["code"], style=STYLE_CODE_BLOCK
+                            examples_gallery[component]["code"], style=styles.STYLE_CODE_BLOCK
                         ),
                         summary="View Code",
                         style={"background-color": "gainsboro"},
@@ -124,7 +122,7 @@ def create_component_example(widget, code):
     grid.append(el.div(widget))
     # Add the code div
     widget_code = markdown(dedent(f"""```python\n{code}\n```"""))
-    grid.append(el.div(widget_code, style=STYLE_CODE_BLOCK))
+    grid.append(el.div(widget_code, style=styles.STYLE_CODE_BLOCK))
 
     return grid
 
@@ -201,10 +199,8 @@ def create_basic_components_page():
     btn = el.button("Click me!")
     when("click", btn)(lambda: window.alert("Clicked!"))
 
-    btn_code = dedent(
-        """btn = button("Click me!"})
-when('click', btn)(lambda: window.alert("Clicked!"))"""
-    )
+    btn_code = dedent("""btn = button("Click me!")
+when('click', btn)(lambda: window.alert("Clicked!"))""")
 
     div.append(create_component_example(btn, btn_code))
 

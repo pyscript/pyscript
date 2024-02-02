@@ -1,57 +1,31 @@
 from textwrap import dedent
+import inspect
 
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
 from pyweb.ui.markdown import markdown
-
-from pyscript import when
+from pyscript import when, window
+import tictactoe
+import styles
 
 MAIN_PAGE_MARKDOWN = dedent(
     """
-    ## Welcome to the PyWeb.UI gallery!
+    This gallery is a collection of demos using the PyWeb.UI library. There are meant
+    to be examples of how to use the library to create GUI applications using Python
+    only.
 
+    ## How to use the gallery
+
+    Simply click on the demo you want to see and the details will appear on the right
     """
 )
-
-# Style dictionary for code blocks
-STYLE_CODE_BLOCK = {"text-align": "left", "background-color": "#eee", "padding": "20px"}
-STYLE_LEFT_PANEL_LINKS = {"display": "block", "text-align": "center", "margin": "auto"}
-STYLE_MARKDOWN_RESULT = {
-    "margin-top": "20px",
-    "min-height": "200px",
-    "background-color": "cornsilk",
-}
-STYLE_LEFT_PANEL_TITLE = {"text-align": "center", "margin": "20px auto 30px"}
-STYLE_TIC_TAC_TOE = """
-.tictactoe-square {
-    width: 70px;
-    height: 70px;
-    border: 1px solid gray;
-    cursor: pointer;
-}
-.tictactoe-choice {
-    font-size: 42px;
-    font-family: Brush Script MT;
-    text-align: center;
-    margin: auto;
-}
-.tictactoe-inside {
-    background-color: lightblue;
-}
-.tictactoe-css {
-    margin-top: 10px;
-    width: 400px;
-    height: 400px;
-    background-color: rgb(255, 255, 244);
-}
-"""
 
 # First thing we do is to load all the external resources we need
 shoelace.load_resources()
 
 
-def add_demo(demo_name, demo_creator_cb, parent_div):
+def add_demo(demo_name, demo_creator_cb, parent_div, source=None):
     """Create a link to a component and add it to the left panel.
 
     Args:
@@ -62,17 +36,25 @@ def add_demo(demo_name, demo_creator_cb, parent_div):
 
     """
     # Create the component link element
-    div = el.div(el.a(demo_name, href="#"), style=STYLE_LEFT_PANEL_LINKS)
+    div = el.div(el.a(demo_name, href="#"), style=styles.STYLE_LEFT_PANEL_LINKS)
 
     # Create a handler that opens the component details when the link is clicked
     @when("click", div)
     def _change():
-        write_to_main(demo_creator_cb())
+        if source:
+            demo_div = el.Grid("50% 50%")
+            demo_div.append(demo_creator_cb())
+            widget_code = markdown(dedent(f"""```python\n{source}\n```"""))
+            demo_div.append(el.div(widget_code, style=styles.STYLE_CODE_BLOCK))
+        else:
+            demo_div = demo_creator_cb()
+        demo_div.style['margin'] = '20px'
+        write_to_main(demo_div)
+        window.hljs.highlightAll()
 
     # Add the new link element to the parent div (left panel)
     parent_div.append(div)
     return div
-
 
 def create_main_area():
     """Create the main area of the right side of page, with the description of the
@@ -82,12 +64,10 @@ def create_main_area():
         the main area
 
     """
-    return el.div(
-        [
-            el.h1("Welcome to PyDom UI!", style={"text-align": "center"}),
+    return el.div([
+            el.h1("PyWeb UI Galler", style={"text-align": "center"}),
             markdown(MAIN_PAGE_MARKDOWN),
-        ]
-    )
+        ])
 
 
 def create_markdown_app():
@@ -98,71 +78,18 @@ def create_markdown_app():
 
     """
     translate_button = shoelace.Button("Convert", variant="primary")
-    markdown_txt_area = shoelace.TextArea(
-        label="Markdown",
-        help_text="Write your Mardown here and press convert to see the result",
-    )
-
-    result_div = el.div(style=STYLE_MARKDOWN_RESULT)
-
-    div = el.div(
-        [
-            el.h2("Markdown"),
-            markdown_txt_area,
-            translate_button,
-            result_div,
-        ]
-    )
-
+    markdown_txt_area = shoelace.TextArea(label="Use this to write your Markdown")
+    result_div = el.div(style=styles.STYLE_MARKDOWN_RESULT)
     @when("click", translate_button)
     def translate_markdown():
         result_div.html = markdown(markdown_txt_area.value).html
 
-    return div
-
-
-clicks = 0
-
-
-def handle_tic_tac_toe_click(square):
-    @when("click", square)
-    def on_click(event):
-        global clicks
-        if clicks % 2:
-            square.html = "X"
-        else:
-            square.html = "0"
-        clicks += 1
-        square.add_class("tictactoe-choice")
-
-
-def create_tic_tac_toe():
-    grid = el.div()
-
-    for _ in range(3):
-        row = el.Grid("1fr 1fr 1fr", style={"width": "100px"})
-        for __ in range(3):
-            square = el.div()
-            square.add_class("tictactoe-square")
-            handle_tic_tac_toe_click(square)
-            row.append(square)
-        grid.append(row)
-
-    div = el.div(
-        [
-            el.h2("Tic Tac Toe"),
-            el.p("This is a simple tic tac toe game", style={"margin": "20px"}),
-            el.Grid("1fr 1fr 1fr", style={"margin-top": "20px"}),
-            grid,
-            el.h3("Tip: Click inside the squares to play"),
-        ]
-    )
-
-    # Load the CSS for the tic-tac-toe example
-    pydom.body.append(el.style(STYLE_TIC_TAC_TOE))
-
-    # Return the main app div
-    return div
+    return el.div([
+            el.h2("Markdown"),
+            markdown_txt_area,
+            translate_button,
+            result_div,
+        ], style={"margin": "20px"})
 
 
 # ********** MAIN PANEL **********
@@ -190,12 +117,12 @@ def create_new_section(title, parent_div):
 
 
 # ********** LEFT PANEL **********
-left_panel_title = el.h1("PyWeb.UI", style=STYLE_LEFT_PANEL_TITLE)
+left_panel_title = el.h1("PyWeb.UI", style=styles.STYLE_LEFT_PANEL_TITLE)
 left_div = el.div(
     [
         left_panel_title,
         shoelace.Divider(style={"margin-bottom": "30px"}),
-        el.h3("Demos", style=STYLE_LEFT_PANEL_TITLE),
+        el.h3("Demos", style=styles.STYLE_LEFT_PANEL_TITLE),
     ]
 )
 
@@ -203,9 +130,25 @@ left_div = el.div(
 when("click", left_panel_title)(restore_home)
 
 # ------ ADD DEMOS ------
+markdown_source = """
+translate_button = shoelace.Button("Convert", variant="primary")
+markdown_txt_area = shoelace.TextArea(label="Markdown",
+    help_text="Write your Mardown here and press convert to see the result",
+)
+result_div = el.div(style=styles.STYLE_MARKDOWN_RESULT)
+@when("click", translate_button)
+def translate_markdown():
+    result_div.html = markdown(markdown_txt_area.value).html
 
-add_demo("Markdown", create_markdown_app, left_div)
-add_demo("Tic Tac Toe", create_tic_tac_toe, left_div)
+el.div([
+    el.h2("Markdown"),
+    markdown_txt_area,
+    translate_button,
+    result_div,
+])
+"""
+add_demo("Markdown", create_markdown_app, left_div, source = markdown_source)
+add_demo("Tic Tac Toe", tictactoe.create_tic_tac_toe, left_div, source=inspect.getsource(tictactoe))
 
 # ********** CREATE ALL THE LAYOUT **********
 grid = el.Grid("minmax(100px, 200px) 20px auto", style={"min-height": "100%"})

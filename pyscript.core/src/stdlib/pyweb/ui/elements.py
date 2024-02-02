@@ -24,6 +24,7 @@ GLOBAL_ATTRIBUTES = [
     "title",
     "translate",
     "virtualkeyboardpolicy",
+    "className"
 ]
 
 # class and style are different ones that are handled by pydom.element directly
@@ -78,7 +79,11 @@ class TextElementBase(ElementBase):
 
 def _add_js_properties(cls, *attrs):
     """Add JSProperties to a class as `js_property` class attributes."""
-    # First we set all the properties as JSProperties
+    # First we set all the global properties as JSProperties
+    for attr in GLOBAL_ATTRIBUTES:
+        setattr(cls, attr, js_property(attr))
+    
+    # Now the specific class properties
     for attr in attrs:
         setattr(cls, attr, js_property(attr))
 
@@ -257,6 +262,7 @@ class br(ElementBase):
 class div(TextElementBase):
     tag = "div"
 
+_add_js_properties(div)
 
 class img(ElementBase):
     tag = "img"
