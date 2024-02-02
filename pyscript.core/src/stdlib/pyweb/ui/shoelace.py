@@ -331,10 +331,13 @@ class Card(TextShoeBase):
         **kwargs,
     ):
         main_div = el.div()
-        if image:
-            if not isinstance(image, el.img):
-                image = el.img(image, alt=img_alt)
 
+        if image:
+            # if the image is just a string, we assume it's the src
+            if not isinstance(image, el.img):
+                image = el.img(src=image, alt=img_alt)
+
+            # IMPORTANT: Shoelace cards have a special slot for the image
             image.slot = "image"
 
         if content:
