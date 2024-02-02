@@ -43,7 +43,7 @@ def add_demo(demo_name, demo_creator_cb, parent_div, source=None):
     @when("click", div)
     def _change():
         if source:
-            demo_div = el.Grid("50% 50%")
+            demo_div = el.grid("50% 50%")
             demo_div.append(demo_creator_cb())
             widget_code = markdown(dedent(f"""```python\n{source}\n```"""))
             demo_div.append(el.div(widget_code, style=styles.STYLE_CODE_BLOCK))
@@ -164,7 +164,7 @@ add_demo(
 )
 
 # ********** CREATE ALL THE LAYOUT **********
-grid = el.Grid("minmax(100px, 200px) 20px auto", style={"min-height": "100%"})
+grid = el.grid("minmax(100px, 200px) 20px auto", style={"min-height": "100%"})
 grid.append(left_div)
 grid.append(shoelace.Divider(vertical=True))
 grid.append(main_area)
