@@ -1,7 +1,8 @@
 from textwrap import dedent
 
-from pyscript import document, when, window
 from pyweb import JSProperty, js_property, pydom
+
+from pyscript import document, when, window
 
 # Global attributes that all elements have (this list is a subset of the official one)
 # and tries to capture the most used ones
@@ -98,11 +99,14 @@ def _add_js_properties(cls, *attrs):
 
         """
 
+
 # IMPORTANT: For all HTML components defined below, we are not mapping all
 # available attributes, only the global ones
 
+
 class a(TextElementBase):
     tag = "a"
+
 
 # Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attributes
 _add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
@@ -111,13 +115,27 @@ _add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "ty
 class button(TextElementBase):
     tag = "button"
 
+
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#attributes
-_add_js_properties(button, "autofocus", "disabled", "form", "formaction", "formenctype",
-                   "formmethod", "formnovalidate", "formtarget", "name", "type", "value")
+_add_js_properties(
+    button,
+    "autofocus",
+    "disabled",
+    "form",
+    "formaction",
+    "formenctype",
+    "formmethod",
+    "formnovalidate",
+    "formtarget",
+    "name",
+    "type",
+    "value",
+)
 
 
 class h1(TextElementBase):
     tag = "h1"
+
 
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#attributes
 # Heading elements only have global attributes
@@ -126,37 +144,70 @@ _add_js_properties(h1)
 
 class h2(TextElementBase):
     tag = "h2"
+
+
 _add_js_properties(h2)
+
 
 class h3(TextElementBase):
     tag = "h3"
+
+
 _add_js_properties(h3)
+
 
 class h4(TextElementBase):
     tag = "h4"
+
+
 _add_js_properties(h4)
+
 
 class h5(TextElementBase):
     tag = "h5"
+
+
 _add_js_properties(h5)
+
 
 class h6(TextElementBase):
     tag = "h6"
+
+
 _add_js_properties(h6)
+
 
 class link(TextElementBase):
     tag = "link"
+
+
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#attributes
-_add_js_properties(link, "as", "crossorigin", "disabled", "fetchpriority", "href", 
-                   "imagesizes", "imagesrcset", "integrity", "media", "rel", 
-                   "referrerpolicy", "sizes", "title", "type")
+_add_js_properties(
+    link,
+    "as",
+    "crossorigin",
+    "disabled",
+    "fetchpriority",
+    "href",
+    "imagesizes",
+    "imagesrcset",
+    "integrity",
+    "media",
+    "rel",
+    "referrerpolicy",
+    "sizes",
+    "title",
+    "type",
+)
 
 
 class style(TextElementBase):
     tag = "style"
 
+
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style#attributes
 _add_js_properties(style, "blocking", "media", "nonce", "title")
+
 
 class script(TextElementBase):
     tag = "script"
@@ -164,19 +215,34 @@ class script(TextElementBase):
     # Let's add async manually since it's a reserved keyword in Python
     async_ = js_property("async")
 
+
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attributes
-_add_js_properties(script, "blocking", "crossorigin", "defer", "fetchpriority",
-                   "integrity", "nomodule", "nonce", "referrerpolicy",
-                    "src", "type")
+_add_js_properties(
+    script,
+    "blocking",
+    "crossorigin",
+    "defer",
+    "fetchpriority",
+    "integrity",
+    "nomodule",
+    "nonce",
+    "referrerpolicy",
+    "src",
+    "type",
+)
+
 
 class p(TextElementBase):
     tag = "p"
 
+
 # p tags only have the global attributes ones
 _add_js_properties(p)
 
+
 class code(TextElementBase):
     tag = "code"
+
 
 # code tags only have the global attributes ones
 _add_js_properties(code)
@@ -185,17 +251,22 @@ _add_js_properties(code)
 class pre(TextElementBase):
     tag = "pre"
 
+
 # pre tags only have the global attributes ones (others have been deprecated)
 _add_js_properties(pre)
+
 
 class strong(TextElementBase):
     tag = "strong"
 
+
 # strong tags only have the global attributes ones
 _add_js_properties(strong)
 
+
 class small(TextElementBase):
     tag = "small"
+
 
 # small tags only have the global attributes ones
 _add_js_properties(small)
@@ -204,12 +275,14 @@ _add_js_properties(small)
 class br(ElementBase):
     tag = "br"
 
+
 # br tags only have the global attributes ones (others have been deprecated)
 _add_js_properties(br)
 
 
 class div(TextElementBase):
     tag = "div"
+
 
 # div tags only have the global attributes ones (others have been deprecated)
 _add_js_properties(div)
@@ -218,10 +291,22 @@ _add_js_properties(div)
 class img(ElementBase):
     tag = "img"
 
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
-_add_js_properties(img, "alt", "crossorigin", "decoding", "fetchpriority", "height",
-                   "ismap", "loading", "referrerpolicy", "sizes", "src", "width")
 
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
+_add_js_properties(
+    img,
+    "alt",
+    "crossorigin",
+    "decoding",
+    "fetchpriority",
+    "height",
+    "ismap",
+    "loading",
+    "referrerpolicy",
+    "sizes",
+    "src",
+    "width",
+)
 
 
 class input(ElementBase):
@@ -244,13 +329,45 @@ class input(ElementBase):
     def __init__(self, style=None, **kwargs):
         super().__init__(style=style, **kwargs)
 
+
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attributes
-_add_js_properties(input, "accept", "alt", "autofocus", "capture", "checked", "dirname",
-                   "disabled", "form", "formaction", "formenctype", "formmethod", 
-                   "formnovalidate", "formtarget", "height", "list", "max", "maxlength",
-                   "min", "minlength", "multiple", "name", "pattern", "placeholder",
-                   "popovertarget", "popovertargetaction", "readonly", "required",
-                   "size", "src", "step", "type", "value", "width")
+_add_js_properties(
+    input,
+    "accept",
+    "alt",
+    "autofocus",
+    "capture",
+    "checked",
+    "dirname",
+    "disabled",
+    "form",
+    "formaction",
+    "formenctype",
+    "formmethod",
+    "formnovalidate",
+    "formtarget",
+    "height",
+    "list",
+    "max",
+    "maxlength",
+    "min",
+    "minlength",
+    "multiple",
+    "name",
+    "pattern",
+    "placeholder",
+    "popovertarget",
+    "popovertargetaction",
+    "readonly",
+    "required",
+    "size",
+    "src",
+    "step",
+    "type",
+    "value",
+    "width",
+)
+
 
 # Custom Elements
 class Grid(ElementBase):
