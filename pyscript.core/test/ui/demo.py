@@ -2,12 +2,13 @@ from textwrap import dedent
 
 import examples
 import styles
-from pyscript import when, window
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
 from pyweb.ui.elements import a, button, div, grid, h1, h2, h3, input_
 from pyweb.ui.markdown import markdown
+
+from pyscript import when, window
 
 MAIN_PAGE_MARKDOWN = dedent(
     """
@@ -55,6 +56,7 @@ def create_component_details(component_label, component):
         ],
         style={"margin": "20px"},
     )
+
 
 def add_component_section(component_label, component, parent_div):
     """Create a link to a component and add it to the left panel.
@@ -160,7 +162,9 @@ def restore_home():
 
 
 def basic_components():
-    write_to_main(create_basic_components_page(label="Basic Components", kit_name="elements"))
+    write_to_main(
+        create_basic_components_page(label="Basic Components", kit_name="elements")
+    )
     # Make sure we highlight the code
     window.hljs.highlightAll()
 
