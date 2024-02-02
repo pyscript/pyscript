@@ -30,7 +30,7 @@ shoelace.load_resources()
 
 
 # Let's define some convenience functions first
-def create_component_details(component):
+def create_component_details(component_label, component):
     """Create a component details card.
 
     Args:
@@ -41,14 +41,13 @@ def create_component_details(component):
 
     """
     # Get the example from the examples catalog
-    examples_gallery = examples.kits["shoelace"]
-    example = examples_gallery[component]["instance"]
-    details = example.__doc__ or f"Details missing for component {component}"
+    example = component['instance']
+    details = example.__doc__ or f"Details missing for component {component_label}"
 
     div = el.div(
         [
             # Title and description (description is picked from the class docstring)
-            el.h1(component),
+            el.h1(component_label),
             markdown(details),
             # Example section
             el.h2("Example:"),
@@ -57,7 +56,7 @@ def create_component_details(component):
                     example,
                     shoelace.Details(
                         el.div(
-                            examples_gallery[component]["code"],
+                            component["code"],
                             style=styles.STYLE_CODE_BLOCK,
                         ),
                         summary="View Code",
@@ -76,7 +75,7 @@ def create_component_details(component):
     return div
 
 
-def add_component_section(component, parent_div):
+def add_component_section(component_label, component, parent_div):
     """Create a link to a component and add it to the left panel.
 
     Args:
@@ -88,14 +87,14 @@ def add_component_section(component, parent_div):
     """
     # Create the component link element
     div = el.div(
-        el.a(component, href="#"),
+        el.a(component_label, href="#"),
         style={"display": "block", "text-align": "center", "margin": "auto"},
     )
 
     # Create a handler that opens the component details when the link is clicked
     @when("click", div)
     def _change():
-        new_main = create_component_details(component)
+        new_main = create_component_details(component_label, component)
         main_area.html = ""
         main_area.append(new_main)
 
@@ -193,6 +192,9 @@ def create_basic_components_page():
     """
     div = el.div()
     div.append(el.h2("Base components:"))
+
+    # for component in examples.kits["examples"]:
+    #     add_component_section(component, left_div, )
 
     # Buttons
     div.append(el.h3("Buttons"))
@@ -312,8 +314,8 @@ left_div.append(shoelace.Divider(style={"margin-top": "5px", "margin-bottom": "3
 
 # Create the links to the components on th left panel
 print("SHOELACE EXAMPLES", examples.kits["shoelace"])
-for component in examples.kits["shoelace"]:
-    add_component_section(component, left_div)
+for component_label, component in examples.kits["shoelace"].items():
+    add_component_section(component_label, component, left_div)
 
 
 # ********** ADD LEFT AND MAIN PANEL TO MAIN **********

@@ -88,5 +88,11 @@ Card(el.p("This is a cool card!"), image="https://pyscript.net/assets/images/pys
             "instance": Radio(),
             "code": el.code("Radio()"),
         },
+    },
+    'elements':{
+        'div': {
+            'instance': el.div("This is a div"),
+            'code': el.code('div("This is a div")')
+        }
     }
 }
