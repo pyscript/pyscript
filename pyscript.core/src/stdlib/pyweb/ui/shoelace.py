@@ -386,6 +386,22 @@ class Radio(ShoeBase):
             value=value, size=size, disabled=disabled, style=style, **kwargs
         )
 
+class CopyButton(ShoeBase):
+    tag = "sl-copy-button"
+    value = js_property("value")
+    _from = js_property("from")
+    disabled = js_property("disabled")
+    copy_label = js_property("copyLabel")
+    success_label = js_property("successLabel")
+    error_label = js_property("errorLabel")
+    feedback_duration = js_property("feedbackDuration")
+    tooltip_placement = js_property("tooltipPlacement")
+    hoist = js_property("hoist")
+    update_complete = js_property("updateComplete")
+
+    def __init__(self, value=None, _from=None, disabled=None, copy_label=None, success_label=None, error_label=None, feedback_duration=None, tooltip_placement=None, hoist=None, style=None, **kwargs):
+        super().__init__(value=value, _from=_from, disabled=disabled, copy_label=copy_label, success_label=success_label, error_label=error_label, feedback_duration=feedback_duration, tooltip_placement=tooltip_placement, hoist=hoist, style=style, **kwargs)
+
 
 # Load resources...
 CSS = """
