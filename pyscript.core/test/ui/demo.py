@@ -44,7 +44,7 @@ def create_component_details(component_label, component):
     example = component["instance"]
     details = example.__doc__ or f"Details missing for component {component_label}"
 
-    div = div(
+    return div(
         [
             # Title and description (description is picked from the class docstring)
             h1(component_label),
@@ -72,8 +72,6 @@ def create_component_details(component_label, component):
         ],
         style={"margin": "20px"},
     )
-    return div
-
 
 def add_component_section(component_label, component, parent_div):
     """Create a link to a component and add it to the left panel.
