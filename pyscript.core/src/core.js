@@ -29,10 +29,36 @@ import { hooks, main, worker, codeFor, createFunction } from "./hooks.js";
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
 
+// Used to create either Pyodide or MicroPython workers
+// with the PyScript module available within the code
+const [PyWorker, MPWorker] = [...TYPES.entries()].map(
+    ([TYPE, interpreter]) =>
+        /**
+         * A `Worker` facade able to bootstrap on the worker thread only a PyScript module.
+         * @param {string} file the python file to run ina worker.
+         * @param {{config?: string | object, async?: boolean}} [options] optional configuration for the worker.
+         * @returns {Promise<Worker & {sync: object}>}
+         */
+        async function PyScriptWorker(file, options) {
+            await configs.get(TYPE).plugins;
+            const xworker = XWorker.call(
+                new Hook(null, hooked.get(TYPE)),
+                file,
+                {
+                    ...options,
+                    type: interpreter,
+                },
+            );
+            assign(xworker.sync, sync);
+            return xworker.ready;
+        },
+);
+
 // avoid multiple initialization of the same library
 const [
     {
         PyWorker: exportedPyWorker,
+        MPWorker: exportedMPWorker,
         hooks: exportedHooks,
         config: exportedConfig,
         whenDefined: exportedWhenDefined,
@@ -40,6 +66,7 @@ const [
     alreadyLive,
 ] = stickyModule("@pyscript/core", {
     PyWorker,
+    MPWorker,
     hooks,
     config: {},
     whenDefined,
@@ -48,6 +75,7 @@ const [
 export {
     TYPES,
     exportedPyWorker as PyWorker,
+    exportedMPWorker as MPWorker,
     exportedHooks as hooks,
     exportedConfig as config,
     exportedWhenDefined as whenDefined,
@@ -313,25 +341,4 @@ for (const [TYPE, interpreter] of TYPES) {
 
     // export the used config without allowing leaks through it
     exportedConfig[TYPE] = structuredClone(config);
-}
-
-/**
- * A `Worker` facade able to bootstrap on the worker thread only a PyScript module.
- * @param {string} file the python file to run ina worker.
- * @param {{config?: string | object, async?: boolean}} [options] optional configuration for the worker.
- * @returns {Worker & {sync: ProxyHandler<object>}}
- */
-function PyWorker(file, options) {
-    const hooks = hooked.get("py");
-    // this propagates pyscript worker hooks without needing a pyscript
-    // bootstrap + it passes arguments and it defaults to `pyodide`
-    // as the interpreter to use in the worker, as all hooks assume that
-    // and as `pyodide` is the only default interpreter that can deal with
-    // all the features we need to deliver pyscript out there.
-    const xworker = XWorker.call(new Hook(null, hooks), file, {
-        type: "pyodide",
-        ...options,
-    });
-    assign(xworker.sync, sync);
-    return xworker;
 }
