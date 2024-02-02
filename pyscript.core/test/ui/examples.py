@@ -1,3 +1,4 @@
+from pyscript import when
 from pyweb import pydom
 from pyweb.ui.elements import (
     a,
