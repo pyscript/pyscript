@@ -308,31 +308,13 @@ _add_js_properties(
     "width",
 )
 
-
-class input(ElementBase):
+# NOTE: Input is a reserved keyword in Python, so we use input_ instead
+class input_(ElementBase):
     tag = "input"
-
-    # JS Properties
-    autofocus = js_property("autofocus")
-    alt = js_property("alt")
-    autocapitalize = js_property("autocapitalize")
-    autocomplete = js_property("autocomplete")
-    checked = js_property("checked")
-    disabled = js_property("disabled")
-    name = js_property("name")
-    type = js_property("type")
-    value = js_property("value")
-    placeholder = js_property("placeholder")
-
-    # TODO: This is by anymeans complete!! We need to add more attributes
-
-    def __init__(self, style=None, **kwargs):
-        super().__init__(style=style, **kwargs)
-
 
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attributes
 _add_js_properties(
-    input,
+    input_,
     "accept",
     "alt",
     "autofocus",
