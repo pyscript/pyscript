@@ -355,6 +355,83 @@ class fieldset(TextElementBase):
 _add_js_properties(fieldset, "disabled", "form", "name")
 
 
+class figcation(TextElementBase):
+    tag = "figcation"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(figcation)
+
+
+class figure(TextElementBase):
+    tag = "figure"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(figure)
+
+
+class footer(TextElementBase):
+    tag = "footer"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(footer)
+
+
+class form(TextElementBase):
+    tag = "form"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(form, 'accept-charset', 'action', 'autocapitalize', 'autocomplete',
+                   'enctype', 'name', 'method', 'nonvalidate', 'rel', 'target')
+
+
+
+class h1(TextElementBase):
+    tag = "h1"
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#attributes
+# Heading elements only have global attributes
+_add_js_properties(h1)
+
+
+class h2(TextElementBase):
+    tag = "h2"
+
+
+_add_js_properties(h2)
+
+
+class h3(TextElementBase):
+    tag = "h3"
+
+
+_add_js_properties(h3)
+
+
+class h4(TextElementBase):
+    tag = "h4"
+
+
+_add_js_properties(h4)
+
+
+class h5(TextElementBase):
+    tag = "h5"
+
+
+_add_js_properties(h5)
+
+
+class h6(TextElementBase):
+    tag = "h6"
+
+_add_js_properties(h6)
+
+
 class img(ElementBase):
     tag = "img"
 
@@ -418,50 +495,6 @@ _add_js_properties(
     "value",
     "width",
 )
-
-
-class h1(TextElementBase):
-    tag = "h1"
-
-
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#attributes
-# Heading elements only have global attributes
-_add_js_properties(h1)
-
-
-class h2(TextElementBase):
-    tag = "h2"
-
-
-_add_js_properties(h2)
-
-
-class h3(TextElementBase):
-    tag = "h3"
-
-
-_add_js_properties(h3)
-
-
-class h4(TextElementBase):
-    tag = "h4"
-
-
-_add_js_properties(h4)
-
-
-class h5(TextElementBase):
-    tag = "h5"
-
-
-_add_js_properties(h5)
-
-
-class h6(TextElementBase):
-    tag = "h6"
-
-
-_add_js_properties(h6)
 
 
 class link(TextElementBase):
