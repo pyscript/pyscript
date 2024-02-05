@@ -260,7 +260,15 @@ class dd(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(dd, 'value')
+_add_js_properties(dd)
+
+
+class del_(TextElementBase):
+    tag = "del"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(del_, 'cite', 'datetime')
 
 
 class details(TextElementBase):
@@ -268,7 +276,7 @@ class details(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(details)
+_add_js_properties(details, 'open')
 
 
 class dialog(TextElementBase):
@@ -277,14 +285,6 @@ class dialog(TextElementBase):
 
 # code tags only have the global attributes ones
 _add_js_properties(dialog, 'open')
-
-
-class datalist(TextElementBase):
-    tag = "datalist"
-
-
-# code tags only have the global attributes ones
-_add_js_properties(datalist)
 
 
 class div(TextElementBase):
@@ -306,8 +306,7 @@ class dt(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(dt, 'value')
-
+_add_js_properties(dt)
 
 
 class em(TextElementBase):
@@ -315,7 +314,15 @@ class em(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(em, 'value')
+_add_js_properties(em)
+
+
+class embed(TextElementBase):
+    tag = "embed"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(embed, 'value')
 
 
 class img(ElementBase):
