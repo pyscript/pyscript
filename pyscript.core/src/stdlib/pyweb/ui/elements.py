@@ -133,8 +133,18 @@ class area(ElementBase):
 
 
 # br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(area, "alt", "coords", "download", "href", "ping", "referrerpolicy",
-                   "rel", "shape", "target")
+_add_js_properties(
+    area,
+    "alt",
+    "coords",
+    "download",
+    "href",
+    "ping",
+    "referrerpolicy",
+    "rel",
+    "shape",
+    "target",
+)
 
 
 class article(ElementBase):
@@ -158,8 +168,18 @@ class audio(ElementBase):
 
 
 # br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(audio, "autoplay", "controls", "controlslist", "crossorigin",
-                   "disableremoteplayback", "loop", "muted", "preload", "src")
+_add_js_properties(
+    audio,
+    "autoplay",
+    "controls",
+    "controlslist",
+    "crossorigin",
+    "disableremoteplayback",
+    "loop",
+    "muted",
+    "preload",
+    "src",
+)
 
 
 class b(ElementBase):
@@ -244,7 +264,7 @@ class data(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(data, 'value')
+_add_js_properties(data, "value")
 
 
 class datalist(TextElementBase):
@@ -268,7 +288,7 @@ class del_(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(del_, 'cite', 'datetime')
+_add_js_properties(del_, "cite", "datetime")
 
 
 class details(TextElementBase):
@@ -276,7 +296,7 @@ class details(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(details, 'open')
+_add_js_properties(details, "open")
 
 
 class dialog(TextElementBase):
@@ -284,11 +304,12 @@ class dialog(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(dialog, 'open')
+_add_js_properties(dialog, "open")
 
 
 class div(TextElementBase):
     tag = "div"
+
 
 # div tags only have the global attributes ones (others have been deprecated)
 _add_js_properties(div)
@@ -297,8 +318,9 @@ _add_js_properties(div)
 class dl(TextElementBase):
     tag = "dl"
 
+
 # code tags only have the global attributes ones
-_add_js_properties(dl, 'value')
+_add_js_properties(dl, "value")
 
 
 class dt(TextElementBase):
@@ -322,7 +344,15 @@ class embed(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(embed, 'value')
+_add_js_properties(embed, "height", "src", "type", "width")
+
+
+class fieldset(TextElementBase):
+    tag = "fieldset"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(fieldset, "disabled", "form", "name")
 
 
 class img(ElementBase):
