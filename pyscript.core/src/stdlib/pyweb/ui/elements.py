@@ -112,6 +112,72 @@ class a(TextElementBase):
 _add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
 
 
+class abbr(ElementBase):
+    tag = "abbr"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(abbr)
+
+
+class address(ElementBase):
+    tag = "address"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(address)
+
+
+class area(ElementBase):
+    tag = "area"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(area, "alt", "coords", "download", "href", "ping", "referrerpolicy",
+                   "rel", "shape", "target")
+
+
+class article(ElementBase):
+    tag = "article"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(article)
+
+
+class aside(ElementBase):
+    tag = "aside"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(aside)
+
+
+class audio(ElementBase):
+    tag = "audio"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(audio, "autoplay", "controls", "controlslist", "crossorigin",
+                   "disableremoteplayback", "loop", "muted", "preload", "src")
+
+
+class b(ElementBase):
+    tag = "b"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(b)
+
+
+class blockquote(ElementBase):
+    tag = "blockquote"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(blockquote, "cite")
+
+
 class br(ElementBase):
     tag = "br"
 
@@ -141,6 +207,30 @@ _add_js_properties(
 )
 
 
+class canvas(ElementBase):
+    tag = "canvas"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(canvas, "height", "width")
+
+
+class caption(ElementBase):
+    tag = "caption"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(caption)
+
+
+class cite(TextElementBase):
+    tag = "cite"
+
+
+# br tags only have the global attributes ones (others have been deprecated)
+_add_js_properties(cite)
+
+
 class code(TextElementBase):
     tag = "code"
 
@@ -149,12 +239,83 @@ class code(TextElementBase):
 _add_js_properties(code)
 
 
+class data(TextElementBase):
+    tag = "data"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(data, 'value')
+
+
+class datalist(TextElementBase):
+    tag = "datalist"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(datalist)
+
+
+class dd(TextElementBase):
+    tag = "dd"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(dd, 'value')
+
+
+class details(TextElementBase):
+    tag = "details"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(details)
+
+
+class dialog(TextElementBase):
+    tag = "dialog"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(dialog, 'open')
+
+
+class datalist(TextElementBase):
+    tag = "datalist"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(datalist)
+
+
 class div(TextElementBase):
     tag = "div"
 
-
 # div tags only have the global attributes ones (others have been deprecated)
 _add_js_properties(div)
+
+
+class dl(TextElementBase):
+    tag = "dl"
+
+# code tags only have the global attributes ones
+_add_js_properties(dl, 'value')
+
+
+class dt(TextElementBase):
+    tag = "dt"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(dt, 'value')
+
+
+
+class em(TextElementBase):
+    tag = "em"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(em, 'value')
 
 
 class img(ElementBase):
