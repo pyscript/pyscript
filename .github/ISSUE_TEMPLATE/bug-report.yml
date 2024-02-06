@@ -13,7 +13,7 @@ body:
 
         There are also already a lot of open issues, so please take 2 minutes and search through existing ones to see if what you are experiencing already exists.
 
-        Finally, if you are opening a bug report related to PyScript.com please [use this repository instead](https://github.com/anaconda/pyscript-dot-com-issues/issues/new/choose).
+        Finally, if you are opening **a bug report related to PyScript.com** please [use this repository instead](https://github.com/anaconda/pyscript-dot-com-issues/issues/new/choose).
 
         Thanks for helping PyScript be amazing. We are nothing without people like you helping build a better community 💐!
   - type: checkboxes
