@@ -1,9 +1,34 @@
-import sys
-import warnings
-from functools import cached_property
-from typing import Any
+try:
+    from typing import Any
+except ImportError:
+    Any = "Any"
 
-from pyodide.ffi import JsProxy
+try:
+    import warnings
+except ImportError:
+    # TODO: For now it probably means we are in MicroPython. We should figure
+    # out the "right" way to handle this. For now we just ignore the warning
+    # and logging to console
+    class warnings:
+        @staticmethod
+        def warn(*args, **kwargs):
+            print("WARNING: ", *args, **kwargs)
+
+
+try:
+    from functools import cached_property
+except ImportError:
+    # TODO: same comment about micropython as above
+    cached_property = property
+
+try:
+    from pyodide.ffi import JsProxy
+except ImportError:
+    # TODO: same comment about micropython as above
+    def JsProxy(obj):
+        return obj
+
+
 from pyscript import display, document, window
 
 alert = window.alert
@@ -14,6 +39,7 @@ class BaseElement:
         self._js = js_element
         self._parent = None
         self.style = StyleProxy(self)
+        self._proxies = {}
 
     def __eq__(self, obj):
         """Check if the element is the same as the other element by comparing
@@ -130,6 +156,18 @@ class Element(BaseElement):
         self._js.id = value
 
     @property
+    def options(self):
+        if "options" in self._proxies:
+            return self._proxies["options"]
+
+        if not self._js.tagName.lower() in {"select", "datalist", "optgroup"}:
+            raise AttributeError(
+                f"Element {self._js.tagName} has no options attribute."
+            )
+        self._proxies["options"] = OptionsProxy(self)
+        return self._proxies["options"]
+
+    @property
     def value(self):
         return self._js.value
 
@@ -144,6 +182,22 @@ class Element(BaseElement):
                 "javascript API attribute instead."
             )
         self._js.value = value
+
+    @property
+    def selected(self):
+        return self._js.selected
+
+    @selected.setter
+    def selected(self, value):
+        # in order to avoid confusion to the user, we don't allow setting the
+        # value of elements that don't have a value attribute
+        if not hasattr(self._js, "selected"):
+            raise AttributeError(
+                f"Element {self._js.tagName} has no value attribute. If you want to "
+                "force a value attribute, set it directly using the `_js.value = <value>` "
+                "javascript API attribute instead."
+            )
+        self._js.selected = value
 
     def clone(self, new_id=None):
         clone = Element(self._js.cloneNode(True))
@@ -175,8 +229,164 @@ class Element(BaseElement):
     def show_me(self):
         self._js.scrollIntoView()
 
+    def snap(
+        self,
+        to: BaseElement | str = None,
+        width: int | None = None,
+        height: int | None = None,
+    ):
+        """
+        Captures a snapshot of a video element. (Only available for video elements)
 
-class StyleProxy(dict):
+        Inputs:
+
+            * to: element where to save the snapshot of the video frame to
+            * width: width of the image
+            * height: height of the image
+
+        Output:
+            (Element) canvas element where the video frame snapshot was drawn into
+        """
+        if self._js.tagName != "VIDEO":
+            raise AttributeError("Snap method is only available for video Elements")
+
+        if to is None:
+            canvas = self.create("canvas")
+            if width is None:
+                width = self._js.width
+            if height is None:
+                height = self._js.height
+            canvas._js.width = width
+            canvas._js.height = height
+
+        elif isistance(to, Element):
+            if to._js.tagName != "CANVAS":
+                raise TypeError("Element to snap to must a canvas.")
+            canvas = to
+        elif getattr(to, "tagName", "") == "CANVAS":
+            canvas = Element(to)
+        elif isinstance(to, str):
+            canvas = pydom[to][0]
+            if canvas._js.tagName != "CANVAS":
+                raise TypeError("Element to snap to must a be canvas.")
+
+        canvas.draw(self, width, height)
+
+        return canvas
+
+    def download(self, filename: str = "snapped.png") -> None:
+        """Download the current element (only available for canvas elements) with the filename
+        provided in input.
+
+        Inputs:
+            * filename (str): name of the file being downloaded
+
+        Output:
+            None
+        """
+        if self._js.tagName != "CANVAS":
+            raise AttributeError(
+                "The download method is only available for canvas Elements"
+            )
+
+        link = self.create("a")
+        link._js.download = filename
+        link._js.href = self._js.toDataURL()
+        link._js.click()
+
+    def draw(self, what, width, height):
+        """Draw `what` on the current element  (only available for canvas elements).
+
+        Inputs:
+
+            * what (canvas image source): An element to draw into the context. The specification permits any canvas
+                image source, specifically, an HTMLImageElement, an SVGImageElement, an HTMLVideoElement,
+                an HTMLCanvasElement, an ImageBitmap, an OffscreenCanvas, or a VideoFrame.
+        """
+        if self._js.tagName != "CANVAS":
+            raise AttributeError(
+                "The draw method is only available for canvas Elements"
+            )
+
+        if isinstance(what, Element):
+            what = what._js
+
+        # https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+        self._js.getContext("2d").drawImage(what, 0, 0, width, height)
+
+
+class OptionsProxy:
+    """This class represents the options of a select element. It
+    allows to access to add and remove options by using the `add` and `remove` methods.
+    """
+
+    def __init__(self, element: Element) -> None:
+        self._element = element
+        if self._element._js.tagName.lower() != "select":
+            raise AttributeError(
+                f"Element {self._element._js.tagName} has no options attribute."
+            )
+
+    def add(
+        self,
+        value: Any = None,
+        html: str = None,
+        text: str = None,
+        before: Element | int = None,
+        **kws,
+    ) -> None:
+        """Add a new option to the select element"""
+        # create the option element and set the attributes
+        option = document.createElement("option")
+        if value is not None:
+            kws["value"] = value
+        if html is not None:
+            option.innerHTML = html
+        if text is not None:
+            kws["text"] = text
+
+        for key, value in kws.items():
+            option.setAttribute(key, value)
+
+        if before:
+            if isinstance(before, Element):
+                before = before._js
+
+        self._element._js.add(option, before)
+
+    def remove(self, item: int) -> None:
+        """Remove the option at the specified index"""
+        self._element._js.remove(item)
+
+    def clear(self) -> None:
+        """Remove all the options"""
+        for i in range(len(self)):
+            self.remove(0)
+
+    @property
+    def options(self):
+        """Return the list of options"""
+        return [Element(opt) for opt in self._element._js.options]
+
+    @property
+    def selected(self):
+        """Return the selected option"""
+        return self.options[self._element._js.selectedIndex]
+
+    def __iter__(self):
+        yield from self.options
+
+    def __len__(self):
+        return len(self.options)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} (length: {len(self)}) {self.options}"
+
+    def __getitem__(self, key):
+        return self.options[key]
+
+
+class StyleProxy:  # (dict):
     def __init__(self, element: Element) -> None:
         self._element = element
 
@@ -295,7 +505,7 @@ class ElementCollection:
 
 
 class DomScope:
-    def __getattr__(self, __name: str) -> Any:
+    def __getattr__(self, __name: str):
         element = document[f"#{__name}"]
         if element:
             return element[0]
@@ -309,7 +519,12 @@ class PyDom(BaseElement):
     ElementCollection = ElementCollection
 
     def __init__(self):
-        super().__init__(document)
+        # PyDom is a special case of BaseElement where we don't want to create a new JS element
+        # and it really doesn't have a need for styleproxy or parent to to call to __init__
+        # (which actually fails in MP for some reason)
+        self._js = document
+        self._parent = None
+        self._proxies = {}
         self.ids = DomScope()
         self.body = Element(document.body)
         self.head = Element(document.head)
@@ -318,10 +533,6 @@ class PyDom(BaseElement):
         return super().create(type_, is_child=False, classes=classes, html=html)
 
     def __getitem__(self, key):
-        if isinstance(key, int):
-            indices = range(*key.indices(len(self.list)))
-            return [self.list[i] for i in indices]
-
         elements = self._js.querySelectorAll(key)
         if not elements:
             return None
@@ -329,5 +540,3 @@ class PyDom(BaseElement):
 
 
 dom = PyDom()
-
-sys.modules[__name__] = dom

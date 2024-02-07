@@ -1,9 +1,0 @@
-setuptools
-wheel
-check-manifest
-briefcase
-flask==2.1.1
-static/wheels/toga_core-0.3.0.dev33-py3-none-any.whl
-static/wheels/toga_flask-0.3.0.dev33-py3-none-any.whl
-static/wheels/toga_web-0.3.0.dev33-py3-none-any.whl
-static/wheels/travertino-0.1.3-py3-none-any.whl

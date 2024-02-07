@@ -26,37 +26,39 @@ import { ErrorCode } from "./exceptions.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
 import { hooks, main, worker, codeFor, createFunction } from "./hooks.js";
 
-// allows lazy element features on code evaluation
-let currentElement;
-
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
 
-let shouldRegister = true;
-const registerModule = ({ XWorker: $XWorker, interpreter, io }) => {
-    // automatically use the pyscript stderr (when/if defined)
-    // this defaults to console.error
-    function PyWorker(...args) {
-        const worker = $XWorker(...args);
-        worker.onerror = ({ error }) => io.stderr(error);
-        return worker;
-    }
-
-    // enrich the Python env with some JS utility for main
-    interpreter.registerJsModule("_pyscript", {
-        PyWorker,
-        get target() {
-            return isScript(currentElement)
-                ? currentElement.target.id
-                : currentElement.id;
+// Used to create either Pyodide or MicroPython workers
+// with the PyScript module available within the code
+const [PyWorker, MPWorker] = [...TYPES.entries()].map(
+    ([TYPE, interpreter]) =>
+        /**
+         * A `Worker` facade able to bootstrap on the worker thread only a PyScript module.
+         * @param {string} file the python file to run ina worker.
+         * @param {{config?: string | object, async?: boolean}} [options] optional configuration for the worker.
+         * @returns {Promise<Worker & {sync: object}>}
+         */
+        async function PyScriptWorker(file, options) {
+            await configs.get(TYPE).plugins;
+            const xworker = XWorker.call(
+                new Hook(null, hooked.get(TYPE)),
+                file,
+                {
+                    ...options,
+                    type: interpreter,
+                },
+            );
+            assign(xworker.sync, sync);
+            return xworker.ready;
         },
-    });
-};
+);
 
 // avoid multiple initialization of the same library
 const [
     {
         PyWorker: exportedPyWorker,
+        MPWorker: exportedMPWorker,
         hooks: exportedHooks,
         config: exportedConfig,
         whenDefined: exportedWhenDefined,
@@ -64,6 +66,7 @@ const [
     alreadyLive,
 ] = stickyModule("@pyscript/core", {
     PyWorker,
+    MPWorker,
     hooks,
     config: {},
     whenDefined,
@@ -72,6 +75,7 @@ const [
 export {
     TYPES,
     exportedPyWorker as PyWorker,
+    exportedMPWorker as MPWorker,
     exportedHooks as hooks,
     exportedConfig as config,
     exportedWhenDefined as whenDefined,
@@ -88,7 +92,7 @@ for (const [TYPE, interpreter] of TYPES) {
         else dispatch(element, TYPE, "done");
     };
 
-    const { config, plugins, error } = configs.get(TYPE);
+    const { config, configURL, plugins, error } = configs.get(TYPE);
 
     // create a unique identifier when/if needed
     let id = 0;
@@ -118,6 +122,36 @@ for (const [TYPE, interpreter] of TYPES) {
         return code;
     };
 
+    // register once any interpreter
+    let alreadyRegistered = false;
+
+    // allows lazy element features on code evaluation
+    let currentElement;
+
+    const registerModule = ({ XWorker, interpreter, io }) => {
+        // avoid multiple registration of the same interpreter
+        if (alreadyRegistered) return;
+        alreadyRegistered = true;
+
+        // automatically use the pyscript stderr (when/if defined)
+        // this defaults to console.error
+        function PyWorker(...args) {
+            const worker = XWorker(...args);
+            worker.onerror = ({ error }) => io.stderr(error);
+            return worker;
+        }
+
+        // enrich the Python env with some JS utility for main
+        interpreter.registerJsModule("_pyscript", {
+            PyWorker,
+            get target() {
+                return isScript(currentElement)
+                    ? currentElement.target.id
+                    : currentElement.id;
+            },
+        });
+    };
+
     // define the module as both `<script type="py">` and `<py-script>`
     // but only if the config didn't throw an error
     if (!error) {
@@ -133,10 +167,7 @@ for (const [TYPE, interpreter] of TYPES) {
                 main: {
                     ...codeFor(main),
                     async onReady(wrap, element) {
-                        if (shouldRegister) {
-                            shouldRegister = false;
-                            registerModule(wrap);
-                        }
+                        registerModule(wrap);
 
                         // allows plugins to do whatever they want with the element
                         // before regular stuff happens in here
@@ -256,6 +287,7 @@ for (const [TYPE, interpreter] of TYPES) {
 
             define(TYPE, {
                 config,
+                configURL,
                 interpreter,
                 hooks,
                 env: `${TYPE}-script`,
@@ -309,25 +341,4 @@ for (const [TYPE, interpreter] of TYPES) {
 
     // export the used config without allowing leaks through it
     exportedConfig[TYPE] = structuredClone(config);
-}
-
-/**
- * A `Worker` facade able to bootstrap on the worker thread only a PyScript module.
- * @param {string} file the python file to run ina worker.
- * @param {{config?: string | object, async?: boolean}} [options] optional configuration for the worker.
- * @returns {Worker & {sync: ProxyHandler<object>}}
- */
-function PyWorker(file, options) {
-    const hooks = hooked.get("py");
-    // this propagates pyscript worker hooks without needing a pyscript
-    // bootstrap + it passes arguments and enforces `pyodide`
-    // as the interpreter to use in the worker, as all hooks assume that
-    // and as `pyodide` is the only default interpreter that can deal with
-    // all the features we need to deliver pyscript out there.
-    const xworker = XWorker.call(new Hook(null, hooks), file, {
-        type: "pyodide",
-        ...options,
-    });
-    assign(xworker.sync, sync);
-    return xworker;
 }

@@ -93,6 +93,19 @@ class TestBasic(PyScriptTest):
         )
         assert self.console.log.lines[-1] == "hello pyscript"
 
+    @only_main
+    def test_input_exception(self):
+        self.pyscript_run(
+            """
+            <script type="py">
+                input("what's your name?")
+            </script>
+            """
+        )
+        self.check_py_errors(
+            "Exception: input() doesn't work when PyScript runs in the main thread."
+        )
+
     @skip_worker("NEXT: exceptions should be displayed in the DOM")
     def test_python_exception(self):
         self.pyscript_run(

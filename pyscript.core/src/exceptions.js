@@ -5,7 +5,7 @@ const CLOSEBUTTON =
 
 /**
  * These error codes are used to identify the type of error that occurred.
- * @see https://docs.pyscript.net/latest/reference/exceptions.html?highlight=errors
+ * @see https://pyscript.github.io/docs/latest/reference/exceptions.html?highlight=errors
  */
 export const ErrorCode = {
     GENERIC: "PY0000", // Use this only for development then change to a more specific error code

@@ -1,6 +1,6 @@
 <html lang="en">
   <head>
-    <title>PyperCard PyTest Suite</title>
+    <title>PyDom Test Suite</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="../../dist/core.css">
@@ -32,7 +32,7 @@
      </style>
   </head>
   <body>
-    <script type="py" src="run_tests.py" config="tests.toml"></script>
+    <script type="py" src="./run_tests.py" config="./tests.toml"></script>
 
     <h1>pyscript.dom Tests</h1>
     <p>You can pass test parameters to this test suite by passing them as query params on the url.
@@ -69,6 +69,24 @@
         <input id="test_rr_input_email" type="email" value="Content test_rr_input_email">
         <input id="test_rr_input_password" type="password" value="Content test_rr_input_password">
       </form>
+
+      <select id="test_select_element"></select>
+      <select id="test_select_element_w_options">
+        <option value="1">Option 1</option>
+        <option value="2" selected="selected">Option 2</option>
+      </select>
+      <select id="test_select_element_to_clear">
+        <option value="1">Option 1</option>
+        <option value="2">Option 2</option>
+        <option value="4">Option 4</option>
+      </select>
+
+      <select id="test_select_element_to_remove">
+        <option value="1">Option 1</option>
+        <option value="2">Option 2</option>
+        <option value="3">Option 3</option>
+        <option value="4">Option 4</option>
+      </select>
 
       <div id="element-creation-test"></div>
 
