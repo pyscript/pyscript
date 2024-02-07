@@ -7,6 +7,7 @@ from .support import PageErrors, PyScriptTest, only_worker, skip_worker
 
 
 class TestPyTerminal(PyScriptTest):
+    @skip_worker("We do support multiple worker terminal now")
     def test_multiple_terminals(self):
         """
         Multiple terminals are not currently supported
@@ -19,9 +20,9 @@ class TestPyTerminal(PyScriptTest):
             wait_for_pyscript=False,
             check_js_errors=False,
         )
-        assert self.assert_banner_message("You can use at most 1 terminal")
+        assert self.assert_banner_message("You can use at most 1 main terminal")
 
-        with pytest.raises(PageErrors, match="You can use at most 1 terminal"):
+        with pytest.raises(PageErrors, match="You can use at most 1 main terminal"):
             self.check_js_errors()
 
     # TODO: interactive shell still unclear
@@ -112,7 +113,7 @@ class TestPyTerminal(PyScriptTest):
         This test isn't meant to capture all of the behaviors of an xtermjs terminal;
         rather, it confirms with a few basic formatting sequences that (1) the xtermjs
         terminal is functioning/loaded correctly and (2) that output toward that terminal
-        isn't being escaped in a way that prevents it reacting to escape seqeunces. The
+        isn't being escaped in a way that prevents it reacting to escape sequences. The
         main goal is preventing regressions.
         """
         self.pyscript_run(

@@ -11,7 +11,9 @@ body:
 
         There will always be more issues than there is time to do them, and so we will need to selectively close issues that don't provide enough information, so we can focus our time on helping people like you who fill out the issue form completely. Thank you for your collaboration!
 
-        There are also already a lot of open issues, so please take 2 minutes and search through existing ones to see if what you are experiencing already exists
+        There are also already a lot of open issues, so please take 2 minutes and search through existing ones to see if what you are experiencing already exists.
+
+        Finally, if you are opening **a bug report related to PyScript.com** please [use this repository instead](https://github.com/anaconda/pyscript-dot-com-issues/issues/new/choose).
 
         Thanks for helping PyScript be amazing. We are nothing without people like you helping build a better community 💐!
   - type: checkboxes

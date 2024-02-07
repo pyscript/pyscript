@@ -1,0 +1,7 @@
+{
+    "files":{
+        "{FROM}": "./src",
+        "{TO}": "./runtime",
+        "{FROM}/test.py": "{TO}/test.py"
+    }
+}

@@ -48,8 +48,8 @@ async function execute({ currentTarget }) {
         xworker.onerror = ({ error }) => {
             outDiv.innerHTML += `<span style='color:red'>${
                 error.message || error
-            }</span>`;
-            console.log(error);
+            }</span>\n`;
+            console.error(error);
         };
 
         const enable = () => {
@@ -57,10 +57,10 @@ async function execute({ currentTarget }) {
         };
         const { sync } = xworker;
         sync.write = (str) => {
-            outDiv.innerText += str;
+            outDiv.innerText += `${str}\n`;
         };
         sync.writeErr = (str) => {
-            outDiv.innerHTML += `<span style='color:red'>${str}</span>`;
+            outDiv.innerHTML += `<span style='color:red'>${str}</span>\n`;
         };
         sync.runAsync(pySrc).then(enable, enable);
     });
@@ -88,7 +88,7 @@ const makeEditorDiv = (listener, type) => {
         event.stopPropagation();
     });
 
-    editorDiv.append(editorShadowContainer, runButton);
+    editorDiv.append(runButton, editorShadowContainer);
 
     return editorDiv;
 };
@@ -164,6 +164,7 @@ const init = async (script, type, interpreter) => {
     // @see https://github.com/JeffersGlass/mkdocs-pyscript/blob/main/mkdocs_pyscript/js/makeblocks.js
     const listener = execute.bind(context);
     const [boxDiv, outDiv] = makeBoxDiv(listener, type);
+    boxDiv.dataset.env = script.hasAttribute("env") ? env : interpreter;
 
     const inputChild = boxDiv.querySelector(`.${type}-editor-input > div`);
     const parent = inputChild.attachShadow({ mode: "open" });
@@ -199,6 +200,9 @@ const init = async (script, type, interpreter) => {
 // avoid too greedy MutationObserver operations at distance
 let timeout = 0;
 
+// avoid delayed initialization
+let queue = Promise.resolve();
+
 // reset interval value then check for new scripts
 const resetTimeout = () => {
     timeout = 0;
@@ -212,11 +216,14 @@ const pyEditor = async () => {
     for (const [type, interpreter] of TYPES) {
         const selector = `script[type="${type}-editor"]`;
         for (const script of document.querySelectorAll(selector)) {
-            // avoid any further bootstrap
+            // avoid any further bootstrap by changing the type as active
             script.type += "-active";
-            await init(script, type, interpreter);
+            // don't await in here or multiple calls might happen
+            // while the first script is being initialized
+            queue = queue.then(() => init(script, type, interpreter));
         }
     }
+    return queue;
 };
 
 new MutationObserver(pyEditor).observe(document, {

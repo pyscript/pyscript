@@ -63,6 +63,9 @@ for (const [TYPE] of TYPES) {
     /** @type {Error | undefined} The error thrown when parsing the PyScript config, if any.*/
     let error;
 
+    /** @type {string | undefined} The `configURL` field to normalize all config operations as opposite of guessing it once resolved */
+    let configURL;
+
     let config,
         type,
         pyElement,
@@ -105,6 +108,7 @@ for (const [TYPE] of TYPES) {
     if (!error && config) {
         try {
             const { json, toml, text, url } = await configDetails(config, type);
+            if (url) configURL = new URL(url, location.href).href;
             config = text;
             if (json || type === "json") {
                 try {
@@ -146,7 +150,7 @@ for (const [TYPE] of TYPES) {
     // assign plugins as Promise.all only if needed
     plugins = Promise.all(toBeAwaited);
 
-    configs.set(TYPE, { config: parsed, plugins, error });
+    configs.set(TYPE, { config: parsed, configURL, plugins, error });
 }
 
 export default configs;

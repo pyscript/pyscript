@@ -43,6 +43,8 @@ from pyscript.magic_js import (
 try:
     from pyscript.event_handling import when
 except:
+    # TODO: should we remove this? Or at the very least, we should capture
+    # the traceback otherwise it's very hard to debug
     from pyscript.util import NotSupported
 
     when = NotSupported(

@@ -4,3 +4,41 @@ mpy-script,
 mpy-config {
     display: none;
 }
+
+/* PyEditor */
+.py-editor-box,
+.mpy-editor-box {
+    padding: 0.5rem;
+}
+.py-editor-input,
+.mpy-editor-input {
+    position: relative;
+}
+.py-editor-box::before,
+.mpy-editor-box::before {
+    content: attr(data-env);
+    display: block;
+    font-size: x-small;
+    text-align: end;
+}
+.py-editor-output,
+.mpy-editor-output {
+    white-space: pre;
+}
+.py-editor-run-button,
+.mpy-editor-run-button {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.25s;
+    z-index: 1;
+}
+.py-editor-box:hover .py-editor-run-button,
+.mpy-editor-box:hover .mpy-editor-run-button,
+.py-editor-run-button:focus,
+.py-editor-run-button:disabled,
+.mpy-editor-run-button:focus,
+.mpy-editor-run-button:disabled {
+    opacity: 1;
+}
