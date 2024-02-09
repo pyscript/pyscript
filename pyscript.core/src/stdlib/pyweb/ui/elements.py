@@ -384,9 +384,19 @@ class form(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(form, 'accept-charset', 'action', 'autocapitalize', 'autocomplete',
-                   'enctype', 'name', 'method', 'nonvalidate', 'rel', 'target')
-
+_add_js_properties(
+    form,
+    "accept-charset",
+    "action",
+    "autocapitalize",
+    "autocomplete",
+    "enctype",
+    "name",
+    "method",
+    "nonvalidate",
+    "rel",
+    "target",
+)
 
 
 class h1(TextElementBase):
@@ -429,7 +439,49 @@ _add_js_properties(h5)
 class h6(TextElementBase):
     tag = "h6"
 
+
 _add_js_properties(h6)
+
+
+class header(TextElementBase):
+    tag = "header"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(header)
+
+
+class hgroup(TextElementBase):
+    tag = "hgroup"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(hgroup)
+
+
+class hr(TextElementBase):
+    tag = "hr"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(hr)
+
+
+class i(TextElementBase):
+    tag = "i"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(i)
+
+
+class iframe(TextElementBase):
+    tag = "iframe"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(iframe, "allow", "allowfullscreen", "height", "loading", "name",
+                   "referrerpolicy", "sandbox", "src", "srcdoc", "width")
 
 
 class img(ElementBase):
@@ -497,6 +549,46 @@ _add_js_properties(
 )
 
 
+class ins(TextElementBase):
+    tag = "ins"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(ins, "cite", "datetime")
+
+
+class kbd(TextElementBase):
+    tag = "kbd"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(kbd)
+
+
+class label(TextElementBase):
+    tag = "label"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(label, "for")
+
+
+class legend(TextElementBase):
+    tag = "legend"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(legend)
+
+
+class li(TextElementBase):
+    tag = "li"
+
+
+# code tags only have the global attributes ones
+_add_js_properties(li, "value")
+
+
 class link(TextElementBase):
     tag = "link"
 
@@ -521,12 +613,103 @@ _add_js_properties(
 )
 
 
+class main(TextElementBase):
+    tag = "main"
+
+
+_add_js_properties(main)
+
+
+class map_(TextElementBase):
+    tag = "map"
+
+
+_add_js_properties(map_, "name")
+
+
+class mark(TextElementBase):
+    tag = "mark"
+
+
+_add_js_properties(mark)
+
+
+class menu(TextElementBase):
+    tag = "menu"
+
+
+_add_js_properties(menu)
+
+
+class map_(TextElementBase):
+    tag = "map"
+
+
+_add_js_properties(map_, "name")
+
+
+class meter(TextElementBase):
+    tag = "meter"
+
+
+_add_js_properties(meter, "form", "high", "low", "max", "min", "optimum", "value")
+
+
+class nav(TextElementBase):
+    tag = "nav"
+
+
+_add_js_properties(nav)
+
+
+class object_(TextElementBase):
+    tag = "object"
+
+
+_add_js_properties(object_, "data", "form", "height", "name", "type", "usemap", "width")
+
+
+class ol(TextElementBase):
+    tag = "ol"
+
+
+_add_js_properties(ol, "reversed", "start", "type")
+
+
+class optgroup(TextElementBase):
+    tag = "optgroup"
+
+
+_add_js_properties(optgroup, "disabled", "label")
+
+
+class option(TextElementBase):
+    tag = "option"
+
+
+_add_js_properties(option, "disabled", "label", "selected", "value")
+
+
+class output(TextElementBase):
+    tag = "output"
+
+
+_add_js_properties(output, "for", "form", "name")
+
+
 class p(TextElementBase):
     tag = "p"
 
 
 # p tags only have the global attributes ones
 _add_js_properties(p)
+
+
+class picture(TextElementBase):
+    tag = "picture"
+
+
+_add_js_properties(picture)
 
 
 class pre(TextElementBase):
@@ -537,12 +720,32 @@ class pre(TextElementBase):
 _add_js_properties(pre)
 
 
-class style(TextElementBase):
-    tag = "style"
+class progress(TextElementBase):
+    tag = "progress"
 
 
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style#attributes
-_add_js_properties(style, "blocking", "media", "nonce", "title")
+_add_js_properties(progress, "max", "value")
+
+
+class q(TextElementBase):
+    tag = "q"
+
+
+_add_js_properties(q, "cite")
+
+
+class nav(TextElementBase):
+    tag = "nav"
+
+
+_add_js_properties(nav)
+
+
+class s(TextElementBase):
+    tag = "s"
+
+
+_add_js_properties(s)
 
 
 class script(TextElementBase):
@@ -568,6 +771,20 @@ _add_js_properties(
 )
 
 
+class section(TextElementBase):
+    tag = "section"
+
+
+_add_js_properties(section)
+
+
+class select(TextElementBase):
+    tag = "select"
+
+
+_add_js_properties(select)
+
+
 class small(TextElementBase):
     tag = "small"
 
@@ -576,16 +793,27 @@ class small(TextElementBase):
 _add_js_properties(small)
 
 
+class source(TextElementBase):
+    tag = "source"
+
+
+_add_js_properties(source, "type", "src", "srcset", "sizes", "media")
+
+
 class strong(TextElementBase):
     tag = "strong"
 
 
-class main(TextElementBase):
-    tag = "main"
-
-
 # strong tags only have the global attributes ones
 _add_js_properties(strong)
+
+
+class style(TextElementBase):
+    tag = "style"
+
+
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style#attributes
+_add_js_properties(style, "blocking", "media", "nonce", "title")
 
 
 # Custom Elements
