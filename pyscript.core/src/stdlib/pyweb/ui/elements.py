@@ -28,7 +28,19 @@ GLOBAL_ATTRIBUTES = [
 ]
 
 # class and style are different ones that are handled by pydom.element directly
-
+CUSTOM_ATTRIBUTES = {
+    'a': ['download', 'href', 'referrerpolicy', 'rel', 'target', 'type'],
+    'td':  ['colspan', 'headers', 'rowspan'],
+    'template': ['shadowrootmode'],
+    'textarea': ['autocapitalize', 'autocomplete', 'autofocus', 'cols', 'dirname', 'disabled',
+                 'form', 'maxlength', 'minlength', 'name', 'placeholder', 'readonly',
+                 'required', 'rows', 'spellcheck', 'wrap'],
+    'tr': ['abbr', 'colspan', 'headers', 'rowspan', 'scope'],
+    'time': ['datetime'],
+    'video': ['autoplay', 'controls', 'crossorigin', 'disablepictureinpicture', 
+              'disableremoteplayback', 'height', 'loop', 'muted', 'playsinline',
+              'poster', 'preload', 'src', 'width'],
+}
 
 class ElementBase(pydom.Element):
     tag = "div"
@@ -92,7 +104,6 @@ def _add_js_properties(cls, *attrs):
 
     Args:
 
-
         * content: The content of the element (can be a string, a list of elements or a single element)
         * style: The style of the element (a dictionary)
         * All the properties of the class: {attrs}
@@ -108,8 +119,8 @@ class a(TextElementBase):
     tag = "a"
 
 
-# Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attributes
-_add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
+# # Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attributes
+# _add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
 
 
 class abbr(ElementBase):
@@ -800,6 +811,10 @@ class source(TextElementBase):
 _add_js_properties(source, "type", "src", "srcset", "sizes", "media")
 
 
+class span(TextElementBase):
+    tag = "span"
+
+
 class strong(TextElementBase):
     tag = "strong"
 
@@ -814,6 +829,82 @@ class style(TextElementBase):
 
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style#attributes
 _add_js_properties(style, "blocking", "media", "nonce", "title")
+
+
+class sub(TextElementBase):
+    tag = "sub"
+
+
+class summary(TextElementBase):
+    tag = "summary"
+
+
+class sup(TextElementBase):
+    tag = "sup"
+
+
+class table(TextElementBase):
+    tag = "table"
+
+
+class tbody(TextElementBase):
+    tag = "tbody"
+
+
+class td(TextElementBase):
+    tag = "td"
+
+
+class template(TextElementBase):
+    tag = "template"
+
+
+class textarea(TextElementBase):
+    tag = "textarea"
+
+
+class tfoot(TextElementBase):
+    tag = "tfoot"
+
+
+class th(TextElementBase):
+    tag = "th"
+
+
+class thead(TextElementBase):
+    tag = "thead"
+
+
+class time(TextElementBase):
+    tag = "time"
+
+
+class title(TextElementBase):
+    tag = "title"
+
+
+class tr(TextElementBase):
+    tag = "tr"
+
+
+class track(TextElementBase):
+    tag = "track"
+
+
+class u(TextElementBase):
+    tag = "u"
+
+
+class ul(TextElementBase):
+    tag = "ul"
+
+
+class var(TextElementBase):
+    tag = "var"
+
+
+class video(TextElementBase):
+    tag = "video"
 
 
 # Custom Elements
