@@ -100,12 +100,13 @@ def _add_js_properties(cls, *attrs):
 
     # Now we patch the __init__ method to specify the properties
     cls.__init__.__doc__ = f"""Class constructor.
+    Official documentation: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/{cls.tag}
 
     Args:
 
         * content: The content of the element (can be a string, a list of elements or a single element)
         * style: The style of the element (a dictionary)
-        * All the properties of the class: {attrs}
+        * All the properties of the class: {attrs} (see the official documentation for more details)
 
         """
 
