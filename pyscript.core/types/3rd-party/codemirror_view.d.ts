@@ -1,1 +1,1 @@
-export * from "@codemirror/view";
+export {};
