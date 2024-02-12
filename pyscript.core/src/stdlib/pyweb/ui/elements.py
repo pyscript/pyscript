@@ -28,18 +28,46 @@ GLOBAL_ATTRIBUTES = [
 
 # class and style are different ones that are handled by pydom.element directly
 CUSTOM_ATTRIBUTES = {
-    'a': ['download', 'href', 'referrerpolicy', 'rel', 'target', 'type'],
-    'td':  ['colspan', 'headers', 'rowspan'],
-    'template': ['shadowrootmode'],
-    'textarea': ['autocapitalize', 'autocomplete', 'autofocus', 'cols', 'dirname', 'disabled',
-                 'form', 'maxlength', 'minlength', 'name', 'placeholder', 'readonly',
-                 'required', 'rows', 'spellcheck', 'wrap'],
-    'tr': ['abbr', 'colspan', 'headers', 'rowspan', 'scope'],
-    'time': ['datetime'],
-    'video': ['autoplay', 'controls', 'crossorigin', 'disablepictureinpicture', 
-              'disableremoteplayback', 'height', 'loop', 'muted', 'playsinline',
-              'poster', 'preload', 'src', 'width'],
+    "a": ["download", "href", "referrerpolicy", "rel", "target", "type"],
+    "td": ["colspan", "headers", "rowspan"],
+    "template": ["shadowrootmode"],
+    "textarea": [
+        "autocapitalize",
+        "autocomplete",
+        "autofocus",
+        "cols",
+        "dirname",
+        "disabled",
+        "form",
+        "maxlength",
+        "minlength",
+        "name",
+        "placeholder",
+        "readonly",
+        "required",
+        "rows",
+        "spellcheck",
+        "wrap",
+    ],
+    "tr": ["abbr", "colspan", "headers", "rowspan", "scope"],
+    "time": ["datetime"],
+    "video": [
+        "autoplay",
+        "controls",
+        "crossorigin",
+        "disablepictureinpicture",
+        "disableremoteplayback",
+        "height",
+        "loop",
+        "muted",
+        "playsinline",
+        "poster",
+        "preload",
+        "src",
+        "width",
+    ],
 }
+
 
 class ElementBase(pydom.Element):
     tag = "div"
@@ -491,8 +519,19 @@ class iframe(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(iframe, "allow", "allowfullscreen", "height", "loading", "name",
-                   "referrerpolicy", "sandbox", "src", "srcdoc", "width")
+_add_js_properties(
+    iframe,
+    "allow",
+    "allowfullscreen",
+    "height",
+    "loading",
+    "name",
+    "referrerpolicy",
+    "sandbox",
+    "src",
+    "srcdoc",
+    "width",
+)
 
 
 class img(ElementBase):
