@@ -21,7 +21,7 @@ const write = (base, literal) => {
         python.push(`_path = _Path("${base}/${key}")`);
         if (typeof value === "string") {
             const code = JSON.stringify(value);
-            python.push(`_path.write_text(${code})`);
+            python.push(`_path.write_text(${code},encoding="utf-8")`);
         } else {
             // @see https://github.com/pyscript/pyscript/pull/1813#issuecomment-1781502909
             python.push(`if not _os.path.exists("${base}/${key}"):`);

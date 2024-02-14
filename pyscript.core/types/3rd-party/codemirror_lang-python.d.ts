@@ -1,1 +1,1 @@
-export {};
+export * from "@codemirror/lang-python";
