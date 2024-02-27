@@ -77,9 +77,13 @@ class ElementBase(pydom.Element):
         super().__init__(document.createElement(self.tag))
 
         # set all the style properties provided in input
-        if style:
+        if isinstance(style, dict):
             for key, value in style.items():
                 self.style[key] = value
+        elif style is None:
+            pass
+        else:
+            raise ValueError(f"Style should be a dictionary, received {style} (type {type(style)}) instead.")
 
         # IMPORTANT!!! This is used to auto-harvest all input arguments and set them as properties
         self._init_properties(**kwargs)
