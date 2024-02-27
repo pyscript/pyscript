@@ -1,15 +1,16 @@
 from textwrap import dedent
 
-from pyweb import JSProperty, js_property, pydom
-
 from pyscript import document, when, window
+from pyweb import JSProperty, js_property, pydom
 
 # Global attributes that all elements have (this list is a subset of the official one)
 # and tries to capture the most used ones
 GLOBAL_ATTRIBUTES = [
     "accesskey",
-    "autocapitalize",
     "autofocus",
+    "autocapitalize",
+    "className",
+    "contenteditable",
     "draggable",
     "enterkeyhint",
     "hidden",
@@ -24,7 +25,6 @@ GLOBAL_ATTRIBUTES = [
     "title",
     "translate",
     "virtualkeyboardpolicy",
-    "className",
 ]
 
 # class and style are different ones that are handled by pydom.element directly
@@ -147,9 +147,8 @@ def _add_js_properties(cls, *attrs):
 class a(TextElementBase):
     tag = "a"
 
-
 # # Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attributes
-# _add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
+_add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
 
 
 class abbr(ElementBase):

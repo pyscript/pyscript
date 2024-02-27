@@ -100,7 +100,8 @@ class TestElements(PyScriptTest):
         assert "clicked" not in self.console.log.lines == []
 
     def test_abbr(self):
-        abbr = self._create_el_and_basic_asserts("abbr", "click me")
+        abbr = self._create_el_and_basic_asserts("abbr", "some text")
+        assert abbr.text == "some text"
 
     def test_element_button(self):
         button = self._create_el_and_basic_asserts("button", "click me")
