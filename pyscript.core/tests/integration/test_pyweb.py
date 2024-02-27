@@ -5,7 +5,7 @@ import pytest
 from .support import PyScriptTest, only_main, skip_worker
 
 DEFAULT_ELEMENT_ATTRIBUTES = {
-    "accesskey": 's',
+    "accesskey": "s",
     "autocapitalize": "off",
     "autofocus": True,
     "contenteditable": True,
@@ -13,7 +13,7 @@ DEFAULT_ELEMENT_ATTRIBUTES = {
     "enterkeyhint": "go",
     "hidden": False,
     "id": "whateverid",
-    "lang": 'br',
+    "lang": "br",
     "nonce": "123",
     "part": "part1:exposed1",
     "popover": True,
@@ -24,20 +24,20 @@ DEFAULT_ELEMENT_ATTRIBUTES = {
     "translate": "no",
     "virtualkeyboardpolicy": "manual",
 }
-    
+
 
 class TestElements(PyScriptTest):
-    def _create_el_and_basic_asserts(self, el_type, el_text, properties = None):
+    def _create_el_and_basic_asserts(self, el_type, el_text, properties=None):
         if not properties:
             properties = {}
-        
+
         def parse_value(v):
             if isinstance(v, bool):
                 return str(v)
 
             return f"'{v}'"
-        
-        attributes = ", ".join([f'{k}={parse_value(v)}' for k, v in properties.items()])
+
+        attributes = ", ".join([f"{k}={parse_value(v)}" for k, v in properties.items()])
         body = self.page.locator("body")
         assert body.inner_html() == ""
         element = self.page.locator(el_type)
@@ -53,7 +53,7 @@ class TestElements(PyScriptTest):
             </script>
             """
         self.pyscript_run(code_)
-        
+
         expected_log = f"{el_type} clicked"
         el = self.page.locator(el_type)
         tag = el.evaluate("node => node.tagName")
@@ -65,11 +65,11 @@ class TestElements(PyScriptTest):
         # Click the link
         el.click()
         assert expected_log not in self.console.log.lines == []
-    
+
         if properties:
             for k, v in properties.items():
                 actual_val = el.evaluate(f"node => node.{k}")
-                assert actual_val == v 
+                assert actual_val == v
         return el
 
     def test_element_a(self):
@@ -89,7 +89,7 @@ class TestElements(PyScriptTest):
             </script>
             """
         )
-        
+
         a = self.page.locator("a")
         assert a.inner_html() == "click me"
         assert self.console.error.lines == []
