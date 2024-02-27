@@ -28,8 +28,14 @@ DEFAULT_ELEMENT_ATTRIBUTES = {
 
 class TestElements(PyScriptTest):
     def _create_el_and_basic_asserts(
-        self, el_type, el_text=None, properties=None, check_click=True
+        self,
+        el_type,
+        el_text=None,
+        properties=None,
+        check_click=True,
+        expected_errors=None,
     ):
+        expected_errors = expected_errors or []
         if not properties:
             properties = {}
 
@@ -70,7 +76,16 @@ class TestElements(PyScriptTest):
         assert tag == el_type.upper()
         if el_text:
             assert el.inner_html() == el_text
-        assert self.console.error.lines == []
+            assert el.text_content() == el_text
+
+        # if we expect specific errors, check that they are in the console
+        if expected_errors:
+            for error in expected_errors:
+                assert error in self.console.error.lines
+        else:
+            # if we don't expect errors, check that there are no errors
+            assert self.console.error.lines == []
+
         assert expected_log not in self.console.log.lines == []
 
         # Click the link
@@ -132,6 +147,31 @@ class TestElements(PyScriptTest):
             "area", properties=properties, check_click=False
         )
 
+    def test_article(self):
+        self._create_el_and_basic_asserts("article", "some text")
+
+    def test_aside(self):
+        self._create_el_and_basic_asserts("aside", "some text")
+
+    def test_audio(self):
+        self._create_el_and_basic_asserts(
+            "audio",
+            properties={"src": "http://localhost:8080/somefile.ogg", "controls": True},
+            check_click=False,
+            expected_errors=[
+                "Failed to load resource: the server responded with a status of 404 (File not found)"
+            ],
+        )
+
+    def test_b(self):
+        self._create_el_and_basic_asserts("aside", "some text")
+
+    def test_blockquote(self):
+        self._create_el_and_basic_asserts("blockquote", "some text")
+
+    def test_br(self):
+        self._create_el_and_basic_asserts("br", check_click=False)
+
     def test_element_button(self):
         button = self._create_el_and_basic_asserts("button", "click me")
         assert button.inner_html() == "click me"
@@ -139,6 +179,19 @@ class TestElements(PyScriptTest):
     def test_element_button_attributes(self):
         button = self._create_el_and_basic_asserts("button", "click me", None)
         assert button.inner_html() == "click me"
+
+    def test_canvas(self):
+        properties = {
+            "height": "100px",
+            "width": "100px",
+        }
+        # TODO: Check why click times out
+        self._create_el_and_basic_asserts(
+            "canvas", "alt text for canvas", properties=properties, check_click=False
+        )
+
+    def test_caption(self):
+        self._create_el_and_basic_asserts("caption", "some text")
 
     def test_element_div(self):
         div = self._create_el_and_basic_asserts("div", "click me")

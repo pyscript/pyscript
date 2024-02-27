@@ -1,7 +1,8 @@
 from textwrap import dedent
 
-from pyscript import document, when, window
 from pyweb import JSProperty, js_property, pydom
+
+from pyscript import document, when, window
 
 # Global attributes that all elements have (this list is a subset of the official one)
 # and tries to capture the most used ones
@@ -193,7 +194,7 @@ _add_js_properties(
 )
 
 
-class article(ElementBase):
+class article(TextElementBase):
     tag = "article"
 
 
@@ -201,7 +202,7 @@ class article(ElementBase):
 _add_js_properties(article)
 
 
-class aside(ElementBase):
+class aside(TextElementBase):
     tag = "aside"
 
 
@@ -228,7 +229,7 @@ _add_js_properties(
 )
 
 
-class b(ElementBase):
+class b(TextElementBase):
     tag = "b"
 
 
@@ -236,7 +237,7 @@ class b(ElementBase):
 _add_js_properties(b)
 
 
-class blockquote(ElementBase):
+class blockquote(TextElementBase):
     tag = "blockquote"
 
 
