@@ -274,7 +274,7 @@ _add_js_properties(
 )
 
 
-class canvas(ElementBase):
+class canvas(TextElementBase):
     tag = "canvas"
 
 
@@ -282,7 +282,7 @@ class canvas(ElementBase):
 _add_js_properties(canvas, "height", "width")
 
 
-class caption(ElementBase):
+class caption(TextElementBase):
     tag = "caption"
 
 
@@ -402,8 +402,8 @@ class fieldset(TextElementBase):
 _add_js_properties(fieldset, "disabled", "form", "name")
 
 
-class figcation(TextElementBase):
-    tag = "figcation"
+class figcaption(TextElementBase):
+    tag = "figcaption"
 
 
 # code tags only have the global attributes ones
