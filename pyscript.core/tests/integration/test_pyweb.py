@@ -101,7 +101,7 @@ class TestElements(PyScriptTest):
 
     def test_abbr(self):
         abbr = self._create_el_and_basic_asserts("abbr", "some text")
-        assert abbr.text == "some text"
+        assert abbr.text_content() == "some text"
 
     def test_element_button(self):
         button = self._create_el_and_basic_asserts("button", "click me")

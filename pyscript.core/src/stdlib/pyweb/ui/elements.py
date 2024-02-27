@@ -151,7 +151,7 @@ class a(TextElementBase):
 _add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
 
 
-class abbr(ElementBase):
+class abbr(TextElementBase):
     tag = "abbr"
 
 
