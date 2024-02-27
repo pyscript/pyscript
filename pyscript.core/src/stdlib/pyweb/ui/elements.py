@@ -1,7 +1,8 @@
 from textwrap import dedent
 
-from pyscript import document, when, window
 from pyweb import JSProperty, js_property, pydom
+
+from pyscript import document, when, window
 
 # Global attributes that all elements have (this list is a subset of the official one)
 # and tries to capture the most used ones
@@ -83,7 +84,9 @@ class ElementBase(pydom.Element):
         elif style is None:
             pass
         else:
-            raise ValueError(f"Style should be a dictionary, received {style} (type {type(style)}) instead.")
+            raise ValueError(
+                f"Style should be a dictionary, received {style} (type {type(style)}) instead."
+            )
 
         # IMPORTANT!!! This is used to auto-harvest all input arguments and set them as properties
         self._init_properties(**kwargs)
@@ -151,6 +154,7 @@ def _add_js_properties(cls, *attrs):
 class a(TextElementBase):
     tag = "a"
 
+
 # # Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attributes
 _add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
 
@@ -163,7 +167,7 @@ class abbr(TextElementBase):
 _add_js_properties(abbr)
 
 
-class address(ElementBase):
+class address(TextElementBase):
     tag = "address"
 
 

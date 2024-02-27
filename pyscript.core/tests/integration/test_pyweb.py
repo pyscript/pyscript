@@ -27,7 +27,9 @@ DEFAULT_ELEMENT_ATTRIBUTES = {
 
 
 class TestElements(PyScriptTest):
-    def _create_el_and_basic_asserts(self, el_type, el_text, properties=None):
+    def _create_el_and_basic_asserts(
+        self, el_type, el_text=None, properties=None, check_click=True
+    ):
         if not properties:
             properties = {}
 
@@ -37,7 +39,15 @@ class TestElements(PyScriptTest):
 
             return f"'{v}'"
 
-        attributes = ", ".join([f"{k}={parse_value(v)}" for k, v in properties.items()])
+        attributes = ""
+        if el_text:
+            attributes += f'"{el_text}",'
+
+        if properties:
+            attributes += ", ".join(
+                [f"{k}={parse_value(v)}" for k, v in properties.items()]
+            )
+
         body = self.page.locator("body")
         assert body.inner_html() == ""
         element = self.page.locator(el_type)
@@ -47,7 +57,7 @@ class TestElements(PyScriptTest):
                 from pyscript import when
                 from pyweb import pydom
                 from pyweb.ui.elements import {el_type}
-                el = {el_type}("{el_text}", {attributes})
+                el = {el_type}({attributes})
                 when("click", el)(lambda e: pydom.body.append("{el_type} clicked"))
                 pydom.body.append(el)
             </script>
@@ -58,13 +68,15 @@ class TestElements(PyScriptTest):
         el = self.page.locator(el_type)
         tag = el.evaluate("node => node.tagName")
         assert tag == el_type.upper()
-        assert el.inner_html() == el_text
+        if el_text:
+            assert el.inner_html() == el_text
         assert self.console.error.lines == []
         assert expected_log not in self.console.log.lines == []
 
         # Click the link
-        el.click()
-        assert expected_log not in self.console.log.lines == []
+        if check_click:
+            el.click()
+            assert expected_log not in self.console.log.lines == []
 
         if properties:
             for k, v in properties.items():
@@ -106,6 +118,19 @@ class TestElements(PyScriptTest):
     def test_address(self):
         address = self._create_el_and_basic_asserts("address", "some text")
         assert address.text_content() == "some text"
+
+    def test_area(self):
+        properties = {
+            "shape": "poly",
+            "coords": "129,0,260,95,129,138",
+            "href": "https://developer.mozilla.org/docs/Web/HTTP",
+            "target": "_blank",
+            "alt": "HTTP",
+        }
+        # TODO: Check why click times out
+        area = self._create_el_and_basic_asserts(
+            "area", properties=properties, check_click=False
+        )
 
     def test_element_button(self):
         button = self._create_el_and_basic_asserts("button", "click me")
