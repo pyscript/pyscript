@@ -407,7 +407,7 @@ class figcaption(TextElementBase):
 
 
 # code tags only have the global attributes ones
-_add_js_properties(figcation)
+_add_js_properties(figcaption)
 
 
 class figure(TextElementBase):
