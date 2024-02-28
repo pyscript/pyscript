@@ -102,7 +102,11 @@ class ElementBase(pydom.Element):
         for attr_name, attr in self.__class__.__dict__.items():
             # For each one, actually check if it is a property of the class and set it
             if isinstance(attr, JSProperty) and attr_name in kwargs:
-                setattr(self, attr_name, kwargs[attr_name])
+                try:
+                    setattr(self, attr_name, kwargs[attr_name])
+                except Exception as e:
+                    print(f"Error setting {attr_name} to {kwargs[attr_name]}: {e}")
+                    raise
 
 
 class TextElementBase(ElementBase):
@@ -699,13 +703,6 @@ class menu(TextElementBase):
 _add_js_properties(menu)
 
 
-class map_(TextElementBase):
-    tag = "map"
-
-
-_add_js_properties(map_, "name")
-
-
 class meter(TextElementBase):
     tag = "meter"
 
@@ -790,13 +787,6 @@ class q(TextElementBase):
 
 
 _add_js_properties(q, "cite")
-
-
-class nav(TextElementBase):
-    tag = "nav"
-
-
-_add_js_properties(nav)
 
 
 class s(TextElementBase):
@@ -926,6 +916,9 @@ class time(TextElementBase):
     tag = "time"
 
 
+_add_js_properties(time, "datetime")
+
+
 class title(TextElementBase):
     tag = "title"
 
@@ -936,6 +929,9 @@ class tr(TextElementBase):
 
 class track(TextElementBase):
     tag = "track"
+
+
+_add_js_properties(track, "default", "kind", "label", "src", "srclang")
 
 
 class u(TextElementBase):
@@ -952,6 +948,24 @@ class var(TextElementBase):
 
 class video(TextElementBase):
     tag = "video"
+
+
+_add_js_properties(
+    video,
+    "autoplay",
+    "controls",
+    "crossorigin",
+    "disablepictureinpicture",
+    "disableremoteplayback",
+    "height",
+    "loop",
+    "muted",
+    "playsinline",
+    "poster",
+    "preload",
+    "src",
+    "width",
+)
 
 
 # Custom Elements
