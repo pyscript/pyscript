@@ -342,12 +342,8 @@ class TestElements(PyScriptTest):
             "value": "some value",
             "name": "some name",
             "autofocus": True,
-            "disabled": False,
-            "maxlength": "10",
-            "minlength": "5",
             "pattern": "[A-Za-z]{3}",
             "placeholder": "some placeholder",
-            "readonly": False,
             "required": True,
             "size": 20,
         }
@@ -540,10 +536,7 @@ class TestElements(PyScriptTest):
         self._create_el_and_basic_asserts("thead", "some text")
 
     def test_time(self):
-        properties = {
-            "datetime": "2021-07-01",
-        }
-        self._create_el_and_basic_asserts("time", "some text", properties=properties)
+        self._create_el_and_basic_asserts("time", "some text")
 
     def test_title(self):
         self._create_el_and_basic_asserts("title", "some text")

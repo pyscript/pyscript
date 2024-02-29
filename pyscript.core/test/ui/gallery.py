@@ -162,6 +162,9 @@ add_demo(
     source=inspect.getsource(tictactoe),
 )
 
+left_div.append(shoelace.Divider(style={"margin-top": "5px", "margin-bottom": "30px"}))
+left_div.append(el.a("Examples", href="/test/ui/", style={"text-align": "left"}))
+
 # ********** CREATE ALL THE LAYOUT **********
 grid = el.grid("minmax(100px, 200px) 20px auto", style={"min-height": "100%"})
 grid.append(left_div)

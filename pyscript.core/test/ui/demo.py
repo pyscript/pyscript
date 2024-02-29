@@ -236,7 +236,8 @@ print("SHOELACE EXAMPLES", examples.kits["shoelace"])
 for component_label, component in examples.kits["shoelace"].items():
     add_component_section(component_label, component, left_div)
 
-
+left_div.append(shoelace.Divider(style={"margin-top": "5px", "margin-bottom": "30px"}))
+left_div.append(a("Gallery", href="gallery.html", style={"text-align": "left"}))
 # ********** ADD LEFT AND MAIN PANEL TO MAIN **********
 main_grid.append(left_div)
 main_grid.append(shoelace.Divider(vertical=True))

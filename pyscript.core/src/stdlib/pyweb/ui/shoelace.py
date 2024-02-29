@@ -6,45 +6,46 @@ from pyweb import JSProperty, js_property, pydom
 from pyweb.ui import elements as el
 
 
-class ShoeBase(pydom.Element):
+class ShoeBase(el.ElementBase):
     tag = "div"
 
-    def __init__(self, style=None, **kwargs):
-        super().__init__(document.createElement(self.tag))
+    # def __init__(self, style=None, **kwargs):
+    #     super().__init__(document.createElement(self.tag))
 
-        # set all the style properties provided in input
-        if style:
-            for key, value in style.items():
-                self.style[key] = value
+    #     # set all the style properties provided in input
+    #     if style:
+    #         for key, value in style.items():
+    #             self.style[key] = value
 
-        # IMPORTANT!!! This is used to auto-harvest all input arguments and set them as properties
-        kwargs["self"] = self
-        self._init_properties(**kwargs)
+    #     # IMPORTANT!!! This is used to auto-harvest all input arguments and set them as properties
+    #     kwargs["self"] = self
+    #     self._init_properties(**kwargs)
 
-    @staticmethod
-    def _init_properties(**kwargs):
-        self = kwargs.pop("self")
+    # @staticmethod
+    # def _init_properties(**kwargs):
+    #     self = kwargs.pop("self")
 
-        # Look at all the properties of the class and see if they were provided in kwargs
-        # print(f"Looking for element properties for {self.__class__}...")
-        for attr_name, attr in self.__class__.__dict__.items():
-            # print("Checking", attr_name, isinstance(attr, ShoelaceProperty),  attr_name in kwargs)
-            # For each one, actually check if it is a property of the class and set it
-            if isinstance(attr, JSProperty) and attr_name in kwargs:
-                setattr(self, attr_name, kwargs[attr_name])
+    #     # Look at all the properties of the class and see if they were provided in kwargs
+    #     # print(f"Looking for element properties for {self.__class__}...")
+    #     for attr_name, attr in self.__class__.__dict__.items():
+    #         # print("Checking", attr_name, isinstance(attr, ShoelaceProperty),  attr_name in kwargs)
+    #         # For each one, actually check if it is a property of the class and set it
+    #         if isinstance(attr, JSProperty) and attr_name in kwargs:
+    #             setattr(self, attr_name, kwargs[attr_name])
 
 
-class TextShoeBase(ShoeBase):
-    def __init__(self, content, style=None, **kwargs):
-        if not style and getattr(self, "default_style", None):
-            style = self.default_style
+class TextShoeBase(el.TextElementBase):
+    pass
+    # def __init__(self, content, style=None, **kwargs):
+    #     if not style and getattr(self, "default_style", None):
+    #         style = self.default_style
 
-        super().__init__(style=style, **kwargs)
+    #     super().__init__(style=style, **kwargs)
 
-        if isinstance(content, pydom.Element):
-            self.append(content)
-        else:
-            self._js.innerHTML = content
+    #     if isinstance(content, pydom.Element):
+    #         self.append(content)
+    #     else:
+    #         self._js.innerHTML = content
 
 
 class Button(ShoeBase):
@@ -197,10 +198,10 @@ class Divider(ShoeBase):
 
     vertical = js_property("vertical")
 
-    def __init__(self, vertical=None, **kwargs):
-        super().__init__(vertical=vertical, **kwargs)
+    # def __init__(self, vertical=None, **kwargs):
+    #     super().__init__(vertical=vertical, **kwargs)
 
-        self._init_properties(**locals())
+    #     self._init_properties(**locals())
 
 
 class BaseMixin(pydom.Element):
@@ -238,61 +239,61 @@ class Input(ShoeBase):
     help_text = js_property("helpText")
     value = js_property("value")
 
-    def __init__(
-        self,
-        label=None,
-        value=None,
-        type="text",
-        placeholder=None,
-        help_text=None,
-        size=None,
-        filled=False,
-        pill=False,
-        disabled=False,
-        readonly=False,
-        autofocus=False,
-        autocomplete=None,
-        autocorrect=None,
-        autocapitalize=None,
-        spellcheck=None,
-        min=None,
-        max=None,
-        step=None,
-        name=None,
-        required=False,
-        pattern=None,
-        minlength=None,
-        maxlength=None,
-        style=None,
-        **kwargs,
-    ):
-        super().__init__(
-            style=style,
-            label=label,
-            value=value,
-            type=type,
-            placeholder=placeholder,
-            help_text=help_text,
-            size=size,
-            filled=filled,
-            pill=pill,
-            disabled=disabled,
-            readonly=readonly,
-            autofocus=autofocus,
-            autocomplete=autocomplete,
-            autocorrect=autocorrect,
-            autocapitalize=autocapitalize,
-            spellcheck=spellcheck,
-            min=min,
-            max=max,
-            step=step,
-            name=name,
-            required=required,
-            pattern=pattern,
-            minlength=minlength,
-            maxlength=maxlength,
-            **kwargs,
-        )
+    # def __init__(
+    #     self,
+    #     label=None,
+    #     value=None,
+    #     type="text",
+    #     placeholder=None,
+    #     help_text=None,
+    #     size=None,
+    #     filled=False,
+    #     pill=False,
+    #     disabled=False,
+    #     readonly=False,
+    #     autofocus=False,
+    #     autocomplete=None,
+    #     autocorrect=None,
+    #     autocapitalize=None,
+    #     spellcheck=None,
+    #     min=None,
+    #     max=None,
+    #     step=None,
+    #     name=None,
+    #     required=False,
+    #     pattern=None,
+    #     minlength=None,
+    #     maxlength=None,
+    #     style=None,
+    #     **kwargs,
+    # ):
+    #     super().__init__(
+    #         style=style,
+    #         label=label,
+    #         value=value,
+    #         type=type,
+    #         placeholder=placeholder,
+    #         help_text=help_text,
+    #         size=size,
+    #         filled=filled,
+    #         pill=pill,
+    #         disabled=disabled,
+    #         readonly=readonly,
+    #         autofocus=autofocus,
+    #         autocomplete=autocomplete,
+    #         autocorrect=autocorrect,
+    #         autocapitalize=autocapitalize,
+    #         spellcheck=spellcheck,
+    #         min=min,
+    #         max=max,
+    #         step=step,
+    #         name=name,
+    #         required=required,
+    #         pattern=pattern,
+    #         minlength=minlength,
+    #         maxlength=maxlength,
+    #         **kwargs,
+    #     )
 
 
 class Badge(TextShoeBase):
@@ -650,7 +651,7 @@ class Textarea(ShoeBase):
         )
 
 
-class Tag(ShoeBase):
+class Tag(TextShoeBase):
     tag = "sl-tag"
     variant = js_property("variant")
     size = js_property("size")
@@ -658,20 +659,20 @@ class Tag(ShoeBase):
     removable = js_property("removable")
     update_complete = js_property("updateComplete")
 
-    def __init__(
-        self,
-        content,
-        variant=None,
-        size=None,
-        pill=None,
-        removable=None,
-        style=None,
-        **kwargs,
-    ):
-        super().__init__(**kwargs)
-        self._js.textContent = content
+    # def __init__(
+    #     self,
+    #     content,
+    #     variant=None,
+    #     size=None,
+    #     pill=None,
+    #     removable=None,
+    #     style=None,
+    #     **kwargs,
+    # ):
+    #     super().__init__(**kwargs)
+    #     self._js.textContent = content
 
-        self._init_properties(**locals())
+    #     self._init_properties(**locals())
 
 
 class Range(ShoeBase):
@@ -692,28 +693,28 @@ class Range(ShoeBase):
     validation_message = js_property("validationMessage")
     update_complete = js_property("updateComplete")
 
-    def __init__(
-        self,
-        name=None,
-        value=None,
-        label=None,
-        help_text=None,
-        disabled=None,
-        _min=None,
-        _max=None,
-        step=None,
-        tooltip=None,
-        tooltip_formatter=None,
-        form=None,
-        default_value=None,
-        validity=None,
-        validation_message=None,
-        style=None,
-        **kwargs,
-    ):
-        super().__init__(**kwargs)
+    # def __init__(
+    #     self,
+    #     name=None,
+    #     value=None,
+    #     label=None,
+    #     help_text=None,
+    #     disabled=None,
+    #     _min=None,
+    #     _max=None,
+    #     step=None,
+    #     tooltip=None,
+    #     tooltip_formatter=None,
+    #     form=None,
+    #     default_value=None,
+    #     validity=None,
+    #     validation_message=None,
+    #     style=None,
+    #     **kwargs,
+    # ):
+    #     super().__init__(**kwargs)
 
-        self._init_properties(**locals())
+    #     self._init_properties(**locals())
 
 
 class RelativeTime(ShoeBase):
@@ -724,8 +725,8 @@ class RelativeTime(ShoeBase):
     sync = js_property("sync")
     update_complete = js_property("updateComplete")
 
-    def __init__(self, date=None, style=None, **kwargs):
-        super().__init__(date=date, style=style, **kwargs)
+    # def __init__(self, date=None, style=None, **kwargs):
+    #     super().__init__(date=date, style=style, **kwargs)
 
 
 # Load resources...
