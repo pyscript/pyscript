@@ -216,8 +216,9 @@ Card(p("This is a cool card!"), image="https://pyscript.net/assets/images/pyscri
     "elements": {
         "button": {
             "instance": btn,
-            "code": """button("Click me!")
+            "code": """btn = button("Click me!")
 when('click', btn)(lambda: window.alert("Clicked!"))
+parentdiv.append(btn)
 """,
         },
         "div": {
