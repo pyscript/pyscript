@@ -23,9 +23,12 @@ const hooks = {
 
 async function execute({ currentTarget }) {
     const { env, pySrc, outDiv } = this;
+    const hasRunButton = !!currentTarget;
 
-    currentTarget.disabled = true;
-    outDiv.innerHTML = "";
+    if (hasRunButton) {
+        currentTarget.disabled = true;
+        outDiv.innerHTML = "";
+    }
 
     if (!envs.has(env)) {
         const srcLink = URL.createObjectURL(new Blob([""]));
@@ -46,21 +49,25 @@ async function execute({ currentTarget }) {
     // before executing the current code
     envs.get(env).then((xworker) => {
         xworker.onerror = ({ error }) => {
-            outDiv.innerHTML += `<span style='color:red'>${
-                error.message || error
-            }</span>\n`;
+            if (hasRunButton) {
+                outDiv.innerHTML += `<span style='color:red'>${
+                    error.message || error
+                }</span>\n`;
+            }
             console.error(error);
         };
 
         const enable = () => {
-            currentTarget.disabled = false;
+            if (hasRunButton) currentTarget.disabled = false;
         };
         const { sync } = xworker;
         sync.write = (str) => {
-            outDiv.innerText += `${str}\n`;
+            if (hasRunButton) outDiv.innerText += `${str}\n`;
         };
         sync.writeErr = (str) => {
-            outDiv.innerHTML += `<span style='color:red'>${str}</span>\n`;
+            if (hasRunButton) {
+                outDiv.innerHTML += `<span style='color:red'>${str}</span>\n`;
+            }
         };
         sync.runAsync(pySrc).then(enable, enable);
     });
@@ -120,7 +127,6 @@ const init = async (script, type, interpreter) => {
         { keymap },
         { defaultKeymap },
     ] = await Promise.all([
-        // TODO: find a way to actually produce these bundles locally
         import(/* webpackIgnore: true */ "../3rd-party/codemirror.js"),
         import(/* webpackIgnore: true */ "../3rd-party/codemirror_state.js"),
         import(
@@ -130,6 +136,27 @@ const init = async (script, type, interpreter) => {
         import(/* webpackIgnore: true */ "../3rd-party/codemirror_view.js"),
         import(/* webpackIgnore: true */ "../3rd-party/codemirror_commands.js"),
     ]);
+
+    const isSetup = script.hasAttribute("setup");
+    const env = `${interpreter}-${script.getAttribute("env") || getID(type)}`;
+    const source = script.src
+        ? await fetch(script.src).then((b) => b.text())
+        : script.textContent;
+    const context = {
+        interpreter,
+        env,
+        get pySrc() {
+            return isSetup ? source : editor.state.doc.toString();
+        },
+        get outDiv() {
+            return isSetup ? null : outDiv;
+        },
+    };
+
+    if (isSetup) {
+        execute.call(context, { currentTarget: null });
+        return;
+    }
 
     const selector = script.getAttribute("target");
 
@@ -148,18 +175,6 @@ const init = async (script, type, interpreter) => {
     if (!target.id) target.id = getID(type);
     if (!target.hasAttribute("exec-id")) target.setAttribute("exec-id", 0);
     if (!target.hasAttribute("root")) target.setAttribute("root", target.id);
-
-    const env = `${interpreter}-${script.getAttribute("env") || getID(type)}`;
-    const context = {
-        interpreter,
-        env,
-        get pySrc() {
-            return editor.state.doc.toString();
-        },
-        get outDiv() {
-            return outDiv;
-        },
-    };
 
     // @see https://github.com/JeffersGlass/mkdocs-pyscript/blob/main/mkdocs_pyscript/js/makeblocks.js
     const listener = execute.bind(context);
