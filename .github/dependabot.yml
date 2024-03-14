@@ -3,11 +3,11 @@
 # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#package-ecosystem
 version: 2
 updates:
-  - package-ecosystem: github-actions
-    directory: /
-    groups:
-      github-actions:
-        patterns:
-          - "*"  # Group all Actions updates into a single larger pull request
-    schedule:
-      interval: weekly
+    - package-ecosystem: github-actions
+      directory: /
+      groups:
+          github-actions:
+              patterns:
+                  - "*" # Group all Actions updates into a single larger pull request
+      schedule:
+          interval: weekly
