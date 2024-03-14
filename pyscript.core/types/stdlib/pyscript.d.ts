@@ -3,6 +3,7 @@ declare namespace _default {
         "__init__.py": string;
         "display.py": string;
         "event_handling.py": string;
+        "fetch.py": string;
         "magic_js.py": string;
         "util.py": string;
     };
