@@ -2,6 +2,36 @@ import json
 
 import js
 
+### wrap the response to grant Pythonic results via overrides
+class _Response:
+    def __init__(self, response):
+        self.response = response
+
+    # forward response.ok and others
+    def __getattr__(self, attr):
+        return getattr(self.response, attr)
+
+    # exposed methods with Pythonic results
+    def arrayBuffer(self):
+        return _array_buffer(self.response, "")
+
+    def blob(self):
+        return _blob(self.response, "")
+
+    def bytearray(self):
+        return _bytearray(self.response, "")
+
+    def json(self):
+        return _json(self.response, "")
+
+    def text(self):
+        return _text(self.response, "")
+
+
+### generic helpers
+def _awaited(fetch, response):
+    fetch._response = response
+    return _Response(response)
 
 def _as_bytearray(buffer):
     ui8a = js.Uint8Array.new(buffer)
@@ -11,54 +41,68 @@ def _as_bytearray(buffer):
         ba[i] = ui8a[i]
     return ba
 
+def _check(response, url):
+    if not response.ok:
+        msg = f"URL {url} failed with status {response.status}"
+        raise Exception(msg)
 
-class _Fetch:
-    def __init__(self, url, **kw):
-        # avoid both Pyodide and MicroPython FFI
-        options = js.JSON.parse(json.dumps(kw))
-        self._url = url
-        self._fetch = js.fetch(url, options)
+async def _buffer(task, url):
+    response = await _response(task, url)
+    return await response.arrayBuffer()
 
-    async def _arrayBuffer(self):
-        response = await self._response()
-        return await response.arrayBuffer()
+# return the response and optionally check if it's OK
+async def _response(task, url):
+    check = False
 
-    async def _response(self):
-        response = await self._fetch
-        if not response.ok:
-            msg = f"URL {self._url} failed with status {response.status}"
-            raise Exception(msg)
-        return response
+    if len(url):
+        if task._response is None:
+            check = True
+            task = await task
+        else:
+            task = task._response
 
-    # https://developer.mozilla.org/en-US/docs/Web/API/Response/arrayBuffer
-    # returns a memoryview of the buffer
-    async def arrayBuffer(self):
-        buffer = await self._arrayBuffer()
-        # works in Pyodide
-        if hasattr(buffer, "to_py"):
-            return buffer.to_py()
-        # shims in MicroPython
-        return memoryview(_as_bytearray(buffer))
+    if check:
+        _check(task, url)
 
-    # https://developer.mozilla.org/en-US/docs/Web/API/Response/blob
-    async def blob(self):
-        response = await self._response()
-        return await response.blob()
+    return task
 
-    # return a bytearray from the uint8 view of the buffer
-    async def bytearray(self):
-        buffer = await self._arrayBuffer()
-        return _as_bytearray(buffer)
+### fetch and response helpers
+async def _array_buffer(task, url):
+    buffer = await _buffer(task, url)
+    # works in Pyodide
+    if hasattr(buffer, "to_py"):
+        return buffer.to_py()
+    # shims in MicroPython
+    return memoryview(_as_bytearray(buffer))
 
-    # https://developer.mozilla.org/en-US/docs/Web/API/Response/json
-    async def json(self):
-        return json.loads(await self.text())
+async def _blob(task, url):
+    response = await _response(task, url)
+    return await response.blob()
 
-    # https://developer.mozilla.org/en-US/docs/Web/API/Response/text
-    async def text(self):
-        response = await self._response()
-        return await response.text()
+async def _bytearray(task, url):
+    buffer = await _buffer(task, url)
+    return _as_bytearray(buffer)
 
+async def _json(task, url):
+    response = await _response(task, url)
+    return json.loads(await response.text())
 
+async def _text(task, url):
+    response = await _response(task, url)
+    return await response.text()
+
+### augmented fetch w/ direct access abilities
 def fetch(url, **kw):
-    return _Fetch(url, **kw)
+    options = js.JSON.parse(json.dumps(kw))
+    fetch = js.fetch(url, options)
+    # flag fetch response as unknown
+    fetch._response = None
+    # flag fetch response as known if directly awaited
+    awaited = fetch.then(lambda response: _awaited(fetch, response))
+    # augmented the promise providing direct access
+    awaited.arrayBuffer = lambda: _array_buffer(fetch, url)
+    awaited.blob = lambda: _blob(fetch, url)
+    awaited.bytearray = lambda: _bytearray(fetch, url)
+    awaited.json = lambda: _json(fetch, url)
+    awaited.text = lambda: _text(fetch, url)
+    return awaited
