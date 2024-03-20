@@ -12,7 +12,6 @@ class _Response:
     def __getattr__(self, attr):
         return getattr(self._response, attr)
 
-
     def _as_bytearray(self, buffer):
         ui8a = js.Uint8Array.new(buffer)
         size = ui8a.length
