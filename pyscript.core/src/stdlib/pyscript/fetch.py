@@ -12,6 +12,7 @@ class _Response:
     def __getattr__(self, attr):
         return getattr(self._response, attr)
 
+
     def _as_bytearray(self, buffer):
         ui8a = js.Uint8Array.new(buffer)
         size = ui8a.length
@@ -43,8 +44,52 @@ class _Response:
         return await self._response.text()
 
 
-async def fetch(url, **kw):
+### allow direct await to _Response methods
+class _DirectResponse:
+    @staticmethod
+    def setup(promise, response):
+        promise._response = _Response(response)
+        return promise._response
+
+    def __init__(self, promise):
+        self._promise = promise
+        promise._response = None
+        promise.arrayBuffer = self.arrayBuffer
+        promise.blob = self.blob
+        promise.bytearray = self.bytearray
+        promise.json = self.json
+        promise.text = self.text
+
+    async def _response(self):
+        if not self._promise._response:
+            await self._promise
+        return self._promise._response
+
+    async def arrayBuffer(self):
+        response = await self._response()
+        return await response.arrayBuffer()
+
+    async def blob(self):
+        response = await self._response()
+        return await response.blob()
+
+    async def bytearray(self):
+        response = await self._response()
+        return await response.bytearray()
+
+    async def json(self):
+        response = await self._response()
+        return await response.json()
+
+    async def text(self):
+        response = await self._response()
+        return await response.text()
+
+
+def fetch(url, **kw):
     # workaround Pyodide / MicroPython dict <-> js conversion
     options = js.JSON.parse(json.dumps(kw))
-    response = await js.fetch(url, options)
-    return _Response(response)
+    awaited = lambda response, *args: _DirectResponse.setup(promise, response)
+    promise = js.fetch(url, options).then(awaited)
+    _DirectResponse(promise)
+    return promise
