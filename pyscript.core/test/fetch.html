@@ -27,51 +27,45 @@
         import js, json
         from pyscript import document, fetch
 
-        fetch_text = await fetch("config.json").text()
+        fetch_text = await (await fetch("config.json")).text()
         if (fetch_text != js.fetch_text):
           raise Exception("fetch_text")
 
-        fetch_json = await fetch("config.json").json()
+        fetch_json = await (await fetch("config.json")).json()
         if (json.dumps(fetch_json).replace(" ", "") != js.fetch_json):
           raise Exception("fetch_json")
 
-        fetch_buffer = await fetch("config.json").arrayBuffer()
+        fetch_buffer = await (await fetch("config.json")).arrayBuffer()
         if (len(fetch_buffer) != js.fetch_buffer):
           raise Exception("fetch_buffer")
 
         print(await (await fetch("config.json")).bytearray())
-        print(await fetch("config.json").bytearray())
-        print(await fetch("config.json").blob())
+        print(await (await fetch("config.json")).blob())
 
-        try:
-          await fetch("shenanigans.nope").text()
-        except:
+        if (await fetch("shenanigans.nope")).ok == False:
           document.documentElement.classList.add('mpy')
       </script>
-      <!-- <script type="py" async>
+      <script type="py" async>
         import js, json
         from pyscript import document, fetch
 
-        fetch_text = await fetch("config.json").text()
+        fetch_text = await (await fetch("config.json")).text()
         if (fetch_text != js.fetch_text):
           raise Exception("fetch_text")
 
-        fetch_json = await fetch("config.json").json()
+        fetch_json = await (await fetch("config.json")).json()
         if (json.dumps(fetch_json).replace(" ", "") != js.fetch_json):
           raise Exception("fetch_json")
 
-        fetch_buffer = await fetch("config.json").arrayBuffer()
+        fetch_buffer = await (await fetch("config.json")).arrayBuffer()
         if (len(fetch_buffer) != js.fetch_buffer):
           raise Exception("fetch_buffer")
 
         print(await (await fetch("config.json")).bytearray())
-        print(await fetch("config.json").bytearray())
-        print(await fetch("config.json").blob())
+        print(await (await fetch("config.json")).blob())
 
-        try:
-          await fetch("shenanigans.nope").text()
-        except:
+        if (await fetch("shenanigans.nope")).ok == False:
           document.documentElement.classList.add('py')
-      </script> -->
+      </script>
     </body>
 </html>
