@@ -83,3 +83,8 @@ test('MicroPython + Pyodide fetch', async ({ page }) => {
   await page.goto('http://localhost:8080/test/fetch.html');
   await page.waitForSelector('html.mpy.py');
 });
+
+test('MicroPython + Pyodide ffi', async ({ page }) => {
+  await page.goto('http://localhost:8080/test/ffi.html');
+  await page.waitForSelector('html.mpy.py');
+});
