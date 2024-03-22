@@ -13,6 +13,9 @@
     <body>
         <script type="py">
             from pyscript import display
+            from pyscript.ffi import to_js
+            import js
+            js.console.log(to_js({"a": 1}))
             display("Hello", "PyScript Next", append=False)
         </script>
     </body>
