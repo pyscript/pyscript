@@ -24,12 +24,12 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Install node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: 18.x
 
             - name: Cache node modules
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               env:
                   cache-name: cache-node-modules
               with:
