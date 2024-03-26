@@ -84,33 +84,9 @@ class TextElementBase(ElementBase):
             self.html = content
 
 
-def _add_js_properties(cls, *attrs):
-    """Add JSProperties to a class as `js_property` class attributes."""
-    # First we set all the global properties as JSProperties
-    for attr in GLOBAL_ATTRIBUTES:
-        setattr(cls, attr, js_property(attr))
-
-    # Now the specific class properties
-    for attr in attrs:
-        setattr(cls, attr, js_property(attr))
-
-    # Now we patch the __init__ method to specify the properties
-    cls.__init__.__doc__ = f"""Class constructor.
-    Official documentation: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/{cls.tag}
-
-    Args:
-
-        * content: The content of the element (can be a string, a list of elements or a single element)
-        * style: The style of the element (a dictionary)
-        * All the properties of the class: {attrs} (see the official documentation for more details)
-
-        """
-
-
 # IMPORTANT: For all HTML components defined below, we are not mapping all
-# available attributes, only the global ones
-
-
+# available attributes, just the global and the most common ones. 
+# If you need to access a specific attribute, you can always use the `_js.<attribute>`
 class a(TextElementBase):
     """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a """
     tag = "a"
