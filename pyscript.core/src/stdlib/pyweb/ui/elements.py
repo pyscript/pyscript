@@ -4,6 +4,21 @@ from pyscript import document, when, window
 from pyweb import JSProperty, pydom
 
 
+import inspect
+import sys
+
+#: A flag to show if MicroPython is the current Python interpreter.
+is_micropython = "MicroPython" in sys.version
+
+def getmembers_static(cls):
+    """Cross-interpreter implementation of inspect.getmembers_static."""
+
+    if is_micropython:  # pragma: no cover
+        return [(name, getattr(cls, name)) for name, _ in inspect.getmembers(cls)]
+
+    return inspect.getmembers_static(cls)
+
+
 class ElementBase(pydom.Element):
     tag = "div"
 
@@ -55,7 +70,7 @@ class ElementBase(pydom.Element):
             **kwargs: The properties to set
         """
         # Look at all the properties of the class and see if they were provided in kwargs
-        for attr_name, attr in self.__class__.__dict__.items():
+        for attr_name, attr in getmembers_static(self.__class__):
             # For each one, actually check if it is a property of the class and set it
             if isinstance(attr, JSProperty) and attr_name in kwargs:
                 try:
