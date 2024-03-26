@@ -180,7 +180,8 @@ const pyTerminal = async () => {
                     isatty: true,
                     write(buffer) {
                         data = decoder.decode(buffer);
-                        readline.write(data);
+                        // @see https://github.com/pyscript/pyscript/issues/2007
+                        readline.write(data || "​");
                         return buffer.length;
                     },
                 };
