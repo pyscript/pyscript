@@ -494,7 +494,6 @@ class ins(TextElementBase):
     datetime = js_property("datetime")
 
 
-
 class kbd(TextElementBase):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd"""
 
@@ -790,7 +789,6 @@ class td(TextElementBase):
     colspan = js_property("colspan")
     headers = js_property("headers")
     rowspan = js_property("rowspan")
-
 
 
 class template(TextElementBase):
