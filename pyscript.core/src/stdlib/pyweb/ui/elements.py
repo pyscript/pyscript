@@ -1,13 +1,14 @@
 from textwrap import dedent
 
-from pyscript import document, when, window
 from pyweb import JSProperty, js_property, pydom
+
+from pyscript import document, when, window
 
 
 class ElementBase(pydom.Element):
     tag = "div"
 
-    # GLOBAL ATTRIBUTES 
+    # GLOBAL ATTRIBUTES
     # These are attribute that all elements have (this list is a subset of the official one)
     # We are trying to capture the most used ones
     accesskey = js_property("accesskey")
@@ -29,7 +30,7 @@ class ElementBase(pydom.Element):
     title = js_property("title")
     translate = js_property("translate")
     virtualkeyboardpolicy = js_property("virtualkeyboardpolicy")
-    
+
     def __init__(self, style=None, **kwargs):
         super().__init__(document.createElement(self.tag))
 
@@ -85,10 +86,11 @@ class TextElementBase(ElementBase):
 
 
 # IMPORTANT: For all HTML components defined below, we are not mapping all
-# available attributes, just the global and the most common ones. 
+# available attributes, just the global and the most common ones.
 # If you need to access a specific attribute, you can always use the `_js.<attribute>`
 class a(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"""
+
     tag = "a"
 
     download = js_property("download")
@@ -100,17 +102,20 @@ class a(TextElementBase):
 
 
 class abbr(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr"""
+
     tag = "abbr"
 
 
 class address(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address"""
+
     tag = "address"
 
 
 class area(ElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area"""
+
     tag = "area"
 
     alt = js_property("alt")
@@ -125,17 +130,20 @@ class area(ElementBase):
 
 
 class article(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article"""
+
     tag = "article"
 
 
 class aside(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside"""
+
     tag = "aside"
 
 
 class audio(ElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio"""
+
     tag = "audio"
 
     autoplay = js_property("autoplay")
@@ -150,24 +158,28 @@ class audio(ElementBase):
 
 
 class b(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b"""
+
     tag = "b"
 
 
 class blockquote(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote"""
+
     tag = "blockquote"
 
     cite = js_property("cite")
 
 
 class br(ElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br"""
+
     tag = "br"
 
 
 class button(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button"""
+
     tag = "button"
 
     autofocus = js_property("autofocus")
@@ -184,7 +196,8 @@ class button(TextElementBase):
 
 
 class canvas(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas"""
+
     tag = "canvas"
 
     height = js_property("height")
@@ -192,39 +205,46 @@ class canvas(TextElementBase):
 
 
 class caption(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption"""
+
     tag = "caption"
 
 
 class cite(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite"""
+
     tag = "cite"
 
 
 class code(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code"""
+
     tag = "code"
 
 
 class data(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data"""
+
     tag = "data"
 
     value = js_property("value")
-    
+
 
 class datalist(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist"""
+
     tag = "datalist"
 
 
 class dd(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd"""
+
     tag = "dd"
 
 
 class del_(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del"""
+
     tag = "del"
 
     cite = js_property("cite")
@@ -232,43 +252,50 @@ class del_(TextElementBase):
 
 
 class details(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"""
+
     tag = "details"
 
     open = js_property("open")
 
 
 class dialog(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog"""
+
     tag = "dialog"
 
     open = js_property("open")
 
 
 class div(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div"""
+
     tag = "div"
 
 
 class dl(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl"""
+
     tag = "dl"
 
     value = js_property("value")
 
 
 class dt(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt"""
+
     tag = "dt"
 
 
 class em(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em"""
+
     tag = "em"
 
 
 class embed(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed"""
+
     tag = "embed"
 
     height = js_property("height")
@@ -278,7 +305,8 @@ class embed(TextElementBase):
 
 
 class fieldset(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset"""
+
     tag = "fieldset"
 
     disabled = js_property("disabled")
@@ -287,22 +315,26 @@ class fieldset(TextElementBase):
 
 
 class figcaption(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption"""
+
     tag = "figcaption"
 
 
 class figure(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure"""
+
     tag = "figure"
 
 
 class footer(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer"""
+
     tag = "footer"
 
 
 class form(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form"""
+
     tag = "form"
 
     accept_charset = js_property("accept-charset")
@@ -318,57 +350,68 @@ class form(TextElementBase):
 
 
 class h1(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1 """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1"""
+
     tag = "h1"
 
 
 class h2(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2 """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2"""
+
     tag = "h2"
 
 
 class h3(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3 """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3"""
+
     tag = "h3"
 
 
 class h4(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4 """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4"""
+
     tag = "h4"
 
 
 class h5(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5 """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5"""
+
     tag = "h5"
 
 
 class h6(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6 """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6"""
+
     tag = "h6"
 
 
 class header(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header"""
+
     tag = "header"
 
 
 class hgroup(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup"""
+
     tag = "hgroup"
 
 
 class hr(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr"""
+
     tag = "hr"
 
 
 class i(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i"""
+
     tag = "i"
 
 
 class iframe(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe"""
+
     tag = "iframe"
 
     allow = js_property("allow")
@@ -384,7 +427,8 @@ class iframe(TextElementBase):
 
 
 class img(ElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"""
+
     tag = "img"
 
     alt = js_property("alt")
@@ -402,7 +446,8 @@ class img(ElementBase):
 
 # NOTE: Input is a reserved keyword in Python, so we use input_ instead
 class input_(ElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"""
+
     tag = "input"
 
     accept = js_property("accept")
@@ -441,38 +486,45 @@ class input_(ElementBase):
 
 
 class ins(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins"""
+
     tag = "ins"
 
     cite = js_property("cite")
     datetime = js_property("datetime")
 
+
 class kbd(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd"""
+
     tag = "kbd"
 
 
 class label(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label"""
+
     tag = "label"
 
     for_ = js_property("for")
 
 
 class legend(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend"""
+
     tag = "legend"
 
 
 class li(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li"""
+
     tag = "li"
 
     value = js_property("value")
 
 
 class link(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link"""
+
     tag = "link"
 
     as_ = js_property("as")
@@ -492,29 +544,34 @@ class link(TextElementBase):
 
 
 class main(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main"""
+
     tag = "main"
 
 
 class map_(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map"""
+
     tag = "map"
 
     name = js_property("name")
 
 
 class mark(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark"""
+
     tag = "mark"
 
 
 class menu(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu"""
+
     tag = "menu"
 
 
 class meter(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter"""
+
     tag = "meter"
 
     form = js_property("form")
@@ -527,12 +584,14 @@ class meter(TextElementBase):
 
 
 class nav(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav"""
+
     tag = "nav"
 
 
 class object_(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object"""
+
     tag = "object"
 
     data = js_property("data")
@@ -542,9 +601,11 @@ class object_(TextElementBase):
     type = js_property("type")
     usemap = js_property("usemap")
     width = js_property("width")
-    
+
+
 class ol(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol"""
+
     tag = "ol"
 
     reversed = js_property("reversed")
@@ -553,7 +614,8 @@ class ol(TextElementBase):
 
 
 class optgroup(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup"""
+
     tag = "optgroup"
 
     disabled = js_property("disabled")
@@ -561,12 +623,14 @@ class optgroup(TextElementBase):
 
 
 class option(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option"""
+
     tag = "option"
 
 
 class output(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output"""
+
     tag = "output"
 
     for_ = js_property("for")
@@ -575,22 +639,26 @@ class output(TextElementBase):
 
 
 class p(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p"""
+
     tag = "p"
 
 
 class picture(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture"""
+
     tag = "picture"
 
 
 class pre(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre"""
+
     tag = "pre"
 
 
 class progress(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress"""
+
     tag = "progress"
 
     max = js_property("max")
@@ -598,19 +666,22 @@ class progress(TextElementBase):
 
 
 class q(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q"""
+
     tag = "q"
 
     cite = js_property("cite")
 
 
 class s(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s"""
+
     tag = "s"
 
 
 class script(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script"""
+
     tag = "script"
 
     # Let's add async manually since it's a reserved keyword in Python
@@ -628,22 +699,26 @@ class script(TextElementBase):
 
 
 class section(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section"""
+
     tag = "section"
 
 
 class select(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select"""
+
     tag = "select"
 
 
 class small(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small"""
+
     tag = "small"
 
 
 class source(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source"""
+
     tag = "source"
 
     media = js_property("media")
@@ -654,17 +729,20 @@ class source(TextElementBase):
 
 
 class span(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span"""
+
     tag = "span"
 
 
 class strong(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong"""
+
     tag = "strong"
 
 
 class style(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style"""
+
     tag = "style"
 
     blocking = js_property("blocking")
@@ -674,47 +752,56 @@ class style(TextElementBase):
 
 
 class sub(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub"""
+
     tag = "sub"
 
 
 class summary(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary"""
+
     tag = "summary"
 
 
 class sup(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup"""
+
     tag = "sup"
 
 
 class table(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table"""
+
     tag = "table"
 
 
 class tbody(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody"""
+
     tag = "tbody"
 
 
 class td(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td"""
+
     tag = "td"
 
     colspan = js_property("colspan")
     headers = js_property("headers")
     rowspan = js_property("rowspan")
 
+
 class template(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template"""
+
     tag = "template"
 
     shadowrootmode = js_property("shadowrootmode")
 
 
 class textarea(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea"""
+
     tag = "textarea"
 
     autocapitalize = js_property("autocapitalize")
@@ -736,34 +823,40 @@ class textarea(TextElementBase):
 
 
 class tfoot(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot"""
+
     tag = "tfoot"
 
 
 class th(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th"""
+
     tag = "th"
 
 
 class thead(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead"""
+
     tag = "thead"
 
 
 class time(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time"""
+
     tag = "time"
 
     datetime = js_property("datetime")
 
 
 class title(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title"""
+
     tag = "title"
 
 
 class tr(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr"""
+
     tag = "tr"
 
     abbr = js_property("abbr")
@@ -771,10 +864,11 @@ class tr(TextElementBase):
     headers = js_property("headers")
     rowspan = js_property("rowspan")
     scope = js_property("scope")
-    
+
 
 class track(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track"""
+
     tag = "track"
 
     default = js_property("default")
@@ -785,22 +879,26 @@ class track(TextElementBase):
 
 
 class u(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u"""
+
     tag = "u"
 
 
 class ul(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul"""
+
     tag = "ul"
 
 
 class var(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var"""
+
     tag = "var"
 
 
 class video(TextElementBase):
-    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video """
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video"""
+
     tag = "video"
 
     autoplay = js_property("autoplay")
