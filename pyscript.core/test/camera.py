@@ -1,7 +1,6 @@
 from pyodide.ffi import create_proxy
-from pyweb import media, pydom
-
 from pyscript import display, document, when, window
+from pyweb import media, pydom
 
 devicesSelect = pydom["#devices"][0]
 video = pydom["video"][0]

@@ -1,8 +1,7 @@
 from textwrap import dedent
 
-from pyweb import JSProperty, pydom
-
 from pyscript import document, when, window
+from pyweb import JSProperty, pydom
 
 
 class ElementBase(pydom.Element):
