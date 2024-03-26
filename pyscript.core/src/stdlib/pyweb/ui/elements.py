@@ -4,49 +4,6 @@ from pyscript import document, when, window
 from pyweb import JSProperty, js_property, pydom
 
 
-# class and style are different ones that are handled by pydom.element directly
-CUSTOM_ATTRIBUTES = {
-    "a": ["download", "href", "referrerpolicy", "rel", "target", "type"],
-    "td": ["colspan", "headers", "rowspan"],
-    "template": ["shadowrootmode"],
-    "textarea": [
-        "autocapitalize",
-        "autocomplete",
-        "autofocus",
-        "cols",
-        "dirname",
-        "disabled",
-        "form",
-        "maxlength",
-        "minlength",
-        "name",
-        "placeholder",
-        "readonly",
-        "required",
-        "rows",
-        "spellcheck",
-        "wrap",
-    ],
-    "tr": ["abbr", "colspan", "headers", "rowspan", "scope"],
-    "time": ["datetime"],
-    "video": [
-        "autoplay",
-        "controls",
-        "crossorigin",
-        "disablepictureinpicture",
-        "disableremoteplayback",
-        "height",
-        "loop",
-        "muted",
-        "playsinline",
-        "poster",
-        "preload",
-        "src",
-        "width",
-    ],
-}
-
-
 class ElementBase(pydom.Element):
     tag = "div"
 
@@ -158,7 +115,6 @@ class a(TextElementBase):
     """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a """
     tag = "a"
 
-    a = JSProperty("a")
     download = JSProperty("download")
     href = JSProperty("href")
     referrerpolicy = JSProperty("referrerpolicy")
@@ -770,15 +726,37 @@ class td(TextElementBase):
     """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td """
     tag = "td"
 
+    colspan = JSProperty("colspan")
+    headers = JSProperty("headers")
+    rowspan = JSProperty("rowspan")
 
 class template(TextElementBase):
     """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template """
     tag = "template"
 
+    shadowrootmode = JSProperty("shadowrootmode")
+
 
 class textarea(TextElementBase):
     """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea """
     tag = "textarea"
+
+    autocapitalize = JSProperty("autocapitalize")
+    autocomplete = JSProperty("autocomplete")
+    autofocus = JSProperty("autofocus")
+    cols = JSProperty("cols")
+    dirname = JSProperty("dirname")
+    disabled = JSProperty("disabled")
+    form = JSProperty("form")
+    maxlength = JSProperty("maxlength")
+    minlength = JSProperty("minlength")
+    name = JSProperty("name")
+    placeholder = JSProperty("placeholder")
+    readonly = JSProperty("readonly")
+    required = JSProperty("required")
+    rows = JSProperty("rows")
+    spellcheck = JSProperty("spellcheck")
+    wrap = JSProperty("wrap")
 
 
 class tfoot(TextElementBase):
@@ -812,6 +790,12 @@ class tr(TextElementBase):
     """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr """
     tag = "tr"
 
+    abbr = JSProperty("abbr")
+    colspan = JSProperty("colspan")
+    headers = JSProperty("headers")
+    rowspan = JSProperty("rowspan")
+    scope = JSProperty("scope")
+    
 
 class track(TextElementBase):
     """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track """
