@@ -155,816 +155,707 @@ def _add_js_properties(cls, *attrs):
 
 
 class a(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a """
     tag = "a"
 
-
-# # Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attributes
-_add_js_properties(a, "download", "href", "referrerpolicy", "rel", "target", "type")
+    a = JSProperty("a")
+    download = JSProperty("download")
+    href = JSProperty("href")
+    referrerpolicy = JSProperty("referrerpolicy")
+    rel = JSProperty("rel")
+    target = JSProperty("target")
+    type = JSProperty("type")
 
 
 class abbr(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr """
     tag = "abbr"
 
 
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(abbr)
-
-
 class address(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address """
     tag = "address"
 
 
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(address)
-
-
 class area(ElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area """
     tag = "area"
 
-
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(
-    area,
-    "alt",
-    "coords",
-    "download",
-    "href",
-    "ping",
-    "referrerpolicy",
-    "rel",
-    "shape",
-    "target",
-)
+    alt = JSProperty("alt")
+    coords = JSProperty("coords")
+    download = JSProperty("download")
+    href = JSProperty("href")
+    ping = JSProperty("ping")
+    referrerpolicy = JSProperty("referrerpolicy")
+    rel = JSProperty("rel")
+    shape = JSProperty("shape")
+    target = JSProperty("target")
 
 
 class article(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article """
     tag = "article"
 
 
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(article)
-
-
 class aside(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside """
     tag = "aside"
 
 
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(aside)
-
-
 class audio(ElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio """
     tag = "audio"
 
-
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(
-    audio,
-    "autoplay",
-    "controls",
-    "controlslist",
-    "crossorigin",
-    "disableremoteplayback",
-    "loop",
-    "muted",
-    "preload",
-    "src",
-)
+    autoplay = JSProperty("autoplay")
+    controls = JSProperty("controls")
+    controlslist = JSProperty("controlslist")
+    crossorigin = JSProperty("crossorigin")
+    disableremoteplayback = JSProperty("disableremoteplayback")
+    loop = JSProperty("loop")
+    muted = JSProperty("muted")
+    preload = JSProperty("preload")
+    src = JSProperty("src")
 
 
 class b(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b """
     tag = "b"
 
 
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(b)
-
-
 class blockquote(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote """
     tag = "blockquote"
 
-
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(blockquote, "cite")
+    cite = JSProperty("cite")
 
 
 class br(ElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br """
     tag = "br"
 
 
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(br)
-
-
 class button(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button """
     tag = "button"
 
-
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#attributes
-_add_js_properties(
-    button,
-    "autofocus",
-    "disabled",
-    "form",
-    "formaction",
-    "formenctype",
-    "formmethod",
-    "formnovalidate",
-    "formtarget",
-    "name",
-    "type",
-    "value",
-)
+    autofocus = JSProperty("autofocus")
+    disabled = JSProperty("disabled")
+    form = JSProperty("form")
+    formaction = JSProperty("formaction")
+    formenctype = JSProperty("formenctype")
+    formmethod = JSProperty("formmethod")
+    formnovalidate = JSProperty("formnovalidate")
+    formtarget = JSProperty("formtarget")
+    name = JSProperty("name")
+    type = JSProperty("type")
+    value = JSProperty("value")
 
 
 class canvas(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas """
     tag = "canvas"
 
-
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(canvas, "height", "width")
+    height = JSProperty("height")
+    width = JSProperty("width")
 
 
 class caption(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption """
     tag = "caption"
 
 
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(caption)
-
-
 class cite(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite """
     tag = "cite"
 
 
-# br tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(cite)
-
-
 class code(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code """
     tag = "code"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(code)
-
-
 class data(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data """
     tag = "data"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(data, "value")
-
+    value = JSProperty("value")
+    
 
 class datalist(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist """
     tag = "datalist"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(datalist)
-
-
 class dd(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd """
     tag = "dd"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(dd)
-
-
 class del_(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del """
     tag = "del"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(del_, "cite", "datetime")
+    cite = JSProperty("cite")
+    datetime = JSProperty("datetime")
 
 
 class details(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details """
     tag = "details"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(details, "open")
+    open = JSProperty("open")
 
 
 class dialog(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog """
     tag = "dialog"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(dialog, "open")
+    open = JSProperty("open")
 
 
 class div(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div """
     tag = "div"
 
 
-# div tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(div)
-
-
 class dl(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl """
     tag = "dl"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(dl, "value")
+    value = JSProperty("value")
 
 
 class dt(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt """
     tag = "dt"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(dt)
-
-
 class em(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em """
     tag = "em"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(em)
-
-
 class embed(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed """
     tag = "embed"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(embed, "height", "src", "type", "width")
+    height = JSProperty("height")
+    src = JSProperty("src")
+    type = JSProperty("type")
+    width = JSProperty("width")
 
 
 class fieldset(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset """
     tag = "fieldset"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(fieldset, "disabled", "form", "name")
+    disabled = JSProperty("disabled")
+    form = JSProperty("form")
+    name = JSProperty("name")
 
 
 class figcaption(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption """
     tag = "figcaption"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(figcaption)
-
-
 class figure(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure """
     tag = "figure"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(figure)
-
-
 class footer(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer """
     tag = "footer"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(footer)
-
-
 class form(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form """
     tag = "form"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(
-    form,
-    "accept-charset",
-    "action",
-    "autocapitalize",
-    "autocomplete",
-    "enctype",
-    "name",
-    "method",
-    "nonvalidate",
-    "rel",
-    "target",
-)
+    accept_charset = JSProperty("accept-charset")
+    action = JSProperty("action")
+    autocapitalize = JSProperty("autocapitalize")
+    autocomplete = JSProperty("autocomplete")
+    enctype = JSProperty("enctype")
+    name = JSProperty("name")
+    method = JSProperty("method")
+    nonvalidate = JSProperty("nonvalidate")
+    rel = JSProperty("rel")
+    target = JSProperty("target")
 
 
 class h1(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1 """
     tag = "h1"
 
 
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#attributes
-# Heading elements only have global attributes
-_add_js_properties(h1)
-
-
 class h2(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2 """
     tag = "h2"
 
 
-_add_js_properties(h2)
-
-
 class h3(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3 """
     tag = "h3"
 
 
-_add_js_properties(h3)
-
-
 class h4(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4 """
     tag = "h4"
 
 
-_add_js_properties(h4)
-
-
 class h5(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5 """
     tag = "h5"
 
 
-_add_js_properties(h5)
-
-
 class h6(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6 """
     tag = "h6"
 
 
-_add_js_properties(h6)
-
-
 class header(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header """
     tag = "header"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(header)
-
-
 class hgroup(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup """
     tag = "hgroup"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(hgroup)
-
-
 class hr(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr """
     tag = "hr"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(hr)
-
-
 class i(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i """
     tag = "i"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(i)
-
-
 class iframe(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe """
     tag = "iframe"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(
-    iframe,
-    "allow",
-    "allowfullscreen",
-    "height",
-    "loading",
-    "name",
-    "referrerpolicy",
-    "sandbox",
-    "src",
-    "srcdoc",
-    "width",
-)
+    allow = JSProperty("allow")
+    allowfullscreen = JSProperty("allowfullscreen")
+    height = JSProperty("height")
+    loading = JSProperty("loading")
+    name = JSProperty("name")
+    referrerpolicy = JSProperty("referrerpolicy")
+    sandbox = JSProperty("sandbox")
+    src = JSProperty("src")
+    srcdoc = JSProperty("srcdoc")
+    width = JSProperty("width")
 
 
 class img(ElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img """
     tag = "img"
 
-
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
-_add_js_properties(
-    img,
-    "alt",
-    "crossorigin",
-    "decoding",
-    "fetchpriority",
-    "height",
-    "ismap",
-    "loading",
-    "referrerpolicy",
-    "sizes",
-    "src",
-    "width",
-)
+    alt = JSProperty("alt")
+    crossorigin = JSProperty("crossorigin")
+    decoding = JSProperty("decoding")
+    fetchpriority = JSProperty("fetchpriority")
+    height = JSProperty("height")
+    ismap = JSProperty("ismap")
+    loading = JSProperty("loading")
+    referrerpolicy = JSProperty("referrerpolicy")
+    sizes = JSProperty("sizes")
+    src = JSProperty("src")
+    width = JSProperty("width")
 
 
 # NOTE: Input is a reserved keyword in Python, so we use input_ instead
 class input_(ElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input """
     tag = "input"
 
-
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attributes
-_add_js_properties(
-    input_,
-    "accept",
-    "alt",
-    "autofocus",
-    "capture",
-    "checked",
-    "dirname",
-    "disabled",
-    "form",
-    "formaction",
-    "formenctype",
-    "formmethod",
-    "formnovalidate",
-    "formtarget",
-    "height",
-    "list",
-    "max",
-    "maxlength",
-    "min",
-    "minlength",
-    "multiple",
-    "name",
-    "pattern",
-    "placeholder",
-    "popovertarget",
-    "popovertargetaction",
-    "readonly",
-    "required",
-    "size",
-    "src",
-    "step",
-    "type",
-    "value",
-    "width",
-)
+    accept = JSProperty("accept")
+    alt = JSProperty("alt")
+    autofocus = JSProperty("autofocus")
+    capture = JSProperty("capture")
+    checked = JSProperty("checked")
+    dirname = JSProperty("dirname")
+    disabled = JSProperty("disabled")
+    form = JSProperty("form")
+    formaction = JSProperty("formaction")
+    formenctype = JSProperty("formenctype")
+    formmethod = JSProperty("formmethod")
+    formnovalidate = JSProperty("formnovalidate")
+    formtarget = JSProperty("formtarget")
+    height = JSProperty("height")
+    list = JSProperty("list")
+    max = JSProperty("max")
+    maxlength = JSProperty("maxlength")
+    min = JSProperty("min")
+    minlength = JSProperty("minlength")
+    multiple = JSProperty("multiple")
+    name = JSProperty("name")
+    pattern = JSProperty("pattern")
+    placeholder = JSProperty("placeholder")
+    popovertarget = JSProperty("popovertarget")
+    popovertargetaction = JSProperty("popovertargetaction")
+    readonly = JSProperty("readonly")
+    required = JSProperty("required")
+    size = JSProperty("size")
+    src = JSProperty("src")
+    step = JSProperty("step")
+    type = JSProperty("type")
+    value = JSProperty("value")
+    width = JSProperty("width")
 
 
 class ins(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins """
     tag = "ins"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(ins, "cite", "datetime")
-
+    cite = JSProperty("cite")
+    datetime = JSProperty("datetime")
 
 class kbd(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd """
     tag = "kbd"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(kbd)
-
-
 class label(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label """
     tag = "label"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(label, "for")
+    for_ = JSProperty("for")
 
 
 class legend(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend """
     tag = "legend"
 
 
-# code tags only have the global attributes ones
-_add_js_properties(legend)
-
-
 class li(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li """
     tag = "li"
 
-
-# code tags only have the global attributes ones
-_add_js_properties(li, "value")
+    value = JSProperty("value")
 
 
 class link(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link """
     tag = "link"
 
-
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#attributes
-_add_js_properties(
-    link,
-    "as",
-    "crossorigin",
-    "disabled",
-    "fetchpriority",
-    "href",
-    "imagesizes",
-    "imagesrcset",
-    "integrity",
-    "media",
-    "rel",
-    "referrerpolicy",
-    "sizes",
-    "title",
-    "type",
-)
+    as_ = JSProperty("as")
+    crossorigin = JSProperty("crossorigin")
+    disabled = JSProperty("disabled")
+    fetchpriority = JSProperty("fetchpriority")
+    href = JSProperty("href")
+    imagesizes = JSProperty("imagesizes")
+    imagesrcset = JSProperty("imagesrcset")
+    integrity = JSProperty("integrity")
+    media = JSProperty("media")
+    rel = JSProperty("rel")
+    referrerpolicy = JSProperty("referrerpolicy")
+    sizes = JSProperty("sizes")
+    title = JSProperty("title")
+    type = JSProperty("type")
 
 
 class main(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main """
     tag = "main"
 
 
-_add_js_properties(main)
-
-
 class map_(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map """
     tag = "map"
 
-
-_add_js_properties(map_, "name")
+    name = JSProperty("name")
 
 
 class mark(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark """
     tag = "mark"
 
 
-_add_js_properties(mark)
-
-
 class menu(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu """
     tag = "menu"
 
 
-_add_js_properties(menu)
-
-
 class meter(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter """
     tag = "meter"
 
-
-_add_js_properties(meter, "form", "high", "low", "max", "min", "optimum", "value")
+    form = JSProperty("form")
+    high = JSProperty("high")
+    low = JSProperty("low")
+    max = JSProperty("max")
+    min = JSProperty("min")
+    optimum = JSProperty("optimum")
+    value = JSProperty("value")
 
 
 class nav(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav """
     tag = "nav"
 
 
-_add_js_properties(nav)
-
-
 class object_(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object """
     tag = "object"
 
-
-_add_js_properties(object_, "data", "form", "height", "name", "type", "usemap", "width")
-
-
+    data = JSProperty("data")
+    form = JSProperty("form")
+    height = JSProperty("height")
+    name = JSProperty("name")
+    type = JSProperty("type")
+    usemap = JSProperty("usemap")
+    width = JSProperty("width")
+    
 class ol(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol """
     tag = "ol"
 
-
-_add_js_properties(ol, "reversed", "start", "type")
+    reversed = JSProperty("reversed")
+    start = JSProperty("start")
+    type = JSProperty("type")
 
 
 class optgroup(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup """
     tag = "optgroup"
 
-
-_add_js_properties(optgroup, "disabled", "label")
+    disabled = JSProperty("disabled")
+    label = JSProperty("label")
 
 
 class option(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option """
     tag = "option"
 
 
-_add_js_properties(option, "disabled", "label", "selected", "value")
-
-
 class output(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output """
     tag = "output"
 
-
-_add_js_properties(output, "for", "form", "name")
+    for_ = JSProperty("for")
+    form = JSProperty("form")
+    name = JSProperty("name")
 
 
 class p(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p """
     tag = "p"
 
 
-# p tags only have the global attributes ones
-_add_js_properties(p)
-
-
 class picture(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture """
     tag = "picture"
 
 
-_add_js_properties(picture)
-
-
 class pre(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre """
     tag = "pre"
 
 
-# pre tags only have the global attributes ones (others have been deprecated)
-_add_js_properties(pre)
-
-
 class progress(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress """
     tag = "progress"
 
-
-_add_js_properties(progress, "max", "value")
+    max = JSProperty("max")
+    value = JSProperty("value")
 
 
 class q(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q """
     tag = "q"
 
-
-_add_js_properties(q, "cite")
+    cite = JSProperty("cite")
 
 
 class s(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s """
     tag = "s"
 
 
-_add_js_properties(s)
-
-
 class script(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script """
     tag = "script"
 
     # Let's add async manually since it's a reserved keyword in Python
     async_ = js_property("async")
-
-
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attributes
-_add_js_properties(
-    script,
-    "blocking",
-    "crossorigin",
-    "defer",
-    "fetchpriority",
-    "integrity",
-    "nomodule",
-    "nonce",
-    "referrerpolicy",
-    "src",
-    "type",
-)
+    blocking = JSProperty("blocking")
+    crossorigin = JSProperty("crossorigin")
+    defer = JSProperty("defer")
+    fetchpriority = JSProperty("fetchpriority")
+    integrity = JSProperty("integrity")
+    nomodule = JSProperty("nomodule")
+    nonce = JSProperty("nonce")
+    referrerpolicy = JSProperty("referrerpolicy")
+    src = JSProperty("src")
+    type = JSProperty("type")
 
 
 class section(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section """
     tag = "section"
 
 
-_add_js_properties(section)
-
-
 class select(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select """
     tag = "select"
 
 
-_add_js_properties(select)
-
-
 class small(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small """
     tag = "small"
 
 
-# small tags only have the global attributes ones
-_add_js_properties(small)
-
-
 class source(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source """
     tag = "source"
 
-
-_add_js_properties(source, "type", "src", "srcset", "sizes", "media")
+    media = JSProperty("media")
+    sizes = JSProperty("sizes")
+    src = JSProperty("src")
+    srcset = JSProperty("srcset")
+    type = JSProperty("type")
 
 
 class span(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span """
     tag = "span"
 
 
 class strong(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong """
     tag = "strong"
 
 
-# strong tags only have the global attributes ones
-_add_js_properties(strong)
-
-
 class style(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style """
     tag = "style"
 
-
-# https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style#attributes
-_add_js_properties(style, "blocking", "media", "nonce", "title")
+    blocking = JSProperty("blocking")
+    media = JSProperty("media")
+    nonce = JSProperty("nonce")
+    title = JSProperty("title")
 
 
 class sub(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub """
     tag = "sub"
 
 
 class summary(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary """
     tag = "summary"
 
 
 class sup(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup """
     tag = "sup"
 
 
 class table(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table """
     tag = "table"
 
 
 class tbody(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody """
     tag = "tbody"
 
 
 class td(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td """
     tag = "td"
 
 
 class template(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template """
     tag = "template"
 
 
 class textarea(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea """
     tag = "textarea"
 
 
 class tfoot(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot """
     tag = "tfoot"
 
 
 class th(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th """
     tag = "th"
 
 
 class thead(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead """
     tag = "thead"
 
 
 class time(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time """
     tag = "time"
 
-
-_add_js_properties(time, "datetime")
+    datetime = JSProperty("datetime")
 
 
 class title(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title """
     tag = "title"
 
 
 class tr(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr """
     tag = "tr"
 
 
 class track(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track """
     tag = "track"
 
-
-_add_js_properties(track, "default", "kind", "label", "src", "srclang")
+    default = JSProperty("default")
+    kind = JSProperty("kind")
+    label = JSProperty("label")
+    src = JSProperty("src")
+    srclang = JSProperty("srclang")
 
 
 class u(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u """
     tag = "u"
 
 
 class ul(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul """
     tag = "ul"
 
 
 class var(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var """
     tag = "var"
 
 
 class video(TextElementBase):
+    """ Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video """
     tag = "video"
 
-
-_add_js_properties(
-    video,
-    "autoplay",
-    "controls",
-    "crossorigin",
-    "disablepictureinpicture",
-    "disableremoteplayback",
-    "height",
-    "loop",
-    "muted",
-    "playsinline",
-    "poster",
-    "preload",
-    "src",
-    "width",
-)
+    autoplay = JSProperty("autoplay")
+    controls = JSProperty("controls")
+    crossorigin = JSProperty("crossorigin")
+    disablepictureinpicture = JSProperty("disablepictureinpicture")
+    disableremoteplayback = JSProperty("disableremoteplayback")
+    height = JSProperty("height")
+    loop = JSProperty("loop")
+    muted = JSProperty("muted")
+    playsinline = JSProperty("playsinline")
+    poster = JSProperty("poster")
+    preload = JSProperty("preload")
+    src = JSProperty("src")
+    width = JSProperty("width")
 
 
 # Custom Elements
