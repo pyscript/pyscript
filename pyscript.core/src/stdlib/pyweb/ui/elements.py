@@ -3,29 +3,6 @@ from textwrap import dedent
 from pyscript import document, when, window
 from pyweb import JSProperty, js_property, pydom
 
-# Global attributes that all elements have (this list is a subset of the official one)
-# and tries to capture the most used ones
-GLOBAL_ATTRIBUTES = [
-    "accesskey",
-    "autofocus",
-    "autocapitalize",
-    "className",
-    "contenteditable",
-    "draggable",
-    "enterkeyhint",
-    "hidden",
-    "id",
-    "lang",
-    "nonce",
-    "part",
-    "popover",
-    "slot",
-    "spellcheck",
-    "tabindex",
-    "title",
-    "translate",
-    "virtualkeyboardpolicy",
-]
 
 # class and style are different ones that are handled by pydom.element directly
 CUSTOM_ATTRIBUTES = {
@@ -73,6 +50,29 @@ CUSTOM_ATTRIBUTES = {
 class ElementBase(pydom.Element):
     tag = "div"
 
+    # GLOBAL ATTRIBUTES 
+    # These are attribute that all elements have (this list is a subset of the official one)
+    # We are trying to capture the most used ones
+    accesskey = JSProperty("accesskey")
+    autofocus = JSProperty("autofocus")
+    autocapitalize = JSProperty("autocapitalize")
+    className = JSProperty("className")
+    contenteditable = JSProperty("contenteditable")
+    draggable = JSProperty("draggable")
+    enterkeyhint = JSProperty("enterkeyhint")
+    hidden = JSProperty("hidden")
+    id = JSProperty("id")
+    lang = JSProperty("lang")
+    nonce = JSProperty("nonce")
+    part = JSProperty("part")
+    popover = JSProperty("popover")
+    slot = JSProperty("slot")
+    spellcheck = JSProperty("spellcheck")
+    tabindex = JSProperty("tabindex")
+    title = JSProperty("title")
+    translate = JSProperty("translate")
+    virtualkeyboardpolicy = JSProperty("virtualkeyboardpolicy")
+    
     def __init__(self, style=None, **kwargs):
         super().__init__(document.createElement(self.tag))
 
