@@ -1,6 +1,6 @@
 from textwrap import dedent
 
-from pyweb import JSProperty, js_property, pydom
+from pyweb import JSProperty, pydom
 
 from pyscript import document, when, window
 
@@ -11,25 +11,25 @@ class ElementBase(pydom.Element):
     # GLOBAL ATTRIBUTES
     # These are attribute that all elements have (this list is a subset of the official one)
     # We are trying to capture the most used ones
-    accesskey = js_property("accesskey")
-    autofocus = js_property("autofocus")
-    autocapitalize = js_property("autocapitalize")
-    className = js_property("className")
-    contenteditable = js_property("contenteditable")
-    draggable = js_property("draggable")
-    enterkeyhint = js_property("enterkeyhint")
-    hidden = js_property("hidden")
-    id = js_property("id")
-    lang = js_property("lang")
-    nonce = js_property("nonce")
-    part = js_property("part")
-    popover = js_property("popover")
-    slot = js_property("slot")
-    spellcheck = js_property("spellcheck")
-    tabindex = js_property("tabindex")
-    title = js_property("title")
-    translate = js_property("translate")
-    virtualkeyboardpolicy = js_property("virtualkeyboardpolicy")
+    accesskey = JSProperty("accesskey")
+    autofocus = JSProperty("autofocus")
+    autocapitalize = JSProperty("autocapitalize")
+    className = JSProperty("className")
+    contenteditable = JSProperty("contenteditable")
+    draggable = JSProperty("draggable")
+    enterkeyhint = JSProperty("enterkeyhint")
+    hidden = JSProperty("hidden")
+    id = JSProperty("id")
+    lang = JSProperty("lang")
+    nonce = JSProperty("nonce")
+    part = JSProperty("part")
+    popover = JSProperty("popover")
+    slot = JSProperty("slot")
+    spellcheck = JSProperty("spellcheck")
+    tabindex = JSProperty("tabindex")
+    title = JSProperty("title")
+    translate = JSProperty("translate")
+    virtualkeyboardpolicy = JSProperty("virtualkeyboardpolicy")
 
     def __init__(self, style=None, **kwargs):
         super().__init__(document.createElement(self.tag))
@@ -93,12 +93,12 @@ class a(TextElementBase):
 
     tag = "a"
 
-    download = js_property("download")
-    href = js_property("href")
-    referrerpolicy = js_property("referrerpolicy")
-    rel = js_property("rel")
-    target = js_property("target")
-    type = js_property("type")
+    download = JSProperty("download")
+    href = JSProperty("href")
+    referrerpolicy = JSProperty("referrerpolicy")
+    rel = JSProperty("rel")
+    target = JSProperty("target")
+    type = JSProperty("type")
 
 
 class abbr(TextElementBase):
@@ -118,15 +118,15 @@ class area(ElementBase):
 
     tag = "area"
 
-    alt = js_property("alt")
-    coords = js_property("coords")
-    download = js_property("download")
-    href = js_property("href")
-    ping = js_property("ping")
-    referrerpolicy = js_property("referrerpolicy")
-    rel = js_property("rel")
-    shape = js_property("shape")
-    target = js_property("target")
+    alt = JSProperty("alt")
+    coords = JSProperty("coords")
+    download = JSProperty("download")
+    href = JSProperty("href")
+    ping = JSProperty("ping")
+    referrerpolicy = JSProperty("referrerpolicy")
+    rel = JSProperty("rel")
+    shape = JSProperty("shape")
+    target = JSProperty("target")
 
 
 class article(TextElementBase):
@@ -146,15 +146,15 @@ class audio(ElementBase):
 
     tag = "audio"
 
-    autoplay = js_property("autoplay")
-    controls = js_property("controls")
-    controlslist = js_property("controlslist")
-    crossorigin = js_property("crossorigin")
-    disableremoteplayback = js_property("disableremoteplayback")
-    loop = js_property("loop")
-    muted = js_property("muted")
-    preload = js_property("preload")
-    src = js_property("src")
+    autoplay = JSProperty("autoplay")
+    controls = JSProperty("controls")
+    controlslist = JSProperty("controlslist")
+    crossorigin = JSProperty("crossorigin")
+    disableremoteplayback = JSProperty("disableremoteplayback")
+    loop = JSProperty("loop")
+    muted = JSProperty("muted")
+    preload = JSProperty("preload")
+    src = JSProperty("src")
 
 
 class b(TextElementBase):
@@ -168,7 +168,7 @@ class blockquote(TextElementBase):
 
     tag = "blockquote"
 
-    cite = js_property("cite")
+    cite = JSProperty("cite")
 
 
 class br(ElementBase):
@@ -182,17 +182,17 @@ class button(TextElementBase):
 
     tag = "button"
 
-    autofocus = js_property("autofocus")
-    disabled = js_property("disabled")
-    form = js_property("form")
-    formaction = js_property("formaction")
-    formenctype = js_property("formenctype")
-    formmethod = js_property("formmethod")
-    formnovalidate = js_property("formnovalidate")
-    formtarget = js_property("formtarget")
-    name = js_property("name")
-    type = js_property("type")
-    value = js_property("value")
+    autofocus = JSProperty("autofocus")
+    disabled = JSProperty("disabled")
+    form = JSProperty("form")
+    formaction = JSProperty("formaction")
+    formenctype = JSProperty("formenctype")
+    formmethod = JSProperty("formmethod")
+    formnovalidate = JSProperty("formnovalidate")
+    formtarget = JSProperty("formtarget")
+    name = JSProperty("name")
+    type = JSProperty("type")
+    value = JSProperty("value")
 
 
 class canvas(TextElementBase):
@@ -200,8 +200,8 @@ class canvas(TextElementBase):
 
     tag = "canvas"
 
-    height = js_property("height")
-    width = js_property("width")
+    height = JSProperty("height")
+    width = JSProperty("width")
 
 
 class caption(TextElementBase):
@@ -227,7 +227,7 @@ class data(TextElementBase):
 
     tag = "data"
 
-    value = js_property("value")
+    value = JSProperty("value")
 
 
 class datalist(TextElementBase):
@@ -247,8 +247,8 @@ class del_(TextElementBase):
 
     tag = "del"
 
-    cite = js_property("cite")
-    datetime = js_property("datetime")
+    cite = JSProperty("cite")
+    datetime = JSProperty("datetime")
 
 
 class details(TextElementBase):
@@ -256,7 +256,7 @@ class details(TextElementBase):
 
     tag = "details"
 
-    open = js_property("open")
+    open = JSProperty("open")
 
 
 class dialog(TextElementBase):
@@ -264,7 +264,7 @@ class dialog(TextElementBase):
 
     tag = "dialog"
 
-    open = js_property("open")
+    open = JSProperty("open")
 
 
 class div(TextElementBase):
@@ -278,7 +278,7 @@ class dl(TextElementBase):
 
     tag = "dl"
 
-    value = js_property("value")
+    value = JSProperty("value")
 
 
 class dt(TextElementBase):
@@ -298,10 +298,10 @@ class embed(TextElementBase):
 
     tag = "embed"
 
-    height = js_property("height")
-    src = js_property("src")
-    type = js_property("type")
-    width = js_property("width")
+    height = JSProperty("height")
+    src = JSProperty("src")
+    type = JSProperty("type")
+    width = JSProperty("width")
 
 
 class fieldset(TextElementBase):
@@ -309,9 +309,9 @@ class fieldset(TextElementBase):
 
     tag = "fieldset"
 
-    disabled = js_property("disabled")
-    form = js_property("form")
-    name = js_property("name")
+    disabled = JSProperty("disabled")
+    form = JSProperty("form")
+    name = JSProperty("name")
 
 
 class figcaption(TextElementBase):
@@ -337,16 +337,16 @@ class form(TextElementBase):
 
     tag = "form"
 
-    accept_charset = js_property("accept-charset")
-    action = js_property("action")
-    autocapitalize = js_property("autocapitalize")
-    autocomplete = js_property("autocomplete")
-    enctype = js_property("enctype")
-    name = js_property("name")
-    method = js_property("method")
-    nonvalidate = js_property("nonvalidate")
-    rel = js_property("rel")
-    target = js_property("target")
+    accept_charset = JSProperty("accept-charset")
+    action = JSProperty("action")
+    autocapitalize = JSProperty("autocapitalize")
+    autocomplete = JSProperty("autocomplete")
+    enctype = JSProperty("enctype")
+    name = JSProperty("name")
+    method = JSProperty("method")
+    nonvalidate = JSProperty("nonvalidate")
+    rel = JSProperty("rel")
+    target = JSProperty("target")
 
 
 class h1(TextElementBase):
@@ -414,16 +414,16 @@ class iframe(TextElementBase):
 
     tag = "iframe"
 
-    allow = js_property("allow")
-    allowfullscreen = js_property("allowfullscreen")
-    height = js_property("height")
-    loading = js_property("loading")
-    name = js_property("name")
-    referrerpolicy = js_property("referrerpolicy")
-    sandbox = js_property("sandbox")
-    src = js_property("src")
-    srcdoc = js_property("srcdoc")
-    width = js_property("width")
+    allow = JSProperty("allow")
+    allowfullscreen = JSProperty("allowfullscreen")
+    height = JSProperty("height")
+    loading = JSProperty("loading")
+    name = JSProperty("name")
+    referrerpolicy = JSProperty("referrerpolicy")
+    sandbox = JSProperty("sandbox")
+    src = JSProperty("src")
+    srcdoc = JSProperty("srcdoc")
+    width = JSProperty("width")
 
 
 class img(ElementBase):
@@ -431,17 +431,17 @@ class img(ElementBase):
 
     tag = "img"
 
-    alt = js_property("alt")
-    crossorigin = js_property("crossorigin")
-    decoding = js_property("decoding")
-    fetchpriority = js_property("fetchpriority")
-    height = js_property("height")
-    ismap = js_property("ismap")
-    loading = js_property("loading")
-    referrerpolicy = js_property("referrerpolicy")
-    sizes = js_property("sizes")
-    src = js_property("src")
-    width = js_property("width")
+    alt = JSProperty("alt")
+    crossorigin = JSProperty("crossorigin")
+    decoding = JSProperty("decoding")
+    fetchpriority = JSProperty("fetchpriority")
+    height = JSProperty("height")
+    ismap = JSProperty("ismap")
+    loading = JSProperty("loading")
+    referrerpolicy = JSProperty("referrerpolicy")
+    sizes = JSProperty("sizes")
+    src = JSProperty("src")
+    width = JSProperty("width")
 
 
 # NOTE: Input is a reserved keyword in Python, so we use input_ instead
@@ -450,39 +450,39 @@ class input_(ElementBase):
 
     tag = "input"
 
-    accept = js_property("accept")
-    alt = js_property("alt")
-    autofocus = js_property("autofocus")
-    capture = js_property("capture")
-    checked = js_property("checked")
-    dirname = js_property("dirname")
-    disabled = js_property("disabled")
-    form = js_property("form")
-    formaction = js_property("formaction")
-    formenctype = js_property("formenctype")
-    formmethod = js_property("formmethod")
-    formnovalidate = js_property("formnovalidate")
-    formtarget = js_property("formtarget")
-    height = js_property("height")
-    list = js_property("list")
-    max = js_property("max")
-    maxlength = js_property("maxlength")
-    min = js_property("min")
-    minlength = js_property("minlength")
-    multiple = js_property("multiple")
-    name = js_property("name")
-    pattern = js_property("pattern")
-    placeholder = js_property("placeholder")
-    popovertarget = js_property("popovertarget")
-    popovertargetaction = js_property("popovertargetaction")
-    readonly = js_property("readonly")
-    required = js_property("required")
-    size = js_property("size")
-    src = js_property("src")
-    step = js_property("step")
-    type = js_property("type")
-    value = js_property("value")
-    width = js_property("width")
+    accept = JSProperty("accept")
+    alt = JSProperty("alt")
+    autofocus = JSProperty("autofocus")
+    capture = JSProperty("capture")
+    checked = JSProperty("checked")
+    dirname = JSProperty("dirname")
+    disabled = JSProperty("disabled")
+    form = JSProperty("form")
+    formaction = JSProperty("formaction")
+    formenctype = JSProperty("formenctype")
+    formmethod = JSProperty("formmethod")
+    formnovalidate = JSProperty("formnovalidate")
+    formtarget = JSProperty("formtarget")
+    height = JSProperty("height")
+    list = JSProperty("list")
+    max = JSProperty("max")
+    maxlength = JSProperty("maxlength")
+    min = JSProperty("min")
+    minlength = JSProperty("minlength")
+    multiple = JSProperty("multiple")
+    name = JSProperty("name")
+    pattern = JSProperty("pattern")
+    placeholder = JSProperty("placeholder")
+    popovertarget = JSProperty("popovertarget")
+    popovertargetaction = JSProperty("popovertargetaction")
+    readonly = JSProperty("readonly")
+    required = JSProperty("required")
+    size = JSProperty("size")
+    src = JSProperty("src")
+    step = JSProperty("step")
+    type = JSProperty("type")
+    value = JSProperty("value")
+    width = JSProperty("width")
 
 
 class ins(TextElementBase):
@@ -490,8 +490,8 @@ class ins(TextElementBase):
 
     tag = "ins"
 
-    cite = js_property("cite")
-    datetime = js_property("datetime")
+    cite = JSProperty("cite")
+    datetime = JSProperty("datetime")
 
 
 class kbd(TextElementBase):
@@ -505,7 +505,7 @@ class label(TextElementBase):
 
     tag = "label"
 
-    for_ = js_property("for")
+    for_ = JSProperty("for")
 
 
 class legend(TextElementBase):
@@ -519,7 +519,7 @@ class li(TextElementBase):
 
     tag = "li"
 
-    value = js_property("value")
+    value = JSProperty("value")
 
 
 class link(TextElementBase):
@@ -527,20 +527,20 @@ class link(TextElementBase):
 
     tag = "link"
 
-    as_ = js_property("as")
-    crossorigin = js_property("crossorigin")
-    disabled = js_property("disabled")
-    fetchpriority = js_property("fetchpriority")
-    href = js_property("href")
-    imagesizes = js_property("imagesizes")
-    imagesrcset = js_property("imagesrcset")
-    integrity = js_property("integrity")
-    media = js_property("media")
-    rel = js_property("rel")
-    referrerpolicy = js_property("referrerpolicy")
-    sizes = js_property("sizes")
-    title = js_property("title")
-    type = js_property("type")
+    as_ = JSProperty("as")
+    crossorigin = JSProperty("crossorigin")
+    disabled = JSProperty("disabled")
+    fetchpriority = JSProperty("fetchpriority")
+    href = JSProperty("href")
+    imagesizes = JSProperty("imagesizes")
+    imagesrcset = JSProperty("imagesrcset")
+    integrity = JSProperty("integrity")
+    media = JSProperty("media")
+    rel = JSProperty("rel")
+    referrerpolicy = JSProperty("referrerpolicy")
+    sizes = JSProperty("sizes")
+    title = JSProperty("title")
+    type = JSProperty("type")
 
 
 class main(TextElementBase):
@@ -554,7 +554,7 @@ class map_(TextElementBase):
 
     tag = "map"
 
-    name = js_property("name")
+    name = JSProperty("name")
 
 
 class mark(TextElementBase):
@@ -574,13 +574,13 @@ class meter(TextElementBase):
 
     tag = "meter"
 
-    form = js_property("form")
-    high = js_property("high")
-    low = js_property("low")
-    max = js_property("max")
-    min = js_property("min")
-    optimum = js_property("optimum")
-    value = js_property("value")
+    form = JSProperty("form")
+    high = JSProperty("high")
+    low = JSProperty("low")
+    max = JSProperty("max")
+    min = JSProperty("min")
+    optimum = JSProperty("optimum")
+    value = JSProperty("value")
 
 
 class nav(TextElementBase):
@@ -594,13 +594,13 @@ class object_(TextElementBase):
 
     tag = "object"
 
-    data = js_property("data")
-    form = js_property("form")
-    height = js_property("height")
-    name = js_property("name")
-    type = js_property("type")
-    usemap = js_property("usemap")
-    width = js_property("width")
+    data = JSProperty("data")
+    form = JSProperty("form")
+    height = JSProperty("height")
+    name = JSProperty("name")
+    type = JSProperty("type")
+    usemap = JSProperty("usemap")
+    width = JSProperty("width")
 
 
 class ol(TextElementBase):
@@ -608,9 +608,9 @@ class ol(TextElementBase):
 
     tag = "ol"
 
-    reversed = js_property("reversed")
-    start = js_property("start")
-    type = js_property("type")
+    reversed = JSProperty("reversed")
+    start = JSProperty("start")
+    type = JSProperty("type")
 
 
 class optgroup(TextElementBase):
@@ -618,8 +618,8 @@ class optgroup(TextElementBase):
 
     tag = "optgroup"
 
-    disabled = js_property("disabled")
-    label = js_property("label")
+    disabled = JSProperty("disabled")
+    label = JSProperty("label")
 
 
 class option(TextElementBase):
@@ -633,9 +633,9 @@ class output(TextElementBase):
 
     tag = "output"
 
-    for_ = js_property("for")
-    form = js_property("form")
-    name = js_property("name")
+    for_ = JSProperty("for")
+    form = JSProperty("form")
+    name = JSProperty("name")
 
 
 class p(TextElementBase):
@@ -661,8 +661,8 @@ class progress(TextElementBase):
 
     tag = "progress"
 
-    max = js_property("max")
-    value = js_property("value")
+    max = JSProperty("max")
+    value = JSProperty("value")
 
 
 class q(TextElementBase):
@@ -670,7 +670,7 @@ class q(TextElementBase):
 
     tag = "q"
 
-    cite = js_property("cite")
+    cite = JSProperty("cite")
 
 
 class s(TextElementBase):
@@ -685,17 +685,17 @@ class script(TextElementBase):
     tag = "script"
 
     # Let's add async manually since it's a reserved keyword in Python
-    async_ = js_property("async")
-    blocking = js_property("blocking")
-    crossorigin = js_property("crossorigin")
-    defer = js_property("defer")
-    fetchpriority = js_property("fetchpriority")
-    integrity = js_property("integrity")
-    nomodule = js_property("nomodule")
-    nonce = js_property("nonce")
-    referrerpolicy = js_property("referrerpolicy")
-    src = js_property("src")
-    type = js_property("type")
+    async_ = JSProperty("async")
+    blocking = JSProperty("blocking")
+    crossorigin = JSProperty("crossorigin")
+    defer = JSProperty("defer")
+    fetchpriority = JSProperty("fetchpriority")
+    integrity = JSProperty("integrity")
+    nomodule = JSProperty("nomodule")
+    nonce = JSProperty("nonce")
+    referrerpolicy = JSProperty("referrerpolicy")
+    src = JSProperty("src")
+    type = JSProperty("type")
 
 
 class section(TextElementBase):
@@ -721,11 +721,11 @@ class source(TextElementBase):
 
     tag = "source"
 
-    media = js_property("media")
-    sizes = js_property("sizes")
-    src = js_property("src")
-    srcset = js_property("srcset")
-    type = js_property("type")
+    media = JSProperty("media")
+    sizes = JSProperty("sizes")
+    src = JSProperty("src")
+    srcset = JSProperty("srcset")
+    type = JSProperty("type")
 
 
 class span(TextElementBase):
@@ -745,10 +745,10 @@ class style(TextElementBase):
 
     tag = "style"
 
-    blocking = js_property("blocking")
-    media = js_property("media")
-    nonce = js_property("nonce")
-    title = js_property("title")
+    blocking = JSProperty("blocking")
+    media = JSProperty("media")
+    nonce = JSProperty("nonce")
+    title = JSProperty("title")
 
 
 class sub(TextElementBase):
@@ -786,9 +786,9 @@ class td(TextElementBase):
 
     tag = "td"
 
-    colspan = js_property("colspan")
-    headers = js_property("headers")
-    rowspan = js_property("rowspan")
+    colspan = JSProperty("colspan")
+    headers = JSProperty("headers")
+    rowspan = JSProperty("rowspan")
 
 
 class template(TextElementBase):
@@ -796,7 +796,7 @@ class template(TextElementBase):
 
     tag = "template"
 
-    shadowrootmode = js_property("shadowrootmode")
+    shadowrootmode = JSProperty("shadowrootmode")
 
 
 class textarea(TextElementBase):
@@ -804,22 +804,22 @@ class textarea(TextElementBase):
 
     tag = "textarea"
 
-    autocapitalize = js_property("autocapitalize")
-    autocomplete = js_property("autocomplete")
-    autofocus = js_property("autofocus")
-    cols = js_property("cols")
-    dirname = js_property("dirname")
-    disabled = js_property("disabled")
-    form = js_property("form")
-    maxlength = js_property("maxlength")
-    minlength = js_property("minlength")
-    name = js_property("name")
-    placeholder = js_property("placeholder")
-    readonly = js_property("readonly")
-    required = js_property("required")
-    rows = js_property("rows")
-    spellcheck = js_property("spellcheck")
-    wrap = js_property("wrap")
+    autocapitalize = JSProperty("autocapitalize")
+    autocomplete = JSProperty("autocomplete")
+    autofocus = JSProperty("autofocus")
+    cols = JSProperty("cols")
+    dirname = JSProperty("dirname")
+    disabled = JSProperty("disabled")
+    form = JSProperty("form")
+    maxlength = JSProperty("maxlength")
+    minlength = JSProperty("minlength")
+    name = JSProperty("name")
+    placeholder = JSProperty("placeholder")
+    readonly = JSProperty("readonly")
+    required = JSProperty("required")
+    rows = JSProperty("rows")
+    spellcheck = JSProperty("spellcheck")
+    wrap = JSProperty("wrap")
 
 
 class tfoot(TextElementBase):
@@ -845,7 +845,7 @@ class time(TextElementBase):
 
     tag = "time"
 
-    datetime = js_property("datetime")
+    datetime = JSProperty("datetime")
 
 
 class title(TextElementBase):
@@ -859,11 +859,11 @@ class tr(TextElementBase):
 
     tag = "tr"
 
-    abbr = js_property("abbr")
-    colspan = js_property("colspan")
-    headers = js_property("headers")
-    rowspan = js_property("rowspan")
-    scope = js_property("scope")
+    abbr = JSProperty("abbr")
+    colspan = JSProperty("colspan")
+    headers = JSProperty("headers")
+    rowspan = JSProperty("rowspan")
+    scope = JSProperty("scope")
 
 
 class track(TextElementBase):
@@ -871,11 +871,11 @@ class track(TextElementBase):
 
     tag = "track"
 
-    default = js_property("default")
-    kind = js_property("kind")
-    label = js_property("label")
-    src = js_property("src")
-    srclang = js_property("srclang")
+    default = JSProperty("default")
+    kind = JSProperty("kind")
+    label = JSProperty("label")
+    src = JSProperty("src")
+    srclang = JSProperty("srclang")
 
 
 class u(TextElementBase):
@@ -901,19 +901,19 @@ class video(TextElementBase):
 
     tag = "video"
 
-    autoplay = js_property("autoplay")
-    controls = js_property("controls")
-    crossorigin = js_property("crossorigin")
-    disablepictureinpicture = js_property("disablepictureinpicture")
-    disableremoteplayback = js_property("disableremoteplayback")
-    height = js_property("height")
-    loop = js_property("loop")
-    muted = js_property("muted")
-    playsinline = js_property("playsinline")
-    poster = js_property("poster")
-    preload = js_property("preload")
-    src = js_property("src")
-    width = js_property("width")
+    autoplay = JSProperty("autoplay")
+    controls = JSProperty("controls")
+    crossorigin = JSProperty("crossorigin")
+    disablepictureinpicture = JSProperty("disablepictureinpicture")
+    disableremoteplayback = JSProperty("disableremoteplayback")
+    height = JSProperty("height")
+    loop = JSProperty("loop")
+    muted = JSProperty("muted")
+    playsinline = JSProperty("playsinline")
+    poster = JSProperty("poster")
+    preload = JSProperty("preload")
+    src = JSProperty("src")
+    width = JSProperty("width")
 
 
 # Custom Elements
