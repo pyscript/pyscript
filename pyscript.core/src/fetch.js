@@ -1,7 +1,10 @@
 import { FetchError, ErrorCode } from "./exceptions.js";
-import { getText } from "polyscript/exports";
 
-export { getText };
+/**
+ * @param {Response} response
+ * @returns
+ */
+export const getText = (response) => response.text();
 
 /**
  * This is a fetch wrapper that handles any non 200 responses and throws a

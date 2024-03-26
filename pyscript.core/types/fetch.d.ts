@@ -8,5 +8,4 @@
  * @returns {Promise<Response>}
  */
 export function robustFetch(url: string, options?: Request): Promise<Response>;
-export { getText };
-import { getText } from "polyscript/exports";
+export function getText(response: Response): Promise<string>;
