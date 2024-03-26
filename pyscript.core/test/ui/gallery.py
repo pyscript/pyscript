@@ -172,3 +172,5 @@ grid.append(shoelace.Divider(vertical=True))
 grid.append(main_area)
 
 pydom.body.append(grid)
+pydom.body.append(el.a("Back to the main page", href="/test/ui/", target="_blank"))
+pydom.body.append(el.a("Hidden!!!", href="/test/ui/", target="_blank", hidden=True))

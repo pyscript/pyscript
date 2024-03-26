@@ -2,7 +2,7 @@ import string
 from textwrap import dedent
 
 from pyscript import document, when, window
-from pyweb import JSProperty, js_property, pydom
+from pyweb import JSProperty, pydom
 from pyweb.ui import elements as el
 
 
@@ -50,11 +50,11 @@ class TextShoeBase(el.TextElementBase):
 
 class Button(ShoeBase):
     tag = "sl-button"
-    variant = js_property("variant")
-    size = js_property("size")
-    outline = js_property("outline")
-    pill = js_property("pill")
-    circle = js_property("circle")
+    variant = JSProperty("variant")
+    size = JSProperty("size")
+    outline = JSProperty("outline")
+    pill = JSProperty("pill")
+    circle = JSProperty("circle")
 
     def __init__(
         self,
@@ -80,8 +80,8 @@ class Alert(TextShoeBase):
     """
 
     tag = "sl-alert"
-    open = js_property("open")
-    variant = js_property("variant")
+    open = JSProperty("open")
+    variant = JSProperty("variant")
 
     def __init__(self, content, variant=None, open=True, **kwargs):
         # TODO: Should content be appended so we can support html Elements as well?
@@ -90,11 +90,11 @@ class Alert(TextShoeBase):
 
 class Select(ShoeBase):
     tag = "sl-select"
-    label = js_property("label")
-    helpText = js_property("helpText")
-    placeholder = js_property("placeholder")
-    pill = js_property("pill")
-    value = js_property("value")
+    label = JSProperty("label")
+    helpText = JSProperty("helpText")
+    placeholder = JSProperty("placeholder")
+    pill = JSProperty("pill")
+    value = JSProperty("value")
 
     def __init__(
         self,
@@ -129,11 +129,11 @@ class Button(TextShoeBase):
     """Buttons represent actions that are available to the user."""
 
     tag = "sl-button"
-    variant = js_property("variant")
-    size = js_property("size")
-    outline = js_property("outline")
-    pill = js_property("pill")
-    circle = js_property("circle")
+    variant = JSProperty("variant")
+    size = JSProperty("size")
+    outline = JSProperty("outline")
+    pill = JSProperty("pill")
+    circle = JSProperty("circle")
 
     def __init__(
         self,
@@ -160,10 +160,10 @@ class Details(TextShoeBase):
     """Details are used as a disclosure widget from which users can retrieve additional information."""
 
     tag = "sl-details"
-    open = js_property("open")
-    summary = js_property("summary")
-    disabled = js_property("disabled")
-    update_complete = js_property("updateComplete")
+    open = JSProperty("open")
+    summary = JSProperty("summary")
+    disabled = JSProperty("disabled")
+    update_complete = JSProperty("updateComplete")
 
     def __init__(
         self, content, summary, open=None, disabled=None, style=None, **kwargs
@@ -180,9 +180,9 @@ class Details(TextShoeBase):
 
 class Dialog(TextShoeBase):
     tag = "sl-dialog"
-    label = js_property("label")
-    noheader = js_property("noheader")
-    open = js_property("open")
+    label = JSProperty("label")
+    noheader = JSProperty("noheader")
+    open = JSProperty("open")
     # TODO: We should map the `modal` property as well but it's a bit of special...
 
     def __init__(
@@ -196,7 +196,7 @@ class Dialog(TextShoeBase):
 class Divider(ShoeBase):
     tag = "sl-divider"
 
-    vertical = js_property("vertical")
+    vertical = JSProperty("vertical")
 
     # def __init__(self, vertical=None, **kwargs):
     #     super().__init__(vertical=vertical, **kwargs)
@@ -233,11 +233,11 @@ class PlaceholderProperty:
 class Input(ShoeBase):
     tag = "sl-input"
 
-    label = js_property("label")
-    placeholder = js_property("placeholder")
-    pill = js_property("pill")
-    help_text = js_property("helpText")
-    value = js_property("value")
+    label = JSProperty("label")
+    placeholder = JSProperty("placeholder")
+    pill = JSProperty("pill")
+    help_text = JSProperty("helpText")
+    value = JSProperty("value")
 
     # def __init__(
     #     self,
@@ -298,23 +298,23 @@ class Input(ShoeBase):
 
 class Badge(TextShoeBase):
     tag = "sl-badge"
-    variant = js_property("variant")
-    pill = js_property("pill")
-    pulse = js_property("pulse")
+    variant = JSProperty("variant")
+    pill = JSProperty("pill")
+    pulse = JSProperty("pulse")
 
 
 class Rating(ShoeBase):
     tag = "sl-rating"
-    label = js_property("label")
-    value = js_property("value")
-    max = js_property("max")
+    label = JSProperty("label")
+    value = JSProperty("value")
+    max = JSProperty("max")
     # TODO: Properties missing...
 
 
 class TextArea(ShoeBase):
     tag = "sl-textarea"
-    label = js_property("label")
-    helpText = js_property("helpText")
+    label = JSProperty("label")
+    helpText = JSProperty("helpText")
     # TODO: Properties missing...
 
 
@@ -364,11 +364,11 @@ class Card(TextShoeBase):
 class Icon(ShoeBase):
     tag = "sl-icon"
 
-    name = js_property("name")
-    src = js_property("src")
-    label = js_property("label")
-    library = js_property("library")
-    update_complete = js_property("updateComplete")
+    name = JSProperty("name")
+    src = JSProperty("src")
+    label = JSProperty("label")
+    library = JSProperty("library")
+    update_complete = JSProperty("updateComplete")
 
     def __init__(
         self, name=None, src=None, label=None, library=None, style=None, **kwargs
@@ -380,10 +380,10 @@ class Icon(ShoeBase):
 
 class Radio(TextShoeBase):
     tag = "sl-radio"
-    value = js_property("value")
-    size = js_property("size")
-    disabled = js_property("disabled")
-    update_complete = js_property("updateComplete")
+    value = JSProperty("value")
+    size = JSProperty("size")
+    disabled = JSProperty("disabled")
+    update_complete = JSProperty("updateComplete")
 
     def __init__(
         self, content, value=None, size=None, disabled=None, style=None, **kwargs
@@ -395,16 +395,16 @@ class Radio(TextShoeBase):
 
 class RadioGroup(ShoeBase):
     tag = "sl-radio-group"
-    label = js_property("label")
-    help_text = js_property("helpText")
-    name = js_property("name")
-    value = js_property("value")
-    size = js_property("size")
-    form = js_property("form")
-    required = js_property("required")
-    validity = js_property("validity")
-    validation_message = js_property("validationMessage")
-    update_complete = js_property("updateComplete")
+    label = JSProperty("label")
+    help_text = JSProperty("helpText")
+    name = JSProperty("name")
+    value = JSProperty("value")
+    size = JSProperty("size")
+    form = JSProperty("form")
+    required = JSProperty("required")
+    validity = JSProperty("validity")
+    validation_message = JSProperty("validationMessage")
+    update_complete = JSProperty("updateComplete")
 
     def __init__(
         self,
@@ -442,16 +442,16 @@ class RadioGroup(ShoeBase):
 
 class CopyButton(ShoeBase):
     tag = "sl-copy-button"
-    value = js_property("value")
-    _from = js_property("from")
-    disabled = js_property("disabled")
-    copy_label = js_property("copyLabel")
-    success_label = js_property("successLabel")
-    error_label = js_property("errorLabel")
-    feedback_duration = js_property("feedbackDuration")
-    tooltip_placement = js_property("tooltipPlacement")
-    hoist = js_property("hoist")
-    update_complete = js_property("updateComplete")
+    value = JSProperty("value")
+    _from = JSProperty("from")
+    disabled = JSProperty("disabled")
+    copy_label = JSProperty("copyLabel")
+    success_label = JSProperty("successLabel")
+    error_label = JSProperty("errorLabel")
+    feedback_duration = JSProperty("feedbackDuration")
+    tooltip_placement = JSProperty("tooltipPlacement")
+    hoist = JSProperty("hoist")
+    update_complete = JSProperty("updateComplete")
 
     def __init__(
         self,
@@ -484,8 +484,8 @@ class CopyButton(ShoeBase):
 
 class Skeleton(ShoeBase):
     tag = "sl-skeleton"
-    effect = js_property("effect")
-    update_complete = js_property("updateComplete")
+    effect = JSProperty("effect")
+    update_complete = JSProperty("updateComplete")
 
     def __init__(self, effect=None, style=None, **kwargs):
         super().__init__(effect=effect, style=style, **kwargs)
@@ -493,7 +493,7 @@ class Skeleton(ShoeBase):
 
 class Spinner(ShoeBase):
     tag = "sl-spinner"
-    update_complete = js_property("updateComplete")
+    update_complete = JSProperty("updateComplete")
 
     def __init__(self, style=None, **kwargs):
         super().__init__(style=style, **kwargs)
@@ -502,15 +502,15 @@ class Spinner(ShoeBase):
 # # TODO: Need to make sure we can pass elements in it.
 # class SplitPanel(ShoeBase):
 #     tag = "sl-split-panel"
-#     content = js_property("content")
-#     position = js_property("position")
-#     position_in_pixels = js_property("positionInPixels")
-#     vertical = js_property("vertical")
-#     disabled = js_property("disabled")
-#     primary = js_property("primary")
-#     snap = js_property("snap")
-#     snap_threshold = js_property("snapThreshold")
-#     update_complete = js_property("updateComplete")
+#     content = JSProperty("content")
+#     position = JSProperty("position")
+#     position_in_pixels = JSProperty("positionInPixels")
+#     vertical = JSProperty("vertical")
+#     disabled = JSProperty("disabled")
+#     primary = JSProperty("primary")
+#     snap = JSProperty("snap")
+#     snap_threshold = JSProperty("snapThreshold")
+#     update_complete = JSProperty("updateComplete")
 
 #     def __init__(self, content, position=None, position_in_pixels=None, vertical=None, disabled=None, primary=None, snap=None, snap_threshold=None, style=None, **kwargs):
 #         super().__init__(**kwargs)
@@ -521,17 +521,17 @@ class Spinner(ShoeBase):
 
 class Switch(ShoeBase):
     tag = "sl-switch"
-    name = js_property("name")
-    value = js_property("value")
-    size = js_property("size")
-    disabled = js_property("disabled")
-    checked = js_property("checked")
-    default_checked = js_property("defaultChecked")
-    form = js_property("form")
-    required = js_property("required")
-    validity = js_property("validity")
-    validation_message = js_property("validationMessage")
-    update_complete = js_property("updateComplete")
+    name = JSProperty("name")
+    value = JSProperty("value")
+    size = JSProperty("size")
+    disabled = JSProperty("disabled")
+    checked = JSProperty("checked")
+    default_checked = JSProperty("defaultChecked")
+    form = JSProperty("form")
+    required = JSProperty("required")
+    validity = JSProperty("validity")
+    validation_message = JSProperty("validationMessage")
+    update_complete = JSProperty("updateComplete")
 
     def __init__(
         self,
@@ -566,31 +566,31 @@ class Switch(ShoeBase):
 
 class Textarea(ShoeBase):
     tag = "sl-textarea"
-    name = js_property("name")
-    value = js_property("value")
-    size = js_property("size")
-    filled = js_property("filled")
-    label = js_property("label")
-    help_text = js_property("helpText")
-    placeholder = js_property("placeholder")
-    rows = js_property("rows")
-    resize = js_property("resize")
-    disabled = js_property("disabled")
-    readonly = js_property("readonly")
-    form = js_property("form")
-    required = js_property("required")
-    min_length = js_property("minLength")
-    max_length = js_property("maxLength")
-    autocalpitalize = js_property("autocapitalize")
-    autocomplete = js_property("autocomplete")
-    autofocus = js_property("autofocus")
-    enterkeyhint = js_property("enterkeyhint")
-    spellcheck = js_property("spellcheck")
-    inputmode = js_property("inputmode")
-    default_value = js_property("defaultValue")
-    validity = js_property("validity")
-    validatio_message = js_property("validationMessage")
-    update_complete = js_property("updateComplete")
+    name = JSProperty("name")
+    value = JSProperty("value")
+    size = JSProperty("size")
+    filled = JSProperty("filled")
+    label = JSProperty("label")
+    help_text = JSProperty("helpText")
+    placeholder = JSProperty("placeholder")
+    rows = JSProperty("rows")
+    resize = JSProperty("resize")
+    disabled = JSProperty("disabled")
+    readonly = JSProperty("readonly")
+    form = JSProperty("form")
+    required = JSProperty("required")
+    min_length = JSProperty("minLength")
+    max_length = JSProperty("maxLength")
+    autocalpitalize = JSProperty("autocapitalize")
+    autocomplete = JSProperty("autocomplete")
+    autofocus = JSProperty("autofocus")
+    enterkeyhint = JSProperty("enterkeyhint")
+    spellcheck = JSProperty("spellcheck")
+    inputmode = JSProperty("inputmode")
+    default_value = JSProperty("defaultValue")
+    validity = JSProperty("validity")
+    validatio_message = JSProperty("validationMessage")
+    update_complete = JSProperty("updateComplete")
 
     def __init__(
         self,
@@ -653,11 +653,11 @@ class Textarea(ShoeBase):
 
 class Tag(TextShoeBase):
     tag = "sl-tag"
-    variant = js_property("variant")
-    size = js_property("size")
-    pill = js_property("pill")
-    removable = js_property("removable")
-    update_complete = js_property("updateComplete")
+    variant = JSProperty("variant")
+    size = JSProperty("size")
+    pill = JSProperty("pill")
+    removable = JSProperty("removable")
+    update_complete = JSProperty("updateComplete")
 
     # def __init__(
     #     self,
@@ -677,21 +677,21 @@ class Tag(TextShoeBase):
 
 class Range(ShoeBase):
     tag = "sl-range"
-    name = js_property("name")
-    value = js_property("value")
-    label = js_property("label")
-    help_text = js_property("helpText")
-    disabled = js_property("disabled")
-    _min = js_property("min")
-    _max = js_property("max")
-    step = js_property("step")
-    tooltip = js_property("tooltip")
-    tooltip_formatter = js_property("tooltipFormatter")
-    form = js_property("form")
-    default_value = js_property("defaultValue")
-    validity = js_property("validity")
-    validation_message = js_property("validationMessage")
-    update_complete = js_property("updateComplete")
+    name = JSProperty("name")
+    value = JSProperty("value")
+    label = JSProperty("label")
+    help_text = JSProperty("helpText")
+    disabled = JSProperty("disabled")
+    _min = JSProperty("min")
+    _max = JSProperty("max")
+    step = JSProperty("step")
+    tooltip = JSProperty("tooltip")
+    tooltip_formatter = JSProperty("tooltipFormatter")
+    form = JSProperty("form")
+    default_value = JSProperty("defaultValue")
+    validity = JSProperty("validity")
+    validation_message = JSProperty("validationMessage")
+    update_complete = JSProperty("updateComplete")
 
     # def __init__(
     #     self,
@@ -719,11 +719,11 @@ class Range(ShoeBase):
 
 class RelativeTime(ShoeBase):
     tag = "sl-relative-time"
-    date = js_property("date")
-    _format = js_property("format")
-    numeric = js_property("numeric")
-    sync = js_property("sync")
-    update_complete = js_property("updateComplete")
+    date = JSProperty("date")
+    _format = JSProperty("format")
+    numeric = JSProperty("numeric")
+    sync = JSProperty("sync")
+    update_complete = JSProperty("updateComplete")
 
     # def __init__(self, date=None, style=None, **kwargs):
     #     super().__init__(date=date, style=style, **kwargs)
