@@ -8,6 +8,7 @@ let id = 0;
 const getID = (type) => `${type}-editor-${id++}`;
 
 const envs = new Map();
+const configs = new Map();
 
 const hooks = {
     worker: {
@@ -37,10 +38,10 @@ async function execute({ currentTarget }) {
         const { config } = this;
         if (config) {
             details.configURL = config;
-            const { parse } = config.endsWith('.toml')
+            const { parse } = config.endsWith(".toml")
                 ? await import(/* webpackIgnore: true */ "../3rd-party/toml.js")
-                : JSON
-            details.config = parse(await fetch(config).then(r => r.text()));
+                : JSON;
+            details.config = parse(await fetch(config).then((r) => r.text()));
         }
 
         const xworker = XWorker.call(new Hook(null, hooks), srcLink, details);
@@ -148,17 +149,27 @@ const init = async (script, type, interpreter) => {
 
     const isSetup = script.hasAttribute("setup");
     const hasConfig = script.hasAttribute("config");
-    if (hasConfig && !isSetup)
-        throw new SyntaxError("only editors with a setup can have a config");
-
     const env = `${interpreter}-${script.getAttribute("env") || getID(type)}`;
+
+    if (hasConfig && configs.has(env)) {
+        throw new SyntaxError(
+            configs.get(env)
+                ? `duplicated config for env: ${env}`
+                : `unable to add a config to the env env: ${env}`
+        );
+    }
+
+    configs.set(env, hasConfig);
+
     const source = script.src
         ? await fetch(script.src).then((b) => b.text())
         : script.textContent;
     const context = {
         interpreter,
         env,
-        config: hasConfig && new URL(script.getAttribute("config"), location.href).href,
+        config:
+            hasConfig &&
+            new URL(script.getAttribute("config"), location.href).href,
         get pySrc() {
             return isSetup ? source : editor.state.doc.toString();
         },
@@ -239,7 +250,7 @@ const resetTimeout = () => {
 };
 
 // triggered both ASAP on the living DOM and via MutationObserver later
-const pyEditor = async () => {
+const pyEditor = () => {
     if (timeout) return;
     timeout = setTimeout(resetTimeout, 250);
     for (const [type, interpreter] of TYPES) {
