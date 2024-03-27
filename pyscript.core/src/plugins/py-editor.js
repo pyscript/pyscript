@@ -155,7 +155,7 @@ const init = async (script, type, interpreter) => {
         throw new SyntaxError(
             configs.get(env)
                 ? `duplicated config for env: ${env}`
-                : `unable to add a config to the env env: ${env}`
+                : `unable to add a config to the env: ${env}`,
         );
     }
 
