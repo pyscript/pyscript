@@ -33,9 +33,17 @@ async function execute({ currentTarget }) {
 
     if (!envs.has(env)) {
         const srcLink = URL.createObjectURL(new Blob([""]));
-        const xworker = XWorker.call(new Hook(null, hooks), srcLink, {
-            type: this.interpreter,
-        });
+        const details = { type: this.interpreter };
+        const { config } = this;
+        if (config) {
+            details.configURL = config;
+            const { parse } = config.endsWith('.toml')
+                ? await import(/* webpackIgnore: true */ "../3rd-party/toml.js")
+                : JSON
+            details.config = parse(await fetch(config).then(r => r.text()));
+        }
+
+        const xworker = XWorker.call(new Hook(null, hooks), srcLink, details);
 
         const { sync } = xworker;
         const { promise, resolve } = Promise.withResolvers();
@@ -139,6 +147,10 @@ const init = async (script, type, interpreter) => {
     ]);
 
     const isSetup = script.hasAttribute("setup");
+    const hasConfig = script.hasAttribute("config");
+    if (hasConfig && !isSetup)
+        throw new SyntaxError("only editors with a setup can have a config");
+
     const env = `${interpreter}-${script.getAttribute("env") || getID(type)}`;
     const source = script.src
         ? await fetch(script.src).then((b) => b.text())
@@ -146,6 +158,7 @@ const init = async (script, type, interpreter) => {
     const context = {
         interpreter,
         env,
+        config: hasConfig && new URL(script.getAttribute("config"), location.href).href,
         get pySrc() {
             return isSetup ? source : editor.state.doc.toString();
         },

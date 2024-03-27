@@ -11,9 +11,10 @@
   <script type="mpy-editor" env="task1">
     print(a)
   </script>
-  <script type="mpy-editor" env="task2" setup>
+  <script type="mpy-editor" config="./config.toml" env="task2" setup>
     from pyscript import window
-    window.console.log("OK")
+    from pyscript.js_modules.html_escaper import escape, unescape
+    window.console.log(unescape(escape("<OK>")))
     b = 2
   </script>
   <script type="mpy-editor" env="task2">
