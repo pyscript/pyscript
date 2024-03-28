@@ -1,3 +1,4 @@
+import stdlib from "./stdlib.js";
 import TYPES from "./types.js";
 /**
  * A `Worker` facade able to bootstrap on the worker thread only a PyScript module.
@@ -38,11 +39,7 @@ declare const exportedHooks: {
     };
     worker: {
         onReady: Set<Function>;
-        onBeforeRun: Set<Function>; /**
-         * Given a generic DOM Element, tries to fetch the 'src' attribute, if present.
-         * It either throws an error if the 'src' can't be fetched or it returns a fallback
-         * content as source.
-         */
+        onBeforeRun: Set<Function>;
         onBeforeRunAsync: Set<Function>;
         onAfterRun: Set<Function>;
         onAfterRunAsync: Set<Function>;
@@ -55,4 +52,4 @@ declare const exportedHooks: {
 declare const exportedConfig: {};
 declare const exportedWhenDefined: (type: string) => Promise<any>;
 import sync from "./sync.js";
-export { TYPES, exportedPyWorker as PyWorker, exportedMPWorker as MPWorker, exportedHooks as hooks, exportedConfig as config, exportedWhenDefined as whenDefined };
+export { stdlib, TYPES, exportedPyWorker as PyWorker, exportedMPWorker as MPWorker, exportedHooks as hooks, exportedConfig as config, exportedWhenDefined as whenDefined };
