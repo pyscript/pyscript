@@ -168,29 +168,25 @@ const pyTerminal = async (element) => {
 for (const key of TYPES.keys()) {
     const selector = `script[type="${key}"][terminal],${key}-script[terminal]`;
     SELECTORS.push(selector);
-    customObserver.set(
-        selector,
-        async (element) => {
-            if (key === 'mpy')
-                notifyAndThrow(`Unsupported ${key} terminal.`);
+    customObserver.set(selector, async (element) => {
+        if (key === "mpy") notifyAndThrow(`Unsupported ${key} terminal.`);
 
-            // we currently support only one terminal on main as in "classic"
-            const terminals = document.querySelectorAll(SELECTORS.join(","));
-            if ([].filter.call(terminals, onceOnMain).length > 1)
-                notifyAndThrow("You can use at most 1 main terminal");
+        // we currently support only one terminal on main as in "classic"
+        const terminals = document.querySelectorAll(SELECTORS.join(","));
+        if ([].filter.call(terminals, onceOnMain).length > 1)
+            notifyAndThrow("You can use at most 1 main terminal");
 
-            // import styles lazily
-            if (addStyle) {
-                addStyle = false;
-                document.head.append(
-                    Object.assign(document.createElement("link"), {
-                        rel: "stylesheet",
-                        href: new URL("./xterm.css", import.meta.url),
-                    }),
-                );
-            }
+        // import styles lazily
+        if (addStyle) {
+            addStyle = false;
+            document.head.append(
+                Object.assign(document.createElement("link"), {
+                    rel: "stylesheet",
+                    href: new URL("./xterm.css", import.meta.url),
+                }),
+            );
+        }
 
-            await pyTerminal(element);
-        },
-    );
+        await pyTerminal(element);
+    });
 }
