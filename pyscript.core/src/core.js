@@ -26,6 +26,9 @@ import { ErrorCode } from "./exceptions.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
 import { hooks, main, worker, codeFor, createFunction } from "./hooks.js";
 
+import stdlib from "./stdlib.js";
+export { stdlib };
+
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
 

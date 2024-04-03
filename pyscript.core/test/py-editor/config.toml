@@ -1,0 +1,2 @@
+[js_modules.worker]
+"https://cdn.jsdelivr.net/npm/html-escaper/+esm" = "html_escaper"
