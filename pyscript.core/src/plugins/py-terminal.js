@@ -28,7 +28,9 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
     // in workers it's always safe to grab the polyscript currentScript
     // the ugly `_` dance is due MicroPython not able to import via:
     // `from polyscript.currentScript import terminal as __terminal__`
-    run("from polyscript import currentScript as _; __terminal__ = _.terminal; del _");
+    run(
+        "from polyscript import currentScript as _; __terminal__ = _.terminal; del _",
+    );
 
     // This part is shared among both Pyodide and MicroPython
     io.stderr = (error) => {
@@ -44,9 +46,17 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
         const encoder = new TextEncoder();
         const processData = () => {
             if (data.length) {
-                for (let i = 0, b = encoder.encode(`${data}\r`); i < b.length; i++) {
+                for (
+                    let i = 0, b = encoder.encode(`${data}\r`);
+                    i < b.length;
+                    i++
+                ) {
                     const code = interpreter.replProcessChar(b[i]);
-                    if (code) throw new Error(`replProcessChar failed with code ${code}`);
+                    if (code) {
+                        throw new Error(
+                            `replProcessChar failed with code ${code}`,
+                        );
+                    }
                 }
             }
             data = ">>> ";
@@ -55,7 +65,7 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
         };
         interpreter.setStderr = Object; // as no-op
         interpreter.setStdout = ({ write }) => {
-            io.stdout = str => {
+            io.stdout = (str) => {
                 // avoid duplicated outcome due i/o + readline
                 const ignore = str.startsWith(`>>> ${data}`);
                 return ignore ? 0 : write(`${str}\n`);
@@ -71,7 +81,7 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
                 interpreter.replInit();
                 data = "";
                 processData();
-            }
+            },
         });
     }
 
@@ -92,7 +102,7 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
     interpreter.setStderr(generic);
     interpreter.setStdin({
         isatty: true,
-        stdin: () => sync.pyterminal_read(data)
+        stdin: () => sync.pyterminal_read(data),
     });
 };
 
@@ -189,9 +199,9 @@ const pyTerminal = async (element) => {
 
             if (isMicroPython) {
                 interpreter.setStderr = Object; // as no-op
-                interpreter.setStdin = Object;  // as no-op
+                interpreter.setStdin = Object; // as no-op
                 interpreter.setStdout = ({ write }) => {
-                    io.stdout = str => write(`${str}\n`);
+                    io.stdout = (str) => write(`${str}\n`);
                 };
             }
 
@@ -222,8 +232,6 @@ for (const key of TYPES.keys()) {
     const selector = `script[type="${key}"][terminal],${key}-script[terminal]`;
     SELECTORS.push(selector);
     customObserver.set(selector, async (element) => {
-        // if (key === "mpy") notifyAndThrow(`Unsupported ${key} terminal.`);
-
         // we currently support only one terminal on main as in "classic"
         const terminals = document.querySelectorAll(SELECTORS.join(","));
         if ([].filter.call(terminals, onceOnMain).length > 1)
