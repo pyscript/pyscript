@@ -13,7 +13,7 @@
             def greetings(event):
                 print('hello world')
         </script>
-        <py-script worker terminal>
+        <script type="mpy" terminal>
             # works on both worker and main scripts
             print("__terminal__", __terminal__)
 
@@ -26,7 +26,7 @@
             # this works as expected
             print("this goes to stderr", file=sys.stderr)
             document.addEventListener('click', lambda event: print(event.type));
-        </py-script>
+        </script>
         <button id="my-button" py-click="greetings">Click me</button>
     </body>
 </html>

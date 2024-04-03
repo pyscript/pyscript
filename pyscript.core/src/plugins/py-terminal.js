@@ -22,11 +22,58 @@ let addStyle = true;
 // this callback will be serialized as string and it never needs
 // to be invoked multiple times. Each xworker here is bootstrapped
 // only once thanks to the `sync.is_pyterminal()` check.
-const workerReady = ({ interpreter, io, run }, { sync }) => {
+const workerReady = ({ interpreter, io, run, type }, { sync }) => {
     if (!sync.is_pyterminal()) return;
 
     // in workers it's always safe to grab the polyscript currentScript
-    run("from polyscript.currentScript import terminal as __terminal__");
+    // the ugly `_` dance is due MicroPython not able to import via:
+    // `from polyscript.currentScript import terminal as __terminal__`
+    run("from polyscript import currentScript as _; __terminal__ = _.terminal; del _");
+
+    // This part is shared among both Pyodide and MicroPython
+    io.stderr = (error) => {
+        sync.pyterminal_write(`${error.message || error}\n`);
+    };
+
+    const isMicroPython = type === "mpy";
+
+    // MicroPython has no code or code.interact()
+    // This part patches it in a way that simulate
+    // the code.interact() module in Pyodide.
+    if (isMicroPython) {
+        const encoder = new TextEncoder();
+        const processData = () => {
+            if (data.length) {
+                for (let i = 0, b = encoder.encode(`${data}\r`); i < b.length; i++) {
+                    const code = interpreter.replProcessChar(b[i]);
+                    if (code) throw new Error(`replProcessChar failed with code ${code}`);
+                }
+            }
+            data = ">>> ";
+            data = io.stdin();
+            processData();
+        };
+        interpreter.setStderr = Object; // as no-op
+        interpreter.setStdout = ({ write }) => {
+            io.stdout = str => {
+                // avoid duplicated outcome due i/o + readline
+                const ignore = str.startsWith(`>>> ${data}`);
+                return ignore ? 0 : write(`${str}\n`);
+            };
+        };
+        interpreter.setStdin = ({ stdin }) => {
+            io.stdin = stdin;
+        };
+        // tiny shim of the code module with only interact
+        // to bootstrap a REPL like environment
+        interpreter.registerJsModule("code", {
+            interact() {
+                interpreter.replInit();
+                data = "";
+                processData();
+            }
+        });
+    }
 
     // This part is inevitably duplicated as external scope
     // can't be reached by workers out of the box.
@@ -36,7 +83,7 @@ const workerReady = ({ interpreter, io, run }, { sync }) => {
     const generic = {
         isatty: true,
         write(buffer) {
-            data = decoder.decode(buffer);
+            data = isMicroPython ? buffer : decoder.decode(buffer);
             sync.pyterminal_write(data);
             return buffer.length;
         },
@@ -45,12 +92,8 @@ const workerReady = ({ interpreter, io, run }, { sync }) => {
     interpreter.setStderr(generic);
     interpreter.setStdin({
         isatty: true,
-        stdin: () => sync.pyterminal_read(data),
+        stdin: () => sync.pyterminal_read(data)
     });
-
-    io.stderr = (error) => {
-        sync.pyterminal_write(`${error.message || error}\n`);
-    };
 };
 
 const pyTerminal = async (element) => {
@@ -125,7 +168,7 @@ const pyTerminal = async (element) => {
     } else {
         // in the main case, just bootstrap XTerm without
         // allowing any input as that's not possible / awkward
-        hooks.main.onReady.add(function main({ interpreter, io, run }) {
+        hooks.main.onReady.add(function main({ interpreter, io, run, type }) {
             console.warn("py-terminal is read only on main thread");
             hooks.main.onReady.delete(main);
 
@@ -138,6 +181,20 @@ const pyTerminal = async (element) => {
             run("from js import __py_terminal__ as __terminal__");
             delete globalThis.__py_terminal__;
 
+            io.stderr = (error) => {
+                readline.write(`${error.message || error}\n`);
+            };
+
+            const isMicroPython = type === "mpy";
+
+            if (isMicroPython) {
+                interpreter.setStderr = Object; // as no-op
+                interpreter.setStdin = Object;  // as no-op
+                interpreter.setStdout = ({ write }) => {
+                    io.stdout = str => write(`${str}\n`);
+                };
+            }
+
             // This part is inevitably duplicated as external scope
             // can't be reached by workers out of the box.
             // The detail is that here we use readline here, not sync.
@@ -146,7 +203,7 @@ const pyTerminal = async (element) => {
             const generic = {
                 isatty: true,
                 write(buffer) {
-                    data = decoder.decode(buffer);
+                    data = isMicroPython ? buffer : decoder.decode(buffer);
                     readline.write(data);
                     return buffer.length;
                 },
@@ -157,10 +214,6 @@ const pyTerminal = async (element) => {
                 isatty: true,
                 stdin: () => readline.read(data),
             });
-
-            io.stderr = (error) => {
-                readline.write(`${error.message || error}\n`);
-            };
         });
     }
 };
@@ -169,7 +222,7 @@ for (const key of TYPES.keys()) {
     const selector = `script[type="${key}"][terminal],${key}-script[terminal]`;
     SELECTORS.push(selector);
     customObserver.set(selector, async (element) => {
-        if (key === "mpy") notifyAndThrow(`Unsupported ${key} terminal.`);
+        // if (key === "mpy") notifyAndThrow(`Unsupported ${key} terminal.`);
 
         // we currently support only one terminal on main as in "classic"
         const terminals = document.querySelectorAll(SELECTORS.join(","));
