@@ -36,7 +36,7 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
     const { pyterminal_read, pyterminal_write } = sync;
     const decoder = new TextDecoder();
     const generic = {
-        isatty: true,
+        isatty: false,
         write(buffer) {
             data = decoder.decode(buffer);
             pyterminal_write(data);
@@ -74,18 +74,16 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
                     data = out.split("\n").at(-1);
                     input = encoder.encode(`${pyterminal_read(data)}\r`);
                     length = 0;
-                    for (const c of input)
-                        interpreter.replProcessChar(c);
+                    for (const c of input) interpreter.replProcessChar(c);
                     repl();
-                }());
+                })();
             },
         });
-    }
-    else {
+    } else {
         interpreter.setStdout(generic);
         interpreter.setStderr(generic);
         interpreter.setStdin({
-            isatty: true,
+            isatty: false,
             stdin: () => pyterminal_read(data),
         });
     }
@@ -181,7 +179,7 @@ const pyTerminal = async (element) => {
             };
 
             if (type === "mpy") {
-                interpreter.setStdin = Object;  // as no-op
+                interpreter.setStdin = Object; // as no-op
                 interpreter.setStderr = Object; // as no-op
                 interpreter.setStdout = ({ write }) => {
                     io.stdout = write;
@@ -191,7 +189,7 @@ const pyTerminal = async (element) => {
             let data = "";
             const decoder = new TextDecoder();
             const generic = {
-                isatty: true,
+                isatty: false,
                 write(buffer) {
                     data = decoder.decode(buffer);
                     readline.write(data);
@@ -201,7 +199,7 @@ const pyTerminal = async (element) => {
             interpreter.setStdout(generic);
             interpreter.setStderr(generic);
             interpreter.setStdin({
-                isatty: true,
+                isatty: false,
                 stdin: () => readline.read(data),
             });
         });
