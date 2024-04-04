@@ -65,26 +65,26 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
         // MicroPython also has issues with code-points and
         // replProcessChar(byte) but that function accepts only
         // one byte per time so ... we have an issue!
-        const bufferPoints = callback => {
-            const acc = [];
-            let points = 0;
+        // @see https://github.com/pyscript/pyscript/pull/2018
+        // @see https://github.com/WebReflection/buffer-points
+        const bufferPoints = (stdio) => {
+            const bytes = [];
+            let needed = 0;
             return buffer => {
-                for (const c of buffer) {
-                    acc.push(c);
-                    if (points)
-                        points--;
-                    else {
-                        // @see https://encoding.spec.whatwg.org/#utf-8-bytes-needed
-                        if (0xC2 <= c && c <= 0xDF)
-                            points = 1;
-                        else if (0xE0 <= c && c <= 0xEF)
-                            points = 2;
-                        else if (0xF0 <= c && c <= 0xF4)
-                            points = 3;
-                        else
-                            callback(new Uint8Array(acc.splice(0)));
+                let written = 0;
+                for (const byte of buffer) {
+                    bytes.push(byte);
+                    // @see https://encoding.spec.whatwg.org/#utf-8-bytes-needed
+                    if (needed) needed--;
+                    else if (0xc2 <= byte && byte <= 0xdf) needed = 1;
+                    else if (0xe0 <= byte && byte <= 0xef) needed = 2;
+                    else if (0xf0 <= byte && byte <= 0xf4) needed = 3;
+                    if (!needed) {
+                        written += bytes.length;
+                        stdio(new Uint8Array(bytes.splice(0)));
                     }
                 }
+                return written;
             };
         };
 
@@ -99,15 +99,15 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
 
                 const encoder = new TextEncoder();
                 const acc = [];
-                const handlePoints = bufferPoints(buffer => {
+                const handlePoints = bufferPoints((buffer) => {
                     acc.push(...buffer);
                     pyterminal_write(decoder.decode(buffer));
                 });
 
-                io.stdout = (buffer) => {
-                    // avoid duplicating the output produced by the input
-                    if (length++ > input.length) handlePoints(buffer);
-                };
+                // avoid duplicating the output produced by the input
+                io.stdout = (buffer) => (
+                    length++ > input.length ? handlePoints(buffer) : 0
+                );
 
                 interpreter.replInit();
 
