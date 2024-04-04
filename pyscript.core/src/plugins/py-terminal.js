@@ -53,6 +53,12 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
     // This part patches it in a way that simulates
     // the code.interact() module in Pyodide.
     if (type === "mpy") {
+        // monkey patch global input otherwise broken in MicroPython
+        interpreter.registerJsModule("_pyscript_input", {
+            input: pyterminal_read,
+        });
+        run("from _pyscript_input import input");
+
         io.stdout = generic.write;
         // tiny shim of the code module with only interact
         // to bootstrap a REPL like environment
@@ -73,12 +79,6 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
                 };
 
                 interpreter.replInit();
-
-                // monkey patch global input otherwise broken in MicroPython
-                interpreter.registerJsModule("_pyscript_input", {
-                    input: pyterminal_read,
-                });
-                run("from _pyscript_input import input");
 
                 // loop forever waiting for user inputs
                 (function repl() {
