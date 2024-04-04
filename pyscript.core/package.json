@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.4.12",
+    "version": "0.4.13",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -42,7 +42,7 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.12.1",
+        "polyscript": "^0.12.2",
         "sticky-module": "^0.1.1",
         "to-json-callback": "^0.1.1",
         "type-checked-collections": "^0.1.7"
@@ -62,7 +62,7 @@
         "chokidar": "^3.6.0",
         "codemirror": "^6.0.1",
         "eslint": "^8.57.0",
-        "rollup": "^4.13.2",
+        "rollup": "^4.14.0",
         "rollup-plugin-postcss": "^4.0.2",
         "rollup-plugin-string": "^3.0.0",
         "static-handler": "^0.4.3",
