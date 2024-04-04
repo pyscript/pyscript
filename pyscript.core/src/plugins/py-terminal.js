@@ -58,22 +58,35 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
         // to bootstrap a REPL like environment
         interpreter.registerJsModule("code", {
             interact() {
-                const encoder = new TextEncoder();
-                const acc = [];
                 let input = "";
                 let length = 1;
-                io.stdout = ([c]) => {
+
+                const encoder = new TextEncoder();
+                const acc = [];
+
+                io.stdout = (buffer) => {
                     // avoid duplicating the output produced by the input
-                    if (length++ > input.length) acc.push(c);
+                    if (length++ > input.length) {
+                        acc.push(...buffer);
+                        pyterminal_write(decoder.decode(buffer));
+                    }
                 };
+
                 interpreter.replInit();
+
+                // monkey patch global input otherwise broken in MicroPython
+                interpreter.registerJsModule("_pyscript_input", {
+                    input: pyterminal_read,
+                });
+                run("from _pyscript_input import input");
+
+                // loop forever waiting for user inputs
                 (function repl() {
                     const out = decoder.decode(new Uint8Array(acc.splice(0)));
-                    pyterminal_write(out);
                     // print in current line only the last line produced by the REPL
-                    data = out.split("\n").at(-1);
-                    input = encoder.encode(`${pyterminal_read(data)}\r`);
+                    const data = `${pyterminal_read(out.split("\n").at(-1))}\r`;
                     length = 0;
+                    input = encoder.encode(data);
                     for (const c of input) interpreter.replProcessChar(c);
                     repl();
                 })();
