@@ -76,7 +76,7 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
 
                 // monkey patch global input otherwise broken in MicroPython
                 interpreter.registerJsModule("_pyscript_input", {
-                    input: pyterminal_read
+                    input: pyterminal_read,
                 });
                 run("from _pyscript_input import input");
 
