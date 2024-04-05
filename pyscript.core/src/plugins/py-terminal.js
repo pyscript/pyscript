@@ -70,7 +70,7 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
         const bufferPoints = (stdio) => {
             const bytes = [];
             let needed = 0;
-            return buffer => {
+            return (buffer) => {
                 let written = 0;
                 for (const byte of buffer) {
                     bytes.push(byte);
@@ -105,9 +105,8 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
                 });
 
                 // avoid duplicating the output produced by the input
-                io.stdout = (buffer) => (
-                    length++ > input.length ? handlePoints(buffer) : 0
-                );
+                io.stdout = (buffer) =>
+                    length++ > input.length ? handlePoints(buffer) : 0;
 
                 interpreter.replInit();
 
