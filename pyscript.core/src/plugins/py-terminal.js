@@ -59,7 +59,37 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
         });
         run("from _pyscript_input import input");
 
-        io.stdout = generic.write;
+        // this is needed to avoid truncated unicode in MicroPython
+        // the reason is that `linebuffer` false just send one byte
+        // per time and readline here doesn't like it much.
+        // MicroPython also has issues with code-points and
+        // replProcessChar(byte) but that function accepts only
+        // one byte per time so ... we have an issue!
+        // @see https://github.com/pyscript/pyscript/pull/2018
+        // @see https://github.com/WebReflection/buffer-points
+        const bufferPoints = (stdio) => {
+            const bytes = [];
+            let needed = 0;
+            return (buffer) => {
+                let written = 0;
+                for (const byte of buffer) {
+                    bytes.push(byte);
+                    // @see https://encoding.spec.whatwg.org/#utf-8-bytes-needed
+                    if (needed) needed--;
+                    else if (0xc2 <= byte && byte <= 0xdf) needed = 1;
+                    else if (0xe0 <= byte && byte <= 0xef) needed = 2;
+                    else if (0xf0 <= byte && byte <= 0xf4) needed = 3;
+                    if (!needed) {
+                        written += bytes.length;
+                        stdio(new Uint8Array(bytes.splice(0)));
+                    }
+                }
+                return written;
+            };
+        };
+
+        io.stdout = bufferPoints(generic.write);
+
         // tiny shim of the code module with only interact
         // to bootstrap a REPL like environment
         interpreter.registerJsModule("code", {
@@ -69,14 +99,14 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
 
                 const encoder = new TextEncoder();
                 const acc = [];
+                const handlePoints = bufferPoints((buffer) => {
+                    acc.push(...buffer);
+                    pyterminal_write(decoder.decode(buffer));
+                });
 
-                io.stdout = (buffer) => {
-                    // avoid duplicating the output produced by the input
-                    if (length++ > input.length) {
-                        acc.push(...buffer);
-                        pyterminal_write(decoder.decode(buffer));
-                    }
-                };
+                // avoid duplicating the output produced by the input
+                io.stdout = (buffer) =>
+                    length++ > input.length ? handlePoints(buffer) : 0;
 
                 interpreter.replInit();
 

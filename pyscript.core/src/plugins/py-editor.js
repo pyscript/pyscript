@@ -15,8 +15,8 @@ const hooks = {
         codeBeforeRun: () => stdlib,
         // works on both Pyodide and MicroPython
         onReady: ({ runAsync, io }, { sync }) => {
-            io.stdout = (line) => sync.write(line);
-            io.stderr = (line) => sync.writeErr(line);
+            io.stdout = io.buffered(sync.write);
+            io.stderr = io.buffered(sync.writeErr);
             sync.revoke();
             sync.runAsync = runAsync;
         },
