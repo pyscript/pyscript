@@ -179,12 +179,15 @@ const pyTerminal = async (element) => {
                     // MicroPython and Pyodide
                     for (const line of code.split(/(?:\r|\n|\r\n)/)) {
                         terminal.paste(`${line}\n`);
-                        do { await new Promise(resolve => setTimeout(resolve, 0)); }
-                        while (!readline.instance.activeRead?.resolve);
-                        readline.instance.activeRead.resolve(line);
+                        do {
+                            await new Promise((resolve) =>
+                                setTimeout(resolve, 0),
+                            );
+                        } while (!readline.activeRead?.resolve);
+                        readline.activeRead.resolve(line);
                     }
                 },
-            }
+            },
         });
         return terminal;
     };
