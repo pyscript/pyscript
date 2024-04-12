@@ -1,7 +1,7 @@
 // PyScript py-terminal plugin
 import { TYPES, hooks } from "../core.js";
 import { notify } from "./error.js";
-import { customObserver, defineProperty } from "polyscript/exports";
+import { customObserver, defineProperties } from "polyscript/exports";
 
 // will contain all valid selectors
 const SELECTORS = [];
@@ -170,7 +170,25 @@ const pyTerminal = async (element) => {
         terminal.open(target);
         fitAddon.fit();
         terminal.focus();
-        defineProperty(element, "terminal", { value: terminal });
+        defineProperties(element, {
+            terminal: { value: terminal },
+            process: {
+                value: async (code) => {
+                    // this loop is the only way I could find to actually simulate
+                    // the user input char after char in a way that works in both
+                    // MicroPython and Pyodide
+                    for (const line of code.split(/(?:\r|\n|\r\n)/)) {
+                        terminal.paste(`${line}\n`);
+                        do {
+                            await new Promise((resolve) =>
+                                setTimeout(resolve, 0),
+                            );
+                        } while (!readline.activeRead?.resolve);
+                        readline.activeRead.resolve(line);
+                    }
+                },
+            },
+        });
         return terminal;
     };
 
