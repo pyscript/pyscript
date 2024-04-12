@@ -51,6 +51,9 @@ const modules = {
     "xterm_addon-fit.js": fetch(`${CDN}/@xterm/addon-fit/+esm`).then((b) =>
         b.text(),
     ),
+    "xterm_addon-web-links.js": fetch(
+        `${CDN}/@xterm/addon-web-links/+esm`,
+    ).then((b) => b.text()),
     "xterm.css": fetch(`${CDN}/xterm@${v("xterm")}/css/xterm.min.css`).then(
         (b) => b.text(),
     ),
