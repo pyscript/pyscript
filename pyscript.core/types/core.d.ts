@@ -51,5 +51,4 @@ declare const exportedHooks: {
 };
 declare const exportedConfig: {};
 declare const exportedWhenDefined: (type: string) => Promise<any>;
-import sync from "./sync.js";
 export { stdlib, TYPES, exportedPyWorker as PyWorker, exportedMPWorker as MPWorker, exportedHooks as hooks, exportedConfig as config, exportedWhenDefined as whenDefined };

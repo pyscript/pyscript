@@ -1,7 +1,7 @@
 // PyScript py-terminal plugin
 import { TYPES, hooks } from "../core.js";
 import { notify } from "./error.js";
-import { customObserver, defineProperty } from "polyscript/exports";
+import { customObserver, defineProperties } from "polyscript/exports";
 
 // will contain all valid selectors
 const SELECTORS = [];
@@ -32,87 +32,117 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
         "from polyscript import currentScript as _; __terminal__ = _.terminal; del _",
     );
 
-    // This part is shared among both Pyodide and MicroPython
-    io.stderr = (error) => {
-        sync.pyterminal_write(`${error.message || error}\n`);
+    let data = "";
+    const { pyterminal_read, pyterminal_write } = sync;
+    const decoder = new TextDecoder();
+    const generic = {
+        isatty: false,
+        write(buffer) {
+            data = decoder.decode(buffer);
+            pyterminal_write(data);
+            return buffer.length;
+        },
     };
 
-    const isMicroPython = type === "mpy";
+    // This part works already in both Pyodide and MicroPython
+    io.stderr = (error) => {
+        pyterminal_write(String(error.message || error));
+    };
 
     // MicroPython has no code or code.interact()
-    // This part patches it in a way that simulate
+    // This part patches it in a way that simulates
     // the code.interact() module in Pyodide.
-    if (isMicroPython) {
-        const encoder = new TextEncoder();
-        const processData = () => {
-            if (data.length) {
-                for (
-                    let i = 0, b = encoder.encode(`${data}\r`);
-                    i < b.length;
-                    i++
-                ) {
-                    const code = interpreter.replProcessChar(b[i]);
-                    if (code) {
-                        throw new Error(
-                            `replProcessChar failed with code ${code}`,
-                        );
+    if (type === "mpy") {
+        // monkey patch global input otherwise broken in MicroPython
+        interpreter.registerJsModule("_pyscript_input", {
+            input: pyterminal_read,
+        });
+        run("from _pyscript_input import input");
+
+        // this is needed to avoid truncated unicode in MicroPython
+        // the reason is that `linebuffer` false just send one byte
+        // per time and readline here doesn't like it much.
+        // MicroPython also has issues with code-points and
+        // replProcessChar(byte) but that function accepts only
+        // one byte per time so ... we have an issue!
+        // @see https://github.com/pyscript/pyscript/pull/2018
+        // @see https://github.com/WebReflection/buffer-points
+        const bufferPoints = (stdio) => {
+            const bytes = [];
+            let needed = 0;
+            return (buffer) => {
+                let written = 0;
+                for (const byte of buffer) {
+                    bytes.push(byte);
+                    // @see https://encoding.spec.whatwg.org/#utf-8-bytes-needed
+                    if (needed) needed--;
+                    else if (0xc2 <= byte && byte <= 0xdf) needed = 1;
+                    else if (0xe0 <= byte && byte <= 0xef) needed = 2;
+                    else if (0xf0 <= byte && byte <= 0xf4) needed = 3;
+                    if (!needed) {
+                        written += bytes.length;
+                        stdio(new Uint8Array(bytes.splice(0)));
                     }
                 }
-            }
-            data = ">>> ";
-            data = io.stdin();
-            processData();
-        };
-        interpreter.setStderr = Object; // as no-op
-        interpreter.setStdout = ({ write }) => {
-            io.stdout = (str) => {
-                // avoid duplicated outcome due i/o + readline
-                const ignore = str.startsWith(`>>> ${data}`);
-                return ignore ? 0 : write(`${str}\n`);
+                return written;
             };
         };
-        interpreter.setStdin = ({ stdin }) => {
-            io.stdin = stdin;
-        };
+
+        io.stdout = bufferPoints(generic.write);
+
         // tiny shim of the code module with only interact
         // to bootstrap a REPL like environment
         interpreter.registerJsModule("code", {
             interact() {
+                let input = "";
+                let length = 1;
+
+                const encoder = new TextEncoder();
+                const acc = [];
+                const handlePoints = bufferPoints((buffer) => {
+                    acc.push(...buffer);
+                    pyterminal_write(decoder.decode(buffer));
+                });
+
+                // avoid duplicating the output produced by the input
+                io.stdout = (buffer) =>
+                    length++ > input.length ? handlePoints(buffer) : 0;
+
                 interpreter.replInit();
-                data = "";
-                processData();
+
+                // loop forever waiting for user inputs
+                (function repl() {
+                    const out = decoder.decode(new Uint8Array(acc.splice(0)));
+                    // print in current line only the last line produced by the REPL
+                    const data = `${pyterminal_read(out.split("\n").at(-1))}\r`;
+                    length = 0;
+                    input = encoder.encode(data);
+                    for (const c of input) interpreter.replProcessChar(c);
+                    repl();
+                })();
             },
         });
+    } else {
+        interpreter.setStdout(generic);
+        interpreter.setStderr(generic);
+        interpreter.setStdin({
+            isatty: false,
+            stdin: () => pyterminal_read(data),
+        });
     }
-
-    // This part is inevitably duplicated as external scope
-    // can't be reached by workers out of the box.
-    // The detail is that here we use sync though, not readline.
-    const decoder = new TextDecoder();
-    let data = "";
-    const generic = {
-        isatty: true,
-        write(buffer) {
-            data = isMicroPython ? buffer : decoder.decode(buffer);
-            sync.pyterminal_write(data);
-            return buffer.length;
-        },
-    };
-    interpreter.setStdout(generic);
-    interpreter.setStderr(generic);
-    interpreter.setStdin({
-        isatty: true,
-        stdin: () => sync.pyterminal_read(data),
-    });
 };
 
 const pyTerminal = async (element) => {
     // lazy load these only when a valid terminal is found
-    const [{ Terminal }, { Readline }, { FitAddon }] = await Promise.all([
-        import(/* webpackIgnore: true */ "../3rd-party/xterm.js"),
-        import(/* webpackIgnore: true */ "../3rd-party/xterm-readline.js"),
-        import(/* webpackIgnore: true */ "../3rd-party/xterm_addon-fit.js"),
-    ]);
+    const [{ Terminal }, { Readline }, { FitAddon }, { WebLinksAddon }] =
+        await Promise.all([
+            import(/* webpackIgnore: true */ "../3rd-party/xterm.js"),
+            import(/* webpackIgnore: true */ "../3rd-party/xterm-readline.js"),
+            import(/* webpackIgnore: true */ "../3rd-party/xterm_addon-fit.js"),
+            import(
+                /* webpackIgnore: true */ "../3rd-party/xterm_addon-web-links.js"
+            ),
+        ]);
 
     const readline = new Readline();
 
@@ -141,10 +171,29 @@ const pyTerminal = async (element) => {
         const fitAddon = new FitAddon();
         terminal.loadAddon(fitAddon);
         terminal.loadAddon(readline);
+        terminal.loadAddon(new WebLinksAddon());
         terminal.open(target);
         fitAddon.fit();
         terminal.focus();
-        defineProperty(element, "terminal", { value: terminal });
+        defineProperties(element, {
+            terminal: { value: terminal },
+            process: {
+                value: async (code) => {
+                    // this loop is the only way I could find to actually simulate
+                    // the user input char after char in a way that works in both
+                    // MicroPython and Pyodide
+                    for (const line of code.split(/(?:\r|\n|\r\n)/)) {
+                        terminal.paste(`${line}\n`);
+                        do {
+                            await new Promise((resolve) =>
+                                setTimeout(resolve, 0),
+                            );
+                        } while (!readline.activeRead?.resolve);
+                        readline.activeRead.resolve(line);
+                    }
+                },
+            },
+        });
         return terminal;
     };
 
@@ -192,28 +241,23 @@ const pyTerminal = async (element) => {
             delete globalThis.__py_terminal__;
 
             io.stderr = (error) => {
-                readline.write(`${error.message || error}\n`);
+                readline.write(String(error.message || error));
             };
 
-            const isMicroPython = type === "mpy";
-
-            if (isMicroPython) {
-                interpreter.setStderr = Object; // as no-op
+            if (type === "mpy") {
                 interpreter.setStdin = Object; // as no-op
+                interpreter.setStderr = Object; // as no-op
                 interpreter.setStdout = ({ write }) => {
-                    io.stdout = (str) => write(`${str}\n`);
+                    io.stdout = write;
                 };
             }
 
-            // This part is inevitably duplicated as external scope
-            // can't be reached by workers out of the box.
-            // The detail is that here we use readline here, not sync.
-            const decoder = new TextDecoder();
             let data = "";
+            const decoder = new TextDecoder();
             const generic = {
-                isatty: true,
+                isatty: false,
                 write(buffer) {
-                    data = isMicroPython ? buffer : decoder.decode(buffer);
+                    data = decoder.decode(buffer);
                     readline.write(data);
                     return buffer.length;
                 },
@@ -221,7 +265,7 @@ const pyTerminal = async (element) => {
             interpreter.setStdout(generic);
             interpreter.setStderr(generic);
             interpreter.setStdin({
-                isatty: true,
+                isatty: false,
                 stdin: () => readline.read(data),
             });
         });
