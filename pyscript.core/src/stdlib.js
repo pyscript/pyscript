@@ -8,6 +8,27 @@
 
 import pyscript from "./stdlib/pyscript.js";
 
+class Ignore extends Array {
+    #add = false;
+    #paths;
+    #array;
+    constructor(array, ...paths) {
+        super();
+        this.#array = array;
+        this.#paths = paths;
+    }
+    push(...values) {
+        if (this.#add) super.push(...values);
+        return this.#array.push(...values);
+    }
+    path(path) {
+        for (const _path of this.#paths) {
+            // bails out at the first `true` value
+            if ((this.#add = path.startsWith(_path))) break;
+        }
+    }
+}
+
 const { entries } = Object;
 
 const python = [
@@ -16,16 +37,19 @@ const python = [
     "_path = None",
 ];
 
+const ignore = new Ignore(python, './pyweb');
+
 const write = (base, literal) => {
     for (const [key, value] of entries(literal)) {
-        python.push(`_path = _Path("${base}/${key}")`);
+        ignore.path(`${base}/${key}`);
+        ignore.push(`_path = _Path("${base}/${key}")`);
         if (typeof value === "string") {
             const code = JSON.stringify(value);
-            python.push(`_path.write_text(${code},encoding="utf-8")`);
+            ignore.push(`_path.write_text(${code},encoding="utf-8")`);
         } else {
             // @see https://github.com/pyscript/pyscript/pull/1813#issuecomment-1781502909
-            python.push(`if not _os.path.exists("${base}/${key}"):`);
-            python.push("    _path.mkdir(parents=True, exist_ok=True)");
+            ignore.push(`if not _os.path.exists("${base}/${key}"):`);
+            ignore.push("    _path.mkdir(parents=True, exist_ok=True)");
             write(`${base}/${key}`, value);
         }
     }
@@ -42,4 +66,5 @@ python.push(
 );
 python.push("\n");
 
-export default python.join("\n");
+export const stdlib = python.join("\n");
+export const optional = ignore.join("\n");
