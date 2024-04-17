@@ -16,7 +16,7 @@ const code = (hooks, branch, key, lib) => {
 };
 
 export const codeFor = (branch, type) => {
-    const pylib = type === 'mpy' ? stdlib.replace(optional, '') : stdlib;
+    const pylib = type === "mpy" ? stdlib.replace(optional, "") : stdlib;
     const hooks = {};
     code(hooks, branch, `codeBeforeRun`, pylib);
     code(hooks, branch, `codeBeforeRunAsync`, pylib);

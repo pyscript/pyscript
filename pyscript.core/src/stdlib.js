@@ -37,7 +37,7 @@ const python = [
     "_path = None",
 ];
 
-const ignore = new Ignore(python, './pyweb');
+const ignore = new Ignore(python, "./pyweb");
 
 const write = (base, literal) => {
     for (const [key, value] of entries(literal)) {
