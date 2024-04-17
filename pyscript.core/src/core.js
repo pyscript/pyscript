@@ -26,8 +26,8 @@ import { ErrorCode } from "./exceptions.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
 import { hooks, main, worker, codeFor, createFunction } from "./hooks.js";
 
-import stdlib from "./stdlib.js";
-export { stdlib };
+import { stdlib, optional } from "./stdlib.js";
+export { stdlib, optional };
 
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
@@ -168,7 +168,7 @@ for (const [TYPE, interpreter] of TYPES) {
             // specific main and worker hooks
             const hooks = {
                 main: {
-                    ...codeFor(main),
+                    ...codeFor(main, TYPE),
                     async onReady(wrap, element) {
                         registerModule(wrap);
 
@@ -265,7 +265,7 @@ for (const [TYPE, interpreter] of TYPES) {
                     },
                 },
                 worker: {
-                    ...codeFor(worker),
+                    ...codeFor(worker, TYPE),
                     // these are lazy getters that returns a composition
                     // of the current hooks or undefined, if no hook is present
                     get onReady() {
