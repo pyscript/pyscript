@@ -1,6 +1,6 @@
 export function main(name: any): any;
 export function worker(name: any): any;
-export function codeFor(branch: any): {};
+export function codeFor(branch: any, type: any): {};
 export function createFunction(self: any, name: any): any;
 export namespace hooks {
     namespace main {

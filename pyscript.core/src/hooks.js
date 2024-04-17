@@ -2,7 +2,7 @@ import { typedSet } from "type-checked-collections";
 import { dedent } from "polyscript/exports";
 import toJSONCallback from "to-json-callback";
 
-import stdlib from "./stdlib.js";
+import { stdlib, optional } from "./stdlib.js";
 
 export const main = (name) => hooks.main[name];
 export const worker = (name) => hooks.worker[name];
@@ -15,10 +15,11 @@ const code = (hooks, branch, key, lib) => {
     };
 };
 
-export const codeFor = (branch) => {
+export const codeFor = (branch, type) => {
+    const pylib = type === "mpy" ? stdlib.replace(optional, "") : stdlib;
     const hooks = {};
-    code(hooks, branch, `codeBeforeRun`, stdlib);
-    code(hooks, branch, `codeBeforeRunAsync`, stdlib);
+    code(hooks, branch, `codeBeforeRun`, pylib);
+    code(hooks, branch, `codeBeforeRunAsync`, pylib);
     code(hooks, branch, `codeAfterRun`);
     code(hooks, branch, `codeAfterRunAsync`);
     return hooks;
