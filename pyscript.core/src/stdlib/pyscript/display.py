@@ -6,17 +6,17 @@ import re
 from pyscript.magic_js import current_target, document, window
 
 _MIME_METHODS = {
-    "__repr__": "text/plain",
-    "_repr_html_": "text/html",
-    "_repr_markdown_": "text/markdown",
-    "_repr_svg_": "image/svg+xml",
-    "_repr_pdf_": "application/pdf",
-    "_repr_jpeg_": "image/jpeg",
-    "_repr_png_": "image/png",
-    "_repr_latex": "text/latex",
-    "_repr_json_": "application/json",
-    "_repr_javascript_": "application/javascript",
     "savefig": "image/png",
+    "_repr_javascript_": "application/javascript",
+    "_repr_json_": "application/json",
+    "_repr_latex": "text/latex",
+    "_repr_png_": "image/png",
+    "_repr_jpeg_": "image/jpeg",
+    "_repr_pdf_": "application/pdf",
+    "_repr_svg_": "image/svg+xml",
+    "_repr_markdown_": "text/markdown",
+    "_repr_html_": "text/html",
+    "__repr__": "text/plain",
 }
 
 
@@ -99,7 +99,7 @@ def _format_mime(obj):
         format_dict = mimebundle
 
     output, not_available = None, []
-    for method, mime_type in reversed(_MIME_METHODS.items()):
+    for method, mime_type in _MIME_METHODS.items():
         if mime_type in format_dict:
             output = format_dict[mime_type]
         else:
