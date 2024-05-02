@@ -7,7 +7,7 @@ declare namespace _default {
         "ffi.py": string;
         "magic_js.py": string;
         "util.py": string;
-        "web_socket.py": string;
+        "websocket.py": string;
     };
     let pyweb: {
         "__init__.py": string;

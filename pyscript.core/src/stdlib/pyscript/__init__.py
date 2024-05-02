@@ -41,7 +41,7 @@ from pyscript.magic_js import (
     sync,
     window,
 )
-from pyscript.web_socket import WebSocket
+from pyscript.websocket import WebSocket
 
 try:
     from pyscript.event_handling import when
