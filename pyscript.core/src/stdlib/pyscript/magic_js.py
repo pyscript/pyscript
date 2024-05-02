@@ -1,11 +1,13 @@
 import sys
+import json
 
 import js as globalThis
-from polyscript import js_modules
+from polyscript import js_modules, config as _config
 from pyscript.util import NotSupported
 
 RUNNING_IN_WORKER = not hasattr(globalThis, "document")
 
+config = json.loads(globalThis.JSON.stringify(_config))
 
 # allow `from pyscript.js_modules.xxx import yyy`
 class JSModule:
