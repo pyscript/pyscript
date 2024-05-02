@@ -1,6 +1,7 @@
 import json
+
 import js
-from util import as_bytearray
+from pyscript.util import as_bytearray
 
 
 ### wrap the response to grant Pythonic results

@@ -1,6 +1,5 @@
 import js
-from util import as_bytearray
-
+from pyscript.util import as_bytearray
 
 code = "code"
 protocols = "protocols"
@@ -15,7 +14,10 @@ class EventMessage:
         value = getattr(self._event, attr)
 
         if attr == "data" and not isinstance(value, str):
-            return as_bytearray(value)
+            if hasattr(value, "to_py"):
+                return value.to_py()
+            # shims in MicroPython
+            return memoryview(as_bytearray(value))
 
         return value
 
@@ -37,10 +39,10 @@ class WebSocket:
         return getattr(self._ws, attr)
 
     def __setattr__(self, attr, value):
-        if attr === "onmessage":
-            py_value = value
-            value = lambda e: py_value(EventMessage(e))
-        self._ws[attr] = value
+        if attr == "onmessage":
+            self._ws[attr] = lambda e: value(EventMessage(e))
+        else:
+            self._ws[attr] = value
 
     def close(self, **kw):
         if code in kw and reason in kw:
