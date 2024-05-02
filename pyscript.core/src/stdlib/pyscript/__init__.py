@@ -31,6 +31,7 @@
 
 from pyscript.display import HTML, display
 from pyscript.fetch import fetch
+from pyscript.web_socket import WebSocket
 from pyscript.magic_js import (
     RUNNING_IN_WORKER,
     PyWorker,

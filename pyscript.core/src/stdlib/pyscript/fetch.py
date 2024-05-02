@@ -1,6 +1,6 @@
 import json
-
 import js
+from util import as_bytearray
 
 
 ### wrap the response to grant Pythonic results
@@ -12,14 +12,6 @@ class _Response:
     def __getattr__(self, attr):
         return getattr(self._response, attr)
 
-    def _as_bytearray(self, buffer):
-        ui8a = js.Uint8Array.new(buffer)
-        size = ui8a.length
-        ba = bytearray(size)
-        for i in range(0, size):
-            ba[i] = ui8a[i]
-        return ba
-
     # exposed methods with Pythonic results
     async def arrayBuffer(self):
         buffer = await self._response.arrayBuffer()
@@ -27,14 +19,14 @@ class _Response:
         if hasattr(buffer, "to_py"):
             return buffer.to_py()
         # shims in MicroPython
-        return memoryview(self._as_bytearray(buffer))
+        return memoryview(as_bytearray(buffer))
 
     async def blob(self):
         return await self._response.blob()
 
     async def bytearray(self):
         buffer = await self._response.arrayBuffer()
-        return self._as_bytearray(buffer)
+        return as_bytearray(buffer)
 
     async def json(self):
         return json.loads(await self.text())
