@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../dist/core.css">
+  <script type="module" src="../../dist/core.js"></script>
+</head>
+<body>
+  <script type="mpy" worker>
+    from pyscript import WebSocket, document
+
+    def onopen(event):
+        print(event.type)
+        ws.send("hello")
+
+    def onmessage(event):
+        print(event.type, event.data)
+        ws.close()
+
+    def onclose(event):
+        print(event.type)
+        document.documentElement.classList.add("ok")
+
+    ws = WebSocket(url="ws://localhost:5037/")
+    ws.onopen = onopen
+    ws.onmessage = onmessage
+    ws.onclose = onclose
+  </script>
+</body>
+</html>
