@@ -30,21 +30,24 @@ class WebSocket(object):
 
     def __init__(self, **kw):
         url = kw["url"]
-        socket = None
         if protocols in kw:
             socket = js.WebSocket.new(url, kw[protocols])
         else:
             socket = js.WebSocket.new(url)
         object.__setattr__(self, "_ws", socket)
 
+        for t in ["onclose", "onerror", "onmessage", "onopen"]:
+            if t in kw:
+                socket[t] = kw[t]
+
     def __getattr__(self, attr):
         return getattr(self._ws, attr)
 
     def __setattr__(self, attr, value):
         if attr == "onmessage":
-            setattr(self._ws, attr, lambda e: value(EventMessage(e)))
+            self._ws[attr] = lambda e: value(EventMessage(e))
         else:
-            setattr(self._ws, attr, value)
+            self._ws[attr] = value
 
     def close(self, **kw):
         if code in kw and reason in kw:
