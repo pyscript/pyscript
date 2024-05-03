@@ -22,10 +22,12 @@
         print(event.type)
         document.documentElement.classList.add("ok")
 
-    ws = WebSocket(url="ws://localhost:5037/")
-    ws.onopen = onopen
-    ws.onmessage = onmessage
-    ws.onclose = onclose
+    ws = WebSocket(
+      url="ws://localhost:5037/",
+      onopen=onopen,
+      onmessage=onmessage,
+      onclose=onclose
+    )
   </script>
 </body>
 </html>
