@@ -21,6 +21,7 @@ class EventMessage:
 
         return value
 
+
 class WebSocket(object):
     CONNECTING = 0
     OPEN = 1
