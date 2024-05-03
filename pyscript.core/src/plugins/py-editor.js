@@ -42,6 +42,8 @@ async function execute({ currentTarget }) {
                 ? await import(/* webpackIgnore: true */ "../3rd-party/toml.js")
                 : JSON;
             details.config = parse(await fetch(config).then((r) => r.text()));
+            const { interpreter } = details.config;
+            if (interpreter) details.version = interpreter;
         }
 
         const xworker = XWorker.call(new Hook(null, hooks), srcLink, details);
