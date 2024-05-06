@@ -43,7 +43,7 @@ async function execute({ currentTarget }) {
                 : JSON;
             details.config = parse(await fetch(config).then((r) => r.text()));
             const { interpreter } = details.config;
-            if (interpreter) details.version = interpreter;
+            if (interpreter) details.version = new URL(interpreter, location.href).href;
         }
 
         const xworker = XWorker.call(new Hook(null, hooks), srcLink, details);
