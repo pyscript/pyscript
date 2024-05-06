@@ -84,10 +84,8 @@ export {
     exportedWhenDefined as whenDefined,
 };
 
-export const offline_interpreter = config => (
-    config?.interpreter &&
-    new URL(config.interpreter, location.href).href
-);
+export const offline_interpreter = (config) =>
+    config?.interpreter && new URL(config.interpreter, location.href).href;
 
 const hooked = new Map();
 
