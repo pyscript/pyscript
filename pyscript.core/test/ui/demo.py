@@ -1,13 +1,17 @@
-from textwrap import dedent
+try:
+    from textwrap import dedent
+except ImportError:
+    dedent = lambda x: x
 
 import examples
 import styles
-from pyscript import when, window
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui import shoelace
 from pyweb.ui.elements import a, button, div, grid, h1, h2, h3, input_
 from pyweb.ui.markdown import markdown
+
+from pyscript import when, window
 
 MAIN_PAGE_MARKDOWN = dedent(
     """
