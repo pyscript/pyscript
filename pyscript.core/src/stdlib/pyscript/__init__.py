@@ -34,12 +34,14 @@ from pyscript.fetch import fetch
 from pyscript.magic_js import (
     RUNNING_IN_WORKER,
     PyWorker,
+    config,
     current_target,
     document,
     js_modules,
     sync,
     window,
 )
+from pyscript.websocket import WebSocket
 
 try:
     from pyscript.event_handling import when

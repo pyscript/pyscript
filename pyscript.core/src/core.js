@@ -84,6 +84,9 @@ export {
     exportedWhenDefined as whenDefined,
 };
 
+export const offline_interpreter = (config) =>
+    config?.interpreter && new URL(config.interpreter, location.href).href;
+
 const hooked = new Map();
 
 for (const [TYPE, interpreter] of TYPES) {
@@ -294,7 +297,7 @@ for (const [TYPE, interpreter] of TYPES) {
                 interpreter,
                 hooks,
                 env: `${TYPE}-script`,
-                version: config?.interpreter,
+                version: offline_interpreter(config),
                 onerror(error, element) {
                     errors.set(element, error);
                 },

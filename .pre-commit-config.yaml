@@ -7,7 +7,7 @@ ci:
 default_stages: [commit]
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v4.5.0
+      rev: v4.6.0
       hooks:
           - id: check-builtin-literals
           - id: check-case-conflict
@@ -25,7 +25,7 @@ repos:
           - id: trailing-whitespace
 
     - repo: https://github.com/psf/black
-      rev: 24.3.0
+      rev: 24.4.2
       hooks:
           - id: black
             exclude: pyscript\.core/src/stdlib/pyscript/__init__\.py
