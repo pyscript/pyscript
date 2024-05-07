@@ -640,6 +640,11 @@ class option(TextElementBase):
 
     tag = "option"
 
+    disabled = JSProperty("value")
+    label = JSProperty("label")
+    selected = JSProperty("selected")
+    value = JSProperty("value")
+
 
 class output(TextElementBase):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output"""
