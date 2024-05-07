@@ -1,3 +1,5 @@
+import inspect
+
 try:
     from typing import Any
 except ImportError:
@@ -121,7 +123,7 @@ class Element(BaseElement):
         # TODO: this is Pyodide specific for now!!!!!!
         # if we get passed a JSProxy Element directly we just map it to the
         # higher level Python element
-        if isinstance(child, JsProxy):
+        if inspect.isclass(JsProxy) and isinstance(child, JsProxy):
             return self.append(Element(child))
 
         elif isinstance(child, Element):
