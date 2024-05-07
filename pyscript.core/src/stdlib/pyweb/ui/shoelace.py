@@ -1,7 +1,6 @@
+from pyscript import document, when, window
 from pyweb import JSProperty, pydom
 from pyweb.ui import elements as el
-
-from pyscript import document, when, window
 
 
 class ShoeBase(el.ElementBase):

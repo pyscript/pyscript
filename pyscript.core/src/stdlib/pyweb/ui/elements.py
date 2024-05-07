@@ -1,9 +1,8 @@
 import inspect
 import sys
 
-from pyweb import JSProperty, pydom
-
 from pyscript import document, when, window
+from pyweb import JSProperty, pydom
 
 #: A flag to show if MicroPython is the current Python interpreter.
 is_micropython = "MicroPython" in sys.version

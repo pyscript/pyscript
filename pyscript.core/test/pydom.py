@@ -3,9 +3,8 @@ import sys
 import time
 from datetime import datetime as dt
 
-from pyweb import pydom
-
 from pyscript import display, when
+from pyweb import pydom
 
 display(sys.version, target="system-info")
 
