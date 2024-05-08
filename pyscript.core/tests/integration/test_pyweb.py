@@ -25,34 +25,38 @@ DEFAULT_ELEMENT_ATTRIBUTES = {
     "virtualkeyboardpolicy": "manual",
 }
 
-INTERPRETERS = ['py', 'mpy']
+INTERPRETERS = ["py", "mpy"]
+
 
 @pytest.fixture(params=INTERPRETERS)
 def interpreter(request):
     return request.param
 
+
 class TestElements(PyScriptTest):
     """Test all elements in the pyweb.ui.elements module.
-    
+
     This class tests all elements in the pyweb.ui.elements module. It creates
     an element of each type, both executing in the main thread and in a worker.
     It runs each test for each interpreter defined in `INTERPRETERS`
-    
+
     Each individual element test looks for the element properties, sets a value
     on each the supported properties and checks if the element was created correctly
     and all it's properties were set correctly.
     """
+
     def _create_el_and_basic_asserts(
         self,
         el_type,
         el_text=None,
-        interpreter='py',
+        interpreter="py",
         properties=None,
         expected_errors=None,
         additional_selector_rules=None,
     ):
         """Create an element with all its properties set, by running <script type=<interpreter> ... >
-        , and check if the element was created correctly and all its properties were set correctly."""
+        , and check if the element was created correctly and all its properties were set correctly.
+        """
         expected_errors = expected_errors or []
         if not properties:
             properties = {}
@@ -118,14 +122,16 @@ class TestElements(PyScriptTest):
                 actual_val = el.evaluate(f"node => node.{k}")
                 assert actual_val == v
         return el
-    
+
     def test_a(self, interpreter):
         print("interpreter", interpreter)
         abbr = self._create_el_and_basic_asserts("a", "click me", interpreter)
         assert abbr.text_content() == "click me"
 
     def test_abbr(self, interpreter):
-        abbr = self._create_el_and_basic_asserts("abbr", "some text", interpreter=interpreter)
+        abbr = self._create_el_and_basic_asserts(
+            "abbr", "some text", interpreter=interpreter
+        )
         assert abbr.text_content() == "some text"
 
     def test_address(self, interpreter):
@@ -141,7 +147,9 @@ class TestElements(PyScriptTest):
             "alt": "HTTP",
         }
         # TODO: Check why click times out
-        self._create_el_and_basic_asserts("area", interpreter=interpreter, properties=properties)
+        self._create_el_and_basic_asserts(
+            "area", interpreter=interpreter, properties=properties
+        )
 
     def test_article(self, interpreter):
         self._create_el_and_basic_asserts("article", "some text", interpreter)
@@ -173,7 +181,9 @@ class TestElements(PyScriptTest):
         assert button.inner_html() == "click me"
 
     def test_element_button_attributes(self, interpreter):
-        button = self._create_el_and_basic_asserts("button", "click me", interpreter, None)
+        button = self._create_el_and_basic_asserts(
+            "button", "click me", interpreter, None
+        )
         assert button.inner_html() == "click me"
 
     def test_canvas(self, interpreter):
@@ -246,7 +256,7 @@ class TestElements(PyScriptTest):
             "height": "200",
         }
         self._create_el_and_basic_asserts(
-            "embed", 
+            "embed",
             interpreter=interpreter,
             properties=properties,
             expected_errors=[
@@ -276,7 +286,9 @@ class TestElements(PyScriptTest):
             "autocomplete": "on",
             "rel": "external",
         }
-        self._create_el_and_basic_asserts("form", "some text", interpreter, properties=properties)
+        self._create_el_and_basic_asserts(
+            "form", "some text", interpreter, properties=properties
+        )
 
     def test_h1(self, interpreter):
         self._create_el_and_basic_asserts("h1", "some text", interpreter)
@@ -316,7 +328,8 @@ class TestElements(PyScriptTest):
             "height": "200",
         }
         self._create_el_and_basic_asserts(
-            "iframe", interpreter,
+            "iframe",
+            interpreter,
             properties=properties,
             expected_errors=[
                 "Failed to load resource: the server responded with a status of 404 (File not found)"
@@ -351,7 +364,9 @@ class TestElements(PyScriptTest):
             "required": True,
             "size": 20,
         }
-        self._create_el_and_basic_asserts("input_", interpreter=interpreter, properties=properties)
+        self._create_el_and_basic_asserts(
+            "input_", interpreter=interpreter, properties=properties
+        )
 
     def test_ins(self, interpreter):
         self._create_el_and_basic_asserts(
@@ -409,7 +424,9 @@ class TestElements(PyScriptTest):
             "high": 80,
             "optimum": 50,
         }
-        self._create_el_and_basic_asserts("meter", "some text", interpreter, properties=properties)
+        self._create_el_and_basic_asserts(
+            "meter", "some text", interpreter, properties=properties
+        )
 
     def test_nav(self, interpreter):
         self._create_el_and_basic_asserts("nav", "some text", interpreter)
@@ -504,7 +521,7 @@ class TestElements(PyScriptTest):
     def test_style(self, interpreter):
         self._create_el_and_basic_asserts(
             "style",
-            "body {background-color: red;}", 
+            "body {background-color: red;}",
             interpreter,
         )
 
