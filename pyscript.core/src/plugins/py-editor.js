@@ -197,10 +197,9 @@ const init = async (script, type, interpreter) => {
                     isSetup = wasSetup;
                     source = wasSource;
                 };
-                return execute.call(context, { currentTarget: null }).then(
-                    restore,
-                    restore,
-                );
+                return execute
+                    .call(context, { currentTarget: null })
+                    .then(restore, restore);
             },
         },
     });
@@ -208,7 +207,7 @@ const init = async (script, type, interpreter) => {
     const notify = () => {
         const event = new Event(`${type}-editor`, { bubbles: true });
         script.dispatchEvent(event);
-    }
+    };
 
     if (isSetup) {
         await execute.call(context, { currentTarget: null });
