@@ -92,6 +92,7 @@ for header in [h1, h2, h3, h4, h5, h6]:
     headers_code.append(f'{header.tag}("{header.tag.upper()} header")')
 headers_code = "\n".join(headers_code)
 
+
 MARKDOWN_EXAMPLE = """# This is a header
 
 This is a ~~paragraph~~ text with **bold** and *italic* text in it!
