@@ -1,5 +1,5 @@
 // PyScript py-editor plugin
-import { Hook, XWorker, dedent } from "polyscript/exports";
+import { Hook, XWorker, dedent, defineProperties } from "polyscript/exports";
 import { TYPES, offline_interpreter, stdlib } from "../core.js";
 
 const RUN_BUTTON = `<svg style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>`;
@@ -58,7 +58,7 @@ async function execute({ currentTarget }) {
 
     // wait for the env then set the target div
     // before executing the current code
-    envs.get(env).then((xworker) => {
+    return envs.get(env).then((xworker) => {
         xworker.onerror = ({ error }) => {
             if (hasRunButton) {
                 outDiv.innerHTML += `<span style='color:red'>${
@@ -148,7 +148,7 @@ const init = async (script, type, interpreter) => {
         import(/* webpackIgnore: true */ "../3rd-party/codemirror_commands.js"),
     ]);
 
-    const isSetup = script.hasAttribute("setup");
+    let isSetup = script.hasAttribute("setup");
     const hasConfig = script.hasAttribute("config");
     const env = `${interpreter}-${script.getAttribute("env") || getID(type)}`;
 
@@ -162,7 +162,7 @@ const init = async (script, type, interpreter) => {
 
     configs.set(env, hasConfig);
 
-    const source = script.src
+    let source = script.src
         ? await fetch(script.src).then((b) => b.text())
         : script.textContent;
     const context = {
@@ -179,14 +179,45 @@ const init = async (script, type, interpreter) => {
         },
     };
 
+    let target;
+    defineProperties(script, {
+        target: { get: () => target },
+        process: {
+            /**
+             * Simulate a setup node overriding the source to evaluate.
+             * @param {string} code the Python code to evaluate.
+             * @returns {Promise<...>} fulfill once code has been evaluated.
+             */
+            value(code) {
+                const wasSetup = isSetup;
+                const wasSource = source;
+                isSetup = true;
+                source = code;
+                const restore = () => {
+                    isSetup = wasSetup;
+                    source = wasSource;
+                };
+                return execute.call(context, { currentTarget: null }).then(
+                    restore,
+                    restore,
+                );
+            },
+        },
+    });
+
+    const notify = () => {
+        const event = new Event(`${type}-editor`, { bubbles: true });
+        script.dispatchEvent(event);
+    }
+
     if (isSetup) {
-        execute.call(context, { currentTarget: null });
+        await execute.call(context, { currentTarget: null });
+        notify();
         return;
     }
 
     const selector = script.getAttribute("target");
 
-    let target;
     if (selector) {
         target =
             document.getElementById(selector) ||
@@ -236,6 +267,7 @@ const init = async (script, type, interpreter) => {
     });
 
     editor.focus();
+    notify();
 };
 
 // avoid too greedy MutationObserver operations at distance
