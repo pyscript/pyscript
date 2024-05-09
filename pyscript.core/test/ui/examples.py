@@ -91,10 +91,15 @@ for header in [h1, h2, h3, h4, h5, h6]:
     headers_code.append(f'{header.tag}("{header.tag.upper()} header")')
 headers_code = "\n".join(headers_code)
 
-rich_input = input_(type='text', name='some name',
-                      autofocus=True, pattern="\w{3,16}",
-                      placeholder='add text with > 3 chars', required=True, size='20'
-                    )
+rich_input = input_(
+    type="text",
+    name="some name",
+    autofocus=True,
+    pattern="\w{3,16}",
+    placeholder="add text with > 3 chars",
+    required=True,
+    size="20",
+)
 inputs_div.append(rich_input)
 inputs_code.append("# You can create inputs with more options like")
 inputs_code.append("# this by passing properties as kwargs")
