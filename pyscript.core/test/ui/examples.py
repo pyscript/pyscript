@@ -82,7 +82,7 @@ for input_type in [
 ]:
     inputs_div.append(input_(type=input_type, style={"display": "block"}))
     inputs_code.append(f"input_(type='{input_type}')")
-inputs_code = "\n".join(inputs_code)
+
 
 headers_div = div()
 headers_code = []
@@ -91,6 +91,17 @@ for header in [h1, h2, h3, h4, h5, h6]:
     headers_code.append(f'{header.tag}("{header.tag.upper()} header")')
 headers_code = "\n".join(headers_code)
 
+rich_input = input_(type='text', name='some name',
+                      autofocus=True, pattern="\w{3,16}",
+                      placeholder='add text with > 3 chars', required=True, size='20'
+                    )
+inputs_div.append(rich_input)
+inputs_code.append("# You can create inputs with more options like")
+inputs_code.append("# this by passing properties as kwargs")
+inputs_code.append(
+    "input_(type='text', name='some name', autofocus=True, pattern='\\w{3,16}', placeholder='add text with > 3 chars', required=True, size='20')"
+)
+inputs_code = "\n".join(inputs_code)
 
 MARKDOWN_EXAMPLE = """# This is a header
 

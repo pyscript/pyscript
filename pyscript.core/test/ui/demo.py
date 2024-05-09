@@ -45,7 +45,7 @@ def create_component_details(component_label, component):
     """
     # Get the example from the examples catalog
     example = component["instance"]
-    details = example.__doc__ or f"Details missing for component {component_label}"
+    details = getattr(example, '__doc__', '') or f"Details missing for component {component_label}"
 
     return div(
         [
