@@ -44,6 +44,9 @@ async function execute({ currentTarget }) {
             details.config = parse(await fetch(config).then((r) => r.text()));
             details.version = offline_interpreter(details.config);
         }
+        else {
+            details.config = {};
+        }
 
         const xworker = XWorker.call(new Hook(null, hooks), srcLink, details);
 
