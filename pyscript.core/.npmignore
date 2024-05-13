@@ -4,6 +4,7 @@ node_modules/
 rollup/
 test/
 tests/
+test-results/
 src/stdlib/_pyscript
 src/stdlib/pyscript.py
 package-lock.json
