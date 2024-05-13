@@ -86,10 +86,10 @@ our [CalVer](https://calver.org/) versioning scheme).
 
 Then, the following three separate repositories need updating:
 
-* [Documentation](https://github.com/pyscript/docs) - Change the `version.json`
-  file in the root of the directory and then `node version-update.js`.
-* [Homepage](https://github.com/pyscript/pyscript.net) - Ensure the version
-  referenced in `index.html` is the latest version.
-* [PSDC](https://pyscript.com) - Use discord or Anaconda Slack (if you work at
-  Anaconda) to let the PSDC team know there's a new version, so they can update
-  their project templates.
+-   [Documentation](https://github.com/pyscript/docs) - Change the `version.json`
+    file in the root of the directory and then `node version-update.js`.
+-   [Homepage](https://github.com/pyscript/pyscript.net) - Ensure the version
+    referenced in `index.html` is the latest version.
+-   [PSDC](https://pyscript.com) - Use discord or Anaconda Slack (if you work at
+    Anaconda) to let the PSDC team know there's a new version, so they can update
+    their project templates.
