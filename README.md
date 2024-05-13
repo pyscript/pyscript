@@ -74,3 +74,22 @@ Check out the [developing process](https://pyscript.github.io/docs/latest/contri
 ## Governance
 
 The [PyScript organization governance](https://github.com/pyscript/governance) is documented in a separate repository.
+
+## Release
+
+To cut a new release of PyScript simply
+[add a new release](https://github.com/pyscript/pyscript/releases) while
+remembering to write a comprehensive changelog. A [GitHub action](https://github.com/pyscript/pyscript/blob/main/.github/workflows/publish-release.yml)
+will kick in and ensure the release is described and deployed to a URL with the
+pattern: https://pyscript.net/releases/YYYY.M.v/ (year/month/version - as per
+our [CalVer](https://calver.org/) versioning scheme).
+
+Then, the following three separate repositories need updating:
+
+* [Documentation](https://github.com/pyscript/docs) - Change the `version.json`
+  file in the root of the directory and then `node version-update.js`.
+* [Homepage](https://github.com/pyscript/pyscript.net) - Ensure the version
+  referenced in `index.html` is the latest version.
+* [PSDC](https://pyscript.com) - Use discord or Anaconda Slack (if you work at
+  Anaconda) to let the PSDC team know there's a new version, so they can update
+  their project templates.
