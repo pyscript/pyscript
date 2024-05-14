@@ -19,8 +19,8 @@ from pyweb.ui.elements import (
     small,
     strong,
 )
-from pyweb.ui.markdown import markdown
-from pyweb.ui.shoelace import (
+from markdown import markdown
+from shoelace import (
     Alert,
     Button,
     Card,
