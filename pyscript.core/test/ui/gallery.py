@@ -5,13 +5,14 @@ except ImportError:
 
 import inspect
 
+import shoelace
 import styles
 import tictactoe
-from pyscript import when, window
+from markdown import markdown
 from pyweb import pydom
 from pyweb.ui import elements as el
-import shoelace
-from markdown import markdown
+
+from pyscript import when, window
 
 MAIN_PAGE_MARKDOWN = dedent(
     """

@@ -4,6 +4,7 @@ import sys
 import js as globalThis
 from polyscript import config as _config
 from polyscript import js_modules
+
 from pyscript.util import NotSupported
 
 RUNNING_IN_WORKER = not hasattr(globalThis, "document")
