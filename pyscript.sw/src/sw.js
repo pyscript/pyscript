@@ -89,9 +89,10 @@
                                 deps[0].then((b) => b.json()) :
                                 deps[0].then((b) => b.text()).then(parse);
 
-                            const [{ packages }] = await Promise.all(deps);
+                            const [{ packages, index_urls }] = await Promise.all(deps);
+
                             const micropip = await pyodide.pyimport("micropip");
-                            await micropip.install(packages);
+                            await micropip.install(packages, index_urls=index_urls);
                         }
                         handlerPath = handler;
                         const result = await getHandler();
