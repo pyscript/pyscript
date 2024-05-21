@@ -1,5 +1,15 @@
 # Release Notes
 
+## 2024.05.21
+
+### Features
+
+### Bug fixes
+
+### Enhancements
+
+- `py-editor` run buttons now display a spinner when disabled, which occurs when the editor is running code.
+
 ## 2023.05.01
 
 ### Features
