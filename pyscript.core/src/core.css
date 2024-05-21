@@ -50,7 +50,7 @@ mpy-config {
 }
 .py-editor-run-button:disabled *,
 .mpy-editor-run-button:disabled * {
-    display: none;          /* hide all the child elements of the run button when it is disabled */
+    display: none; /* hide all the child elements of the run button when it is disabled */
 }
 .py-editor-run-button:disabled,
 .mpy-editor-run-button:disabled {
@@ -65,8 +65,8 @@ mpy-config {
     left: 100%;
     width: 20px;
     height: 20px;
-    margin-top: -23px;      /* hardcoded value to center the spinner on the run button */
-    margin-left: -26px;     /* hardcoded value to center the spinner on the run button */
+    margin-top: -23px; /* hardcoded value to center the spinner on the run button */
+    margin-left: -26px; /* hardcoded value to center the spinner on the run button */
     border-radius: 50%;
     border: 2px solid #aaa;
     border-top-color: #000;

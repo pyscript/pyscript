@@ -8,7 +8,7 @@
 
 ### Enhancements
 
-- `py-editor` run buttons now display a spinner when disabled, which occurs when the editor is running code.
+-   `py-editor` run buttons now display a spinner when disabled, which occurs when the editor is running code.
 
 ## 2023.05.01
 
