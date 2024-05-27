@@ -1,4 +1,5 @@
 .eslintrc.cjs
+eslint.config.mjs
 .pytest_cache/
 node_modules/
 rollup/
