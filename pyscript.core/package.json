@@ -20,7 +20,7 @@
     },
     "scripts": {
         "server": "npx static-handler --coi .",
-        "build": "export ESLINT_USE_FLAT_CONFIG=false; npm run build:3rd-party && npm run build:stdlib && npm run build:plugins && npm run build:core && eslint src/ && npm run ts && npm run test:mpy",
+        "build": "export ESLINT_USE_FLAT_CONFIG=true;npm run build:3rd-party && npm run build:stdlib && npm run build:plugins && npm run build:core && eslint src/ && npm run ts && npm run test:mpy",
         "build:core": "rm -rf dist && rollup --config rollup/core.config.js && cp src/3rd-party/*.css dist/",
         "build:plugins": "node rollup/plugins.cjs",
         "build:stdlib": "node rollup/stdlib.cjs",
