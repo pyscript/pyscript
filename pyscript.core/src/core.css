@@ -48,8 +48,8 @@ mpy-config {
         transform: rotate(360deg);
     }
 }
-.py-editor-run-button:disabled *,
-.mpy-editor-run-button:disabled * {
+.py-editor-run-button:disabled > *,
+.mpy-editor-run-button:disabled > * {
     display: none; /* hide all the child elements of the run button when it is disabled */
 }
 .py-editor-run-button:disabled,
