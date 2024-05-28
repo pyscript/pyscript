@@ -1,5 +1,5 @@
 // PyScript py-terminal plugin
-import { TYPES, hooks } from "../core.js";
+import { TYPES, hooks, inputFailure } from "../core.js";
 import { notify } from "./error.js";
 import { customObserver, defineProperties } from "polyscript/exports";
 
@@ -132,17 +132,25 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
     }
 };
 
-const pyTerminal = async (element) => {
+const pyTerminal = async (element, ignoreReadLine) => {
+    const dependencies = [
+        import(/* webpackIgnore: true */ "../3rd-party/xterm.js"),
+        import(/* webpackIgnore: true */ "../3rd-party/xterm_addon-fit.js"),
+        import(
+            /* webpackIgnore: true */ "../3rd-party/xterm_addon-web-links.js"
+        ),
+    ];
+
+    // mock ReadLine instance on MicroPython terminals
+    dependencies.push(ignoreReadLine ? { Readline: Object } : import(/* webpackIgnore: true */ "../3rd-party/xterm-readline.js"));
+
     // lazy load these only when a valid terminal is found
-    const [{ Terminal }, { Readline }, { FitAddon }, { WebLinksAddon }] =
-        await Promise.all([
-            import(/* webpackIgnore: true */ "../3rd-party/xterm.js"),
-            import(/* webpackIgnore: true */ "../3rd-party/xterm-readline.js"),
-            import(/* webpackIgnore: true */ "../3rd-party/xterm_addon-fit.js"),
-            import(
-                /* webpackIgnore: true */ "../3rd-party/xterm_addon-web-links.js"
-            ),
-        ]);
+    const [
+        { Terminal },
+        { FitAddon },
+        { WebLinksAddon },
+        { Readline }
+    ] = await Promise.all(dependencies);
 
     const readline = new Readline();
 
@@ -170,7 +178,7 @@ const pyTerminal = async (element) => {
         });
         const fitAddon = new FitAddon();
         terminal.loadAddon(fitAddon);
-        terminal.loadAddon(readline);
+        if (!ignoreReadLine) terminal.loadAddon(readline);
         terminal.loadAddon(new WebLinksAddon());
         terminal.open(target);
         fitAddon.fit();
@@ -182,7 +190,7 @@ const pyTerminal = async (element) => {
                     // this loop is the only way I could find to actually simulate
                     // the user input char after char in a way that works in both
                     // MicroPython and Pyodide
-                    for (const line of code.split(/(?:\r|\n|\r\n)/)) {
+                    for (const line of code.split(/(?:\r\n|\r|\n)/)) {
                         terminal.paste(`${line}\n`);
                         do {
                             await new Promise((resolve) =>
@@ -228,46 +236,79 @@ const pyTerminal = async (element) => {
         // in the main case, just bootstrap XTerm without
         // allowing any input as that's not possible / awkward
         hooks.main.onReady.add(function main({ interpreter, io, run, type }) {
-            console.warn("py-terminal is read only on main thread");
             hooks.main.onReady.delete(main);
-
-            // on main, it's easy to trash and clean the current terminal
-            globalThis.__py_terminal__ = init({
-                disableStdin: true,
-                cursorBlink: false,
-                cursorStyle: "underline",
-            });
-            run("from js import __py_terminal__ as __terminal__");
-            delete globalThis.__py_terminal__;
-
-            io.stderr = (error) => {
-                readline.write(String(error.message || error));
-            };
-
+            // MicroPython Terminal can work on main too
             if (type === "mpy") {
-                interpreter.setStdin = Object; // as no-op
-                interpreter.setStderr = Object; // as no-op
-                interpreter.setStdout = ({ write }) => {
-                    io.stdout = write;
+                const terminal = init({
+                    cursorBlink: true,
+                    cursorStyle: "block",
+                });
+
+                const missingReturn = new Uint8Array([13]);
+                io.stdout = buffer => {
+                  if (buffer[0] === 10)
+                    terminal.write(missingReturn);
+                  terminal.write(buffer);
                 };
+
+                globalThis.__py_terminal__ = terminal;
+
+                interpreter.registerJsModule("code", {
+                    interact() {
+                        const encoder = new TextEncoderStream;
+                        encoder.readable.pipeTo(
+                          new WritableStream({
+                            write(buffer) {
+                              for (const c of buffer)
+                                interpreter.replProcessChar(c);
+                            }
+                          })
+                        );
+        
+                        const writer = encoder.writable.getWriter();
+                        terminal.onData(buffer => writer.write(buffer));
+
+                        interpreter.replInit();
+                        run("from js import prompt as input");
+                    },
+                });
+            }
+            // Pyodide terminal apparently has more issues to tackle ...
+            else {
+                console.warn(`${type}-terminal is read only on main thread`);
+
+                // on main, it's easy to trash and clean the current terminal
+                globalThis.__py_terminal__ = init({
+                    disableStdin: true,
+                    cursorBlink: false,
+                    cursorStyle: "underline",
+                });
+
+                io.stderr = (error) => {
+                    readline.write(String(error.message || error));
+                };
+
+                let data = "";
+                const decoder = new TextDecoder();
+                const generic = {
+                    isatty: false,
+                    write(buffer) {
+                        data = decoder.decode(buffer);
+                        readline.write(data);
+                        return buffer.length;
+                    },
+                };
+                interpreter.setStdout(generic);
+                interpreter.setStderr(generic);
+                interpreter.setStdin({
+                    isatty: false,
+                    stdin: () => readline.read(data),
+                });
             }
 
-            let data = "";
-            const decoder = new TextDecoder();
-            const generic = {
-                isatty: false,
-                write(buffer) {
-                    data = decoder.decode(buffer);
-                    readline.write(data);
-                    return buffer.length;
-                },
-            };
-            interpreter.setStdout(generic);
-            interpreter.setStderr(generic);
-            interpreter.setStdin({
-                isatty: false,
-                stdin: () => readline.read(data),
-            });
+            // expose the __terminal__ one-off reference
+            run("from js import __py_terminal__ as __terminal__");
+            delete globalThis.__py_terminal__;
         });
     }
 };
@@ -281,6 +322,15 @@ for (const key of TYPES.keys()) {
         if ([].filter.call(terminals, onceOnMain).length > 1)
             notifyAndThrow("You can use at most 1 main terminal");
 
+        const isMicroPython = key === "mpy";
+
+        // ⚠️ In an ideal world the inputFailure should never be used on main.
+        //    However, Pyodide still can't compete with MicroPython REPL mode
+        //    so while it's OK to keep that entry on main as default, we need
+        //    to remove it ASAP from `mpy` use cases, otherwise MicroPython would
+        //    also throw whenever an `input(...)` is required / digited.
+        if (isMicroPython) hooks.main.codeBeforeRun.delete(inputFailure);
+
         // import styles lazily
         if (addStyle) {
             addStyle = false;
@@ -292,6 +342,6 @@ for (const key of TYPES.keys()) {
             );
         }
 
-        await pyTerminal(element);
+        await pyTerminal(element, isMicroPython && !element.hasAttribute("worker"));
     });
 }
