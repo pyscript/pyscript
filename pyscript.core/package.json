@@ -43,7 +43,7 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.12.10",
+        "polyscript": "^0.12.11",
         "sticky-module": "^0.1.1",
         "to-json-callback": "^0.1.1",
         "type-checked-collections": "^0.1.7"
