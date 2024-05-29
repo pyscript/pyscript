@@ -1,4 +1,4 @@
-// PyScript pyodide terminal plugin
+// PyScript py-terminal plugin
 import { hooks } from "../../core.js";
 import { defineProperties } from "polyscript/exports";
 
@@ -10,11 +10,12 @@ const bootstrapped = new WeakSet();
 const workerReady = ({ interpreter, io, run, type }, { sync }) => {
     if (type !== "py" || !sync.is_pyterminal()) return;
 
-    // in workers it's always safe to grab the polyscript currentScript
-    // the ugly `_` dance is due MicroPython not able to import via:
-    // `from polyscript.currentScript import terminal as __terminal__`
     run(
-        "from polyscript import currentScript as _; __terminal__ = _.terminal; del _",
+        [
+            "from polyscript import currentScript as _",
+            "__terminal__ = _.terminal",
+            "del _",
+        ].join(";"),
     );
 
     let data = "";
@@ -43,15 +44,13 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
 
 export default async (element) => {
     // lazy load these only when a valid terminal is found
-    const [{ Terminal }, { FitAddon }, { WebLinksAddon }, { Readline }] =
+    const [{ Terminal }, { Readline }, { FitAddon }, { WebLinksAddon }] =
         await Promise.all([
             import(/* webpackIgnore: true */ "../../3rd-party/xterm.js"),
+            import(/* webpackIgnore: true */ "../../3rd-party/xterm-readline.js"),
             import(/* webpackIgnore: true */ "../../3rd-party/xterm_addon-fit.js"),
             import(
                 /* webpackIgnore: true */ "../../3rd-party/xterm_addon-web-links.js"
-            ),
-            import(
-                /* webpackIgnore: true */ "../../3rd-party/xterm-readline.js"
             ),
         ]);
 
@@ -90,11 +89,9 @@ export default async (element) => {
             terminal: { value: terminal },
             process: {
                 value: async (code) => {
-                    // this loop is the only way I could find to actually simulate
-                    // the user input char after char in a way that works in both
-                    // MicroPython and Pyodide
                     for (const line of code.split(/(?:\r\n|\r|\n)/)) {
-                        terminal.paste(`${line}\n`);
+                        terminal.paste(`${line}`);
+                        terminal.write("\r\n");
                         do {
                             await new Promise((resolve) =>
                                 setTimeout(resolve, 0),
@@ -138,12 +135,13 @@ export default async (element) => {
     } else {
         // in the main case, just bootstrap XTerm without
         // allowing any input as that's not possible / awkward
-        hooks.main.onReady.add(function main({ interpreter, io, run }) {
-            hooks.main.onReady.delete(main);
+        hooks.main.onReady.add(function main({ interpreter, io, run, type }) {
+            if (type !== "py") return;
 
             console.warn("py-terminal is read only on main thread");
+            hooks.main.onReady.delete(main);
 
-            // expose the __terminal__ one-off reference
+            // on main, it's easy to trash and clean the current terminal
             globalThis.__py_terminal__ = init({
                 disableStdin: true,
                 cursorBlink: false,

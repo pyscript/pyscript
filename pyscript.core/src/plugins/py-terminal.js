@@ -48,10 +48,13 @@ for (const type of TYPES.keys()) {
         // we can't be smart with template literals for the dynamic import
         // or bundlers are incapable of producing multiple files around
         if (type === "mpy") {
-            await import(/* webpackIgnore: true */ "./py-terminal/mpy.js").then(bootstrap);
-        }
-        else {
-            await import(/* webpackIgnore: true */ "./py-terminal/py.js").then(bootstrap);
+            await import(/* webpackIgnore: true */ "./py-terminal/mpy.js").then(
+                bootstrap,
+            );
+        } else {
+            await import(/* webpackIgnore: true */ "./py-terminal/py.js").then(
+                bootstrap,
+            );
         }
     });
 }

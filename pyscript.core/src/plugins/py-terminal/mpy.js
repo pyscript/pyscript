@@ -16,12 +16,14 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
         input: pyterminal_read,
     });
 
-    run([
-        "from _pyscript_input import input",
-        "from polyscript import currentScript as _",
-        "__terminal__ = _.terminal",
-        "del _",
-    ].join(";"));
+    run(
+        [
+            "from _pyscript_input import input",
+            "from polyscript import currentScript as _",
+            "__terminal__ = _.terminal",
+            "del _",
+        ].join(";"),
+    );
 
     const missingReturn = new Uint8Array([13]);
     io.stdout = (buffer) => {
@@ -37,12 +39,13 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
     interpreter.registerJsModule("code", {
         interact() {
             const encoder = new TextEncoderStream();
-            encoder.readable.pipeTo(new WritableStream({
-                write(buffer) {
-                    for (const c of buffer)
-                        interpreter.replProcessChar(c);
-                },
-            }));
+            encoder.readable.pipeTo(
+                new WritableStream({
+                    write(buffer) {
+                        for (const c of buffer) interpreter.replProcessChar(c);
+                    },
+                }),
+            );
 
             const writer = encoder.writable.getWriter();
             sync.pyterminal_stream_write = (buffer) => writer.write(buffer);
@@ -55,14 +58,13 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
 
 export default async (element) => {
     // lazy load these only when a valid terminal is found
-    const [{ Terminal }, { FitAddon }, { WebLinksAddon }] =
-        await Promise.all([
-            import(/* webpackIgnore: true */ "../../3rd-party/xterm.js"),
-            import(/* webpackIgnore: true */ "../../3rd-party/xterm_addon-fit.js"),
-            import(
-                /* webpackIgnore: true */ "../../3rd-party/xterm_addon-web-links.js"
-            ),
-        ]);
+    const [{ Terminal }, { FitAddon }, { WebLinksAddon }] = await Promise.all([
+        import(/* webpackIgnore: true */ "../../3rd-party/xterm.js"),
+        import(/* webpackIgnore: true */ "../../3rd-party/xterm_addon-fit.js"),
+        import(
+            /* webpackIgnore: true */ "../../3rd-party/xterm_addon-web-links.js"
+        ),
+    ]);
 
     const terminalOptions = {
         disableStdin: false,
@@ -103,7 +105,11 @@ export default async (element) => {
         defineProperties(element, {
             terminal: { value: terminal },
             process: {
-                value: async (code) => stream.write(code)
+                value: async (code) => {
+                    for (const line of code.split(/(?:\r\n|\r|\n)/)) {
+                        await stream.write(`${line}\r`);
+                    }
+                },
             },
         });
         return terminal;
@@ -150,9 +156,10 @@ export default async (element) => {
             sync.pyterminal_ready = () => {
                 let queue = Promise.resolve();
                 stream = {
-                    write: (buffer) => (queue = queue.then(
-                        () => sync.pyterminal_stream_write(buffer),
-                    ))
+                    write: (buffer) =>
+                        (queue = queue.then(() =>
+                            sync.pyterminal_stream_write(buffer),
+                        )),
                 };
                 terminal.onData((buffer) => {
                     if (promisedChunks) {
@@ -164,8 +171,7 @@ export default async (element) => {
                             promisedChunks = null;
                             readChunks = "";
                         }
-                    }
-                    else {
+                    } else {
                         stream.write(buffer);
                     }
                 });
@@ -182,11 +188,12 @@ export default async (element) => {
         //    to remove it ASAP from `mpy` use cases, otherwise MicroPython would
         //    also throw whenever an `input(...)` is required / digited.
         hooks.main.codeBeforeRun.delete(inputFailure);
-        hooks.main.codeBeforeRun.add("from js import prompt as input");
 
         // in the main case, just bootstrap XTerm without
         // allowing any input as that's not possible / awkward
-        hooks.main.onReady.add(function main({ interpreter, io, run }) {
+        hooks.main.onReady.add(function main({ interpreter, io, run, type }) {
+            if (type !== "mpy") return;
+
             hooks.main.onReady.delete(main);
 
             const terminal = init();
@@ -199,7 +206,12 @@ export default async (element) => {
 
             // expose the __terminal__ one-off reference
             globalThis.__py_terminal__ = terminal;
-            run("from js import __py_terminal__ as __terminal__");
+            run(
+                [
+                    "from js import prompt as input",
+                    "from js import __py_terminal__ as __terminal__",
+                ].join(";"),
+            );
             delete globalThis.__py_terminal__;
 
             // NOTE: this is NOT the same as the one within
@@ -207,12 +219,14 @@ export default async (element) => {
             interpreter.registerJsModule("code", {
                 interact() {
                     const encoder = new TextEncoderStream();
-                    encoder.readable.pipeTo(new WritableStream({
-                        write(buffer) {
-                            for (const c of buffer)
-                                interpreter.replProcessChar(c);
-                        },
-                    }));
+                    encoder.readable.pipeTo(
+                        new WritableStream({
+                            write(buffer) {
+                                for (const c of buffer)
+                                    interpreter.replProcessChar(c);
+                            },
+                        }),
+                    );
 
                     stream = encoder.writable.getWriter();
                     terminal.onData((buffer) => stream.write(buffer));
