@@ -46,7 +46,7 @@ export const createFunction = (self, name) => {
 const SetFunction = typedSet({ typeof: "function" });
 const SetString = typedSet({ typeof: "string" });
 
-const inputFailure = `
+export const inputFailure = `
     import builtins
     def input(prompt=""):
         raise Exception("\\n           ".join([

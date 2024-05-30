@@ -1,6 +1,7 @@
 export function offline_interpreter(config: any): string;
 import { stdlib } from "./stdlib.js";
 import { optional } from "./stdlib.js";
+import { inputFailure } from "./hooks.js";
 import TYPES from "./types.js";
 /**
  * A `Worker` facade able to bootstrap on the worker thread only a PyScript module.
@@ -53,4 +54,4 @@ declare const exportedHooks: {
 };
 declare const exportedConfig: {};
 declare const exportedWhenDefined: (type: string) => Promise<any>;
-export { stdlib, optional, TYPES, exportedPyWorker as PyWorker, exportedMPWorker as MPWorker, exportedHooks as hooks, exportedConfig as config, exportedWhenDefined as whenDefined };
+export { stdlib, optional, inputFailure, TYPES, exportedPyWorker as PyWorker, exportedMPWorker as MPWorker, exportedHooks as hooks, exportedConfig as config, exportedWhenDefined as whenDefined };
