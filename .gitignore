@@ -142,6 +142,7 @@ coverage/
 test_results
 
 # @pyscript/core npm artifacts
+pyscript.core/test-results/*
 pyscript.core/core.*
 pyscript.core/dist
 pyscript.core/dist.zip

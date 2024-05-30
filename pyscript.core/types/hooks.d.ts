@@ -2,6 +2,7 @@ export function main(name: any): any;
 export function worker(name: any): any;
 export function codeFor(branch: any, type: any): {};
 export function createFunction(self: any, name: any): any;
+export const inputFailure: "\n    import builtins\n    def input(prompt=\"\"):\n        raise Exception(\"\\n           \".join([\n            \"input() doesn't work when PyScript runs in the main thread.\",\n            \"Consider using the worker attribute: https://pyscript.github.io/docs/2023.11.2/user-guide/workers/\"\n        ]))\n\n    builtins.input = input\n    del builtins\n    del input\n";
 export namespace hooks {
     namespace main {
         let onWorker: Set<Function>;
