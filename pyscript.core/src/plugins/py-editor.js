@@ -184,6 +184,21 @@ const init = async (script, type, interpreter) => {
     let target;
     defineProperties(script, {
         target: { get: () => target },
+        code: {
+            get: () => context.pySrc,
+            set: (insert) => {
+                if (isSetup) return;
+                editor.update([
+                    editor.state.update({
+                        changes: {
+                            from: 0,
+                            to: editor.state.doc.length,
+                            insert,
+                        },
+                    }),
+                ]);
+            }
+        },
         process: {
             /**
              * Simulate a setup node overriding the source to evaluate.
