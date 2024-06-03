@@ -44,15 +44,19 @@ class TestElements(PyScriptTest):
     on each the supported properties and checks if the element was created correctly
     and all it's properties were set correctly.
     """
+
     @property
     def expected_missing_file_errors(self):
         # In fake server conditions this test will not throw an error due to missing files.
         # If we want to skip the test, use:
         # pytest.skip("Skipping: fake server doesn't throw 404 errors on missing local files.")
-        return [
-            "Failed to load resource: the server responded with a status of 404 (File not found)"
-        ] if self.dev_server else []
-
+        return (
+            [
+                "Failed to load resource: the server responded with a status of 404 (File not found)"
+            ]
+            if self.dev_server
+            else []
+        )
 
     def _create_el_and_basic_asserts(
         self,
