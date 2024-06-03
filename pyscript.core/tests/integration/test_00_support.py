@@ -186,12 +186,12 @@ class TestSupport(PyScriptTest):
         #
         msg = str(exc.value)
         expected = textwrap.dedent(
-            """
+            f"""
             JS errors found: 2
             Error: error 1
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             Error: error 2
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
@@ -217,12 +217,12 @@ class TestSupport(PyScriptTest):
         #
         msg = str(exc.value)
         expected = textwrap.dedent(
-            """
+            f"""
             JS errors found: 2
             Error: NOT expected 2
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             Error: NOT expected 4
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
@@ -243,15 +243,15 @@ class TestSupport(PyScriptTest):
         #
         msg = str(exc.value)
         expected = textwrap.dedent(
-            """
+            f"""
             The following JS errors were expected but could not be found:
                 - this is not going to be found
             ---
             The following JS errors were raised but not expected:
             Error: error 1
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             Error: error 2
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
