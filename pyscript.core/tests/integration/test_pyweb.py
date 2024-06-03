@@ -124,9 +124,8 @@ class TestElements(PyScriptTest):
         return el
 
     def test_a(self, interpreter):
-        print("interpreter", interpreter)
-        abbr = self._create_el_and_basic_asserts("a", "click me", interpreter)
-        assert abbr.text_content() == "click me"
+        a = self._create_el_and_basic_asserts("a", "click me", interpreter)
+        assert a.text_content() == "click me"
 
     def test_abbr(self, interpreter):
         abbr = self._create_el_and_basic_asserts(
