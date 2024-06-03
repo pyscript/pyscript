@@ -44,6 +44,15 @@ class TestElements(PyScriptTest):
     on each the supported properties and checks if the element was created correctly
     and all it's properties were set correctly.
     """
+    @property
+    def expected_missing_file_errors(self):
+        # In fake server conditions this test will not throw an error due to missing files.
+        # If we want to skip the test, use:
+        # pytest.skip("Skipping: fake server doesn't throw 404 errors on missing local files.")
+        return [
+            "Failed to load resource: the server responded with a status of 404 (File not found)"
+        ] if self.dev_server else []
+
 
     def _create_el_and_basic_asserts(
         self,
@@ -157,22 +166,11 @@ class TestElements(PyScriptTest):
         self._create_el_and_basic_asserts("aside", "some text", interpreter)
 
     def test_audio(self, interpreter):
-
-        if self.dev_server:
-            expected_errors = [
-                "Failed to load resource: the server responded with a status of 404 (File not found)"
-            ]
-        else:
-            # In fake server conditions this test will not throw an error due to missing files.
-            # If we want to skip the test, use:
-            # pytest.skip("Skipping: fake server doesn't throw 404 errors on missing local files.")
-            expected_errors = []
-
         self._create_el_and_basic_asserts(
             "audio",
             interpreter=interpreter,
             properties={"src": "http://localhost:8080/somefile.ogg", "controls": True},
-            expected_errors=expected_errors,
+            expected_errors=self.expected_missing_file_errors,
         )
 
     def test_b(self, interpreter):
@@ -267,9 +265,7 @@ class TestElements(PyScriptTest):
             "embed",
             interpreter=interpreter,
             properties=properties,
-            expected_errors=[
-                "Failed to load resource: the server responded with a status of 404 (File not found)"
-            ],
+            expected_errors=self.expected_missing_file_errors,
         )
 
     def test_fieldset(self, interpreter):
@@ -339,9 +335,7 @@ class TestElements(PyScriptTest):
             "iframe",
             interpreter,
             properties=properties,
-            expected_errors=[
-                "Failed to load resource: the server responded with a status of 404 (File not found)"
-            ],
+            expected_errors=self.expected_missing_file_errors,
         )
 
     def test_img(self, interpreter):
@@ -355,9 +349,7 @@ class TestElements(PyScriptTest):
             "img",
             interpreter=interpreter,
             properties=properties,
-            expected_errors=[
-                "Failed to load resource: the server responded with a status of 404 (File not found)"
-            ],
+            expected_errors=self.expected_missing_file_errors,
         )
 
     def test_input(self, interpreter):
@@ -403,9 +395,7 @@ class TestElements(PyScriptTest):
             "link",
             interpreter=interpreter,
             properties=properties,
-            expected_errors=[
-                "Failed to load resource: the server responded with a status of 404 (File not found)"
-            ],
+            expected_errors=self.expected_missing_file_errors,
             additional_selector_rules="[href='http://localhost:8080/somefile.css']",
         )
 
@@ -515,9 +505,6 @@ class TestElements(PyScriptTest):
             "source",
             interpreter=interpreter,
             properties=properties,
-            # expected_errors=[
-            #     "Failed to load resource: the server responded with a status of 404 (File not found)"
-            # ],
         )
 
     def test_span(self, interpreter):
@@ -588,9 +575,6 @@ class TestElements(PyScriptTest):
             "track",
             interpreter=interpreter,
             properties=properties,
-            # expected_errors=[
-            #     "Failed to load resource: the server responded with a status of 404 (File not found)"
-            # ],
         )
 
     def test_u(self, interpreter):
@@ -613,7 +597,5 @@ class TestElements(PyScriptTest):
             "video",
             interpreter=interpreter,
             properties=properties,
-            expected_errors=[
-                "Failed to load resource: the server responded with a status of 404 (File not found)"
-            ],
+            expected_errors=self.expected_missing_file_errors,
         )
