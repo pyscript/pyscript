@@ -197,7 +197,7 @@ const init = async (script, type, interpreter) => {
                         },
                     }),
                 ]);
-            }
+            },
         },
         process: {
             /**
