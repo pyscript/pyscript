@@ -9,10 +9,9 @@ import shoelace
 import styles
 import tictactoe
 from markdown import markdown
+from pyscript import when, window
 from pyweb import pydom
 from pyweb.ui import elements as el
-
-from pyscript import when, window
 
 MAIN_PAGE_MARKDOWN = dedent(
     """
