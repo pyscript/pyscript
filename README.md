@@ -38,11 +38,11 @@ To try PyScript, import the appropriate pyscript files into the `<head>` tag of 
 <head>
     <link
         rel="stylesheet"
-        href="https://pyscript.net/releases/2023.11.2/core.css"
+        href="https://pyscript.net/releases/2024.5.2/core.css"
     />
     <script
         type="module"
-        src="https://pyscript.net/releases/2023.11.2/core.js"
+        src="https://pyscript.net/releases/2024.5.2/core.js"
     ></script>
 </head>
 <body>
@@ -67,10 +67,29 @@ Check out the [official docs](https://docs.pyscript.net/) for more detailed docu
 
 ## How to Contribute
 
-Read the [contributing guide](CONTRIBUTING.md) to learn about our development process, reporting bugs and improvements, creating issues and asking questions.
+Read the [contributing guide](https://docs.pyscript.net/latest/contributing/) to learn about our development process, reporting bugs and improvements, creating issues and asking questions.
 
-Check out the [developing process](https://pyscript.github.io/docs/latest/contributing) documentation for more information on how to setup your development environment.
+Check out the [developing process](https://docs.pyscript.net/latest/developers/) documentation for more information on how to setup your development environment.
 
 ## Governance
 
 The [PyScript organization governance](https://github.com/pyscript/governance) is documented in a separate repository.
+
+## Release
+
+To cut a new release of PyScript simply
+[add a new release](https://github.com/pyscript/pyscript/releases) while
+remembering to write a comprehensive changelog. A [GitHub action](https://github.com/pyscript/pyscript/blob/main/.github/workflows/publish-release.yml)
+will kick in and ensure the release is described and deployed to a URL with the
+pattern: https://pyscript.net/releases/YYYY.M.v/ (year/month/version - as per
+our [CalVer](https://calver.org/) versioning scheme).
+
+Then, the following three separate repositories need updating:
+
+-   [Documentation](https://github.com/pyscript/docs) - Change the `version.json`
+    file in the root of the directory and then `node version-update.js`.
+-   [Homepage](https://github.com/pyscript/pyscript.net) - Ensure the version
+    referenced in `index.html` is the latest version.
+-   [PSDC](https://pyscript.com) - Use discord or Anaconda Slack (if you work at
+    Anaconda) to let the PSDC team know there's a new version, so they can update
+    their project templates.

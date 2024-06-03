@@ -4,7 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../../dist/core.css">
-  <script type="module" src="../../dist/core.js"></script>
+  <script type="module">
+    import '../../dist/core.js';
+
+    addEventListener('mpy-editor', async ({ target }) => {
+      if (target.hasAttribute('setup')) {
+        await target.process([
+          'from pyscript import document',
+          // adds class="a-1" to the <html> element
+          'document.documentElement.classList.add(f"a-{a}")',
+          'from js import console',
+          'console.log("Hello JS")',
+        ].join('\n'));
+      }
+    });
+  </script>
 </head>
 <body>
   <!-- a setup node with a config for an env -->

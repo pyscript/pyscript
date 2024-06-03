@@ -286,7 +286,7 @@ class Element(BaseElement):
             canvas._js.width = width
             canvas._js.height = height
 
-        elif isistance(to, Element):
+        elif isinstance(to, Element):
             if to._js.tagName != "CANVAS":
                 raise TypeError("Element to snap to must a canvas.")
             canvas = to
