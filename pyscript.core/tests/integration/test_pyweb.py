@@ -157,13 +157,22 @@ class TestElements(PyScriptTest):
         self._create_el_and_basic_asserts("aside", "some text", interpreter)
 
     def test_audio(self, interpreter):
+
+        if self.dev_server:
+            expected_errors = [
+                "Failed to load resource: the server responded with a status of 404 (File not found)"
+            ]
+        else:
+            # In fake server conditions this test will not throw an error due to missing files.
+            # If we want to skip the test, use:
+            # pytest.skip("Skipping: fake server doesn't throw 404 errors on missing local files.")
+            expected_errors = []
+
         self._create_el_and_basic_asserts(
             "audio",
             interpreter=interpreter,
             properties={"src": "http://localhost:8080/somefile.ogg", "controls": True},
-            expected_errors=[
-                "Failed to load resource: the server responded with a status of 404 (File not found)"
-            ],
+            expected_errors=expected_errors,
         )
 
     def test_b(self, interpreter):
