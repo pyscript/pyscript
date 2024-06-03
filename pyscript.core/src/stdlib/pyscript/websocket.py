@@ -1,5 +1,4 @@
 import js
-
 from pyscript.util import as_bytearray
 
 code = "code"
