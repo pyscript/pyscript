@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../dist/core.css">
+  <script type="module" src="../dist/core.js"></script>
+</head>
+<body>
+  <script type="py" async>
+    from pyscript import py_modules
+
+    matplotlib, regex, = await py_modules("matplotlib", "regex")
+
+    print(matplotlib, regex)
+  </script>
+</body>
+</html>

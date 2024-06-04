@@ -43,6 +43,8 @@ from pyscript.magic_js import (
 )
 from pyscript.websocket import WebSocket
 
+from polyscript import lazy_py_modules as py_modules
+
 try:
     from pyscript.event_handling import when
 except:
