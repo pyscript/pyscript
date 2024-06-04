@@ -2,7 +2,6 @@ import inspect
 import sys
 
 from pyscript import document, when, window
-from pyscript.web.dom import JSProperty
 from pyscript.web import dom as pydom
 
 #: A flag to show if MicroPython is the current Python interpreter.
@@ -16,6 +15,23 @@ def getmembers_static(cls):
         return [(name, getattr(cls, name)) for name, _ in inspect.getmembers(cls)]
 
     return inspect.getmembers_static(cls)
+
+
+class JSProperty:
+    """JS property descriptor that directly maps to the property with the same
+    name in the underlying JS component."""
+
+    def __init__(self, name: str, allow_nones: bool = False):
+        self.name = name
+        self.allow_nones = allow_nones
+
+    def __get__(self, obj, objtype=None):
+        return getattr(obj._js, self.name)
+
+    def __set__(self, obj, value):
+        if not self.allow_nones and value is None:
+            return
+        setattr(obj._js, self.name, value)
 
 
 class ElementBase(pydom.Element):

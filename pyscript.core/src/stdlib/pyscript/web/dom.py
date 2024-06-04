@@ -36,23 +36,6 @@ from pyscript import display, document, window
 alert = window.alert
 
 
-class JSProperty:
-    """JS property descriptor that directly maps to the property with the same
-    name in the underlying JS component."""
-
-    def __init__(self, name: str, allow_nones: bool = False):
-        self.name = name
-        self.allow_nones = allow_nones
-
-    def __get__(self, obj, objtype=None):
-        return getattr(obj._js, self.name)
-
-    def __set__(self, obj, value):
-        if not self.allow_nones and value is None:
-            return
-        setattr(obj._js, self.name, value)
-
-
 class BaseElement:
     def __init__(self, js_element):
         self._js = js_element
