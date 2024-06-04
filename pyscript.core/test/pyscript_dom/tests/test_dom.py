@@ -234,7 +234,7 @@ class TestCollection:
 class TestCreation:
     def test_create_document_element(self):
         # TODO: This test should probably be removed since it's testing the elements module
-        new_el = el.div
+        new_el = el.div('new element')
         new_el.id = "new_el_id"
         assert isinstance(new_el, el.BaseElement)
         assert new_el._js.tagName == "DIV"
@@ -253,7 +253,7 @@ class TestCreation:
         # new_el = parent_div.create(
         #     "p", classes=["code-description"], html="Ciao PyScripters!"
         # )
-        new_el = el.p(classes=["code-description"], html="Ciao PyScripters!")
+        new_el = el.p('a div', classes=["code-description"], html="Ciao PyScripters!")
         parent_div.append(new_el)
 
         assert isinstance(new_el, el.BaseElement)
