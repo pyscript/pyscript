@@ -1,9 +1,12 @@
 import random
+import sys
 import time
 from datetime import datetime as dt
 
 from pyscript import display, when
 from pyweb import pydom
+
+display(sys.version, target="system-info")
 
 
 @when("click", "#just-a-button")

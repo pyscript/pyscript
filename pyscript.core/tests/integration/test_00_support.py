@@ -186,12 +186,12 @@ class TestSupport(PyScriptTest):
         #
         msg = str(exc.value)
         expected = textwrap.dedent(
-            """
+            f"""
             JS errors found: 2
             Error: error 1
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             Error: error 2
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
@@ -217,12 +217,12 @@ class TestSupport(PyScriptTest):
         #
         msg = str(exc.value)
         expected = textwrap.dedent(
-            """
+            f"""
             JS errors found: 2
             Error: NOT expected 2
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             Error: NOT expected 4
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
@@ -243,15 +243,15 @@ class TestSupport(PyScriptTest):
         #
         msg = str(exc.value)
         expected = textwrap.dedent(
-            """
+            f"""
             The following JS errors were expected but could not be found:
                 - this is not going to be found
             ---
             The following JS errors were raised but not expected:
             Error: error 1
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             Error: error 2
-                at https://fake_server/mytest.html:.*
+                at {self.http_server_addr}/mytest.html:.*
             """
         ).strip()
         assert re.search(expected, msg)
@@ -471,6 +471,8 @@ class TestSupport(PyScriptTest):
         Test that we capture a 404 in loading a page that does not exist.
         """
         self.goto("this_url_does_not_exist.html")
-        assert [
-            "Failed to load resource: the server responded with a status of 404 (Not Found)"
-        ] == self.console.all.lines
+        if self.dev_server:
+            error = "Failed to load resource: the server responded with a status of 404 (File not found)"
+        else:
+            error = "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        assert [error] == self.console.all.lines
