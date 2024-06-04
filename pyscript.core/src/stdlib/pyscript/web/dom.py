@@ -8,7 +8,7 @@ from pyscript.web.elements import Element, ElementCollection
 #             return element[0]
 
 
-class PyDom: #(BaseElement):
+class PyDom:  # (BaseElement):
     # Add objects we want to expose to the DOM namespace since this class instance is being
     # remapped as "the module" itself
     # BaseElement = BaseElement
@@ -20,7 +20,7 @@ class PyDom: #(BaseElement):
         # and it really doesn't have a need for styleproxy or parent to to call to __init__
         # (which actually fails in MP for some reason)
 
-        # TODO: Check if we can prune the follow 4 
+        # TODO: Check if we can prune the follow 4
         self._js = document
         # self._parent = None
         # self._proxies = {}
@@ -36,5 +36,6 @@ class PyDom: #(BaseElement):
         if not elements:
             return None
         return ElementCollection([Element(el) for el in elements])
+
 
 dom = PyDom()

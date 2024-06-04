@@ -2,6 +2,7 @@ from unittest import mock
 
 import pytest
 from pyscript import document, when
+
 # from pyweb import pydom
 from pyscript.web import dom
 from pyscript.web import elements as el
@@ -10,6 +11,7 @@ from pyscript.web import elements as el
 class TestDocument:
     def test__element(self):
         assert dom._js == document
+
 
 def test_getitem_by_id():
     # GIVEN an existing element on the page with a known text content
@@ -95,7 +97,7 @@ class TestElement:
         id_ = "element-append-tests"
         div = dom[f"#{id_}"][0]
         len_children_before = len(div.children)
-        new_el = el.p('new element')
+        new_el = el.p("new element")
         div.append(new_el)
         assert len(div.children) == len_children_before + 1
         assert div.children[-1] == new_el
@@ -104,7 +106,7 @@ class TestElement:
         id_ = "element-append-tests"
         div = dom[f"#{id_}"][0]
         len_children_before = len(div.children)
-        new_el = el.p('new element')
+        new_el = el.p("new element")
         div.append(new_el._js)
         assert len(div.children) == len_children_before + 1
         assert div.children[-1] == new_el
@@ -234,7 +236,7 @@ class TestCollection:
 class TestCreation:
     def test_create_document_element(self):
         # TODO: This test should probably be removed since it's testing the elements module
-        new_el = el.div('new element')
+        new_el = el.div("new element")
         new_el.id = "new_el_id"
         assert isinstance(new_el, el.BaseElement)
         assert new_el._js.tagName == "DIV"
@@ -253,7 +255,7 @@ class TestCreation:
         # new_el = parent_div.create(
         #     "p", classes=["code-description"], html="Ciao PyScripters!"
         # )
-        new_el = el.p('a div', classes=["code-description"], html="Ciao PyScripters!")
+        new_el = el.p("a div", classes=["code-description"], html="Ciao PyScripters!")
         parent_div.append(new_el)
 
         assert isinstance(new_el, el.BaseElement)

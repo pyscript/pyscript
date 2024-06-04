@@ -19,8 +19,9 @@ def when(event_type=None, selector=None):
     """
 
     def decorator(func):
-        
+
         from pyscript.web.elements import Element, ElementCollection
+
         if isinstance(selector, str):
             elements = document.querySelectorAll(selector)
         else:
@@ -39,6 +40,7 @@ def when(event_type=None, selector=None):
             sig = inspect.signature(func)
             # Function doesn't receive events
             if not sig.parameters:
+
                 def wrapper(*args, **kwargs):
                     func()
 
