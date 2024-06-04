@@ -10,6 +10,7 @@ declare namespace _default {
         web: {
             "__init__.py": string;
             "dom.py": string;
+            "elements.py": string;
         };
         "websocket.py": string;
     };
@@ -18,7 +19,6 @@ declare namespace _default {
         "media.py": string;
         ui: {
             "__init__.py": string;
-            "elements.py": string;
         };
     };
 }
