@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.4.41",
+    "version": "0.4.42",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -49,11 +49,11 @@
         "type-checked-collections": "^0.1.7"
     },
     "devDependencies": {
-        "@codemirror/commands": "^6.5.0",
+        "@codemirror/commands": "^6.6.0",
         "@codemirror/lang-python": "^6.1.6",
-        "@codemirror/language": "^6.10.1",
+        "@codemirror/language": "^6.10.2",
         "@codemirror/state": "^6.4.1",
-        "@codemirror/view": "^6.26.3",
+        "@codemirror/view": "^6.27.0",
         "@playwright/test": "^1.44.1",
         "@rollup/plugin-commonjs": "^25.0.8",
         "@rollup/plugin-node-resolve": "^15.2.3",
