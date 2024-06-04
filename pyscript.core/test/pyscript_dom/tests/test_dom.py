@@ -4,22 +4,12 @@ import pytest
 from pyscript import document, when
 # from pyweb import pydom
 from pyscript.web import dom
+from pyscript.web import elements as el
 
 
 class TestDocument:
     def test__element(self):
         assert dom._js == document
-
-    def test_no_parent(self):
-        assert dom.parent is None
-
-    def test_create_element(self):
-        new_el = dom.create("div")
-        assert isinstance(new_el, dom.BaseElement)
-        assert new_el._js.tagName == "DIV"
-        # EXPECT the new element to be associated with the document
-        assert new_el.parent == None
-
 
 def test_getitem_by_id():
     # GIVEN an existing element on the page with a known text content
@@ -33,7 +23,7 @@ def test_getitem_by_id():
     # the JS document.querySelector API would return
     assert document.querySelector(selector).innerHTML == div.html == txt
     # EXPECT the results to be of the right types
-    assert isinstance(div, dom.BaseElement)
+    assert isinstance(div, el.BaseElement)
     assert isinstance(result, dom.ElementCollection)
 
 
@@ -77,8 +67,8 @@ class TestElement:
 
         # EXPECT the new element to be associated with the parent
         assert div.parent == parent_div
-        # EXPECT the new element to be a BaseElement
-        assert isinstance(div, dom.BaseElement)
+        # EXPECT the new element to be a el.BaseElement
+        assert isinstance(div, el.BaseElement)
         # EXPECT the div attributes to be == to how they are configured in the page
         assert div.html == "Child 1"
         assert div.id == "test_selector_w_children_child_1"
@@ -105,7 +95,7 @@ class TestElement:
         id_ = "element-append-tests"
         div = dom[f"#{id_}"][0]
         len_children_before = len(div.children)
-        new_el = div.create("p")
+        new_el = el.p('new element')
         div.append(new_el)
         assert len(div.children) == len_children_before + 1
         assert div.children[-1] == new_el
@@ -114,7 +104,7 @@ class TestElement:
         id_ = "element-append-tests"
         div = dom[f"#{id_}"][0]
         len_children_before = len(div.children)
-        new_el = div.create("p")
+        new_el = el.p('new element')
         div.append(new_el._js)
         assert len(div.children) == len_children_before + 1
         assert div.children[-1] == new_el
@@ -243,9 +233,10 @@ class TestCollection:
 
 class TestCreation:
     def test_create_document_element(self):
-        new_el = dom.create("div")
+        # TODO: This test should probably be removed since it's testing the elements module
+        new_el = el.div
         new_el.id = "new_el_id"
-        assert isinstance(new_el, dom.BaseElement)
+        assert isinstance(new_el, el.BaseElement)
         assert new_el._js.tagName == "DIV"
         # EXPECT the new element to be associated with the document
         assert new_el.parent == None
@@ -259,11 +250,13 @@ class TestCreation:
 
         # Creating an element from another element automatically creates that element
         # as a child of the original element
-        new_el = parent_div.create(
-            "p", classes=["code-description"], html="Ciao PyScripters!"
-        )
+        # new_el = parent_div.create(
+        #     "p", classes=["code-description"], html="Ciao PyScripters!"
+        # )
+        new_el = el.p(classes=["code-description"], html="Ciao PyScripters!")
+        parent_div.append(new_el)
 
-        assert isinstance(new_el, dom.BaseElement)
+        assert isinstance(new_el, el.BaseElement)
         assert new_el._js.tagName == "P"
         # EXPECT the new element to be associated with the document
         assert new_el.parent == parent_div
