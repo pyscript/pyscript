@@ -157,6 +157,7 @@ for (const [TYPE, interpreter] of TYPES) {
         // enrich the Python env with some JS utility for main
         interpreter.registerJsModule("_pyscript", {
             PyWorker,
+            js_import: (...urls) => Promise.all(urls.map((url) => import(url))),
             get target() {
                 return isScript(currentElement)
                     ? currentElement.target.id
