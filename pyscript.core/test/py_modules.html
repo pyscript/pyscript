@@ -8,11 +8,20 @@
 </head>
 <body>
   <script type="py" async>
-    from pyscript import py_modules
+    from pyscript import py_import, js_import, window
 
-    matplotlib, regex, = await py_modules("matplotlib", "regex")
+    window.console.time("first")
+    matplotlib, regex, = await py_import("matplotlib", "regex")
+    window.console.timeEnd("first")
+
+    window.console.time("second")
+    matplotlib, regex, = await py_import("matplotlib", "regex")
+    window.console.timeEnd("second")
 
     print(matplotlib, regex)
+
+    escaper, = await js_import("https://esm.run/html-escaper")
+    window.console.log(escaper)
   </script>
 </body>
 </html>
