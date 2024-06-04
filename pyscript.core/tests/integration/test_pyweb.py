@@ -101,8 +101,9 @@ class TestElements(PyScriptTest):
         code_ = f"""
                 from pyscript import when
             <script type="{interpreter}">
-                from pyweb import pydom
-                from pyweb.ui.elements import {el_type}
+                from pyscript.web import dom
+                from pyscript.web.elements import {el_type}
+
                 el = {el_type}({attributes})
                 pydom.body.append(el)
             </script>
