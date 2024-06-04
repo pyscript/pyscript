@@ -38,8 +38,8 @@ from pyscript.magic_js import (
     config,
     current_target,
     document,
-    js_modules,
     js_import,
+    js_modules,
     sync,
     window,
 )

@@ -43,7 +43,9 @@ if RUNNING_IN_WORKER:
         document = window.document
         js.document = document
         # this is the same as js_import on main and it lands modules on main
-        js_import = window.Function("return (...urls) => Promise.all(urls.map((url) => import(url)))")()
+        js_import = window.Function(
+            "return (...urls) => Promise.all(urls.map((url) => import(url)))"
+        )()
     except:
         globalThis.console.debug("SharedArrayBuffer is not available")
         # in this scenario none of the utilities would work
