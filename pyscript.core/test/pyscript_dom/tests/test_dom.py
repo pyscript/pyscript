@@ -4,7 +4,6 @@ import pytest
 
 from pyscript import document, when
 
-# from pyweb import pydom
 from pyscript.web import dom
 from pyscript.web import elements as el
 
@@ -253,9 +252,6 @@ class TestCreation:
 
         # Creating an element from another element automatically creates that element
         # as a child of the original element
-        # new_el = parent_div.create(
-        #     "p", classes=["code-description"], html="Ciao PyScripters!"
-        # )
         new_el = el.p("a div", classes=["code-description"], html="Ciao PyScripters!")
         parent_div.append(new_el)
 
@@ -264,7 +260,6 @@ class TestCreation:
 
         # EXPECT the new element to be associated with the document
         assert new_el.parent == parent_div
-
         assert dom[selector][0].children[0] == new_el
 
 
