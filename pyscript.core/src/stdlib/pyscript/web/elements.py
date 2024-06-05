@@ -17,7 +17,6 @@ except ImportError:
         def warn(*args, **kwargs):
             print("WARNING: ", *args, **kwargs)
 
-
 try:
     from functools import cached_property
 except ImportError:
@@ -31,8 +30,7 @@ except ImportError:
     def JsProxy(obj):
         return obj
 
-
-from pyscript import document, window
+from pyscript import document
 
 # from pyscript.web import dom as pydom
 
