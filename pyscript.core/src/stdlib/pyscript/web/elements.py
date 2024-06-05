@@ -31,9 +31,7 @@ except ImportError:
     def JsProxy(obj):
         return obj
 
-
 from pyscript import document, window
-
 # from pyscript.web import dom as pydom
 
 #: A flag to show if MicroPython is the current Python interpreter.
@@ -67,7 +65,6 @@ class JSProperty:
 
 
 # ------ TODO: REMOVE!!!! pydom elements
-
 
 class BaseElement:
     def __init__(self, js_element):
@@ -312,7 +309,6 @@ class Element(BaseElement):
         elif isinstance(to, str):
             # TODO (fpliger): This needs a better fix but doing a local import here for a quick fix
             from pyscript.web import dom
-
             canvas = dom[to][0]
             if canvas._js.tagName != "CANVAS":
                 raise TypeError("Element to snap to must a be canvas.")
@@ -466,8 +462,7 @@ class StyleProxy:  # (dict):
     def visible(self, value):
         self._element._js.style.visibility = value
 
-
-# --------- END OF PYDOM STUFF ------
+#--------- END OF PYDOM STUFF ------
 
 
 class ElementBase(Element):
