@@ -604,3 +604,81 @@ class TestElements(PyScriptTest):
             properties=properties,
             expected_errors=self.expected_missing_file_errors,
         )
+
+    def test_append_py_element(self, interpreter):
+        # Let's make sure the body of the page is clean first
+        body = self.page.locator("body")
+        assert body.inner_html() == ""
+
+        # Let's make sure the element is not in the page
+        element = self.page.locator("div")
+        assert not element.count()
+
+        div_text_content = "Luke, I am your father"
+        p_text_content = "noooooooooo!"
+        # Let's create the element
+        code_ = f"""
+            from pyscript import when
+            <script type="{interpreter}">
+                from pyscript.web import dom
+                from pyscript.web.elements import div, p
+
+                el = div("{div_text_content}")
+                child = p('{p_text_content}')
+                el.append(child)
+                dom.body.append(el)
+            </script>
+            """
+        self.pyscript_run(code_)
+
+        # Let's keep the tag in 2 variables, one for the selector and another to
+        # check the return tag from the selector
+        el = self.page.locator("div")
+        tag = el.evaluate("node => node.tagName")
+        assert tag == "DIV"
+        assert el.text_content() == f"{div_text_content}{p_text_content}"
+
+        assert el.evaluate("node => node.children.length") == 1, "There should be only 1 child"
+        assert el.evaluate("node => node.children[0].tagName") == "P"
+        assert el.evaluate("node => node.children[0].parentNode.textContent") == f"{div_text_content}{p_text_content}"
+        assert el.evaluate("node => node.children[0].textContent") == p_text_content
+
+    def test_append_proxy_element(self, interpreter):
+        # Let's make sure the body of the page is clean first
+        body = self.page.locator("body")
+        assert body.inner_html() == ""
+
+        # Let's make sure the element is not in the page
+        element = self.page.locator("div")
+        assert not element.count()
+
+        div_text_content = "Luke, I am your father"
+        p_text_content = "noooooooooo!"
+        # Let's create the element
+        code_ = f"""
+            from pyscript import when
+            <script type="{interpreter}">
+                from pyscript import document
+                from pyscript.web import dom
+                from pyscript.web.elements import div, p
+
+                el = div("{div_text_content}")
+                child = document.createElement('P')
+                child.textContent = '{p_text_content}'
+                el.append(child)
+                dom.body.append(el)
+            </script>
+            """
+        self.pyscript_run(code_)
+
+        # Let's keep the tag in 2 variables, one for the selector and another to
+        # check the return tag from the selector
+        el = self.page.locator("div")
+        tag = el.evaluate("node => node.tagName")
+        assert tag == "DIV"
+        assert el.text_content() == f"{div_text_content}{p_text_content}"
+
+        assert el.evaluate("node => node.children.length") == 1, "There should be only 1 child"
+        assert el.evaluate("node => node.children[0].tagName") == "P"
+        assert el.evaluate("node => node.children[0].parentNode.textContent") == f"{div_text_content}{p_text_content}"
+        assert el.evaluate("node => node.children[0].textContent") == p_text_content

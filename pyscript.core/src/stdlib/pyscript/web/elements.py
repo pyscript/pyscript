@@ -23,13 +23,6 @@ except ImportError:
     # TODO: same comment about micropython as above
     cached_property = property
 
-try:
-    from pyodide.ffi import JsProxy
-except ImportError:
-    # TODO: same comment about micropython as above
-    def JsProxy(obj):
-        return obj
-
 from pyscript import document
 
 # from pyscript.web import dom as pydom
@@ -135,20 +128,28 @@ class Element(BaseElement):
         return [self.__class__(el) for el in self._js.children]
 
     def append(self, child):
-        # TODO: this is Pyodide specific for now!!!!!!
-        # if we get passed a JSProxy Element directly we just map it to the
-        # higher level Python element
-        if inspect.isclass(JsProxy) and isinstance(child, JsProxy):
-            return self.append(Element(child))
-
-        elif isinstance(child, Element):
+        if isinstance(child, Element):
             self._js.appendChild(child._js)
-
-            return child
 
         elif isinstance(child, ElementCollection):
             for el in child:
-                self.append(el)
+                self._js.appendChild(el._js)
+
+        else:
+            # In this case we know its not a Python Object so we will guess it's a JS object
+            try:
+                # First, we try to see if it's a valid element
+                tag = child.tagName
+                self._js.appendChild(child)
+            except AttributeError:
+                # This is not a valid element, so let's try it's a nodelist (using lenght)
+                try:
+                    if child.length:
+                        for element_ in child:
+                            self._js.appendChild(element_)
+                except AttributeError:
+                    # Nope! This is not a valid element, nor a NodeList, so we raise an error
+                    raise TypeError(f'Element "{child}" a proxy object, but not a valid element or a NodeList.')
 
     # -------- Pythonic Interface to Element -------- #
     @property
