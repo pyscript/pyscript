@@ -9,12 +9,13 @@ class PyDom:
 
     def __init__(self):
         self._js = document
-        
+
         self.body = Element(document.body)
         self.head = Element(document.head)
 
     def __getitem__(self, key):
         elements = self._js.querySelectorAll(key)
         return ElementCollection([Element(el) for el in elements])
+
 
 dom = PyDom()
