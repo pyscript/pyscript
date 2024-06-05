@@ -1,7 +1,6 @@
 from unittest import mock
 
 import pytest
-
 from pyscript import document, when
 
 # from pyweb import pydom
