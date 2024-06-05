@@ -16,8 +16,6 @@ class PyDom:
 
     def __getitem__(self, key):
         elements = self._js.querySelectorAll(key)
-        if not elements:
-            return None
         return ElementCollection([Element(el) for el in elements])
 
 dom = PyDom()
