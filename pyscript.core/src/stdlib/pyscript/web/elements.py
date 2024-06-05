@@ -17,6 +17,7 @@ except ImportError:
         def warn(*args, **kwargs):
             print("WARNING: ", *args, **kwargs)
 
+
 try:
     from functools import cached_property
 except ImportError:
@@ -142,14 +143,16 @@ class Element(BaseElement):
                 tag = child.tagName
                 self._js.appendChild(child)
             except AttributeError:
-                # This is not a valid element, so let's try it's a nodelist (using lenght)
+                # This is not a valid element, so let's try it's a nodelist (using length)
                 try:
                     if child.length:
                         for element_ in child:
                             self._js.appendChild(element_)
                 except AttributeError:
                     # Nope! This is not a valid element, nor a NodeList, so we raise an error
-                    raise TypeError(f'Element "{child}" a proxy object, but not a valid element or a NodeList.')
+                    raise TypeError(
+                        f'Element "{child}" a proxy object, but not a valid element or a NodeList.'
+                    )
 
     # -------- Pythonic Interface to Element -------- #
     @property

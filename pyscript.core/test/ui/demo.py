@@ -7,10 +7,11 @@ import examples
 import shoelace
 import styles
 from markdown import markdown
-from pyscript import when, window
 from pyweb import pydom
 from pyweb.ui import elements as el
 from pyweb.ui.elements import a, button, div, grid, h1, h2, h3
+
+from pyscript import when, window
 
 MAIN_PAGE_MARKDOWN = dedent(
     """
