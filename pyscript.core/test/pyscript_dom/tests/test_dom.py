@@ -1,7 +1,6 @@
 from unittest import mock
 
 import pytest
-
 from pyscript import document, when
 from pyscript.web import dom
 from pyscript.web import elements as el
