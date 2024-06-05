@@ -258,6 +258,7 @@ class TestCreation:
 
         assert isinstance(new_el, el.BaseElement)
         assert new_el._js.tagName == "P"
+    
         # EXPECT the new element to be associated with the document
         assert new_el.parent == parent_div
 

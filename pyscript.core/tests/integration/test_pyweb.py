@@ -105,7 +105,7 @@ class TestElements(PyScriptTest):
                 from pyscript.web.elements import {el_type}
 
                 el = {el_type}({attributes})
-                pydom.body.append(el)
+                dom.body.append(el)
             </script>
             """
         self.pyscript_run(code_)

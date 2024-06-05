@@ -84,7 +84,8 @@ class BaseElement:
             return self._parent
 
         if self._js.parentElement:
-            self._parent = self.__class__(self._js.parentElement)
+            # TODO: This should actually return the correct class (== to tagName)
+            self._parent = Element(self._js.parentElement)
 
         return self._parent
 
