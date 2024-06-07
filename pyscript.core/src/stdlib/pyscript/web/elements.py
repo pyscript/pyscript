@@ -122,14 +122,14 @@ class BaseElement:
                 # First, we try to see if it's an element with a 'tagName' attribute.
                 self._js.appendChild(child.tagName)
             except AttributeError:
-                # This is not a valid element, so let's see if it's a nodelist with
-                # a 'length' attribute.
+                # This is not an element, so let's see if it's a nodelist with a
+                # 'length' attribute.
                 try:
                     if child.length:
                         for element_ in child:
                             self._js.appendChild(element_)
                 except AttributeError:
-                    # Nope! This is not a valid element, nor a NodeList.
+                    # Nope! This is not an element, nor a NodeList.
                     raise TypeError(
                         f'Element "{child}" a proxy object, but not a valid element or a NodeList.'
                     )
