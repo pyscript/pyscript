@@ -221,9 +221,9 @@ class HasOptions:
     The elements that support options are: <datalist>, <optgroup>, and <select>.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, js_element=None, style=None, **kwargs):
         self._options = OptionsProxy(self)
+        super().__init__(*args, js_element=js_element, style=style, **kwargs)
 
     @property
     def options(self):
