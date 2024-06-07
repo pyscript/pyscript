@@ -56,7 +56,7 @@ class JSProperty:
         setattr(obj._js, self.name, value)
 
 
-def element_from_js(js_element):
+def element_from_js(js_element, *args, **kwargs):
     """Create an instance of the appropriate subclass of this class for a JS element.
 
     If the JS element was created via an `Element` (i.e. by us) it will have a data
@@ -79,7 +79,7 @@ def element_from_js(js_element):
         if not cls:
             raise TypeError(f"Unknown element tag: {js_element.tagName}")
 
-    return cls(js_element)
+    return cls(js_element, *args, **kwargs)
 
 
 class BaseElement:
@@ -136,21 +136,6 @@ class BaseElement:
                     raise TypeError(
                         f'Element "{child}" is a proxy object, but not a valid element or a NodeList.'
                     )
-
-    def create(self, type_, is_child=True, classes=None, html=None, label=None):
-        js_el = document.createElement(type_)
-        element = element_from_js(js_el, classes=classes)
-
-        if html is not None:
-            element.html = html
-
-        if label is not None:
-            element.label = label
-
-        if is_child:
-            self.append(element)
-
-        return element
 
     def find(self, selector):
         """Return an ElementCollection representing all the child elements that
