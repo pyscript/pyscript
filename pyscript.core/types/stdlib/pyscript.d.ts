@@ -15,6 +15,5 @@ declare namespace _default {
         };
         "websocket.py": string;
     };
-    let pyweb: {};
 }
 export default _default;
