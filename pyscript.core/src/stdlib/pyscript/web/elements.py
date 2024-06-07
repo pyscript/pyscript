@@ -162,22 +162,6 @@ class BaseElement:
         elements = self._js.querySelectorAll(selector)
         return ElementCollection([BaseElement.from_js(el) for el in elements])
 
-    # @property
-    # def html(self):
-    #     return self._js.innerHTML
-    #
-    # @html.setter
-    # def html(self, value):
-    #     self._js.innerHTML = value
-
-    # @property
-    # def text(self):
-    #     return self._js.textContent
-    #
-    # @text.setter
-    # def text(self, value):
-    #     self._js.textContent = value
-
     @property
     def content(self):
         # TODO: This breaks with with standard template elements. Define how to best
@@ -199,14 +183,6 @@ class BaseElement:
             return
 
         display(value, target=self.id)
-
-    # @property
-    # def id(self):
-    #     return self._js.id
-    #
-    # @id.setter
-    # def id(self, value):
-    #     self._js.id = value
 
     @property
     def options(self):
@@ -237,22 +213,6 @@ class BaseElement:
                 "javascript API attribute instead."
             )
         self._js.value = value
-
-    @property
-    def selected(self):
-        return self._js.selected
-
-    @selected.setter
-    def selected(self, value):
-        # in order to avoid confusion to the user, we don't allow setting the
-        # value of elements that don't have a value attribute
-        if not hasattr(self._js, "selected"):
-            raise AttributeError(
-                f"Element {self._js.tagName} has no selected attribute. If you want to "
-                "force a selected attribute, set it directly using the `_js.selected = <value>` "
-                "javascript API attribute instead."
-            )
-        self._js.selected = value
 
     def clone(self, new_id=None):
         clone = type(self)(self._js.cloneNode(True))
