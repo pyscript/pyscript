@@ -287,58 +287,6 @@ class BaseElement:
     def show_me(self):
         self._js.scrollIntoView()
 
-    def snap(
-        self,
-        to: "BaseElement" | str = None,
-        width: int | None = None,
-        height: int | None = None,
-    ):
-        """
-        Captures a snapshot of a video element. (Only available for video elements)
-
-        Inputs:
-
-            * to: element where to save the snapshot of the video frame to
-            * width: width of the image
-            * height: height of the image
-
-        Output:
-            (Element) canvas element where the video frame snapshot was drawn into
-        """
-        if self._js.tagName != "VIDEO":
-            raise AttributeError("Snap method is only available for video Elements")
-
-        if to is None:
-            to_canvas = self.create("canvas")
-            if width is None:
-                width = self._js.width
-            if height is None:
-                height = self._js.height
-            to_canvas._js.width = width
-            to_canvas._js.height = height
-
-        elif isinstance(to, BaseElement):
-            if to._js.tagName != "CANVAS":
-                raise TypeError("Element to snap to must a canvas.")
-            to_canvas = to
-
-        elif getattr(to, "tagName", "") == "CANVAS":
-            to_canvas = canvas(to)
-
-        # If 'to' is a string, then assume it is a query selector.
-        elif isinstance(to, str):
-            nodelist = document.querySelectorAll(to)
-            if nodelist.length == 0:
-                raise TypeError("No element with selector {to} to snap to.")
-
-            if nodelist[0].tagName != "CANVAS":
-                raise TypeError("Element to snap to must a be canvas.")
-
-            to_canvas = canvas(nodelist[0])
-
-        to_canvas.draw(self, width, height)
-
-        return canvas
 
     def download(self, filename: str = "snapped.png") -> None:
         """Download the current element (only available for canvas elements) with the filename
@@ -1411,6 +1359,56 @@ class video(TextElement):
     preload = JSProperty("preload")
     src = JSProperty("src")
     width = JSProperty("width")
+
+    def snap(
+        self,
+        to: "BaseElement" | str = None,
+        width: int | None = None,
+        height: int | None = None,
+    ):
+        """
+        Captures a snapshot of a video.
+
+        Inputs:
+
+            * to: element where to save the snapshot of the video frame to
+            * width: width of the image
+            * height: height of the image
+
+        Output:
+            (Element) canvas element where the video frame snapshot was drawn into
+        """
+        if to is None:
+            to_canvas = self.create("canvas")
+            if width is None:
+                width = self._js.width
+            if height is None:
+                height = self._js.height
+            to_canvas._js.width = width
+            to_canvas._js.height = height
+
+        elif isinstance(to, BaseElement):
+            if to._js.tagName != "CANVAS":
+                raise TypeError("Element to snap to must a canvas.")
+            to_canvas = to
+
+        elif getattr(to, "tagName", "") == "CANVAS":
+            to_canvas = canvas(to)
+
+        # If 'to' is a string, then assume it is a query selector.
+        elif isinstance(to, str):
+            nodelist = document.querySelectorAll(to)
+            if nodelist.length == 0:
+                raise TypeError("No element with selector {to} to snap to.")
+
+            if nodelist[0].tagName != "CANVAS":
+                raise TypeError("Element to snap to must a be canvas.")
+
+            to_canvas = canvas(nodelist[0])
+
+        to_canvas.draw(self, width, height)
+
+        return canvas
 
 
 # Custom Elements
