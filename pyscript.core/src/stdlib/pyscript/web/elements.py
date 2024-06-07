@@ -288,45 +288,6 @@ class BaseElement:
         self._js.scrollIntoView()
 
 
-    def download(self, filename: str = "snapped.png") -> None:
-        """Download the current element (only available for canvas elements) with the filename
-        provided in input.
-
-        Inputs:
-            * filename (str): name of the file being downloaded
-
-        Output:
-            None
-        """
-        if self._js.tagName != "CANVAS":
-            raise AttributeError(
-                "The download method is only available for canvas Elements"
-            )
-
-        link = self.create("a")
-        link._js.download = filename
-        link._js.href = self._js.toDataURL()
-        link._js.click()
-
-    def draw(self, what, width, height):
-        """Draw `what` on the current element  (only available for canvas elements).
-
-        Inputs:
-
-            * what (canvas image source): An element to draw into the context. The specification permits any canvas
-                image source, specifically, an HTMLImageElement, an SVGImageElement, an HTMLVideoElement,
-                an HTMLCanvasElement, an ImageBitmap, an OffscreenCanvas, or a VideoFrame.
-        """
-        if self._js.tagName != "CANVAS":
-            raise AttributeError(
-                "The draw method is only available for canvas Elements"
-            )
-
-        if isinstance(what, BaseElement):
-            what = what._js
-
-        # https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
-        self._js.getContext("2d").drawImage(what, 0, 0, width, height)
 
 
 class OptionsProxy:
@@ -642,6 +603,35 @@ class canvas(TextElement):
 
     height = JSProperty("height")
     width = JSProperty("width")
+
+    def download(self, filename: str = "snapped.png") -> None:
+        """Download the current element with the filename provided in input.
+
+        Inputs:
+            * filename (str): name of the file being downloaded
+
+        Output:
+            None
+        """
+        link = self.create("a")
+        link._js.download = filename
+        link._js.href = self._js.toDataURL()
+        link._js.click()
+
+    def draw(self, what, width, height):
+        """Draw `what` on the current element
+
+        Inputs:
+
+            * what (canvas image source): An element to draw into the context. The specification permits any canvas
+                image source, specifically, an HTMLImageElement, an SVGImageElement, an HTMLVideoElement,
+                an HTMLCanvasElement, an ImageBitmap, an OffscreenCanvas, or a VideoFrame.
+        """
+        if isinstance(what, BaseElement):
+            what = what._js
+
+        # https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+        self._js.getContext("2d").drawImage(what, 0, 0, width, height)
 
 
 class caption(TextElement):
