@@ -227,6 +227,9 @@ class HasOptions:
 
     @property
     def options(self):
+        if not hasattr(self, '_options'):
+            self._options = OptionsProxy(self)
+
         return self._options
 
 
@@ -279,7 +282,7 @@ class OptionsProxy:
     @property
     def options(self):
         """Return the list of options"""
-        return [option(opt) for opt in self._element._js.options]
+        return [element_from_js(opt) for opt in self._element._js.options]
 
     @property
     def selected(self):
