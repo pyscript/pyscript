@@ -56,7 +56,7 @@ class JSProperty:
         setattr(obj._js, self.name, value)
 
 
-def element_from_js(js_element, *args, **kwargs):
+def element_from_js(js_element):
     """Create an instance of the appropriate subclass of this class for a JS element.
 
     If the JS element was created via an `Element` (i.e. by us) it will have a data
@@ -68,7 +68,11 @@ def element_from_js(js_element, *args, **kwargs):
     look up the `Element` subclass by tag name (this is NOT fool-proof as many
     subclasses might use a `<div>`).
     """
-    cls_name = js_element.dataset.pyscriptType
+
+    # We use "getAttribute" here instead of `js_element.dataset.pyscriptType' as the
+    # latter throws an `AttributeError` if the value isn't set and this way we just get
+    # `None` which seems cleaner.
+    cls_name = js_element.getAttribute("data-pyscript-type")
     if cls_name:
         cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
         if not cls:
@@ -79,7 +83,7 @@ def element_from_js(js_element, *args, **kwargs):
         if not cls:
             raise TypeError(f"Unknown element tag: {js_element.tagName}")
 
-    return cls(js_element, *args, **kwargs)
+    return cls(js_element=js_element)
 
 
 class BaseElement:
@@ -173,10 +177,10 @@ class BaseElement:
         display(value, target=self.id)
 
     def clone(self, new_id=None):
-        clone = type(self)(self._js.cloneNode(True))
-        clone.id = new_id
+        el = element_from_js(self._js.cloneNode(True))
+        el.id = new_id
 
-        return clone
+        return el
 
     @property
     def classes(self):
@@ -193,10 +197,9 @@ class BaseElement:
     def add_class(self, classname):
         classList = self._js.classList
         if isinstance(classname, list):
-            print("adding list of classes")
             classList.add(*classname)
+
         else:
-            print("adding single classname")
             classList.add(classname)
         return self
 
@@ -213,7 +216,9 @@ class BaseElement:
 
 
 class HasOptions:
-    """Mix-in for elements that have an options attribute ("datalist", "optgroup", "select").
+    """Mix-in for elements that have an options attribute.
+
+    i.e. <datalist>, <optgroup>, <select>
     """
 
     def __init__(self, *args, **kwargs):
@@ -226,16 +231,14 @@ class HasOptions:
 
 
 class OptionsProxy:
-    """This class represents the options of a select element. It
-    allows to access to add and remove options by using the `add` and `remove` methods.
+    """This class represents the options of a <datalist>, <optgroup> or <select> element.
+
+    It allows to access to add and remove options by using the `add` and `remove`
+    methods.
     """
 
     def __init__(self, element: BaseElement) -> None:
         self._element = element
-        if self._element._js.tagName.lower() != "select":
-            raise AttributeError(
-                f"Element {self._element._js.tagName} has no options attribute."
-            )
 
     def add(
         self,
@@ -361,38 +364,51 @@ class Element(BaseElement):
     translate = JSProperty("translate")
     virtualkeyboardpolicy = JSProperty("virtualkeyboardpolicy")
 
-    def __init__(self, style=None, classes=None, **kwargs):
-        super().__init__(document.createElement(self.tag))
+    def __init__(self, style=None, classes=None, js_element=None, **kwargs):
+        # If `js_element` is NOT None it means we are being called to "wrap" an
+        # existing js element.
+        if js_element is not None:
+            super().__init__(js_element)
+
+        # Otherwise, it means we are being called programmatically to create a new
+        # element.
+        else:
+            super().__init__(document.createElement(self.tag))
+
+            # Tag the JS element with our class name.
+            self._js.dataset.pyscriptType = type(self).__name__
+
+            # Set any style properties provided in input.
+            if isinstance(style, dict):
+                self.style.set(**style)
+
+            elif style is not None:
+                raise ValueError(
+                    f"Style should be a dictionary, received {style} (type {type(style)}) instead."
+                )
+
+            if classes:
+                self.classes = classes
+
+            # IMPORTANT!!! This is used to auto-harvest all input arguments and set them
+            # as properties.
+            self._init_properties(**kwargs)
 
         # Tag the JS element with our class name.
         self._js.dataset.pyscriptType = type(self).__name__
 
-        # Set all the style properties provided in input
-        if isinstance(style, dict):
-            self.style.set(**style)
-        elif style is not None:
-            raise ValueError(
-                f"Style should be a dictionary, received {style} (type {type(style)}) instead."
-            )
-
-        if classes:
-            self.classes = classes
-
-        # IMPORTANT!!! This is used to auto-harvest all input arguments and set them as
-        # properties.
-        self._init_properties(**kwargs)
-
     def _init_properties(self, **kwargs):
-        """Set all the properties (of type JSProperties) provided in input as properties
+        """Set all the properties (of type JSProperty) provided in input as properties
         of the class instance.
 
         Args:
             **kwargs: The properties to set
         """
-        # Look at all the properties of the class and see if they were provided in kwargs
-        for attr_name, attr in getmembers_static(self.__class__):
-            # For each one, actually check if it is a property of the class and set it
-            if isinstance(attr, JSProperty) and attr_name in kwargs:
+        # Look at all the properties of the class and see if they were provided in
+        # kwargs.
+        for attr_name, attr_value in getmembers_static(self.__class__):
+            # For each one, actually check if it is a property of the class and set it.
+            if attr_name in kwargs and isinstance(attr_value, JSProperty):
                 try:
                     setattr(self, attr_name, kwargs[attr_name])
                 except Exception as e:
@@ -401,8 +417,8 @@ class Element(BaseElement):
 
 
 class TextElement(Element):
-    def __init__(self, *args, style=None, **kwargs):
-        super().__init__(style=style, **kwargs)
+    def __init__(self, *args, js_element=None, style=None, **kwargs):
+        super().__init__(js_element=js_element, style=style, **kwargs)
 
         for item in args:
             if isinstance(item, BaseElement):
@@ -1393,12 +1409,13 @@ class ElementCollection:
         # If it's an integer we use it to access the elements in the collection
         if isinstance(key, int):
             return self._elements[key]
+
         # If it's a slice we use it to support slice operations over the elements
         # in the collection
         elif isinstance(key, slice):
             return ElementCollection(self._elements[key])
 
-        # If it's anything else (basically a string) we use it as a selector
+        # If it's anything else (basically a string) we use it as a query selector.
         # TODO: Write tests!
         elements = self._element.querySelectorAll(key)
         return ElementCollection([element_from_js(el) for el in elements])
@@ -1451,7 +1468,7 @@ ELEMENT_CLASSES = [
     data, datalist, dd, del_, details, dialog, div, dl, dt,
     em, embed,
     fieldset, figcaption, figure, footer, form,
-    grid,
+    #grid,
     h1, h2, h3, h4, h5, h6, header, hgroup, hr,
     i, iframe, img, input_, ins,
     kbd,
