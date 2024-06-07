@@ -276,7 +276,7 @@ class BaseElement:
         if isinstance(classname, list):
             classList.add(*classname)
         else:
-            self._js.classList.add(classname)
+            classList.add(classname)
         return self
 
     @property
@@ -286,8 +286,6 @@ class BaseElement:
 
     def show_me(self):
         self._js.scrollIntoView()
-
-
 
 
 class OptionsProxy:
