@@ -484,9 +484,9 @@ class TextElement(Element):
         #     self.html = content
 
 
-# IMPORTANT: For all HTML components defined below, we are not mapping all
-# available attributes, just the global and the most common ones.
-# If you need to access a specific attribute, you can always use the `_js.<attribute>`
+# IMPORTANT: For all HTML components defined below, we are not mapping all possible
+# attributes, just the global and the most common ones. If you need to access a
+# specific attribute, you can always use the `_js.<attribute>`
 class a(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"""
 
@@ -621,9 +621,11 @@ class canvas(TextElement):
 
         Inputs:
 
-            * what (canvas image source): An element to draw into the context. The specification permits any canvas
-                image source, specifically, an HTMLImageElement, an SVGImageElement, an HTMLVideoElement,
-                an HTMLCanvasElement, an ImageBitmap, an OffscreenCanvas, or a VideoFrame.
+            * what (canvas image source): An element to draw into the context. The
+                specification permits any canvas image source, specifically, an
+                HTMLImageElement, an SVGImageElement, an HTMLVideoElement,
+                an HTMLCanvasElement, an ImageBitmap, an OffscreenCanvas, or a
+                VideoFrame.
         """
         if isinstance(what, BaseElement):
             what = what._js
