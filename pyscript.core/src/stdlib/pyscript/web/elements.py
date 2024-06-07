@@ -220,6 +220,8 @@ class BaseElement:
         self._proxies["options"] = OptionsProxy(self)
         return self._proxies["options"]
 
+    # TODO: only for input (not used for file and image inputs ), textarea, select and
+    #  button.
     @property
     def value(self):
         return self._js.value
