@@ -17,7 +17,6 @@ except ImportError:
         def warn(*args, **kwargs):
             print("WARNING: ", *args, **kwargs)
 
-
 try:
     from functools import cached_property
 except ImportError:
@@ -26,7 +25,6 @@ except ImportError:
 
 from pyscript import document
 
-# from pyscript.web import dom as pydom
 
 #: A flag to show if MicroPython is the current Python interpreter.
 is_micropython = "MicroPython" in sys.version
@@ -58,10 +56,33 @@ class JSProperty:
         setattr(obj._js, self.name, value)
 
 
-# ------ TODO: REMOVE!!!! pydom elements
-
-
 class BaseElement:
+    @classmethod
+    def from_js(cls, js_element):
+        """Create an instance of the appropriate subclass of this class for a JS element.
+
+        If the JS element was created via an `Element` (i.e. by us) it will have a data
+        attribute named `data-pyscript-type` which contains the name of the subclass
+        that created it.
+
+        Hence, if the 'data-pyscript-type' attribute is present we look up the subclass
+        by name and create an instance of that. Otherwise, we make a 'best-guess' and
+        look up the `Element` subclass by tag name (this is NOT fool-proof as many
+        subclasses might use a `<div>`).
+        """
+        cls_name = js_element.dataset.pyscriptType
+        if cls_name:
+            cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
+            if not cls:
+                raise TypeError(f"Unknown element type: {cls_name}")
+
+        else:
+            cls = ELEMENT_CLASSES_BY_TAG.get(js_element.tagName.lower())
+            if not cls:
+                raise TypeError(f"Unknown element tag: {js_element.tagName}")
+
+        return cls(js_element)
+
     def __init__(self, js_element):
         self._js = js_element
         self._parent = None
@@ -69,8 +90,7 @@ class BaseElement:
         self._proxies = {}
 
     def __eq__(self, obj):
-        """Check if the element is the same as the other element by comparing
-        the underlying JS element"""
+        """Check for equality by comparing the underlying JS element."""
         return isinstance(obj, BaseElement) and obj._js == self._js
 
     @property
@@ -79,18 +99,13 @@ class BaseElement:
             return self._parent
 
         if self._js.parentElement:
-            # TODO: This should actually return the correct class (== to tagName)
-            self._parent = Element(self._js.parentElement)
+            self._parent = BaseElement.from_js(self._js.parentElement)
 
         return self._parent
 
-    # @property
-    # def __class(self):
-    #     return self.__class__ if self.__class__ != PyDom else Element
-
     def create(self, type_, is_child=True, classes=None, html=None, label=None):
         js_el = document.createElement(type_)
-        element = self.__class(js_el)
+        element = BaseElement.from_js(js_el)
 
         if classes:
             for class_ in classes:
@@ -118,18 +133,14 @@ class BaseElement:
             ElementCollection: A collection of elements matching the selector
         """
         elements = self._js.querySelectorAll(selector)
-        if not elements:
-            return None
-        return ElementCollection([Element(el) for el in elements])
+        return ElementCollection([BaseElement.from_js(el) for el in elements])
 
-
-class Element(BaseElement):
     @property
     def children(self):
-        return [self.__class__(el) for el in self._js.children]
+        return [BaseElement.from_js(el) for el in self._js.children]
 
     def append(self, child):
-        if isinstance(child, Element):
+        if isinstance(child, BaseElement):
             self._js.appendChild(child._js)
 
         elif isinstance(child, ElementCollection):
@@ -137,19 +148,20 @@ class Element(BaseElement):
                 self._js.appendChild(el._js)
 
         else:
-            # In this case we know its not a Python Object so we will guess it's a JS object
+            # In this case we know it's not an Element or an ElementCollection, so we
+            # will guess it's a JS object returned via the ffi.
             try:
-                # First, we try to see if it's a valid element
-                tag = child.tagName
-                self._js.appendChild(child)
+                # First, we try to see if it's an element with a 'tagName' attribute.
+                self._js.appendChild(child.tagName)
             except AttributeError:
-                # This is not a valid element, so let's try it's a nodelist (using length)
+                # This is not a valid element, so let's see if it's a nodelist with
+                # a 'length' attribute.
                 try:
                     if child.length:
                         for element_ in child:
                             self._js.appendChild(element_)
                 except AttributeError:
-                    # Nope! This is not a valid element, nor a NodeList, so we raise an error
+                    # Nope! This is not a valid element, nor a NodeList.
                     raise TypeError(
                         f'Element "{child}" a proxy object, but not a valid element or a NodeList.'
                     )
@@ -239,14 +251,14 @@ class Element(BaseElement):
         # value of elements that don't have a value attribute
         if not hasattr(self._js, "selected"):
             raise AttributeError(
-                f"Element {self._js.tagName} has no value attribute. If you want to "
-                "force a value attribute, set it directly using the `_js.value = <value>` "
+                f"Element {self._js.tagName} has no selected attribute. If you want to "
+                "force a selected attribute, set it directly using the `_js.selected = <value>` "
                 "javascript API attribute instead."
             )
         self._js.selected = value
 
     def clone(self, new_id=None):
-        clone = Element(self._js.cloneNode(True))
+        clone = type(self)(self._js.cloneNode(True))
         clone.id = new_id
 
         return clone
@@ -277,7 +289,7 @@ class Element(BaseElement):
 
     def snap(
         self,
-        to: BaseElement | str = None,
+        to: "BaseElement" | str = None,
         width: int | None = None,
         height: int | None = None,
     ):
@@ -297,29 +309,34 @@ class Element(BaseElement):
             raise AttributeError("Snap method is only available for video Elements")
 
         if to is None:
-            canvas = self.create("canvas")
+            to_canvas = self.create("canvas")
             if width is None:
                 width = self._js.width
             if height is None:
                 height = self._js.height
-            canvas._js.width = width
-            canvas._js.height = height
+            to_canvas._js.width = width
+            to_canvas._js.height = height
 
-        elif isinstance(to, Element):
+        elif isinstance(to, BaseElement):
             if to._js.tagName != "CANVAS":
                 raise TypeError("Element to snap to must a canvas.")
-            canvas = to
-        elif getattr(to, "tagName", "") == "CANVAS":
-            canvas = Element(to)
-        elif isinstance(to, str):
-            # TODO (fpliger): This needs a better fix but doing a local import here for a quick fix
-            from pyscript.web import dom
+            to_canvas = to
 
-            canvas = dom[to][0]
-            if canvas._js.tagName != "CANVAS":
+        elif getattr(to, "tagName", "") == "CANVAS":
+            to_canvas = canvas(to)
+
+        # If 'to' is a string, then assume it is a query selector.
+        elif isinstance(to, str):
+            nodelist = document.querySelectorAll(to)
+            if nodelist.length == 0:
+                raise TypeError("No element with selector {to} to snap to.")
+
+            if nodelist[0].tagName != "CANVAS":
                 raise TypeError("Element to snap to must a be canvas.")
 
-        canvas.draw(self, width, height)
+            to_canvas = canvas(nodelist[0])
+
+        to_canvas.draw(self, width, height)
 
         return canvas
 
@@ -357,7 +374,7 @@ class Element(BaseElement):
                 "The draw method is only available for canvas Elements"
             )
 
-        if isinstance(what, Element):
+        if isinstance(what, BaseElement):
             what = what._js
 
         # https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
@@ -369,7 +386,7 @@ class OptionsProxy:
     allows to access to add and remove options by using the `add` and `remove` methods.
     """
 
-    def __init__(self, element: Element) -> None:
+    def __init__(self, element: BaseElement) -> None:
         self._element = element
         if self._element._js.tagName.lower() != "select":
             raise AttributeError(
@@ -381,7 +398,7 @@ class OptionsProxy:
         value: Any = None,
         html: str = None,
         text: str = None,
-        before: Element | int = None,
+        before: BaseElement | int = None,
         **kws,
     ) -> None:
         """Add a new option to the select element"""
@@ -398,7 +415,7 @@ class OptionsProxy:
             option.setAttribute(key, value)
 
         if before:
-            if isinstance(before, Element):
+            if isinstance(before, BaseElement):
                 before = before._js
 
         self._element._js.add(option, before)
@@ -415,7 +432,7 @@ class OptionsProxy:
     @property
     def options(self):
         """Return the list of options"""
-        return [Element(opt) for opt in self._element._js.options]
+        return [option(opt) for opt in self._element._js.options]
 
     @property
     def selected(self):
@@ -436,7 +453,7 @@ class OptionsProxy:
 
 
 class StyleProxy:  # (dict):
-    def __init__(self, element: Element) -> None:
+    def __init__(self, element: BaseElement) -> None:
         self._element = element
 
     @cached_property
@@ -458,7 +475,7 @@ class StyleProxy:  # (dict):
 
     # CSS Properties
     # Reference: https://github.com/microsoft/TypeScript/blob/main/src/lib/dom.generated.d.ts#L3799C1-L5005C2
-    # Following prperties automatically generated from the above reference using
+    # Following properties automatically generated from the above reference using
     # tools/codegen_css_proxy.py
     @property
     def visible(self):
@@ -472,12 +489,12 @@ class StyleProxy:  # (dict):
 # --------- END OF PYDOM STUFF ------
 
 
-class ElementBase(Element):
+class Element(BaseElement):
     tag = "div"
 
-    # GLOBAL ATTRIBUTES
-    # These are attribute that all elements have (this list is a subset of the official one)
-    # We are trying to capture the most used ones
+    # GLOBAL ATTRIBUTES.
+    # These are attribute that all elements have (this list is a subset of the official
+    # one). We are trying to capture the most used ones.
     accesskey = JSProperty("accesskey")
     autofocus = JSProperty("autofocus")
     autocapitalize = JSProperty("autocapitalize")
@@ -501,18 +518,19 @@ class ElementBase(Element):
     def __init__(self, style=None, **kwargs):
         super().__init__(document.createElement(self.tag))
 
-        # set all the style properties provided in input
+        # Tag the JS element with our class name.
+        self._js.dataset.pyscriptType = type(self).__name__
+
+        # Set all the style properties provided in input
         if isinstance(style, dict):
-            for key, value in style.items():
-                self.style[key] = value
-        elif style is None:
-            pass
-        else:
+            self.style.set(**style)
+        elif style is not None:
             raise ValueError(
                 f"Style should be a dictionary, received {style} (type {type(style)}) instead."
             )
 
-        # IMPORTANT!!! This is used to auto-harvest all input arguments and set them as properties
+        # IMPORTANT!!! This is used to auto-harvest all input arguments and set them as
+        # properties.
         self._init_properties(**kwargs)
 
     def _init_properties(self, **kwargs):
@@ -533,29 +551,36 @@ class ElementBase(Element):
                     raise
 
 
-class TextElementBase(ElementBase):
-    def __init__(self, content=None, style=None, **kwargs):
+class TextElement(Element):
+    def __init__(self, *args, style=None, **kwargs):
         super().__init__(style=style, **kwargs)
 
-        # If it's an element, append the element
-        if isinstance(content, Element):
-            self.append(content)
-        # If it's a list of elements
-        elif isinstance(content, list):
-            for item in content:
+        for item in args:
+            if isinstance(item, BaseElement):
                 self.append(item)
-        # If the content wasn't set just ignore
-        elif content is None:
-            pass
-        else:
-            # Otherwise, set content as the html of the element
-            self.html = content
+
+            else:
+                self.html = item
+
+        # # If it's an element, append the element
+        # if isinstance(content, BaseElement):
+        #     self.append(content)
+        # # If it's a list of elements
+        # elif isinstance(content, list):
+        #     for item in content:
+        #         self.append(item)
+        # # If the content wasn't set just ignore
+        # elif content is None:
+        #     pass
+        # else:
+        #     # Otherwise, set content as the html of the element
+        #     self.html = content
 
 
 # IMPORTANT: For all HTML components defined below, we are not mapping all
 # available attributes, just the global and the most common ones.
 # If you need to access a specific attribute, you can always use the `_js.<attribute>`
-class a(TextElementBase):
+class a(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"""
 
     tag = "a"
@@ -568,19 +593,19 @@ class a(TextElementBase):
     type = JSProperty("type")
 
 
-class abbr(TextElementBase):
+class abbr(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr"""
 
     tag = "abbr"
 
 
-class address(TextElementBase):
+class address(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address"""
 
     tag = "address"
 
 
-class area(ElementBase):
+class area(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area"""
 
     tag = "area"
@@ -596,19 +621,19 @@ class area(ElementBase):
     target = JSProperty("target")
 
 
-class article(TextElementBase):
+class article(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article"""
 
     tag = "article"
 
 
-class aside(TextElementBase):
+class aside(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside"""
 
     tag = "aside"
 
 
-class audio(ElementBase):
+class audio(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio"""
 
     tag = "audio"
@@ -624,13 +649,13 @@ class audio(ElementBase):
     src = JSProperty("src")
 
 
-class b(TextElementBase):
+class b(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b"""
 
     tag = "b"
 
 
-class blockquote(TextElementBase):
+class blockquote(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote"""
 
     tag = "blockquote"
@@ -638,13 +663,13 @@ class blockquote(TextElementBase):
     cite = JSProperty("cite")
 
 
-class br(ElementBase):
+class br(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br"""
 
     tag = "br"
 
 
-class button(TextElementBase):
+class button(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button"""
 
     tag = "button"
@@ -662,7 +687,7 @@ class button(TextElementBase):
     value = JSProperty("value")
 
 
-class canvas(TextElementBase):
+class canvas(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas"""
 
     tag = "canvas"
@@ -671,25 +696,25 @@ class canvas(TextElementBase):
     width = JSProperty("width")
 
 
-class caption(TextElementBase):
+class caption(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption"""
 
     tag = "caption"
 
 
-class cite(TextElementBase):
+class cite(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite"""
 
     tag = "cite"
 
 
-class code(TextElementBase):
+class code(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code"""
 
     tag = "code"
 
 
-class data(TextElementBase):
+class data(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data"""
 
     tag = "data"
@@ -697,19 +722,19 @@ class data(TextElementBase):
     value = JSProperty("value")
 
 
-class datalist(TextElementBase):
+class datalist(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist"""
 
     tag = "datalist"
 
 
-class dd(TextElementBase):
+class dd(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd"""
 
     tag = "dd"
 
 
-class del_(TextElementBase):
+class del_(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del"""
 
     tag = "del"
@@ -718,7 +743,7 @@ class del_(TextElementBase):
     datetime = JSProperty("datetime")
 
 
-class details(TextElementBase):
+class details(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"""
 
     tag = "details"
@@ -726,7 +751,7 @@ class details(TextElementBase):
     open = JSProperty("open")
 
 
-class dialog(TextElementBase):
+class dialog(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog"""
 
     tag = "dialog"
@@ -734,13 +759,13 @@ class dialog(TextElementBase):
     open = JSProperty("open")
 
 
-class div(TextElementBase):
+class div(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div"""
 
     tag = "div"
 
 
-class dl(TextElementBase):
+class dl(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl"""
 
     tag = "dl"
@@ -748,19 +773,19 @@ class dl(TextElementBase):
     value = JSProperty("value")
 
 
-class dt(TextElementBase):
+class dt(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt"""
 
     tag = "dt"
 
 
-class em(TextElementBase):
+class em(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em"""
 
     tag = "em"
 
 
-class embed(TextElementBase):
+class embed(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed"""
 
     tag = "embed"
@@ -771,7 +796,7 @@ class embed(TextElementBase):
     width = JSProperty("width")
 
 
-class fieldset(TextElementBase):
+class fieldset(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset"""
 
     tag = "fieldset"
@@ -781,25 +806,25 @@ class fieldset(TextElementBase):
     name = JSProperty("name")
 
 
-class figcaption(TextElementBase):
+class figcaption(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption"""
 
     tag = "figcaption"
 
 
-class figure(TextElementBase):
+class figure(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure"""
 
     tag = "figure"
 
 
-class footer(TextElementBase):
+class footer(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer"""
 
     tag = "footer"
 
 
-class form(TextElementBase):
+class form(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form"""
 
     tag = "form"
@@ -816,67 +841,67 @@ class form(TextElementBase):
     target = JSProperty("target")
 
 
-class h1(TextElementBase):
+class h1(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1"""
 
     tag = "h1"
 
 
-class h2(TextElementBase):
+class h2(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2"""
 
     tag = "h2"
 
 
-class h3(TextElementBase):
+class h3(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3"""
 
     tag = "h3"
 
 
-class h4(TextElementBase):
+class h4(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4"""
 
     tag = "h4"
 
 
-class h5(TextElementBase):
+class h5(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5"""
 
     tag = "h5"
 
 
-class h6(TextElementBase):
+class h6(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6"""
 
     tag = "h6"
 
 
-class header(TextElementBase):
+class header(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header"""
 
     tag = "header"
 
 
-class hgroup(TextElementBase):
+class hgroup(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup"""
 
     tag = "hgroup"
 
 
-class hr(TextElementBase):
+class hr(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr"""
 
     tag = "hr"
 
 
-class i(TextElementBase):
+class i(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i"""
 
     tag = "i"
 
 
-class iframe(TextElementBase):
+class iframe(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe"""
 
     tag = "iframe"
@@ -893,7 +918,7 @@ class iframe(TextElementBase):
     width = JSProperty("width")
 
 
-class img(ElementBase):
+class img(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"""
 
     tag = "img"
@@ -912,7 +937,7 @@ class img(ElementBase):
 
 
 # NOTE: Input is a reserved keyword in Python, so we use input_ instead
-class input_(ElementBase):
+class input_(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"""
 
     tag = "input"
@@ -952,7 +977,7 @@ class input_(ElementBase):
     width = JSProperty("width")
 
 
-class ins(TextElementBase):
+class ins(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins"""
 
     tag = "ins"
@@ -961,13 +986,13 @@ class ins(TextElementBase):
     datetime = JSProperty("datetime")
 
 
-class kbd(TextElementBase):
+class kbd(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd"""
 
     tag = "kbd"
 
 
-class label(TextElementBase):
+class label(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label"""
 
     tag = "label"
@@ -975,13 +1000,13 @@ class label(TextElementBase):
     for_ = JSProperty("for")
 
 
-class legend(TextElementBase):
+class legend(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend"""
 
     tag = "legend"
 
 
-class li(TextElementBase):
+class li(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li"""
 
     tag = "li"
@@ -989,7 +1014,7 @@ class li(TextElementBase):
     value = JSProperty("value")
 
 
-class link(TextElementBase):
+class link(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link"""
 
     tag = "link"
@@ -1010,13 +1035,13 @@ class link(TextElementBase):
     type = JSProperty("type")
 
 
-class main(TextElementBase):
+class main(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main"""
 
     tag = "main"
 
 
-class map_(TextElementBase):
+class map_(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map"""
 
     tag = "map"
@@ -1024,19 +1049,19 @@ class map_(TextElementBase):
     name = JSProperty("name")
 
 
-class mark(TextElementBase):
+class mark(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark"""
 
     tag = "mark"
 
 
-class menu(TextElementBase):
+class menu(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu"""
 
     tag = "menu"
 
 
-class meter(TextElementBase):
+class meter(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter"""
 
     tag = "meter"
@@ -1050,13 +1075,13 @@ class meter(TextElementBase):
     value = JSProperty("value")
 
 
-class nav(TextElementBase):
+class nav(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav"""
 
     tag = "nav"
 
 
-class object_(TextElementBase):
+class object_(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object"""
 
     tag = "object"
@@ -1070,7 +1095,7 @@ class object_(TextElementBase):
     width = JSProperty("width")
 
 
-class ol(TextElementBase):
+class ol(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol"""
 
     tag = "ol"
@@ -1080,7 +1105,7 @@ class ol(TextElementBase):
     type = JSProperty("type")
 
 
-class optgroup(TextElementBase):
+class optgroup(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup"""
 
     tag = "optgroup"
@@ -1089,7 +1114,7 @@ class optgroup(TextElementBase):
     label = JSProperty("label")
 
 
-class option(TextElementBase):
+class option(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option"""
 
     tag = "option"
@@ -1100,7 +1125,7 @@ class option(TextElementBase):
     value = JSProperty("value")
 
 
-class output(TextElementBase):
+class output(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output"""
 
     tag = "output"
@@ -1110,25 +1135,25 @@ class output(TextElementBase):
     name = JSProperty("name")
 
 
-class p(TextElementBase):
+class p(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p"""
 
     tag = "p"
 
 
-class picture(TextElementBase):
+class picture(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture"""
 
     tag = "picture"
 
 
-class pre(TextElementBase):
+class pre(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre"""
 
     tag = "pre"
 
 
-class progress(TextElementBase):
+class progress(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress"""
 
     tag = "progress"
@@ -1137,7 +1162,7 @@ class progress(TextElementBase):
     value = JSProperty("value")
 
 
-class q(TextElementBase):
+class q(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q"""
 
     tag = "q"
@@ -1145,13 +1170,13 @@ class q(TextElementBase):
     cite = JSProperty("cite")
 
 
-class s(TextElementBase):
+class s(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s"""
 
     tag = "s"
 
 
-class script(TextElementBase):
+class script(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script"""
 
     tag = "script"
@@ -1170,25 +1195,25 @@ class script(TextElementBase):
     type = JSProperty("type")
 
 
-class section(TextElementBase):
+class section(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section"""
 
     tag = "section"
 
 
-class select(TextElementBase):
+class select(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select"""
 
     tag = "select"
 
 
-class small(TextElementBase):
+class small(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small"""
 
     tag = "small"
 
 
-class source(TextElementBase):
+class source(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source"""
 
     tag = "source"
@@ -1200,19 +1225,19 @@ class source(TextElementBase):
     type = JSProperty("type")
 
 
-class span(TextElementBase):
+class span(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span"""
 
     tag = "span"
 
 
-class strong(TextElementBase):
+class strong(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong"""
 
     tag = "strong"
 
 
-class style(TextElementBase):
+class style(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style"""
 
     tag = "style"
@@ -1223,37 +1248,37 @@ class style(TextElementBase):
     title = JSProperty("title")
 
 
-class sub(TextElementBase):
+class sub(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub"""
 
     tag = "sub"
 
 
-class summary(TextElementBase):
+class summary(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary"""
 
     tag = "summary"
 
 
-class sup(TextElementBase):
+class sup(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup"""
 
     tag = "sup"
 
 
-class table(TextElementBase):
+class table(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table"""
 
     tag = "table"
 
 
-class tbody(TextElementBase):
+class tbody(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody"""
 
     tag = "tbody"
 
 
-class td(TextElementBase):
+class td(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td"""
 
     tag = "td"
@@ -1263,7 +1288,7 @@ class td(TextElementBase):
     rowspan = JSProperty("rowspan")
 
 
-class template(TextElementBase):
+class template(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template"""
 
     tag = "template"
@@ -1271,7 +1296,7 @@ class template(TextElementBase):
     shadowrootmode = JSProperty("shadowrootmode")
 
 
-class textarea(TextElementBase):
+class textarea(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea"""
 
     tag = "textarea"
@@ -1294,25 +1319,25 @@ class textarea(TextElementBase):
     wrap = JSProperty("wrap")
 
 
-class tfoot(TextElementBase):
+class tfoot(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot"""
 
     tag = "tfoot"
 
 
-class th(TextElementBase):
+class th(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th"""
 
     tag = "th"
 
 
-class thead(TextElementBase):
+class thead(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead"""
 
     tag = "thead"
 
 
-class time(TextElementBase):
+class time(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time"""
 
     tag = "time"
@@ -1320,13 +1345,13 @@ class time(TextElementBase):
     datetime = JSProperty("datetime")
 
 
-class title(TextElementBase):
+class title(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title"""
 
     tag = "title"
 
 
-class tr(TextElementBase):
+class tr(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr"""
 
     tag = "tr"
@@ -1338,7 +1363,7 @@ class tr(TextElementBase):
     scope = JSProperty("scope")
 
 
-class track(TextElementBase):
+class track(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track"""
 
     tag = "track"
@@ -1350,25 +1375,25 @@ class track(TextElementBase):
     srclang = JSProperty("srclang")
 
 
-class u(TextElementBase):
+class u(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u"""
 
     tag = "u"
 
 
-class ul(TextElementBase):
+class ul(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul"""
 
     tag = "ul"
 
 
-class var(TextElementBase):
+class var(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var"""
 
     tag = "var"
 
 
-class video(TextElementBase):
+class video(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video"""
 
     tag = "video"
@@ -1389,7 +1414,7 @@ class video(TextElementBase):
 
 
 # Custom Elements
-class grid(TextElementBase):
+class grid(TextElement):
     tag = "div"
 
     def __init__(self, layout, content=None, gap=None, **kwargs):
@@ -1422,9 +1447,14 @@ class StyleCollection:
 
 
 class ElementCollection:
-    def __init__(self, elements: [Element]) -> None:
+    def __init__(self, elements: [BaseElement]) -> None:
         self._elements = elements
         self.style = StyleCollection(self)
+
+    def __eq__(self, obj):
+        """Check if the element is the same as the other element by comparing
+        the underlying JS element"""
+        return isinstance(obj, ElementCollection) and obj._elements == self._elements
 
     def __getitem__(self, key):
         # If it's an integer we use it to access the elements in the collection
@@ -1438,15 +1468,16 @@ class ElementCollection:
         # If it's anything else (basically a string) we use it as a selector
         # TODO: Write tests!
         elements = self._element.querySelectorAll(key)
-        return ElementCollection([Element(el) for el in elements])
+        return ElementCollection([BaseElement.from_js(el) for el in elements])
+
+    def __iter__(self):
+        yield from self._elements
 
     def __len__(self):
         return len(self._elements)
 
-    def __eq__(self, obj):
-        """Check if the element is the same as the other element by comparing
-        the underlying JS element"""
-        return isinstance(obj, ElementCollection) and obj._elements == self._elements
+    def __repr__(self):
+        return f"{self.__class__.__name__} (length: {len(self._elements)}) {self._elements}"
 
     def _get_attribute(self, attr, index=None):
         if index is None:
@@ -1458,6 +1489,10 @@ class ElementCollection:
     def _set_attribute(self, attr, value):
         for el in self._elements:
             setattr(el, attr, value)
+
+    @property
+    def children(self):
+        return self._elements
 
     @property
     def html(self):
@@ -1475,12 +1510,32 @@ class ElementCollection:
     def value(self, value):
         self._set_attribute("value", value)
 
-    @property
-    def children(self):
-        return self._elements
 
-    def __iter__(self):
-        yield from self._elements
+ELEMENT_CLASSES = [
+    a, abbr, address, area, article, aside, audio,
+    b, blockquote, br, button,
+    canvas, caption, cite, code,
+    data, datalist, dd, del_, details, dialog, div, dl, dt,
+    em, embed,
+    fieldset, figcaption, figure, footer, form,
+    grid,
+    h1, h2, h3, h4, h5, h6, header, hgroup, hr,
+    i, iframe, img, input_, ins,
+    kbd,
+    label, legend, li, link,
+    main, map_, mark, menu, meter,
+    nav,
+    object_, ol, optgroup, option, output,
+    p, picture, pre, progress,
+    q,
+    s, script, section, select, small, source, span, strong, style, sub, summary, sup,
+    table, tbody, td, template, textarea, tfoot, th, thead, time, title, tr, track,
+    u, ul,
+    var, video,
+]
 
-    def __repr__(self):
-        return f"{self.__class__.__name__} (length: {len(self._elements)}) {self._elements}"
+
+ELEMENT_CLASSES_BY_NAME = {cls.__name__: cls for cls in ELEMENT_CLASSES}
+
+
+ELEMENT_CLASSES_BY_TAG = {cls.tag: cls for cls in ELEMENT_CLASSES}

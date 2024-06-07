@@ -1,21 +1,22 @@
 from pyscript import document
-from pyscript.web.elements import Element, ElementCollection
+from pyscript.web.elements import BaseElement, ElementCollection
 
 
-class PyDom:
-    # Add objects we want to expose to the DOM namespace since this class instance is being
-    # remapped as "the module" itself
+# TODO: mic: naming  - this is really the document... Could this be in elements now?
+# and called Document?
+class PyDOM:
+    # TODO: mic: do we still need this?
     ElementCollection = ElementCollection
 
     def __init__(self):
         self._js = document
 
-        self.body = Element(document.body)
-        self.head = Element(document.head)
+        self.body = BaseElement(document.body)
+        self.head = BaseElement(document.head)
 
     def __getitem__(self, key):
         elements = self._js.querySelectorAll(key)
-        return ElementCollection([Element(el) for el in elements])
+        return ElementCollection([BaseElement.from_js(el) for el in elements])
 
 
-dom = PyDom()
+dom = PyDOM()
