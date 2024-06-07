@@ -1106,7 +1106,7 @@ class section(TextElement):
     tag = "section"
 
 
-class select(HasOptions, TextElement):
+class select(TextElement, HasOptions):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select"""
 
     tag = "select"
