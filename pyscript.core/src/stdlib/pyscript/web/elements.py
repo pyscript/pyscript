@@ -94,6 +94,10 @@ class BaseElement:
         return isinstance(obj, BaseElement) and obj._js == self._js
 
     @property
+    def children(self):
+        return [BaseElement.from_js(el) for el in self._js.children]
+
+    @property
     def parent(self):
         if self._parent:
             return self._parent
@@ -102,42 +106,6 @@ class BaseElement:
             self._parent = BaseElement.from_js(self._js.parentElement)
 
         return self._parent
-
-    def create(self, type_, is_child=True, classes=None, html=None, label=None):
-        js_el = document.createElement(type_)
-        element = BaseElement.from_js(js_el)
-
-        if classes:
-            for class_ in classes:
-                element.add_class(class_)
-
-        if html is not None:
-            element.html = html
-
-        if label is not None:
-            element.label = label
-
-        if is_child:
-            self.append(element)
-
-        return element
-
-    def find(self, selector):
-        """Return an ElementCollection representing all the child elements that
-        match the specified selector.
-
-        Args:
-            selector (str): A string containing a selector expression
-
-        Returns:
-            ElementCollection: A collection of elements matching the selector
-        """
-        elements = self._js.querySelectorAll(selector)
-        return ElementCollection([BaseElement.from_js(el) for el in elements])
-
-    @property
-    def children(self):
-        return [BaseElement.from_js(el) for el in self._js.children]
 
     def append(self, child):
         if isinstance(child, BaseElement):
@@ -166,7 +134,34 @@ class BaseElement:
                         f'Element "{child}" a proxy object, but not a valid element or a NodeList.'
                     )
 
-    # -------- Pythonic Interface to Element -------- #
+    def create(self, type_, is_child=True, classes=None, html=None, label=None):
+        js_el = document.createElement(type_)
+        element = BaseElement.from_js(js_el, classes=classes)
+
+        if html is not None:
+            element.html = html
+
+        if label is not None:
+            element.label = label
+
+        if is_child:
+            self.append(element)
+
+        return element
+
+    def find(self, selector):
+        """Return an ElementCollection representing all the child elements that
+        match the specified selector.
+
+        Args:
+            selector (str): A string containing a selector expression
+
+        Returns:
+            ElementCollection: A collection of elements matching the selector
+        """
+        elements = self._js.querySelectorAll(selector)
+        return ElementCollection([BaseElement.from_js(el) for el in elements])
+
     @property
     def html(self):
         return self._js.innerHTML
@@ -263,6 +258,28 @@ class BaseElement:
 
         return clone
 
+    @property
+    def classes(self):
+        return list(self._js.classList)
+
+    @classes.setter
+    def classes(self, value):
+        self.add_class(value)
+
+    # TODO: mic: If the abstraction we are presenting is that the classes
+    # are Python lists, do we need these - can the user just use the
+    # standard Python list manipulation methods? i.e. Can we create a
+    # subtype ClassList of list to manage it?
+    def add_class(self, classname):
+        classList = self._js.classList
+        if isinstance(classname, list):
+            print("adding list of classes")
+            classList.add(*classname)
+        else:
+            print("adding single classname")
+            classList.add(classname)
+        return self
+
     def remove_class(self, classname):
         classList = self._js.classList
         if isinstance(classname, list):
@@ -270,19 +287,6 @@ class BaseElement:
         else:
             classList.remove(classname)
         return self
-
-    def add_class(self, classname):
-        classList = self._js.classList
-        if isinstance(classname, list):
-            classList.add(*classname)
-        else:
-            classList.add(classname)
-        return self
-
-    @property
-    def classes(self):
-        classes = self._js.classList.values()
-        return [x for x in classes]
 
     def show_me(self):
         self._js.scrollIntoView()
@@ -422,7 +426,7 @@ class Element(BaseElement):
     translate = JSProperty("translate")
     virtualkeyboardpolicy = JSProperty("virtualkeyboardpolicy")
 
-    def __init__(self, style=None, **kwargs):
+    def __init__(self, style=None, classes=None, **kwargs):
         super().__init__(document.createElement(self.tag))
 
         # Tag the JS element with our class name.
@@ -435,6 +439,9 @@ class Element(BaseElement):
             raise ValueError(
                 f"Style should be a dictionary, received {style} (type {type(style)}) instead."
             )
+
+        if classes:
+            self.classes = classes
 
         # IMPORTANT!!! This is used to auto-harvest all input arguments and set them as
         # properties.
@@ -1352,7 +1359,7 @@ class video(TextElement):
 
     def snap(
         self,
-        to: "BaseElement" | str = None,
+        to: BaseElement | str = None,
         width: int | None = None,
         height: int | None = None,
     ):
