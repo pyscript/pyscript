@@ -181,7 +181,7 @@ class BaseElement:
     @property
     def content(self):
         # TODO: This breaks with with standard template elements. Define how to best
-        #       handle this specifica use case. Just not support for now?
+        #       handle this specific use case. Just not support for now?
         if self._js.tagName == "TEMPLATE":
             warnings.warn(
                 "Content attribute not supported for template elements.", stacklevel=2
