@@ -56,38 +56,37 @@ class JSProperty:
         setattr(obj._js, self.name, value)
 
 
+def element_from_js(js_element):
+    """Create an instance of the appropriate subclass of this class for a JS element.
+
+    If the JS element was created via an `Element` (i.e. by us) it will have a data
+    attribute named `data-pyscript-type` which contains the name of the subclass
+    that created it.
+
+    Hence, if the 'data-pyscript-type' attribute is present we look up the subclass
+    by name and create an instance of that. Otherwise, we make a 'best-guess' and
+    look up the `Element` subclass by tag name (this is NOT fool-proof as many
+    subclasses might use a `<div>`).
+    """
+    cls_name = js_element.dataset.pyscriptType
+    if cls_name:
+        cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
+        if not cls:
+            raise TypeError(f"Unknown element type: {cls_name}")
+
+    else:
+        cls = ELEMENT_CLASSES_BY_TAG.get(js_element.tagName.lower())
+        if not cls:
+            raise TypeError(f"Unknown element tag: {js_element.tagName}")
+
+    return cls(js_element)
+
+
 class BaseElement:
-    @classmethod
-    def from_js(cls, js_element):
-        """Create an instance of the appropriate subclass of this class for a JS element.
-
-        If the JS element was created via an `Element` (i.e. by us) it will have a data
-        attribute named `data-pyscript-type` which contains the name of the subclass
-        that created it.
-
-        Hence, if the 'data-pyscript-type' attribute is present we look up the subclass
-        by name and create an instance of that. Otherwise, we make a 'best-guess' and
-        look up the `Element` subclass by tag name (this is NOT fool-proof as many
-        subclasses might use a `<div>`).
-        """
-        cls_name = js_element.dataset.pyscriptType
-        if cls_name:
-            cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
-            if not cls:
-                raise TypeError(f"Unknown element type: {cls_name}")
-
-        else:
-            cls = ELEMENT_CLASSES_BY_TAG.get(js_element.tagName.lower())
-            if not cls:
-                raise TypeError(f"Unknown element tag: {js_element.tagName}")
-
-        return cls(js_element)
-
     def __init__(self, js_element):
         self._js = js_element
         self._parent = None
         self.style = StyleProxy(self)
-        self._proxies = {}
 
     def __eq__(self, obj):
         """Check for equality by comparing the underlying JS element."""
@@ -95,7 +94,7 @@ class BaseElement:
 
     @property
     def children(self):
-        return [BaseElement.from_js(el) for el in self._js.children]
+        return [element_from_js(el) for el in self._js.children]
 
     @property
     def parent(self):
@@ -103,7 +102,7 @@ class BaseElement:
             return self._parent
 
         if self._js.parentElement:
-            self._parent = BaseElement.from_js(self._js.parentElement)
+            self._parent = element_from_js(self._js.parentElement)
 
         return self._parent
 
@@ -117,26 +116,30 @@ class BaseElement:
 
         else:
             # In this case we know it's not an Element or an ElementCollection, so we
-            # will guess it's a JS object returned via the ffi.
+            # guess that it's either a JS element or NodeList returned via the ffi.
             try:
-                # First, we try to see if it's an element with a 'tagName' attribute.
-                self._js.appendChild(child.tagName)
+                # First, we try to see if it's an element by accessing the 'tagName'
+                # attribute.
+                child.tagName
+                self._js.appendChild(child)
+
             except AttributeError:
-                # This is not an element, so let's see if it's a nodelist with a
-                # 'length' attribute.
+                # Ok, it's not an element, so let's see if it's a NodeList by accessing
+                # the 'length' attribute.
                 try:
                     if child.length:
                         for element_ in child:
                             self._js.appendChild(element_)
+
                 except AttributeError:
-                    # Nope! This is not an element, nor a NodeList.
+                    # Nope! This is not an element or a NodeList.
                     raise TypeError(
-                        f'Element "{child}" a proxy object, but not a valid element or a NodeList.'
+                        f'Element "{child}" is a proxy object, but not a valid element or a NodeList.'
                     )
 
     def create(self, type_, is_child=True, classes=None, html=None, label=None):
         js_el = document.createElement(type_)
-        element = BaseElement.from_js(js_el, classes=classes)
+        element = element_from_js(js_el, classes=classes)
 
         if html is not None:
             element.html = html
@@ -160,7 +163,7 @@ class BaseElement:
             ElementCollection: A collection of elements matching the selector
         """
         elements = self._js.querySelectorAll(selector)
-        return ElementCollection([BaseElement.from_js(el) for el in elements])
+        return ElementCollection([element_from_js(el) for el in elements])
 
     @property
     def content(self):
@@ -183,18 +186,6 @@ class BaseElement:
             return
 
         display(value, target=self.id)
-
-    @property
-    def options(self):
-        if "options" in self._proxies:
-            return self._proxies["options"]
-
-        if not self._js.tagName.lower() in {"select", "datalist", "optgroup"}:
-            raise AttributeError(
-                f"Element {self._js.tagName} has no options attribute."
-            )
-        self._proxies["options"] = OptionsProxy(self)
-        return self._proxies["options"]
 
     # TODO: only for input (not used for file and image inputs ), textarea, select and
     #  button.
@@ -231,7 +222,7 @@ class BaseElement:
     # TODO: mic: If the abstraction we are presenting is that the classes
     # are Python lists, do we need these - can the user just use the
     # standard Python list manipulation methods? i.e. Can we create a
-    # subtype ClassList of list to manage it?
+    # subtype ClassesList or ClasslistProxy of list to manage it?
     def add_class(self, classname):
         classList = self._js.classList
         if isinstance(classname, list):
@@ -252,6 +243,19 @@ class BaseElement:
 
     def show_me(self):
         self._js.scrollIntoView()
+
+
+class HasOptions:
+    """Mix-in for elements that have an options attribute ("datalist", "optgroup", "select").
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._options = OptionsProxy(self)
+
+    @property
+    def options(self):
+        return self._options
 
 
 class OptionsProxy:
@@ -631,7 +635,7 @@ class data(TextElement):
     value = JSProperty("value")
 
 
-class datalist(TextElement):
+class datalist(TextElement, HasOptions):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist"""
 
     tag = "datalist"
@@ -1014,7 +1018,7 @@ class ol(TextElement):
     type = JSProperty("type")
 
 
-class optgroup(TextElement):
+class optgroup(TextElement, HasOptions):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup"""
 
     tag = "optgroup"
@@ -1110,7 +1114,7 @@ class section(TextElement):
     tag = "section"
 
 
-class select(TextElement):
+class select(TextElement, HasOptions):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select"""
 
     tag = "select"
@@ -1427,7 +1431,7 @@ class ElementCollection:
         # If it's anything else (basically a string) we use it as a selector
         # TODO: Write tests!
         elements = self._element.querySelectorAll(key)
-        return ElementCollection([BaseElement.from_js(el) for el in elements])
+        return ElementCollection([element_from_js(el) for el in elements])
 
     def __iter__(self):
         yield from self._elements

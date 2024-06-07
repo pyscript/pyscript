@@ -1,5 +1,5 @@
 from pyscript import document
-from pyscript.web.elements import BaseElement, ElementCollection
+from pyscript.web.elements import element_from_js, BaseElement, ElementCollection
 
 
 # TODO: mic: naming  - this is really the document... Could this be in elements now?
@@ -16,7 +16,7 @@ class PyDOM:
 
     def __getitem__(self, key):
         elements = self._js.querySelectorAll(key)
-        return ElementCollection([BaseElement.from_js(el) for el in elements])
+        return ElementCollection([element_from_js(el) for el in elements])
 
 
 dom = PyDOM()
