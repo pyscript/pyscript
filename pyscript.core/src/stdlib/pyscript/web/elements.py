@@ -172,24 +172,6 @@ class BaseElement:
 
         display(value, target=self.id)
 
-    # TODO: only for input (not used for file and image inputs ), textarea, select and
-    #  button.
-    @property
-    def value(self):
-        return self._js.value
-
-    @value.setter
-    def value(self, value):
-        # in order to avoid confusion to the user, we don't allow setting the
-        # value of elements that don't have a value attribute
-        if not hasattr(self._js, "value"):
-            raise AttributeError(
-                f"Element {self._js.tagName} has no value attribute. If you want to "
-                "force a value attribute, set it directly using the `_js.value = <value>` "
-                "javascript API attribute instead."
-            )
-        self._js.value = value
-
     def clone(self, new_id=None):
         clone = type(self)(self._js.cloneNode(True))
         clone.id = new_id
@@ -1104,6 +1086,8 @@ class select(TextElement, HasOptions):
 
     tag = "select"
 
+    value = JSProperty("value")
+
 
 class small(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small"""
@@ -1214,6 +1198,7 @@ class textarea(TextElement):
     required = JSProperty("required")
     rows = JSProperty("rows")
     spellcheck = JSProperty("spellcheck")
+    value = JSProperty("value")
     wrap = JSProperty("wrap")
 
 
