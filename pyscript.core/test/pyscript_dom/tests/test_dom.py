@@ -298,20 +298,19 @@ class TestInput:
             input_el.value = new_value
             assert input_el.value[0] == new_value == input_el[0].value
 
-    def test_element_without_value(self):
-        result = dom[f"#tests-terminal"][0]
-        with pytest.raises(AttributeError):
-            result.value = "some value"
-
-    def test_element_without_collection(self):
-        result = dom[f"#tests-terminal"]
-        with pytest.raises(AttributeError):
-            result.value = "some value"
-
-    def test_element_without_collection(self):
-        result = dom[f"#tests-terminal"]
-        with pytest.raises(AttributeError):
-            result.value = "some value"
+    # TODO: We only attach attributes to the classes that have them now which means we
+    # would have to have some other way to help users if using attributes that aren't
+    # actually on the class. Maybe a job for  __setattr__?
+    #
+    # def test_element_without_value(self):
+    #     result = dom[f"#tests-terminal"][0]
+    #     with pytest.raises(AttributeError):
+    #         result.value = "some value"
+    #
+    # def test_element_without_value_via_collection(self):
+    #     result = dom[f"#tests-terminal"]
+    #     with pytest.raises(AttributeError):
+    #         result.value = "some value"
 
 
 class TestSelect:
