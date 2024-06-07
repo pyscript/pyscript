@@ -63,25 +63,24 @@ def element_from_js(js_element):
     attribute named `data-pyscript-type` which contains the name of the subclass
     that created it.
 
-    Hence, if the 'data-pyscript-type' attribute is present we look up the subclass
+    Hence, if the `data-pyscript-type` attribute is present we look up the subclass
     by name and create an instance of that. Otherwise, we make a 'best-guess' and
     look up the `Element` subclass by tag name (this is NOT fool-proof as many
     subclasses might use a `<div>`).
     """
 
-    # We use "getAttribute" here instead of `js_element.dataset.pyscriptType' as the
-    # latter throws an `AttributeError` if the value isn't set and this way we just get
+    # We use "getAttribute" here instead of `js_element.dataset.pyscriptType` as the
+    # latter throws an `AttributeError` if the value isn't set. This way we just get
     # `None` which seems cleaner.
     cls_name = js_element.getAttribute("data-pyscript-type")
     if cls_name:
         cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
-        if not cls:
-            raise TypeError(f"Unknown element type: {cls_name}")
-
     else:
         cls = ELEMENT_CLASSES_BY_TAG.get(js_element.tagName.lower())
-        if not cls:
-            raise TypeError(f"Unknown element tag: {js_element.tagName}")
+
+    if not cls:
+        cls = BaseElement
+        #raise TypeError(f"Unknown element: {cls_name or js_element.tagName}")
 
     return cls(js_element=js_element)
 
@@ -128,12 +127,12 @@ class BaseElement:
                 self._js.appendChild(child)
 
             except AttributeError:
-                # Ok, it's not an element, so let's see if it's a NodeList by accessing
-                # the 'length' attribute.
                 try:
-                    if child.length:
-                        for element_ in child:
-                            self._js.appendChild(element_)
+                    # Ok, it's not an element, so let's see if it's a NodeList by
+                    # accessing the 'length' attribute.
+                    child.length
+                    for element_ in child:
+                        self._js.appendChild(element_)
 
                 except AttributeError:
                     # Nope! This is not an element or a NodeList.
@@ -151,8 +150,9 @@ class BaseElement:
         Returns:
             ElementCollection: A collection of elements matching the selector
         """
-        elements = self._js.querySelectorAll(selector)
-        return ElementCollection([element_from_js(el) for el in elements])
+        return ElementCollection([
+            element_from_js(el) for el in self._js.querySelectorAll(selector)
+        ])
 
     @property
     def content(self):
@@ -218,7 +218,7 @@ class BaseElement:
 class HasOptions:
     """Mix-in for elements that have an options attribute.
 
-    i.e. <datalist>, <optgroup>, <select>
+    The elements that support options are: <datalist>, <optgroup>, and <select>.
     """
 
     def __init__(self, *args, **kwargs):
@@ -375,9 +375,6 @@ class Element(BaseElement):
         else:
             super().__init__(document.createElement(self.tag))
 
-            # Tag the JS element with our class name.
-            self._js.dataset.pyscriptType = type(self).__name__
-
             # Set any style properties provided in input.
             if isinstance(style, dict):
                 self.style.set(**style)
@@ -526,6 +523,12 @@ class blockquote(TextElement):
     tag = "blockquote"
 
     cite = JSProperty("cite")
+
+
+class body(TextElement):
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body"""
+
+    tag = "body"
 
 
 class br(Element):
@@ -771,6 +774,12 @@ class h6(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6"""
 
     tag = "h6"
+
+
+class head(TextElement):
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head"""
+
+    tag = "head"
 
 
 class header(TextElement):
@@ -1097,7 +1106,7 @@ class section(TextElement):
     tag = "section"
 
 
-class select(TextElement, HasOptions):
+class select(HasOptions, TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select"""
 
     tag = "select"
@@ -1462,14 +1471,19 @@ class ElementCollection:
 
 
 ELEMENT_CLASSES = [
+    # TODO: We put grid first because it is really just a <div> but we want the div
+    # class to be used if wrapping js elements that we have not tagged with a
+    # `data-pyscript-type` attribute (and last one is the winner when it comes to this
+    # list).
+    grid,
+    # The rest in alphabetical order.
     a, abbr, address, area, article, aside, audio,
-    b, blockquote, br, button,
+    b, blockquote, body, br, button,
     canvas, caption, cite, code,
     data, datalist, dd, del_, details, dialog, div, dl, dt,
     em, embed,
     fieldset, figcaption, figure, footer, form,
-    #grid,
-    h1, h2, h3, h4, h5, h6, header, hgroup, hr,
+    h1, h2, h3, h4, h5, h6, head, header, hgroup, hr,
     i, iframe, img, input_, ins,
     kbd,
     label, legend, li, link,
