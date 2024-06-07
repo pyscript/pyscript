@@ -1,0 +1,24 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+html {
+  background-color: black;
+  color: white;
+}
+#connect::after {
+  margin-inline-start: 4px; 
+  display: inline-flex;
+  content: "❌";
+}
+#connect:disabled::after {
+  content: "✔️";
+}
+#output {
+  transition: opacity .3s;
+}
+body:has(#connect) #output {
+  opacity: 0.7;
+}
+body:has(#connect:disabled) #output {
+  opacity: 1;
+}

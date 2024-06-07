@@ -1,0 +1,6 @@
+[js_modules.main]
+"https://esm.run/codedent" = "dedent"
+"https://esm.run/micro-repl/serial" = "micro_repl"
+
+[files]
+"./events.py" = "./"
