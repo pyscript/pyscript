@@ -40,7 +40,7 @@ def getmembers_static(cls):
 
 
 class JSProperty:
-    """JS property descriptor that directly maps to the property with the same
+    """JS property descriptor that directly maps to the property with the specified
     name in the underlying JS component."""
 
     def __init__(self, name: str, allow_nones: bool = False):
@@ -162,21 +162,21 @@ class BaseElement:
         elements = self._js.querySelectorAll(selector)
         return ElementCollection([BaseElement.from_js(el) for el in elements])
 
-    @property
-    def html(self):
-        return self._js.innerHTML
+    # @property
+    # def html(self):
+    #     return self._js.innerHTML
+    #
+    # @html.setter
+    # def html(self, value):
+    #     self._js.innerHTML = value
 
-    @html.setter
-    def html(self, value):
-        self._js.innerHTML = value
-
-    @property
-    def text(self):
-        return self._js.textContent
-
-    @text.setter
-    def text(self, value):
-        self._js.textContent = value
+    # @property
+    # def text(self):
+    #     return self._js.textContent
+    #
+    # @text.setter
+    # def text(self, value):
+    #     self._js.textContent = value
 
     @property
     def content(self):
@@ -200,13 +200,13 @@ class BaseElement:
 
         display(value, target=self.id)
 
-    @property
-    def id(self):
-        return self._js.id
-
-    @id.setter
-    def id(self, value):
-        self._js.id = value
+    # @property
+    # def id(self):
+    #     return self._js.id
+    #
+    # @id.setter
+    # def id(self, value):
+    #     self._js.id = value
 
     @property
     def options(self):
@@ -414,6 +414,7 @@ class Element(BaseElement):
     draggable = JSProperty("draggable")
     enterkeyhint = JSProperty("enterkeyhint")
     hidden = JSProperty("hidden")
+    html = JSProperty("innerHTML")
     id = JSProperty("id")
     lang = JSProperty("lang")
     nonce = JSProperty("nonce")
@@ -422,6 +423,7 @@ class Element(BaseElement):
     slot = JSProperty("slot")
     spellcheck = JSProperty("spellcheck")
     tabindex = JSProperty("tabindex")
+    text = JSProperty("textContent")
     title = JSProperty("title")
     translate = JSProperty("translate")
     virtualkeyboardpolicy = JSProperty("virtualkeyboardpolicy")
