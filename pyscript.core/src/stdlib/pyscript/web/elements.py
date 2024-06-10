@@ -17,12 +17,6 @@ except ImportError:
         def warn(*args, **kwargs):
             print("WARNING: ", *args, **kwargs)
 
-try:
-    from functools import cached_property
-except ImportError:
-    # TODO: same comment about micropython as above
-    cached_property = property
-
 from pyscript import document
 
 
@@ -40,8 +34,11 @@ def getmembers_static(cls):
 
 
 class JSProperty:
-    """JS property descriptor that directly maps to the property with the specified
-    name in the underlying JS component."""
+    """A descriptor representing a JS property on an `Element`.
+
+    This maps a property on an `Element` instance, to the property with the specified
+    name on the element's underlying JS object.
+    """
 
     def __init__(self, name: str, allow_nones: bool = False):
         self.name = name
@@ -57,16 +54,14 @@ class JSProperty:
 
 
 def element_from_js(js_element):
-    """Create an instance of the appropriate subclass of this class for a JS element.
+    """Create an instance of the appropriate subclass of `Element` for a JS element.
 
     If the JS element was created via an `Element` (i.e. by us) it will have a data
-    attribute named `data-pyscript-type` which contains the name of the subclass
-    that created it.
-
-    Hence, if the `data-pyscript-type` attribute is present we look up the subclass
-    by name and create an instance of that. Otherwise, we make a 'best-guess' and
-    look up the `Element` subclass by tag name (this is NOT fool-proof as many
-    subclasses might use a `<div>`).
+    attribute named `data-pyscript-type` that contains the name of the subclass
+    that created it. If the `data-pyscript-type` attribute *is* present we look up the
+    subclass by name and create an instance of that. Otherwise, we make a 'best-guess'
+    and look up the `Element` subclass by tag name (this is NOT fool-proof as many
+    subclasses might use a `<div>`, but close enough for jazz).
     """
 
     # We use "getAttribute" here instead of `js_element.dataset.pyscriptType` as the
@@ -78,6 +73,7 @@ def element_from_js(js_element):
     else:
         cls = ELEMENT_CLASSES_BY_TAG.get(js_element.tagName.lower())
 
+    # TODO: How to we handle custom elements?
     if not cls:
         cls = BaseElement
         #raise TypeError(f"Unknown element: {cls_name or js_element.tagName}")
@@ -88,12 +84,17 @@ def element_from_js(js_element):
 class BaseElement:
     def __init__(self, js_element):
         self._js = js_element
+        self._classes = Classes(self)
         self._parent = None
-        self.style = Style(self)
+        self._style = Style(self)
 
     def __eq__(self, obj):
         """Check for equality by comparing the underlying JS element."""
         return isinstance(obj, BaseElement) and obj._js == self._js
+
+    @property
+    def classes(self):
+        return self._classes
 
     @property
     def content(self):
@@ -122,10 +123,6 @@ class BaseElement:
         return [element_from_js(el) for el in self._js.children]
 
     @property
-    def classes(self):
-        return Classes(self._js.classList)
-
-    @property
     def parent(self):
         if self._parent:
             return self._parent
@@ -134,6 +131,10 @@ class BaseElement:
             self._parent = element_from_js(self._js.parentElement)
 
         return self._parent
+
+    @property
+    def style(self):
+        return self._style
 
     def append(self, child):
         if isinstance(child, BaseElement):
@@ -167,6 +168,7 @@ class BaseElement:
                     )
 
     def clone(self, new_id=None):
+        """Make a clone of the element (clones the underlying JS object too)."""
         el = element_from_js(self._js.cloneNode(True))
         el.id = new_id
         return el
@@ -186,14 +188,16 @@ class BaseElement:
         ])
 
     def show_me(self):
+        """Scroll the element into view."""
         self._js.scrollIntoView()
 
 
 class Classes:
-    """Wrap a JS element's `classList` with a set-like API."""
+    """A 'more Pythonic' interface to an element's JS `classList`."""
 
-    def __init__(self, js_class_list):
-        self._js_class_list = js_class_list
+    def __init__(self, element: BaseElement):
+        self._element = element
+        self._js_class_list = self._element._js.classList
 
     def __contains__(self, item):
         return item in self._js_class_list
@@ -257,22 +261,13 @@ class Classes:
         self.remove(old_class)
         self.add(new_class)
 
-    def toggle(self, class_name, force=None):
-        if not force:
-            if class_name in self:
-                self.remove(class_name)
-                return False
+    def toggle(self, class_name):
+        if class_name in self:
+            self.remove(class_name)
+            return False
 
-            else:
-                self.add(class_name)
-                return True
-
-        else:
-            if class_name not in self:
-                self.add(class_name)
-                return True
-
-        return False
+        self.add(class_name)
+        return True
 
 
 class HasOptions:
@@ -362,13 +357,12 @@ class Options:
         return self.options[key]
 
 
-class Style:  # (dict):
+class Style:
+    """A dict-like interface to an elements css style."""
+
     def __init__(self, element: BaseElement) -> None:
         self._element = element
-
-    @cached_property
-    def _style(self):
-        return self._element._js.style
+        self._style = self._element._js.style
 
     def __getitem__(self, key):
         return self._style.getPropertyValue(key)
