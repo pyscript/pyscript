@@ -131,10 +131,10 @@ class TestElement:
         classname = "tester-class"
         div = dom[f"#{id_}"][0]
         assert not div.classes
-        div.add_class(classname)
+        div.classes.add(classname)
         same_div = dom[f"#{id_}"][0]
         assert div.classes == [classname] == same_div.classes
-        div.remove_class(classname)
+        div.classes.remove(classname)
         assert div.classes == [] == same_div.classes
 
     def test_when_decorator(self):

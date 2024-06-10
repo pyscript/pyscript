@@ -89,15 +89,41 @@ class BaseElement:
     def __init__(self, js_element):
         self._js = js_element
         self._parent = None
-        self.style = StyleProxy(self)
+        self.style = Style(self)
 
     def __eq__(self, obj):
         """Check for equality by comparing the underlying JS element."""
         return isinstance(obj, BaseElement) and obj._js == self._js
 
     @property
+    def content(self):
+        # TODO: This breaks with with standard template elements. Define how to best
+        #       handle this specific use case. Just not support for now?
+        if self._js.tagName == "TEMPLATE":
+            warnings.warn(
+                "Content attribute not supported for template elements.", stacklevel=2
+            )
+            return None
+        return self._js.innerHTML
+
+    @content.setter
+    def content(self, value):
+        # TODO: (same comment as above)
+        if self._js.tagName == "TEMPLATE":
+            warnings.warn(
+                "Content attribute not supported for template elements.", stacklevel=2
+            )
+            return
+
+        display(value, target=self.id)
+
+    @property
     def children(self):
         return [element_from_js(el) for el in self._js.children]
+
+    @property
+    def classes(self):
+        return Classes(self._js.classList)
 
     @property
     def parent(self):
@@ -140,6 +166,11 @@ class BaseElement:
                         f'Element "{child}" is a proxy object, but not a valid element or a NodeList.'
                     )
 
+    def clone(self, new_id=None):
+        el = element_from_js(self._js.cloneNode(True))
+        el.id = new_id
+        return el
+
     def find(self, selector):
         """Return an ElementCollection representing all the child elements that
         match the specified selector.
@@ -154,65 +185,94 @@ class BaseElement:
             element_from_js(el) for el in self._js.querySelectorAll(selector)
         ])
 
-    @property
-    def content(self):
-        # TODO: This breaks with with standard template elements. Define how to best
-        #       handle this specific use case. Just not support for now?
-        if self._js.tagName == "TEMPLATE":
-            warnings.warn(
-                "Content attribute not supported for template elements.", stacklevel=2
-            )
-            return None
-        return self._js.innerHTML
-
-    @content.setter
-    def content(self, value):
-        # TODO: (same comment as above)
-        if self._js.tagName == "TEMPLATE":
-            warnings.warn(
-                "Content attribute not supported for template elements.", stacklevel=2
-            )
-            return
-
-        display(value, target=self.id)
-
-    def clone(self, new_id=None):
-        el = element_from_js(self._js.cloneNode(True))
-        el.id = new_id
-
-        return el
-
-    @property
-    def classes(self):
-        return list(self._js.classList)
-
-    @classes.setter
-    def classes(self, value):
-        self.add_class(value)
-
-    # TODO: mic: If the abstraction we are presenting is that the classes
-    # are Python lists, do we need these - can the user just use the
-    # standard Python list manipulation methods? i.e. Can we create a
-    # subtype ClassesList or ClasslistProxy of list to manage it?
-    def add_class(self, classname):
-        classList = self._js.classList
-        if isinstance(classname, list):
-            classList.add(*classname)
-
-        else:
-            classList.add(classname)
-        return self
-
-    def remove_class(self, classname):
-        classList = self._js.classList
-        if isinstance(classname, list):
-            classList.remove(*classname)
-        else:
-            classList.remove(classname)
-        return self
-
     def show_me(self):
         self._js.scrollIntoView()
+
+
+class Classes:
+    """Wrap a JS element's `classList` with a set-like API."""
+
+    def __init__(self, js_class_list):
+        self._js_class_list = js_class_list
+
+    def __contains__(self, item):
+        return item in self._js_class_list
+
+    def __eq__(self, other):
+        # We allow comparison with either another `Classes` instance...
+        if isinstance(other, Classes):
+            compare_with = list(other._js_class_list)
+
+        # ...or iterables of strings.
+        else:
+            # TODO: Check MP for existence of better iterable test.
+            try:
+                compare_with = iter(other)
+
+            except TypeError:
+                return False
+
+        return set(self._js_class_list) == set(compare_with)
+
+    def __getitem__(self, index):
+        if 0 <= index < self._js_class_list.length:
+            return self._js_class_list.item(index)
+        else:
+            return None
+
+    def __iter__(self):
+        return iter(self._js_class_list)
+
+    def __len__(self):
+        return self._js_class_list.length
+
+    def __repr__(self):
+        return f"ClassList({', '.join(self._js_class_list)})"
+
+    def __str__(self):
+        return ' '.join(self._js_class_list)
+
+    def add(self, *class_names):
+        for class_name in class_names:
+            if isinstance(class_name, list):
+                for item in class_name:
+                    self.add(item)
+
+            else:
+                self._js_class_list.add(class_name)
+
+    def contains(self, class_name):
+        return class_name in self
+
+    def remove(self, *class_names):
+        for class_name in class_names:
+            if isinstance(class_name, list):
+                for item in class_name:
+                    self.remove(item)
+
+            else:
+                self._js_class_list.remove(class_name)
+
+    def replace(self, old_class, new_class):
+        self.remove(old_class)
+        self.add(new_class)
+
+    def toggle(self, class_name, force=None):
+        if not force:
+            if class_name in self:
+                self.remove(class_name)
+                return False
+
+            else:
+                self.add(class_name)
+                return True
+
+        else:
+            if class_name not in self:
+                self.add(class_name)
+                return True
+
+        return False
 
 
 class HasOptions:
@@ -222,18 +282,18 @@ class HasOptions:
     """
 
     def __init__(self, *args, js_element=None, style=None, **kwargs):
-        self._options = OptionsProxy(self)
+        self._options = Options(self)
         super().__init__(*args, js_element=js_element, style=style, **kwargs)
 
     @property
     def options(self):
         if not hasattr(self, '_options'):
-            self._options = OptionsProxy(self)
+            self._options = Options(self)
 
         return self._options
 
 
-class OptionsProxy:
+class Options:
     """This class represents the options of a <datalist>, <optgroup> or <select> element.
 
     It allows to access to add and remove options by using the `add` and `remove`
@@ -302,7 +362,7 @@ class OptionsProxy:
         return self.options[key]
 
 
-class StyleProxy:  # (dict):
+class Style:  # (dict):
     def __init__(self, element: BaseElement) -> None:
         self._element = element
 
@@ -388,7 +448,7 @@ class Element(BaseElement):
                 )
 
             if classes:
-                self.classes = classes
+                self.classes.add(classes)
 
             # IMPORTANT!!! This is used to auto-harvest all input arguments and set them
             # as properties.
