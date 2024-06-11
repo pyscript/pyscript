@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.4.42",
+    "version": "0.4.44",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -53,7 +53,7 @@
         "@codemirror/lang-python": "^6.1.6",
         "@codemirror/language": "^6.10.2",
         "@codemirror/state": "^6.4.1",
-        "@codemirror/view": "^6.27.0",
+        "@codemirror/view": "^6.28.0",
         "@playwright/test": "^1.44.1",
         "@rollup/plugin-commonjs": "^26.0.1",
         "@rollup/plugin-node-resolve": "^15.2.3",

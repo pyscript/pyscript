@@ -141,7 +141,7 @@ const init = async (script, type, interpreter) => {
         { python },
         { indentUnit },
         { keymap },
-        { defaultKeymap },
+        { defaultKeymap, indentWithTab },
     ] = await Promise.all([
         import(/* webpackIgnore: true */ "../3rd-party/codemirror.js"),
         import(/* webpackIgnore: true */ "../3rd-party/codemirror_state.js"),
@@ -193,8 +193,7 @@ const init = async (script, type, interpreter) => {
             get: () => context.handleEvent,
             set: (callback) => {
                 // do not bother with logic if it was set back as its original handler
-                if (callback === execute)
-                    context.handleEvent = execute;
+                if (callback === execute) context.handleEvent = execute;
                 // in every other case be sure that if the listener override returned
                 // `false` nothing happens, otherwise keep doing what it always did
                 else {
@@ -202,10 +201,12 @@ const init = async (script, type, interpreter) => {
                         // trap the currentTarget ASAP (if any)
                         // otherwise it gets lost asynchronously
                         const { currentTarget } = event;
-                        // augment a code property before invoking the override
-                        defineProperties(event, { code: { value: context.pySrc } });
+                        // augment a code snapshot before invoking the override
+                        defineProperties(event, {
+                            code: { value: context.pySrc },
+                        });
                         // avoid executing the default handler if the override returned `false`
-                        if (await callback(event) !== false)
+                        if ((await callback(event)) !== false)
                             await execute.call(context, { currentTarget });
                     };
                 }
@@ -241,7 +242,9 @@ const init = async (script, type, interpreter) => {
                     isSetup = wasSetup;
                     source = wasSource;
                 };
-                return context.handleEvent({ currentTarget: null }).then(restore, restore);
+                return context
+                    .handleEvent({ currentTarget: null })
+                    .then(restore, restore);
             },
         },
     });
@@ -300,9 +303,13 @@ const init = async (script, type, interpreter) => {
                 { key: "Ctrl-Enter", run: listener, preventDefault: true },
                 { key: "Cmd-Enter", run: listener, preventDefault: true },
                 { key: "Shift-Enter", run: listener, preventDefault: true },
+                // @see https://codemirror.net/examples/tab/
+                indentWithTab,
             ]),
             basicSetup,
         ],
+        foldGutter: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
         parent,
         doc,
     });
