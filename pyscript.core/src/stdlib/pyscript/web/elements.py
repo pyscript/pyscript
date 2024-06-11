@@ -218,12 +218,6 @@ class Classes:
 
         return set(self._js_class_list) == set(compare_with)
 
-    def __getitem__(self, index):
-        if 0 <= index < self._js_class_list.length:
-            return self._js_class_list.item(index)
-        else:
-            return None
-
     def __iter__(self):
         return iter(self._js_class_list)
 

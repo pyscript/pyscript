@@ -19,4 +19,15 @@ class Document:
         ])
 
 
+# TODO: Why not....
+# def find(selector):
+#     return ElementCollection([
+#         element_from_js(el) for el in document.querySelectorAll(key)
+#     ])
+#
+#
+# body = element_from_js(document.body)
+# head = element_from_js(document.head)
+#
+# Instead of...
 dom = Document()
