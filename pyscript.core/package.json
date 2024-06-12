@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.4.42",
+    "version": "0.4.44",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -20,7 +20,7 @@
     },
     "scripts": {
         "server": "npx static-handler --coi .",
-        "build": "export ESLINT_USE_FLAT_CONFIG=true;npm run build:3rd-party && npm run build:stdlib && npm run build:plugins && npm run build:core && eslint src/ && npm run ts && npm run test:mpy",
+        "build": "export ESLINT_USE_FLAT_CONFIG=true;npm run build:3rd-party && npm run build:stdlib && npm run build:plugins && npm run build:core && if [ -z \"$NO_MIN\" ]; then eslint src/ && npm run ts && npm run test:mpy; fi",
         "build:core": "rm -rf dist && rollup --config rollup/core.config.js && cp src/3rd-party/*.css dist/",
         "build:plugins": "node rollup/plugins.cjs",
         "build:stdlib": "node rollup/stdlib.cjs",
@@ -53,9 +53,9 @@
         "@codemirror/lang-python": "^6.1.6",
         "@codemirror/language": "^6.10.2",
         "@codemirror/state": "^6.4.1",
-        "@codemirror/view": "^6.27.0",
+        "@codemirror/view": "^6.28.0",
         "@playwright/test": "^1.44.1",
-        "@rollup/plugin-commonjs": "^25.0.8",
+        "@rollup/plugin-commonjs": "^26.0.1",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
         "@webreflection/toml-j0.4": "^1.1.3",
