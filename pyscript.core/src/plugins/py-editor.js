@@ -291,7 +291,7 @@ const init = async (script, type, interpreter) => {
     const doc = dedent(script.textContent).trim();
 
     // preserve user indentation, if any
-    const indentation = /^(\s+)/m.test(doc) ? RegExp.$1 : "    ";
+    const indentation = /^([ \t]+)/m.test(doc) ? RegExp.$1 : "    ";
 
     const listener = () => runButton.click();
     const editor = new EditorView({
