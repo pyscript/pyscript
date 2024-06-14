@@ -7,12 +7,13 @@ declare namespace _default {
         "ffi.py": string;
         "magic_js.py": string;
         "util.py": string;
+        web: {
+            "__init__.py": string;
+            "dom.py": string;
+            "elements.py": string;
+            "media.py": string;
+        };
         "websocket.py": string;
-    };
-    let pyweb: {
-        "__init__.py": string;
-        "media.py": string;
-        "pydom.py": string;
     };
 }
 export default _default;

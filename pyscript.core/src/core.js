@@ -24,10 +24,17 @@ import sync from "./sync.js";
 import bootstrapNodeAndPlugins from "./plugins-helper.js";
 import { ErrorCode } from "./exceptions.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
-import { hooks, main, worker, codeFor, createFunction } from "./hooks.js";
+import {
+    hooks,
+    main,
+    worker,
+    codeFor,
+    createFunction,
+    inputFailure,
+} from "./hooks.js";
 
 import { stdlib, optional } from "./stdlib.js";
-export { stdlib, optional };
+export { stdlib, optional, inputFailure };
 
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
@@ -150,6 +157,7 @@ for (const [TYPE, interpreter] of TYPES) {
         // enrich the Python env with some JS utility for main
         interpreter.registerJsModule("_pyscript", {
             PyWorker,
+            js_import: (...urls) => Promise.all(urls.map((url) => import(url))),
             get target() {
                 return isScript(currentElement)
                     ? currentElement.target.id

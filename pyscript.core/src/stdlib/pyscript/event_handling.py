@@ -19,16 +19,17 @@ def when(event_type=None, selector=None):
     """
 
     def decorator(func):
+
+        from pyscript.web.elements import Element, ElementCollection
+
         if isinstance(selector, str):
             elements = document.querySelectorAll(selector)
         else:
             # TODO: This is a hack that will be removed when pyscript becomes a package
             #       and we can better manage the imports without circular dependencies
-            from pyweb import pydom
-
-            if isinstance(selector, pydom.Element):
+            if isinstance(selector, Element):
                 elements = [selector._js]
-            elif isinstance(selector, pydom.ElementCollection):
+            elif isinstance(selector, ElementCollection):
                 elements = [el._js for el in selector]
             else:
                 raise ValueError(
@@ -47,13 +48,14 @@ def when(event_type=None, selector=None):
                 wrapper = func
 
         except AttributeError:
-            # TODO: this is currently an quick hack to get micropython working but we need
-            #       to actually properly replace inspect.signature with something else
+            # TODO: this is very ugly hack to get micropython working because inspect.signature
+            #       doesn't exist, but we need to actually properly replace inspect.signature.
+            #       It may be actually better to not try any magic for now and raise the error
             def wrapper(*args, **kwargs):
                 try:
                     return func(*args, **kwargs)
                 except TypeError as e:
-                    if "takes 0 positional arguments" in str(e):
+                    if "takes" in str(e) and "positional arguments" in str(e):
                         return func()
 
                     raise
