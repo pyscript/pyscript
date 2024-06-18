@@ -30,6 +30,7 @@
 #     as it works transparently in both the main thread and worker cases.
 
 from polyscript import lazy_py_modules as py_import
+from polyscript import storage as _storage
 from pyscript.display import HTML, display
 from pyscript.fetch import fetch
 from pyscript.magic_js import (
@@ -44,6 +45,18 @@ from pyscript.magic_js import (
     window,
 )
 from pyscript.websocket import WebSocket
+
+# this is the JS way (a js.Map instance)
+async def storage(*args):
+    if len(args):
+        name, = args
+    else:
+        name = "core"
+
+    return await _storage(f"@pyscript/{name}")
+
+# this is the Pythonic way (a Python dict)
+from pyscript.storage import storage
 
 try:
     from pyscript.event_handling import when

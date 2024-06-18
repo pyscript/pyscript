@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@pyscript/core storage</title>
+        <link rel="stylesheet" href="../dist/core.css">
+        <script type="module" src="../dist/core.js"></script>
+    </head>
+    <body>
+        <script type="mpy" async>
+          from random import random
+          from pyscript import storage
+
+          store = await storage()
+
+          print("before", len(store))
+          for k in store:
+              print(f"    {k}: {store[k]}")
+
+          store["random"] = random()
+          store["key"] = "value"
+
+          print("now", len(store))
+          for k in store:
+              print(f"    {k}: {store[k]}")
+
+          del store["key"]
+          # store.clear()
+
+          print("after", len(store))
+          for k in store:
+              print(f"    {k}: {store[k]}")
+
+          await store.sync()
+
+          import js
+          js.document.documentElement.classList.add("ok")
+        </script>
+        <!-- <script type="js-mpy" async>
+          from pyscript import storage
+
+          store = await storage()
+
+          print(store.size)
+          store.set("key", "value")
+
+          import js
+          js.document.documentElement.classList.add("ok")
+        </script> -->
+    </body>
+</html>
