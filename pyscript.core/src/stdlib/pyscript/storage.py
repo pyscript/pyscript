@@ -1,8 +1,9 @@
 from polyscript import storage as _storage
 
+
 async def storage(*args):
     if len(args):
-        name, = args
+        (name,) = args
     else:
         name = "core"
 

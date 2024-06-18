@@ -46,6 +46,7 @@ from pyscript.magic_js import (
 )
 from pyscript.websocket import WebSocket
 
+
 # this is the JS way (a js.Map instance)
 async def storage(*args):
     if len(args):
