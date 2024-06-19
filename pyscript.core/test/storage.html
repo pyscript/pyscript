@@ -9,44 +9,38 @@
     </head>
     <body>
         <script type="mpy" async>
-          from random import random
-          from pyscript import storage
+            from random import random
+            from pyscript import storage
 
-          store = await storage()
+            store = await storage()
 
-          print("before", len(store))
-          for k in store:
-              print(f"    {k}: {store[k]}")
+            print("before", len(store))
+            for k in store:
+                if isinstance(store[k], memoryview):
+                    print(f"    {k}: {store[k].hex()} as hex()")
+                else:
+                    print(f"    {k}: {store[k]}")
 
-          store["random"] = random()
-          store["key"] = "value"
+            store["ba"] = bytearray([0, 1, 2, 3, 4])
+            store["mv"] = memoryview(bytearray([5, 6, 7, 8, 9]))
+            store["random"] = ("some", random())
+            store["key"] = "value"
 
-          print("now", len(store))
-          for k in store:
-              print(f"    {k}: {store[k]}")
+            print("now", len(store))
+            for k in store:
+                print(f"    {k}: {store[k]}")
 
-          del store["key"]
-          # store.clear()
+            del store["key"]
+            # store.clear()
 
-          print("after", len(store))
-          for k in store:
-              print(f"    {k}: {store[k]}")
+            print("after", len(store))
+            for k in store:
+                print(f"    {k}: {store[k]}")
 
-          await store.sync()
+            await store.sync()
 
-          import js
-          js.document.documentElement.classList.add("ok")
+            import js
+            js.document.documentElement.classList.add("ok")
         </script>
-        <!-- <script type="js-mpy" async>
-          from pyscript import storage
-
-          store = await storage()
-
-          print(store.size)
-          store.set("key", "value")
-
-          import js
-          js.document.documentElement.classList.add("ok")
-        </script> -->
     </body>
 </html>
