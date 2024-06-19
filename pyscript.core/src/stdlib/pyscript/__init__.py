@@ -43,10 +43,7 @@ from pyscript.magic_js import (
     sync,
     window,
 )
-from pyscript.storage import (
-    Storage,
-    storage,
-)
+from pyscript.storage import Storage, storage
 from pyscript.websocket import WebSocket
 
 try:

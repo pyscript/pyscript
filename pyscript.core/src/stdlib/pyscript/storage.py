@@ -13,7 +13,7 @@ def _to_idb(value):
         return _stringify(["bytearray", [v for v in value]])
     if isinstance(value, memoryview):
         return _stringify(["memoryview", [v for v in value]])
-    raise f"Unexpected value: {value}"
+    raise TypeError(f"Unexpected value: {value}")
 
 
 # convert an IndexedDB compatible entry into a Python value
@@ -54,5 +54,7 @@ class Storage(dict):
         await self.__store__.sync()
 
 
-async def storage(name="core", storage_class=Storage):
+async def storage(name="", storage_class=Storage):
+    if not name:
+        raise ValueError("The storage name must be defined")
     return storage_class(await _storage(f"@pyscript/{name}"))

@@ -12,7 +12,7 @@
             from random import random
             from pyscript import storage
 
-            store = await storage()
+            store = await storage(name="test")
 
             print("before", len(store))
             for k in store:
