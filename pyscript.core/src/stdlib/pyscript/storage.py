@@ -1,5 +1,6 @@
 from polyscript import storage as _storage
-from pyscript.flatted import parse as _parse, stringify as _stringify
+from pyscript.flatted import parse as _parse
+from pyscript.flatted import stringify as _stringify
 
 
 # convert a Python value into an IndexedDB compatible entry
@@ -32,32 +33,26 @@ def _from_idb(value):
     return value
 
 
-async def storage(*args):
-    if len(args):
-        (name,) = args
-    else:
-        name = "core"
+class Storage(dict):
+    def __init__(self, store):
+        super().__init__({k: _from_idb(v) for k, v in store.entries()})
+        self.__store__ = store
 
-    store = await _storage(f"@pyscript/{name}")
-    known = {k: _from_idb(v) for k, v in store.entries()}
+    def __delitem__(self, attr):
+        self.__store__.delete(attr)
+        super().__delitem__(attr)
 
-    class Storage(dict):
-        def __init__(self, known):
-            super().__init__(known)
+    def __setitem__(self, attr, value):
+        self.__store__.set(attr, _to_idb(value))
+        super().__setitem__(attr, value)
 
-        def __delitem__(self, attr):
-            store.delete(attr)
-            super().__delitem__(attr)
+    def clear(self):
+        self.__store__.clear()
+        super().clear()
 
-        def __setitem__(self, attr, value):
-            store.set(attr, _to_idb(value))
-            super().__setitem__(attr, value)
+    async def sync(self):
+        await self.__store__.sync()
 
-        def clear(self):
-            store.clear()
-            super().clear()
 
-        async def sync(self):
-            await store.sync()
-
-    return Storage(known)
+async def storage(name="core", storage_class=Storage):
+    return storage_class(await _storage(f"@pyscript/{name}"))
