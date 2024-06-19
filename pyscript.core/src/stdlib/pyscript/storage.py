@@ -1,19 +1,24 @@
 from polyscript import storage as _storage
 
-import json
+from pyscript.flatted import parse, stringify
 
 # convert a Python value into an IndexedDB compatible entry
 def to_idb(value):
+    if value is None:
+        return stringify(["null", 0])
     if isinstance(value, (float, int, str, list, dict, tuple)):
-        return json.dumps(["generic", value])
+        return stringify(["generic", value])
     if isinstance(value, bytearray):
-        return json.dumps(["bytearray", [v for v in value]])
+        return stringify(["bytearray", [v for v in value]])
     if isinstance(value, memoryview):
-        return json.dumps(["memoryview", [v for v in value]])
+        return stringify(["memoryview", [v for v in value]])
+    raise f"Unexpected value: {value}"
 
 # convert an IndexedDB compatible entry into a Python value
 def from_idb(value):
-    (kind, result,) = json.loads(value)
+    (kind, result,) = parse(value)
+    if kind == "null":
+        return None
     if kind == "generic":
         return result
     if kind == "bytearray":
