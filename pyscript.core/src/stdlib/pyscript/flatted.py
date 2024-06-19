@@ -2,10 +2,12 @@
 
 import json as _json
 
+
 class _Known:
     def __init__(self):
         self.key = []
         self.value = []
+
 
 class _String:
     def __init__(self, value):
@@ -20,20 +22,25 @@ def _array_keys(value):
         i += 1
     return keys
 
+
 def _object_keys(value):
     keys = []
     for key in value:
         keys.append(key)
     return keys
 
+
 def _is_array(value):
     return isinstance(value, list) or isinstance(value, tuple)
+
 
 def _is_object(value):
     return isinstance(value, dict)
 
+
 def _is_string(value):
     return isinstance(value, str)
+
 
 def _index(known, input, value):
     input.append(value)
@@ -42,6 +49,7 @@ def _index(known, input, value):
     known.value.append(index)
     return index
 
+
 def _loop(keys, input, known, output):
     for key in keys:
         value = output[key]
@@ -49,6 +57,7 @@ def _loop(keys, input, known, output):
             _ref(key, input[int(value.value)], input, known, output)
 
     return output
+
 
 def _ref(key, value, input, known, output):
     if _is_array(value) and not value in known:
@@ -60,6 +69,7 @@ def _ref(key, value, input, known, output):
 
     output[key] = value
 
+
 def _relate(known, input, value):
     if _is_string(value) or _is_array(value) or _is_object(value):
         try:
@@ -68,6 +78,7 @@ def _relate(known, input, value):
             return _index(known, input, value)
 
     return value
+
 
 def _transform(known, input, value):
     if _is_array(value):
@@ -84,6 +95,7 @@ def _transform(known, input, value):
 
     return value
 
+
 def _wrap(value):
     if _is_string(value):
         return _String(value)
@@ -99,6 +111,7 @@ def _wrap(value):
             value[key] = _wrap(value[key])
 
     return value
+
 
 def parse(value, *args, **kwargs):
     json = _json.loads(value, *args, **kwargs)

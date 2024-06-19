@@ -1,6 +1,6 @@
 from polyscript import storage as _storage
-
 from pyscript.flatted import parse, stringify
+
 
 # convert a Python value into an IndexedDB compatible entry
 def to_idb(value):
@@ -14,9 +14,13 @@ def to_idb(value):
         return stringify(["memoryview", [v for v in value]])
     raise f"Unexpected value: {value}"
 
+
 # convert an IndexedDB compatible entry into a Python value
 def from_idb(value):
-    (kind, result,) = parse(value)
+    (
+        kind,
+        result,
+    ) = parse(value)
     if kind == "null":
         return None
     if kind == "generic":
@@ -27,6 +31,7 @@ def from_idb(value):
         return memoryview(bytearray(result))
     return value
 
+
 async def storage(*args):
     if len(args):
         (name,) = args
@@ -34,7 +39,7 @@ async def storage(*args):
         name = "core"
 
     store = await _storage(f"@pyscript/{name}")
-    known = {k:from_idb(v) for k, v in store.entries()}
+    known = {k: from_idb(v) for k, v in store.entries()}
 
     class Storage(dict):
         def __init__(self, known):
