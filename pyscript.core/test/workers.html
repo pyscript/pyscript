@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <script type="module" src="../dist/core.js"></script>
+    </head>
+    <body>
+        <script type="mpy" async>
+          from pyscript import document, workers
+
+          test = await workers["test"]
+          version = await test.pyodide_version()
+
+          document.body.append(version)
+          document.documentElement.classList.add("ok")
+        </script>
+        <script type="py" name="test" worker>
+          def pyodide_version():
+              import sys
+              return sys.version
+
+          __export__ = ['pyodide_version']
+        </script>
+    </body>
+</html>
