@@ -95,6 +95,6 @@ test('MicroPython + Storage', async ({ page }) => {
 });
 
 test('MicroPython + workers', async ({ page }) => {
-  await page.goto('http://localhost:8080/test/workers.html');
-  await page.waitForSelector('html.ok');
+  await page.goto('http://localhost:8080/test/workers/index.html');
+  await page.waitForSelector('html.mpy.py');
 });
