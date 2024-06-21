@@ -6,6 +6,11 @@
         <script type="module" src="../../dist/core.js"></script>
     </head>
     <body>
+        <script type="mpy" async>
+          from pyscript import create_named_worker
+
+          await create_named_worker("./worker.py", name="micropython_version", type="mpy")
+        </script>
         <script type="mpy" config="./config.toml" async>
           from test import test
           await test("mpy")
@@ -20,13 +25,6 @@
               return sys.version
 
           __export__ = ['pyodide_version']
-        </script>
-        <script type="mpy" name="micropython_version" worker>
-          def micropython_version():
-              import sys
-              return sys.version
-
-          __export__ = ['micropython_version']
         </script>
     </body>
 </html>

@@ -47,7 +47,7 @@ from pyscript.storage import Storage, storage
 from pyscript.websocket import WebSocket
 
 if not RUNNING_IN_WORKER:
-    from pyscript.workers import workers
+    from pyscript.workers import workers, create_named_worker
 
 try:
     from pyscript.event_handling import when
