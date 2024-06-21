@@ -101,11 +101,10 @@ class TestElements(PyScriptTest):
         code_ = f"""
                 from pyscript import when
             <script type="{interpreter}">
-                from pyscript.web import dom
-                from pyscript.web.elements import {el_type}
-
+                from pyweb import pydom
+                from pyweb.ui.elements import {el_type}
                 el = {el_type}({attributes})
-                dom.body.append(el)
+                pydom.body.append(el)
             </script>
             """
         self.pyscript_run(code_)

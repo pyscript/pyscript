@@ -2,13 +2,22 @@ from unittest import mock
 
 import pytest
 from pyscript import document, when
-from pyscript.web import dom
-from pyscript.web import elements as el
+from pyweb import pydom
 
 
 class TestDocument:
     def test__element(self):
-        assert dom._js == document
+        assert pydom._js == document
+
+    def test_no_parent(self):
+        assert pydom.parent is None
+
+    def test_create_element(self):
+        new_el = pydom.create("div")
+        assert isinstance(new_el, pydom.BaseElement)
+        assert new_el._js.tagName == "DIV"
+        # EXPECT the new element to be associated with the document
+        assert new_el.parent == None
 
 
 def test_getitem_by_id():
@@ -17,14 +26,14 @@ def test_getitem_by_id():
     txt = "You found test_id_selector"
     selector = f"#{id_}"
     # EXPECT the element to be found by id
-    result = dom[selector]
+    result = pydom[selector]
     div = result[0]
     # EXPECT the element text value to match what we expect and what
     # the JS document.querySelector API would return
     assert document.querySelector(selector).innerHTML == div.html == txt
     # EXPECT the results to be of the right types
-    assert isinstance(div, el.BaseElement)
-    assert isinstance(result, dom.ElementCollection)
+    assert isinstance(div, pydom.BaseElement)
+    assert isinstance(result, pydom.ElementCollection)
 
 
 def test_getitem_by_class():
@@ -34,7 +43,7 @@ def test_getitem_by_class():
         "test_selector_w_children_child_1",
     ]
     expected_class = "a-test-class"
-    result = dom[f".{expected_class}"]
+    result = pydom[f".{expected_class}"]
     div = result[0]
 
     # EXPECT to find exact number of elements with the class in the page (== 3)
@@ -45,7 +54,7 @@ def test_getitem_by_class():
 
 
 def test_read_n_write_collection_elements():
-    elements = dom[".multi-elems"]
+    elements = pydom[".multi-elems"]
 
     for element in elements:
         assert element.html == f"Content {element.id.replace('#', '')}"
@@ -60,15 +69,15 @@ class TestElement:
     def test_query(self):
         # GIVEN an existing element on the page, with at least 1 child element
         id_ = "test_selector_w_children"
-        parent_div = dom[f"#{id_}"][0]
+        parent_div = pydom[f"#{id_}"][0]
 
         # EXPECT it to be able to query for the first child element
         div = parent_div.find("div")[0]
 
         # EXPECT the new element to be associated with the parent
         assert div.parent == parent_div
-        # EXPECT the new element to be a el.BaseElement
-        assert isinstance(div, el.BaseElement)
+        # EXPECT the new element to be a BaseElement
+        assert isinstance(div, pydom.BaseElement)
         # EXPECT the div attributes to be == to how they are configured in the page
         assert div.html == "Child 1"
         assert div.id == "test_selector_w_children_child_1"
@@ -77,8 +86,8 @@ class TestElement:
         # GIVEN 2 different Elements pointing to the same underlying element
         id_ = "test_id_selector"
         selector = f"#{id_}"
-        div = dom[selector][0]
-        div2 = dom[selector][0]
+        div = pydom[selector][0]
+        div2 = pydom[selector][0]
 
         # EXPECT them to be equal
         assert div == div2
@@ -93,27 +102,27 @@ class TestElement:
 
     def test_append_element(self):
         id_ = "element-append-tests"
-        div = dom[f"#{id_}"][0]
+        div = pydom[f"#{id_}"][0]
         len_children_before = len(div.children)
-        new_el = el.p("new element")
+        new_el = div.create("p")
         div.append(new_el)
         assert len(div.children) == len_children_before + 1
         assert div.children[-1] == new_el
 
     def test_append_js_element(self):
         id_ = "element-append-tests"
-        div = dom[f"#{id_}"][0]
+        div = pydom[f"#{id_}"][0]
         len_children_before = len(div.children)
-        new_el = el.p("new element")
+        new_el = div.create("p")
         div.append(new_el._js)
         assert len(div.children) == len_children_before + 1
         assert div.children[-1] == new_el
 
     def test_append_collection(self):
         id_ = "element-append-tests"
-        div = dom[f"#{id_}"][0]
+        div = pydom[f"#{id_}"][0]
         len_children_before = len(div.children)
-        collection = dom[".collection"]
+        collection = pydom[".collection"]
         div.append(collection)
         assert len(div.children) == len_children_before + len(collection)
 
@@ -123,16 +132,16 @@ class TestElement:
     def test_read_classes(self):
         id_ = "test_class_selector"
         expected_class = "a-test-class"
-        div = dom[f"#{id_}"][0]
+        div = pydom[f"#{id_}"][0]
         assert div.classes == [expected_class]
 
     def test_add_remove_class(self):
         id_ = "div-no-classes"
         classname = "tester-class"
-        div = dom[f"#{id_}"][0]
+        div = pydom[f"#{id_}"][0]
         assert not div.classes
         div.add_class(classname)
-        same_div = dom[f"#{id_}"][0]
+        same_div = pydom[f"#{id_}"][0]
         assert div.classes == [classname] == same_div.classes
         div.remove_class(classname)
         assert div.classes == [] == same_div.classes
@@ -140,7 +149,7 @@ class TestElement:
     def test_when_decorator(self):
         called = False
 
-        just_a_button = dom["#a-test-button"][0]
+        just_a_button = pydom["#a-test-button"][0]
 
         @when("click", just_a_button)
         def on_click(event):
@@ -148,7 +157,7 @@ class TestElement:
             called = True
 
         # Now let's simulate a click on the button (using the low level JS API)
-        # so we don't risk dom getting in the way
+        # so we don't risk pydom getting in the way
         assert not called
         just_a_button._js.click()
 
@@ -156,7 +165,7 @@ class TestElement:
 
     def test_html_attribute(self):
         # GIVEN an existing element on the page with a known empty text content
-        div = dom["#element_attribute_tests"][0]
+        div = pydom["#element_attribute_tests"][0]
 
         # WHEN we set the html attribute
         div.html = "<b>New Content</b>"
@@ -168,7 +177,7 @@ class TestElement:
 
     def test_text_attribute(self):
         # GIVEN an existing element on the page with a known empty text content
-        div = dom["#element_attribute_tests"][0]
+        div = pydom["#element_attribute_tests"][0]
 
         # WHEN we set the html attribute
         div.text = "<b>New Content</b>"
@@ -181,12 +190,12 @@ class TestElement:
 
 class TestCollection:
     def test_iter_eq_children(self):
-        elements = dom[".multi-elems"]
+        elements = pydom[".multi-elems"]
         assert [el for el in elements] == [el for el in elements.children]
         assert len(elements) == 3
 
     def test_slices(self):
-        elements = dom[".multi-elems"]
+        elements = pydom[".multi-elems"]
         assert elements[0]
         _slice = elements[:2]
         assert len(_slice) == 2
@@ -196,26 +205,26 @@ class TestCollection:
 
     def test_style_rule(self):
         selector = ".multi-elems"
-        elements = dom[selector]
+        elements = pydom[selector]
         for el in elements:
             assert el.style["background-color"] != "red"
 
         elements.style["background-color"] = "red"
 
-        for i, el in enumerate(dom[selector]):
+        for i, el in enumerate(pydom[selector]):
             assert elements[i].style["background-color"] == "red"
             assert el.style["background-color"] == "red"
 
         elements.style.remove("background-color")
 
-        for i, el in enumerate(dom[selector]):
+        for i, el in enumerate(pydom[selector]):
             assert el.style["background-color"] != "red"
             assert elements[i].style["background-color"] != "red"
 
     def test_when_decorator(self):
         called = False
 
-        buttons_collection = dom["button"]
+        buttons_collection = pydom["button"]
 
         @when("click", buttons_collection)
         def on_click(event):
@@ -223,7 +232,7 @@ class TestCollection:
             called = True
 
         # Now let's simulate a click on the button (using the low level JS API)
-        # so we don't risk dom getting in the way
+        # so we don't risk pydom getting in the way
         assert not called
         for button in buttons_collection:
             button._js.click()
@@ -233,32 +242,32 @@ class TestCollection:
 
 class TestCreation:
     def test_create_document_element(self):
-        # TODO: This test should probably be removed since it's testing the elements module
-        new_el = el.div("new element")
+        new_el = pydom.create("div")
         new_el.id = "new_el_id"
-        assert isinstance(new_el, el.BaseElement)
+        assert isinstance(new_el, pydom.BaseElement)
         assert new_el._js.tagName == "DIV"
         # EXPECT the new element to be associated with the document
         assert new_el.parent == None
-        dom.body.append(new_el)
+        pydom.body.append(new_el)
 
-        assert dom["#new_el_id"][0].parent == dom.body
+        assert pydom["#new_el_id"][0].parent == pydom.body
 
     def test_create_element_child(self):
         selector = "#element-creation-test"
-        parent_div = dom[selector][0]
+        parent_div = pydom[selector][0]
 
         # Creating an element from another element automatically creates that element
         # as a child of the original element
-        new_el = el.p("a div", classes=["code-description"], html="Ciao PyScripters!")
-        parent_div.append(new_el)
+        new_el = parent_div.create(
+            "p", classes=["code-description"], html="Ciao PyScripters!"
+        )
 
-        assert isinstance(new_el, el.BaseElement)
+        assert isinstance(new_el, pydom.BaseElement)
         assert new_el._js.tagName == "P"
-
         # EXPECT the new element to be associated with the document
         assert new_el.parent == parent_div
-        assert dom[selector][0].children[0] == new_el
+
+        assert pydom[selector][0].children[0] == new_el
 
 
 class TestInput:
@@ -272,7 +281,7 @@ class TestInput:
     def test_value(self):
         for id_ in self.input_ids:
             expected_type = id_.split("_")[-1]
-            result = dom[f"#{id_}"]
+            result = pydom[f"#{id_}"]
             input_el = result[0]
             assert input_el._js.type == expected_type
             assert input_el.value == f"Content {id_}" == input_el._js.value
@@ -290,7 +299,7 @@ class TestInput:
 
     def test_set_value_collection(self):
         for id_ in self.input_ids:
-            input_el = dom[f"#{id_}"]
+            input_el = pydom[f"#{id_}"]
 
             assert input_el.value[0] == f"Content {id_}" == input_el[0].value
 
@@ -299,35 +308,35 @@ class TestInput:
             assert input_el.value[0] == new_value == input_el[0].value
 
     def test_element_without_value(self):
-        result = dom[f"#tests-terminal"][0]
+        result = pydom[f"#tests-terminal"][0]
         with pytest.raises(AttributeError):
             result.value = "some value"
 
     def test_element_without_collection(self):
-        result = dom[f"#tests-terminal"]
+        result = pydom[f"#tests-terminal"]
         with pytest.raises(AttributeError):
             result.value = "some value"
 
     def test_element_without_collection(self):
-        result = dom[f"#tests-terminal"]
+        result = pydom[f"#tests-terminal"]
         with pytest.raises(AttributeError):
             result.value = "some value"
 
 
 class TestSelect:
     def test_select_options_iter(self):
-        select = dom[f"#test_select_element_w_options"][0]
+        select = pydom[f"#test_select_element_w_options"][0]
 
         for i, option in enumerate(select.options, 1):
             assert option.value == f"{i}"
             assert option.html == f"Option {i}"
 
     def test_select_options_len(self):
-        select = dom[f"#test_select_element_w_options"][0]
+        select = pydom[f"#test_select_element_w_options"][0]
         assert len(select.options) == 2
 
     def test_select_options_clear(self):
-        select = dom[f"#test_select_element_to_clear"][0]
+        select = pydom[f"#test_select_element_to_clear"][0]
         assert len(select.options) == 3
 
         select.options.clear()
@@ -336,7 +345,7 @@ class TestSelect:
 
     def test_select_element_add(self):
         # GIVEN the existing select element with no options
-        select = dom[f"#test_select_element"][0]
+        select = pydom[f"#test_select_element"][0]
 
         # EXPECT the select element to have no options
         assert len(select.options) == 0
@@ -417,7 +426,7 @@ class TestSelect:
 
     def test_select_options_remove(self):
         # GIVEN the existing select element with 3 options
-        select = dom[f"#test_select_element_to_remove"][0]
+        select = pydom[f"#test_select_element_to_remove"][0]
 
         # EXPECT the select element to have 3 options
         assert len(select.options) == 4
@@ -439,7 +448,7 @@ class TestSelect:
 
     def test_select_get_selected_option(self):
         # GIVEN the existing select element with one selected option
-        select = dom[f"#test_select_element_w_options"][0]
+        select = pydom[f"#test_select_element_w_options"][0]
 
         # WHEN we get the selected option
         selected_option = select.options.selected

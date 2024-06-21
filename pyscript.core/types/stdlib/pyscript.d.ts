@@ -17,5 +17,14 @@ declare namespace _default {
         };
         "websocket.py": string;
     };
+    let pyweb: {
+        "__init__.py": string;
+        "media.py": string;
+        "pydom.py": string;
+        ui: {
+            "__init__.py": string;
+            "elements.py": string;
+        };
+    };
 }
 export default _default;
