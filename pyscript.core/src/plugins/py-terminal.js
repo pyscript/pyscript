@@ -1,5 +1,5 @@
 // PyScript py-terminal plugin
-import { TYPES } from "../core.js";
+import { TYPES, relative_url } from "../core.js";
 import { notify } from "./error.js";
 import { customObserver } from "polyscript/exports";
 
@@ -35,7 +35,7 @@ for (const type of TYPES.keys()) {
             document.head.append(
                 Object.assign(document.createElement("link"), {
                     rel: "stylesheet",
-                    href: new URL("./xterm.css", import.meta.url),
+                    href: relative_url("./xterm.css", import.meta.url),
                 }),
             );
         }

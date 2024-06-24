@@ -3,6 +3,7 @@ import { stdlib } from "./stdlib.js";
 import { optional } from "./stdlib.js";
 import { inputFailure } from "./hooks.js";
 import TYPES from "./types.js";
+import { relative_url } from "./config.js";
 /**
  * A `Worker` facade able to bootstrap on the worker thread only a PyScript module.
  * @param {string} file the python file to run ina worker.
@@ -54,4 +55,4 @@ declare const exportedHooks: {
 };
 declare const exportedConfig: {};
 declare const exportedWhenDefined: (type: string) => Promise<any>;
-export { stdlib, optional, inputFailure, TYPES, exportedPyWorker as PyWorker, exportedMPWorker as MPWorker, exportedHooks as hooks, exportedConfig as config, exportedWhenDefined as whenDefined };
+export { stdlib, optional, inputFailure, TYPES, relative_url, exportedPyWorker as PyWorker, exportedMPWorker as MPWorker, exportedHooks as hooks, exportedConfig as config, exportedWhenDefined as whenDefined };
