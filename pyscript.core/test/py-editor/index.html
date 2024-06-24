@@ -29,7 +29,7 @@
     a = 1
   </script>
   <!-- a share-nothing micropython editor -->
-  <script type="mpy-editor" config="./config.toml">
+  <script type="mpy-editor" config='{"js_modules":{"worker":{"https://cdn.jsdelivr.net/npm/html-escaper/+esm":"html_escaper"}}}'>
     from pyscript.js_modules.html_escaper import escape, unescape
     print(unescape(escape("<OK>")))
     b = 2

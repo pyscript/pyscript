@@ -1,6 +1,6 @@
 // PyScript py-editor plugin
 import { Hook, XWorker, dedent, defineProperties } from "polyscript/exports";
-import { TYPES, offline_interpreter, stdlib } from "../core.js";
+import { TYPES, offline_interpreter, relative_url, stdlib } from "../core.js";
 
 const RUN_BUTTON = `<svg style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>`;
 
@@ -37,11 +37,24 @@ async function execute({ currentTarget }) {
         const details = { type: this.interpreter };
         const { config } = this;
         if (config) {
-            details.configURL = config;
-            const { parse } = config.endsWith(".toml")
-                ? await import(/* webpackIgnore: true */ "../3rd-party/toml.js")
-                : JSON;
-            details.config = parse(await fetch(config).then((r) => r.text()));
+            details.configURL = relative_url(config);
+            if (config.endsWith(".toml")) {
+                const [
+                    { parse },
+                    toml,
+                ] = await Promise.all([
+                    import(/* webpackIgnore: true */ "../3rd-party/toml.js"),
+                    fetch(config).then((r) => r.text()),
+                ]);
+                details.config = parse(toml);
+            }
+            else if (config.endsWith(".json")) {
+                details.config = await fetch(config).then((r) => r.json());
+            }
+            else {
+                details.configURL = relative_url('./config.txt');
+                details.config = JSON.parse(config);
+            }
             details.version = offline_interpreter(details.config);
         } else {
             details.config = {};
@@ -175,9 +188,7 @@ const init = async (script, type, interpreter) => {
         handleEvent: execute,
         interpreter,
         env,
-        config:
-            hasConfig &&
-            new URL(script.getAttribute("config"), location.href).href,
+        config: hasConfig && script.getAttribute("config"),
         get pySrc() {
             return isSetup ? source : editor.state.doc.toString();
         },
