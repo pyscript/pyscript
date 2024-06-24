@@ -39,20 +39,15 @@ async function execute({ currentTarget }) {
         if (config) {
             details.configURL = relative_url(config);
             if (config.endsWith(".toml")) {
-                const [
-                    { parse },
-                    toml,
-                ] = await Promise.all([
+                const [{ parse }, toml] = await Promise.all([
                     import(/* webpackIgnore: true */ "../3rd-party/toml.js"),
                     fetch(config).then((r) => r.text()),
                 ]);
                 details.config = parse(toml);
-            }
-            else if (config.endsWith(".json")) {
+            } else if (config.endsWith(".json")) {
                 details.config = await fetch(config).then((r) => r.json());
-            }
-            else {
-                details.configURL = relative_url('./config.txt');
+            } else {
+                details.configURL = relative_url("./config.txt");
                 details.config = JSON.parse(config);
             }
             details.version = offline_interpreter(details.config);
