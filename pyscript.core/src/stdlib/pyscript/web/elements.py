@@ -465,29 +465,22 @@ class Element(BaseElement):
 
 
 class TextElement(Element):
-    def __init__(self, *args, js_element=None, style=None, **kwargs):
+    def __init__(self, *args, children=None, js_element=None, style=None, **kwargs):
         super().__init__(js_element=js_element, style=style, **kwargs)
 
-        for item in args:
-            if isinstance(item, BaseElement):
-                self.append(item)
+        if not children:
+            children = args
+
+        for child in children:
+            if isinstance(child, BaseElement):
+                self.append(child)
+
+            elif isinstance(child, list):
+                for item in child:
+                    self.append(item)
 
             else:
-                self.html = item
-
-        # # If it's an element, append the element
-        # if isinstance(content, BaseElement):
-        #     self.append(content)
-        # # If it's a list of elements
-        # elif isinstance(content, list):
-        #     for item in content:
-        #         self.append(item)
-        # # If the content wasn't set just ignore
-        # elif content is None:
-        #     pass
-        # else:
-        #     # Otherwise, set content as the html of the element
-        #     self.html = content
+                self.html = child
 
 
 # IMPORTANT: For all HTML components defined below, we are not mapping all possible
