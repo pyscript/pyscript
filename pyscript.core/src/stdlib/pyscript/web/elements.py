@@ -76,7 +76,7 @@ def element_from_js(js_element):
     # For any unknown elements (custom tags etc.) we just create an instance of the
     # 'BaseElement' class.
     #
-    # TODO: Should we have a subclass
+    # TODO: Should we have a subclass for unknown elements?
     if not cls:
         cls = BaseElement
 
@@ -834,6 +834,12 @@ class hr(TextElement):
     tag = "hr"
 
 
+class html(TextElement):
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html"""
+
+    tag = "html"
+
+
 class i(TextElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i"""
 
@@ -1517,7 +1523,7 @@ ELEMENT_CLASSES = [
     data, datalist, dd, del_, details, dialog, div, dl, dt,
     em, embed,
     fieldset, figcaption, figure, footer, form,
-    h1, h2, h3, h4, h5, h6, head, header, hgroup, hr,
+    h1, h2, h3, h4, h5, h6, head, header, hgroup, hr, html,
     i, iframe, img, input_, ins,
     kbd,
     label, legend, li, link,
