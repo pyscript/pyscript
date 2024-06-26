@@ -73,10 +73,12 @@ def element_from_js(js_element):
     else:
         cls = ELEMENT_CLASSES_BY_TAG.get(js_element.tagName.lower())
 
-    # TODO: How to we handle custom elements?
+    # For any unknown elements (custom tags etc.) we just create an instance of the
+    # 'BaseElement' class.
+    #
+    # TODO: Should we have a subclass
     if not cls:
         cls = BaseElement
-        #raise TypeError(f"Unknown element: {cls_name or js_element.tagName}")
 
     return cls(js_element=js_element)
 
@@ -270,10 +272,6 @@ class HasOptions:
     The elements that support options are: <datalist>, <optgroup>, and <select>.
     """
 
-    def __init__(self, *args, js_element=None, style=None, **kwargs):
-        self._options = Options(self)
-        super().__init__(*args, js_element=js_element, style=style, **kwargs)
-
     @property
     def options(self):
         if not hasattr(self, '_options'):
@@ -415,14 +413,13 @@ class Element(BaseElement):
     translate = JSProperty("translate")
     virtualkeyboardpolicy = JSProperty("virtualkeyboardpolicy")
 
-    def __init__(self, style=None, classes=None, js_element=None, **kwargs):
-        # If `js_element` is NOT None it means we are being called to "wrap" an
+    def __init__(self, js_element=None, style=None, classes=None, **kwargs):
+        # If `js_element` is NOT None it means we are being called to *wrap* an
         # existing js element.
         if js_element is not None:
             super().__init__(js_element)
 
-        # Otherwise, it means we are being called programmatically to create a new
-        # element.
+        # Otherwise, it means we are being called to *create* a new element.
         else:
             super().__init__(document.createElement(self.tag))
 
@@ -465,19 +462,12 @@ class Element(BaseElement):
 
 
 class TextElement(Element):
-    def __init__(self, *args, children=None, js_element=None, style=None, **kwargs):
-        super().__init__(js_element=js_element, style=style, **kwargs)
+    def __init__(self, *args, children=None, js_element=None, style=None, classes=None, **kwargs):
+        super().__init__(js_element=js_element, style=style, classes=classes, **kwargs)
 
-        if not children:
-            children = args
-
-        for child in children:
-            if isinstance(child, BaseElement):
+        for child in list(args) + (children or []):
+            if isinstance(child, BaseElement) or isinstance (child, ElementCollection):
                 self.append(child)
-
-            elif isinstance(child, list):
-                for item in child:
-                    self.append(item)
 
             else:
                 self.html = child
@@ -1515,9 +1505,9 @@ class ElementCollection:
 
 
 ELEMENT_CLASSES = [
-    # TODO: We put grid first because it is really just a <div> but we want the div
-    # class to be used if wrapping js elements that we have not tagged with a
-    # `data-pyscript-type` attribute (and last one is the winner when it comes to this
+    # We put grid first because it is really just a <div> but we want the div class to
+    # be used if wrapping existing js elements that we have not tagged with a
+    # `data-pyscript-type` attribute (last one is the winner when it comes to this
     # list).
     grid,
     # The rest in alphabetical order.
