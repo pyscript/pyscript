@@ -16,6 +16,7 @@ declare namespace _default {
             "media.py": string;
         };
         "websocket.py": string;
+        "workers.py": string;
     };
     let pyweb: {
         "__init__.py": string;

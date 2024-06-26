@@ -46,6 +46,9 @@ from pyscript.magic_js import (
 from pyscript.storage import Storage, storage
 from pyscript.websocket import WebSocket
 
+if not RUNNING_IN_WORKER:
+    from pyscript.workers import create_named_worker, workers
+
 try:
     from pyscript.event_handling import when
 except:
