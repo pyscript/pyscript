@@ -1,5 +1,6 @@
 from pyscript import document, workers
 
+
 async def test(interpreter):
     # accessed as item
     named = await workers.micropython_version
