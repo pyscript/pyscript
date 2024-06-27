@@ -33,7 +33,7 @@ def getmembers_static(cls):
     return inspect.getmembers_static(cls)
 
 
-class JSProperty:
+class DOMProperty:
     """A descriptor representing a JS property on an `Element`.
 
     This maps a property on an `Element` instance, to the property with the specified
@@ -74,25 +74,95 @@ def element_from_js(js_element):
         cls = ELEMENT_CLASSES_BY_TAG.get(js_element.tagName.lower())
 
     # For any unknown elements (custom tags etc.) we just create an instance of the
-    # 'BaseElement' class.
+    # 'Element' class.
     #
     # TODO: Should we have a subclass for unknown elements?
     if not cls:
-        cls = BaseElement
+        cls = Element
 
     return cls(js_element=js_element)
 
 
-class BaseElement:
-    def __init__(self, js_element):
-        self._js = js_element
+class Element:
+    tag = "div"
+
+    # GLOBAL ATTRIBUTES.
+    # These are attribute that all elements have (this list is a subset of the official
+    # one). We are trying to capture the most used ones.
+    accesskey = DOMProperty("accesskey")
+    autofocus = DOMProperty("autofocus")
+    autocapitalize = DOMProperty("autocapitalize")
+    className = DOMProperty("className")
+    contenteditable = DOMProperty("contenteditable")
+    draggable = DOMProperty("draggable")
+    enterkeyhint = DOMProperty("enterkeyhint")
+    hidden = DOMProperty("hidden")
+    html = DOMProperty("innerHTML")
+    id = DOMProperty("id")
+    lang = DOMProperty("lang")
+    nonce = DOMProperty("nonce")
+    part = DOMProperty("part")
+    popover = DOMProperty("popover")
+    slot = DOMProperty("slot")
+    spellcheck = DOMProperty("spellcheck")
+    tabindex = DOMProperty("tabindex")
+    text = DOMProperty("textContent")
+    title = DOMProperty("title")
+    translate = DOMProperty("translate")
+    virtualkeyboardpolicy = DOMProperty("virtualkeyboardpolicy")
+
+    def __init__(self, js_element=None, style=None, classes=None, **kwargs):
+        """
+        If `js_element` is NOT None it means we are being called to *wrap* an
+        existing js element. Otherwise, it means we are being called to *create* a new
+        element.
+        """
+
+        self._js = js_element or document.createElement(self.tag)
+
         self._classes = Classes(self)
         self._parent = None
         self._style = Style(self)
 
+        if js_element is None:
+            # Set any style properties provided in input.
+            if isinstance(style, dict):
+                self.style.set(**style)
+
+            elif style is not None:
+                raise ValueError(
+                    f"Style should be a dictionary, received {style} (type {type(style)}) instead."
+                )
+
+            if classes:
+                self.classes.add(classes)
+
+            self._init_properties(**kwargs)
+
+        # Tag the JS element with our class name.
+        self._js.dataset.pyscriptType = type(self).__name__
+
     def __eq__(self, obj):
         """Check for equality by comparing the underlying JS element."""
-        return isinstance(obj, BaseElement) and obj._js == self._js
+        return isinstance(obj, Element) and obj._js == self._js
+
+    def _init_properties(self, **kwargs):
+        """Set all the properties (of type JSProperty) provided in input as properties
+        of the class instance.
+
+        Args:
+            **kwargs: The properties to set
+        """
+        # Look at all the properties of the class and see if they were provided in
+        # kwargs.
+        for attr_name, attr_value in getmembers_static(self.__class__):
+            # For each one, actually check if it is a property of the class and set it.
+            if attr_name in kwargs and isinstance(attr_value, DOMProperty):
+                try:
+                    setattr(self, attr_name, kwargs[attr_name])
+                except Exception as e:
+                    print(f"Error setting {attr_name} to {kwargs[attr_name]}: {e}")
+                    raise
 
     @property
     def classes(self):
@@ -139,7 +209,7 @@ class BaseElement:
         return self._style
 
     def append(self, child):
-        if isinstance(child, BaseElement):
+        if isinstance(child, Element):
             self._js.appendChild(child._js)
 
         elif isinstance(child, ElementCollection):
@@ -197,7 +267,7 @@ class BaseElement:
 class Classes:
     """A 'more Pythonic' interface to an element's JS `classList`."""
 
-    def __init__(self, element: BaseElement):
+    def __init__(self, element: Element):
         self._element = element
         self._js_class_list = self._element._js.classList
 
@@ -281,13 +351,14 @@ class HasOptions:
 
 
 class Options:
-    """This class represents the options of a <datalist>, <optgroup> or <select> element.
+    """This class represents the <option>s of a <datalist>, <optgroup> or <select>
+    element.
 
-    It allows to access to add and remove options by using the `add` and `remove`
+    It allows to access to add and remove <option>s by using the `add` and `remove`
     methods.
     """
 
-    def __init__(self, element: BaseElement) -> None:
+    def __init__(self, element: Element) -> None:
         self._element = element
 
     def add(
@@ -295,7 +366,7 @@ class Options:
         value: Any = None,
         html: str = None,
         text: str = None,
-        before: BaseElement | int = None,
+        before: Element | int = None,
         **kws,
     ) -> None:
         """Add a new option to the select element"""
@@ -312,7 +383,7 @@ class Options:
             option.setAttribute(key, value)
 
         if before:
-            if isinstance(before, BaseElement):
+            if isinstance(before, Element):
                 before = before._js
 
         self._element._js.add(option, before)
@@ -352,7 +423,7 @@ class Options:
 class Style:
     """A dict-like interface to an elements css style."""
 
-    def __init__(self, element: BaseElement) -> None:
+    def __init__(self, element: Element) -> None:
         self._element = element
         self._style = self._element._js.style
 
@@ -382,120 +453,41 @@ class Style:
         self._element._js.style.visibility = value
 
 
-# --------- END OF PYDOM STUFF ------
-
-
-class Element(BaseElement):
-    tag = "div"
-
-    # GLOBAL ATTRIBUTES.
-    # These are attribute that all elements have (this list is a subset of the official
-    # one). We are trying to capture the most used ones.
-    accesskey = JSProperty("accesskey")
-    autofocus = JSProperty("autofocus")
-    autocapitalize = JSProperty("autocapitalize")
-    className = JSProperty("className")
-    contenteditable = JSProperty("contenteditable")
-    draggable = JSProperty("draggable")
-    enterkeyhint = JSProperty("enterkeyhint")
-    hidden = JSProperty("hidden")
-    html = JSProperty("innerHTML")
-    id = JSProperty("id")
-    lang = JSProperty("lang")
-    nonce = JSProperty("nonce")
-    part = JSProperty("part")
-    popover = JSProperty("popover")
-    slot = JSProperty("slot")
-    spellcheck = JSProperty("spellcheck")
-    tabindex = JSProperty("tabindex")
-    text = JSProperty("textContent")
-    title = JSProperty("title")
-    translate = JSProperty("translate")
-    virtualkeyboardpolicy = JSProperty("virtualkeyboardpolicy")
-
-    def __init__(self, js_element=None, style=None, classes=None, **kwargs):
-        # If `js_element` is NOT None it means we are being called to *wrap* an
-        # existing js element.
-        if js_element is not None:
-            super().__init__(js_element)
-
-        # Otherwise, it means we are being called to *create* a new element.
-        else:
-            super().__init__(document.createElement(self.tag))
-
-            # Set any style properties provided in input.
-            if isinstance(style, dict):
-                self.style.set(**style)
-
-            elif style is not None:
-                raise ValueError(
-                    f"Style should be a dictionary, received {style} (type {type(style)}) instead."
-                )
-
-            if classes:
-                self.classes.add(classes)
-
-            # IMPORTANT!!! This is used to auto-harvest all input arguments and set them
-            # as properties.
-            self._init_properties(**kwargs)
-
-        # Tag the JS element with our class name.
-        self._js.dataset.pyscriptType = type(self).__name__
-
-    def _init_properties(self, **kwargs):
-        """Set all the properties (of type JSProperty) provided in input as properties
-        of the class instance.
-
-        Args:
-            **kwargs: The properties to set
-        """
-        # Look at all the properties of the class and see if they were provided in
-        # kwargs.
-        for attr_name, attr_value in getmembers_static(self.__class__):
-            # For each one, actually check if it is a property of the class and set it.
-            if attr_name in kwargs and isinstance(attr_value, JSProperty):
-                try:
-                    setattr(self, attr_name, kwargs[attr_name])
-                except Exception as e:
-                    print(f"Error setting {attr_name} to {kwargs[attr_name]}: {e}")
-                    raise
-
-
-class TextElement(Element):
+class ContainerElement(Element):
     def __init__(self, *args, children=None, js_element=None, style=None, classes=None, **kwargs):
         super().__init__(js_element=js_element, style=style, classes=classes, **kwargs)
 
         for child in list(args) + (children or []):
-            if isinstance(child, BaseElement) or isinstance (child, ElementCollection):
+            if isinstance(child, Element) or isinstance (child, ElementCollection):
                 self.append(child)
 
             else:
-                self.html = child
+                self.html += child
 
 
 # IMPORTANT: For all HTML components defined below, we are not mapping all possible
 # attributes, just the global and the most common ones. If you need to access a
 # specific attribute, you can always use the `_js.<attribute>`
-class a(TextElement):
+class a(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"""
 
     tag = "a"
 
-    download = JSProperty("download")
-    href = JSProperty("href")
-    referrerpolicy = JSProperty("referrerpolicy")
-    rel = JSProperty("rel")
-    target = JSProperty("target")
-    type = JSProperty("type")
+    download = DOMProperty("download")
+    href = DOMProperty("href")
+    referrerpolicy = DOMProperty("referrerpolicy")
+    rel = DOMProperty("rel")
+    target = DOMProperty("target")
+    type = DOMProperty("type")
 
 
-class abbr(TextElement):
+class abbr(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr"""
 
     tag = "abbr"
 
 
-class address(TextElement):
+class address(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address"""
 
     tag = "address"
@@ -506,24 +498,24 @@ class area(Element):
 
     tag = "area"
 
-    alt = JSProperty("alt")
-    coords = JSProperty("coords")
-    download = JSProperty("download")
-    href = JSProperty("href")
-    ping = JSProperty("ping")
-    referrerpolicy = JSProperty("referrerpolicy")
-    rel = JSProperty("rel")
-    shape = JSProperty("shape")
-    target = JSProperty("target")
+    alt = DOMProperty("alt")
+    coords = DOMProperty("coords")
+    download = DOMProperty("download")
+    href = DOMProperty("href")
+    ping = DOMProperty("ping")
+    referrerpolicy = DOMProperty("referrerpolicy")
+    rel = DOMProperty("rel")
+    shape = DOMProperty("shape")
+    target = DOMProperty("target")
 
 
-class article(TextElement):
+class article(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article"""
 
     tag = "article"
 
 
-class aside(TextElement):
+class aside(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside"""
 
     tag = "aside"
@@ -534,32 +526,32 @@ class audio(Element):
 
     tag = "audio"
 
-    autoplay = JSProperty("autoplay")
-    controls = JSProperty("controls")
-    controlslist = JSProperty("controlslist")
-    crossorigin = JSProperty("crossorigin")
-    disableremoteplayback = JSProperty("disableremoteplayback")
-    loop = JSProperty("loop")
-    muted = JSProperty("muted")
-    preload = JSProperty("preload")
-    src = JSProperty("src")
+    autoplay = DOMProperty("autoplay")
+    controls = DOMProperty("controls")
+    controlslist = DOMProperty("controlslist")
+    crossorigin = DOMProperty("crossorigin")
+    disableremoteplayback = DOMProperty("disableremoteplayback")
+    loop = DOMProperty("loop")
+    muted = DOMProperty("muted")
+    preload = DOMProperty("preload")
+    src = DOMProperty("src")
 
 
-class b(TextElement):
+class b(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b"""
 
     tag = "b"
 
 
-class blockquote(TextElement):
+class blockquote(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote"""
 
     tag = "blockquote"
 
-    cite = JSProperty("cite")
+    cite = DOMProperty("cite")
 
 
-class body(TextElement):
+class body(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body"""
 
     tag = "body"
@@ -571,31 +563,31 @@ class br(Element):
     tag = "br"
 
 
-class button(TextElement):
+class button(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button"""
 
     tag = "button"
 
-    autofocus = JSProperty("autofocus")
-    disabled = JSProperty("disabled")
-    form = JSProperty("form")
-    formaction = JSProperty("formaction")
-    formenctype = JSProperty("formenctype")
-    formmethod = JSProperty("formmethod")
-    formnovalidate = JSProperty("formnovalidate")
-    formtarget = JSProperty("formtarget")
-    name = JSProperty("name")
-    type = JSProperty("type")
-    value = JSProperty("value")
+    autofocus = DOMProperty("autofocus")
+    disabled = DOMProperty("disabled")
+    form = DOMProperty("form")
+    formaction = DOMProperty("formaction")
+    formenctype = DOMProperty("formenctype")
+    formmethod = DOMProperty("formmethod")
+    formnovalidate = DOMProperty("formnovalidate")
+    formtarget = DOMProperty("formtarget")
+    name = DOMProperty("name")
+    type = DOMProperty("type")
+    value = DOMProperty("value")
 
 
-class canvas(TextElement):
+class canvas(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas"""
 
     tag = "canvas"
 
-    height = JSProperty("height")
-    width = JSProperty("width")
+    height = DOMProperty("height")
+    width = DOMProperty("width")
 
     def download(self, filename: str = "snapped.png") -> None:
         """Download the current element with the filename provided in input.
@@ -622,245 +614,245 @@ class canvas(TextElement):
                 an HTMLCanvasElement, an ImageBitmap, an OffscreenCanvas, or a
                 VideoFrame.
         """
-        if isinstance(what, BaseElement):
+        if isinstance(what, Element):
             what = what._js
 
         # https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
         self._js.getContext("2d").drawImage(what, 0, 0, width, height)
 
 
-class caption(TextElement):
+class caption(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption"""
 
     tag = "caption"
 
 
-class cite(TextElement):
+class cite(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite"""
 
     tag = "cite"
 
 
-class code(TextElement):
+class code(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code"""
 
     tag = "code"
 
 
-class data(TextElement):
+class data(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data"""
 
     tag = "data"
 
-    value = JSProperty("value")
+    value = DOMProperty("value")
 
 
-class datalist(TextElement, HasOptions):
+class datalist(ContainerElement, HasOptions):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist"""
 
     tag = "datalist"
 
 
-class dd(TextElement):
+class dd(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd"""
 
     tag = "dd"
 
 
-class del_(TextElement):
+class del_(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del"""
 
     tag = "del"
 
-    cite = JSProperty("cite")
-    datetime = JSProperty("datetime")
+    cite = DOMProperty("cite")
+    datetime = DOMProperty("datetime")
 
 
-class details(TextElement):
+class details(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"""
 
     tag = "details"
 
-    open = JSProperty("open")
+    open = DOMProperty("open")
 
 
-class dialog(TextElement):
+class dialog(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog"""
 
     tag = "dialog"
 
-    open = JSProperty("open")
+    open = DOMProperty("open")
 
 
-class div(TextElement):
+class div(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div"""
 
     tag = "div"
 
 
-class dl(TextElement):
+class dl(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl"""
 
     tag = "dl"
 
-    value = JSProperty("value")
+    value = DOMProperty("value")
 
 
-class dt(TextElement):
+class dt(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt"""
 
     tag = "dt"
 
 
-class em(TextElement):
+class em(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em"""
 
     tag = "em"
 
 
-class embed(TextElement):
+class embed(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed"""
 
     tag = "embed"
 
-    height = JSProperty("height")
-    src = JSProperty("src")
-    type = JSProperty("type")
-    width = JSProperty("width")
+    height = DOMProperty("height")
+    src = DOMProperty("src")
+    type = DOMProperty("type")
+    width = DOMProperty("width")
 
 
-class fieldset(TextElement):
+class fieldset(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset"""
 
     tag = "fieldset"
 
-    disabled = JSProperty("disabled")
-    form = JSProperty("form")
-    name = JSProperty("name")
+    disabled = DOMProperty("disabled")
+    form = DOMProperty("form")
+    name = DOMProperty("name")
 
 
-class figcaption(TextElement):
+class figcaption(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption"""
 
     tag = "figcaption"
 
 
-class figure(TextElement):
+class figure(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure"""
 
     tag = "figure"
 
 
-class footer(TextElement):
+class footer(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer"""
 
     tag = "footer"
 
 
-class form(TextElement):
+class form(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form"""
 
     tag = "form"
 
-    accept_charset = JSProperty("accept-charset")
-    action = JSProperty("action")
-    autocapitalize = JSProperty("autocapitalize")
-    autocomplete = JSProperty("autocomplete")
-    enctype = JSProperty("enctype")
-    name = JSProperty("name")
-    method = JSProperty("method")
-    nonvalidate = JSProperty("nonvalidate")
-    rel = JSProperty("rel")
-    target = JSProperty("target")
+    accept_charset = DOMProperty("accept-charset")
+    action = DOMProperty("action")
+    autocapitalize = DOMProperty("autocapitalize")
+    autocomplete = DOMProperty("autocomplete")
+    enctype = DOMProperty("enctype")
+    name = DOMProperty("name")
+    method = DOMProperty("method")
+    nonvalidate = DOMProperty("nonvalidate")
+    rel = DOMProperty("rel")
+    target = DOMProperty("target")
 
 
-class h1(TextElement):
+class h1(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1"""
 
     tag = "h1"
 
 
-class h2(TextElement):
+class h2(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2"""
 
     tag = "h2"
 
 
-class h3(TextElement):
+class h3(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3"""
 
     tag = "h3"
 
 
-class h4(TextElement):
+class h4(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4"""
 
     tag = "h4"
 
 
-class h5(TextElement):
+class h5(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5"""
 
     tag = "h5"
 
 
-class h6(TextElement):
+class h6(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6"""
 
     tag = "h6"
 
 
-class head(TextElement):
+class head(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head"""
 
     tag = "head"
 
 
-class header(TextElement):
+class header(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header"""
 
     tag = "header"
 
 
-class hgroup(TextElement):
+class hgroup(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup"""
 
     tag = "hgroup"
 
 
-class hr(TextElement):
+class hr(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr"""
 
     tag = "hr"
 
 
-class html(TextElement):
+class html(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html"""
 
     tag = "html"
 
 
-class i(TextElement):
+class i(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i"""
 
     tag = "i"
 
 
-class iframe(TextElement):
+class iframe(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe"""
 
     tag = "iframe"
 
-    allow = JSProperty("allow")
-    allowfullscreen = JSProperty("allowfullscreen")
-    height = JSProperty("height")
-    loading = JSProperty("loading")
-    name = JSProperty("name")
-    referrerpolicy = JSProperty("referrerpolicy")
-    sandbox = JSProperty("sandbox")
-    src = JSProperty("src")
-    srcdoc = JSProperty("srcdoc")
-    width = JSProperty("width")
+    allow = DOMProperty("allow")
+    allowfullscreen = DOMProperty("allowfullscreen")
+    height = DOMProperty("height")
+    loading = DOMProperty("loading")
+    name = DOMProperty("name")
+    referrerpolicy = DOMProperty("referrerpolicy")
+    sandbox = DOMProperty("sandbox")
+    src = DOMProperty("src")
+    srcdoc = DOMProperty("srcdoc")
+    width = DOMProperty("width")
 
 
 class img(Element):
@@ -868,17 +860,17 @@ class img(Element):
 
     tag = "img"
 
-    alt = JSProperty("alt")
-    crossorigin = JSProperty("crossorigin")
-    decoding = JSProperty("decoding")
-    fetchpriority = JSProperty("fetchpriority")
-    height = JSProperty("height")
-    ismap = JSProperty("ismap")
-    loading = JSProperty("loading")
-    referrerpolicy = JSProperty("referrerpolicy")
-    sizes = JSProperty("sizes")
-    src = JSProperty("src")
-    width = JSProperty("width")
+    alt = DOMProperty("alt")
+    crossorigin = DOMProperty("crossorigin")
+    decoding = DOMProperty("decoding")
+    fetchpriority = DOMProperty("fetchpriority")
+    height = DOMProperty("height")
+    ismap = DOMProperty("ismap")
+    loading = DOMProperty("loading")
+    referrerpolicy = DOMProperty("referrerpolicy")
+    sizes = DOMProperty("sizes")
+    src = DOMProperty("src")
+    width = DOMProperty("width")
 
 
 # NOTE: Input is a reserved keyword in Python, so we use input_ instead
@@ -887,482 +879,488 @@ class input_(Element):
 
     tag = "input"
 
-    accept = JSProperty("accept")
-    alt = JSProperty("alt")
-    autofocus = JSProperty("autofocus")
-    capture = JSProperty("capture")
-    checked = JSProperty("checked")
-    dirname = JSProperty("dirname")
-    disabled = JSProperty("disabled")
-    form = JSProperty("form")
-    formaction = JSProperty("formaction")
-    formenctype = JSProperty("formenctype")
-    formmethod = JSProperty("formmethod")
-    formnovalidate = JSProperty("formnovalidate")
-    formtarget = JSProperty("formtarget")
-    height = JSProperty("height")
-    list = JSProperty("list")
-    max = JSProperty("max")
-    maxlength = JSProperty("maxlength")
-    min = JSProperty("min")
-    minlength = JSProperty("minlength")
-    multiple = JSProperty("multiple")
-    name = JSProperty("name")
-    pattern = JSProperty("pattern")
-    placeholder = JSProperty("placeholder")
-    popovertarget = JSProperty("popovertarget")
-    popovertargetaction = JSProperty("popovertargetaction")
-    readonly = JSProperty("readonly")
-    required = JSProperty("required")
-    size = JSProperty("size")
-    src = JSProperty("src")
-    step = JSProperty("step")
-    type = JSProperty("type")
-    value = JSProperty("value")
-    width = JSProperty("width")
+    accept = DOMProperty("accept")
+    alt = DOMProperty("alt")
+    autofocus = DOMProperty("autofocus")
+    capture = DOMProperty("capture")
+    checked = DOMProperty("checked")
+    dirname = DOMProperty("dirname")
+    disabled = DOMProperty("disabled")
+    form = DOMProperty("form")
+    formaction = DOMProperty("formaction")
+    formenctype = DOMProperty("formenctype")
+    formmethod = DOMProperty("formmethod")
+    formnovalidate = DOMProperty("formnovalidate")
+    formtarget = DOMProperty("formtarget")
+    height = DOMProperty("height")
+    list = DOMProperty("list")
+    max = DOMProperty("max")
+    maxlength = DOMProperty("maxlength")
+    min = DOMProperty("min")
+    minlength = DOMProperty("minlength")
+    multiple = DOMProperty("multiple")
+    name = DOMProperty("name")
+    pattern = DOMProperty("pattern")
+    placeholder = DOMProperty("placeholder")
+    popovertarget = DOMProperty("popovertarget")
+    popovertargetaction = DOMProperty("popovertargetaction")
+    readonly = DOMProperty("readonly")
+    required = DOMProperty("required")
+    size = DOMProperty("size")
+    src = DOMProperty("src")
+    step = DOMProperty("step")
+    type = DOMProperty("type")
+    value = DOMProperty("value")
+    width = DOMProperty("width")
 
 
-class ins(TextElement):
+class ins(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins"""
 
     tag = "ins"
 
-    cite = JSProperty("cite")
-    datetime = JSProperty("datetime")
+    cite = DOMProperty("cite")
+    datetime = DOMProperty("datetime")
 
 
-class kbd(TextElement):
+class kbd(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd"""
 
     tag = "kbd"
 
 
-class label(TextElement):
+class label(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label"""
 
     tag = "label"
 
-    for_ = JSProperty("for")
+    for_ = DOMProperty("for")
 
 
-class legend(TextElement):
+class legend(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend"""
 
     tag = "legend"
 
 
-class li(TextElement):
+class li(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li"""
 
     tag = "li"
 
-    value = JSProperty("value")
+    value = DOMProperty("value")
 
 
-class link(TextElement):
+class link(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link"""
 
     tag = "link"
 
-    as_ = JSProperty("as")
-    crossorigin = JSProperty("crossorigin")
-    disabled = JSProperty("disabled")
-    fetchpriority = JSProperty("fetchpriority")
-    href = JSProperty("href")
-    imagesizes = JSProperty("imagesizes")
-    imagesrcset = JSProperty("imagesrcset")
-    integrity = JSProperty("integrity")
-    media = JSProperty("media")
-    rel = JSProperty("rel")
-    referrerpolicy = JSProperty("referrerpolicy")
-    sizes = JSProperty("sizes")
-    title = JSProperty("title")
-    type = JSProperty("type")
+    as_ = DOMProperty("as")
+    crossorigin = DOMProperty("crossorigin")
+    disabled = DOMProperty("disabled")
+    fetchpriority = DOMProperty("fetchpriority")
+    href = DOMProperty("href")
+    imagesizes = DOMProperty("imagesizes")
+    imagesrcset = DOMProperty("imagesrcset")
+    integrity = DOMProperty("integrity")
+    media = DOMProperty("media")
+    rel = DOMProperty("rel")
+    referrerpolicy = DOMProperty("referrerpolicy")
+    sizes = DOMProperty("sizes")
+    title = DOMProperty("title")
+    type = DOMProperty("type")
 
 
-class main(TextElement):
+class main(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main"""
 
     tag = "main"
 
 
-class map_(TextElement):
+class map_(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map"""
 
     tag = "map"
 
-    name = JSProperty("name")
+    name = DOMProperty("name")
 
 
-class mark(TextElement):
+class mark(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark"""
 
     tag = "mark"
 
 
-class menu(TextElement):
+class menu(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu"""
 
     tag = "menu"
 
 
-class meter(TextElement):
+class meter(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter"""
 
     tag = "meter"
 
-    form = JSProperty("form")
-    high = JSProperty("high")
-    low = JSProperty("low")
-    max = JSProperty("max")
-    min = JSProperty("min")
-    optimum = JSProperty("optimum")
-    value = JSProperty("value")
+    form = DOMProperty("form")
+    high = DOMProperty("high")
+    low = DOMProperty("low")
+    max = DOMProperty("max")
+    min = DOMProperty("min")
+    optimum = DOMProperty("optimum")
+    value = DOMProperty("value")
 
 
-class nav(TextElement):
+class nav(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav"""
 
     tag = "nav"
 
 
-class object_(TextElement):
+class object_(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object"""
 
     tag = "object"
 
-    data = JSProperty("data")
-    form = JSProperty("form")
-    height = JSProperty("height")
-    name = JSProperty("name")
-    type = JSProperty("type")
-    usemap = JSProperty("usemap")
-    width = JSProperty("width")
+    data = DOMProperty("data")
+    form = DOMProperty("form")
+    height = DOMProperty("height")
+    name = DOMProperty("name")
+    type = DOMProperty("type")
+    usemap = DOMProperty("usemap")
+    width = DOMProperty("width")
 
 
-class ol(TextElement):
+class ol(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol"""
 
     tag = "ol"
 
-    reversed = JSProperty("reversed")
-    start = JSProperty("start")
-    type = JSProperty("type")
+    reversed = DOMProperty("reversed")
+    start = DOMProperty("start")
+    type = DOMProperty("type")
 
 
-class optgroup(TextElement, HasOptions):
+class optgroup(ContainerElement, HasOptions):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup"""
 
     tag = "optgroup"
 
-    disabled = JSProperty("disabled")
-    label = JSProperty("label")
+    disabled = DOMProperty("disabled")
+    label = DOMProperty("label")
 
 
-class option(TextElement):
+class option(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option"""
 
     tag = "option"
 
-    disabled = JSProperty("value")
-    label = JSProperty("label")
-    selected = JSProperty("selected")
-    value = JSProperty("value")
+    disabled = DOMProperty("value")
+    label = DOMProperty("label")
+    selected = DOMProperty("selected")
+    value = DOMProperty("value")
 
 
-class output(TextElement):
+class output(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output"""
 
     tag = "output"
 
-    for_ = JSProperty("for")
-    form = JSProperty("form")
-    name = JSProperty("name")
+    for_ = DOMProperty("for")
+    form = DOMProperty("form")
+    name = DOMProperty("name")
 
 
-class p(TextElement):
+class p(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p"""
 
     tag = "p"
 
 
-class picture(TextElement):
+class param(ContainerElement):
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p"""
+
+    tag = "p"
+
+
+class picture(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture"""
 
     tag = "picture"
 
 
-class pre(TextElement):
+class pre(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre"""
 
     tag = "pre"
 
 
-class progress(TextElement):
+class progress(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress"""
 
     tag = "progress"
 
-    max = JSProperty("max")
-    value = JSProperty("value")
+    max = DOMProperty("max")
+    value = DOMProperty("value")
 
 
-class q(TextElement):
+class q(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q"""
 
     tag = "q"
 
-    cite = JSProperty("cite")
+    cite = DOMProperty("cite")
 
 
-class s(TextElement):
+class s(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s"""
 
     tag = "s"
 
 
-class script(TextElement):
+class script(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script"""
 
     tag = "script"
 
     # Let's add async manually since it's a reserved keyword in Python
-    async_ = JSProperty("async")
-    blocking = JSProperty("blocking")
-    crossorigin = JSProperty("crossorigin")
-    defer = JSProperty("defer")
-    fetchpriority = JSProperty("fetchpriority")
-    integrity = JSProperty("integrity")
-    nomodule = JSProperty("nomodule")
-    nonce = JSProperty("nonce")
-    referrerpolicy = JSProperty("referrerpolicy")
-    src = JSProperty("src")
-    type = JSProperty("type")
+    async_ = DOMProperty("async")
+    blocking = DOMProperty("blocking")
+    crossorigin = DOMProperty("crossorigin")
+    defer = DOMProperty("defer")
+    fetchpriority = DOMProperty("fetchpriority")
+    integrity = DOMProperty("integrity")
+    nomodule = DOMProperty("nomodule")
+    nonce = DOMProperty("nonce")
+    referrerpolicy = DOMProperty("referrerpolicy")
+    src = DOMProperty("src")
+    type = DOMProperty("type")
 
 
-class section(TextElement):
+class section(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section"""
 
     tag = "section"
 
 
-class select(TextElement, HasOptions):
+class select(ContainerElement, HasOptions):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select"""
 
     tag = "select"
 
-    value = JSProperty("value")
+    value = DOMProperty("value")
 
 
-class small(TextElement):
+class small(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small"""
 
     tag = "small"
 
 
-class source(TextElement):
+class source(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source"""
 
     tag = "source"
 
-    media = JSProperty("media")
-    sizes = JSProperty("sizes")
-    src = JSProperty("src")
-    srcset = JSProperty("srcset")
-    type = JSProperty("type")
+    media = DOMProperty("media")
+    sizes = DOMProperty("sizes")
+    src = DOMProperty("src")
+    srcset = DOMProperty("srcset")
+    type = DOMProperty("type")
 
 
-class span(TextElement):
+class span(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span"""
 
     tag = "span"
 
 
-class strong(TextElement):
+class strong(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong"""
 
     tag = "strong"
 
 
-class style(TextElement):
+class style(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style"""
 
     tag = "style"
 
-    blocking = JSProperty("blocking")
-    media = JSProperty("media")
-    nonce = JSProperty("nonce")
-    title = JSProperty("title")
+    blocking = DOMProperty("blocking")
+    media = DOMProperty("media")
+    nonce = DOMProperty("nonce")
+    title = DOMProperty("title")
 
 
-class sub(TextElement):
+class sub(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub"""
 
     tag = "sub"
 
 
-class summary(TextElement):
+class summary(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary"""
 
     tag = "summary"
 
 
-class sup(TextElement):
+class sup(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup"""
 
     tag = "sup"
 
 
-class table(TextElement):
+class table(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table"""
 
     tag = "table"
 
 
-class tbody(TextElement):
+class tbody(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody"""
 
     tag = "tbody"
 
 
-class td(TextElement):
+class td(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td"""
 
     tag = "td"
 
-    colspan = JSProperty("colspan")
-    headers = JSProperty("headers")
-    rowspan = JSProperty("rowspan")
+    colspan = DOMProperty("colspan")
+    headers = DOMProperty("headers")
+    rowspan = DOMProperty("rowspan")
 
 
-class template(TextElement):
+class template(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template"""
 
     tag = "template"
 
-    shadowrootmode = JSProperty("shadowrootmode")
+    shadowrootmode = DOMProperty("shadowrootmode")
 
 
-class textarea(TextElement):
+class textarea(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea"""
 
     tag = "textarea"
 
-    autocapitalize = JSProperty("autocapitalize")
-    autocomplete = JSProperty("autocomplete")
-    autofocus = JSProperty("autofocus")
-    cols = JSProperty("cols")
-    dirname = JSProperty("dirname")
-    disabled = JSProperty("disabled")
-    form = JSProperty("form")
-    maxlength = JSProperty("maxlength")
-    minlength = JSProperty("minlength")
-    name = JSProperty("name")
-    placeholder = JSProperty("placeholder")
-    readonly = JSProperty("readonly")
-    required = JSProperty("required")
-    rows = JSProperty("rows")
-    spellcheck = JSProperty("spellcheck")
-    value = JSProperty("value")
-    wrap = JSProperty("wrap")
+    autocapitalize = DOMProperty("autocapitalize")
+    autocomplete = DOMProperty("autocomplete")
+    autofocus = DOMProperty("autofocus")
+    cols = DOMProperty("cols")
+    dirname = DOMProperty("dirname")
+    disabled = DOMProperty("disabled")
+    form = DOMProperty("form")
+    maxlength = DOMProperty("maxlength")
+    minlength = DOMProperty("minlength")
+    name = DOMProperty("name")
+    placeholder = DOMProperty("placeholder")
+    readonly = DOMProperty("readonly")
+    required = DOMProperty("required")
+    rows = DOMProperty("rows")
+    spellcheck = DOMProperty("spellcheck")
+    value = DOMProperty("value")
+    wrap = DOMProperty("wrap")
 
 
-class tfoot(TextElement):
+class tfoot(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot"""
 
     tag = "tfoot"
 
 
-class th(TextElement):
+class th(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th"""
 
     tag = "th"
 
 
-class thead(TextElement):
+class thead(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead"""
 
     tag = "thead"
 
 
-class time(TextElement):
+class time(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time"""
 
     tag = "time"
 
-    datetime = JSProperty("datetime")
+    datetime = DOMProperty("datetime")
 
 
-class title(TextElement):
+class title(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title"""
 
     tag = "title"
 
 
-class tr(TextElement):
+class tr(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr"""
 
     tag = "tr"
 
-    abbr = JSProperty("abbr")
-    colspan = JSProperty("colspan")
-    headers = JSProperty("headers")
-    rowspan = JSProperty("rowspan")
-    scope = JSProperty("scope")
+    abbr = DOMProperty("abbr")
+    colspan = DOMProperty("colspan")
+    headers = DOMProperty("headers")
+    rowspan = DOMProperty("rowspan")
+    scope = DOMProperty("scope")
 
 
-class track(TextElement):
+class track(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track"""
 
     tag = "track"
 
-    default = JSProperty("default")
-    kind = JSProperty("kind")
-    label = JSProperty("label")
-    src = JSProperty("src")
-    srclang = JSProperty("srclang")
+    default = DOMProperty("default")
+    kind = DOMProperty("kind")
+    label = DOMProperty("label")
+    src = DOMProperty("src")
+    srclang = DOMProperty("srclang")
 
 
-class u(TextElement):
+class u(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u"""
 
     tag = "u"
 
 
-class ul(TextElement):
+class ul(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul"""
 
     tag = "ul"
 
 
-class var(TextElement):
+class var(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var"""
 
     tag = "var"
 
 
-class video(TextElement):
+class video(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video"""
 
     tag = "video"
 
-    autoplay = JSProperty("autoplay")
-    controls = JSProperty("controls")
-    crossorigin = JSProperty("crossorigin")
-    disablepictureinpicture = JSProperty("disablepictureinpicture")
-    disableremoteplayback = JSProperty("disableremoteplayback")
-    height = JSProperty("height")
-    loop = JSProperty("loop")
-    muted = JSProperty("muted")
-    playsinline = JSProperty("playsinline")
-    poster = JSProperty("poster")
-    preload = JSProperty("preload")
-    src = JSProperty("src")
-    width = JSProperty("width")
+    autoplay = DOMProperty("autoplay")
+    controls = DOMProperty("controls")
+    crossorigin = DOMProperty("crossorigin")
+    disablepictureinpicture = DOMProperty("disablepictureinpicture")
+    disableremoteplayback = DOMProperty("disableremoteplayback")
+    height = DOMProperty("height")
+    loop = DOMProperty("loop")
+    muted = DOMProperty("muted")
+    playsinline = DOMProperty("playsinline")
+    poster = DOMProperty("poster")
+    preload = DOMProperty("preload")
+    src = DOMProperty("src")
+    width = DOMProperty("width")
 
     def snap(
         self,
-        to: BaseElement | str = None,
+        to: Element | str = None,
         width: int | None = None,
         height: int | None = None,
     ):
@@ -1387,7 +1385,7 @@ class video(TextElement):
             to_canvas._js.width = width
             to_canvas._js.height = height
 
-        elif isinstance(to, BaseElement):
+        elif isinstance(to, Element):
             if to._js.tagName != "CANVAS":
                 raise TypeError("Element to snap to must a canvas.")
             to_canvas = to
@@ -1412,7 +1410,7 @@ class video(TextElement):
 
 
 # Custom Elements
-class grid(TextElement):
+class grid(ContainerElement):
     tag = "div"
 
     def __init__(self, layout, content=None, gap=None, **kwargs):
@@ -1445,7 +1443,7 @@ class StyleCollection:
 
 
 class ElementCollection:
-    def __init__(self, elements: [BaseElement]) -> None:
+    def __init__(self, elements: [Element]) -> None:
         self._elements = elements
         self.style = StyleCollection(self)
 
@@ -1530,7 +1528,7 @@ ELEMENT_CLASSES = [
     main, map_, mark, menu, meter,
     nav,
     object_, ol, optgroup, option, output,
-    p, picture, pre, progress,
+    p, param, picture, pre, progress,
     q,
     s, script, section, select, small, source, span, strong, style, sub, summary, sup,
     table, tbody, td, template, textarea, tfoot, th, thead, time, title, tr, track,
