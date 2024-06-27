@@ -6,8 +6,8 @@ from pyscript.web import elements as el
 
 class TestDocument:
     def test__element(self):
-        assert body._js == document.body
-        assert head._js == document.head
+        assert body._dom_element == document.body
+        assert head._dom_element == document.head
 
 
 def test_getitem_by_id():
@@ -22,7 +22,7 @@ def test_getitem_by_id():
     # the JS document.querySelector API would return
     assert document.querySelector(selector).innerHTML == div.html == txt
     # EXPECT the results to be of the right types
-    assert isinstance(div, el.BaseElement)
+    assert isinstance(div, el.Element)
     assert isinstance(result, ElementCollection)
 
 
@@ -66,8 +66,8 @@ class TestElement:
 
         # EXPECT the new element to be associated with the parent
         assert div.parent == parent_div
-        # EXPECT the new element to be a el.BaseElement
-        assert isinstance(div, el.BaseElement)
+        # EXPECT the new element to be a el.Element
+        assert isinstance(div, el.Element)
         # EXPECT the div attributes to be == to how they are configured in the page
         assert div.html == "Child 1"
         assert div.id == "test_selector_w_children_child_1"
@@ -99,12 +99,12 @@ class TestElement:
         assert len(div.children) == len_children_before + 1
         assert div.children[-1] == new_el
 
-    def test_append_js_element(self):
+    def test_append_dom_element_element(self):
         id_ = "element-append-tests"
         div = find(f"#{id_}")[0]
         len_children_before = len(div.children)
         new_el = el.p("new element")
-        div.append(new_el._js)
+        div.append(new_el._dom_element)
         assert len(div.children) == len_children_before + 1
         assert div.children[-1] == new_el
 
@@ -149,7 +149,7 @@ class TestElement:
         # Now let's simulate a click on the button (using the low level JS API)
         # so we don't risk dom getting in the way
         assert not called
-        just_a_button._js.click()
+        just_a_button._dom_element.click()
 
         assert called
 
@@ -162,8 +162,8 @@ class TestElement:
 
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
-        assert div.html == div._js.innerHTML == "<b>New Content</b>"
-        assert div.text == div._js.textContent == "New Content"
+        assert div.html == div._dom_element.innerHTML == "<b>New Content</b>"
+        assert div.text == div._dom_element.textContent == "New Content"
 
     def test_text_attribute(self):
         # GIVEN an existing element on the page with a known empty text content
@@ -174,8 +174,8 @@ class TestElement:
 
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
-        assert div.html == div._js.innerHTML == "&lt;b&gt;New Content&lt;/b&gt;"
-        assert div.text == div._js.textContent == "<b>New Content</b>"
+        assert div.html == div._dom_element.innerHTML == "&lt;b&gt;New Content&lt;/b&gt;"
+        assert div.text == div._dom_element.textContent == "<b>New Content</b>"
 
 
 class TestCollection:
@@ -225,7 +225,7 @@ class TestCollection:
         # so we don't risk dom getting in the way
         assert not called
         for button in buttons_collection:
-            button._js.click()
+            button._dom_element.click()
             assert called
             called = False
 
@@ -235,8 +235,8 @@ class TestCreation:
         # TODO: This test should probably be removed since it's testing the elements module
         new_el = el.div("new element")
         new_el.id = "new_el_id"
-        assert isinstance(new_el, el.BaseElement)
-        assert new_el._js.tagName == "DIV"
+        assert isinstance(new_el, el.Element)
+        assert new_el._dom_element.tagName == "DIV"
         # EXPECT the new element to be associated with the document
         assert new_el.parent == None
         body.append(new_el)
@@ -252,8 +252,8 @@ class TestCreation:
         new_el = el.p("a div", classes=["code-description"], html="Ciao PyScripters!")
         parent_div.append(new_el)
 
-        assert isinstance(new_el, el.BaseElement)
-        assert new_el._js.tagName == "P"
+        assert isinstance(new_el, el.Element)
+        assert new_el._dom_element.tagName == "P"
 
         # EXPECT the new element to be associated with the document
         assert new_el.parent == parent_div
@@ -273,8 +273,8 @@ class TestInput:
             expected_type = id_.split("_")[-1]
             result = find(f"#{id_}")
             input_el = result[0]
-            assert input_el._js.type == expected_type
-            assert input_el.value == f"Content {id_}" == input_el._js.value
+            assert input_el._dom_element.type == expected_type
+            assert input_el.value == f"Content {id_}" == input_el._dom_element.value
 
             # Check that we can set the value
             new_value = f"New Value {expected_type}"
@@ -385,18 +385,18 @@ class TestSelect:
         # EXPECT the middle option to have the value and html we passed in
         assert select.options[0].value == "1"
         assert select.options[0].html == "Option 1"
-        assert select.options[0].selected == select.options[0]._js.selected == False
+        assert select.options[0].selected == select.options[0]._dom_element.selected == False
         assert select.options[1].value == "2"
         assert select.options[1].html == "Option 2"
         assert select.options[2].value == "3"
         assert select.options[2].html == "Option 3"
-        assert select.options[2].selected == select.options[2]._js.selected == True
+        assert select.options[2].selected == select.options[2]._dom_element.selected == True
         assert select.options[3].value == ""
         assert select.options[3].html == ""
 
         # WHEN we add another option (this time adding it in between the other 2
         # options but using the JS element of the option itself)
-        select.options.add(value="2a", html="Option 2a", before=select.options[2]._js)
+        select.options.add(value="2a", html="Option 2a", before=select.options[2]._dom_element)
 
         # EXPECT the select element to have 3 options
         assert len(select.options) == 5
@@ -445,4 +445,4 @@ class TestSelect:
         # EXPECT the selected option to be correct
         assert selected_option.value == "2"
         assert selected_option.html == "Option 2"
-        assert selected_option.selected == selected_option._js.selected == True
+        assert selected_option.selected == selected_option._dom_element.selected == True
