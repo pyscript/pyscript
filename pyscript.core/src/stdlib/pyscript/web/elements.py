@@ -521,7 +521,7 @@ class aside(ContainerElement):
     tag = "aside"
 
 
-class audio(Element):
+class audio(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio"""
 
     tag = "audio"
@@ -541,6 +541,12 @@ class b(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b"""
 
     tag = "b"
+
+
+class base(Element):
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base"""
+
+    tag = "base"
 
 
 class blockquote(ContainerElement):
@@ -639,6 +645,18 @@ class code(ContainerElement):
     tag = "code"
 
 
+class col(Element):
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col"""
+
+    tag = "col"
+
+
+class colgroup(ContainerElement):
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup"""
+
+    tag = "colgroup"
+
+
 class data(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data"""
 
@@ -710,7 +728,7 @@ class em(ContainerElement):
     tag = "em"
 
 
-class embed(ContainerElement):
+class embed(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed"""
 
     tag = "embed"
@@ -820,7 +838,7 @@ class hgroup(ContainerElement):
     tag = "hgroup"
 
 
-class hr(ContainerElement):
+class hr(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr"""
 
     tag = "hr"
@@ -951,7 +969,7 @@ class li(ContainerElement):
     value = DOMProperty("value")
 
 
-class link(ContainerElement):
+class link(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link"""
 
     tag = "link"
@@ -996,6 +1014,12 @@ class menu(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu"""
 
     tag = "menu"
+
+
+class meta(ContainerElement):
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta"""
+
+    tag = "meta"
 
 
 class meter(ContainerElement):
@@ -1158,7 +1182,7 @@ class small(ContainerElement):
     tag = "small"
 
 
-class source(ContainerElement):
+class source(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source"""
 
     tag = "source"
@@ -1309,7 +1333,7 @@ class tr(ContainerElement):
     scope = DOMProperty("scope")
 
 
-class track(ContainerElement):
+class track(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track"""
 
     tag = "track"
@@ -1407,6 +1431,12 @@ class video(ContainerElement):
         to_canvas.draw(self, width, height)
 
         return canvas
+
+
+class wbr(Element):
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr"""
+
+    tag = "wbr"
 
 
 # Custom Elements
@@ -1516,8 +1546,8 @@ ELEMENT_CLASSES = [
     grid,
     # The rest in alphabetical order.
     a, abbr, address, area, article, aside, audio,
-    b, blockquote, body, br, button,
-    canvas, caption, cite, code,
+    b, base, blockquote, body, br, button,
+    canvas, caption, cite, code, col, colgroup,
     data, datalist, dd, del_, details, dialog, div, dl, dt,
     em, embed,
     fieldset, figcaption, figure, footer, form,
@@ -1525,7 +1555,7 @@ ELEMENT_CLASSES = [
     i, iframe, img, input_, ins,
     kbd,
     label, legend, li, link,
-    main, map_, mark, menu, meter,
+    main, map_, mark, menu, meta, meter,
     nav,
     object_, ol, optgroup, option, output,
     p, param, picture, pre, progress,
@@ -1534,6 +1564,7 @@ ELEMENT_CLASSES = [
     table, tbody, td, template, textarea, tfoot, th, thead, time, title, tr, track,
     u, ul,
     var, video,
+    wbr,
 ]
 
 
