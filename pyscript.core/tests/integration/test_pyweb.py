@@ -179,7 +179,7 @@ class TestElements(PyScriptTest):
         )
 
     def test_b(self, interpreter):
-        self._create_el_and_basic_asserts("aside", "some text", interpreter)
+        self._create_el_and_basic_asserts("b", "some text", interpreter)
 
     def test_blockquote(self, interpreter):
         self._create_el_and_basic_asserts("blockquote", "some text", interpreter)
