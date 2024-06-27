@@ -53,7 +53,7 @@ class DOMProperty:
         setattr(obj._js, self.name, value)
 
 
-def element_from_js(dom_element):
+def element_from_dom(dom_element):
     """Create an instance of the appropriate subclass of `Element` for a JS element.
 
     If the JS element was created via an `Element` (i.e. by us) it will have a data
@@ -192,7 +192,7 @@ class Element:
 
     @property
     def children(self):
-        return [element_from_js(el) for el in self._js.children]
+        return [element_from_dom(el) for el in self._js.children]
 
     @property
     def parent(self):
@@ -200,7 +200,7 @@ class Element:
             return self._parent
 
         if self._js.parentElement:
-            self._parent = element_from_js(self._js.parentElement)
+            self._parent = element_from_dom(self._js.parentElement)
 
         return self._parent
 
@@ -241,7 +241,7 @@ class Element:
 
     def clone(self, new_id=None):
         """Make a clone of the element (clones the underlying JS object too)."""
-        el = element_from_js(self._js.cloneNode(True))
+        el = element_from_dom(self._js.cloneNode(True))
         el.id = new_id
         return el
 
@@ -256,7 +256,7 @@ class Element:
             ElementCollection: A collection of elements matching the selector
         """
         return ElementCollection([
-            element_from_js(el) for el in self._js.querySelectorAll(selector)
+            element_from_dom(el) for el in self._js.querySelectorAll(selector)
         ])
 
     def show_me(self):
@@ -400,7 +400,7 @@ class Options:
     @property
     def options(self):
         """Return the list of options"""
-        return [element_from_js(opt) for opt in self._element._js.options]
+        return [element_from_dom(opt) for opt in self._element._js.options]
 
     @property
     def selected(self):
@@ -1465,7 +1465,7 @@ class ElementCollection:
         # If it's anything else (basically a string) we use it as a query selector.
         # TODO: Write tests!
         elements = self._element.querySelectorAll(key)
-        return ElementCollection([element_from_js(el) for el in elements])
+        return ElementCollection([element_from_dom(el) for el in elements])
 
     def __iter__(self):
         yield from self._elements
