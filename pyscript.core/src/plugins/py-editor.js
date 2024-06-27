@@ -1,6 +1,6 @@
 // PyScript py-editor plugin
 import { Hook, XWorker, dedent, defineProperties } from "polyscript/exports";
-import { TYPES, offline_interpreter, stdlib } from "../core.js";
+import { TYPES, offline_interpreter, relative_url, stdlib } from "../core.js";
 
 const RUN_BUTTON = `<svg style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>`;
 
@@ -37,11 +37,19 @@ async function execute({ currentTarget }) {
         const details = { type: this.interpreter };
         const { config } = this;
         if (config) {
-            details.configURL = config;
-            const { parse } = config.endsWith(".toml")
-                ? await import(/* webpackIgnore: true */ "../3rd-party/toml.js")
-                : JSON;
-            details.config = parse(await fetch(config).then((r) => r.text()));
+            details.configURL = relative_url(config);
+            if (config.endsWith(".toml")) {
+                const [{ parse }, toml] = await Promise.all([
+                    import(/* webpackIgnore: true */ "../3rd-party/toml.js"),
+                    fetch(config).then((r) => r.text()),
+                ]);
+                details.config = parse(toml);
+            } else if (config.endsWith(".json")) {
+                details.config = await fetch(config).then((r) => r.json());
+            } else {
+                details.configURL = relative_url("./config.txt");
+                details.config = JSON.parse(config);
+            }
             details.version = offline_interpreter(details.config);
         } else {
             details.config = {};
@@ -86,21 +94,24 @@ async function execute({ currentTarget }) {
     });
 }
 
-const makeRunButton = (listener, type) => {
+const makeRunButton = (handler, type) => {
     const runButton = document.createElement("button");
     runButton.className = `absolute ${type}-editor-run-button`;
     runButton.innerHTML = RUN_BUTTON;
     runButton.setAttribute("aria-label", "Python Script Run Button");
-    runButton.addEventListener("click", listener);
+    runButton.addEventListener("click", async (event) => {
+        runButton.blur();
+        await handler.handleEvent(event);
+    });
     return runButton;
 };
 
-const makeEditorDiv = (listener, type) => {
+const makeEditorDiv = (handler, type) => {
     const editorDiv = document.createElement("div");
     editorDiv.className = `${type}-editor-input`;
     editorDiv.setAttribute("aria-label", "Python Script Area");
 
-    const runButton = makeRunButton(listener, type);
+    const runButton = makeRunButton(handler, type);
     const editorShadowContainer = document.createElement("div");
 
     // avoid outer elements intercepting key events (reveal as example)
@@ -120,15 +131,15 @@ const makeOutDiv = (type) => {
     return outDiv;
 };
 
-const makeBoxDiv = (listener, type) => {
+const makeBoxDiv = (handler, type) => {
     const boxDiv = document.createElement("div");
     boxDiv.className = `${type}-editor-box`;
 
-    const editorDiv = makeEditorDiv(listener, type);
+    const editorDiv = makeEditorDiv(handler, type);
     const outDiv = makeOutDiv(type);
     boxDiv.append(editorDiv, outDiv);
 
-    return [boxDiv, outDiv];
+    return [boxDiv, outDiv, editorDiv.querySelector("button")];
 };
 
 const init = async (script, type, interpreter) => {
@@ -138,7 +149,7 @@ const init = async (script, type, interpreter) => {
         { python },
         { indentUnit },
         { keymap },
-        { defaultKeymap },
+        { defaultKeymap, indentWithTab },
     ] = await Promise.all([
         import(/* webpackIgnore: true */ "../3rd-party/codemirror.js"),
         import(/* webpackIgnore: true */ "../3rd-party/codemirror_state.js"),
@@ -168,11 +179,11 @@ const init = async (script, type, interpreter) => {
         ? await fetch(script.src).then((b) => b.text())
         : script.textContent;
     const context = {
+        // allow the listener to be overridden at distance
+        handleEvent: execute,
         interpreter,
         env,
-        config:
-            hasConfig &&
-            new URL(script.getAttribute("config"), location.href).href,
+        config: hasConfig && script.getAttribute("config"),
         get pySrc() {
             return isSetup ? source : editor.state.doc.toString();
         },
@@ -184,6 +195,29 @@ const init = async (script, type, interpreter) => {
     let target;
     defineProperties(script, {
         target: { get: () => target },
+        handleEvent: {
+            get: () => context.handleEvent,
+            set: (callback) => {
+                // do not bother with logic if it was set back as its original handler
+                if (callback === execute) context.handleEvent = execute;
+                // in every other case be sure that if the listener override returned
+                // `false` nothing happens, otherwise keep doing what it always did
+                else {
+                    context.handleEvent = async (event) => {
+                        // trap the currentTarget ASAP (if any)
+                        // otherwise it gets lost asynchronously
+                        const { currentTarget } = event;
+                        // augment a code snapshot before invoking the override
+                        defineProperties(event, {
+                            code: { value: context.pySrc },
+                        });
+                        // avoid executing the default handler if the override returned `false`
+                        if ((await callback(event)) !== false)
+                            await execute.call(context, { currentTarget });
+                    };
+                }
+            },
+        },
         code: {
             get: () => context.pySrc,
             set: (insert) => {
@@ -214,8 +248,8 @@ const init = async (script, type, interpreter) => {
                     isSetup = wasSetup;
                     source = wasSource;
                 };
-                return execute
-                    .call(context, { currentTarget: null })
+                return context
+                    .handleEvent({ currentTarget: null })
                     .then(restore, restore);
             },
         },
@@ -227,7 +261,7 @@ const init = async (script, type, interpreter) => {
     };
 
     if (isSetup) {
-        await execute.call(context, { currentTarget: null });
+        await context.handleEvent({ currentTarget: null });
         notify();
         return;
     }
@@ -250,8 +284,7 @@ const init = async (script, type, interpreter) => {
     if (!target.hasAttribute("root")) target.setAttribute("root", target.id);
 
     // @see https://github.com/JeffersGlass/mkdocs-pyscript/blob/main/mkdocs_pyscript/js/makeblocks.js
-    const listener = execute.bind(context);
-    const [boxDiv, outDiv] = makeBoxDiv(listener, type);
+    const [boxDiv, outDiv, runButton] = makeBoxDiv(context, type);
     boxDiv.dataset.env = script.hasAttribute("env") ? env : interpreter;
 
     const inputChild = boxDiv.querySelector(`.${type}-editor-input > div`);
@@ -264,8 +297,9 @@ const init = async (script, type, interpreter) => {
     const doc = dedent(script.textContent).trim();
 
     // preserve user indentation, if any
-    const indentation = /^(\s+)/m.test(doc) ? RegExp.$1 : "    ";
+    const indentation = /^([ \t]+)/m.test(doc) ? RegExp.$1 : "    ";
 
+    const listener = () => runButton.click();
     const editor = new EditorView({
         extensions: [
             indentUnit.of(indentation),
@@ -275,9 +309,13 @@ const init = async (script, type, interpreter) => {
                 { key: "Ctrl-Enter", run: listener, preventDefault: true },
                 { key: "Cmd-Enter", run: listener, preventDefault: true },
                 { key: "Shift-Enter", run: listener, preventDefault: true },
+                // @see https://codemirror.net/examples/tab/
+                indentWithTab,
             ]),
             basicSetup,
         ],
+        foldGutter: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
         parent,
         doc,
     });

@@ -5,7 +5,9 @@ declare namespace _default {
         "event_handling.py": string;
         "fetch.py": string;
         "ffi.py": string;
+        "flatted.py": string;
         "magic_js.py": string;
+        "storage.py": string;
         "util.py": string;
         web: {
             "__init__.py": string;
@@ -14,6 +16,7 @@ declare namespace _default {
             "media.py": string;
         };
         "websocket.py": string;
+        "workers.py": string;
     };
     let pyweb: {};
 }

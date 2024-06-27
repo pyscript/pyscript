@@ -19,7 +19,7 @@ import {
 
 import "./all-done.js";
 import TYPES from "./types.js";
-import configs from "./config.js";
+import { configs, relative_url } from "./config.js";
 import sync from "./sync.js";
 import bootstrapNodeAndPlugins from "./plugins-helper.js";
 import { ErrorCode } from "./exceptions.js";
@@ -84,6 +84,7 @@ const [
 
 export {
     TYPES,
+    relative_url,
     exportedPyWorker as PyWorker,
     exportedMPWorker as MPWorker,
     exportedHooks as hooks,
@@ -92,7 +93,7 @@ export {
 };
 
 export const offline_interpreter = (config) =>
-    config?.interpreter && new URL(config.interpreter, location.href).href;
+    config?.interpreter && relative_url(config.interpreter);
 
 const hooked = new Map();
 

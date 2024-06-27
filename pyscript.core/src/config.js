@@ -45,6 +45,8 @@ const configDetails = async (config, type) => {
 
 const conflictError = (reason) => new Error(`(${CONFLICTING_CODE}): ${reason}`);
 
+const relative_url = (url, base = location.href) => new URL(url, base).href;
+
 const syntaxError = (type, url, { message }) => {
     let str = `(${BAD_CONFIG}): Invalid ${type}`;
     if (url) str += ` @ ${url}`;
@@ -108,7 +110,7 @@ for (const [TYPE] of TYPES) {
     if (!error && config) {
         try {
             const { json, toml, text, url } = await configDetails(config, type);
-            if (url) configURL = new URL(url, location.href).href;
+            if (url) configURL = relative_url(url);
             config = text;
             if (json || type === "json") {
                 try {
@@ -153,4 +155,4 @@ for (const [TYPE] of TYPES) {
     configs.set(TYPE, { config: parsed, configURL, plugins, error });
 }
 
-export default configs;
+export { configs, relative_url };
