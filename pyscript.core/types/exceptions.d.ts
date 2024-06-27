@@ -53,4 +53,19 @@ export class InstallError extends UserError {
 /**
  * Keys of the ErrorCode object
  */
-export type ErrorCodes = "GENERIC" | "CONFLICTING_CODE" | "BAD_CONFIG" | "MICROPIP_INSTALL_ERROR" | "BAD_PLUGIN_FILE_EXTENSION" | "NO_DEFAULT_EXPORT" | "TOP_LEVEL_AWAIT" | "FETCH_ERROR" | "FETCH_NAME_ERROR" | "FETCH_UNAUTHORIZED_ERROR" | "FETCH_FORBIDDEN_ERROR" | "FETCH_NOT_FOUND_ERROR" | "FETCH_SERVER_ERROR" | "FETCH_UNAVAILABLE_ERROR";
+export type ErrorCodes = keyof {
+    GENERIC: string;
+    CONFLICTING_CODE: string;
+    BAD_CONFIG: string;
+    MICROPIP_INSTALL_ERROR: string;
+    BAD_PLUGIN_FILE_EXTENSION: string;
+    NO_DEFAULT_EXPORT: string;
+    TOP_LEVEL_AWAIT: string;
+    FETCH_ERROR: string;
+    FETCH_NAME_ERROR: string;
+    FETCH_UNAUTHORIZED_ERROR: string;
+    FETCH_FORBIDDEN_ERROR: string;
+    FETCH_NOT_FOUND_ERROR: string;
+    FETCH_SERVER_ERROR: string;
+    FETCH_UNAVAILABLE_ERROR: string;
+};

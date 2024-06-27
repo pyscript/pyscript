@@ -11,13 +11,10 @@ declare namespace _default {
         "util.py": string;
         web: {
             "__init__.py": string;
-            "dom.py": string;
             "elements.py": string;
-            "media.py": string;
         };
         "websocket.py": string;
         "workers.py": string;
     };
-    let pyweb: {};
 }
 export default _default;

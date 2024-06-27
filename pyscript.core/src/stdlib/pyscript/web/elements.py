@@ -1517,7 +1517,7 @@ class ElementCollection:
 
         # If it's anything else (basically a string) we use it as a query selector.
         # TODO: Write tests!
-        elements = self._element.querySelectorAll(key)
+        elements = self._elements.querySelectorAll(key)
         return ElementCollection([element_from_dom(el) for el in elements])
 
     def __iter__(self):
