@@ -18,7 +18,7 @@ except ImportError:
             print("WARNING: ", *args, **kwargs)
 
 
-from pyscript import document
+from pyscript import display, document
 
 #: A flag to show if MicroPython is the current Python interpreter.
 is_micropython = "MicroPython" in sys.version
