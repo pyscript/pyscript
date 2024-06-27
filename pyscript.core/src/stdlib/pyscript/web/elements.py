@@ -548,6 +548,9 @@ class base(Element):
 
     tag = "base"
 
+    href = DOMProperty("href")
+    target = DOMProperty("target")
+
 
 class blockquote(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote"""
@@ -649,6 +652,8 @@ class col(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col"""
 
     tag = "col"
+
+    span = DOMProperty("span")
 
 
 class colgroup(ContainerElement):
@@ -843,6 +848,12 @@ class hr(Element):
 
     tag = "hr"
 
+    align = DOMProperty("align")
+    color = DOMProperty("color")
+    noshade = DOMProperty("noshade")
+    size = DOMProperty("size")
+    width = DOMProperty("width")
+
 
 class html(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html"""
@@ -1020,6 +1031,11 @@ class meta(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta"""
 
     tag = "meta"
+
+    charset = DOMProperty("charset")
+    content = DOMProperty("content")
+    http_equiv = DOMProperty("http-equiv")
+    name = DOMProperty("name")
 
 
 class meter(ContainerElement):
