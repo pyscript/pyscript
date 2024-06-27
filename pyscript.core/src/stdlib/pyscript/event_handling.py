@@ -27,9 +27,9 @@ def when(event_type=None, selector=None):
         # TODO: This is a hack that will be removed when pyscript becomes a package
         #       and we can better manage the imports without circular dependencies
         elif isinstance(selector, Element):
-            elements = [selector._js]
+            elements = [selector._dom_element]
         elif isinstance(selector, ElementCollection):
-            elements = [el._js for el in selector]
+            elements = [el._dom_element for el in selector]
         else:
             if isinstance(selector, list):
                 elements = selector

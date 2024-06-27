@@ -45,12 +45,12 @@ class DOMProperty:
         self.allow_nones = allow_nones
 
     def __get__(self, obj, objtype=None):
-        return getattr(obj._js, self.name)
+        return getattr(obj._dom_element, self.name)
 
     def __set__(self, obj, value):
         if not self.allow_nones and value is None:
             return
-        setattr(obj._js, self.name, value)
+        setattr(obj._dom_element, self.name, value)
 
 
 def element_from_dom(dom_element):
@@ -118,7 +118,7 @@ class Element:
         element.
         """
 
-        self._js = dom_element or document.createElement(self.tag)
+        self._dom_element = dom_element or document.createElement(self.tag)
 
         self._classes = Classes(self)
         self._parent = None
@@ -140,11 +140,11 @@ class Element:
             self._init_properties(**kwargs)
 
         # Tag the DOM element with our class name.
-        self._js.dataset.pyscriptType = type(self).__name__
+        self._dom_element.dataset.pyscriptType = type(self).__name__
 
     def __eq__(self, obj):
         """Check for equality by comparing the underlying DOM element."""
-        return isinstance(obj, Element) and obj._js == self._js
+        return isinstance(obj, Element) and obj._dom_element == self._dom_element
 
     def _init_properties(self, **kwargs):
         """Set all the properties (of type DOMProperty) provided in input as properties
@@ -172,17 +172,17 @@ class Element:
     def content(self):
         # TODO: This breaks with with standard template elements. Define how to best
         #       handle this specific use case. Just not support for now?
-        if self._js.tagName == "TEMPLATE":
+        if self._dom_element.tagName == "TEMPLATE":
             warnings.warn(
                 "Content attribute not supported for template elements.", stacklevel=2
             )
             return None
-        return self._js.innerHTML
+        return self._dom_element.innerHTML
 
     @content.setter
     def content(self, value):
         # TODO: (same comment as above)
-        if self._js.tagName == "TEMPLATE":
+        if self._dom_element.tagName == "TEMPLATE":
             warnings.warn(
                 "Content attribute not supported for template elements.", stacklevel=2
             )
@@ -192,15 +192,15 @@ class Element:
 
     @property
     def children(self):
-        return [element_from_dom(el) for el in self._js.children]
+        return [element_from_dom(el) for el in self._dom_element.children]
 
     @property
     def parent(self):
         if self._parent:
             return self._parent
 
-        if self._js.parentElement:
-            self._parent = element_from_dom(self._js.parentElement)
+        if self._dom_element.parentElement:
+            self._parent = element_from_dom(self._dom_element.parentElement)
 
         return self._parent
 
@@ -210,11 +210,11 @@ class Element:
 
     def append(self, child):
         if isinstance(child, Element):
-            self._js.appendChild(child._js)
+            self._dom_element.appendChild(child._dom_element)
 
         elif isinstance(child, ElementCollection):
             for el in child:
-                self._js.appendChild(el._js)
+                self._dom_element.appendChild(el._dom_element)
 
         else:
             # In this case we know it's not an Element or an ElementCollection, so we
@@ -223,7 +223,7 @@ class Element:
                 # First, we try to see if it's an element by accessing the 'tagName'
                 # attribute.
                 child.tagName
-                self._js.appendChild(child)
+                self._dom_element.appendChild(child)
 
             except AttributeError:
                 try:
@@ -231,7 +231,7 @@ class Element:
                     # accessing the 'length' attribute.
                     child.length
                     for element_ in child:
-                        self._js.appendChild(element_)
+                        self._dom_element.appendChild(element_)
 
                 except AttributeError:
                     # Nope! This is not an element or a NodeList.
@@ -241,7 +241,7 @@ class Element:
 
     def clone(self, new_id=None):
         """Make a clone of the element (clones the underlying DOM object too)."""
-        el = element_from_dom(self._js.cloneNode(True))
+        el = element_from_dom(self._dom_element.cloneNode(True))
         el.id = new_id
         return el
 
@@ -256,12 +256,12 @@ class Element:
             ElementCollection: A collection of elements matching the selector
         """
         return ElementCollection([
-            element_from_dom(el) for el in self._js.querySelectorAll(selector)
+            element_from_dom(el) for el in self._dom_element.querySelectorAll(selector)
         ])
 
     def show_me(self):
         """Scroll the element into view."""
-        self._js.scrollIntoView()
+        self._dom_element.scrollIntoView()
 
 
 class Classes:
@@ -269,15 +269,15 @@ class Classes:
 
     def __init__(self, element: Element):
         self._element = element
-        self._js_class_list = self._element._js.classList
+        self._class_list = self._element._dom_element.classList
 
     def __contains__(self, item):
-        return item in self._js_class_list
+        return item in self._class_list
 
     def __eq__(self, other):
         # We allow comparison with either another `Classes` instance...
         if isinstance(other, Classes):
-            compare_with = list(other._js_class_list)
+            compare_with = list(other._class_list)
 
         # ...or iterables of strings.
         else:
@@ -288,19 +288,19 @@ class Classes:
             except TypeError:
                 return False
 
-        return set(self._js_class_list) == set(compare_with)
+        return set(self._class_list) == set(compare_with)
 
     def __iter__(self):
-        return iter(self._js_class_list)
+        return iter(self._class_list)
 
     def __len__(self):
-        return self._js_class_list.length
+        return self._class_list.length
 
     def __repr__(self):
-        return f"ClassList({', '.join(self._js_class_list)})"
+        return f"ClassList({', '.join(self._class_list)})"
 
     def __str__(self):
-        return ' '.join(self._js_class_list)
+        return ' '.join(self._class_list)
 
     def add(self, *class_names):
         for class_name in class_names:
@@ -309,7 +309,7 @@ class Classes:
                     self.add(item)
 
             else:
-                self._js_class_list.add(class_name)
+                self._class_list.add(class_name)
 
     def contains(self, class_name):
         return class_name in self
@@ -321,7 +321,7 @@ class Classes:
                     self.remove(item)
 
             else:
-                self._js_class_list.remove(class_name)
+                self._class_list.remove(class_name)
 
     def replace(self, old_class, new_class):
         self.remove(old_class)
@@ -384,13 +384,13 @@ class Options:
 
         if before:
             if isinstance(before, Element):
-                before = before._js
+                before = before._dom_element
 
-        self._element._js.add(option, before)
+        self._element._dom_element.add(option, before)
 
     def remove(self, item: int) -> None:
         """Remove the option at the specified index"""
-        self._element._js.remove(item)
+        self._element._dom_element.remove(item)
 
     def clear(self) -> None:
         """Remove all the options"""
@@ -400,12 +400,12 @@ class Options:
     @property
     def options(self):
         """Return the list of options"""
-        return [element_from_dom(opt) for opt in self._element._js.options]
+        return [element_from_dom(opt) for opt in self._element._dom_element.options]
 
     @property
     def selected(self):
         """Return the selected option"""
-        return self.options[self._element._js.selectedIndex]
+        return self.options[self._element._dom_element.selectedIndex]
 
     def __iter__(self):
         yield from self.options
@@ -425,7 +425,7 @@ class Style:
 
     def __init__(self, element: Element) -> None:
         self._element = element
-        self._style = self._element._js.style
+        self._style = self._element._dom_element.style
 
     def __getitem__(self, key):
         return self._style.getPropertyValue(key)
@@ -438,7 +438,7 @@ class Style:
 
     def set(self, **kws):
         for k, v in kws.items():
-            self._element._js.style.setProperty(k, v)
+            self._element._dom_element.style.setProperty(k, v)
 
     # CSS Properties
     # Reference: https://github.com/microsoft/TypeScript/blob/main/src/lib/dom.generated.d.ts#L3799C1-L5005C2
@@ -446,11 +446,11 @@ class Style:
     # tools/codegen_css_proxy.py
     @property
     def visible(self):
-        return self._element._js.style.visibility
+        return self._element._dom_element.style.visibility
 
     @visible.setter
     def visible(self, value):
-        self._element._js.style.visibility = value
+        self._element._dom_element.style.visibility = value
 
 
 class ContainerElement(Element):
@@ -467,7 +467,7 @@ class ContainerElement(Element):
 
 # IMPORTANT: For all HTML components defined below, we are not mapping all possible
 # attributes, just the global and the most common ones. If you need to access a
-# specific attribute, you can always use the `_js.<attribute>`
+# specific attribute, you can always use the `_dom_element.<attribute>`
 class a(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"""
 
@@ -599,9 +599,9 @@ class canvas(ContainerElement):
             None
         """
         link = self.create("a")
-        link._js.download = filename
-        link._js.href = self._js.toDataURL()
-        link._js.click()
+        link._dom_element.download = filename
+        link._dom_element.href = self._dom_element.toDataURL()
+        link._dom_element.click()
 
     def draw(self, what, width, height):
         """Draw `what` on the current element
@@ -615,10 +615,10 @@ class canvas(ContainerElement):
                 VideoFrame.
         """
         if isinstance(what, Element):
-            what = what._js
+            what = what._dom_element
 
         # https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
-        self._js.getContext("2d").drawImage(what, 0, 0, width, height)
+        self._dom_element.getContext("2d").drawImage(what, 0, 0, width, height)
 
 
 class caption(ContainerElement):
@@ -1379,14 +1379,14 @@ class video(ContainerElement):
         if to is None:
             to_canvas = self.create("canvas")
             if width is None:
-                width = self._js.width
+                width = self._dom_element.width
             if height is None:
-                height = self._js.height
-            to_canvas._js.width = width
-            to_canvas._js.height = height
+                height = self._dom_element.height
+            to_canvas._dom_element.width = width
+            to_canvas._dom_element.height = height
 
         elif isinstance(to, Element):
-            if to._js.tagName != "CANVAS":
+            if to._dom_element.tagName != "CANVAS":
                 raise TypeError("Element to snap to must a canvas.")
             to_canvas = to
 
