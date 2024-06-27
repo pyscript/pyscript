@@ -1,9 +1,7 @@
 from pyscript import document, when
 from pyscript.web import dom
-from pyscript.web.elements import ElementCollection
 from pyscript.web import elements as el
-
-
+from pyscript.web.elements import ElementCollection
 
 
 class TestDocument:
@@ -176,7 +174,9 @@ class TestElement:
 
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
-        assert div.html == div._dom_element.innerHTML == "&lt;b&gt;New Content&lt;/b&gt;"
+        assert (
+            div.html == div._dom_element.innerHTML == "&lt;b&gt;New Content&lt;/b&gt;"
+        )
         assert div.text == div._dom_element.textContent == "<b>New Content</b>"
 
 
@@ -387,18 +387,28 @@ class TestSelect:
         # EXPECT the middle option to have the value and html we passed in
         assert select.options[0].value == "1"
         assert select.options[0].html == "Option 1"
-        assert select.options[0].selected == select.options[0]._dom_element.selected == False
+        assert (
+            select.options[0].selected
+            == select.options[0]._dom_element.selected
+            == False
+        )
         assert select.options[1].value == "2"
         assert select.options[1].html == "Option 2"
         assert select.options[2].value == "3"
         assert select.options[2].html == "Option 3"
-        assert select.options[2].selected == select.options[2]._dom_element.selected == True
+        assert (
+            select.options[2].selected
+            == select.options[2]._dom_element.selected
+            == True
+        )
         assert select.options[3].value == ""
         assert select.options[3].html == ""
 
         # WHEN we add another option (this time adding it in between the other 2
         # options but using the JS element of the option itself)
-        select.options.add(value="2a", html="Option 2a", before=select.options[2]._dom_element)
+        select.options.add(
+            value="2a", html="Option 2a", before=select.options[2]._dom_element
+        )
 
         # EXPECT the select element to have 3 options
         assert len(select.options) == 5
