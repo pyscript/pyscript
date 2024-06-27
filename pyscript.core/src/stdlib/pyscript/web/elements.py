@@ -124,6 +124,9 @@ class Element:
         self._parent = None
         self._style = Style(self)
 
+        # TODO: Not sure this guard is necessary? If we are wrapping an existing element
+        # we often just pass that element in, but there is no reason we couldn't also
+        # allow the setting of style and classes on it?
         if dom_element is None:
             # Set any style properties provided in input.
             if isinstance(style, dict):
