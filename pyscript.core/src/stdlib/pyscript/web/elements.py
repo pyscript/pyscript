@@ -54,9 +54,9 @@ class DOMProperty:
 
 
 def element_from_dom(dom_element):
-    """Create an instance of the appropriate subclass of `Element` for a JS element.
+    """Create an instance of the appropriate subclass of `Element` for a DOM element.
 
-    If the JS element was created via an `Element` (i.e. by us) it will have a data
+    If the DOM element was created via an `Element` (i.e. by us) it will have a data
     attribute named `data-pyscript-type` that contains the name of the subclass
     that created it. If the `data-pyscript-type` attribute *is* present we look up the
     subclass by name and create an instance of that. Otherwise, we make a 'best-guess'
@@ -139,15 +139,15 @@ class Element:
 
             self._init_properties(**kwargs)
 
-        # Tag the JS element with our class name.
+        # Tag the DOM element with our class name.
         self._js.dataset.pyscriptType = type(self).__name__
 
     def __eq__(self, obj):
-        """Check for equality by comparing the underlying JS element."""
+        """Check for equality by comparing the underlying DOM element."""
         return isinstance(obj, Element) and obj._js == self._js
 
     def _init_properties(self, **kwargs):
-        """Set all the properties (of type JSProperty) provided in input as properties
+        """Set all the properties (of type DOMProperty) provided in input as properties
         of the class instance.
 
         Args:
@@ -218,7 +218,7 @@ class Element:
 
         else:
             # In this case we know it's not an Element or an ElementCollection, so we
-            # guess that it's either a JS element or NodeList returned via the ffi.
+            # guess that it's either a DOM element or NodeList returned via the ffi.
             try:
                 # First, we try to see if it's an element by accessing the 'tagName'
                 # attribute.
@@ -240,7 +240,7 @@ class Element:
                     )
 
     def clone(self, new_id=None):
-        """Make a clone of the element (clones the underlying JS object too)."""
+        """Make a clone of the element (clones the underlying DOM object too)."""
         el = element_from_dom(self._js.cloneNode(True))
         el.id = new_id
         return el
@@ -265,7 +265,7 @@ class Element:
 
 
 class Classes:
-    """A 'more Pythonic' interface to an element's JS `classList`."""
+    """A 'more Pythonic' interface to an element's `classList`."""
 
     def __init__(self, element: Element):
         self._element = element
@@ -1449,7 +1449,7 @@ class ElementCollection:
 
     def __eq__(self, obj):
         """Check if the element is the same as the other element by comparing
-        the underlying JS element"""
+        the underlying DOM element"""
         return isinstance(obj, ElementCollection) and obj._elements == self._elements
 
     def __getitem__(self, key):
