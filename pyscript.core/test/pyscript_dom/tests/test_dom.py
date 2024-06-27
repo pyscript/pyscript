@@ -1,13 +1,15 @@
 from pyscript import document, when
-from pyscript.web.dom import body, find, head
+from pyscript.web import dom
 from pyscript.web.elements import ElementCollection
 from pyscript.web import elements as el
 
 
+
+
 class TestDocument:
     def test__element(self):
-        assert body._dom_element == document.body
-        assert head._dom_element == document.head
+        assert dom.body._dom_element == document.body
+        assert dom.head._dom_element == document.head
 
 
 def test_getitem_by_id():
@@ -16,7 +18,7 @@ def test_getitem_by_id():
     txt = "You found test_id_selector"
     selector = f"#{id_}"
     # EXPECT the element to be found by id
-    result = find(selector)
+    result = dom.find(selector)
     div = result[0]
     # EXPECT the element text value to match what we expect and what
     # the JS document.querySelector API would return
@@ -33,7 +35,7 @@ def test_getitem_by_class():
         "test_selector_w_children_child_1",
     ]
     expected_class = "a-test-class"
-    result = find(f".{expected_class}")
+    result = dom.find(f".{expected_class}")
     div = result[0]
 
     # EXPECT to find exact number of elements with the class in the page (== 3)
@@ -44,7 +46,7 @@ def test_getitem_by_class():
 
 
 def test_read_n_write_collection_elements():
-    elements = find(".multi-elems")
+    elements = dom.find(".multi-elems")
 
     for element in elements:
         assert element.html == f"Content {element.id.replace('#', '')}"
@@ -59,7 +61,7 @@ class TestElement:
     def test_query(self):
         # GIVEN an existing element on the page, with at least 1 child element
         id_ = "test_selector_w_children"
-        parent_div = find(f"#{id_}")[0]
+        parent_div = dom.find(f"#{id_}")[0]
 
         # EXPECT it to be able to query for the first child element
         div = parent_div.find("div")[0]
@@ -76,8 +78,8 @@ class TestElement:
         # GIVEN 2 different Elements pointing to the same underlying element
         id_ = "test_id_selector"
         selector = f"#{id_}"
-        div = find(selector)[0]
-        div2 = find(selector)[0]
+        div = dom.find(selector)[0]
+        div2 = dom.find(selector)[0]
 
         # EXPECT them to be equal
         assert div == div2
@@ -92,7 +94,7 @@ class TestElement:
 
     def test_append_element(self):
         id_ = "element-append-tests"
-        div = find(f"#{id_}")[0]
+        div = dom.find(f"#{id_}")[0]
         len_children_before = len(div.children)
         new_el = el.p("new element")
         div.append(new_el)
@@ -101,7 +103,7 @@ class TestElement:
 
     def test_append_dom_element_element(self):
         id_ = "element-append-tests"
-        div = find(f"#{id_}")[0]
+        div = dom.find(f"#{id_}")[0]
         len_children_before = len(div.children)
         new_el = el.p("new element")
         div.append(new_el._dom_element)
@@ -110,9 +112,9 @@ class TestElement:
 
     def test_append_collection(self):
         id_ = "element-append-tests"
-        div = find(f"#{id_}")[0]
+        div = dom.find(f"#{id_}")[0]
         len_children_before = len(div.children)
-        collection = find(".collection")
+        collection = dom.find(".collection")
         div.append(collection)
         assert len(div.children) == len_children_before + len(collection)
 
@@ -122,16 +124,16 @@ class TestElement:
     def test_read_classes(self):
         id_ = "test_class_selector"
         expected_class = "a-test-class"
-        div = find(f"#{id_}")[0]
+        div = dom.find(f"#{id_}")[0]
         assert div.classes == [expected_class]
 
     def test_add_remove_class(self):
         id_ = "div-no-classes"
         classname = "tester-class"
-        div = find(f"#{id_}")[0]
+        div = dom.find(f"#{id_}")[0]
         assert not div.classes
         div.classes.add(classname)
-        same_div = find(f"#{id_}")[0]
+        same_div = dom.find(f"#{id_}")[0]
         assert div.classes == [classname] == same_div.classes
         div.classes.remove(classname)
         assert div.classes == [] == same_div.classes
@@ -139,7 +141,7 @@ class TestElement:
     def test_when_decorator(self):
         called = False
 
-        just_a_button = find("#a-test-button")[0]
+        just_a_button = dom.find("#a-test-button")[0]
 
         @when("click", just_a_button)
         def on_click(event):
@@ -155,7 +157,7 @@ class TestElement:
 
     def test_html_attribute(self):
         # GIVEN an existing element on the page with a known empty text content
-        div = find("#element_attribute_tests")[0]
+        div = dom.find("#element_attribute_tests")[0]
 
         # WHEN we set the html attribute
         div.html = "<b>New Content</b>"
@@ -167,7 +169,7 @@ class TestElement:
 
     def test_text_attribute(self):
         # GIVEN an existing element on the page with a known empty text content
-        div = find("#element_attribute_tests")[0]
+        div = dom.find("#element_attribute_tests")[0]
 
         # WHEN we set the html attribute
         div.text = "<b>New Content</b>"
@@ -180,12 +182,12 @@ class TestElement:
 
 class TestCollection:
     def test_iter_eq_children(self):
-        elements = find(".multi-elems")
+        elements = dom.find(".multi-elems")
         assert [el for el in elements] == [el for el in elements.children]
         assert len(elements) == 3
 
     def test_slices(self):
-        elements = find(".multi-elems")
+        elements = dom.find(".multi-elems")
         assert elements[0]
         _slice = elements[:2]
         assert len(_slice) == 2
@@ -195,26 +197,26 @@ class TestCollection:
 
     def test_style_rule(self):
         selector = ".multi-elems"
-        elements = find(selector)
+        elements = dom.find(selector)
         for el in elements:
             assert el.style["background-color"] != "red"
 
         elements.style["background-color"] = "red"
 
-        for i, el in enumerate(find(selector)):
+        for i, el in enumerate(dom.find(selector)):
             assert elements[i].style["background-color"] == "red"
             assert el.style["background-color"] == "red"
 
         elements.style.remove("background-color")
 
-        for i, el in enumerate(find(selector)):
+        for i, el in enumerate(dom.find(selector)):
             assert el.style["background-color"] != "red"
             assert elements[i].style["background-color"] != "red"
 
     def test_when_decorator(self):
         called = False
 
-        buttons_collection = find("button")
+        buttons_collection = dom.find("button")
 
         @when("click", buttons_collection)
         def on_click(event):
@@ -239,13 +241,13 @@ class TestCreation:
         assert new_el._dom_element.tagName == "DIV"
         # EXPECT the new element to be associated with the document
         assert new_el.parent == None
-        body.append(new_el)
+        dom.body.append(new_el)
 
-        assert find("#new_el_id")[0].parent == body
+        assert dom.find("#new_el_id")[0].parent == dom.body
 
     def test_create_element_child(self):
         selector = "#element-creation-test"
-        parent_div = find(selector)[0]
+        parent_div = dom.find(selector)[0]
 
         # Creating an element from another element automatically creates that element
         # as a child of the original element
@@ -257,7 +259,7 @@ class TestCreation:
 
         # EXPECT the new element to be associated with the document
         assert new_el.parent == parent_div
-        assert find(selector)[0].children[0] == new_el
+        assert dom.find(selector)[0].children[0] == new_el
 
 
 class TestInput:
@@ -271,7 +273,7 @@ class TestInput:
     def test_value(self):
         for id_ in self.input_ids:
             expected_type = id_.split("_")[-1]
-            result = find(f"#{id_}")
+            result = dom.find(f"#{id_}")
             input_el = result[0]
             assert input_el._dom_element.type == expected_type
             assert input_el.value == f"Content {id_}" == input_el._dom_element.value
@@ -289,7 +291,7 @@ class TestInput:
 
     def test_set_value_collection(self):
         for id_ in self.input_ids:
-            input_el = find(f"#{id_}")
+            input_el = dom.find(f"#{id_}")
 
             assert input_el.value[0] == f"Content {id_}" == input_el[0].value
 
@@ -302,30 +304,30 @@ class TestInput:
     # actually on the class. Maybe a job for  __setattr__?
     #
     # def test_element_without_value(self):
-    #     result = find(f"#tests-terminal"][0]
+    #     result = dom.find(f"#tests-terminal"][0]
     #     with pytest.raises(AttributeError):
     #         result.value = "some value"
     #
     # def test_element_without_value_via_collection(self):
-    #     result = find(f"#tests-terminal"]
+    #     result = dom.find(f"#tests-terminal"]
     #     with pytest.raises(AttributeError):
     #         result.value = "some value"
 
 
 class TestSelect:
     def test_select_options_iter(self):
-        select = find(f"#test_select_element_w_options")[0]
+        select = dom.find(f"#test_select_element_w_options")[0]
 
         for i, option in enumerate(select.options, 1):
             assert option.value == f"{i}"
             assert option.html == f"Option {i}"
 
     def test_select_options_len(self):
-        select = find(f"#test_select_element_w_options")[0]
+        select = dom.find(f"#test_select_element_w_options")[0]
         assert len(select.options) == 2
 
     def test_select_options_clear(self):
-        select = find(f"#test_select_element_to_clear")[0]
+        select = dom.find(f"#test_select_element_to_clear")[0]
         assert len(select.options) == 3
 
         select.options.clear()
@@ -334,7 +336,7 @@ class TestSelect:
 
     def test_select_element_add(self):
         # GIVEN the existing select element with no options
-        select = find(f"#test_select_element")[0]
+        select = dom.find(f"#test_select_element")[0]
 
         # EXPECT the select element to have no options
         assert len(select.options) == 0
@@ -415,7 +417,7 @@ class TestSelect:
 
     def test_select_options_remove(self):
         # GIVEN the existing select element with 3 options
-        select = find(f"#test_select_element_to_remove")[0]
+        select = dom.find(f"#test_select_element_to_remove")[0]
 
         # EXPECT the select element to have 3 options
         assert len(select.options) == 4
@@ -437,7 +439,7 @@ class TestSelect:
 
     def test_select_get_selected_option(self):
         # GIVEN the existing select element with one selected option
-        select = find(f"#test_select_element_w_options")[0]
+        select = dom.find(f"#test_select_element_w_options")[0]
 
         # WHEN we get the selected option
         selected_option = select.options.selected
