@@ -17,8 +17,8 @@ except ImportError:
         def warn(*args, **kwargs):
             print("WARNING: ", *args, **kwargs)
 
-from pyscript import document
 
+from pyscript import document
 
 #: A flag to show if MicroPython is the current Python interpreter.
 is_micropython = "MicroPython" in sys.version
@@ -255,9 +255,12 @@ class Element:
         Returns:
             ElementCollection: A collection of elements matching the selector
         """
-        return ElementCollection([
-            element_from_dom(el) for el in self._dom_element.querySelectorAll(selector)
-        ])
+        return ElementCollection(
+            [
+                element_from_dom(el)
+                for el in self._dom_element.querySelectorAll(selector)
+            ]
+        )
 
     def show_me(self):
         """Scroll the element into view."""
@@ -300,7 +303,7 @@ class Classes:
         return f"ClassList({', '.join(self._class_list)})"
 
     def __str__(self):
-        return ' '.join(self._class_list)
+        return " ".join(self._class_list)
 
     def add(self, *class_names):
         for class_name in class_names:
@@ -344,7 +347,7 @@ class HasOptions:
 
     @property
     def options(self):
-        if not hasattr(self, '_options'):
+        if not hasattr(self, "_options"):
             self._options = Options(self)
 
         return self._options
@@ -454,11 +457,15 @@ class Style:
 
 
 class ContainerElement(Element):
-    def __init__(self, *args, children=None, dom_element=None, style=None, classes=None, **kwargs):
-        super().__init__(dom_element=dom_element, style=style, classes=classes, **kwargs)
+    def __init__(
+        self, *args, children=None, dom_element=None, style=None, classes=None, **kwargs
+    ):
+        super().__init__(
+            dom_element=dom_element, style=style, classes=classes, **kwargs
+        )
 
         for child in list(args) + (children or []):
-            if isinstance(child, Element) or isinstance (child, ElementCollection):
+            if isinstance(child, Element) or isinstance(child, ElementCollection):
                 self.append(child)
 
             else:
@@ -1561,25 +1568,108 @@ ELEMENT_CLASSES = [
     # list).
     grid,
     # The rest in alphabetical order.
-    a, abbr, address, area, article, aside, audio,
-    b, base, blockquote, body, br, button,
-    canvas, caption, cite, code, col, colgroup,
-    data, datalist, dd, del_, details, dialog, div, dl, dt,
-    em, embed,
-    fieldset, figcaption, figure, footer, form,
-    h1, h2, h3, h4, h5, h6, head, header, hgroup, hr, html,
-    i, iframe, img, input_, ins,
+    a,
+    abbr,
+    address,
+    area,
+    article,
+    aside,
+    audio,
+    b,
+    base,
+    blockquote,
+    body,
+    br,
+    button,
+    canvas,
+    caption,
+    cite,
+    code,
+    col,
+    colgroup,
+    data,
+    datalist,
+    dd,
+    del_,
+    details,
+    dialog,
+    div,
+    dl,
+    dt,
+    em,
+    embed,
+    fieldset,
+    figcaption,
+    figure,
+    footer,
+    form,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    head,
+    header,
+    hgroup,
+    hr,
+    html,
+    i,
+    iframe,
+    img,
+    input_,
+    ins,
     kbd,
-    label, legend, li, link,
-    main, map_, mark, menu, meta, meter,
+    label,
+    legend,
+    li,
+    link,
+    main,
+    map_,
+    mark,
+    menu,
+    meta,
+    meter,
     nav,
-    object_, ol, optgroup, option, output,
-    p, param, picture, pre, progress,
+    object_,
+    ol,
+    optgroup,
+    option,
+    output,
+    p,
+    param,
+    picture,
+    pre,
+    progress,
     q,
-    s, script, section, select, small, source, span, strong, style, sub, summary, sup,
-    table, tbody, td, template, textarea, tfoot, th, thead, time, title, tr, track,
-    u, ul,
-    var, video,
+    s,
+    script,
+    section,
+    select,
+    small,
+    source,
+    span,
+    strong,
+    style,
+    sub,
+    summary,
+    sup,
+    table,
+    tbody,
+    td,
+    template,
+    textarea,
+    tfoot,
+    th,
+    thead,
+    time,
+    title,
+    tr,
+    track,
+    u,
+    ul,
+    var,
+    video,
     wbr,
 ]
 

@@ -1,5 +1,5 @@
 from pyscript import document
-from pyscript.web.elements import element_from_dom, ElementCollection
+from pyscript.web.elements import ElementCollection, element_from_dom
 
 
 class DOM:
@@ -8,9 +8,9 @@ class DOM:
         self.head = element_from_dom(document.head)
 
     def find(self, selector):
-        return ElementCollection([
-            element_from_dom(el) for el in document.querySelectorAll(selector)
-        ])
+        return ElementCollection(
+            [element_from_dom(el) for el in document.querySelectorAll(selector)]
+        )
 
 
 dom = DOM()
