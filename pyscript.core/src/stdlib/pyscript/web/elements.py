@@ -34,10 +34,10 @@ def getmembers_static(cls):
 
 
 class DOMProperty:
-    """A descriptor representing a JS property on an `Element`.
+    """A descriptor representing a property on an Element`.
 
     This maps a property on an `Element` instance, to the property with the specified
-    name on the element's underlying JS object.
+    name on the element's underlying DOM element.
     """
 
     def __init__(self, name: str, allow_nones: bool = False):
@@ -53,7 +53,7 @@ class DOMProperty:
         setattr(obj._js, self.name, value)
 
 
-def element_from_js(js_element):
+def element_from_js(dom_element):
     """Create an instance of the appropriate subclass of `Element` for a JS element.
 
     If the JS element was created via an `Element` (i.e. by us) it will have a data
@@ -67,11 +67,11 @@ def element_from_js(js_element):
     # We use "getAttribute" here instead of `js_element.dataset.pyscriptType` as the
     # latter throws an `AttributeError` if the value isn't set. This way we just get
     # `None` which seems cleaner.
-    cls_name = js_element.getAttribute("data-pyscript-type")
+    cls_name = dom_element.getAttribute("data-pyscript-type")
     if cls_name:
         cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
     else:
-        cls = ELEMENT_CLASSES_BY_TAG.get(js_element.tagName.lower())
+        cls = ELEMENT_CLASSES_BY_TAG.get(dom_element.tagName.lower())
 
     # For any unknown elements (custom tags etc.) we just create an instance of the
     # 'Element' class.
@@ -80,7 +80,7 @@ def element_from_js(js_element):
     if not cls:
         cls = Element
 
-    return cls(js_element=js_element)
+    return cls(dom_element=dom_element)
 
 
 class Element:
@@ -111,20 +111,20 @@ class Element:
     translate = DOMProperty("translate")
     virtualkeyboardpolicy = DOMProperty("virtualkeyboardpolicy")
 
-    def __init__(self, js_element=None, style=None, classes=None, **kwargs):
+    def __init__(self, dom_element=None, style=None, classes=None, **kwargs):
         """
         If `js_element` is NOT None it means we are being called to *wrap* an
         existing js element. Otherwise, it means we are being called to *create* a new
         element.
         """
 
-        self._js = js_element or document.createElement(self.tag)
+        self._js = dom_element or document.createElement(self.tag)
 
         self._classes = Classes(self)
         self._parent = None
         self._style = Style(self)
 
-        if js_element is None:
+        if dom_element is None:
             # Set any style properties provided in input.
             if isinstance(style, dict):
                 self.style.set(**style)
@@ -454,8 +454,8 @@ class Style:
 
 
 class ContainerElement(Element):
-    def __init__(self, *args, children=None, js_element=None, style=None, classes=None, **kwargs):
-        super().__init__(js_element=js_element, style=style, classes=classes, **kwargs)
+    def __init__(self, *args, children=None, dom_element=None, style=None, classes=None, **kwargs):
+        super().__init__(dom_element=dom_element, style=style, classes=classes, **kwargs)
 
         for child in list(args) + (children or []):
             if isinstance(child, Element) or isinstance (child, ElementCollection):
