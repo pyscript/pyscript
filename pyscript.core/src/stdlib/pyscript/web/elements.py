@@ -75,8 +75,6 @@ def element_from_dom(dom_element):
 
     # For any unknown elements (custom tags etc.) we just create an instance of the
     # 'Element' class.
-    #
-    # TODO: Should we have a subclass for unknown elements?
     if not cls:
         cls = Element
 
@@ -112,38 +110,37 @@ class Element:
     virtualkeyboardpolicy = DOMProperty("virtualkeyboardpolicy")
 
     def __init__(self, dom_element=None, style=None, classes=None, **kwargs):
-        """
-        If `js_element` is NOT None it means we are being called to *wrap* an
-        existing js element. Otherwise, it means we are being called to *create* a new
-        element.
+        """Wrap or create a DOM element.
+
+        If `dom_element` is NOT None it means we are being called to *wrap* an existing
+        DOM element. Otherwise, we are being called to *create* a new element.
         """
 
+        # Wrap or create a new DOM element.
         self._dom_element = dom_element or document.createElement(self.tag)
+
+        # Tag the DOM element with our class name.
+        self._dom_element.dataset.pyscriptType = type(self).__name__
 
         self._classes = Classes(self)
         self._parent = None
         self._style = Style(self)
 
-        # TODO: Not sure this guard is necessary? If we are wrapping an existing element
-        # we often just pass that element in, but there is no reason we couldn't also
-        # allow the setting of style and classes on it?
-        if dom_element is None:
-            # Set any style properties provided in input.
-            if isinstance(style, dict):
-                self.style.set(**style)
+        # Set any specified style properties.
+        if isinstance(style, dict):
+            self.style.set(**style)
 
-            elif style is not None:
-                raise ValueError(
-                    f"Style should be a dictionary, received {style} (type {type(style)}) instead."
-                )
+        elif style is not None:
+            raise ValueError(
+                f"Style should be a dictionary, received {style} (type {type(style)}) instead."
+            )
 
-            if classes:
-                self.classes.add(classes)
+        # Add any specified classes.
+        if classes:
+            self.classes.add(classes)
 
-            self._init_properties(**kwargs)
-
-        # Tag the DOM element with our class name.
-        self._dom_element.dataset.pyscriptType = type(self).__name__
+        # Set any DOM properties.
+        self._init_properties(**kwargs)
 
     def __eq__(self, obj):
         """Check for equality by comparing the underlying DOM element."""
@@ -303,7 +300,7 @@ class Classes:
         return self._class_list.length
 
     def __repr__(self):
-        return f"ClassList({', '.join(self._class_list)})"
+        return f"Classes({', '.join(self._class_list)})"
 
     def __str__(self):
         return " ".join(self._class_list)
@@ -442,9 +439,9 @@ class Style:
     def remove(self, key):
         self._style.removeProperty(key)
 
-    def set(self, **kws):
-        for k, v in kws.items():
-            self._element._dom_element.style.setProperty(k, v)
+    def set(self, **kwargs):
+        for key, value in kwargs.items():
+            self._element._dom_element.style.setProperty(key, value)
 
     # CSS Properties
     # Reference: https://github.com/microsoft/TypeScript/blob/main/src/lib/dom.generated.d.ts#L3799C1-L5005C2
@@ -1477,6 +1474,63 @@ class grid(ContainerElement):
         # TODO: This should be a property
         if not gap is None:
             self.style["gap"] = gap
+
+
+class ClassesCollection:
+    """A 'more Pythonic' interface to an element's `classList`."""
+
+    def __init__(self, collection: "ElementCollection") -> None:
+        self._collection = collection
+
+    def __contains__(self, class_name):
+        for element in self._collection:
+            if class_name in element.classes:
+                return True
+
+        return False
+
+    def __eq__(self, other):
+        return isinstance(other, ClassesCollection) and self._collection == other._collection
+
+    def __iter__(self):
+        all_classes = set()
+        for element in self._collection:
+            all_classes.add(*element.classes)
+
+        for class_name in all_classes:
+            yield class_name
+
+    def __len__(self):
+        all_classes = set()
+        for element in self._collection:
+            all_classes.add(*element.classes)
+
+        return len(all_classes)
+
+    def __repr__(self):
+        return f"ClassesCollection({repr(self._collection)})"
+
+    def __str__(self):
+        return " ".join(self._class_list)
+
+    def add(self, *class_names):
+        for element in self._collection:
+            element.classes.add(*class_names)
+
+    def contains(self, class_name):
+        return class_name in self
+
+    def remove(self, *class_names):
+        for element in self._collection:
+            element.classes.remove(*class_names)
+
+    def replace(self, old_class, new_class):
+        for element in self._collection:
+            element.classes.replace(old_class, new_class)
+
+    def toggle(self, class_name):
+        for element in self._collection:
+            element.classes.toggle(class_name)
 
 
 class StyleCollection:
