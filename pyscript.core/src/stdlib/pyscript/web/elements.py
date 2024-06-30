@@ -1620,6 +1620,7 @@ class ElementCollection:
     def value(self, value):
         self._set_attribute("value", value)
 
+
 # fmt: off
 ELEMENT_CLASSES = [
     # We put grid first because it is really just a <div> but we want the div class to
