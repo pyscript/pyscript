@@ -1490,7 +1490,10 @@ class ClassesCollection:
         return False
 
     def __eq__(self, other):
-        return isinstance(other, ClassesCollection) and self._collection == other._collection
+        return (
+            isinstance(other, ClassesCollection)
+            and self._collection == other._collection
+        )
 
     def __iter__(self):
         all_classes = set()
