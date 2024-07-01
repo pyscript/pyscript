@@ -1,5 +1,6 @@
-import inspect
-import sys
+# import inspect
+# import sys
+
 
 try:
     from typing import Any
@@ -20,17 +21,17 @@ except ImportError:
 
 from pyscript import display, document
 
-#: A flag to show if MicroPython is the current Python interpreter.
-is_micropython = "MicroPython" in sys.version
-
-
-def getmembers_static(cls):
-    """Cross-interpreter implementation of inspect.getmembers_static."""
-
-    if is_micropython:  # pragma: no cover
-        return [(name, getattr(cls, name)) for name, _ in inspect.getmembers(cls)]
-
-    return inspect.getmembers_static(cls)
+# #: A flag to show if MicroPython is the current Python interpreter.
+# is_micropython = "MicroPython" in sys.version
+#
+#
+# def getmembers_static(cls):
+#     """Cross-interpreter implementation of inspect.getmembers_static."""
+#
+#     if is_micropython:  # pragma: no cover
+#         return [(name, getattr(cls, name)) for name, _ in inspect.getmembers(cls)]
+#
+#     return inspect.getmembers_static(cls)
 
 
 class DOMProperty:
@@ -141,29 +142,29 @@ class Element:
             self.classes.add(classes)
 
         # Set any specified DOM properties.
-        self._init_properties(**kwargs)
+        self.set(**kwargs)
+
+    # def _init_properties(self, **kwargs):
+    #     """Set all the properties (of type DOMProperty) provided in input as properties
+    #     of the class instance.
+    #
+    #     Args:
+    #         **kwargs: The properties to set
+    #     """
+    #     # Look at all the properties of the class and see if they were provided in
+    #     # kwargs.
+    #     for attr_name, attr_value in getmembers_static(self.__class__):
+    #         # For each one, actually check if it is a property of the class and set it.
+    #         if attr_name in kwargs and isinstance(attr_value, DOMProperty):
+    #             try:
+    #                 setattr(self, attr_name, kwargs[attr_name])
+    #             except Exception as e:
+    #                 print(f"Error setting {attr_name} to {kwargs[attr_name]}: {e}")
+    #                 raise
 
     def __eq__(self, obj):
         """Check for equality by comparing the underlying DOM element."""
         return isinstance(obj, Element) and obj._dom_element == self._dom_element
-
-    def _init_properties(self, **kwargs):
-        """Set all the properties (of type DOMProperty) provided in input as properties
-        of the class instance.
-
-        Args:
-            **kwargs: The properties to set
-        """
-        # Look at all the properties of the class and see if they were provided in
-        # kwargs.
-        for attr_name, attr_value in getmembers_static(self.__class__):
-            # For each one, actually check if it is a property of the class and set it.
-            if attr_name in kwargs and isinstance(attr_value, DOMProperty):
-                try:
-                    setattr(self, attr_name, kwargs[attr_name])
-                except Exception as e:
-                    print(f"Error setting {attr_name} to {kwargs[attr_name]}: {e}")
-                    raise
 
     @property
     def children(self):
@@ -262,6 +263,11 @@ class Element:
                 for el in self._dom_element.querySelectorAll(selector)
             ]
         )
+
+    def set(self, **kwargs):
+        """Convenience method to set multiple DOM properties in a single call."""
+        for name, value in kwargs.items():
+            setattr(self, name, value)
 
     def show_me(self):
         """Scroll the element into view."""
@@ -1478,8 +1484,6 @@ class grid(ContainerElement):
 
 
 class ClassesCollection:
-    """A 'more Pythonic' interface to an element's `classList`."""
-
     def __init__(self, collection: "ElementCollection") -> None:
         self._collection = collection
 
@@ -1656,7 +1660,7 @@ ELEMENT_CLASSES = [
 ]
 # fmt: on
 
+
+# Lookup tables to get an element class by its name or tag.
 ELEMENT_CLASSES_BY_NAME = {cls.__name__: cls for cls in ELEMENT_CLASSES}
-
-
 ELEMENT_CLASSES_BY_TAG = {cls.tag: cls for cls in ELEMENT_CLASSES}
