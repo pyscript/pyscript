@@ -1514,7 +1514,12 @@ class ClassesCollection:
         return f"ClassesCollection({repr(self._collection)})"
 
     def __str__(self):
-        return " ".join(self._class_list)
+        all_classes = set()
+        for element in self._collection:
+            for class_name in element.classes:
+                all_classes.add(class_name)
+
+        return " ".join(all_classes)
 
     def add(self, *class_names):
         for element in self._collection:
