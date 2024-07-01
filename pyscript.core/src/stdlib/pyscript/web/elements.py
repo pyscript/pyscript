@@ -1580,7 +1580,6 @@ class ElementCollection:
             return ElementCollection(self._elements[key])
 
         # If it's anything else (basically a string) we use it as a query selector.
-        # TODO: Write tests!
         elements = self._elements.querySelectorAll(key)
         return ElementCollection([element_from_dom(el) for el in elements])
 
