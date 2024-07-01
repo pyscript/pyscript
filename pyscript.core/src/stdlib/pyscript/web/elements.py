@@ -60,8 +60,8 @@ def element_from_dom(dom_element):
     attribute named `data-pyscript-type` that contains the name of the subclass
     that created it. If the `data-pyscript-type` attribute *is* present we look up the
     subclass by name and create an instance of that. Otherwise, we make a 'best-guess'
-    and look up the `Element` subclass by tag name (this is NOT fool-proof as many
-    subclasses might use a `<div>`, but close enough for jazz).
+    and look up the `Element` subclass by the DOM element's tag name (this is NOT
+    fool-proof as many subclasses might use a `<div>`, but close enough for jazz).
     """
 
     # We use "getAttribute" here instead of `js_element.dataset.pyscriptType` as the
@@ -70,11 +70,12 @@ def element_from_dom(dom_element):
     cls_name = dom_element.getAttribute("data-pyscript-type")
     if cls_name:
         cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
+
     else:
         cls = ELEMENT_CLASSES_BY_TAG.get(dom_element.tagName.lower())
 
-    # For any unknown elements (custom tags etc.) we just create an instance of the
-    # 'Element' class.
+    # For any unknown elements (custom tags etc.) create an instance of the 'Element'
+    # class.
     if not cls:
         cls = Element
 
@@ -110,10 +111,10 @@ class Element:
     virtualkeyboardpolicy = DOMProperty("virtualkeyboardpolicy")
 
     def __init__(self, dom_element=None, style=None, classes=None, **kwargs):
-        """Wrap or create a DOM element.
+        """Create a new, or wrap an existing DOM element.
 
-        If `dom_element` is NOT None it means we are being called to *wrap* an existing
-        DOM element. Otherwise, we are being called to *create* a new element.
+        If `dom_element` is None we are being called to *create* a new element.
+        Otherwise, we are being called to *wrap* an existing DOM element.
         """
 
         # Wrap or create a new DOM element.
@@ -126,7 +127,7 @@ class Element:
         self._parent = None
         self._style = Style(self)
 
-        # Set any specified style properties.
+        # Set any specified styles.
         if isinstance(style, dict):
             self.style.set(**style)
 
@@ -139,7 +140,7 @@ class Element:
         if classes:
             self.classes.add(classes)
 
-        # Set any DOM properties.
+        # Set any specified DOM properties.
         self._init_properties(**kwargs)
 
     def __eq__(self, obj):
@@ -163,6 +164,10 @@ class Element:
                 except Exception as e:
                     print(f"Error setting {attr_name} to {kwargs[attr_name]}: {e}")
                     raise
+
+    @property
+    def children(self):
+        return [element_from_dom(el) for el in self._dom_element.children]
 
     @property
     def classes(self):
@@ -189,10 +194,6 @@ class Element:
             return
 
         display(value, target=self.id)
-
-    @property
-    def children(self):
-        return [element_from_dom(el) for el in self._dom_element.children]
 
     @property
     def parent(self):
@@ -239,11 +240,11 @@ class Element:
                         f'Element "{child}" is a proxy object, but not a valid element or a NodeList.'
                     )
 
-    def clone(self, new_id=None):
+    def clone(self, clone_id=None):
         """Make a clone of the element (clones the underlying DOM object too)."""
-        el = element_from_dom(self._dom_element.cloneNode(True))
-        el.id = new_id
-        return el
+        clone = element_from_dom(self._dom_element.cloneNode(True))
+        clone.id = clone_id
+        return clone
 
     def find(self, selector):
         """Return an ElementCollection representing all the child elements that
@@ -268,7 +269,7 @@ class Element:
 
 
 class Classes:
-    """A 'more Pythonic' interface to an element's `classList`."""
+    """A set-like interface to an element's `classList`."""
 
     def __init__(self, element: Element):
         self._element = element
@@ -424,7 +425,7 @@ class Options:
 
 
 class Style:
-    """A dict-like interface to an elements css style."""
+    """A dict-like interface to an element's css style."""
 
     def __init__(self, element: Element) -> None:
         self._element = element
