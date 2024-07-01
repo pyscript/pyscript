@@ -167,7 +167,9 @@ class Element:
 
     @property
     def children(self):
-        return ElementCollection([element_from_dom(el) for el in self._dom_element.children])
+        return ElementCollection(
+            [element_from_dom(el) for el in self._dom_element.children]
+        )
 
     @property
     def classes(self):
