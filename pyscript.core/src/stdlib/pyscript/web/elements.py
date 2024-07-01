@@ -1496,30 +1496,17 @@ class ClassesCollection:
         )
 
     def __iter__(self):
-        all_classes = set()
-        for element in self._collection:
-            all_classes.add(*element.classes)
-
-        for class_name in all_classes:
+        for class_name in self._all_class_names():
             yield class_name
 
     def __len__(self):
-        all_classes = set()
-        for element in self._collection:
-            all_classes.add(*element.classes)
-
-        return len(all_classes)
+        return len(self._all_class_names())
 
     def __repr__(self):
         return f"ClassesCollection({repr(self._collection)})"
 
     def __str__(self):
-        all_classes = set()
-        for element in self._collection:
-            for class_name in element.classes:
-                all_classes.add(class_name)
-
-        return " ".join(all_classes)
+        return " ".join(self._all_class_names())
 
     def add(self, *class_names):
         for element in self._collection:
@@ -1540,6 +1527,14 @@ class ClassesCollection:
         for element in self._collection:
             element.classes.toggle(class_name)
 
+    def _all_class_names(self):
+        all_class_names = set()
+        for element in self._collection:
+            for class_name in element.classes:
+                all_class_names.add(class_name)
+
+        return all_class_names
+
 
 class StyleCollection:
     def __init__(self, collection: "ElementCollection") -> None:
@@ -1554,6 +1549,9 @@ class StyleCollection:
     def __setitem__(self, key, value):
         for element in self._collection._elements:
             element.style[key] = value
+
+    def __repr__(self):
+        return f"StyleCollection({repr(self._collection)})"
 
     def remove(self, key):
         for element in self._collection._elements:
