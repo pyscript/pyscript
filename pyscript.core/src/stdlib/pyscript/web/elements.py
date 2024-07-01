@@ -1558,6 +1558,7 @@ class StyleCollection:
 class ElementCollection:
     def __init__(self, elements: [Element]) -> None:
         self._elements = elements
+        self.classes = ClassesCollection(self)
         self.style = StyleCollection(self)
 
     def __eq__(self, obj):
