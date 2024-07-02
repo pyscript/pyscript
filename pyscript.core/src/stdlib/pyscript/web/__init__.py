@@ -7,6 +7,9 @@ class DOM:
         self.body = element_from_dom(document.body)
         self.head = element_from_dom(document.head)
 
+    def __getitem__(self, selector):
+        return self.find(selector)
+
     def find(self, selector):
         return ElementCollection(
             [element_from_dom(el) for el in document.querySelectorAll(selector)]
