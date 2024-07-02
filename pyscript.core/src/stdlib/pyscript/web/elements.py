@@ -1,7 +1,6 @@
 import inspect
 import sys
 
-
 try:
     from typing import Any
 except ImportError:
@@ -20,7 +19,6 @@ except ImportError:
 
 
 from pyscript import display, document
-
 
 #: A flag to show if MicroPython is the current Python interpreter.
 is_micropython = "MicroPython" in sys.version
@@ -162,9 +160,7 @@ class Element:
         """
         dom_properties = {
             attribute_name: attribute_value
-
             for attribute_name, attribute_value in getmembers_static(self.__class__)
-
             if isinstance(attribute_value, DOMProperty)
         }
 
