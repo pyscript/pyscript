@@ -1,5 +1,5 @@
-# import inspect
-# import sys
+import inspect
+import sys
 
 
 try:
@@ -21,21 +21,22 @@ except ImportError:
 
 from pyscript import display, document
 
-# #: A flag to show if MicroPython is the current Python interpreter.
-# is_micropython = "MicroPython" in sys.version
-#
-#
-# def getmembers_static(cls):
-#     """Cross-interpreter implementation of inspect.getmembers_static."""
-#
-#     if is_micropython:  # pragma: no cover
-#         return [(name, getattr(cls, name)) for name, _ in inspect.getmembers(cls)]
-#
-#     return inspect.getmembers_static(cls)
+
+#: A flag to show if MicroPython is the current Python interpreter.
+is_micropython = "MicroPython" in sys.version
+
+
+def getmembers_static(cls):
+    """Cross-interpreter implementation of inspect.getmembers_static."""
+
+    if is_micropython:  # pragma: no cover
+        return [(name, getattr(cls, name)) for name, _ in inspect.getmembers(cls)]
+
+    return inspect.getmembers_static(cls)
 
 
 class DOMProperty:
-    """A descriptor representing a property on an Element`.
+    """A descriptor representing a DOM property on an Element`.
 
     This maps a property on an `Element` instance, to the property with the specified
     name on the element's underlying DOM element.
@@ -111,7 +112,7 @@ class Element:
     translate = DOMProperty("translate")
     virtualkeyboardpolicy = DOMProperty("virtualkeyboardpolicy")
 
-    def __init__(self, dom_element=None, style=None, classes=None, **kwargs):
+    def __init__(self, dom_element=None, classes=None, style=None, **kwargs):
         """Create a new, or wrap an existing DOM element.
 
         If `dom_element` is None we are being called to *create* a new element.
@@ -122,11 +123,24 @@ class Element:
         self._dom_element = dom_element or document.createElement(self.tag)
 
         # Tag the DOM element with our class name.
+        #
+        # Using the `dataset` attribute is how you programmatically add `data-xxx`
+        # attributes to a DOM element. In this case it will set an attribute that
+        # appears in (say) the devtools as `data-pyscript-type`.
         self._dom_element.dataset.pyscriptType = type(self).__name__
 
-        self._classes = Classes(self)
         self._parent = None
+        self._classes = Classes(self)
         self._style = Style(self)
+
+        # Set any specified classes, styles, and DOM properties.
+        self.update(classes=classes, style=style, **kwargs)
+
+    def update(self, classes=None, style=None, **kwargs):
+        """Update the element with the specified classes, styles, and DOM properties."""
+
+        if classes:
+            self.classes.add(classes)
 
         # Set any specified styles.
         if isinstance(style, dict):
@@ -137,30 +151,32 @@ class Element:
                 f"Style should be a dictionary, received {style} (type {type(style)}) instead."
             )
 
-        # Add any specified classes.
-        if classes:
-            self.classes.add(classes)
+        self._set_dom_properties(**kwargs)
 
-        # Set any specified DOM properties.
-        self.set(**kwargs)
+    def _set_dom_properties(self, **kwargs):
+        """Set all the properties (of type DOMProperty) provided in input as properties
+        of the class instance.
 
-    # def _init_properties(self, **kwargs):
-    #     """Set all the properties (of type DOMProperty) provided in input as properties
-    #     of the class instance.
-    #
-    #     Args:
-    #         **kwargs: The properties to set
-    #     """
-    #     # Look at all the properties of the class and see if they were provided in
-    #     # kwargs.
-    #     for attr_name, attr_value in getmembers_static(self.__class__):
-    #         # For each one, actually check if it is a property of the class and set it.
-    #         if attr_name in kwargs and isinstance(attr_value, DOMProperty):
-    #             try:
-    #                 setattr(self, attr_name, kwargs[attr_name])
-    #             except Exception as e:
-    #                 print(f"Error setting {attr_name} to {kwargs[attr_name]}: {e}")
-    #                 raise
+        Args:
+            **kwargs: The properties to set
+        """
+        dom_properties = {
+            attribute_name: attribute_value
+
+            for attribute_name, attribute_value in getmembers_static(self.__class__)
+
+            if isinstance(attribute_value, DOMProperty)
+        }
+
+        for name, value in kwargs.items():
+            if name not in dom_properties:
+                raise ValueError(f"'{name}' is not a DOM property.")
+
+            try:
+                setattr(self, name, value)
+            except Exception as e:
+                print(f"Error setting {name} to {value}: {e}")
+                raise
 
     def __eq__(self, obj):
         """Check for equality by comparing the underlying DOM element."""
@@ -265,11 +281,6 @@ class Element:
                 for el in self._dom_element.querySelectorAll(selector)
             ]
         )
-
-    def set(self, **kwargs):
-        """Convenience method to set multiple DOM properties in a single call."""
-        for name, value in kwargs.items():
-            setattr(self, name, value)
 
     def show_me(self):
         """Scroll the element into view."""
