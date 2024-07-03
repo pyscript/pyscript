@@ -116,8 +116,6 @@ class Element:
         If `dom_element` is None we are being called to *create* a new element.
         Otherwise, we are being called to *wrap* an existing DOM element.
         """
-
-        # Wrap or create a new DOM element.
         self._dom_element = dom_element or document.createElement(self.tag)
 
         # Tag the DOM element with our class name.
