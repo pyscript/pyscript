@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyTerminal Prompt: NO REPL</title>
+        <script type="module" src="../../dist/core.js"></script>
+        <style>.xterm { padding: .5rem; }</style>
+    </head>
+    <body>
+        <script type="mpy" worker terminal>
+            prompt = input("Say something: ")
+            print("You said, ", prompt)
+        </script>
+        <script type="py" worker terminal>
+            prompt = input("Say something: ")
+            print("You said, ", prompt)
+        </script>
+    </body>
+</html>

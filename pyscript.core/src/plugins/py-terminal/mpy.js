@@ -49,11 +49,12 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
 
             const writer = encoder.writable.getWriter();
             sync.pyterminal_stream_write = (buffer) => writer.write(buffer);
-            pyterminal_ready();
 
             interpreter.replInit();
         },
     });
+
+    pyterminal_ready();
 };
 
 export default async (element) => {
@@ -163,13 +164,25 @@ export default async (element) => {
                 };
                 terminal.onData((buffer) => {
                     if (promisedChunks) {
-                        readChunks += buffer;
-                        terminal.write(buffer);
-                        if (readChunks.endsWith("\r")) {
-                            terminal.write("\n");
-                            promisedChunks.resolve(readChunks.slice(0, -1));
-                            promisedChunks = null;
-                            readChunks = "";
+                        // handle backspace on input
+                        if (buffer === "\x7f") {
+                            // avoid over-greedy backspace
+                            if (readChunks.length) {
+                                readChunks = readChunks.slice(0, -1);
+                                // override previous char position
+                                // put an empty space to clear the char
+                                // move back position again
+                                buffer = "\b \b";
+                            } else buffer = "";
+                        } else readChunks += buffer;
+                        if (buffer) {
+                            terminal.write(buffer);
+                            if (readChunks.endsWith("\r")) {
+                                terminal.write("\n");
+                                promisedChunks.resolve(readChunks.slice(0, -1));
+                                promisedChunks = null;
+                                readChunks = "";
+                            }
                         }
                     } else {
                         stream.write(buffer);
