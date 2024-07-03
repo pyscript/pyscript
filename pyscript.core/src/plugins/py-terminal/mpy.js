@@ -49,11 +49,12 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
 
             const writer = encoder.writable.getWriter();
             sync.pyterminal_stream_write = (buffer) => writer.write(buffer);
-            pyterminal_ready();
 
             interpreter.replInit();
         },
     });
+
+    pyterminal_ready();
 };
 
 export default async (element) => {
