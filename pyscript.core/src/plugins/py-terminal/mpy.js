@@ -164,13 +164,24 @@ export default async (element) => {
                 };
                 terminal.onData((buffer) => {
                     if (promisedChunks) {
-                        readChunks += buffer;
-                        terminal.write(buffer);
-                        if (readChunks.endsWith("\r")) {
-                            terminal.write("\n");
-                            promisedChunks.resolve(readChunks.slice(0, -1));
-                            promisedChunks = null;
-                            readChunks = "";
+                        // handle backspace on input
+                        if (buffer === "\x7f") {
+                            if (readChunks.length) {
+                                readChunks = readChunks.slice(0, -1);
+                                buffer = "\b \b";
+                            }
+                            else buffer = "";
+                        }
+                        else
+                            readChunks += buffer;
+                        if (buffer) {
+                            terminal.write(buffer);
+                            if (readChunks.endsWith("\r")) {
+                                terminal.write("\n");
+                                promisedChunks.resolve(readChunks.slice(0, -1));
+                                promisedChunks = null;
+                                readChunks = "";
+                            }
                         }
                     } else {
                         stream.write(buffer);
