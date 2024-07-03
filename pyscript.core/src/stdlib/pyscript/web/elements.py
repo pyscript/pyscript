@@ -1550,41 +1550,14 @@ class StyleCollection:
 
 class ElementCollection:
     def __init__(self, elements: [Element]) -> None:
-        self._elements = elements
-        self._classes = ClassesCollection(self)
-        self._style = StyleCollection(self)
-
-    @property
-    def children(self):
-        return self._elements
-
-    @property
-    def classes(self):
-        return self._classes
-
-    @property
-    def style(self):
-        return self._style
-
-    @property
-    def innerHTML(self):
-        return self._get_attribute("innerHTML")
-
-    @innerHTML.setter
-    def innerHTML(self, value):
-        self._set_attribute("innerHTML", value)
-
-    @property
-    def value(self):
-        return self._get_attribute("value")
-
-    @value.setter
-    def value(self, value):
-        self._set_attribute("value", value)
+        # We set via the `__dict__` here as we override `__setattr__` to delegate all
+        # other attributes through to the elements in the collection.
+        self.__dict__["_elements"] = elements
+        self.__dict__["_classes"] = ClassesCollection(self)
+        self.__dict__["_style"] = StyleCollection(self)
 
     def __eq__(self, obj):
-        """Check if the element is the same as the other element by comparing
-        the underlying DOM element"""
+        """Check for equality by comparing the underlying DOM elements."""
         return isinstance(obj, ElementCollection) and obj._elements == self._elements
 
     def __getitem__(self, key):
@@ -1609,6 +1582,24 @@ class ElementCollection:
 
     def __repr__(self):
         return f"{self.__class__.__name__} (length: {len(self._elements)}) {self._elements}"
+
+    def __getattr__(self, item):
+        return self._get_attribute(item)
+
+    def __setattr__(self, key, value):
+        self._set_attribute(key, value)
+
+    @property
+    def children(self):
+        return self._elements
+
+    @property
+    def classes(self):
+        return self._classes
+
+    @property
+    def style(self):
+        return self._style
 
     def _get_attribute(self, attr, index=None):
         if index is None:
