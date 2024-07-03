@@ -175,7 +175,9 @@ class TestElement:
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
         assert (
-            div.innerHTML == div._dom_element.innerHTML == "&lt;b&gt;New Content&lt;/b&gt;"
+            div.innerHTML
+            == div._dom_element.innerHTML
+            == "&lt;b&gt;New Content&lt;/b&gt;"
         )
         assert div.text == div._dom_element.textContent == "<b>New Content</b>"
 
@@ -251,7 +253,9 @@ class TestCreation:
 
         # Creating an element from another element automatically creates that element
         # as a child of the original element
-        new_el = el.p("a div", classes=["code-description"], innerHTML="Ciao PyScripters!")
+        new_el = el.p(
+            "a div", classes=["code-description"], innerHTML="Ciao PyScripters!"
+        )
         parent_div.append(new_el)
 
         assert isinstance(new_el, el.Element)
