@@ -19,7 +19,7 @@ except ImportError:
             print("WARNING: ", *args, **kwargs)
 
 
-from pyscript import display, document
+from pyscript import document
 
 
 #: A flag to show if MicroPython is the current Python interpreter.
@@ -98,7 +98,7 @@ class Element:
     draggable = DOMProperty("draggable")
     enterkeyhint = DOMProperty("enterkeyhint")
     hidden = DOMProperty("hidden")
-    html = DOMProperty("innerHTML")
+    innerHTML = DOMProperty("innerHTML")
     id = DOMProperty("id")
     lang = DOMProperty("lang")
     nonce = DOMProperty("nonce")
@@ -191,28 +191,6 @@ class Element:
     @property
     def classes(self):
         return self._classes
-
-    @property
-    def content(self):
-        # TODO: This breaks with with standard template elements. Define how to best
-        #       handle this specific use case. Just not support for now?
-        if self._dom_element.tagName == "TEMPLATE":
-            warnings.warn(
-                "Content attribute not supported for template elements.", stacklevel=2
-            )
-            return None
-        return self._dom_element.innerHTML
-
-    @content.setter
-    def content(self, value):
-        # TODO: (same comment as above)
-        if self._dom_element.tagName == "TEMPLATE":
-            warnings.warn(
-                "Content attribute not supported for template elements.", stacklevel=2
-            )
-            return
-
-        display(value, target=self.id)
 
     @property
     def parent(self):
@@ -489,7 +467,7 @@ class ContainerElement(Element):
                 self.append(child)
 
             else:
-                self.html += child
+                self.innerHTML += child
 
 
 # IMPORTANT: For all HTML components defined below, we are not mapping all possible
@@ -1579,8 +1557,36 @@ class StyleCollection:
 class ElementCollection:
     def __init__(self, elements: [Element]) -> None:
         self._elements = elements
-        self.classes = ClassesCollection(self)
-        self.style = StyleCollection(self)
+        self._classes = ClassesCollection(self)
+        self._style = StyleCollection(self)
+
+    @property
+    def children(self):
+        return self._elements
+
+    @property
+    def classes(self):
+        return self._classes
+
+    @property
+    def style(self):
+        return self._style
+
+    @property
+    def innerHTML(self):
+        return self._get_attribute("innerHTML")
+
+    @innerHTML.setter
+    def innerHTML(self, value):
+        self._set_attribute("innerHTML", value)
+
+    @property
+    def value(self):
+        return self._get_attribute("value")
+
+    @value.setter
+    def value(self, value):
+        self._set_attribute("value", value)
 
     def __eq__(self, obj):
         """Check if the element is the same as the other element by comparing
@@ -1620,26 +1626,6 @@ class ElementCollection:
     def _set_attribute(self, attr, value):
         for el in self._elements:
             setattr(el, attr, value)
-
-    @property
-    def children(self):
-        return self._elements
-
-    @property
-    def html(self):
-        return self._get_attribute("html")
-
-    @html.setter
-    def html(self, value):
-        self._set_attribute("html", value)
-
-    @property
-    def value(self):
-        return self._get_attribute("value")
-
-    @value.setter
-    def value(self, value):
-        self._set_attribute("value", value)
 
 
 # fmt: off

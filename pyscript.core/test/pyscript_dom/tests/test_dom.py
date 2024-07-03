@@ -20,7 +20,7 @@ def test_getitem_by_id():
     div = result[0]
     # EXPECT the element text value to match what we expect and what
     # the JS document.querySelector API would return
-    assert document.querySelector(selector).innerHTML == div.html == txt
+    assert document.querySelector(selector).innerHTML == div.innerHTML == txt
     # EXPECT the results to be of the right types
     assert isinstance(div, el.Element)
     assert isinstance(result, ElementCollection)
@@ -47,12 +47,12 @@ def test_read_n_write_collection_elements():
     elements = dom.find(".multi-elems")
 
     for element in elements:
-        assert element.html == f"Content {element.id.replace('#', '')}"
+        assert element.innerHTML == f"Content {element.id.replace('#', '')}"
 
     new_content = "New Content"
-    elements.html = new_content
+    elements.innerHTML = new_content
     for element in elements:
-        assert element.html == new_content
+        assert element.innerHTML == new_content
 
 
 class TestElement:
@@ -69,7 +69,7 @@ class TestElement:
         # EXPECT the new element to be a el.Element
         assert isinstance(div, el.Element)
         # EXPECT the div attributes to be == to how they are configured in the page
-        assert div.html == "Child 1"
+        assert div.innerHTML == "Child 1"
         assert div.id == "test_selector_w_children_child_1"
 
     def test_equality(self):
@@ -85,10 +85,10 @@ class TestElement:
         assert div is not div2
 
         # EXPECT their value to always be equal
-        assert div.html == div2.html
-        div.html = "some value"
+        assert div.innerHTML == div2.innerHTML
+        div.innerHTML = "some value"
 
-        assert div.html == div2.html == "some value"
+        assert div.innerHTML == div2.innerHTML == "some value"
 
     def test_append_element(self):
         id_ = "element-append-tests"
@@ -158,11 +158,11 @@ class TestElement:
         div = dom.find("#element_attribute_tests")[0]
 
         # WHEN we set the html attribute
-        div.html = "<b>New Content</b>"
+        div.innerHTML = "<b>New Content</b>"
 
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
-        assert div.html == div._dom_element.innerHTML == "<b>New Content</b>"
+        assert div.innerHTML == div._dom_element.innerHTML == "<b>New Content</b>"
         assert div.text == div._dom_element.textContent == "New Content"
 
     def test_text_attribute(self):
@@ -175,7 +175,7 @@ class TestElement:
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
         assert (
-            div.html == div._dom_element.innerHTML == "&lt;b&gt;New Content&lt;/b&gt;"
+            div.innerHTML == div._dom_element.innerHTML == "&lt;b&gt;New Content&lt;/b&gt;"
         )
         assert div.text == div._dom_element.textContent == "<b>New Content</b>"
 
@@ -251,7 +251,7 @@ class TestCreation:
 
         # Creating an element from another element automatically creates that element
         # as a child of the original element
-        new_el = el.p("a div", classes=["code-description"], html="Ciao PyScripters!")
+        new_el = el.p("a div", classes=["code-description"], innerHTML="Ciao PyScripters!")
         parent_div.append(new_el)
 
         assert isinstance(new_el, el.Element)
@@ -320,7 +320,7 @@ class TestSelect:
 
         for i, option in enumerate(select.options, 1):
             assert option.value == f"{i}"
-            assert option.html == f"Option {i}"
+            assert option.innerHTML == f"Option {i}"
 
     def test_select_options_len(self):
         select = dom.find(f"#test_select_element_w_options")[0]
@@ -348,7 +348,7 @@ class TestSelect:
         # we passed in
         assert len(select.options) == 1
         assert select.options[0].value == "1"
-        assert select.options[0].html == "Option 1"
+        assert select.options[0].innerHTML == "Option 1"
 
         # WHEN we add another option (blank this time)
         select.options.add("")
@@ -358,7 +358,7 @@ class TestSelect:
 
         # EXPECT the last option to have an empty value and html
         assert select.options[1].value == ""
-        assert select.options[1].html == ""
+        assert select.options[1].innerHTML == ""
 
         # WHEN we add another option (this time adding it in between the other 2
         # options by using an integer index)
@@ -369,11 +369,11 @@ class TestSelect:
 
         # EXPECT the middle option to have the value and html we passed in
         assert select.options[0].value == "1"
-        assert select.options[0].html == "Option 1"
+        assert select.options[0].innerHTML == "Option 1"
         assert select.options[1].value == "2"
-        assert select.options[1].html == "Option 2"
+        assert select.options[1].innerHTML == "Option 2"
         assert select.options[2].value == ""
-        assert select.options[2].html == ""
+        assert select.options[2].innerHTML == ""
 
         # WHEN we add another option (this time adding it in between the other 2
         # options but using the option itself)
@@ -386,23 +386,23 @@ class TestSelect:
 
         # EXPECT the middle option to have the value and html we passed in
         assert select.options[0].value == "1"
-        assert select.options[0].html == "Option 1"
+        assert select.options[0].innerHTML == "Option 1"
         assert (
             select.options[0].selected
             == select.options[0]._dom_element.selected
             == False
         )
         assert select.options[1].value == "2"
-        assert select.options[1].html == "Option 2"
+        assert select.options[1].innerHTML == "Option 2"
         assert select.options[2].value == "3"
-        assert select.options[2].html == "Option 3"
+        assert select.options[2].innerHTML == "Option 3"
         assert (
             select.options[2].selected
             == select.options[2]._dom_element.selected
             == True
         )
         assert select.options[3].value == ""
-        assert select.options[3].html == ""
+        assert select.options[3].innerHTML == ""
 
         # WHEN we add another option (this time adding it in between the other 2
         # options but using the JS element of the option itself)
@@ -415,15 +415,15 @@ class TestSelect:
 
         # EXPECT the middle option to have the value and html we passed in
         assert select.options[0].value == "1"
-        assert select.options[0].html == "Option 1"
+        assert select.options[0].innerHTML == "Option 1"
         assert select.options[1].value == "2"
-        assert select.options[1].html == "Option 2"
+        assert select.options[1].innerHTML == "Option 2"
         assert select.options[2].value == "2a"
-        assert select.options[2].html == "Option 2a"
+        assert select.options[2].innerHTML == "Option 2a"
         assert select.options[3].value == "3"
-        assert select.options[3].html == "Option 3"
+        assert select.options[3].innerHTML == "Option 3"
         assert select.options[4].value == ""
-        assert select.options[4].html == ""
+        assert select.options[4].innerHTML == ""
 
     def test_select_options_remove(self):
         # GIVEN the existing select element with 3 options
@@ -456,5 +456,5 @@ class TestSelect:
 
         # EXPECT the selected option to be correct
         assert selected_option.value == "2"
-        assert selected_option.html == "Option 2"
+        assert selected_option.innerHTML == "Option 2"
         assert selected_option.selected == selected_option._dom_element.selected == True
