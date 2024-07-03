@@ -166,14 +166,15 @@ export default async (element) => {
                     if (promisedChunks) {
                         // handle backspace on input
                         if (buffer === "\x7f") {
+                            // avoid over-greedy backspace
                             if (readChunks.length) {
                                 readChunks = readChunks.slice(0, -1);
+                                // override previous char position
+                                // put an empty space to clear the char
+                                // move back position again
                                 buffer = "\b \b";
-                            }
-                            else buffer = "";
-                        }
-                        else
-                            readChunks += buffer;
+                            } else buffer = "";
+                        } else readChunks += buffer;
                         if (buffer) {
                             terminal.write(buffer);
                             if (readChunks.endsWith("\r")) {
