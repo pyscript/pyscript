@@ -1573,9 +1573,9 @@ class ElementCollection:
         # If it's anything else (basically a string) we use it as a query selector.
         elements = []
         for element in self._elements:
-            elements.extend(element._dom_element.querySelectorAll(key))
+            elements.extend(element.find(key))
 
-        return ElementCollection([element_from_dom(el) for el in elements])
+        return ElementCollection(elements)
 
     def __iter__(self):
         yield from self._elements
