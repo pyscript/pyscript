@@ -1571,11 +1571,7 @@ class ElementCollection:
             return ElementCollection(self._elements[key])
 
         # If it's anything else (basically a string) we use it as a query selector.
-        elements = []
-        for element in self._elements:
-            elements.extend(element.find(key))
-
-        return ElementCollection(elements)
+        return self.find(key)
 
     def __iter__(self):
         yield from self._elements
@@ -1603,6 +1599,13 @@ class ElementCollection:
     @property
     def style(self):
         return self._style
+
+    def find(self, selector):
+        elements = []
+        for element in self._elements:
+            elements.extend(element.find(selector))
+
+        return ElementCollection(elements)
 
     def _get_attribute(self, attr, index=None):
         if index is None:
