@@ -1571,7 +1571,10 @@ class ElementCollection:
             return ElementCollection(self._elements[key])
 
         # If it's anything else (basically a string) we use it as a query selector.
-        elements = self._elements.querySelectorAll(key)
+        elements = []
+        for element in self._elements:
+            elements.extend(element._dom_element.querySelectorAll(key))
+
         return ElementCollection([element_from_dom(el) for el in elements])
 
     def __iter__(self):
