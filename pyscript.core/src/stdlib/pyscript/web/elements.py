@@ -105,7 +105,7 @@ class Element:
     slot = DOMProperty("slot")
     spellcheck = DOMProperty("spellcheck")
     tabindex = DOMProperty("tabindex")
-    text = DOMProperty("textContent")
+    textContent = DOMProperty("textContent")
     title = DOMProperty("title")
     translate = DOMProperty("translate")
     virtualkeyboardpolicy = DOMProperty("virtualkeyboardpolicy")
@@ -1603,7 +1603,7 @@ class ElementCollection:
     def find(self, selector):
         elements = []
         for element in self._elements:
-            elements.extend(element.find(selector))
+            elements.append(element.find(selector))
 
         return ElementCollection(elements)
 
