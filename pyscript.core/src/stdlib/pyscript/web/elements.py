@@ -87,7 +87,7 @@ class Element:
 
     # GLOBAL ATTRIBUTES.
     # These are attribute that all elements have (this list is a subset of the official
-    # one). We are trying to capture the most used ones.
+    # one - we are just trying to capture the most used ones).
     accesskey = DOMProperty("accesskey")
     autofocus = DOMProperty("autofocus")
     autocapitalize = DOMProperty("autocapitalize")
@@ -122,7 +122,7 @@ class Element:
         #
         # Using the `dataset` attribute is how you programmatically add `data-xxx`
         # attributes to a DOM element. In this case it will set an attribute that
-        # appears in (say) the devtools as `data-pyscript-type`.
+        # appears in the DOM as `data-pyscript-type`.
         self._dom_element.dataset.pyscriptType = type(self).__name__
 
         self._parent = None
@@ -138,7 +138,6 @@ class Element:
         if classes:
             self.classes.add(classes)
 
-        # Set any specified styles.
         if isinstance(style, dict):
             self.style.set(**style)
 
@@ -150,12 +149,12 @@ class Element:
         self._set_dom_properties(**kwargs)
 
     def _set_dom_properties(self, **kwargs):
-        """Set all the properties (of type DOMProperty) provided in input as properties
-        of the class instance.
+        """Set the specified DOM properties.
 
         Args:
             **kwargs: The properties to set
         """
+        # Harvest all DOM properties from the instance's class.
         dom_properties = {
             attribute_name: attribute_value
             for attribute_name, attribute_value in getmembers_static(self.__class__)
@@ -1603,7 +1602,7 @@ class ElementCollection:
     def find(self, selector):
         elements = []
         for element in self._elements:
-            elements.append(element.find(selector))
+            elements.extend(element.find(selector))
 
         return ElementCollection(elements)
 
