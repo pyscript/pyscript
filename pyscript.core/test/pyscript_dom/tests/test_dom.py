@@ -153,7 +153,7 @@ class TestElement:
 
         assert called
 
-    def test_html_attribute(self):
+    def test_inner_html_attribute(self):
         # GIVEN an existing element on the page with a known empty text content
         div = dom.find("#element_attribute_tests")[0]
 
@@ -163,14 +163,14 @@ class TestElement:
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
         assert div.innerHTML == div._dom_element.innerHTML == "<b>New Content</b>"
-        assert div.text == div._dom_element.textContent == "New Content"
+        assert div.textContent == div._dom_element.textContent == "New Content"
 
     def test_text_attribute(self):
         # GIVEN an existing element on the page with a known empty text content
         div = dom.find("#element_attribute_tests")[0]
 
         # WHEN we set the html attribute
-        div.text = "<b>New Content</b>"
+        div.textContent = "<b>New Content</b>"
 
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
@@ -179,7 +179,7 @@ class TestElement:
             == div._dom_element.innerHTML
             == "&lt;b&gt;New Content&lt;/b&gt;"
         )
-        assert div.text == div._dom_element.textContent == "<b>New Content</b>"
+        assert div.textContent == div._dom_element.textContent == "<b>New Content</b>"
 
 
 class TestCollection:
