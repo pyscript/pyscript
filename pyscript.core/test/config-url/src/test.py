@@ -1,8 +1,9 @@
-from pyscript import RUNNING_IN_WORKER, document
+import js
+from pyscript import window, document
 
 classList = document.documentElement.classList
 
-if RUNNING_IN_WORKER:
-    classList.add("worker")
-else:
+if js is window:
     classList.add("main")
+else:
+    classList.add("worker")

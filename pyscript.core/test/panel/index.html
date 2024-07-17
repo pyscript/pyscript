@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>🦜 Panel Editor Template</title>
+    <script src="https://cdn.bokeh.org/bokeh/release/bokeh-3.4.1.js"></script>
+    <script src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.4.1.min.js"></script>
+    <script src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@holoviz/panel@1.4.4/dist/panel.min.js"></script>
+    <script type="module" src="../../dist/core.js"></script>
+  </head>
+  <body>
+    <div id="simple_app"></div>
+    <script type="py" config="./config.toml">
+        import panel as pn
+
+        pn.extension(sizing_mode="stretch_width")
+
+        slider = pn.widgets.FloatSlider(start=0, end=10, name='Amplitude')
+
+        def callback(new):
+            return f'Amplitude is: {new}'
+
+        pn.Row(slider, pn.bind(callback, slider)).servable(target='simple_app')
+    </script>
+  </body>
+</html>

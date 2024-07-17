@@ -1,14 +1,12 @@
+import js
 import json
 import sys
 
-import js as globalThis
 from polyscript import config as _config
 from polyscript import js_modules
 from pyscript.util import NotSupported
 
-RUNNING_IN_WORKER = not hasattr(globalThis, "document")
-
-config = json.loads(globalThis.JSON.stringify(_config))
+config = json.loads(js.JSON.stringify(_config))
 
 
 # allow `from pyscript.js_modules.xxx import yyy`
@@ -23,11 +21,11 @@ class JSModule:
 
 
 # generate N modules in the system that will proxy the real value
-for name in globalThis.Reflect.ownKeys(js_modules):
+for name in js.Reflect.ownKeys(js_modules):
     sys.modules[f"pyscript.js_modules.{name}"] = JSModule(name)
 sys.modules["pyscript.js_modules"] = js_modules
 
-if RUNNING_IN_WORKER:
+if not hasattr(js, "document"):
     import polyscript
 
     PyWorker = NotSupported(
@@ -36,9 +34,7 @@ if RUNNING_IN_WORKER:
     )
 
     try:
-        globalThis.SharedArrayBuffer.new(4)
-        import js
-
+        js.SharedArrayBuffer.new(4)
         window = polyscript.xworker.window
         document = window.document
         js.document = document
@@ -47,7 +43,7 @@ if RUNNING_IN_WORKER:
             "return (...urls) => Promise.all(urls.map((url) => import(url)))"
         )()
     except:
-        globalThis.console.debug("SharedArrayBuffer is not available")
+        js.console.debug("SharedArrayBuffer is not available")
         # in this scenario none of the utilities would work
         # as expected so we better export these as NotSupported
         window = NotSupported(
@@ -70,8 +66,8 @@ else:
     import _pyscript
     from _pyscript import PyWorker, js_import
 
-    window = globalThis
-    document = globalThis.document
+    window = js
+    document = js.document
     sync = NotSupported(
         "pyscript.sync", "pyscript.sync works only when running in a worker"
     )

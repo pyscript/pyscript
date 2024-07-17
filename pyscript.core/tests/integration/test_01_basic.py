@@ -10,7 +10,7 @@ class TestBasic(PyScriptTest):
         self.pyscript_run(
             """
             <script type="py">
-                from pyscript import RUNNING_IN_WORKER, PyWorker, window, document, sync, current_target
+                from pyscript import PyWorker, window, document, sync, current_target
             </script>
             """
         )
@@ -44,7 +44,7 @@ class TestBasic(PyScriptTest):
             <script type="py">
                 import pyscript
                 import js
-                js.console.log("worker?", pyscript.RUNNING_IN_WORKER)
+                js.console.log("worker?", js is not pyscript.window)
             </script>
             """,
         )

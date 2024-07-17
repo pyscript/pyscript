@@ -33,7 +33,6 @@ from polyscript import lazy_py_modules as py_import
 from pyscript.display import HTML, display
 from pyscript.fetch import fetch
 from pyscript.magic_js import (
-    RUNNING_IN_WORKER,
     PyWorker,
     config,
     current_target,
@@ -46,7 +45,8 @@ from pyscript.magic_js import (
 from pyscript.storage import Storage, storage
 from pyscript.websocket import WebSocket
 
-if not RUNNING_IN_WORKER:
+import js
+if js is window:
     from pyscript.workers import create_named_worker, workers
 
 try:
