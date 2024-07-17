@@ -3,7 +3,7 @@ import js
 js.document.body.append("document patch ")
 
 import a
-from pyscript import window, display, sync
+from pyscript import display, sync, window
 
 display("Hello World", target="test", append=True)
 

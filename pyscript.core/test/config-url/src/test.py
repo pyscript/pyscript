@@ -1,5 +1,5 @@
 import js
-from pyscript import window, document
+from pyscript import document, window
 
 classList = document.documentElement.classList
 

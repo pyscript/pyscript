@@ -1,7 +1,7 @@
-import js
 import json
 import sys
 
+import js
 from polyscript import config as _config
 from polyscript import js_modules
 from pyscript.util import NotSupported
@@ -38,6 +38,7 @@ if not hasattr(js, "document"):
         window = polyscript.xworker.window
         document = window.document
         js.document = document
+        js.window = window
         # this is the same as js_import on main and it lands modules on main
         js_import = window.Function(
             "return (...urls) => Promise.all(urls.map((url) => import(url)))"

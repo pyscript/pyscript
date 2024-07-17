@@ -29,6 +29,7 @@
 #     pyscript.magic_js. This is the blessed way to access them from pyscript,
 #     as it works transparently in both the main thread and worker cases.
 
+import js
 from polyscript import lazy_py_modules as py_import
 from pyscript.display import HTML, display
 from pyscript.fetch import fetch
@@ -45,7 +46,6 @@ from pyscript.magic_js import (
 from pyscript.storage import Storage, storage
 from pyscript.websocket import WebSocket
 
-import js
 if js is window:
     from pyscript.workers import create_named_worker, workers
 
