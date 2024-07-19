@@ -53,35 +53,6 @@ class DOMProperty:
         setattr(obj._dom_element, self.name, value)
 
 
-def element_from_dom(dom_element):
-    """Create an instance of the appropriate subclass of `Element` for a DOM element.
-
-    If the DOM element was created via an `Element` (i.e. by us) it will have a data
-    attribute named `data-pyscript-type` that contains the name of the subclass
-    that created it. If the `data-pyscript-type` attribute *is* present we look up the
-    subclass by name and create an instance of that. Otherwise, we make a 'best-guess'
-    and look up the `Element` subclass by the DOM element's tag name (this is NOT
-    fool-proof as many subclasses might use a `<div>`, but close enough for jazz).
-    """
-
-    # We use "getAttribute" here instead of `js_element.dataset.pyscriptType` as the
-    # latter throws an `AttributeError` if the value isn't set. This way we just get
-    # `None` which seems cleaner.
-    cls_name = dom_element.getAttribute("data-pyscript-type")
-    if cls_name:
-        cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
-
-    else:
-        cls = ELEMENT_CLASSES_BY_TAG.get(dom_element.tagName.lower())
-
-    # For any unknown elements (custom tags etc.) create an instance of the 'Element'
-    # class.
-    if not cls:
-        cls = Element
-
-    return cls(dom_element=dom_element)
-
-
 class Element:
     tag = "div"
 
@@ -105,10 +76,40 @@ class Element:
     slot = DOMProperty("slot")
     spellcheck = DOMProperty("spellcheck")
     tabindex = DOMProperty("tabindex")
+    tagName = DOMProperty("tagName")
     textContent = DOMProperty("textContent")
     title = DOMProperty("title")
     translate = DOMProperty("translate")
     virtualkeyboardpolicy = DOMProperty("virtualkeyboardpolicy")
+
+    @classmethod
+    def from_dom(cls, dom_element):
+        """Create an instance of the appropriate subclass of `Element` for a DOM element.
+
+        If the DOM element was created via an `Element` (i.e. by us) it will have a data
+        attribute named `data-pyscript-type` that contains the name of the subclass
+        that created it. If the `data-pyscript-type` attribute *is* present we look up the
+        subclass by name and create an instance of that. Otherwise, we make a 'best-guess'
+        and look up the `Element` subclass by the DOM element's tag name (this is NOT
+        fool-proof as many subclasses might use a `<div>`, but close enough for jazz).
+        """
+
+        # We use "getAttribute" here instead of `js_element.dataset.pyscriptType` as the
+        # latter throws an `AttributeError` if the value isn't set. This way we just get
+        # `None` which seems cleaner.
+        cls_name = dom_element.getAttribute("data-pyscript-type")
+        if cls_name:
+            element_cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
+
+        else:
+            element_cls = ELEMENT_CLASSES_BY_TAG.get(dom_element.tagName.lower())
+
+        # For any unknown elements (custom tags etc.) create an instance of this
+        # class ('Element').
+        if not element_cls:
+            element_cls = cls
+
+        return element_cls(dom_element=dom_element)
 
     def __init__(self, dom_element=None, classes=None, style=None, **kwargs):
         """Create a new, or wrap an existing DOM element.
@@ -178,7 +179,7 @@ class Element:
     @property
     def children(self):
         return ElementCollection(
-            [element_from_dom(el) for el in self._dom_element.children]
+            [Element.from_dom(el) for el in self._dom_element.children]
         )
 
     @property
@@ -191,7 +192,7 @@ class Element:
             return self._parent
 
         if self._dom_element.parentElement:
-            self._parent = element_from_dom(self._dom_element.parentElement)
+            self._parent = Element.from_dom(self._dom_element.parentElement)
 
         return self._parent
 
@@ -232,7 +233,7 @@ class Element:
 
     def clone(self, clone_id=None):
         """Make a clone of the element (clones the underlying DOM object too)."""
-        clone = element_from_dom(self._dom_element.cloneNode(True))
+        clone = Element.from_dom(self._dom_element.cloneNode(True))
         clone.id = clone_id
         return clone
 
@@ -248,7 +249,7 @@ class Element:
         """
         return ElementCollection(
             [
-                element_from_dom(el)
+                Element.from_dom(el)
                 for el in self._dom_element.querySelectorAll(selector)
             ]
         )
@@ -394,7 +395,7 @@ class Options:
     @property
     def options(self):
         """Return the list of options"""
-        return [element_from_dom(opt) for opt in self._element._dom_element.options]
+        return [Element.from_dom(opt) for opt in self._element._dom_element.options]
 
     @property
     def selected(self):
@@ -448,6 +449,7 @@ class Style:
 
 
 class ContainerElement(Element):
+    """Base class for elements that can contain other elements."""
     def __init__(
         self, *args, children=None, dom_element=None, style=None, classes=None, **kwargs
     ):
