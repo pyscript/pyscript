@@ -395,7 +395,9 @@ class Options:
     @property
     def options(self):
         """Return the list of options"""
-        return [Element.from_dom_element(opt) for opt in self._element._dom_element.options]
+        return [
+            Element.from_dom_element(opt) for opt in self._element._dom_element.options
+        ]
 
     @property
     def selected(self):
