@@ -34,7 +34,7 @@ def getmembers_static(cls):
 
 
 class DOMProperty:
-    """A descriptor representing a DOM property on an Element`.
+    """A descriptor representing a DOM property on an `Element` instance.
 
     This maps a property on an `Element` instance, to the property with the specified
     name on the element's underlying DOM element.
@@ -56,7 +56,6 @@ class DOMProperty:
 class Element:
     tag = "div"
 
-    # GLOBAL ATTRIBUTES.
     # These are attribute that all elements have (this list is a subset of the official
     # one - we are just trying to capture the most used ones).
     accesskey = DOMProperty("accesskey")
@@ -83,15 +82,16 @@ class Element:
     virtualkeyboardpolicy = DOMProperty("virtualkeyboardpolicy")
 
     @classmethod
-    def from_dom(cls, dom_element):
+    def from_dom_element(cls, dom_element):
         """Create an instance of the appropriate subclass of `Element` for a DOM element.
 
         If the DOM element was created via an `Element` (i.e. by us) it will have a data
         attribute named `data-pyscript-type` that contains the name of the subclass
-        that created it. If the `data-pyscript-type` attribute *is* present we look up the
-        subclass by name and create an instance of that. Otherwise, we make a 'best-guess'
-        and look up the `Element` subclass by the DOM element's tag name (this is NOT
-        fool-proof as many subclasses might use a `<div>`, but close enough for jazz).
+        that created it. Hence, if the `data-pyscript-type` attribute *is* present we
+        look up the subclass by name and create an instance of that. Otherwise, we make
+        a 'best-guess' and look up the `Element` subclass by the DOM element's tag name
+        (this is NOT fool-proof as many subclasses might use a `<div>`, but close enough
+        for jazz).
         """
 
         # We use "getAttribute" here instead of `js_element.dataset.pyscriptType` as the
@@ -179,7 +179,7 @@ class Element:
     @property
     def children(self):
         return ElementCollection(
-            [Element.from_dom(el) for el in self._dom_element.children]
+            [Element.from_dom_element(el) for el in self._dom_element.children]
         )
 
     @property
@@ -192,7 +192,7 @@ class Element:
             return self._parent
 
         if self._dom_element.parentElement:
-            self._parent = Element.from_dom(self._dom_element.parentElement)
+            self._parent = Element.from_dom_element(self._dom_element.parentElement)
 
         return self._parent
 
@@ -233,7 +233,7 @@ class Element:
 
     def clone(self, clone_id=None):
         """Make a clone of the element (clones the underlying DOM object too)."""
-        clone = Element.from_dom(self._dom_element.cloneNode(True))
+        clone = Element.from_dom_element(self._dom_element.cloneNode(True))
         clone.id = clone_id
         return clone
 
@@ -249,8 +249,8 @@ class Element:
         """
         return ElementCollection(
             [
-                Element.from_dom(el)
-                for el in self._dom_element.querySelectorAll(selector)
+                Element.from_dom_element(dom_element)
+                for dom_element in self._dom_element.querySelectorAll(selector)
             ]
         )
 
@@ -365,7 +365,7 @@ class Options:
         **kws,
     ) -> None:
         """Add a new option to the select element"""
-        # create the option element and set the attributes
+
         option = document.createElement("option")
         if value is not None:
             kws["value"] = value
@@ -395,7 +395,7 @@ class Options:
     @property
     def options(self):
         """Return the list of options"""
-        return [Element.from_dom(opt) for opt in self._element._dom_element.options]
+        return [Element.from_dom_element(opt) for opt in self._element._dom_element.options]
 
     @property
     def selected(self):
