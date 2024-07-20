@@ -450,6 +450,7 @@ class Style:
 
 class ContainerElement(Element):
     """Base class for elements that can contain other elements."""
+
     def __init__(
         self, *args, children=None, dom_element=None, style=None, classes=None, **kwargs
     ):
