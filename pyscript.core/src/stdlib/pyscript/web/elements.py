@@ -232,7 +232,7 @@ class Element:
                     # Nope! This is not an element or a NodeList.
                     raise TypeError(
                         f'Element "{child}" is a proxy object, "'
-                        f'but not a valid element or a NodeList.'
+                        f"but not a valid element or a NodeList."
                     )
 
     def clone(self, clone_id=None):
@@ -1442,7 +1442,7 @@ class video(ContainerElement):
 
         # If 'to' is a string, then assume it is a query selector.
         elif isinstance(to, str):
-            nodelist = document.querySelectorAll(to) # NOQA
+            nodelist = document.querySelectorAll(to)  # NOQA
             if nodelist.length == 0:
                 raise TypeError("No element with selector {to} to snap to.")
 
