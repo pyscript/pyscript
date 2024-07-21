@@ -1,3 +1,4 @@
+# noinspection PyPep8Naming
 import inspect
 import sys
 
@@ -83,7 +84,8 @@ class Element:
 
     @classmethod
     def from_dom_element(cls, dom_element):
-        """Create an instance of the appropriate subclass of `Element` for a DOM element.
+        """Create an instance of the appropriate subclass of `Element` for a DOM
+        element.
 
         If the DOM element was created via an `Element` (i.e. by us) it will have a data
         attribute named `data-pyscript-type` that contains the name of the subclass
@@ -144,7 +146,8 @@ class Element:
 
         elif style is not None:
             raise ValueError(
-                f"Style should be a dictionary, received {style} (type {type(style)}) instead."
+                f"Style should be a dictionary, received {style} "
+                f"(type {type(style)}) instead."
             )
 
         self._set_dom_properties(**kwargs)
@@ -228,7 +231,8 @@ class Element:
                 except AttributeError:
                     # Nope! This is not an element or a NodeList.
                     raise TypeError(
-                        f'Element "{child}" is a proxy object, but not a valid element or a NodeList.'
+                        f'Element "{child}" is a proxy object, "'
+                        f'but not a valid element or a NodeList.'
                     )
 
     def clone(self, clone_id=None):
@@ -395,7 +399,9 @@ class Options:
     @property
     def options(self):
         """Return the list of options"""
-        return [Element.from_dom_element(opt) for opt in self._element._dom_element.options]
+        return [
+            Element.from_dom_element(opt) for opt in self._element._dom_element.options
+        ]
 
     @property
     def selected(self):
@@ -1436,7 +1442,7 @@ class video(ContainerElement):
 
         # If 'to' is a string, then assume it is a query selector.
         elif isinstance(to, str):
-            nodelist = document.querySelectorAll(to)
+            nodelist = document.querySelectorAll(to) # NOQA
             if nodelist.length == 0:
                 raise TypeError("No element with selector {to} to snap to.")
 
@@ -1466,7 +1472,7 @@ class grid(ContainerElement):
         self.style["grid-template-columns"] = layout
 
         # TODO: This should be a property
-        if not gap is None:
+        if gap is not None:
             self.style["gap"] = gap
 
 
@@ -1582,7 +1588,10 @@ class ElementCollection:
         return len(self._elements)
 
     def __repr__(self):
-        return f"{self.__class__.__name__} (length: {len(self._elements)}) {self._elements}"
+        return (
+            f"{self.__class__.__name__} (length: {len(self._elements)}) "
+            f"{self._elements}"
+        )
 
     def __getattr__(self, item):
         return self._get_attribute(item)
