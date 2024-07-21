@@ -326,13 +326,13 @@ class Classes:
         self.remove(old_class)
         self.add(new_class)
 
-    def toggle(self, class_name):
-        if class_name in self:
-            self.remove(class_name)
-            return False
+    def toggle(self, *class_names):
+        for class_name in class_names:
+            if class_name in self:
+                self.remove(class_name)
 
-        self.add(class_name)
-        return True
+            else:
+                self.add(class_name)
 
 
 class HasOptions:
@@ -1521,9 +1521,9 @@ class ClassesCollection:
         for element in self._collection:
             element.classes.replace(old_class, new_class)
 
-    def toggle(self, class_name):
+    def toggle(self, *class_names):
         for element in self._collection:
-            element.classes.toggle(class_name)
+            element.classes.toggle(*class_names)
 
     def _all_class_names(self):
         all_class_names = set()
@@ -1558,11 +1558,9 @@ class StyleCollection:
 
 class ElementCollection:
     def __init__(self, elements: [Element]) -> None:
-        # We set via the `__dict__` here as we override `__setattr__` to delegate all
-        # other attributes through to the elements in the collection.
-        self.__dict__["_elements"] = elements
-        self.__dict__["_classes"] = ClassesCollection(self)
-        self.__dict__["_style"] = StyleCollection(self)
+        self._elements = elements
+        self._classes = ClassesCollection(self)
+        self._style = StyleCollection(self)
 
     def __eq__(self, obj):
         """Check for equality by comparing the underlying DOM elements."""
@@ -1597,7 +1595,15 @@ class ElementCollection:
         return self._get_attribute(item)
 
     def __setattr__(self, key, value):
-        self._set_attribute(key, value)
+        # This class overrides `__setattr__` to delegate "public" attributes to the
+        # elements in the collection, but we don't use the usual Python pattern where we
+        # set attributes on the collection itself via `self.__dict__` as it is not yet
+        # supported in our build of MicroPython. Instead, we handle it here.
+        if key.startswith("_"):
+            super().__setattr__(key, value)
+
+        else:
+            self._set_attribute(key, value)
 
     @property
     def children(self):
