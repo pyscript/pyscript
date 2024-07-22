@@ -622,7 +622,7 @@ class canvas(ContainerElement):
 
         download_link._dom_element.click()
 
-    def draw(self, what, width, height):
+    def draw(self, what, width=None, height=None):
         """Draw `what` on the current element
 
         Inputs:
@@ -637,7 +637,12 @@ class canvas(ContainerElement):
             what = what._dom_element
 
         # https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
-        self._dom_element.getContext("2d").drawImage(what, 0, 0, width, height)
+        ctx = self._dom_element.getContext("2d")
+        if width or height:
+            ctx.drawImage(what, 0, 0, width, height)
+
+        else:
+            ctx.drawImage(what, 0, 0)
 
 
 class caption(ContainerElement):
