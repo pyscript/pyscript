@@ -614,10 +614,13 @@ class canvas(ContainerElement):
         Output:
             None
         """
-        link = self.create("a")
-        link._dom_element.download = filename
-        link._dom_element.href = self._dom_element.toDataURL()
-        link._dom_element.click()
+        download_link = a(download=filename, href=self._dom_element.toDataURL())
+
+        # Adding the link to the DOM is recommended for browser compatibility to make
+        # sure that the click works.
+        self.append(download_link)
+
+        download_link._dom_element.click()
 
     def draw(self, what, width, height):
         """Draw `what` on the current element
@@ -1404,6 +1407,8 @@ class video(ContainerElement):
     preload = DOMProperty("preload")
     src = DOMProperty("src")
     width = DOMProperty("width")
+    videoHeight = DOMProperty("videoHeight")
+    videoWidth = DOMProperty("videoWidth")
 
     def snap(
         self,
@@ -1412,33 +1417,29 @@ class video(ContainerElement):
         height: int | None = None,
     ):
         """
-        Captures a snapshot of a video.
+        Capture a snapshot (i.e. a single frame) of a video to a canvas.
 
         Inputs:
 
-            * to: element where to save the snapshot of the video frame to
-            * width: width of the image
-            * height: height of the image
+            * to: the canvas to save the video frame to (if None, one is created).
+            * width: width of the snapshot (defaults to the video width).
+            * height: height of the snapshot (defaults to the video height).
 
         Output:
             (Element) canvas element where the video frame snapshot was drawn into
         """
+        width = width if width is not None else self.videoWidth
+        height = height if height is not None else self.videoHeight
+
         if to is None:
-            to_canvas = self.create("canvas")
-            if width is None:
-                width = self._dom_element.width
-            if height is None:
-                height = self._dom_element.height
-            to_canvas._dom_element.width = width
-            to_canvas._dom_element.height = height
+            to = canvas(width=width, height=height)
 
         elif isinstance(to, Element):
-            if to._dom_element.tagName != "CANVAS":
-                raise TypeError("Element to snap to must a canvas.")
-            to_canvas = to
+            if to.tag != "canvas":
+                raise TypeError("Element to snap to must be a canvas.")
 
         elif getattr(to, "tagName", "") == "CANVAS":
-            to_canvas = canvas(to)
+            to = canvas(dom_element=to)
 
         # If 'to' is a string, then assume it is a query selector.
         elif isinstance(to, str):
@@ -1447,13 +1448,13 @@ class video(ContainerElement):
                 raise TypeError("No element with selector {to} to snap to.")
 
             if nodelist[0].tagName != "CANVAS":
-                raise TypeError("Element to snap to must a be canvas.")
+                raise TypeError("Element to snap to must be a canvas.")
 
-            to_canvas = canvas(nodelist[0])
+            to = canvas(dom_element=nodelist[0])
 
-        to_canvas.draw(self, width, height)
+        to.draw(self, width, height)
 
-        return canvas
+        return to
 
 
 class wbr(Element):
