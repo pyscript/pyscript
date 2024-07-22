@@ -1,3 +1,4 @@
+# noinspection PyPep8Naming
 import inspect
 import sys
 
@@ -34,7 +35,7 @@ def getmembers_static(cls):
 
 
 class DOMProperty:
-    """A descriptor representing a DOM property on an Element`.
+    """A descriptor representing a DOM property on an `Element` instance.
 
     This maps a property on an `Element` instance, to the property with the specified
     name on the element's underlying DOM element.
@@ -53,41 +54,11 @@ class DOMProperty:
         setattr(obj._dom_element, self.name, value)
 
 
-def element_from_dom(dom_element):
-    """Create an instance of the appropriate subclass of `Element` for a DOM element.
-
-    If the DOM element was created via an `Element` (i.e. by us) it will have a data
-    attribute named `data-pyscript-type` that contains the name of the subclass
-    that created it. If the `data-pyscript-type` attribute *is* present we look up the
-    subclass by name and create an instance of that. Otherwise, we make a 'best-guess'
-    and look up the `Element` subclass by the DOM element's tag name (this is NOT
-    fool-proof as many subclasses might use a `<div>`, but close enough for jazz).
-    """
-
-    # We use "getAttribute" here instead of `js_element.dataset.pyscriptType` as the
-    # latter throws an `AttributeError` if the value isn't set. This way we just get
-    # `None` which seems cleaner.
-    cls_name = dom_element.getAttribute("data-pyscript-type")
-    if cls_name:
-        cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
-
-    else:
-        cls = ELEMENT_CLASSES_BY_TAG.get(dom_element.tagName.lower())
-
-    # For any unknown elements (custom tags etc.) create an instance of the 'Element'
-    # class.
-    if not cls:
-        cls = Element
-
-    return cls(dom_element=dom_element)
-
-
 class Element:
     tag = "div"
 
-    # GLOBAL ATTRIBUTES.
     # These are attribute that all elements have (this list is a subset of the official
-    # one). We are trying to capture the most used ones.
+    # one - we are just trying to capture the most used ones).
     accesskey = DOMProperty("accesskey")
     autofocus = DOMProperty("autofocus")
     autocapitalize = DOMProperty("autocapitalize")
@@ -105,10 +76,42 @@ class Element:
     slot = DOMProperty("slot")
     spellcheck = DOMProperty("spellcheck")
     tabindex = DOMProperty("tabindex")
-    text = DOMProperty("textContent")
+    tagName = DOMProperty("tagName")
+    textContent = DOMProperty("textContent")
     title = DOMProperty("title")
     translate = DOMProperty("translate")
     virtualkeyboardpolicy = DOMProperty("virtualkeyboardpolicy")
+
+    @classmethod
+    def from_dom_element(cls, dom_element):
+        """Create an instance of the appropriate subclass of `Element` for a DOM
+        element.
+
+        If the DOM element was created via an `Element` (i.e. by us) it will have a data
+        attribute named `data-pyscript-type` that contains the name of the subclass
+        that created it. Hence, if the `data-pyscript-type` attribute *is* present we
+        look up the subclass by name and create an instance of that. Otherwise, we make
+        a 'best-guess' and look up the `Element` subclass by the DOM element's tag name
+        (this is NOT fool-proof as many subclasses might use a `<div>`, but close enough
+        for jazz).
+        """
+
+        # We use "getAttribute" here instead of `js_element.dataset.pyscriptType` as the
+        # latter throws an `AttributeError` if the value isn't set. This way we just get
+        # `None` which seems cleaner.
+        cls_name = dom_element.getAttribute("data-pyscript-type")
+        if cls_name:
+            element_cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
+
+        else:
+            element_cls = ELEMENT_CLASSES_BY_TAG.get(dom_element.tagName.lower())
+
+        # For any unknown elements (custom tags etc.) create an instance of this
+        # class ('Element').
+        if not element_cls:
+            element_cls = cls
+
+        return element_cls(dom_element=dom_element)
 
     def __init__(self, dom_element=None, classes=None, style=None, **kwargs):
         """Create a new, or wrap an existing DOM element.
@@ -122,7 +125,7 @@ class Element:
         #
         # Using the `dataset` attribute is how you programmatically add `data-xxx`
         # attributes to a DOM element. In this case it will set an attribute that
-        # appears in (say) the devtools as `data-pyscript-type`.
+        # appears in the DOM as `data-pyscript-type`.
         self._dom_element.dataset.pyscriptType = type(self).__name__
 
         self._parent = None
@@ -138,24 +141,24 @@ class Element:
         if classes:
             self.classes.add(classes)
 
-        # Set any specified styles.
         if isinstance(style, dict):
             self.style.set(**style)
 
         elif style is not None:
             raise ValueError(
-                f"Style should be a dictionary, received {style} (type {type(style)}) instead."
+                f"Style should be a dictionary, received {style} "
+                f"(type {type(style)}) instead."
             )
 
         self._set_dom_properties(**kwargs)
 
     def _set_dom_properties(self, **kwargs):
-        """Set all the properties (of type DOMProperty) provided in input as properties
-        of the class instance.
+        """Set the specified DOM properties.
 
         Args:
             **kwargs: The properties to set
         """
+        # Harvest all DOM properties from the instance's class.
         dom_properties = {
             attribute_name: attribute_value
             for attribute_name, attribute_value in getmembers_static(self.__class__)
@@ -179,7 +182,7 @@ class Element:
     @property
     def children(self):
         return ElementCollection(
-            [element_from_dom(el) for el in self._dom_element.children]
+            [Element.from_dom_element(el) for el in self._dom_element.children]
         )
 
     @property
@@ -192,7 +195,7 @@ class Element:
             return self._parent
 
         if self._dom_element.parentElement:
-            self._parent = element_from_dom(self._dom_element.parentElement)
+            self._parent = Element.from_dom_element(self._dom_element.parentElement)
 
         return self._parent
 
@@ -228,12 +231,13 @@ class Element:
                 except AttributeError:
                     # Nope! This is not an element or a NodeList.
                     raise TypeError(
-                        f'Element "{child}" is a proxy object, but not a valid element or a NodeList.'
+                        f'Element "{child}" is a proxy object, "'
+                        f"but not a valid element or a NodeList."
                     )
 
     def clone(self, clone_id=None):
         """Make a clone of the element (clones the underlying DOM object too)."""
-        clone = element_from_dom(self._dom_element.cloneNode(True))
+        clone = Element.from_dom_element(self._dom_element.cloneNode(True))
         clone.id = clone_id
         return clone
 
@@ -249,8 +253,8 @@ class Element:
         """
         return ElementCollection(
             [
-                element_from_dom(el)
-                for el in self._dom_element.querySelectorAll(selector)
+                Element.from_dom_element(dom_element)
+                for dom_element in self._dom_element.querySelectorAll(selector)
             ]
         )
 
@@ -322,13 +326,13 @@ class Classes:
         self.remove(old_class)
         self.add(new_class)
 
-    def toggle(self, class_name):
-        if class_name in self:
-            self.remove(class_name)
-            return False
+    def toggle(self, *class_names):
+        for class_name in class_names:
+            if class_name in self:
+                self.remove(class_name)
 
-        self.add(class_name)
-        return True
+            else:
+                self.add(class_name)
 
 
 class HasOptions:
@@ -365,7 +369,7 @@ class Options:
         **kws,
     ) -> None:
         """Add a new option to the select element"""
-        # create the option element and set the attributes
+
         option = document.createElement("option")
         if value is not None:
             kws["value"] = value
@@ -395,7 +399,9 @@ class Options:
     @property
     def options(self):
         """Return the list of options"""
-        return [element_from_dom(opt) for opt in self._element._dom_element.options]
+        return [
+            Element.from_dom_element(opt) for opt in self._element._dom_element.options
+        ]
 
     @property
     def selected(self):
@@ -449,6 +455,8 @@ class Style:
 
 
 class ContainerElement(Element):
+    """Base class for elements that can contain other elements."""
+
     def __init__(
         self, *args, children=None, dom_element=None, style=None, classes=None, **kwargs
     ):
@@ -1434,7 +1442,7 @@ class video(ContainerElement):
 
         # If 'to' is a string, then assume it is a query selector.
         elif isinstance(to, str):
-            nodelist = document.querySelectorAll(to)
+            nodelist = document.querySelectorAll(to)  # NOQA
             if nodelist.length == 0:
                 raise TypeError("No element with selector {to} to snap to.")
 
@@ -1464,7 +1472,7 @@ class grid(ContainerElement):
         self.style["grid-template-columns"] = layout
 
         # TODO: This should be a property
-        if not gap is None:
+        if gap is not None:
             self.style["gap"] = gap
 
 
@@ -1513,9 +1521,9 @@ class ClassesCollection:
         for element in self._collection:
             element.classes.replace(old_class, new_class)
 
-    def toggle(self, class_name):
+    def toggle(self, *class_names):
         for element in self._collection:
-            element.classes.toggle(class_name)
+            element.classes.toggle(*class_names)
 
     def _all_class_names(self):
         all_class_names = set()
@@ -1554,37 +1562,8 @@ class ElementCollection:
         self._classes = ClassesCollection(self)
         self._style = StyleCollection(self)
 
-    @property
-    def children(self):
-        return self._elements
-
-    @property
-    def classes(self):
-        return self._classes
-
-    @property
-    def style(self):
-        return self._style
-
-    @property
-    def innerHTML(self):
-        return self._get_attribute("innerHTML")
-
-    @innerHTML.setter
-    def innerHTML(self, value):
-        self._set_attribute("innerHTML", value)
-
-    @property
-    def value(self):
-        return self._get_attribute("value")
-
-    @value.setter
-    def value(self, value):
-        self._set_attribute("value", value)
-
     def __eq__(self, obj):
-        """Check if the element is the same as the other element by comparing
-        the underlying DOM element"""
+        """Check for equality by comparing the underlying DOM elements."""
         return isinstance(obj, ElementCollection) and obj._elements == self._elements
 
     def __getitem__(self, key):
@@ -1598,8 +1577,7 @@ class ElementCollection:
             return ElementCollection(self._elements[key])
 
         # If it's anything else (basically a string) we use it as a query selector.
-        elements = self._elements.querySelectorAll(key)
-        return ElementCollection([element_from_dom(el) for el in elements])
+        return self.find(key)
 
     def __iter__(self):
         yield from self._elements
@@ -1608,7 +1586,43 @@ class ElementCollection:
         return len(self._elements)
 
     def __repr__(self):
-        return f"{self.__class__.__name__} (length: {len(self._elements)}) {self._elements}"
+        return (
+            f"{self.__class__.__name__} (length: {len(self._elements)}) "
+            f"{self._elements}"
+        )
+
+    def __getattr__(self, item):
+        return self._get_attribute(item)
+
+    def __setattr__(self, key, value):
+        # This class overrides `__setattr__` to delegate "public" attributes to the
+        # elements in the collection, but we don't use the usual Python pattern where we
+        # set attributes on the collection itself via `self.__dict__` as it is not yet
+        # supported in our build of MicroPython. Instead, we handle it here.
+        if key.startswith("_"):
+            super().__setattr__(key, value)
+
+        else:
+            self._set_attribute(key, value)
+
+    @property
+    def children(self):
+        return self._elements
+
+    @property
+    def classes(self):
+        return self._classes
+
+    @property
+    def style(self):
+        return self._style
+
+    def find(self, selector):
+        elements = []
+        for element in self._elements:
+            elements.extend(element.find(selector))
+
+        return ElementCollection(elements)
 
     def _get_attribute(self, attr, index=None):
         if index is None:
