@@ -1,14 +1,12 @@
-# noinspection PyPep8Naming
-import inspect
-import sys
-
 try:
     from typing import Any
+
 except ImportError:
     Any = "Any"
 
 try:
     import warnings
+
 except ImportError:
     # TODO: For now it probably means we are in MicroPython. We should figure
     # out the "right" way to handle this. For now we just ignore the warning
@@ -21,67 +19,8 @@ except ImportError:
 
 from pyscript import document
 
-#: A flag to show if MicroPython is the current Python interpreter.
-is_micropython = "MicroPython" in sys.version
-
-
-def getmembers_static(cls):
-    """Cross-interpreter implementation of inspect.getmembers_static."""
-
-    if is_micropython:  # pragma: no cover
-        return [(name, getattr(cls, name)) for name, _ in inspect.getmembers(cls)]
-
-    return inspect.getmembers_static(cls)
-
-
-class DOMProperty:
-    """A descriptor representing a DOM property on an `Element` instance.
-
-    This maps a property on an `Element` instance, to the property with the specified
-    name on the element's underlying DOM element.
-    """
-
-    def __init__(self, name: str, allow_nones: bool = False):
-        self.name = name
-        self.allow_nones = allow_nones
-
-    def __get__(self, obj, objtype=None):
-        return getattr(obj._dom_element, self.name)
-
-    def __set__(self, obj, value):
-        if not self.allow_nones and value is None:
-            return
-        setattr(obj._dom_element, self.name, value)
-
 
 class Element:
-    tag = "div"
-
-    # These are attribute that all elements have (this list is a subset of the official
-    # one - we are just trying to capture the most used ones).
-    accesskey = DOMProperty("accesskey")
-    autofocus = DOMProperty("autofocus")
-    autocapitalize = DOMProperty("autocapitalize")
-    className = DOMProperty("className")
-    contenteditable = DOMProperty("contenteditable")
-    draggable = DOMProperty("draggable")
-    enterkeyhint = DOMProperty("enterkeyhint")
-    hidden = DOMProperty("hidden")
-    innerHTML = DOMProperty("innerHTML")
-    id = DOMProperty("id")
-    lang = DOMProperty("lang")
-    nonce = DOMProperty("nonce")
-    part = DOMProperty("part")
-    popover = DOMProperty("popover")
-    slot = DOMProperty("slot")
-    spellcheck = DOMProperty("spellcheck")
-    tabindex = DOMProperty("tabindex")
-    tagName = DOMProperty("tagName")
-    textContent = DOMProperty("textContent")
-    title = DOMProperty("title")
-    translate = DOMProperty("translate")
-    virtualkeyboardpolicy = DOMProperty("virtualkeyboardpolicy")
-
     @classmethod
     def from_dom_element(cls, dom_element):
         """Create an instance of the appropriate subclass of `Element` for a DOM
@@ -135,6 +74,26 @@ class Element:
         # Set any specified classes, styles, and DOM properties.
         self.update(classes=classes, style=style, **kwargs)
 
+    def __getattr__(self, name):
+        if name.endswith("_"):
+            name = name[:-1]
+
+        return getattr(self._dom_element, name)
+
+    def __setattr__(self, name, value):
+        # This class overrides `__setattr__` to delegate "public" attributes to the
+        # elements in the collection, but we don't use the usual Python pattern where we
+        # set attributes on the collection itself via `self.__dict__` as it is not yet
+        # supported in our build of MicroPython. Instead, we handle it here.
+        if name.startswith("_"):
+            super().__setattr__(name, value)
+
+        else:
+            if name.endswith("_"):
+                name = name[:-1]
+
+            setattr(self._dom_element, name, value)
+
     def update(self, classes=None, style=None, **kwargs):
         """Update the element with the specified classes, styles, and DOM properties."""
 
@@ -158,22 +117,8 @@ class Element:
         Args:
             **kwargs: The properties to set
         """
-        # Harvest all DOM properties from the instance's class.
-        dom_properties = {
-            attribute_name: attribute_value
-            for attribute_name, attribute_value in getmembers_static(self.__class__)
-            if isinstance(attribute_value, DOMProperty)
-        }
-
         for name, value in kwargs.items():
-            if name not in dom_properties:
-                raise ValueError(f"'{name}' is not a DOM property.")
-
-            try:
-                setattr(self, name, value)
-            except Exception as e:
-                print(f"Error setting {name} to {value}: {e}")
-                raise
+            setattr(self, name, value)
 
     def __eq__(self, obj):
         """Check for equality by comparing the underlying DOM element."""
@@ -472,20 +417,15 @@ class ContainerElement(Element):
                 self.innerHTML += child
 
 
-# IMPORTANT: For all HTML components defined below, we are not mapping all possible
-# attributes, just the global and the most common ones. If you need to access a
-# specific attribute, you can always use the `_dom_element.<attribute>`
+# Classes for every element type. If the element type (e.g. "input") clashes with
+# either a Python keyword or common symbol, then we suffix the class name with an "_"
+# (e.g. "input_").
+
+
 class a(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"""
 
     tag = "a"
-
-    download = DOMProperty("download")
-    href = DOMProperty("href")
-    referrerpolicy = DOMProperty("referrerpolicy")
-    rel = DOMProperty("rel")
-    target = DOMProperty("target")
-    type = DOMProperty("type")
 
 
 class abbr(ContainerElement):
@@ -505,16 +445,6 @@ class area(Element):
 
     tag = "area"
 
-    alt = DOMProperty("alt")
-    coords = DOMProperty("coords")
-    download = DOMProperty("download")
-    href = DOMProperty("href")
-    ping = DOMProperty("ping")
-    referrerpolicy = DOMProperty("referrerpolicy")
-    rel = DOMProperty("rel")
-    shape = DOMProperty("shape")
-    target = DOMProperty("target")
-
 
 class article(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article"""
@@ -533,16 +463,6 @@ class audio(ContainerElement):
 
     tag = "audio"
 
-    autoplay = DOMProperty("autoplay")
-    controls = DOMProperty("controls")
-    controlslist = DOMProperty("controlslist")
-    crossorigin = DOMProperty("crossorigin")
-    disableremoteplayback = DOMProperty("disableremoteplayback")
-    loop = DOMProperty("loop")
-    muted = DOMProperty("muted")
-    preload = DOMProperty("preload")
-    src = DOMProperty("src")
-
 
 class b(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b"""
@@ -555,16 +475,11 @@ class base(Element):
 
     tag = "base"
 
-    href = DOMProperty("href")
-    target = DOMProperty("target")
-
 
 class blockquote(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote"""
 
     tag = "blockquote"
-
-    cite = DOMProperty("cite")
 
 
 class body(ContainerElement):
@@ -584,26 +499,11 @@ class button(ContainerElement):
 
     tag = "button"
 
-    autofocus = DOMProperty("autofocus")
-    disabled = DOMProperty("disabled")
-    form = DOMProperty("form")
-    formaction = DOMProperty("formaction")
-    formenctype = DOMProperty("formenctype")
-    formmethod = DOMProperty("formmethod")
-    formnovalidate = DOMProperty("formnovalidate")
-    formtarget = DOMProperty("formtarget")
-    name = DOMProperty("name")
-    type = DOMProperty("type")
-    value = DOMProperty("value")
-
 
 class canvas(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas"""
 
     tag = "canvas"
-
-    height = DOMProperty("height")
-    width = DOMProperty("width")
 
     def download(self, filename: str = "snapped.png") -> None:
         """Download the current element with the filename provided in input.
@@ -668,8 +568,6 @@ class col(Element):
 
     tag = "col"
 
-    span = DOMProperty("span")
-
 
 class colgroup(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup"""
@@ -681,8 +579,6 @@ class data(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data"""
 
     tag = "data"
-
-    value = DOMProperty("value")
 
 
 class datalist(ContainerElement, HasOptions):
@@ -702,24 +598,17 @@ class del_(ContainerElement):
 
     tag = "del"
 
-    cite = DOMProperty("cite")
-    datetime = DOMProperty("datetime")
-
 
 class details(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"""
 
     tag = "details"
 
-    open = DOMProperty("open")
-
 
 class dialog(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog"""
 
     tag = "dialog"
-
-    open = DOMProperty("open")
 
 
 class div(ContainerElement):
@@ -732,8 +621,6 @@ class dl(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl"""
 
     tag = "dl"
-
-    value = DOMProperty("value")
 
 
 class dt(ContainerElement):
@@ -753,20 +640,11 @@ class embed(Element):
 
     tag = "embed"
 
-    height = DOMProperty("height")
-    src = DOMProperty("src")
-    type = DOMProperty("type")
-    width = DOMProperty("width")
-
 
 class fieldset(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset"""
 
     tag = "fieldset"
-
-    disabled = DOMProperty("disabled")
-    form = DOMProperty("form")
-    name = DOMProperty("name")
 
 
 class figcaption(ContainerElement):
@@ -791,17 +669,6 @@ class form(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form"""
 
     tag = "form"
-
-    accept_charset = DOMProperty("accept-charset")
-    action = DOMProperty("action")
-    autocapitalize = DOMProperty("autocapitalize")
-    autocomplete = DOMProperty("autocomplete")
-    enctype = DOMProperty("enctype")
-    name = DOMProperty("name")
-    method = DOMProperty("method")
-    nonvalidate = DOMProperty("nonvalidate")
-    rel = DOMProperty("rel")
-    target = DOMProperty("target")
 
 
 class h1(ContainerElement):
@@ -863,12 +730,6 @@ class hr(Element):
 
     tag = "hr"
 
-    align = DOMProperty("align")
-    color = DOMProperty("color")
-    noshade = DOMProperty("noshade")
-    size = DOMProperty("size")
-    width = DOMProperty("width")
-
 
 class html(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html"""
@@ -887,84 +748,23 @@ class iframe(ContainerElement):
 
     tag = "iframe"
 
-    allow = DOMProperty("allow")
-    allowfullscreen = DOMProperty("allowfullscreen")
-    height = DOMProperty("height")
-    loading = DOMProperty("loading")
-    name = DOMProperty("name")
-    referrerpolicy = DOMProperty("referrerpolicy")
-    sandbox = DOMProperty("sandbox")
-    src = DOMProperty("src")
-    srcdoc = DOMProperty("srcdoc")
-    width = DOMProperty("width")
-
 
 class img(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"""
 
     tag = "img"
 
-    alt = DOMProperty("alt")
-    crossorigin = DOMProperty("crossorigin")
-    decoding = DOMProperty("decoding")
-    fetchpriority = DOMProperty("fetchpriority")
-    height = DOMProperty("height")
-    ismap = DOMProperty("ismap")
-    loading = DOMProperty("loading")
-    referrerpolicy = DOMProperty("referrerpolicy")
-    sizes = DOMProperty("sizes")
-    src = DOMProperty("src")
-    width = DOMProperty("width")
 
-
-# NOTE: Input is a reserved keyword in Python, so we use input_ instead
 class input_(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"""
 
     tag = "input"
-
-    accept = DOMProperty("accept")
-    alt = DOMProperty("alt")
-    autofocus = DOMProperty("autofocus")
-    capture = DOMProperty("capture")
-    checked = DOMProperty("checked")
-    dirname = DOMProperty("dirname")
-    disabled = DOMProperty("disabled")
-    form = DOMProperty("form")
-    formaction = DOMProperty("formaction")
-    formenctype = DOMProperty("formenctype")
-    formmethod = DOMProperty("formmethod")
-    formnovalidate = DOMProperty("formnovalidate")
-    formtarget = DOMProperty("formtarget")
-    height = DOMProperty("height")
-    list = DOMProperty("list")
-    max = DOMProperty("max")
-    maxlength = DOMProperty("maxlength")
-    min = DOMProperty("min")
-    minlength = DOMProperty("minlength")
-    multiple = DOMProperty("multiple")
-    name = DOMProperty("name")
-    pattern = DOMProperty("pattern")
-    placeholder = DOMProperty("placeholder")
-    popovertarget = DOMProperty("popovertarget")
-    popovertargetaction = DOMProperty("popovertargetaction")
-    readonly = DOMProperty("readonly")
-    required = DOMProperty("required")
-    size = DOMProperty("size")
-    src = DOMProperty("src")
-    step = DOMProperty("step")
-    type = DOMProperty("type")
-    value = DOMProperty("value")
-    width = DOMProperty("width")
 
 
 class ins(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins"""
 
     tag = "ins"
-
-    cite = DOMProperty("cite")
-    datetime = DOMProperty("datetime")
 
 
 class kbd(ContainerElement):
@@ -978,8 +778,6 @@ class label(ContainerElement):
 
     tag = "label"
 
-    for_ = DOMProperty("for")
-
 
 class legend(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend"""
@@ -992,28 +790,11 @@ class li(ContainerElement):
 
     tag = "li"
 
-    value = DOMProperty("value")
-
 
 class link(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link"""
 
     tag = "link"
-
-    as_ = DOMProperty("as")
-    crossorigin = DOMProperty("crossorigin")
-    disabled = DOMProperty("disabled")
-    fetchpriority = DOMProperty("fetchpriority")
-    href = DOMProperty("href")
-    imagesizes = DOMProperty("imagesizes")
-    imagesrcset = DOMProperty("imagesrcset")
-    integrity = DOMProperty("integrity")
-    media = DOMProperty("media")
-    rel = DOMProperty("rel")
-    referrerpolicy = DOMProperty("referrerpolicy")
-    sizes = DOMProperty("sizes")
-    title = DOMProperty("title")
-    type = DOMProperty("type")
 
 
 class main(ContainerElement):
@@ -1026,8 +807,6 @@ class map_(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map"""
 
     tag = "map"
-
-    name = DOMProperty("name")
 
 
 class mark(ContainerElement):
@@ -1047,24 +826,11 @@ class meta(ContainerElement):
 
     tag = "meta"
 
-    charset = DOMProperty("charset")
-    content = DOMProperty("content")
-    http_equiv = DOMProperty("http-equiv")
-    name = DOMProperty("name")
-
 
 class meter(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter"""
 
     tag = "meter"
-
-    form = DOMProperty("form")
-    high = DOMProperty("high")
-    low = DOMProperty("low")
-    max = DOMProperty("max")
-    min = DOMProperty("min")
-    optimum = DOMProperty("optimum")
-    value = DOMProperty("value")
 
 
 class nav(ContainerElement):
@@ -1078,23 +844,11 @@ class object_(ContainerElement):
 
     tag = "object"
 
-    data = DOMProperty("data")
-    form = DOMProperty("form")
-    height = DOMProperty("height")
-    name = DOMProperty("name")
-    type = DOMProperty("type")
-    usemap = DOMProperty("usemap")
-    width = DOMProperty("width")
-
 
 class ol(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol"""
 
     tag = "ol"
-
-    reversed = DOMProperty("reversed")
-    start = DOMProperty("start")
-    type = DOMProperty("type")
 
 
 class optgroup(ContainerElement, HasOptions):
@@ -1102,29 +856,17 @@ class optgroup(ContainerElement, HasOptions):
 
     tag = "optgroup"
 
-    disabled = DOMProperty("disabled")
-    label = DOMProperty("label")
-
 
 class option(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option"""
 
     tag = "option"
 
-    disabled = DOMProperty("value")
-    label = DOMProperty("label")
-    selected = DOMProperty("selected")
-    value = DOMProperty("value")
-
 
 class output(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output"""
 
     tag = "output"
-
-    for_ = DOMProperty("for")
-    form = DOMProperty("form")
-    name = DOMProperty("name")
 
 
 class p(ContainerElement):
@@ -1156,16 +898,11 @@ class progress(ContainerElement):
 
     tag = "progress"
 
-    max = DOMProperty("max")
-    value = DOMProperty("value")
-
 
 class q(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q"""
 
     tag = "q"
-
-    cite = DOMProperty("cite")
 
 
 class s(ContainerElement):
@@ -1179,19 +916,6 @@ class script(ContainerElement):
 
     tag = "script"
 
-    # Let's add async manually since it's a reserved keyword in Python
-    async_ = DOMProperty("async")
-    blocking = DOMProperty("blocking")
-    crossorigin = DOMProperty("crossorigin")
-    defer = DOMProperty("defer")
-    fetchpriority = DOMProperty("fetchpriority")
-    integrity = DOMProperty("integrity")
-    nomodule = DOMProperty("nomodule")
-    nonce = DOMProperty("nonce")
-    referrerpolicy = DOMProperty("referrerpolicy")
-    src = DOMProperty("src")
-    type = DOMProperty("type")
-
 
 class section(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section"""
@@ -1204,8 +928,6 @@ class select(ContainerElement, HasOptions):
 
     tag = "select"
 
-    value = DOMProperty("value")
-
 
 class small(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small"""
@@ -1217,12 +939,6 @@ class source(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source"""
 
     tag = "source"
-
-    media = DOMProperty("media")
-    sizes = DOMProperty("sizes")
-    src = DOMProperty("src")
-    srcset = DOMProperty("srcset")
-    type = DOMProperty("type")
 
 
 class span(ContainerElement):
@@ -1241,11 +957,6 @@ class style(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style"""
 
     tag = "style"
-
-    blocking = DOMProperty("blocking")
-    media = DOMProperty("media")
-    nonce = DOMProperty("nonce")
-    title = DOMProperty("title")
 
 
 class sub(ContainerElement):
@@ -1283,41 +994,17 @@ class td(ContainerElement):
 
     tag = "td"
 
-    colspan = DOMProperty("colspan")
-    headers = DOMProperty("headers")
-    rowspan = DOMProperty("rowspan")
-
 
 class template(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template"""
 
     tag = "template"
 
-    shadowrootmode = DOMProperty("shadowrootmode")
-
 
 class textarea(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea"""
 
     tag = "textarea"
-
-    autocapitalize = DOMProperty("autocapitalize")
-    autocomplete = DOMProperty("autocomplete")
-    autofocus = DOMProperty("autofocus")
-    cols = DOMProperty("cols")
-    dirname = DOMProperty("dirname")
-    disabled = DOMProperty("disabled")
-    form = DOMProperty("form")
-    maxlength = DOMProperty("maxlength")
-    minlength = DOMProperty("minlength")
-    name = DOMProperty("name")
-    placeholder = DOMProperty("placeholder")
-    readonly = DOMProperty("readonly")
-    required = DOMProperty("required")
-    rows = DOMProperty("rows")
-    spellcheck = DOMProperty("spellcheck")
-    value = DOMProperty("value")
-    wrap = DOMProperty("wrap")
 
 
 class tfoot(ContainerElement):
@@ -1343,8 +1030,6 @@ class time(ContainerElement):
 
     tag = "time"
 
-    datetime = DOMProperty("datetime")
-
 
 class title(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title"""
@@ -1357,23 +1042,11 @@ class tr(ContainerElement):
 
     tag = "tr"
 
-    abbr = DOMProperty("abbr")
-    colspan = DOMProperty("colspan")
-    headers = DOMProperty("headers")
-    rowspan = DOMProperty("rowspan")
-    scope = DOMProperty("scope")
-
 
 class track(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track"""
 
     tag = "track"
-
-    default = DOMProperty("default")
-    kind = DOMProperty("kind")
-    label = DOMProperty("label")
-    src = DOMProperty("src")
-    srclang = DOMProperty("srclang")
 
 
 class u(ContainerElement):
@@ -1398,22 +1071,6 @@ class video(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video"""
 
     tag = "video"
-
-    autoplay = DOMProperty("autoplay")
-    controls = DOMProperty("controls")
-    crossorigin = DOMProperty("crossorigin")
-    disablepictureinpicture = DOMProperty("disablepictureinpicture")
-    disableremoteplayback = DOMProperty("disableremoteplayback")
-    height = DOMProperty("height")
-    loop = DOMProperty("loop")
-    muted = DOMProperty("muted")
-    playsinline = DOMProperty("playsinline")
-    poster = DOMProperty("poster")
-    preload = DOMProperty("preload")
-    src = DOMProperty("src")
-    width = DOMProperty("width")
-    videoHeight = DOMProperty("videoHeight")
-    videoWidth = DOMProperty("videoWidth")
 
     def snap(
         self,
