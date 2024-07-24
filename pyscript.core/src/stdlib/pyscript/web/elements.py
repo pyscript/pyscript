@@ -563,7 +563,7 @@ class ElementCollection:
 
 ########################################################################################
 
-# Classes for every HTML element type. If the element type (e.g. "input") clashes with
+# Classes for every HTML element. If the element tag name (e.g. "input") clashes with
 # either a Python keyword or common symbol, then we suffix the class name with an "_"
 # (e.g. "input_").
 
