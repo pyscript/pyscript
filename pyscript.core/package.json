@@ -44,7 +44,7 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.13.10",
+        "polyscript": "^0.14.0-rc1",
         "sticky-module": "^0.1.1",
         "to-json-callback": "^0.1.1",
         "type-checked-collections": "^0.1.7"
@@ -54,8 +54,8 @@
         "@codemirror/lang-python": "^6.1.6",
         "@codemirror/language": "^6.10.2",
         "@codemirror/state": "^6.4.1",
-        "@codemirror/view": "^6.28.5",
-        "@playwright/test": "^1.45.2",
+        "@codemirror/view": "^6.28.6",
+        "@playwright/test": "^1.45.3",
         "@rollup/plugin-commonjs": "^26.0.1",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
@@ -67,11 +67,11 @@
         "codemirror": "^6.0.1",
         "eslint": "^9.7.0",
         "flatted": "^3.3.1",
-        "rollup": "^4.18.1",
+        "rollup": "^4.19.0",
         "rollup-plugin-postcss": "^4.0.2",
         "rollup-plugin-string": "^3.0.0",
         "static-handler": "^0.4.3",
-        "typescript": "^5.5.3",
+        "typescript": "^5.5.4",
         "xterm": "^5.3.0",
         "xterm-readline": "^1.1.1"
     },

@@ -36,9 +36,7 @@ if RUNNING_IN_WORKER:
     )
 
     try:
-        globalThis.SharedArrayBuffer.new(4)
         import js
-
         window = polyscript.xworker.window
         document = window.document
         js.document = document
@@ -47,17 +45,10 @@ if RUNNING_IN_WORKER:
             "return (...urls) => Promise.all(urls.map((url) => import(url)))"
         )()
     except:
-        globalThis.console.debug("SharedArrayBuffer is not available")
-        # in this scenario none of the utilities would work
-        # as expected so we better export these as NotSupported
-        window = NotSupported(
-            "pyscript.window",
-            "pyscript.window in workers works only via SharedArrayBuffer",
-        )
-        document = NotSupported(
-            "pyscript.document",
-            "pyscript.document in workers works only via SharedArrayBuffer",
-        )
+        message = "Unable to use `window` or `document` -> https://docs.pyscript.net/latest/faq/#sharedarraybuffer"
+        globalThis.console.warn(message)
+        window = NotSupported("pyscript.window", message)
+        document = NotSupported("pyscript.document", message)
 
     sync = polyscript.xworker.sync
 
