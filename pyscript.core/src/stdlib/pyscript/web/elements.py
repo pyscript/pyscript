@@ -565,7 +565,7 @@ class ElementCollection:
 
 # Classes for every HTML element. If the element tag name (e.g. "input") clashes with
 # either a Python keyword or common symbol, then we suffix the class name with an "_"
-# (e.g. "input_").
+# (e.g. the class for the "input" tag is "input_").
 
 
 class a(ContainerElement):
