@@ -23,27 +23,9 @@ from pyscript import document
 class Element:
     @classmethod
     def from_dom_element(cls, dom_element):
-        """Create an instance of the appropriate subclass of `Element` for a DOM
-        element.
+        """Create an instance of a subclass of `Element` for a DOM element."""
 
-        If the DOM element was created via an `Element` (i.e. by us) it will have a data
-        attribute named `data-pyscript-type` that contains the name of the subclass
-        that created it. Hence, if the `data-pyscript-type` attribute *is* present we
-        look up the subclass by name and create an instance of that. Otherwise, we make
-        a 'best-guess' and look up the `Element` subclass by the DOM element's tag name
-        (this is NOT fool-proof as many subclasses might use a `<div>`, but close enough
-        for jazz).
-        """
-
-        # We use "getAttribute" here instead of `js_element.dataset.pyscriptType` as the
-        # latter throws an `AttributeError` if the value isn't set. This way we just get
-        # `None` which seems cleaner.
-        cls_name = dom_element.getAttribute("data-pyscript-type")
-        if cls_name:
-            element_cls = ELEMENT_CLASSES_BY_NAME.get(cls_name.lower())
-
-        else:
-            element_cls = ELEMENT_CLASSES_BY_TAG.get(dom_element.tagName.lower())
+        element_cls = ELEMENT_CLASSES_BY_TAG_NAME.get(dom_element.tagName.lower())
 
         # For any unknown elements (custom tags etc.) create an instance of this
         # class ('Element').
@@ -58,14 +40,9 @@ class Element:
         If `dom_element` is None we are being called to *create* a new element.
         Otherwise, we are being called to *wrap* an existing DOM element.
         """
-        self._dom_element = dom_element or document.createElement(self.tag)
-
-        # Tag the DOM element with our class name.
-        #
-        # Using the `dataset` attribute is how you programmatically add `data-xxx`
-        # attributes to a DOM element. In this case it will set an attribute that
-        # appears in the DOM as `data-pyscript-type`.
-        self._dom_element.dataset.pyscriptType = type(self).__name__
+        self._dom_element = dom_element or document.createElement(
+            type(self).__name__.replace("_", "")
+        )
 
         self._parent = None
         self._classes = Classes(self)
@@ -75,6 +52,10 @@ class Element:
         self.update(classes=classes, style=style, **kwargs)
 
     def __getattr__(self, name):
+        # This allows us to get attributes on the underlying DOM element that clash
+        # with Python keywords or built-ins (e.g. the output element has an
+        # attribute `for` which is a Python keyword, so you can access it on the
+        # Element instance via `for_`).
         if name.endswith("_"):
             name = name[:-1]
 
@@ -82,13 +63,18 @@ class Element:
 
     def __setattr__(self, name, value):
         # This class overrides `__setattr__` to delegate "public" attributes to the
-        # elements in the collection, but we don't use the usual Python pattern where we
-        # set attributes on the collection itself via `self.__dict__` as it is not yet
-        # supported in our build of MicroPython. Instead, we handle it here.
+        # underlying DOM element. BUT, we don't use the usual Python pattern where
+        # we set attributes on the element itself via `self.__dict__` as that is not
+        # yet supported in our build of MicroPython. Instead, we handle it here by
+        # using super for all "private" attributes (those starting with an underscore).
         if name.startswith("_"):
             super().__setattr__(name, value)
 
         else:
+            # This allows us to set attributes on the underlying DOM element that clash
+            # with Python keywords or built-ins (e.g. the output element has an
+            # attribute `for` which is a Python keyword, so you can access it on the
+            # Element instance via `for_`).
             if name.endswith("_"):
                 name = name[:-1]
 
@@ -425,85 +411,57 @@ class ContainerElement(Element):
 class a(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"""
 
-    tag = "a"
-
 
 class abbr(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr"""
-
-    tag = "abbr"
 
 
 class address(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address"""
 
-    tag = "address"
-
 
 class area(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area"""
-
-    tag = "area"
 
 
 class article(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article"""
 
-    tag = "article"
-
 
 class aside(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside"""
-
-    tag = "aside"
 
 
 class audio(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio"""
 
-    tag = "audio"
-
 
 class b(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b"""
-
-    tag = "b"
 
 
 class base(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base"""
 
-    tag = "base"
-
 
 class blockquote(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote"""
-
-    tag = "blockquote"
 
 
 class body(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body"""
 
-    tag = "body"
-
 
 class br(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br"""
-
-    tag = "br"
 
 
 class button(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button"""
 
-    tag = "button"
-
 
 class canvas(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas"""
-
-    tag = "canvas"
 
     def download(self, filename: str = "snapped.png") -> None:
         """Download the current element with the filename provided in input.
@@ -548,529 +506,353 @@ class canvas(ContainerElement):
 class caption(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption"""
 
-    tag = "caption"
-
 
 class cite(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite"""
-
-    tag = "cite"
 
 
 class code(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code"""
 
-    tag = "code"
-
 
 class col(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col"""
-
-    tag = "col"
 
 
 class colgroup(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup"""
 
-    tag = "colgroup"
-
 
 class data(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data"""
-
-    tag = "data"
 
 
 class datalist(ContainerElement, HasOptions):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist"""
 
-    tag = "datalist"
-
 
 class dd(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd"""
-
-    tag = "dd"
 
 
 class del_(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del"""
 
-    tag = "del"
-
 
 class details(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"""
-
-    tag = "details"
 
 
 class dialog(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog"""
 
-    tag = "dialog"
-
 
 class div(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div"""
-
-    tag = "div"
 
 
 class dl(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl"""
 
-    tag = "dl"
-
 
 class dt(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt"""
-
-    tag = "dt"
 
 
 class em(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em"""
 
-    tag = "em"
-
 
 class embed(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed"""
-
-    tag = "embed"
 
 
 class fieldset(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset"""
 
-    tag = "fieldset"
-
 
 class figcaption(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption"""
-
-    tag = "figcaption"
 
 
 class figure(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure"""
 
-    tag = "figure"
-
 
 class footer(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer"""
-
-    tag = "footer"
 
 
 class form(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form"""
 
-    tag = "form"
-
 
 class h1(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1"""
-
-    tag = "h1"
 
 
 class h2(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2"""
 
-    tag = "h2"
-
 
 class h3(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3"""
-
-    tag = "h3"
 
 
 class h4(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4"""
 
-    tag = "h4"
-
 
 class h5(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5"""
-
-    tag = "h5"
 
 
 class h6(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6"""
 
-    tag = "h6"
-
 
 class head(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head"""
-
-    tag = "head"
 
 
 class header(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header"""
 
-    tag = "header"
-
 
 class hgroup(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup"""
-
-    tag = "hgroup"
 
 
 class hr(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr"""
 
-    tag = "hr"
-
 
 class html(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html"""
-
-    tag = "html"
 
 
 class i(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i"""
 
-    tag = "i"
-
 
 class iframe(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe"""
-
-    tag = "iframe"
 
 
 class img(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"""
 
-    tag = "img"
-
 
 class input_(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"""
-
-    tag = "input"
 
 
 class ins(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins"""
 
-    tag = "ins"
-
 
 class kbd(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd"""
-
-    tag = "kbd"
 
 
 class label(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label"""
 
-    tag = "label"
-
 
 class legend(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend"""
-
-    tag = "legend"
 
 
 class li(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li"""
 
-    tag = "li"
-
 
 class link(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link"""
-
-    tag = "link"
 
 
 class main(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main"""
 
-    tag = "main"
-
 
 class map_(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map"""
-
-    tag = "map"
 
 
 class mark(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark"""
 
-    tag = "mark"
-
 
 class menu(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu"""
-
-    tag = "menu"
 
 
 class meta(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta"""
 
-    tag = "meta"
-
 
 class meter(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter"""
-
-    tag = "meter"
 
 
 class nav(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav"""
 
-    tag = "nav"
-
 
 class object_(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object"""
-
-    tag = "object"
 
 
 class ol(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol"""
 
-    tag = "ol"
-
 
 class optgroup(ContainerElement, HasOptions):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup"""
-
-    tag = "optgroup"
 
 
 class option(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option"""
 
-    tag = "option"
-
 
 class output(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output"""
-
-    tag = "output"
 
 
 class p(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p"""
 
-    tag = "p"
-
 
 class param(ContainerElement):
-    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p"""
-
-    tag = "p"
+    """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param"""
 
 
 class picture(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture"""
 
-    tag = "picture"
-
 
 class pre(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre"""
-
-    tag = "pre"
 
 
 class progress(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress"""
 
-    tag = "progress"
-
 
 class q(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q"""
-
-    tag = "q"
 
 
 class s(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s"""
 
-    tag = "s"
-
 
 class script(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script"""
-
-    tag = "script"
 
 
 class section(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section"""
 
-    tag = "section"
-
 
 class select(ContainerElement, HasOptions):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select"""
-
-    tag = "select"
 
 
 class small(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small"""
 
-    tag = "small"
-
 
 class source(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source"""
-
-    tag = "source"
 
 
 class span(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span"""
 
-    tag = "span"
-
 
 class strong(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong"""
-
-    tag = "strong"
 
 
 class style(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style"""
 
-    tag = "style"
-
 
 class sub(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub"""
-
-    tag = "sub"
 
 
 class summary(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary"""
 
-    tag = "summary"
-
 
 class sup(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup"""
-
-    tag = "sup"
 
 
 class table(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table"""
 
-    tag = "table"
-
 
 class tbody(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody"""
-
-    tag = "tbody"
 
 
 class td(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td"""
 
-    tag = "td"
-
 
 class template(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template"""
-
-    tag = "template"
 
 
 class textarea(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea"""
 
-    tag = "textarea"
-
 
 class tfoot(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot"""
-
-    tag = "tfoot"
 
 
 class th(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th"""
 
-    tag = "th"
-
 
 class thead(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead"""
-
-    tag = "thead"
 
 
 class time(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time"""
 
-    tag = "time"
-
 
 class title(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title"""
-
-    tag = "title"
 
 
 class tr(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr"""
 
-    tag = "tr"
-
 
 class track(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track"""
-
-    tag = "track"
 
 
 class u(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u"""
 
-    tag = "u"
-
 
 class ul(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul"""
-
-    tag = "ul"
 
 
 class var(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var"""
 
-    tag = "var"
-
 
 class video(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video"""
-
-    tag = "video"
 
     def snap(
         self,
@@ -1121,22 +903,6 @@ class video(ContainerElement):
 
 class wbr(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr"""
-
-    tag = "wbr"
-
-
-# Custom Elements
-class grid(ContainerElement):
-    tag = "div"
-
-    def __init__(self, layout, content=None, gap=None, **kwargs):
-        super().__init__(content, **kwargs)
-        self.style["display"] = "grid"
-        self.style["grid-template-columns"] = layout
-
-        # TODO: This should be a property
-        if gap is not None:
-            self.style["gap"] = gap
 
 
 class ClassesCollection:
@@ -1259,9 +1025,10 @@ class ElementCollection:
 
     def __setattr__(self, key, value):
         # This class overrides `__setattr__` to delegate "public" attributes to the
-        # elements in the collection, but we don't use the usual Python pattern where we
-        # set attributes on the collection itself via `self.__dict__` as it is not yet
-        # supported in our build of MicroPython. Instead, we handle it here.
+        # elements in the collection. BUT, we don't use the usual Python pattern where
+        # we set attributes on the collection itself via `self.__dict__` as that is not
+        # yet supported in our build of MicroPython. Instead, we handle it here by
+        # using super for all "private" attributes (those starting with an underscore).
         if key.startswith("_"):
             super().__setattr__(key, value)
 
@@ -1301,12 +1068,6 @@ class ElementCollection:
 
 # fmt: off
 ELEMENT_CLASSES = [
-    # We put grid first because it is really just a <div> but we want the div class to
-    # be used if wrapping existing js elements that we have not tagged with a
-    # `data-pyscript-type` attribute (last one is the winner when it comes to this
-    # list).
-    grid,
-    # The rest in alphabetical order.
     a, abbr, address, area, article, aside, audio,
     b, base, blockquote, body, br, button,
     canvas, caption, cite, code, col, colgroup,
@@ -1331,6 +1092,7 @@ ELEMENT_CLASSES = [
 # fmt: on
 
 
-# Lookup tables to get an element class by its name or tag.
-ELEMENT_CLASSES_BY_NAME = {cls.__name__: cls for cls in ELEMENT_CLASSES}
-ELEMENT_CLASSES_BY_TAG = {cls.tag: cls for cls in ELEMENT_CLASSES}
+# Lookup table to get an element class by its tag name.
+ELEMENT_CLASSES_BY_TAG_NAME = {
+    cls.__name__.replace("_", ""): cls for cls in ELEMENT_CLASSES
+}
