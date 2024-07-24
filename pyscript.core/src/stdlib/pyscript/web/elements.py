@@ -288,6 +288,18 @@ class Options:
     def __init__(self, element: Element) -> None:
         self._element = element
 
+    def __getitem__(self, key):
+        return self.options[key]
+
+    def __iter__(self):
+        yield from self.options
+
+    def __len__(self):
+        return len(self.options)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} (length: {len(self)}) {self.options}"
+
     def add(
         self,
         value: Any = None,
@@ -321,7 +333,7 @@ class Options:
 
     def clear(self) -> None:
         """Remove all the options"""
-        for index in range(len(self)):
+        while len(self) > 0:
             self.remove(0)
 
     @property
@@ -335,18 +347,6 @@ class Options:
     def selected(self):
         """Return the selected option"""
         return self.options[self._element._dom_element.selectedIndex]
-
-    def __iter__(self):
-        yield from self.options
-
-    def __len__(self):
-        return len(self.options)
-
-    def __repr__(self):
-        return f"{self.__class__.__name__} (length: {len(self)}) {self.options}"
-
-    def __getitem__(self, key):
-        return self.options[key]
 
 
 class Style:
@@ -561,11 +561,9 @@ class ElementCollection:
             setattr(el, attr, value)
 
 
-########################################################################################
-
 # Classes for every HTML element. If the element tag name (e.g. "input") clashes with
 # either a Python keyword or common symbol, then we suffix the class name with an "_"
-# (e.g. the class for the "input" tag is "input_").
+# (e.g. the class for the "input" element is "input_").
 
 
 class a(ContainerElement):
