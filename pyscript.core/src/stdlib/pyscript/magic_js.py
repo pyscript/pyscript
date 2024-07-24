@@ -37,6 +37,7 @@ if RUNNING_IN_WORKER:
 
     try:
         import js
+
         window = polyscript.xworker.window
         document = window.document
         js.document = document
@@ -49,6 +50,7 @@ if RUNNING_IN_WORKER:
         globalThis.console.warn(message)
         window = NotSupported("pyscript.window", message)
         document = NotSupported("pyscript.document", message)
+        js_import = None
 
     sync = polyscript.xworker.sync
 
