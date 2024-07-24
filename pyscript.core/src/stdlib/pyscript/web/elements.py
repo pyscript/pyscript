@@ -25,8 +25,8 @@ class Element:
     def from_dom_element(cls, dom_element):
         """Create an instance of a subclass of `Element` for a DOM element."""
 
-        # Lookup the element class by tag name and for any unknown elements (custom
-        # tags etc.) use this class (`Element`).
+        # Lookup the element class by tag name. For any unknown elements (custom
+        # tags etc.) use *this* class (`Element`).
         element_cls = ELEMENT_CLASSES_BY_TAG_NAME.get(dom_element.tagName.lower(), cls)
 
         return element_cls(dom_element=dom_element)
