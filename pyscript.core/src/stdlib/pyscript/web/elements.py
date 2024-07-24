@@ -25,12 +25,9 @@ class Element:
     def from_dom_element(cls, dom_element):
         """Create an instance of a subclass of `Element` for a DOM element."""
 
-        element_cls = ELEMENT_CLASSES_BY_TAG_NAME.get(dom_element.tagName.lower())
-
-        # For any unknown elements (custom tags etc.) create an instance of this
-        # class ('Element').
-        if not element_cls:
-            element_cls = cls
+        # Lookup the element class by tag name and for any unknown elements (custom
+        # tags etc.) use this class (`Element`).
+        element_cls = ELEMENT_CLASSES_BY_TAG_NAME.get(dom_element.tagName.lower(), cls)
 
         return element_cls(dom_element=dom_element)
 
@@ -324,7 +321,7 @@ class Options:
 
     def clear(self) -> None:
         """Remove all the options"""
-        for i in range(len(self)):
+        for index in range(len(self)):
             self.remove(0)
 
     @property
@@ -403,7 +400,170 @@ class ContainerElement(Element):
                 self.innerHTML += child
 
 
-# Classes for every element type. If the element type (e.g. "input") clashes with
+class ClassesCollection:
+    def __init__(self, collection: "ElementCollection") -> None:
+        self._collection = collection
+
+    def __contains__(self, class_name):
+        for element in self._collection:
+            if class_name in element.classes:
+                return True
+
+        return False
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, ClassesCollection)
+            and self._collection == other._collection
+        )
+
+    def __iter__(self):
+        for class_name in self._all_class_names():
+            yield class_name
+
+    def __len__(self):
+        return len(self._all_class_names())
+
+    def __repr__(self):
+        return f"ClassesCollection({repr(self._collection)})"
+
+    def __str__(self):
+        return " ".join(self._all_class_names())
+
+    def add(self, *class_names):
+        for element in self._collection:
+            element.classes.add(*class_names)
+
+    def contains(self, class_name):
+        return class_name in self
+
+    def remove(self, *class_names):
+        for element in self._collection:
+            element.classes.remove(*class_names)
+
+    def replace(self, old_class, new_class):
+        for element in self._collection:
+            element.classes.replace(old_class, new_class)
+
+    def toggle(self, *class_names):
+        for element in self._collection:
+            element.classes.toggle(*class_names)
+
+    def _all_class_names(self):
+        all_class_names = set()
+        for element in self._collection:
+            for class_name in element.classes:
+                all_class_names.add(class_name)
+
+        return all_class_names
+
+
+class StyleCollection:
+    def __init__(self, collection: "ElementCollection") -> None:
+        self._collection = collection
+
+    def __get__(self, obj, objtype=None):
+        return obj._get_attribute("style")
+
+    def __getitem__(self, key):
+        return self._collection._get_attribute("style")[key]
+
+    def __setitem__(self, key, value):
+        for element in self._collection._elements:
+            element.style[key] = value
+
+    def __repr__(self):
+        return f"StyleCollection({repr(self._collection)})"
+
+    def remove(self, key):
+        for element in self._collection._elements:
+            element.style.remove(key)
+
+
+class ElementCollection:
+    def __init__(self, elements: [Element]) -> None:
+        self._elements = elements
+        self._classes = ClassesCollection(self)
+        self._style = StyleCollection(self)
+
+    def __eq__(self, obj):
+        """Check for equality by comparing the underlying DOM elements."""
+        return isinstance(obj, ElementCollection) and obj._elements == self._elements
+
+    def __getitem__(self, key):
+        # If it's an integer we use it to access the elements in the collection
+        if isinstance(key, int):
+            return self._elements[key]
+
+        # If it's a slice we use it to support slice operations over the elements
+        # in the collection
+        elif isinstance(key, slice):
+            return ElementCollection(self._elements[key])
+
+        # If it's anything else (basically a string) we use it as a query selector.
+        return self.find(key)
+
+    def __iter__(self):
+        yield from self._elements
+
+    def __len__(self):
+        return len(self._elements)
+
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__} (length: {len(self._elements)}) "
+            f"{self._elements}"
+        )
+
+    def __getattr__(self, item):
+        return self._get_attribute(item)
+
+    def __setattr__(self, key, value):
+        # This class overrides `__setattr__` to delegate "public" attributes to the
+        # elements in the collection. BUT, we don't use the usual Python pattern where
+        # we set attributes on the collection itself via `self.__dict__` as that is not
+        # yet supported in our build of MicroPython. Instead, we handle it here by
+        # using super for all "private" attributes (those starting with an underscore).
+        if key.startswith("_"):
+            super().__setattr__(key, value)
+
+        else:
+            self._set_attribute(key, value)
+
+    @property
+    def children(self):
+        return self._elements
+
+    @property
+    def classes(self):
+        return self._classes
+
+    @property
+    def style(self):
+        return self._style
+
+    def find(self, selector):
+        elements = []
+        for element in self._elements:
+            elements.extend(element.find(selector))
+
+        return ElementCollection(elements)
+
+    def _get_attribute(self, attr, index=None):
+        if index is None:
+            return [getattr(el, attr) for el in self._elements]
+
+        # As JQuery, when getting an attr, only return it for the first element
+        return getattr(self._elements[index], attr)
+
+    def _set_attribute(self, attr, value):
+        for el in self._elements:
+            setattr(el, attr, value)
+
+
+########################################################################################
+
+# Classes for every HTML element type. If the element type (e.g. "input") clashes with
 # either a Python keyword or common symbol, then we suffix the class name with an "_"
 # (e.g. "input_").
 
@@ -903,167 +1063,6 @@ class video(ContainerElement):
 
 class wbr(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr"""
-
-
-class ClassesCollection:
-    def __init__(self, collection: "ElementCollection") -> None:
-        self._collection = collection
-
-    def __contains__(self, class_name):
-        for element in self._collection:
-            if class_name in element.classes:
-                return True
-
-        return False
-
-    def __eq__(self, other):
-        return (
-            isinstance(other, ClassesCollection)
-            and self._collection == other._collection
-        )
-
-    def __iter__(self):
-        for class_name in self._all_class_names():
-            yield class_name
-
-    def __len__(self):
-        return len(self._all_class_names())
-
-    def __repr__(self):
-        return f"ClassesCollection({repr(self._collection)})"
-
-    def __str__(self):
-        return " ".join(self._all_class_names())
-
-    def add(self, *class_names):
-        for element in self._collection:
-            element.classes.add(*class_names)
-
-    def contains(self, class_name):
-        return class_name in self
-
-    def remove(self, *class_names):
-        for element in self._collection:
-            element.classes.remove(*class_names)
-
-    def replace(self, old_class, new_class):
-        for element in self._collection:
-            element.classes.replace(old_class, new_class)
-
-    def toggle(self, *class_names):
-        for element in self._collection:
-            element.classes.toggle(*class_names)
-
-    def _all_class_names(self):
-        all_class_names = set()
-        for element in self._collection:
-            for class_name in element.classes:
-                all_class_names.add(class_name)
-
-        return all_class_names
-
-
-class StyleCollection:
-    def __init__(self, collection: "ElementCollection") -> None:
-        self._collection = collection
-
-    def __get__(self, obj, objtype=None):
-        return obj._get_attribute("style")
-
-    def __getitem__(self, key):
-        return self._collection._get_attribute("style")[key]
-
-    def __setitem__(self, key, value):
-        for element in self._collection._elements:
-            element.style[key] = value
-
-    def __repr__(self):
-        return f"StyleCollection({repr(self._collection)})"
-
-    def remove(self, key):
-        for element in self._collection._elements:
-            element.style.remove(key)
-
-
-class ElementCollection:
-    def __init__(self, elements: [Element]) -> None:
-        self._elements = elements
-        self._classes = ClassesCollection(self)
-        self._style = StyleCollection(self)
-
-    def __eq__(self, obj):
-        """Check for equality by comparing the underlying DOM elements."""
-        return isinstance(obj, ElementCollection) and obj._elements == self._elements
-
-    def __getitem__(self, key):
-        # If it's an integer we use it to access the elements in the collection
-        if isinstance(key, int):
-            return self._elements[key]
-
-        # If it's a slice we use it to support slice operations over the elements
-        # in the collection
-        elif isinstance(key, slice):
-            return ElementCollection(self._elements[key])
-
-        # If it's anything else (basically a string) we use it as a query selector.
-        return self.find(key)
-
-    def __iter__(self):
-        yield from self._elements
-
-    def __len__(self):
-        return len(self._elements)
-
-    def __repr__(self):
-        return (
-            f"{self.__class__.__name__} (length: {len(self._elements)}) "
-            f"{self._elements}"
-        )
-
-    def __getattr__(self, item):
-        return self._get_attribute(item)
-
-    def __setattr__(self, key, value):
-        # This class overrides `__setattr__` to delegate "public" attributes to the
-        # elements in the collection. BUT, we don't use the usual Python pattern where
-        # we set attributes on the collection itself via `self.__dict__` as that is not
-        # yet supported in our build of MicroPython. Instead, we handle it here by
-        # using super for all "private" attributes (those starting with an underscore).
-        if key.startswith("_"):
-            super().__setattr__(key, value)
-
-        else:
-            self._set_attribute(key, value)
-
-    @property
-    def children(self):
-        return self._elements
-
-    @property
-    def classes(self):
-        return self._classes
-
-    @property
-    def style(self):
-        return self._style
-
-    def find(self, selector):
-        elements = []
-        for element in self._elements:
-            elements.extend(element.find(selector))
-
-        return ElementCollection(elements)
-
-    def _get_attribute(self, attr, index=None):
-        if index is None:
-            return [getattr(el, attr) for el in self._elements]
-
-        # As JQuery, when getting an attr, only return it for the first element
-        return getattr(self._elements[index], attr)
-
-    def _set_attribute(self, attr, value):
-        for el in self._elements:
-            setattr(el, attr, value)
 
 
 # fmt: off
