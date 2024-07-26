@@ -41,7 +41,6 @@ class Element:
             type(self).__name__.replace("_", "")
         )
 
-        self._parent = None
         self._classes = Classes(self)
         self._style = Style(self)
 
@@ -119,13 +118,10 @@ class Element:
 
     @property
     def parent(self):
-        if self._parent:
-            return self._parent
+        if self._dom_element.parentElement is None:
+            return None
 
-        if self._dom_element.parentElement:
-            self._parent = Element.from_dom_element(self._dom_element.parentElement)
-
-        return self._parent
+        return Element.from_dom_element(self._dom_element.parentElement)
 
     @property
     def style(self):
