@@ -171,10 +171,10 @@ const init = async (script, type, interpreter) => {
 
     // helps preventing too lazy ServiceWorker initialization on button run
     if (serviceWorker) {
-        (new XWorker(
-            'data:application/javascript,postMessage(0)',
-            { type: 'dummy', serviceWorker },
-        )).onmessage = ({ target }) => target.terminate();
+        new XWorker("data:application/javascript,postMessage(0)", {
+            type: "dummy",
+            serviceWorker,
+        }).onmessage = ({ target }) => target.terminate();
     }
 
     if (hasConfig && configs.has(env)) {
