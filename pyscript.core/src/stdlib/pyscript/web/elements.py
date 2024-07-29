@@ -143,10 +143,6 @@ class Element:
                 for element in child:
                     self._dom_element.appendChild(element._dom_element)
 
-            elif is_iterable(child):
-                for item in child:
-                    self.append(item)
-
             else:
                 # In this case we know it's not an Element or an ElementCollection, so we
                 # guess that it's either a DOM element or NodeList returned via the ffi.
