@@ -47,6 +47,10 @@ class Element:
         # Set any specified classes, styles, and DOM properties.
         self.update(classes=classes, style=style, **kwargs)
 
+    def __eq__(self, obj):
+        """Check for equality by comparing the underlying DOM element."""
+        return isinstance(obj, Element) and obj._dom_element == self._dom_element
+
     def __getattr__(self, name):
         # This allows us to get attributes on the underlying DOM element that clash
         # with Python keywords or built-ins (e.g. the output element has an
@@ -82,29 +86,11 @@ class Element:
         if classes:
             self.classes.add(classes)
 
-        if isinstance(style, dict):
+        if style:
             self.style.set(**style)
 
-        elif style is not None:
-            raise ValueError(
-                f"Style should be a dictionary, received {style} "
-                f"(type {type(style)}) instead."
-            )
-
-        self._set_dom_properties(**kwargs)
-
-    def _set_dom_properties(self, **kwargs):
-        """Set the specified DOM properties.
-
-        Args:
-            **kwargs: The properties to set
-        """
         for name, value in kwargs.items():
             setattr(self, name, value)
-
-    def __eq__(self, obj):
-        """Check for equality by comparing the underlying DOM element."""
-        return isinstance(obj, Element) and obj._dom_element == self._dom_element
 
     @property
     def children(self):
