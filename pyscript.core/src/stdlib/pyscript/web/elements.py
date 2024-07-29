@@ -21,7 +21,8 @@ from pyscript import document
 
 
 class Element:
-    # Lookup table to get an element class by its tag name.
+    # Lookup table to get an element class by its tag name when wrapping an existing
+    # DOM element.
     element_classes_by_tag_name = {}
 
     @classmethod
@@ -96,27 +97,18 @@ class Element:
             # with Python keywords or built-ins (e.g. the output element has an
             # attribute `for` which is a Python keyword, so you can access it on the
             # Element instance via `for_`).
-            if name.endswith("_") and not name.endswith("__"):
+            if name.endswith("_"):
                 name = name[:-1]
 
             setattr(self._dom_element, name, value)
 
-    def update(self, classes=None, style=None, **kwargs):
-        """Update the element with the specified classes, styles, and DOM properties."""
-
-        if classes:
-            self.classes.add(classes)
-
-        if style:
-            self.style.set(**style)
-
-        for name, value in kwargs.items():
-            setattr(self, name, value)
-
     @property
     def children(self):
         return ElementCollection(
-            [Element.from_dom_element(el) for el in self._dom_element.children]
+            [
+                Element.from_dom_element(dom_element)
+                for dom_element in self._dom_element.children
+            ]
         )
 
     @property
@@ -139,8 +131,8 @@ class Element:
             self._dom_element.appendChild(child._dom_element)
 
         elif isinstance(child, ElementCollection):
-            for el in child:
-                self._dom_element.appendChild(el._dom_element)
+            for element in child:
+                self._dom_element.appendChild(element._dom_element)
 
         else:
             # In this case we know it's not an Element or an ElementCollection, so we
@@ -192,6 +184,18 @@ class Element:
     def show_me(self):
         """Scroll the element into view."""
         self._dom_element.scrollIntoView()
+
+    def update(self, classes=None, style=None, **kwargs):
+        """Update the element with the specified classes, styles, and DOM properties."""
+
+        if classes:
+            self.classes.add(classes)
+
+        if style:
+            self.style.set(**style)
+
+        for name, value in kwargs.items():
+            setattr(self, name, value)
 
 
 class Classes:
@@ -521,7 +525,7 @@ class ElementCollection:
         )
 
     def __getattr__(self, name):
-        return [getattr(el, name) for el in self._elements]
+        return [getattr(element, name) for element in self._elements]
 
     def __setattr__(self, name, value):
         # This class overrides `__setattr__` to delegate "public" attributes to the
@@ -533,8 +537,8 @@ class ElementCollection:
             super().__setattr__(name, value)
 
         else:
-            for el in self._elements:
-                setattr(el, name, value)
+            for element in self._elements:
+                setattr(element, name, value)
 
     @property
     def children(self):
