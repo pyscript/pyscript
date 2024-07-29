@@ -8,15 +8,6 @@ except ImportError:
 from pyscript import document
 
 
-def is_iterable(obj):
-    try:
-        iter(obj)
-        return True
-
-    except TypeError:
-        return False
-
-
 class Element:
     # Lookup table to get an element class by tag name. Used when wrapping an existing
     # DOM element.
@@ -143,7 +134,8 @@ class Element:
                 for element in child:
                     self._dom_element.appendChild(element._dom_element)
 
-            # We don't use a check for iterables here as it will match JS proxies for
+            # We check for list/tuple here and NOT for any iterable as it will match
+            # a JS Nodelist which is handled explicitly below.
             # NodeList.
             elif isinstance(child, list) or isinstance(child, tuple):
                 for item in child:
