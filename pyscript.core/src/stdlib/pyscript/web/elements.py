@@ -473,9 +473,7 @@ class StyleCollection:
         self._collection = collection
 
     def __getitem__(self, key):
-        return [
-            element.style[key] for element in self._collection._elements
-        ]
+        return [element.style[key] for element in self._collection._elements]
 
     def __setitem__(self, key, value):
         for element in self._collection._elements:
