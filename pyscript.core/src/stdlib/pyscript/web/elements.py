@@ -26,11 +26,19 @@ class Element:
     element_classes_by_tag_name = {}
 
     @classmethod
+    def get_tag_name(cls):
+        """Return the HTML tag name for the element class."""
+
+        # For classes that have a trailing underscore (because they clash with a
+        # Python keyword or built-in), we remove it to get the tag name.
+        return cls.__name__.replace("_", "")
+
+    @classmethod
     def register_element_classes(cls, element_classes):
         """Register an iterable of element classes."""
 
         for element_class in element_classes:
-            tag_name = element_class.__name__.replace("_", "")
+            tag_name = element_class.get_tag_name()
             cls.element_classes_by_tag_name[tag_name] = element_class
 
     @classmethod
@@ -38,12 +46,12 @@ class Element:
         """Unregister an iterable of element classes."""
 
         for element_class in element_classes:
-            tag_name = element_class.__name__.replace("_", "")
+            tag_name = element_class.get_tag_name()
             cls.element_classes_by_tag_name.pop(tag_name, None)
 
     @classmethod
     def from_dom_element(cls, dom_element):
-        """Create an instance of a subclass of `Element` for a DOM element."""
+        """Create an instance of a subclass of `Element` from an existing DOM element."""
 
         # Lookup the element class by tag name. For any unknown elements (custom
         # tags etc.) use *this* class (`Element`).
@@ -60,7 +68,7 @@ class Element:
         Otherwise, we are being called to *wrap* an existing DOM element.
         """
         self._dom_element = dom_element or document.createElement(
-            type(self).__name__.replace("_", "")
+            type(self).get_tag_name()
         )
 
         self._classes = Classes(self)
