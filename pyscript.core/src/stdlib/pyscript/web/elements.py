@@ -77,7 +77,7 @@ class Element:
         # with Python keywords or built-ins (e.g. the output element has an
         # attribute `for` which is a Python keyword, so you can access it on the
         # Element instance via `for_`).
-        if name.endswith("_"):
+        if name.endswith("_") and not name.endswith("__"):
             name = name[:-1]
 
         return getattr(self._dom_element, name)
@@ -96,7 +96,7 @@ class Element:
             # with Python keywords or built-ins (e.g. the output element has an
             # attribute `for` which is a Python keyword, so you can access it on the
             # Element instance via `for_`).
-            if name.endswith("_"):
+            if name.endswith("_") and not name.endswith("__"):
                 name = name[:-1]
 
             setattr(self._dom_element, name, value)
@@ -402,6 +402,9 @@ class ContainerElement(Element):
             else:
                 self.innerHTML += child
 
+    def __iter__(self):
+        yield from self.children
+
 
 class ClassesCollection:
     def __init__(self, collection: "ElementCollection") -> None:
@@ -465,11 +468,10 @@ class StyleCollection:
     def __init__(self, collection: "ElementCollection") -> None:
         self._collection = collection
 
-    def __get__(self, obj, objtype=None):
-        return obj._get_attribute("style")
-
     def __getitem__(self, key):
-        return self._collection._get_attribute("style")[key]
+        return [
+            element.style[key] for element in self._collection._elements
+        ]
 
     def __setitem__(self, key, value):
         for element in self._collection._elements:
@@ -518,20 +520,21 @@ class ElementCollection:
             f"{self._elements}"
         )
 
-    def __getattr__(self, item):
-        return self._get_attribute(item)
+    def __getattr__(self, name):
+        return [getattr(el, name) for el in self._elements]
 
-    def __setattr__(self, key, value):
+    def __setattr__(self, name, value):
         # This class overrides `__setattr__` to delegate "public" attributes to the
         # elements in the collection. BUT, we don't use the usual Python pattern where
         # we set attributes on the collection itself via `self.__dict__` as that is not
         # yet supported in our build of MicroPython. Instead, we handle it here by
         # using super for all "private" attributes (those starting with an underscore).
-        if key.startswith("_"):
-            super().__setattr__(key, value)
+        if name.startswith("_"):
+            super().__setattr__(name, value)
 
         else:
-            self._set_attribute(key, value)
+            for el in self._elements:
+                setattr(el, name, value)
 
     @property
     def children(self):
@@ -551,17 +554,6 @@ class ElementCollection:
             elements.extend(element.find(selector))
 
         return ElementCollection(elements)
-
-    def _get_attribute(self, attr, index=None):
-        if index is None:
-            return [getattr(el, attr) for el in self._elements]
-
-        # As JQuery, when getting an attr, only return it for the first element
-        return getattr(self._elements[index], attr)
-
-    def _set_attribute(self, attr, value):
-        for el in self._elements:
-            setattr(el, attr, value)
 
 
 # Classes for every HTML element. If the element tag name (e.g. "input") clashes with
