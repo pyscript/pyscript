@@ -134,38 +134,45 @@ class Element:
     def style(self):
         return self._style
 
-    def append(self, child):
-        if isinstance(child, Element):
-            self._dom_element.appendChild(child._dom_element)
+    def append(self, *children):
+        for child in children:
+            if isinstance(child, Element):
+                self._dom_element.appendChild(child._dom_element)
 
-        elif isinstance(child, ElementCollection):
-            for element in child:
-                self._dom_element.appendChild(element._dom_element)
+            elif isinstance(child, ElementCollection):
+                for element in child:
+                    self._dom_element.appendChild(element._dom_element)
 
-        else:
-            # In this case we know it's not an Element or an ElementCollection, so
-            # we guess that it's either a DOM element or NodeList returned via the
-            # ffi.
-            try:
-                # First, we try to see if it's an element by accessing the 'tagName'
-                # attribute.
-                child.tagName
-                self._dom_element.appendChild(child)
+            # We don't use a check for iterables here as it will match JS proxies for
+            # NodeList.
+            elif isinstance(child, list) or isinstance(child, tuple):
+                for item in child:
+                    self.append(item)
 
-            except AttributeError:
+            else:
+                # In this case we know it's not an Element or an ElementCollection, so
+                # we guess that it's either a DOM element or NodeList returned via the
+                # ffi.
                 try:
-                    # Ok, it's not an element, so let's see if it's a NodeList by
-                    # accessing the 'length' attribute.
-                    child.length
-                    for element_ in child:
-                        self._dom_element.appendChild(element_)
+                    # First, we try to see if it's an element by accessing the 'tagName'
+                    # attribute.
+                    child.tagName
+                    self._dom_element.appendChild(child)
 
                 except AttributeError:
-                    # Nope! This is not an element or a NodeList.
-                    raise TypeError(
-                        f'Element "{child}" is a proxy object, "'
-                        f"but not a valid element or a NodeList."
-                    )
+                    try:
+                        # Ok, it's not an element, so let's see if it's a NodeList by
+                        # accessing the 'length' attribute.
+                        child.length
+                        for element_ in child:
+                            self._dom_element.appendChild(element_)
+
+                    except AttributeError:
+                        # Nope! This is not an element or a NodeList.
+                        raise TypeError(
+                            f'Element "{child}" is a proxy object, "'
+                            f"but not a valid element or a NodeList."
+                        )
 
     def clone(self, clone_id=None):
         """Make a clone of the element (clones the underlying DOM object too)."""
