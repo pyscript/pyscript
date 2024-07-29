@@ -171,11 +171,10 @@ const init = async (script, type, interpreter) => {
 
     // helps preventing too lazy ServiceWorker initialization on button run
     if (serviceWorker) {
-        const bootstrap = document.createElement('script');
-        bootstrap.type = 'mpy';
-        bootstrap.setAttribute('worker', '');
-        bootstrap.setAttribute('service-worker', serviceWorker);
-        document.head.appendChild(bootstrap);
+        (new XWorker(
+            'data:application/javascript,postMessage(0)',
+            { type: 'dummy', serviceWorker },
+        )).onmessage = ({ target }) => target.terminate();
     }
 
     if (hasConfig && configs.has(env)) {
