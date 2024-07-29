@@ -10,7 +10,8 @@ class DOM:
     def __getitem__(self, selector):
         return self.find(selector)
 
-    def find(self, selector):
+    @staticmethod
+    def find(selector):
         return ElementCollection(
             [
                 Element.from_dom_element(dom_element)

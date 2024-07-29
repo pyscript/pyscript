@@ -4,39 +4,29 @@ try:
 except ImportError:
     Any = "Any"
 
-try:
-    import warnings
-
-except ImportError:
-    # TODO: For now it probably means we are in MicroPython. We should figure
-    # out the "right" way to handle this. For now we just ignore the warning
-    # and logging to console
-    class warnings:
-        @staticmethod
-        def warn(*args, **kwargs):
-            print("WARNING: ", *args, **kwargs)
-
 
 from pyscript import document
 
 
 class Element:
-    # Lookup table to get an element class by its tag name when wrapping an existing
+    # Lookup table to get an element class by tag name. Used when wrapping an existing
     # DOM element.
     element_classes_by_tag_name = {}
 
     @classmethod
     def get_tag_name(cls):
-        """Return the HTML tag name for the element class."""
+        """Return the HTML tag name for the element class.
 
-        # For classes that have a trailing underscore (because they clash with a
-        # Python keyword or built-in), we remove it to get the tag name.
+        For classes that have a trailing underscore (because they clash with a Python
+        keyword or built-in), we remove it to get the tag name. e.g. for the `input_`
+        class, the tag name is 'input'.
+
+        """
         return cls.__name__.replace("_", "")
 
     @classmethod
     def register_element_classes(cls, element_classes):
         """Register an iterable of element classes."""
-
         for element_class in element_classes:
             tag_name = element_class.get_tag_name()
             cls.element_classes_by_tag_name[tag_name] = element_class
@@ -44,17 +34,18 @@ class Element:
     @classmethod
     def unregister_element_classes(cls, element_classes):
         """Unregister an iterable of element classes."""
-
         for element_class in element_classes:
             tag_name = element_class.get_tag_name()
             cls.element_classes_by_tag_name.pop(tag_name, None)
 
     @classmethod
     def from_dom_element(cls, dom_element):
-        """Create an instance of a subclass of `Element` from an existing DOM element."""
+        """Wrap an existing DOM element in an instance of a subclass of `Element`.
 
-        # Lookup the element class by tag name. For any unknown elements (custom
-        # tags etc.) use *this* class (`Element`).
+        We look up the `Element` subclass by the DOM element's tag name. For any unknown
+        elements (custom tags etc.) use *this* class (`Element`).
+
+        """
         element_cls = cls.element_classes_by_tag_name.get(
             dom_element.tagName.lower(), cls
         )
