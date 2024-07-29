@@ -21,13 +21,34 @@ from pyscript import document
 
 
 class Element:
+    # Lookup table to get an element class by its tag name.
+    element_classes_by_tag_name = {}
+
+    @classmethod
+    def register_element_classes(cls, element_classes):
+        """Register an iterable of element classes."""
+
+        for element_class in element_classes:
+            tag_name = element_class.__name__.replace("_", "")
+            cls.element_classes_by_tag_name[tag_name] = element_class
+
+    @classmethod
+    def unregister_element_classes(cls, element_classes):
+        """Unregister an iterable of element classes."""
+
+        for element_class in element_classes:
+            tag_name = element_class.__name__.replace("_", "")
+            cls.element_classes_by_tag_name.pop(tag_name, None)
+
     @classmethod
     def from_dom_element(cls, dom_element):
         """Create an instance of a subclass of `Element` for a DOM element."""
 
         # Lookup the element class by tag name. For any unknown elements (custom
         # tags etc.) use *this* class (`Element`).
-        element_cls = ELEMENT_CLASSES_BY_TAG_NAME.get(dom_element.tagName.lower(), cls)
+        element_cls = cls.element_classes_by_tag_name.get(
+            dom_element.tagName.lower(), cls
+        )
 
         return element_cls(dom_element=dom_element)
 
@@ -1071,7 +1092,5 @@ ELEMENT_CLASSES = [
 # fmt: on
 
 
-# Lookup table to get an element class by its tag name.
-ELEMENT_CLASSES_BY_TAG_NAME = {
-    cls.__name__.replace("_", ""): cls for cls in ELEMENT_CLASSES
-}
+# Register all the default (aka "built-in") Element classes.
+Element.register_element_classes(ELEMENT_CLASSES)
