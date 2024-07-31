@@ -20,7 +20,7 @@ def when(event_type=None, selector=None):
 
     def decorator(func):
 
-        from pyscript.web.elements import Element, ElementCollection
+        from pyscript.web import Element, ElementCollection
 
         if isinstance(selector, str):
             elements = document.querySelectorAll(selector)

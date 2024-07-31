@@ -6,6 +6,17 @@ except ImportError:
 
 
 from pyscript import document
+from pyscript import when  # noqa: impoprted to expose via this module.
+
+
+def wrap_dom_element(dom_element):
+    """Wrap an existing DOM element in an instance of a subclass of `Element`.
+
+    This is just a convenience function to avoid having to import the `Element` class
+    and use a class method.
+    """
+
+    return Element.wrap_dom_element(dom_element)
 
 
 class Element:
@@ -39,7 +50,7 @@ class Element:
             cls.element_classes_by_tag_name.pop(tag_name, None)
 
     @classmethod
-    def from_dom_element(cls, dom_element):
+    def wrap_dom_element(cls, dom_element):
         """Wrap an existing DOM element in an instance of a subclass of `Element`.
 
         We look up the `Element` subclass by the DOM element's tag name. For any unknown
@@ -103,12 +114,7 @@ class Element:
 
     @property
     def children(self):
-        return ElementCollection(
-            [
-                Element.from_dom_element(dom_element)
-                for dom_element in self._dom_element.children
-            ]
-        )
+        return ElementCollection.wrap_dom_elements(self._dom_element.children)
 
     @property
     def classes(self):
@@ -119,7 +125,7 @@ class Element:
         if self._dom_element.parentElement is None:
             return None
 
-        return Element.from_dom_element(self._dom_element.parentElement)
+        return Element.wrap_dom_element(self._dom_element.parentElement)
 
     @property
     def style(self):
@@ -168,7 +174,7 @@ class Element:
 
     def clone(self, clone_id=None):
         """Make a clone of the element (clones the underlying DOM object too)."""
-        clone = Element.from_dom_element(self._dom_element.cloneNode(True))
+        clone = Element.wrap_dom_element(self._dom_element.cloneNode(True))
         clone.id = clone_id
         return clone
 
@@ -182,11 +188,8 @@ class Element:
         Returns:
             ElementCollection: A collection of elements matching the selector
         """
-        return ElementCollection(
-            [
-                Element.from_dom_element(dom_element)
-                for dom_element in self._dom_element.querySelectorAll(selector)
-            ]
+        return ElementCollection.wrap_dom_elements(
+            self._dom_element.querySelectorAll(selector)
         )
 
     def show_me(self):
@@ -355,7 +358,7 @@ class Options:
     def options(self):
         """Return the list of options"""
         return [
-            Element.from_dom_element(opt) for opt in self._element._dom_element.options
+            Element.wrap_dom_element(opt) for opt in self._element._dom_element.options
         ]
 
     @property
@@ -496,6 +499,14 @@ class StyleCollection:
 
 
 class ElementCollection:
+    @classmethod
+    def wrap_dom_elements(cls, dom_elements):
+        """Wrap an iterable of dom_elements in an `ElementCollection`."""
+
+        return cls(
+            [Element.wrap_dom_element(dom_element) for dom_element in dom_elements]
+        )
+
     def __init__(self, elements: [Element]) -> None:
         self._elements = elements
         self._classes = ClassesCollection(self)
@@ -613,7 +624,6 @@ class blockquote(ContainerElement):
 
 class body(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body"""
-
 
 class br(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br"""
@@ -1096,3 +1106,22 @@ ELEMENT_CLASSES = [
 
 # Register all the default (aka "built-in") Element classes.
 Element.register_element_classes(ELEMENT_CLASSES)
+
+
+class Page:
+    """Wraps the `document` object."""
+
+    def __init__(self):
+        self.body = Element.wrap_dom_element(document.body)
+        self.head = Element.wrap_dom_element(document.head)
+
+    @staticmethod
+    def find(selector):
+        """Find all elements that match the specified selector.
+
+        Return the results as a possibly `ElementCollection`.
+        """
+        return ElementCollection.wrap_dom_elements(document.querySelectorAll(selector))
+
+
+page = Page()
