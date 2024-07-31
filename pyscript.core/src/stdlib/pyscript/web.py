@@ -83,6 +83,10 @@ class Element:
         """Check for equality by comparing the underlying DOM element."""
         return isinstance(obj, Element) and obj._dom_element == self._dom_element
 
+    def __getitem__(self, selector):
+        """Shortcut for `element.find`."""
+        return self.find(selector)
+
     def __getattr__(self, name):
         # This allows us to get attributes on the underlying DOM element that clash
         # with Python keywords or built-ins (e.g. the output element has an
