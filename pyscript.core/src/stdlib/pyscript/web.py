@@ -5,8 +5,8 @@ except ImportError:
     Any = "Any"
 
 
-from pyscript import document
 from pyscript import when  # noqa: impoprted to expose via this module.
+from pyscript import document
 
 
 def wrap_dom_element(dom_element):
@@ -624,6 +624,7 @@ class blockquote(ContainerElement):
 
 class body(ContainerElement):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body"""
+
 
 class br(Element):
     """Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br"""

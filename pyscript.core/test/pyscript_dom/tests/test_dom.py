@@ -1,5 +1,5 @@
 from pyscript import document, when
-from pyscript.web import Element, ElementCollection, div, p, page, Element
+from pyscript.web import Element, ElementCollection, div, p, page
 
 
 class TestDocument:
@@ -251,9 +251,7 @@ class TestCreation:
 
         # Creating an element from another element automatically creates that element
         # as a child of the original element
-        new_el = p(
-            "a div", classes=["code-description"], innerHTML="Ciao PyScripters!"
-        )
+        new_el = p("a div", classes=["code-description"], innerHTML="Ciao PyScripters!")
         parent_div.append(new_el)
 
         assert isinstance(new_el, Element)
