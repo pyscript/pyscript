@@ -34,7 +34,10 @@ async function execute({ currentTarget }) {
 
     if (!envs.has(env)) {
         const srcLink = URL.createObjectURL(new Blob([""]));
-        const details = { type: this.interpreter };
+        const details = {
+            type: this.interpreter,
+            serviceWorker: this.serviceWorker,
+        };
         const { config } = this;
         if (config) {
             details.configURL = relative_url(config);
@@ -163,7 +166,16 @@ const init = async (script, type, interpreter) => {
 
     let isSetup = script.hasAttribute("setup");
     const hasConfig = script.hasAttribute("config");
+    const serviceWorker = script.getAttribute("service-worker");
     const env = `${interpreter}-${script.getAttribute("env") || getID(type)}`;
+
+    // helps preventing too lazy ServiceWorker initialization on button run
+    if (serviceWorker) {
+        new XWorker("data:application/javascript,postMessage(0)", {
+            type: "dummy",
+            serviceWorker,
+        }).onmessage = ({ target }) => target.terminate();
+    }
 
     if (hasConfig && configs.has(env)) {
         throw new SyntaxError(
@@ -181,6 +193,7 @@ const init = async (script, type, interpreter) => {
     const context = {
         // allow the listener to be overridden at distance
         handleEvent: execute,
+        serviceWorker,
         interpreter,
         env,
         config: hasConfig && script.getAttribute("config"),
