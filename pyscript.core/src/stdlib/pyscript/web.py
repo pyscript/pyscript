@@ -1116,6 +1116,10 @@ class Page:
         self.body = Element.wrap_dom_element(document.body)
         self.head = Element.wrap_dom_element(document.head)
 
+    def __getitem__(self, selector):
+        """Shortcut for `page.find`."""
+        return self.find(selector)
+
     @property
     def title(self):
         """Return the page title."""
