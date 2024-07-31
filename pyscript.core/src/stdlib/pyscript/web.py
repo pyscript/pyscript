@@ -258,7 +258,7 @@ class Classes:
         return " ".join(self._class_list)
 
     def add(self, *class_names):
-        """Add one or more classes to the element's `classList`."""
+        """Add one or more classes to the element."""
         for class_name in class_names:
             if isinstance(class_name, list):
                 for item in class_name:
@@ -272,7 +272,7 @@ class Classes:
         return class_name in self
 
     def remove(self, *class_names):
-        """Remove one or more classes from the element's `classList`."""
+        """Remove one or more classes from the element."""
         for class_name in class_names:
             if isinstance(class_name, list):
                 for item in class_name:
@@ -282,12 +282,12 @@ class Classes:
                 self._class_list.remove(class_name)
 
     def replace(self, old_class, new_class):
-        """"""
+        """Replace one of the element's classes with another."""
         self.remove(old_class)
         self.add(new_class)
 
     def toggle(self, *class_names):
-        """Toggle one or more classes in the element's `classList`."""
+        """Toggle one or more of the element's classes."""
         for class_name in class_names:
             if class_name in self:
                 self.remove(class_name)
