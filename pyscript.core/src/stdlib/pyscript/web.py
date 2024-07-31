@@ -97,7 +97,7 @@ class Element:
         # with Python keywords or built-ins (e.g. the output element has an
         # attribute `for` which is a Python keyword, so you can access it on the
         # Element instance via `for_`).
-        if name.endswith("_") and not name.endswith("__"):
+        if name.endswith("_"):
             name = name[:-1]
 
         return getattr(self._dom_element, name)
