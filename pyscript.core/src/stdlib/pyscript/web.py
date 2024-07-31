@@ -1109,14 +1109,28 @@ Element.register_element_classes(ELEMENT_CLASSES)
 
 
 class Page:
-    """Wraps the `document` object."""
+    """Represents the whole page."""
 
     def __init__(self):
         self.body = Element.wrap_dom_element(document.body)
         self.head = Element.wrap_dom_element(document.head)
 
-    @staticmethod
-    def find(selector):
+    @property
+    def title(self):
+        """Return the page title."""
+        return document.title
+
+    @title.setter
+    def title(self, value):
+        """Set the page title."""
+        document.title = value
+
+    def append(self, *children):
+        """Shortcut for `page.body.append`."""
+
+        self.body.append(*children)
+
+    def find(self, selector):  # NOQA
         """Find all elements that match the specified selector.
 
         Return the results as a possibly `ElementCollection`.
