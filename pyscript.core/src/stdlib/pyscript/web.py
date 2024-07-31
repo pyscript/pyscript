@@ -341,13 +341,13 @@ class Options:
         """Return the selected option."""
         return self.options[self._element._dom_element.selectedIndex]
 
-    def add(self, value, innerHTML, text, before, **kwargs):
+    def add(self, value=None, html=None, text=None, before=None, **kwargs):
         """Add a new option to the element"""
         if value is not None:
             kwargs["value"] = value
 
         if html is not None:
-            kwargs["innerHTML"] = innerHTML
+            kwargs["innerHTML"] = html
 
         if text is not None:
             kwargs["text"] = text
