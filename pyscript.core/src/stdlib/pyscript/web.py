@@ -5,7 +5,7 @@ except ImportError:
     Any = "Any"
 
 
-from pyscript import when  # noqa: impoprted to expose via this module.
+from pyscript import when  # noqa: imported to expose `when` via this module.
 from pyscript import document
 
 
@@ -13,7 +13,7 @@ def wrap_dom_element(dom_element):
     """Wrap an existing DOM element in an instance of a subclass of `Element`.
 
     This is just a convenience function to avoid having to import the `Element` class
-    and use a class method.
+    and use the class method.
     """
 
     return Element.wrap_dom_element(dom_element)
@@ -1125,7 +1125,7 @@ Element.register_element_classes(ELEMENT_CLASSES)
 
 
 class Page:
-    """Represents the whole page."""
+    """Represents the whole page (aka document)."""
 
     def __init__(self):
         self.body = Element.wrap_dom_element(document.body)
@@ -1134,9 +1134,10 @@ class Page:
     def __getitem__(self, key):
         """Get an item on the page.
 
-        If `key` is an integer or a slice we use it to index/slice the pages's
-        children (not *that* useful, as the page always has a single child, the <html>
-        element, but...). Otherwise, we use `key` as a query selector.
+        If `key` is an integer or a slice we use it to index/slice the page's children
+        (not *that* useful, as the page always has a single child, the <html> element
+        but consistent with `Element` and `ElementCollection`). Otherwise, we use `key`
+        as a query selector.
         """
         if isinstance(key, int) or isinstance(key, slice):
             return self.children[key]
