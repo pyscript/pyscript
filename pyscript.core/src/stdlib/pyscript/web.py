@@ -1,4 +1,5 @@
-"""Lightweight Python access to the DOM and HTML elements."""
+"""Lightweight interface to the DOM and HTML elements."""
+
 
 # `when` is not used in this module. It is imported here save the user an additional
 # import (i.e. they can get what they need from `pyscript.web`).
@@ -51,7 +52,6 @@ class Element:
 
         We look up the `Element` subclass by the DOM element's tag name. For any unknown
         elements (custom tags etc.) use *this* class (`Element`).
-
         """
         element_cls = cls.element_classes_by_tag_name.get(
             dom_element.tagName.lower(), cls
@@ -69,7 +69,10 @@ class Element:
             type(self).get_tag_name()
         )
 
+        # A set-like interface to the element's `classList`.
         self._classes = Classes(self)
+
+        # A dict-like interface to the element's `style` attribute.
         self._style = Style(self)
 
         # Set any specified classes, styles, and DOM properties.
