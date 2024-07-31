@@ -83,9 +83,16 @@ class Element:
         """Check for equality by comparing the underlying DOM element."""
         return isinstance(obj, Element) and obj._dom_element == self._dom_element
 
-    def __getitem__(self, selector):
-        """Shortcut for `element.find`."""
-        return self.find(selector)
+    def __getitem__(self, key):
+        """Get an item within the element's children.
+
+        If `key` is an integer or a slice we use it to index/slice the element's
+        children. Otherwise, we use `key` as a query selector.
+        """
+        if isinstance(key, int) or isinstance(key, slice):
+            return self.children[key]
+
+        return self.find(key)
 
     def __getattr__(self, name):
         # This allows us to get attributes on the underlying DOM element that clash
@@ -521,16 +528,17 @@ class ElementCollection:
         return isinstance(obj, ElementCollection) and obj._elements == self._elements
 
     def __getitem__(self, key):
-        # If it's an integer we use it to access the elements in the collection
+        """Get an item in the collection.
+
+        If `key` is an integer or a slice we use it to index/slice the collection.
+        Otherwise, we use `key` as a query selector.
+        """
         if isinstance(key, int):
             return self._elements[key]
 
-        # If it's a slice we use it to support slice operations over the elements
-        # in the collection
         elif isinstance(key, slice):
             return ElementCollection(self._elements[key])
 
-        # If it's anything else (basically a string) we use it as a query selector.
         return self.find(key)
 
     def __iter__(self):
@@ -1120,9 +1128,21 @@ class Page:
         self.body = Element.wrap_dom_element(document.body)
         self.head = Element.wrap_dom_element(document.head)
 
-    def __getitem__(self, selector):
-        """Shortcut for `page.find`."""
-        return self.find(selector)
+    def __getitem__(self, key):
+        """Get an item on the page.
+
+        If `key` is an integer or a slice we use it to index/slice the document's
+        children (not *that* useful, as a document has a single child, the <html>
+        element, but...). Otherwise, we use `key` as a query selector.
+        """
+        if isinstance(key, int) or isinstance(key, slice):
+            return self.children[key]
+
+        return self.find(key)
+
+    @property
+    def children(self):
+        return ElementCollection.wrap_dom_elements(document.children)
 
     @property
     def title(self):
