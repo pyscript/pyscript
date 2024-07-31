@@ -1,6 +1,5 @@
 """Lightweight Python access to the DOM and HTML elements."""
 
-
 # `when` is not used in this module. It is imported here save the user an additional
 # import (i.e. they can get what they need from `pyscript.web`).
 from pyscript import document, when  # NOQA
