@@ -202,7 +202,7 @@ class Element:
         )
 
     def show_me(self):
-        """Scroll the element into view."""
+        """Convenience method for 'element.scrollIntoView()'."""
         self._dom_element.scrollIntoView()
 
     def update(self, classes=None, style=None, **kwargs):
@@ -428,7 +428,9 @@ class ContainerElement(Element):
 
 
 class ClassesCollection:
-    def __init__(self, collection: "ElementCollection"):
+    """A set-like interface to the classes of the elements in a collection."""
+
+    def __init__(self, collection):
         self._collection = collection
 
     def __contains__(self, class_name):
@@ -458,11 +460,12 @@ class ClassesCollection:
         return " ".join(self._all_class_names())
 
     def add(self, *class_names):
+        """Add one or more classes to the elements in the collection."""
         for element in self._collection:
             element.classes.add(*class_names)
 
     def contains(self, class_name):
-        """"""
+        """Check if any element in the collection has the specified class."""
         return class_name in self
 
     def remove(self, *class_names):
@@ -472,12 +475,12 @@ class ClassesCollection:
             element.classes.remove(*class_names)
 
     def replace(self, old_class, new_class):
-        """"""
+        """Replace one of the classes in the elements in the collection with another."""
         for element in self._collection:
             element.classes.replace(old_class, new_class)
 
     def toggle(self, *class_names):
-        """"""
+        """Toggle one or more classes on the elements in the collection."""
         for element in self._collection:
             element.classes.toggle(*class_names)
 
@@ -491,7 +494,9 @@ class ClassesCollection:
 
 
 class StyleCollection:
-    def __init__(self, collection: "ElementCollection"):
+    """A dict-like interface to the styles of the elements in a collection."""
+
+    def __init__(self, collection):
         self._collection = collection
 
     def __getitem__(self, key):
@@ -505,7 +510,7 @@ class StyleCollection:
         return f"StyleCollection({repr(self._collection)})"
 
     def remove(self, key):
-        """"""
+        """Remove a CSS property from the elements in the collection."""
         for element in self._collection._elements:
             element.style.remove(key)
 
@@ -571,13 +576,14 @@ class ElementCollection:
                 setattr(element, name, value)
 
     @property
-    def children(self):
-        return self._elements
-
-    @property
     def classes(self):
         """Return the classes of the elements in the collection as a `ClassesCollection`."""
         return self._classes
+
+    @property
+    def elements(self):
+        """Return the elements in the collection as a list."""
+        return self._elements
 
     @property
     def style(self):

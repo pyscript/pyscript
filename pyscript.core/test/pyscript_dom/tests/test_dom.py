@@ -182,7 +182,7 @@ class TestElement:
 class TestCollection:
     def test_iter_eq_children(self):
         elements = page.find(".multi-elems")
-        assert [el for el in elements] == [el for el in elements.children]
+        assert [el for el in elements] == [el for el in elements.elements]
         assert len(elements) == 3
 
     def test_slices(self):
