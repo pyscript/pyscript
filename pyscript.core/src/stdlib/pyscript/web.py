@@ -125,6 +125,7 @@ class Element:
 
     @property
     def children(self):
+        """Return the element's children as an `ElementCollection`."""
         return ElementCollection.wrap_dom_elements(self._dom_element.children)
 
     @property
@@ -133,6 +134,7 @@ class Element:
 
     @property
     def parent(self):
+        """Return the element's `parent."""
         if self._dom_element.parentElement is None:
             return None
 
@@ -143,6 +145,7 @@ class Element:
         return self._style
 
     def append(self, *children):
+        """Append the specified children to the element."""
         for child in children:
             if isinstance(child, Element):
                 self._dom_element.appendChild(child._dom_element)
@@ -1131,8 +1134,8 @@ class Page:
     def __getitem__(self, key):
         """Get an item on the page.
 
-        If `key` is an integer or a slice we use it to index/slice the document's
-        children (not *that* useful, as a document has a single child, the <html>
+        If `key` is an integer or a slice we use it to index/slice the pages's
+        children (not *that* useful, as the page always has a single child, the <html>
         element, but...). Otherwise, we use `key` as a query selector.
         """
         if isinstance(key, int) or isinstance(key, slice):
@@ -1142,6 +1145,10 @@ class Page:
 
     @property
     def children(self):
+        """Return the page's children as an `ElementCollection`.
+
+        The page always has a single child, the <html> element.
+        """
         return ElementCollection.wrap_dom_elements(document.children)
 
     @property
