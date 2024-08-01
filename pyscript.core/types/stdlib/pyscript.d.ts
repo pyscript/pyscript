@@ -9,10 +9,7 @@ declare namespace _default {
         "magic_js.py": string;
         "storage.py": string;
         "util.py": string;
-        web: {
-            "__init__.py": string;
-            "elements.py": string;
-        };
+        "web.py": string;
         "websocket.py": string;
         "workers.py": string;
     };

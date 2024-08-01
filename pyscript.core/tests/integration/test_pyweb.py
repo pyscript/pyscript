@@ -101,11 +101,9 @@ class TestElements(PyScriptTest):
         code_ = f"""
                 from pyscript import when
             <script type="{interpreter}">
-                from pyscript.web import dom
-                from pyscript.web.elements import {el_type}
-
+                from pyscript.web import page, {el_type}
                 el = {el_type}({attributes})
-                dom.body.append(el)
+                page.body.append(el)
             </script>
             """
         self.pyscript_run(code_)
@@ -620,13 +618,12 @@ class TestElements(PyScriptTest):
         code_ = f"""
             from pyscript import when
             <script type="{interpreter}">
-                from pyscript.web import dom
-                from pyscript.web.elements import div, p
+                from pyscript.web import page, div, p
 
                 el = div("{div_text_content}")
                 child = p('{p_text_content}')
                 el.append(child)
-                dom.body.append(el)
+                page.body.append(el)
             </script>
             """
         self.pyscript_run(code_)
@@ -664,14 +661,13 @@ class TestElements(PyScriptTest):
             from pyscript import when
             <script type="{interpreter}">
                 from pyscript import document
-                from pyscript.web import dom
-                from pyscript.web.elements import div, p
+                from pyscript.web import page, div, p
 
                 el = div("{div_text_content}")
                 child = document.createElement('P')
                 child.textContent = '{p_text_content}'
                 el.append(child)
-                dom.body.append(el)
+                page.body.append(el)
             </script>
             """
         self.pyscript_run(code_)
@@ -709,15 +705,14 @@ class TestElements(PyScriptTest):
         code_ = f"""
             from pyscript import when
             <script type="{interpreter}">
-                from pyscript.web import dom
-                from pyscript.web.elements import div, p, ElementCollection
+                from pyscript.web import page, div, p, ElementCollection
 
                 el = div("{div_text_content}")
                 child1 = p('{p_text_content}')
                 child2 = p('{p2_text_content}', id='child2')
                 collection = ElementCollection([child1, child2])
                 el.append(collection)
-                dom.body.append(el)
+                page.body.append(el)
             </script>
             """
         self.pyscript_run(code_)
@@ -765,20 +760,19 @@ class TestElements(PyScriptTest):
             from pyscript import when
             <script type="{interpreter}">
                 from pyscript import document
-                from pyscript.web import dom
-                from pyscript.web.elements import div, p, ElementCollection
+                from pyscript.web import page, div, p, ElementCollection
 
                 el = div("{div_text_content}")
                 child1 = p('{p_text_content}')
                 child2 = p('{p2_text_content}', id='child2')
 
-                dom.body.append(child1)
-                dom.body.append(child2)
+                page.body.append(child1)
+                page.body.append(child2)
 
                 nodes = document.querySelectorAll('p')
                 el.append(nodes)
 
-                dom.body.append(el)
+                page.body.append(el)
             </script>
             """
         self.pyscript_run(code_)
