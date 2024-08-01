@@ -5,11 +5,17 @@
         <script type="module" src="../dist/core.js"></script>
     </head>
     <body>
-        <py-script async>
+        <py-script>
             import asyncio
-            print('foo')
+            print('py-script sleep')
             await asyncio.sleep(1)
-            print('bar')
+            print('py-script done')
         </py-script>
+        <script type="py">
+            import asyncio
+            print('script-py sleep')
+            await asyncio.sleep(1)
+            print('script-py done')
+        </script>
     </body>
 </html>
