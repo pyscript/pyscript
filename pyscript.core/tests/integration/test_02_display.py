@@ -43,12 +43,12 @@ class TestDisplay(PyScriptTest):
     def test_consecutive_display(self):
         self.pyscript_run(
             """
-            <script type="py">
+            <script type="py" async="false">
                 from pyscript import display
                 display('hello 1')
             </script>
             <p>hello 2</p>
-            <script type="py">
+            <script type="py" async="false">
                 from pyscript import display
                 display('hello 3')
             </script>
@@ -177,16 +177,16 @@ class TestDisplay(PyScriptTest):
     def test_consecutive_display_target(self):
         self.pyscript_run(
             """
-            <script type="py" id="first">
+            <script type="py" id="first" async="false">
                 from pyscript import display
                 display('hello 1')
             </script>
                 <p>hello in between 1 and 2</p>
-            <script type="py" id="second">
+            <script type="py" id="second" async="false">
                 from pyscript import display
                 display('hello 2', target="second")
             </script>
-            <script type="py" id="third">
+            <script type="py" id="third" async="false">
                 from pyscript import display
                 display('hello 3')
             </script>

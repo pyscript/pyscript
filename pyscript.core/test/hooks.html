@@ -48,12 +48,12 @@
   </script>
 </head>
 <body>
-  <script type="mpy" worker>
+  <script type="mpy" async="false" worker>
     from pyscript import document
     print("actual code in worker")
     document.documentElement.classList.add('worker')
   </script>
-  <script type="mpy">
+  <script type="mpy" async="false">
     print("actual code in main")
   </script>
 </body>
