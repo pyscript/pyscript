@@ -98,3 +98,8 @@ test('MicroPython + workers', async ({ page }) => {
   await page.goto('http://localhost:8080/test/workers/index.html');
   await page.waitForSelector('html.mpy.py');
 });
+
+test('MicroPython Editor setup error', async ({ page }) => {
+  await page.goto('http://localhost:8080/test/issue-2093/index.html');
+  await page.waitForSelector('html.errored');
+});
