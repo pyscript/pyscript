@@ -88,12 +88,12 @@ async function execute({ currentTarget }) {
         const { sync } = xworker;
         sync.write = (str) => {
             if (hasRunButton) outDiv.innerText += `${str}\n`;
+            else console.log(str);
         };
         sync.writeErr = (str) => {
             if (hasRunButton) {
                 outDiv.innerHTML += `<span style='color:red'>${str}</span>\n`;
-            }
-            else {
+            } else {
                 notify(str);
                 console.error(str);
             }
