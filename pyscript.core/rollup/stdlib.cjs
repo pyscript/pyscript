@@ -5,7 +5,6 @@ const {
     writeFileSync,
 } = require("node:fs");
 
-
 const { spawnSync } = require("node:child_process");
 
 const { join } = require("node:path");
@@ -14,15 +13,15 @@ const crawl = (path, json) => {
     for (const file of readdirSync(path)) {
         const full = join(path, file);
         if (/\.py$/.test(file)) {
-            if (process.env.NO_MIN)
-                json[file] = readFileSync(full).toString();
+            if (process.env.NO_MIN) json[file] = readFileSync(full).toString();
             else {
-                const { output: [error, result] } = spawnSync('pyminify', [full]);
+                const {
+                    output: [error, result],
+                } = spawnSync("pyminify", ['--remove-literal-statements', full]);
                 if (error) process.exit(1);
                 json[file] = result.toString();
             }
-        }
-        else if (statSync(full).isDirectory() && !file.endsWith("_"))
+        } else if (statSync(full).isDirectory() && !file.endsWith("_"))
             crawl(full, (json[file] = {}));
     }
 };
