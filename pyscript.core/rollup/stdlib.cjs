@@ -17,7 +17,10 @@ const crawl = (path, json) => {
             else {
                 const {
                     output: [error, result],
-                } = spawnSync("pyminify", ['--remove-literal-statements', full]);
+                } = spawnSync("pyminify", [
+                    "--remove-literal-statements",
+                    full,
+                ]);
                 if (error) process.exit(1);
                 json[file] = result.toString();
             }
