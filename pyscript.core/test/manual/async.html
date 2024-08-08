@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="../../dist/core.css">
+        <script type="module" src="../../dist/core.js"></script>
+    </head>
+    <body>
+        <py-script>
+            import asyncio
+            print('py-script sleep')
+            await asyncio.sleep(1)
+            print('py-script done')
+        </py-script>
+        <script type="py">
+            import asyncio
+            print('script-py sleep')
+            await asyncio.sleep(1)
+            print('script-py done')
+        </script>
+    </body>
+</html>

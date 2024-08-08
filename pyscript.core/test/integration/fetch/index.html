@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="../../../dist/core.css">
+    </head>
+    <body>
+      <script type="module">
+        import fetch from 'https://esm.run/@webreflection/fetch';
+
+        globalThis.fetch_text = await fetch("config.json").text();
+        globalThis.fetch_json = JSON.stringify(await fetch("config.json").json());
+        globalThis.fetch_buffer = new Uint8Array((await fetch("config.json").arrayBuffer())).length;
+
+        document.head.appendChild(
+          Object.assign(
+            document.createElement('script'),
+            {
+              type: 'module',
+              src: '../../../dist/core.js'
+            }
+          )
+        );
+      </script>
+      <script type="mpy" async>
+        import js, json
+        from pyscript import document, fetch
+
+        fetch_text = await (await fetch("config.json")).text()
+        if (fetch_text != js.fetch_text):
+          raise Exception("fetch_text")
+
+        fetch_text = await fetch("config.json").text()
+        if (fetch_text != js.fetch_text):
+          raise Exception("fetch_text")
+
+        fetch_json = await (await fetch("config.json")).json()
+        if (json.dumps(fetch_json).replace(" ", "") != js.fetch_json):
+          raise Exception("fetch_json")
+
+        fetch_json = await fetch("config.json").json()
+        if (json.dumps(fetch_json).replace(" ", "") != js.fetch_json):
+          raise Exception("fetch_json")
+
+        fetch_buffer = await (await fetch("config.json")).arrayBuffer()
+        if (len(fetch_buffer) != js.fetch_buffer):
+          raise Exception("fetch_buffer")
+
+        fetch_buffer = await fetch("config.json").arrayBuffer()
+        if (len(fetch_buffer) != js.fetch_buffer):
+          raise Exception("fetch_buffer")
+
+        print(await (await fetch("config.json")).bytearray())
+        print(await (await fetch("config.json")).blob())
+
+        if (await fetch("shenanigans.nope")).ok == False:
+          document.documentElement.classList.add('mpy')
+      </script>
+      <script type="py" async>
+        import js, json
+        from pyscript import document, fetch
+
+        fetch_text = await (await fetch("config.json")).text()
+        if (fetch_text != js.fetch_text):
+          raise Exception("fetch_text")
+
+        fetch_text = await fetch("config.json").text()
+        if (fetch_text != js.fetch_text):
+          raise Exception("fetch_text")
+
+        fetch_json = await (await fetch("config.json")).json()
+        if (json.dumps(fetch_json).replace(" ", "") != js.fetch_json):
+          raise Exception("fetch_json")
+
+        fetch_json = await fetch("config.json").json()
+        if (json.dumps(fetch_json).replace(" ", "") != js.fetch_json):
+          raise Exception("fetch_json")
+
+        fetch_buffer = await (await fetch("config.json")).arrayBuffer()
+        if (len(fetch_buffer) != js.fetch_buffer):
+          raise Exception("fetch_buffer")
+
+        fetch_buffer = await fetch("config.json").arrayBuffer()
+        if (len(fetch_buffer) != js.fetch_buffer):
+          raise Exception("fetch_buffer")
+
+        print(await (await fetch("config.json")).bytearray())
+        print(await (await fetch("config.json")).blob())
+
+        if (await fetch("shenanigans.nope")).ok == False:
+          document.documentElement.classList.add('py')
+      </script>
+    </body>
+</html>

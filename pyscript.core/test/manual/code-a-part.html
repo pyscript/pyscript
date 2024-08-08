@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="../../dist/core.css">
+        <script type="module">
+            import { hooks } from "../../dist/core.js";
+            hooks.main.codeBeforeRun.add('print(0)');
+            hooks.main.codeAfterRun.add('print(2)');
+        </script>
+    </head>
+    <body>
+        <script type="py">
+            # raise an error instead to see it on line 1
+            print(1)
+        </script>
+    </body>
+</html>

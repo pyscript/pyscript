@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Next</title>
+        <link rel="stylesheet" href="../../dist/core.css">
+
+        <!-- the PyWorker approach -->
+        <script type="module">
+          import { PyWorker, whenDefined } from '../../dist/core.js';
+          whenDefined('py').then(() => {
+            PyWorker('./worker.py', {config: {fetch: [{files: ['./a.py']}]}});
+          });
+          // the type is overwritten as "pyodide" in PyScript as the module
+          // lives in that env too
+        </script>
+
+        <!-- the worker attribute -->
+        <script type="py" src="./worker.py" config="./config.json" worker></script>
+
+        <!-- this is only to test the non-blocking behavior -->
+        <script>
+          addEventListener('DOMContentLoaded', () => {
+            const div = document.body.appendChild(
+              document.createElement('div')
+            );
+            (function monitor() {
+              const date = new Date;
+              div.textContent = `${date.getSeconds()}.${date.getMilliseconds()}`;
+              requestAnimationFrame(monitor);
+            }());
+          });
+        </script>
+    </head>
+    <body>
+      <div id="test"></div>
+    </body>
+</html>
