@@ -4,7 +4,7 @@ const { lstatSync, readdirSync, writeFileSync } = require("node:fs");
 // folders to not consider while crawling
 const EXCLUDE_DIR = new Set(["ws"]);
 
-const TEST_DIR = join(__dirname, "..", "test");
+const TEST_DIR = join(__dirname, "..", "tests");
 
 const TEST_INDEX = join(TEST_DIR, "index.html");
 

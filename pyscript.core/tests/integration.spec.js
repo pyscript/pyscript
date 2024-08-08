@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('MicroPython display', async ({ page }) => {
-  await page.goto('http://localhost:8080/test/integration/mpy.html');
+  await page.goto('http://localhost:8080/tests/js-integration/mpy.html');
   await page.waitForSelector('html.done.worker');
   const body = await page.evaluate(() => document.body.innerText);
   await expect(body.trim()).toBe([
@@ -18,7 +18,7 @@ test('MicroPython hooks', async ({ page }) => {
     if (!text.startsWith('['))
       logs.push(text);
   });
-  await page.goto('http://localhost:8080/test/integration/hooks.html');
+  await page.goto('http://localhost:8080/tests/js-integration/hooks.html');
   await page.waitForSelector('html.done.worker');
   await expect(logs.join('\n')).toBe([
     'main onReady',
@@ -43,7 +43,7 @@ test('MicroPython + Pyodide js_modules', async ({ page }) => {
     if (!text.startsWith('['))
       logs.push(text);
   });
-  await page.goto('http://localhost:8080/test/integration/js_modules.html');
+  await page.goto('http://localhost:8080/tests/js-integration/js_modules.html');
   await page.waitForSelector('html.done');
   await expect(logs.length).toBe(6);
   await expect(logs[0]).toBe(logs[1]);
@@ -59,47 +59,47 @@ test('MicroPython + configURL', async ({ page }) => {
     if (!text.startsWith('['))
       logs.push(text);
   });
-  await page.goto('http://localhost:8080/test/integration/config-url.html');
+  await page.goto('http://localhost:8080/tests/js-integration/config-url.html');
   await page.waitForSelector('html.main.worker');
 });
 
 test('Pyodide + terminal on Main', async ({ page }) => {
-  await page.goto('http://localhost:8080/test/integration/py-terminal-main.html');
+  await page.goto('http://localhost:8080/tests/js-integration/py-terminal-main.html');
   await page.waitForSelector('html.ok');
 });
 
 
 test('Pyodide + terminal on Worker', async ({ page }) => {
-  await page.goto('http://localhost:8080/test/integration/py-terminal-worker.html');
+  await page.goto('http://localhost:8080/tests/js-integration/py-terminal-worker.html');
   await page.waitForSelector('html.ok');
 });
 
 test('Pyodide + multiple terminals via Worker', async ({ page }) => {
-  await page.goto('http://localhost:8080/test/integration/py-terminals.html');
+  await page.goto('http://localhost:8080/tests/js-integration/py-terminals.html');
   await page.waitForSelector('html.first.second');
 });
 
 test('MicroPython + Pyodide fetch', async ({ page }) => {
-  await page.goto('http://localhost:8080/test/integration/fetch/index.html');
+  await page.goto('http://localhost:8080/tests/js-integration/fetch/index.html');
   await page.waitForSelector('html.mpy.py');
 });
 
 test('MicroPython + Pyodide ffi', async ({ page }) => {
-  await page.goto('http://localhost:8080/test/integration/ffi.html');
+  await page.goto('http://localhost:8080/tests/js-integration/ffi.html');
   await page.waitForSelector('html.mpy.py');
 });
 
 test('MicroPython + Storage', async ({ page }) => {
-  await page.goto('http://localhost:8080/test/integration/storage.html');
+  await page.goto('http://localhost:8080/tests/js-integration/storage.html');
   await page.waitForSelector('html.ok');
 });
 
 test('MicroPython + workers', async ({ page }) => {
-  await page.goto('http://localhost:8080/test/integration/workers/index.html');
+  await page.goto('http://localhost:8080/tests/js-integration/workers/index.html');
   await page.waitForSelector('html.mpy.py');
 });
 
 test('MicroPython Editor setup error', async ({ page }) => {
-  await page.goto('http://localhost:8080/test/integration/issue-2093/index.html');
+  await page.goto('http://localhost:8080/tests/js-integration/issue-2093/index.html');
   await page.waitForSelector('html.errored');
 });
