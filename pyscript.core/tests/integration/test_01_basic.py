@@ -221,6 +221,27 @@ class TestBasic(PyScriptTest):
             "hello asciitree",  # printed by us
         ]
 
+    def test_packages_custom_pypi(self):
+        self.pyscript_run(
+            """
+            <py-config>
+                packages = ["test-foo"]
+                index_urls = ["https://test.pypi.org/simple"]
+            </py-config>
+            <script type="py">
+                import js
+                import test_foo
+                js.console.log('hello', test_foo.__name__)
+            </script>
+            """
+        )
+
+        assert self.console.log.lines[-3:] == [
+            "Loading test_foo",  # printed by pyodide
+            "Loaded test_foo",  # printed by pyodide
+            "hello test_foo",  # printed by us
+        ]
+
     @pytest.mark.skip("NEXT: No banner")
     def test_non_existent_package(self):
         self.pyscript_run(
