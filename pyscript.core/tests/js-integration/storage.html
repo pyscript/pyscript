@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@pyscript/core storage</title>
+        <link rel="stylesheet" href="../../dist/core.css">
+        <script type="module" src="../../dist/core.js"></script>
+    </head>
+    <body>
+        <script type="mpy" async>
+            from random import random
+            from pyscript import storage
+
+            store = await storage(name="test")
+
+            print("before", len(store))
+            for k in store:
+                if isinstance(store[k], memoryview):
+                    print(f"    {k}: {store[k].hex()} as hex()")
+                else:
+                    print(f"    {k}: {store[k]}")
+
+            store["ba"] = bytearray([0, 1, 2, 3, 4])
+            store["mv"] = memoryview(bytearray([5, 6, 7, 8, 9]))
+            store["random"] = ("some", random(), True)
+            store["key"] = "value"
+
+            print("now", len(store))
+            for k in store:
+                print(f"    {k}: {store[k]}")
+
+            del store["key"]
+            # store.clear()
+
+            print("after", len(store))
+            for k in store:
+                print(f"    {k}: {store[k]}")
+
+            await store.sync()
+
+            import js
+            js.document.documentElement.classList.add("ok")
+        </script>
+    </body>
+</html>

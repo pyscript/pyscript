@@ -12,7 +12,7 @@ Clone this repository then run `npm install` within its folder.
 
 Use `npm run build` to create all artifacts and _dist_ files.
 
-Use `npm run server` to test locally, via the `http://localhost:8080/test/` url, smoke tests or to test manually anything you'd like to check.
+Use `npm run server` to test locally, via the `http://localhost:8080/tests/` url, smoke tests or to test manually anything you'd like to check.
 
 ### Artifacts
 
