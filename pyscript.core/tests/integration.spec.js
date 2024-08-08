@@ -53,12 +53,6 @@ test('MicroPython + Pyodide js_modules', async ({ page }) => {
 });
 
 test('MicroPython + configURL', async ({ page }) => {
-  const logs = [];
-  page.on('console', msg => {
-    const text = msg.text();
-    if (!text.startsWith('['))
-      logs.push(text);
-  });
   await page.goto('http://localhost:8080/tests/js-integration/config-url.html');
   await page.waitForSelector('html.main.worker');
 });
