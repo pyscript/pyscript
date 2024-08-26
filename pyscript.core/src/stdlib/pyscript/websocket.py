@@ -1,5 +1,6 @@
 import js
 from pyscript.util import as_bytearray
+from pyscript.ffi import create_proxy
 
 code = "code"
 protocols = "protocols"
@@ -36,9 +37,11 @@ class WebSocket(object):
             socket = js.WebSocket.new(url)
         object.__setattr__(self, "_ws", socket)
 
+        set_attr = js.Reflect.set
         for t in ["onclose", "onerror", "onmessage", "onopen"]:
             if t in kw:
-                socket[t] = kw[t]
+                # Pyodide fails at setting socket[t] directly
+                set_attr(socket, t, create_proxy(kw[t]))
 
     def __getattr__(self, attr):
         return getattr(self._ws, attr)
