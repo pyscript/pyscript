@@ -5,6 +5,8 @@ import { fileURLToPath } from 'url';
 
 const dir = dirname(fileURLToPath(import.meta.url));
 
+console.log('http://localhost:5037/');
+
 serve({
   port: 5037,
   fetch(req, server) {
