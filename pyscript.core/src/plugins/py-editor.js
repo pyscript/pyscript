@@ -24,6 +24,12 @@ const hooks = {
     },
 };
 
+const validate = (config, result) => {
+    if (typeof result === 'boolean')
+        throw `Invalid source: ${config}`;
+    return result;
+};
+
 async function execute({ currentTarget }) {
     const { env, pySrc, outDiv } = this;
     const hasRunButton = !!currentTarget;
@@ -41,20 +47,28 @@ async function execute({ currentTarget }) {
         };
         const { config } = this;
         if (config) {
-            details.configURL = relative_url(config);
-            if (config.endsWith(".toml")) {
-                const [{ parse }, toml] = await Promise.all([
-                    import(/* webpackIgnore: true */ "../3rd-party/toml.js"),
-                    fetch(config).then((r) => r.text()),
-                ]);
-                details.config = parse(toml);
-            } else if (config.endsWith(".json")) {
-                details.config = await fetch(config).then((r) => r.json());
-            } else {
-                details.configURL = relative_url("./config.txt");
-                details.config = JSON.parse(config);
+            // verify that config can be parsed and used
+            try {
+                details.configURL = relative_url(config);
+                if (config.endsWith(".toml")) {
+                    const [{ parse }, toml] = await Promise.all([
+                        import(/* webpackIgnore: true */ "../3rd-party/toml.js"),
+                        fetch(config).then((r) => (r.ok && r.text())),
+                    ]);
+                    details.config = parse(validate(config, toml));
+                } else if (config.endsWith(".json")) {
+                    const json = await fetch(config).then((r) => (r.ok && r.json()));
+                    details.config = validate(config, json);
+                } else {
+                    details.configURL = relative_url("./config.txt");
+                    details.config = JSON.parse(config);
+                }
+                details.version = offline_interpreter(details.config);
             }
-            details.version = offline_interpreter(details.config);
+            catch(error) {
+                notify(error);
+                return;
+            }
         } else {
             details.config = {};
         }
@@ -192,9 +206,20 @@ const init = async (script, type, interpreter) => {
 
     configs.set(env, hasConfig);
 
-    let source = script.src
-        ? await fetch(script.src).then((b) => b.text())
-        : script.textContent;
+    let source = script.textContent;
+
+    // verify the src points to a valid file that can be parsed
+    const { src } = script;
+    if (src) {
+        try {
+            source = validate(src, await fetch(src).then((b) => (b.ok && b.text())));
+        }
+        catch (error) {
+            notify(error);
+            return;
+        }
+    }
+
     const context = {
         // allow the listener to be overridden at distance
         handleEvent: execute,
@@ -273,14 +298,14 @@ const init = async (script, type, interpreter) => {
         },
     });
 
-    const notify = () => {
+    const notifyEditor = () => {
         const event = new Event(`${type}-editor`, { bubbles: true });
         script.dispatchEvent(event);
     };
 
     if (isSetup) {
         await context.handleEvent({ currentTarget: null });
-        notify();
+        notifyEditor();
         return;
     }
 
@@ -339,7 +364,7 @@ const init = async (script, type, interpreter) => {
     });
 
     editor.focus();
-    notify();
+    notifyEditor();
 };
 
 // avoid too greedy MutationObserver operations at distance
