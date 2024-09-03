@@ -25,8 +25,7 @@ const hooks = {
 };
 
 const validate = (config, result) => {
-    if (typeof result === 'boolean')
-        throw `Invalid source: ${config}`;
+    if (typeof result === "boolean") throw `Invalid source: ${config}`;
     return result;
 };
 
@@ -52,20 +51,23 @@ async function execute({ currentTarget }) {
                 details.configURL = relative_url(config);
                 if (config.endsWith(".toml")) {
                     const [{ parse }, toml] = await Promise.all([
-                        import(/* webpackIgnore: true */ "../3rd-party/toml.js"),
-                        fetch(config).then((r) => (r.ok && r.text())),
+                        import(
+                            /* webpackIgnore: true */ "../3rd-party/toml.js"
+                        ),
+                        fetch(config).then((r) => r.ok && r.text()),
                     ]);
                     details.config = parse(validate(config, toml));
                 } else if (config.endsWith(".json")) {
-                    const json = await fetch(config).then((r) => (r.ok && r.json()));
+                    const json = await fetch(config).then(
+                        (r) => r.ok && r.json(),
+                    );
                     details.config = validate(config, json);
                 } else {
                     details.configURL = relative_url("./config.txt");
                     details.config = JSON.parse(config);
                 }
                 details.version = offline_interpreter(details.config);
-            }
-            catch(error) {
+            } catch (error) {
                 notify(error);
                 return;
             }
@@ -212,9 +214,11 @@ const init = async (script, type, interpreter) => {
     const { src } = script;
     if (src) {
         try {
-            source = validate(src, await fetch(src).then((b) => (b.ok && b.text())));
-        }
-        catch (error) {
+            source = validate(
+                src,
+                await fetch(src).then((b) => b.ok && b.text()),
+            );
+        } catch (error) {
             notify(error);
             return;
         }
