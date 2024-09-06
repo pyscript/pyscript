@@ -19,7 +19,7 @@
         "./package.json": "./package.json"
     },
     "scripts": {
-        "server": "npx static-handler --coi .",
+        "server": "echo \"➡️  TESTS @ $(tput bold)http://localhost:8080/tests/$(tput sgr0)\"; npx static-handler --coi .",
         "build": "export ESLINT_USE_FLAT_CONFIG=true;npm run build:3rd-party && npm run build:stdlib && npm run build:plugins && npm run build:core && npm run build:tests-index && if [ -z \"$NO_MIN\" ]; then eslint src/ && npm run ts && npm run test:integration; fi",
         "build:core": "rm -rf dist && rollup --config rollup/core.config.js && cp src/3rd-party/*.css dist/",
         "build:flatted": "node rollup/flatted.cjs",
@@ -45,13 +45,13 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.15.1",
+        "polyscript": "^0.15.2",
         "sticky-module": "^0.1.1",
         "to-json-callback": "^0.1.1",
         "type-checked-collections": "^0.1.7"
     },
     "devDependencies": {
-        "@codemirror/commands": "^6.6.0",
+        "@codemirror/commands": "^6.6.1",
         "@codemirror/lang-python": "^6.1.6",
         "@codemirror/language": "^6.10.2",
         "@codemirror/state": "^6.4.1",
@@ -68,7 +68,7 @@
         "codemirror": "^6.0.1",
         "eslint": "^9.9.1",
         "flatted": "^3.3.1",
-        "rollup": "^4.21.1",
+        "rollup": "^4.21.2",
         "rollup-plugin-postcss": "^4.0.2",
         "rollup-plugin-string": "^3.0.0",
         "static-handler": "^0.4.3",

@@ -41,8 +41,16 @@ def when(event_type=None, selector=None):
             # Function doesn't receive events
             if not sig.parameters:
 
-                def wrapper(*args, **kwargs):
-                    func()
+                # Function is async: must be awaited
+                if inspect.iscoroutinefunction(func):
+
+                    async def wrapper(*args, **kwargs):
+                        await func()
+
+                else:
+
+                    def wrapper(*args, **kwargs):
+                        func()
 
             else:
                 wrapper = func
