@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../dist/core.css">
+    <script type="module" src="../../dist/core.js"></script>
+</head>
+<body>
+  <script type="mpy">
+    from pyscript import window, document, fetch, when
+
+    @when('click', '#click')
+    async def click(event):
+      text = await fetch(window.location.href).text()
+      document.getElementById('output').append(text)
+      document.documentElement.classList.add('ok')
+
+    document.getElementById('click').click()
+  </script>
+  <button id="click">click</button>
+  <pre id="output"></pre>
+</body>
+</html>
