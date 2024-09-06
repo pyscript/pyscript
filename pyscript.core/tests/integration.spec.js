@@ -97,3 +97,8 @@ test('MicroPython Editor setup error', async ({ page }) => {
   await page.goto('http://localhost:8080/tests/js-integration/issue-2093/index.html');
   await page.waitForSelector('html.errored');
 });
+
+test('MicroPython async @when listener', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/js-integration/async-listener.html');
+  await page.waitForSelector('html.ok');
+});
