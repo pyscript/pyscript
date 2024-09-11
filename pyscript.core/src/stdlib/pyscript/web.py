@@ -421,7 +421,7 @@ class ContainerElement(Element):
                 self.append(child)
 
             else:
-                self.innerHTML += child
+                self._dom_element.insertAdjacentHTML("beforeend", child)
 
     def __iter__(self):
         yield from self.children
