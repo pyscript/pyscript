@@ -38,11 +38,11 @@ To try PyScript, import the appropriate pyscript files into the `<head>` tag of 
 <head>
     <link
         rel="stylesheet"
-        href="https://pyscript.net/releases/2024.6.1/core.css"
+        href="https://pyscript.net/releases/2024.6.2/core.css"
     />
     <script
         type="module"
-        src="https://pyscript.net/releases/2024.6.1/core.js"
+        src="https://pyscript.net/releases/2024.6.2/core.js"
     ></script>
 </head>
 <body>

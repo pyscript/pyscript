@@ -5,7 +5,6 @@ from .support import PyScriptTest, with_execution_thread
 class TestSmokeTests(PyScriptTest):
     """
     Each example requires the same three tests:
-
         - Test that the initial markup loads properly (currently done by
           testing the <title> tag's content)
         - Testing that pyscript is loading properly
@@ -14,7 +13,7 @@ class TestSmokeTests(PyScriptTest):
 
     def test_pydom(self):
         # Test the full pydom test suite by running it in the browser
-        self.goto("test/pyscript_dom/index.html?-v&-s")
+        self.goto("tests/pyscript_dom/index.html?-v&-s")
         assert self.page.title() == "PyDom Test Suite"
 
         # wait for the test suite to finish

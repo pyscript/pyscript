@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript Next Plugin</title>
+  <link rel="stylesheet" href="../../dist/core.css">
+  <script type="module" src="../../dist/core.js"></script>
+  <mpy-config src="config-url/config.json"></mpy-config>
+  <script type="mpy">
+    from pyscript import config
+    if config["files"]["{TO}"] != "./runtime":
+        raise Exception("wrong config tree")
+
+    from runtime import test
+  </script>
+  <script type="mpy" worker>
+    from pyscript import config
+    if config["files"]["{TO}"] != "./runtime":
+        raise Exception("wrong config tree")
+
+    from runtime import test
+  </script>
+</head>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../dist/core.css">
+  <script type="module" src="../../dist/core.js"></script>
+</head>
+<body>
+  <script type="py" async>
+    from pyscript import py_import, js_import, window
+
+    window.console.time("first")
+    matplotlib, regex, = await py_import("matplotlib", "regex")
+    window.console.timeEnd("first")
+
+    window.console.time("second")
+    matplotlib, regex, = await py_import("matplotlib", "regex")
+    window.console.timeEnd("second")
+
+    print(matplotlib, regex)
+
+    escaper, = await js_import("https://esm.run/html-escaper")
+    window.console.log(escaper)
+  </script>
+</body>
+</html>

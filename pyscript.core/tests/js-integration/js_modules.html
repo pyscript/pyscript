@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../dist/core.css">
+    <script type="module" src="../../dist/core.js"></script>
+</head>
+<body>
+    <mpy-config>
+        [js_modules.main]
+        "./js_modules.js" = "random_js"
+    </mpy-config>
+    <mpy-script>
+        from pyscript.js_modules.random_js import default as value
+        from pyscript.js_modules import random_js
+        from pyscript import js_modules
+
+        print("mpy", value)
+        print("mpy", random_js.default)
+        print("mpy", js_modules.random_js.default)
+    </mpy-script>
+    <py-config>
+        [js_modules.main]
+        "./js_modules.js" = "random_js"
+    </py-config>
+    <py-script>
+        from pyscript.js_modules.random_js import default as value
+        from pyscript.js_modules import random_js
+        from pyscript import js_modules, document
+
+        print("py", value)
+        print("py", random_js.default)
+        print("py", js_modules.random_js.default)
+
+        document.documentElement.classList.add('done')
+    </py-script>
+</body>
+</html>

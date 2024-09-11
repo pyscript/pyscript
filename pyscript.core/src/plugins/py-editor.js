@@ -1,6 +1,7 @@
 // PyScript py-editor plugin
 import { Hook, XWorker, dedent, defineProperties } from "polyscript/exports";
-import { TYPES, offline_interpreter, stdlib } from "../core.js";
+import { TYPES, offline_interpreter, relative_url, stdlib } from "../core.js";
+import { notify } from "./error.js";
 
 const RUN_BUTTON = `<svg style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>`;
 
@@ -23,6 +24,11 @@ const hooks = {
     },
 };
 
+const validate = (config, result) => {
+    if (typeof result === "boolean") throw `Invalid source: ${config}`;
+    return result;
+};
+
 async function execute({ currentTarget }) {
     const { env, pySrc, outDiv } = this;
     const hasRunButton = !!currentTarget;
@@ -34,15 +40,37 @@ async function execute({ currentTarget }) {
 
     if (!envs.has(env)) {
         const srcLink = URL.createObjectURL(new Blob([""]));
-        const details = { type: this.interpreter };
+        const details = {
+            type: this.interpreter,
+            serviceWorker: this.serviceWorker,
+        };
         const { config } = this;
         if (config) {
-            details.configURL = config;
-            const { parse } = config.endsWith(".toml")
-                ? await import(/* webpackIgnore: true */ "../3rd-party/toml.js")
-                : JSON;
-            details.config = parse(await fetch(config).then((r) => r.text()));
-            details.version = offline_interpreter(details.config);
+            // verify that config can be parsed and used
+            try {
+                details.configURL = relative_url(config);
+                if (config.endsWith(".toml")) {
+                    const [{ parse }, toml] = await Promise.all([
+                        import(
+                            /* webpackIgnore: true */ "../3rd-party/toml.js"
+                        ),
+                        fetch(config).then((r) => r.ok && r.text()),
+                    ]);
+                    details.config = parse(validate(config, toml));
+                } else if (config.endsWith(".json")) {
+                    const json = await fetch(config).then(
+                        (r) => r.ok && r.json(),
+                    );
+                    details.config = validate(config, json);
+                } else {
+                    details.configURL = relative_url("./config.txt");
+                    details.config = JSON.parse(config);
+                }
+                details.version = offline_interpreter(details.config);
+            } catch (error) {
+                notify(error);
+                return;
+            }
         } else {
             details.config = {};
         }
@@ -63,9 +91,12 @@ async function execute({ currentTarget }) {
     return envs.get(env).then((xworker) => {
         xworker.onerror = ({ error }) => {
             if (hasRunButton) {
-                outDiv.innerHTML += `<span style='color:red'>${
-                    error.message || error
-                }</span>\n`;
+                outDiv.insertAdjacentHTML(
+                    "beforeend",
+                    `<span style='color:red'>${
+                        error.message || error
+                    }</span>\n`,
+                );
             }
             console.error(error);
         };
@@ -76,10 +107,17 @@ async function execute({ currentTarget }) {
         const { sync } = xworker;
         sync.write = (str) => {
             if (hasRunButton) outDiv.innerText += `${str}\n`;
+            else console.log(str);
         };
         sync.writeErr = (str) => {
             if (hasRunButton) {
-                outDiv.innerHTML += `<span style='color:red'>${str}</span>\n`;
+                outDiv.insertAdjacentHTML(
+                    "beforeend",
+                    `<span style='color:red'>${str}</span>\n`,
+                );
+            } else {
+                notify(str);
+                console.error(str);
             }
         };
         sync.runAsync(pySrc).then(enable, enable);
@@ -155,7 +193,16 @@ const init = async (script, type, interpreter) => {
 
     let isSetup = script.hasAttribute("setup");
     const hasConfig = script.hasAttribute("config");
+    const serviceWorker = script.getAttribute("service-worker");
     const env = `${interpreter}-${script.getAttribute("env") || getID(type)}`;
+
+    // helps preventing too lazy ServiceWorker initialization on button run
+    if (serviceWorker) {
+        new XWorker("data:application/javascript,postMessage(0)", {
+            type: "dummy",
+            serviceWorker,
+        }).onmessage = ({ target }) => target.terminate();
+    }
 
     if (hasConfig && configs.has(env)) {
         throw new SyntaxError(
@@ -167,17 +214,29 @@ const init = async (script, type, interpreter) => {
 
     configs.set(env, hasConfig);
 
-    let source = script.src
-        ? await fetch(script.src).then((b) => b.text())
-        : script.textContent;
+    let source = script.textContent;
+
+    // verify the src points to a valid file that can be parsed
+    const { src } = script;
+    if (src) {
+        try {
+            source = validate(
+                src,
+                await fetch(src).then((b) => b.ok && b.text()),
+            );
+        } catch (error) {
+            notify(error);
+            return;
+        }
+    }
+
     const context = {
         // allow the listener to be overridden at distance
         handleEvent: execute,
+        serviceWorker,
         interpreter,
         env,
-        config:
-            hasConfig &&
-            new URL(script.getAttribute("config"), location.href).href,
+        config: hasConfig && script.getAttribute("config"),
         get pySrc() {
             return isSetup ? source : editor.state.doc.toString();
         },
@@ -249,14 +308,14 @@ const init = async (script, type, interpreter) => {
         },
     });
 
-    const notify = () => {
+    const notifyEditor = () => {
         const event = new Event(`${type}-editor`, { bubbles: true });
         script.dispatchEvent(event);
     };
 
     if (isSetup) {
         await context.handleEvent({ currentTarget: null });
-        notify();
+        notifyEditor();
         return;
     }
 
@@ -315,7 +374,7 @@ const init = async (script, type, interpreter) => {
     });
 
     editor.focus();
-    notify();
+    notifyEditor();
 };
 
 // avoid too greedy MutationObserver operations at distance

@@ -97,7 +97,7 @@ class TestBasic(PyScriptTest):
     def test_input_exception(self):
         self.pyscript_run(
             """
-            <script type="py">
+            <script type="py" async="false">
                 input("what's your name?")
             </script>
             """

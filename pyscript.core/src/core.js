@@ -12,6 +12,7 @@ import {
     define,
     defineProperty,
     dispatch,
+    isSync,
     queryTarget,
     unescape,
     whenDefined,
@@ -19,7 +20,7 @@ import {
 
 import "./all-done.js";
 import TYPES from "./types.js";
-import configs from "./config.js";
+import { configs, relative_url } from "./config.js";
 import sync from "./sync.js";
 import bootstrapNodeAndPlugins from "./plugins-helper.js";
 import { ErrorCode } from "./exceptions.js";
@@ -84,6 +85,7 @@ const [
 
 export {
     TYPES,
+    relative_url,
     exportedPyWorker as PyWorker,
     exportedMPWorker as MPWorker,
     exportedHooks as hooks,
@@ -92,7 +94,7 @@ export {
 };
 
 export const offline_interpreter = (config) =>
-    config?.interpreter && new URL(config.interpreter, location.href).href;
+    config?.interpreter && relative_url(config.interpreter);
 
 const hooked = new Map();
 
@@ -201,15 +203,13 @@ for (const [TYPE, interpreter] of TYPES) {
                         }
 
                         if (isScript(element)) {
-                            const {
-                                attributes: { async: isAsync, target },
-                            } = element;
-                            const hasTarget = !!target?.value;
-                            const show = hasTarget
-                                ? queryTarget(element, target.value)
+                            const isAsync = !isSync(element);
+                            const target = element.getAttribute("target");
+                            const show = target
+                                ? queryTarget(element, target)
                                 : document.createElement("script-py");
 
-                            if (!hasTarget) {
+                            if (!target) {
                                 const { head, body } = document;
                                 if (head.contains(element)) body.append(show);
                                 else element.after(show);
@@ -330,7 +330,7 @@ for (const [TYPE, interpreter] of TYPES) {
                     async connectedCallback() {
                         if (!this.executed) {
                             this.executed = true;
-                            const isAsync = this.hasAttribute("async");
+                            const isAsync = !isSync(this);
                             const { io, run, runAsync } = await this._wrap
                                 .promise;
                             this.srcCode = await fetchSource(

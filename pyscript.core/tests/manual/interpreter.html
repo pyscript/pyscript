@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Pyodide Worker Version</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="../../dist/core.css">
+    <script type="module" src="../../dist/core.js"></script>
+</head>
+<body>
+    <script type="py" config='{"interpreter":"https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.mjs"}' worker>
+      import pyodide
+      print(pyodide.__version__)
+    </script>
+</body>
+</html>
