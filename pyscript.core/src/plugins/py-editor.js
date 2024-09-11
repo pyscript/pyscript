@@ -91,9 +91,12 @@ async function execute({ currentTarget }) {
     return envs.get(env).then((xworker) => {
         xworker.onerror = ({ error }) => {
             if (hasRunButton) {
-                outDiv.innerHTML += `<span style='color:red'>${
-                    error.message || error
-                }</span>\n`;
+                outDiv.insertAdjacentHTML(
+                    "beforeend",
+                    `<span style='color:red'>${
+                        error.message || error
+                    }</span>\n`,
+                );
             }
             console.error(error);
         };
@@ -108,7 +111,10 @@ async function execute({ currentTarget }) {
         };
         sync.writeErr = (str) => {
             if (hasRunButton) {
-                outDiv.innerHTML += `<span style='color:red'>${str}</span>\n`;
+                outDiv.insertAdjacentHTML(
+                    "beforeend",
+                    `<span style='color:red'>${str}</span>\n`,
+                );
             } else {
                 notify(str);
                 console.error(str);
