@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../../dist/core.css">
+  <script type="module">
+    import '../../../dist/core.js';
+
+    addEventListener('py:progress', ({ detail }) => {
+      document.body.append(
+        detail,
+        document.createElement('br'),
+      );
+    });
+  </script>
+</head>
+<body>
+  <py-config>
+    packages = ["matplotlib"]
+  </py-config>
+  <script type="py" worker>
+    from pyscript import document
+    from sys import version
+    document.body.append(document.createElement('hr'), version)
+    document.documentElement.classList.add('ok')
+  </script>
+</body>
+</html>
