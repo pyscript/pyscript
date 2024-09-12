@@ -102,3 +102,10 @@ test('MicroPython async @when listener', async ({ page }) => {
   await page.goto('http://localhost:8080/tests/js-integration/async-listener.html');
   await page.waitForSelector('html.ok');
 });
+
+test('Pyodide loader', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/js-integration/loader/index.html');
+  await page.waitForSelector('html.ok');
+  const body = await page.evaluate(() => document.body.textContent);
+  await expect(body.includes('Loaded Pyodide')).toBe(true);
+});
