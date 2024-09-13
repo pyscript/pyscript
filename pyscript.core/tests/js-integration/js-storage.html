@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../dist/core.css">
+    <script type="module">
+      import { storage } from '../../dist/storage.js';
+
+      const store = await storage('js-storage');
+      store.test = [1, 2, 3].map(String);
+      await store.sync();
+
+      // be sure the store is not empty before bootstrap
+      import('../../dist/core.js');
+    </script>
+</head>
+<body>
+  <script type="mpy">
+    from pyscript import storage, document
+
+    store = await storage("js-storage")
+
+    if ",".join(store["test"]) == "1,2,3":
+        document.documentElement.classList.add("ok")
+  </script>
+</body>
+</html>
