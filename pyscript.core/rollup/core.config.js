@@ -40,4 +40,17 @@ export default [
             warn(warning);
         },
     },
+    {
+        input: "./src/storage.js",
+        plugins: plugins.concat(
+            process.env.NO_MIN
+                ? [nodeResolve(), commonjs()]
+                : [nodeResolve(), commonjs(), terser()],
+        ),
+        output: {
+            esModule: true,
+            dir: "./dist",
+            sourcemap: true,
+        },
+    },
 ];

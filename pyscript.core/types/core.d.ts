@@ -54,5 +54,5 @@ declare const exportedHooks: {
     };
 };
 declare const exportedConfig: {};
-declare const exportedWhenDefined: (type: string) => Promise<object>;
+declare const exportedWhenDefined: any;
 export { stdlib, optional, inputFailure, TYPES, relative_url, exportedPyWorker as PyWorker, exportedMPWorker as MPWorker, exportedHooks as hooks, exportedConfig as config, exportedWhenDefined as whenDefined };

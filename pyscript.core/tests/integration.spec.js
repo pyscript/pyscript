@@ -88,6 +88,11 @@ test('MicroPython + Storage', async ({ page }) => {
   await page.waitForSelector('html.ok');
 });
 
+test('MicroPython + JS Storage', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/js-integration/js-storage.html');
+  await page.waitForSelector('html.ok');
+});
+
 test('MicroPython + workers', async ({ page }) => {
   await page.goto('http://localhost:8080/tests/js-integration/workers/index.html');
   await page.waitForSelector('html.mpy.py');

@@ -44,8 +44,10 @@
     "license": "APACHE-2.0",
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
+        "@webreflection/idb-map": "^0.3.1",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.15.3",
+        "polyscript": "^0.15.5",
+        "sabayon": "^0.5.2",
         "sticky-module": "^0.1.1",
         "to-json-callback": "^0.1.1",
         "type-checked-collections": "^0.1.7"
@@ -64,7 +66,7 @@
         "@xterm/addon-fit": "^0.10.0",
         "@xterm/addon-web-links": "^0.11.0",
         "bun": "^1.1.27",
-        "chokidar": "^3.6.0",
+        "chokidar": "^4.0.0",
         "codemirror": "^6.0.1",
         "eslint": "^9.10.0",
         "flatted": "^3.3.1",
