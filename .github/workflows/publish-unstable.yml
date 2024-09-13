@@ -26,7 +26,21 @@ jobs:
             - name: Install node
               uses: actions/setup-node@v4
               with:
-                  node-version: 18.x
+                  node-version: 20.x
+
+            - name: Python venv
+              run: python -m venv env
+            - name: Activate Python
+              run: source env/bin/activate
+
+            - name: Update pip
+              run: pip install --upgrade pip
+
+            - name: Install PyMinifier
+              run: pip install --ignore-requires-python python-minifier
+
+            - name: Install Setuptools
+              run: pip install setuptools
 
             - name: Cache node modules
               uses: actions/cache@v4
