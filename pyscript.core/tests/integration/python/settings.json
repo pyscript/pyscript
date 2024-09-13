@@ -1,7 +1,8 @@
 {
     "files": {
-        "https://raw.githubusercontent.com/ntoll/upytest/1.0.1/upytest.py": "",
-        "https://raw.githubusercontent.com/ntoll/umock/1.0.0/umock.py": "",
-        "./tests/test_web.py": "tests/test_web.py"
+        "https://raw.githubusercontent.com/ntoll/upytest/1.0.4/upytest.py": "",
+        "./tests/test_web.py": "tests/test_web.py",
+        "./tests/test_display.py": "tests/test_display.py",
+        "./tests/test_when.py": "tests/test_when.py"
     }
 }

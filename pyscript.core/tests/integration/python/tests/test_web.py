@@ -1,5 +1,14 @@
-from pyscript import web, when
-import upytest
+from pyscript import web, when, document
+
+
+def setup():
+    container = web.page.find("#test-element-container")[0]
+    container.innerHTML = ""
+
+
+def teardown():
+    container = web.page.find("#test-element-container")[0]
+    container.innerHTML = ""
 
 
 def test_getitem_by_id():
@@ -495,6 +504,10 @@ class TestElements:
     on each the supported properties and checks if the element was created correctly
     and all it's properties were set correctly.
     """
+
+    def __init__(self):
+        # This module's setup function ensures self.container is empty.
+        self.container = web.page.find("#test-element-container")[0]
 
     def _create_el_and_basic_asserts(
         self,
@@ -1006,3 +1019,102 @@ class TestElements:
             "video",
             properties=properties
         )
+    
+    def test_append_py_element(self):
+        div_text_content = "Luke, I am your father"
+        p_text_content = "noooooooooo!"
+        # Let's create the element
+        el = web.div(div_text_content)
+        child = web.p(p_text_content)
+        el.append(child)
+        self.container.append(el)
+        # Check the expected content exists.
+        result = self.container.find("div")
+        assert len(result) == 1
+        el = result[0]
+        tag = el.tagName
+        assert tag == "DIV", tag
+        assert el.textContent == f"{div_text_content}{p_text_content}"
+        assert len(el.children) == 1, "There should be only 1 child"
+        assert el.children[0].tagName == "P"
+        assert el.children[0].parentNode.textContent == f"{div_text_content}{p_text_content}"
+        assert el.children[0].textContent == p_text_content
+
+    def test_append_proxy_element(self):
+        div_text_content = "Luke, I am your father"
+        p_text_content = "noooooooooo!"
+        # Let's create the element
+        el = web.div(div_text_content)
+        child = document.createElement('P')
+        child.textContent = p_text_content
+        el.append(child)
+        self.container.append(el)
+        # Check the expected content exists.
+        result = self.container.find("div")
+        assert len(result) == 1
+        el = result[0]
+        tag = el.tagName
+        assert tag == "DIV", tag
+        assert el.textContent == f"{div_text_content}{p_text_content}", el.textContent
+        assert len(el.children) == 1, "There should be only 1 child"
+        assert el.children[0].tagName == "P"
+        assert el.children[0].parentNode.textContent == f"{div_text_content}{p_text_content}"
+        assert el.children[0].textContent == p_text_content
+
+    def test_append_py_elementcollection(self):
+        div_text_content = "Luke, I am your father"
+        p_text_content = "noooooooooo!"
+        p2_text_content = "not me!"
+        # Let's create the elements
+        el = web.div(div_text_content)
+        child1 = web.p(p_text_content)
+        child2 = web.p(p2_text_content, id='child2')
+        collection = web.ElementCollection([child1, child2])
+        el.append(collection)
+        self.container.append(el)
+        # Check the expected content exists.
+        result = self.container.find("div")
+        assert len(result) == 1
+        el = result[0]
+        tag = el.tagName
+        assert tag == "DIV", tag
+        parent_full_content = f"{div_text_content}{p_text_content}{p2_text_content}"
+        assert el.textContent == parent_full_content
+        assert len(el.children) == 2, "There should be only 2 children"
+        assert el.children[0].tagName == "P"
+        assert el.children[0].parentNode.textContent == parent_full_content
+        assert el.children[0].textContent == p_text_content
+        assert el.children[1].tagName == "P"
+        assert el.children[1].id == "child2"
+        assert el.children[1].parentNode.textContent == parent_full_content
+        assert el.children[1].textContent == p2_text_content
+
+    def test_append_js_element_nodelist(self):
+        div_text_content = "Luke, I am your father"
+        p_text_content = "noooooooooo!"
+        p2_text_content = "not me!"
+        # Let's create the elements
+        el = web.div(div_text_content)
+        child1 = web.p(p_text_content)
+        child2 = web.p(p2_text_content, id='child2')
+        self.container.append(child1)
+        self.container.append(child2)
+        nodes = self.container._dom_element.querySelectorAll('p')
+        el.append(nodes)
+        self.container.append(el)
+        # Check the expected content exists.
+        result = self.container.find("div")
+        assert len(result) == 1
+        el = result[0]
+        tag = el.tagName
+        assert tag == "DIV", tag
+        parent_full_content = f"{div_text_content}{p_text_content}{p2_text_content}"
+        assert el.textContent == parent_full_content, el.innerHTML
+        assert len(el.children) == 2, "There should be only 2 children"
+        assert el.children[0].tagName == "P"
+        assert el.children[0].parentNode.textContent == parent_full_content
+        assert el.children[0].textContent == p_text_content
+        assert el.children[1].tagName == "P"
+        assert el.children[1].id == "child2"
+        assert el.children[1].parentNode.textContent == parent_full_content
+        assert el.children[1].textContent == p2_text_content
