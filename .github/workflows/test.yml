@@ -43,6 +43,7 @@ jobs:
 
             - name: Python venv
               run: python -m venv env
+              
             - name: Activate Python
               run: source env/bin/activate
 
