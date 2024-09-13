@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.5.6",
+    "version": "0.5.12",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -8,6 +8,15 @@
     "jsdelivr": "./jsdelivr.js",
     "browser": "./index.js",
     "main": "./index.js",
+    "files": [
+        "./dist/",
+        "./src/",
+        "./types/",
+        "./index.js",
+        "./jsdelivr.js",
+        "LICENSE",
+        "README.md"
+    ],
     "exports": {
         ".": {
             "types": "./types/core.d.ts",
@@ -15,6 +24,9 @@
         },
         "./css": {
             "import": "./dist/core.css"
+        },
+        "./storage": {
+            "import": "./dist/storage.js"
         },
         "./package.json": "./package.json"
     },
@@ -46,7 +58,7 @@
         "@ungap/with-resolvers": "^0.1.0",
         "@webreflection/idb-map": "^0.3.1",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.15.5",
+        "polyscript": "^0.15.6",
         "sabayon": "^0.5.2",
         "sticky-module": "^0.1.1",
         "to-json-callback": "^0.1.1",
