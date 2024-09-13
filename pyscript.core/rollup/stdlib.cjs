@@ -9,7 +9,7 @@ const { spawnSync } = require("node:child_process");
 
 const { join } = require("node:path");
 
-const dedent = require('codedent');
+const dedent = require("codedent");
 
 const crawl = (path, json) => {
     for (const file of readdirSync(path)) {
@@ -29,8 +29,7 @@ const crawl = (path, json) => {
                         process.exit(1);
                     }
                     json[file] = result.toString();
-                }
-                catch (error) {
+                } catch (error) {
                     console.error(error);
                     console.log(
                         dedent(`
