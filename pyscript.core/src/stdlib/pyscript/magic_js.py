@@ -10,6 +10,11 @@ RUNNING_IN_WORKER = not hasattr(globalThis, "document")
 
 config = json.loads(globalThis.JSON.stringify(_config))
 
+if "MicroPython" in sys.version:
+    config["type"] = "mpy"
+else:
+    config["type"] = "py"
+
 
 # allow `from pyscript.js_modules.xxx import yyy`
 class JSModule:

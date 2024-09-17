@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../dist/core.css">
+    <script type="module" src="../../dist/core.js"></script>
+</head>
+<body>
+    <script type="mpy">
+      from pyscript import config, document
+
+      if config["type"] is "mpy":
+        document.documentElement.classList.add("mpy")
+    </script>
+    <script type="py">
+      from pyscript import config, document
+
+      if config["type"] is "py":
+        document.documentElement.classList.add("py")
+    </script>
+</body>
+</html>
