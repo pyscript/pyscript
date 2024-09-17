@@ -1,7 +1,7 @@
-from pyscript import window
-from pyscript.ffi import to_js
-
+from pyscript import web
 import upytest
+import json
 
 result = await upytest.run("./tests")
-window.console.log(to_js(result))
+output = web.div(json.dumps(result), id="result")
+web.page.append(output)
