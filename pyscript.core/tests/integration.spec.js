@@ -114,3 +114,8 @@ test('Pyodide loader', async ({ page }) => {
   const body = await page.evaluate(() => document.body.textContent);
   await expect(body.includes('Loaded Pyodide')).toBe(true);
 });
+
+test('Py and Mpy config["type"]', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/js-integration/config_type.html');
+  await page.waitForSelector('html.mpy.py');
+});
