@@ -1,5 +1,6 @@
+import upytest
 import asyncio
-from pyscript import web
+from pyscript import web, RUNNING_IN_WORKER
 
 
 def get_container():
@@ -31,11 +32,13 @@ async def test_when_decorator_with_event():
     def foo(evt):
         nonlocal called
         called = evt
-    
+
     btn.click()
+    await asyncio.sleep(0.01)
     assert called.target.id == "foo_id"
 
-def test_when_decorator_without_event():
+
+async def test_when_decorator_without_event():
     """
     When the decorated function takes no parameters (not including 'self'),
     it should be called without the event object
@@ -50,121 +53,142 @@ def test_when_decorator_without_event():
     def foo():
         nonlocal called
         called = True
-    
+
     btn.click()
+    await asyncio.sleep(0.01)
     assert called
 
-def _test_two_when_decorators():
+
+async def test_two_when_decorators():
     """
     When decorating a function twice, both should function
     """
-    self.pyscript_run(
-        """
-        <button id="foo_id">foo_button</button>
-        <button class="bar_class">bar_button</button>
-        <script type="py">
-            from pyscript import when
-            @when("click", selector="#foo_id")
-            @when("mouseover", selector=".bar_class")
-            def foo(evt):
-                print(f"got event: {evt.type}")
-        </script>
-    """
-    )
-    self.page.locator("text=bar_button").hover()
-    self.wait_for_console("got event: mouseover")
-    self.page.locator("text=foo_button").click()
-    self.wait_for_console("got event: click")
-    self.assert_no_banners()
+    btn = web.button("foo_button", id="foo_id")
+    container = get_container()
+    container.append(btn)
 
-def _test_two_when_decorators_same_element():
-    """When decorating a function twice *on the same DOM element*, both should function"""
-    self.pyscript_run(
-        """
-        <button id="foo_id">foo_button</button>
-        <script type="py">
-            from pyscript import when
-            @when("click", selector="#foo_id")
-            @when("mouseover", selector="#foo_id")
-            def foo(evt):
-                print(f"got event: {evt.type}")
-        </script>
-    """
-    )
-    self.page.locator("text=foo_button").hover()
-    self.wait_for_console("got event: mouseover")
-    self.page.locator("text=foo_button").click()
-    self.wait_for_console("got event: click")
-    self.assert_no_banners()
+    called1 = False
+    called2 = False
 
-def _test_when_decorator_multiple_elements():
-    """The @when decorator's selector should successfully select multiple
+    @web.when("click", selector="#foo_id")
+    def foo1(evt):
+        nonlocal called1
+        called1 = True
+
+    @web.when("click", selector="#foo_id")
+    def foo2(evt):
+        nonlocal called2
+        called2 = True
+
+    btn.click()
+    await asyncio.sleep(0.01)
+    assert called1
+    assert called2
+
+
+async def test_two_when_decorators_same_element():
+    """
+    When decorating a function twice *on the same DOM element*, both should
+    function
+    """
+    btn = web.button("foo_button", id="foo_id")
+    container = get_container()
+    container.append(btn)
+
+    counter = 0
+
+    @web.when("click", selector="#foo_id")
+    @web.when("click", selector="#foo_id")
+    def foo(evt):
+        nonlocal counter
+        counter += 1
+
+    assert counter == 0, counter
+    btn.click()
+    await asyncio.sleep(0.01)
+    assert counter == 2, counter
+
+
+async def test_when_decorator_multiple_elements():
+    """
+    The @when decorator's selector should successfully select multiple
     DOM elements
     """
-    self.pyscript_run(
-        """
-        <button class="bar_class">button1</button>
-        <button class="bar_class">button2</button>
-        <script type="py">
-            from pyscript import when
-            @when("click", selector=".bar_class")
-            def foo(evt):
-                print(f"{evt.target.innerText} was clicked")
-        </script>
-    """
+    btn1 = web.button(
+        "foo_button1",
+        id="foo_id1",
+        classes=[
+            "foo_class",
+        ],
     )
-    self.page.locator("text=button1").click()
-    self.page.locator("text=button2").click()
-    self.wait_for_console("button2 was clicked")
-    assert "button1 was clicked" in self.console.log.lines
-    assert "button2 was clicked" in self.console.log.lines
-    self.assert_no_banners()
-
-def _test_when_decorator_duplicate_selectors():
-    """ """
-    self.pyscript_run(
-        """
-        <button id="foo_id">foo_button</button>
-        <script type="py">
-            from pyscript import when
-            @when("click", selector="#foo_id")
-            @when("click", selector="#foo_id")
-            def foo(evt):
-                foo.n += 1
-                print(f"click {foo.n} on {evt.target.id}")
-            foo.n = 0
-        </script>
-    """
+    btn2 = web.button(
+        "foo_button2",
+        id="foo_id2",
+        classes=[
+            "foo_class",
+        ],
     )
-    self.page.locator("text=foo_button").click()
-    self.wait_for_console("click 1 on foo_id")
-    self.wait_for_console("click 2 on foo_id")
-    self.assert_no_banners()
+    container = get_container()
+    container.append(btn1)
+    container.append(btn2)
 
-#@skip_worker("NEXT: error banner not shown")
-def _test_when_decorator_invalid_selector():
-    """When the selector parameter of @when is invalid, it should show an error"""
-    self.pyscript_run(
-        """
-        <button id="foo_id">foo_button</button>
-        <script type="py">
-            from pyscript import when
-            @when("click", selector="#.bad")
-            def foo(evt):
-                ...
-        </script>
+    counter = 0
+
+    @web.when("click", selector=".foo_class")
+    def foo(evt):
+        nonlocal counter
+        counter += 1
+
+    assert counter == 0, counter
+    btn1.click()
+    await asyncio.sleep(0.01)
+    assert counter == 1, counter
+    btn2.click()
+    await asyncio.sleep(0.01)
+    assert counter == 2, counter
+
+
+async def test_when_decorator_duplicate_selectors():
     """
+    When is not idempotent, so it should be possible to add multiple
+    @when decorators with the same selector.
+    """
+    btn = web.button("foo_button", id="foo_id")
+    container = get_container()
+    container.append(btn)
+
+    counter = 0
+
+    @web.when("click", selector="#foo_id")
+    @web.when("click", selector="#foo_id")  # duplicate
+    def foo1(evt):
+        nonlocal counter
+        counter += 1
+
+    assert counter == 0, counter
+    btn.click()
+    await asyncio.sleep(0.01)
+    assert counter == 2, counter
+
+
+@upytest.skip(
+    "Only works in Pyodide on main thread",
+    skip_when=upytest.is_micropython or RUNNING_IN_WORKER,
+)
+def test_when_decorator_invalid_selector():
+    """
+    When the selector parameter of @when is invalid, it should raise an error.
+    """
+    if upytest.is_micropython:
+        from jsffi import JsException
+    else:
+        from pyodide.ffi import JsException
+
+    with upytest.raises(JsException) as e:
+
+        @web.when("click", selector="#.bad")
+        def foo(evt): ...
+
+    assert "'#.bad' is not a valid selector" in str(e.exception), str(
+        e.exception
     )
-    self.page.locator("text=foo_button").click()
-    msg = "Failed to execute 'querySelectorAll' on 'Document': '#.bad' is not a valid selector."
-    error = self.page.wait_for_selector(".py-error")
-    banner_text = error.inner_text()
-
-    if msg not in banner_text:
-        raise AssertionError(
-            f"Expected message '{msg}' does not "
-            f"match banner text '{banner_text}'"
-        )
-
-    assert msg in self.console.error.lines[-1]
-    self.check_py_errors(msg)

@@ -1,6 +1,6 @@
 {
     "files": {
-        "https://raw.githubusercontent.com/ntoll/upytest/1.0.4/upytest.py": "",
+        "https://raw.githubusercontent.com/ntoll/upytest/1.0.5/upytest.py": "",
         "./tests/test_web.py": "tests/test_web.py",
         "./tests/test_display.py": "tests/test_display.py",
         "./tests/test_when.py": "tests/test_when.py"
