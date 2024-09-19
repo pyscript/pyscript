@@ -4,7 +4,6 @@ Tests for the display function in PyScript.
 
 import re
 import upytest
-import asyncio
 
 
 from pyscript import display, web, HTML, RUNNING_IN_WORKER, py_import
@@ -33,7 +32,6 @@ async def setup():
         container.replaceChildren()
     target_container = web.page.find("#test-element-container")[0]
     target_container.innerHTML = ""
-    await asyncio.sleep(0.01)
 
 
 async def teardown():
@@ -45,7 +43,6 @@ async def teardown():
         container.replaceChildren()
     target_container = web.page.find("#test-element-container")[0]
     target_container.innerHTML = ""
-    await asyncio.sleep(0.01)
 
 
 def test_simple_display():
@@ -142,36 +139,6 @@ def test_tag_target_attribute():
     assert target.innerText == "item 2"
 
 
-@upytest.skip("CHECK: test consecutive script tags with display in JS")
-def test_consecutive_display_target():
-    self.pyscript_run(
-        """
-        <script type="py" id="first" async="false">
-            from pyscript import display
-            display('hello 1')
-        </script>
-            <p>hello in between 1 and 2</p>
-        <script type="py" id="second" async="false">
-            from pyscript import display
-            display('hello 2', target="second")
-        </script>
-        <script type="py" id="third" async="false">
-            from pyscript import display
-            display('hello 3')
-        </script>
-        """
-    )
-    inner_text = self.page.inner_text("body")
-    lines = inner_text.splitlines()
-    lines = [line for line in filter_page_content(lines)]  # remove empty lines
-    assert lines == [
-        "hello 1",
-        "hello in between 1 and 2",
-        "hello 2",
-        "hello 3",
-    ]
-
-
 def test_multiple_display_calls_same_tag():
     """
     Multiple display calls in the same script tag should be displayed in order.
@@ -215,7 +182,6 @@ async def test_display_multiple_values():
     Display multiple values in the same call.
     """
     display("hello", "world")
-    await asyncio.sleep(0.01)
     container = get_display_container()
     assert container.innerText == "hello\nworld", container.innerText
 
@@ -260,7 +226,6 @@ async def test_display_list_dict_tuple():
     d = {"B": 2, "List": l}
     t = ("C", 3, "!")
     display(l, d, t)
-    await asyncio.sleep(0.01)
     container = get_display_container()
     l2, d2, t2 = container.innerText.split("\n")
     assert l == eval(l2)

@@ -1,4 +1,7 @@
-import asyncio
+"""
+Tests for the pyscript.web module.
+"""
+
 import upytest
 from pyscript import web, when, document, RUNNING_IN_WORKER
 
@@ -156,7 +159,6 @@ class TestElement:
         # so we don't risk dom getting in the way
         assert not called
         just_a_button._dom_element.click()
-        await asyncio.sleep(0.01)
         assert called
 
     def test_inner_html_attribute(self):
@@ -243,7 +245,6 @@ class TestCollection:
         assert not called
         for button in buttons_collection:
             button._dom_element.click()
-            await asyncio.sleep(0.01)
             assert called
             called = False
 
@@ -289,7 +290,7 @@ class TestCreation:
 
 
 class TestInput:
-    
+
     input_ids = [
         "test_rr_input_text",
         "test_rr_input_button",
