@@ -1,6 +1,7 @@
 """
 Ensure the pyscript.storage object behaves as a Python dict.
 """
+
 from pyscript import storage, Storage
 
 

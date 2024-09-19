@@ -1,6 +1,7 @@
 """
 Exercise (as much as is possible) the pyscript.ffi namespace.
 """
+
 import upytest
 from pyscript import ffi
 
@@ -12,7 +13,7 @@ def test_create_proxy():
 
     def func():
         return 42
-    
+
     proxy = ffi.create_proxy(func)
     assert proxy() == 42
     if upytest.is_micropython:
