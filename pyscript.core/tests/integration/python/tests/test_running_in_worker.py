@@ -1,6 +1,7 @@
 """
 Ensure the pyscript.RUNNING_IN_WORKER flag is set correctly (a sanity check).
 """
+
 import upytest
 from pyscript import document, RUNNING_IN_WORKER
 

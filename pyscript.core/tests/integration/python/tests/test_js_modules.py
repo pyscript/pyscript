@@ -2,6 +2,7 @@
 Ensure referenced JavaScript modules are available via the pyscript.js_modules
 object.
 """
+
 import upytest
 from pyscript import RUNNING_IN_WORKER
 
@@ -10,10 +11,11 @@ from pyscript import RUNNING_IN_WORKER
 def test_js_module_is_available_on_main():
     """
     The "hello" function in the example_js_module.js file is available via the
-    js_modules object while running in the main thread. See the settings.json 
+    js_modules object while running in the main thread. See the settings.json
     file for the configuration that makes this possible.
     """
     from pyscript.js_modules import greeting
+
     assert greeting.hello() == "Hello from JavaScript!"
 
 
@@ -25,6 +27,7 @@ def test_js_module_is_available_on_worker():
     the configuration that makes this possible.
     """
     from pyscript.js_modules import greeting
+
     assert greeting.hello() == "Hello from JavaScript!"
 
 
@@ -35,6 +38,7 @@ def test_js_module_is_available_on_worker():
     via the js_modules object while running in a worker.
     """
     from pyscript.js_modules import greeting_worker
+
     assert greeting_worker.hello() == "Hello from JavaScript in a web worker!"
 
 

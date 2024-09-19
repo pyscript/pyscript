@@ -1,6 +1,7 @@
 """
 Exercise the pyscript.Websocket class.
 """
+
 import asyncio
 from pyscript import WebSocket
 
@@ -24,12 +25,12 @@ async def test_websocket():
         nonlocal connected_flag
         connected_flag = True
         ws.send("Hello, world!")  # A message to echo.
-    
+
     def on_message(event):
         messages.append(event.data)
         if len(messages) == 2:  # We're done.
             ws.close()
-    
+
     def on_close(event):
         nonlocal closed_flag
         closed_flag = True
@@ -46,4 +47,3 @@ async def test_websocket():
     assert "request served by" in messages[0].lower()
     assert messages[1] == "Hello, world!"
     assert closed_flag is True
-    

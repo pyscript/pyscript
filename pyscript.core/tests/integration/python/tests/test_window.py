@@ -1,6 +1,7 @@
 """
 Ensure the pyscript.window object refers to the main thread's window object.
 """
+
 import upytest
 from pyscript import window, RUNNING_IN_WORKER
 
