@@ -1,5 +1,8 @@
+"""
+Tests for the pyscript.when decorator.
+"""
+
 import upytest
-import asyncio
 from pyscript import web, RUNNING_IN_WORKER
 
 
@@ -34,7 +37,6 @@ async def test_when_decorator_with_event():
         called = evt
 
     btn.click()
-    await asyncio.sleep(0.01)
     assert called.target.id == "foo_id"
 
 
@@ -55,7 +57,6 @@ async def test_when_decorator_without_event():
         called = True
 
     btn.click()
-    await asyncio.sleep(0.01)
     assert called
 
 
@@ -81,7 +82,6 @@ async def test_two_when_decorators():
         called2 = True
 
     btn.click()
-    await asyncio.sleep(0.01)
     assert called1
     assert called2
 
@@ -105,7 +105,6 @@ async def test_two_when_decorators_same_element():
 
     assert counter == 0, counter
     btn.click()
-    await asyncio.sleep(0.01)
     assert counter == 2, counter
 
 
@@ -141,10 +140,8 @@ async def test_when_decorator_multiple_elements():
 
     assert counter == 0, counter
     btn1.click()
-    await asyncio.sleep(0.01)
     assert counter == 1, counter
     btn2.click()
-    await asyncio.sleep(0.01)
     assert counter == 2, counter
 
 
@@ -167,7 +164,6 @@ async def test_when_decorator_duplicate_selectors():
 
     assert counter == 0, counter
     btn.click()
-    await asyncio.sleep(0.01)
     assert counter == 2, counter
 
 
