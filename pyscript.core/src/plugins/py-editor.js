@@ -290,9 +290,11 @@ const init = async (script, type, interpreter) => {
             /**
              * Simulate a setup node overriding the source to evaluate.
              * @param {string} code the Python code to evaluate.
+             * @param {boolean} asRunButtonAction invoke the `Run` button handler.
              * @returns {Promise<...>} fulfill once code has been evaluated.
              */
-            value(code) {
+            value(code, asRunButtonAction = false) {
+                if (asRunButtonAction) return listener();
                 const wasSetup = isSetup;
                 const wasSource = source;
                 isSetup = true;

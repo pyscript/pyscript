@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../../dist/core.css">
+    <script type="module" src="../../dist/core.js"></script>
+  </head>
+  <body>
+    <script type="py-editor" id="editor">
+      import sys
+      print(sys.version)
+    </script>
+    <script type="py" src="submit.py"></script>
+    <button py-click="submit">Submit</button>
+  </body>
+</html>
