@@ -29,6 +29,6 @@ Some rules of thumb:
   context of the test.
 * Tests in Python use [uPyTest](https://github.com/ntoll/upytest) (see the
   README for documentation), an "inspired by PyTest" test framework that works
-  with both MicroPython and Pyodide in the browser. This means that all 
+  with both MicroPython and Pyodide in the browser. This means that all
   Python tests should work with both interpreters.
 * Tests in JavaScript... (Andrea to explain). ;-)

@@ -3,9 +3,7 @@ Tests for the display function in PyScript.
 """
 
 import upytest
-
-
-from pyscript import display, web, HTML, RUNNING_IN_WORKER, py_import
+from pyscript import HTML, RUNNING_IN_WORKER, display, py_import, web
 
 
 def get_display_container():
@@ -50,9 +48,7 @@ def test_simple_display():
     """
     display("Hello, world")
     container = get_display_container()
-    assert (
-        len(container.children) == 1
-    ), "Expected one child in the display container."
+    assert len(container.children) == 1, "Expected one child in the display container."
     assert (
         container.children[0].tagName == "DIV"
     ), "Expected a div element in the display container."

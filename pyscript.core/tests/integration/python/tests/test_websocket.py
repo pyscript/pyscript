@@ -3,6 +3,7 @@ Exercise the pyscript.Websocket class.
 """
 
 import asyncio
+
 from pyscript import WebSocket
 
 
@@ -83,7 +84,12 @@ async def test_websocket_with_init():
         closed_flag = True
         ready_to_test.set()  # Finished!
 
-    ws = WebSocket(url="wss://echo.websocket.org", onopen=on_open, onmessage=on_message, onclose=on_close)
+    ws = WebSocket(
+        url="wss://echo.websocket.org",
+        onopen=on_open,
+        onmessage=on_message,
+        onclose=on_close,
+    )
     # Wait for everything to be finished.
     await ready_to_test.wait()
     assert connected_flag is True
