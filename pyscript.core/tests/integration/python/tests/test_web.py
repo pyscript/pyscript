@@ -2,6 +2,7 @@
 Tests for the pyscript.web module.
 """
 
+import asyncio
 import upytest
 from pyscript import web, when, document, RUNNING_IN_WORKER
 
@@ -149,16 +150,19 @@ class TestElement:
         called = False
 
         just_a_button = web.page.find("#a-test-button")[0]
+        call_flag = asyncio.Event()
 
         @when("click", just_a_button)
         def on_click(event):
             nonlocal called
             called = True
+            call_flag.set()
 
         # Now let's simulate a click on the button (using the low level JS API)
         # so we don't risk dom getting in the way
         assert not called
         just_a_button._dom_element.click()
+        await call_flag.wait()
         assert called
 
     def test_inner_html_attribute(self):
@@ -772,13 +776,13 @@ class TestElements:
         }
         self._create_el_and_basic_asserts("iframe", properties=properties)
 
-    @upytest.skip(
-        "CHECK: This test is failing if running in a worker",
-        skip_when=RUNNING_IN_WORKER,
-    )
+    #@upytest.skip(
+    #    "CHECK: This test is failing if running in a worker",
+    #    skip_when=RUNNING_IN_WORKER,
+    #)
     def test_img(self):
         properties = {
-            "src": "http://localhost:8080/somefile.png",
+            "src": "https://placehold.co/600x400",
             "alt": "some image",
             "width": 250,
             "height": 200,

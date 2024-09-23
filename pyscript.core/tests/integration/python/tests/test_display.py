@@ -2,7 +2,6 @@
 Tests for the display function in PyScript.
 """
 
-import re
 import upytest
 
 
@@ -240,7 +239,7 @@ def test_display_should_escape():
     assert container.innerText == "<p>hello world</p>"
 
 
-def test_display_HTML():
+async def test_display_HTML():
     display(HTML("<p>hello world</p>"))
     container = get_display_container()
     assert container[0].innerHTML == "<p>hello world</p>"
