@@ -5,6 +5,7 @@ from pyscript.util import as_bytearray
 code = "code"
 protocols = "protocols"
 reason = "reason"
+methods = ["onclose", "onerror", "onmessage", "onopen"]
 
 
 class EventMessage:
@@ -37,7 +38,7 @@ class WebSocket(object):
             socket = js.WebSocket.new(url)
         object.__setattr__(self, "_ws", socket)
 
-        for t in ["onclose", "onerror", "onmessage", "onopen"]:
+        for t in methods:
             if t in kw:
                 # Pyodide fails at setting socket[t] directly
                 setattr(socket, t, create_proxy(kw[t]))
@@ -46,10 +47,11 @@ class WebSocket(object):
         return getattr(self._ws, attr)
 
     def __setattr__(self, attr, value):
-        if attr == "onmessage":
-            self._ws[attr] = lambda e: value(EventMessage(e))
+        if attr in methods:
+            m = lambda e: value(EventMessage(e))
+            setattr(self._ws, attr, create_proxy(m))
         else:
-            self._ws[attr] = value
+            setattr(self._ws, attr, value)
 
     def close(self, **kw):
         if code in kw and reason in kw:
