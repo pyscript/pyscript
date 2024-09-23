@@ -3,7 +3,7 @@ Ensure the pyscript.current_target function returns the expected target
 element's id.
 """
 
-from pyscript import current_target, RUNNING_IN_WORKER
+from pyscript import RUNNING_IN_WORKER, current_target
 from upytest import is_micropython
 
 
@@ -19,6 +19,4 @@ def test_current_target():
             expected = "mpy-0"
     elif RUNNING_IN_WORKER:
         expected = "py-w0-target"
-    assert (
-        current_target() == expected
-    ), f"Expected {expected} got {current_target()}"
+    assert current_target() == expected, f"Expected {expected} got {current_target()}"
