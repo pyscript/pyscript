@@ -2,6 +2,7 @@
 Tests for the pyscript.when decorator.
 """
 
+import asyncio
 import upytest
 from pyscript import web, RUNNING_IN_WORKER
 
@@ -30,13 +31,16 @@ async def test_when_decorator_with_event():
     container.append(btn)
 
     called = False
+    call_flag = asyncio.Event()
 
     @web.when("click", selector="#foo_id")
     def foo(evt):
         nonlocal called
         called = evt
+        call_flag.set()
 
     btn.click()
+    await call_flag.wait()
     assert called.target.id == "foo_id"
 
 
@@ -50,13 +54,16 @@ async def test_when_decorator_without_event():
     container.append(btn)
 
     called = False
+    call_flag = asyncio.Event()
 
     @web.when("click", selector="#foo_id")
     def foo():
         nonlocal called
         called = True
+        call_flag.set()
 
     btn.click()
+    await call_flag.wait()
     assert called
 
 
@@ -70,18 +77,24 @@ async def test_two_when_decorators():
 
     called1 = False
     called2 = False
+    call_flag1 = asyncio.Event()
+    call_flag2 = asyncio.Event()
 
     @web.when("click", selector="#foo_id")
     def foo1(evt):
         nonlocal called1
         called1 = True
+        call_flag1.set()
 
     @web.when("click", selector="#foo_id")
     def foo2(evt):
         nonlocal called2
         called2 = True
+        call_flag2.set()
 
     btn.click()
+    await call_flag1.wait()
+    await call_flag2.wait()
     assert called1
     assert called2
 
@@ -96,15 +109,18 @@ async def test_two_when_decorators_same_element():
     container.append(btn)
 
     counter = 0
+    call_flag = asyncio.Event()
 
     @web.when("click", selector="#foo_id")
     @web.when("click", selector="#foo_id")
     def foo(evt):
         nonlocal counter
         counter += 1
+        call_flag.set()
 
     assert counter == 0, counter
     btn.click()
+    await call_flag.wait()
     assert counter == 2, counter
 
 
@@ -132,16 +148,24 @@ async def test_when_decorator_multiple_elements():
     container.append(btn2)
 
     counter = 0
+    call_flag1 = asyncio.Event()
+    call_flag2 = asyncio.Event()
 
     @web.when("click", selector=".foo_class")
     def foo(evt):
         nonlocal counter
         counter += 1
+        if evt.target.id == "foo_id1":
+            call_flag1.set()
+        else:
+            call_flag2.set()
 
     assert counter == 0, counter
     btn1.click()
+    await call_flag1.wait()
     assert counter == 1, counter
     btn2.click()
+    await call_flag2.wait()
     assert counter == 2, counter
 
 
@@ -155,15 +179,18 @@ async def test_when_decorator_duplicate_selectors():
     container.append(btn)
 
     counter = 0
+    call_flag = asyncio.Event()
 
     @web.when("click", selector="#foo_id")
     @web.when("click", selector="#foo_id")  # duplicate
     def foo1(evt):
         nonlocal counter
         counter += 1
+        call_flag.set()
 
     assert counter == 0, counter
     btn.click()
+    await call_flag.wait()
     assert counter == 2, counter
 
 
