@@ -1,7 +1,9 @@
 """
 Tests for the display function in PyScript.
 """
+
 import asyncio
+
 import upytest
 from pyscript import HTML, RUNNING_IN_WORKER, display, py_import, web
 
