@@ -213,4 +213,6 @@ def test_when_decorator_invalid_selector():
         @web.when("click", selector="#.bad")
         def foo(evt): ...
 
-    assert "'#.bad' is not a valid selector" in str(e.exception), str(e.exception)
+    assert "'#.bad' is not a valid selector" in str(e.exception), str(
+        e.exception
+    )
