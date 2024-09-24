@@ -6,8 +6,7 @@ test('Python unit tests - MicroPython on MAIN thread', async ({ page }) => {
   const result = page.locator("#result");  // Payload for results will be here.
   await result.waitFor();  // wait for the result.
   const data = JSON.parse(await result.textContent());  // get the result data.
-  await expect(data.fails.length).toBe(0);  // ensure no test failed.
-  await result.waitFor()
+  await expect(data.fails).toMatchObject([]);  // ensure no test failed.
 });
 
 test('Python unit tests - Pyodide on MAIN thread', async ({ page }) => {
@@ -16,8 +15,7 @@ test('Python unit tests - Pyodide on MAIN thread', async ({ page }) => {
   const result = page.locator("#result");  // Payload for results will be here.
   await result.waitFor();  // wait for the result.
   const data = JSON.parse(await result.textContent());  // get the result data.
-  await expect(data.fails.length).toBe(0);  // ensure no test failed.
-  await result.waitFor()
+  await expect(data.fails).toMatchObject([]);  // ensure no test failed.
 });
 
 test('Python unit tests - MicroPython on WORKER', async ({ page }) => {
@@ -26,8 +24,7 @@ test('Python unit tests - MicroPython on WORKER', async ({ page }) => {
   const result = page.locator("#result");  // Payload for results will be here.
   await result.waitFor();  // wait for the result.
   const data = JSON.parse(await result.textContent());  // get the result data.
-  await expect(data.fails.length).toBe(0);  // ensure no test failed.
-  await result.waitFor()
+  await expect(data.fails).toMatchObject([]);  // ensure no test failed.
 });
 
 test('Python unit tests - Pyodide on WORKER', async ({ page }) => {
@@ -36,8 +33,7 @@ test('Python unit tests - Pyodide on WORKER', async ({ page }) => {
   const result = page.locator("#result");  // Payload for results will be here.
   await result.waitFor();  // wait for the result.
   const data = JSON.parse(await result.textContent());  // get the result data.
-  await expect(data.fails.length).toBe(0);  // ensure no test failed.
-  await result.waitFor()
+  await expect(data.fails).toMatchObject([]);  // ensure no test failed.
 });
 
 test('MicroPython display', async ({ page }) => {
