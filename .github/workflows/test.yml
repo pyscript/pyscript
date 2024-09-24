@@ -83,10 +83,3 @@ jobs:
                       pyscript.core/dist/
                   if-no-files-found: error
                   retention-days: 7
-
-            - uses: actions/upload-artifact@v4
-              if: success() || failure()
-              with:
-                  name: test_results
-                  path: test_results/
-                  if-no-files-found: error
