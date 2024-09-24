@@ -19,6 +19,4 @@ def test_current_target():
             expected = "mpy-0"
     elif RUNNING_IN_WORKER:
         expected = "py-w0-target"
-    assert (
-        current_target() == expected
-    ), f"Expected {expected} got {current_target()}"
+    assert current_target() == expected, f"Expected {expected} got {current_target()}"

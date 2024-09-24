@@ -54,9 +54,7 @@ async def test_simple_display():
     """
     display("Hello, world")
     container = await get_display_container()
-    assert (
-        len(container.children) == 1
-    ), "Expected one child in the display container."
+    assert len(container.children) == 1, "Expected one child in the display container."
     assert (
         container.children[0].tagName == "DIV"
     ), "Expected a div element in the display container."

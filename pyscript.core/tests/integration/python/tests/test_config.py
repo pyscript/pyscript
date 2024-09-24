@@ -15,6 +15,4 @@ async def test_config_reads_expected_settings_correctly():
     url = document.location.href.rsplit("/", 1)[0] + "/settings.json"
     raw_config = await fetch(url).json()
     for key, value in raw_config.items():
-        assert (
-            config[key] == value
-        ), f"Expected {key} to be {value}, got {config[key]}"
+        assert config[key] == value, f"Expected {key} to be {value}, got {config[key]}"

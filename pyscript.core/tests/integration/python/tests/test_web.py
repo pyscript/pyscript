@@ -72,9 +72,7 @@ class TestElement:
             div.parent.id == parent_div.id
         ), f"The parent of the new element should be the parent div, but got {div.parent} instead of {parent_div}"
         # EXPECT the new element to be an Element
-        assert isinstance(
-            div, web.Element
-        ), "The new element should be an Element"
+        assert isinstance(div, web.Element), "The new element should be an Element"
         # EXPECT the div attributes to be == to how they are configured in the page
         assert (
             div.innerHTML == "Child 1"
@@ -175,9 +173,7 @@ class TestElement:
 
         # EXPECT the element html and underlying JS Element innerHTML property
         # to match what we expect and what
-        assert (
-            div.innerHTML == div._dom_element.innerHTML == "<b>New Content</b>"
-        )
+        assert div.innerHTML == div._dom_element.innerHTML == "<b>New Content</b>"
         assert div.textContent == div._dom_element.textContent == "New Content"
 
     def test_text_attribute(self):
@@ -194,11 +190,7 @@ class TestElement:
             == div._dom_element.innerHTML
             == "&lt;b&gt;New Content&lt;/b&gt;"
         )
-        assert (
-            div.textContent
-            == div._dom_element.textContent
-            == "<b>New Content</b>"
-        )
+        assert div.textContent == div._dom_element.textContent == "<b>New Content</b>"
 
 
 class TestCollection:
@@ -271,10 +263,7 @@ class TestCreation:
         assert new_el.parent is None
         web.page.body.append(new_el)
 
-        assert (
-            web.page.find("#new_el_id")[0].parent.tagName
-            == web.page.body.tagName
-        )
+        assert web.page.find("#new_el_id")[0].parent.tagName == web.page.body.tagName
 
     def test_create_element_child(self):
         selector = "#element-creation-test"
@@ -314,9 +303,7 @@ class TestInput:
             input_el = result[0]
             assert input_el._dom_element.type == expected_type
             assert (
-                input_el.value
-                == f"Content {id_}"
-                == input_el._dom_element.value
+                input_el.value == f"Content {id_}" == input_el._dom_element.value
             ), f"Expected '{input_el.value}' to be 'Content {id_}' to be '{input_el._dom_element.value}'"
 
             # Check that we can set the value
@@ -504,11 +491,7 @@ class TestSelect:
         # EXPECT the selected option to be correct
         assert selected_option.value == "2"
         assert selected_option.innerHTML == "Option 2"
-        assert (
-            selected_option.selected
-            == selected_option._dom_element.selected
-            == True
-        )
+        assert selected_option.selected == selected_option._dom_element.selected == True
 
 
 class TestElements:
@@ -569,9 +552,7 @@ class TestElements:
 
         # Let's keep the tag in 2 variables, one for the selector and another to
         # check the return tag from the selector
-        locator_type = el_tag = (
-            el_type[:-1] if el_type.endswith("_") else el_type
-        )
+        locator_type = el_tag = el_type[:-1] if el_type.endswith("_") else el_type
         if additional_selector_rules:
             locator_type += f"{additional_selector_rules}"
 
@@ -585,9 +566,7 @@ class TestElements:
 
         if properties:
             for k, v in properties.items():
-                assert v == getattr(
-                    el, k
-                ), f"{k} should be {v} but is {getattr(el, k)}"
+                assert v == getattr(el, k), f"{k} should be {v} but is {getattr(el, k)}"
         return el
 
     def test_a(self):
@@ -738,9 +717,7 @@ class TestElements:
             "autocomplete": "on",
             "rel": "external",
         }
-        self._create_el_and_basic_asserts(
-            "form", "some text", properties=properties
-        )
+        self._create_el_and_basic_asserts("form", "some text", properties=properties)
 
     def test_h1(self):
         self._create_el_and_basic_asserts("h1", "some text")
@@ -825,9 +802,7 @@ class TestElements:
         # Check the img element was created correctly and all its properties
         # were set correctly.
         for k, v in properties.items():
-            assert v == getattr(
-                el, k
-            ), f"{k} should be {v} but is {getattr(el, k)}"
+            assert v == getattr(el, k), f"{k} should be {v} but is {getattr(el, k)}"
 
     def test_input(self):
         # TODO: we need multiple input tests
@@ -895,9 +870,7 @@ class TestElements:
             "high": 80,
             "optimum": 50,
         }
-        self._create_el_and_basic_asserts(
-            "meter", "some text", properties=properties
-        )
+        self._create_el_and_basic_asserts("meter", "some text", properties=properties)
 
     def test_nav(self):
         self._create_el_and_basic_asserts("nav", "some text")
@@ -1102,9 +1075,7 @@ class TestElements:
         el = result[0]
         tag = el.tagName
         assert tag == "DIV", tag
-        assert (
-            el.textContent == f"{div_text_content}{p_text_content}"
-        ), el.textContent
+        assert el.textContent == f"{div_text_content}{p_text_content}", el.textContent
         assert len(el.children) == 1, "There should be only 1 child"
         assert el.children[0].tagName == "P"
         assert (
@@ -1130,9 +1101,7 @@ class TestElements:
         el = result[0]
         tag = el.tagName
         assert tag == "DIV", tag
-        parent_full_content = (
-            f"{div_text_content}{p_text_content}{p2_text_content}"
-        )
+        parent_full_content = f"{div_text_content}{p_text_content}{p2_text_content}"
         assert el.textContent == parent_full_content
         assert len(el.children) == 2, "There should be only 2 children"
         assert el.children[0].tagName == "P"
@@ -1162,9 +1131,7 @@ class TestElements:
         el = result[0]
         tag = el.tagName
         assert tag == "DIV", tag
-        parent_full_content = (
-            f"{div_text_content}{p_text_content}{p2_text_content}"
-        )
+        parent_full_content = f"{div_text_content}{p_text_content}{p2_text_content}"
         assert el.textContent == parent_full_content, el.innerHTML
         assert len(el.children) == 2, "There should be only 2 children"
         assert el.children[0].tagName == "P"
