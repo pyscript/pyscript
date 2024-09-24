@@ -64,13 +64,7 @@ precommit-check:
 
 # Run all integration tests sequentially.
 test-integration:
-	mkdir -p test_results
-	pytest -vv $(ARGS) pyscript.core/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
-
-# Run all integration tests in parallel.
-test-integration-parallel:
-	mkdir -p test_results
-	pytest --numprocesses auto -vv $(ARGS) pyscript.core/tests/integration/ --log-cli-level=warning --junitxml=test_results/integration.xml
+	cd pyscript.core && npm run test:integration
 
 # Format the code.
 fmt: fmt-py

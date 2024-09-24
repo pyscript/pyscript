@@ -1,5 +1,45 @@
 import { test, expect } from '@playwright/test';
 
+test('Python unit tests - MicroPython on MAIN thread', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/integration/python/index.html');
+  test.setTimeout(120*1000);  // Increase timeout for this test.
+  const result = page.locator("#result");  // Payload for results will be here.
+  await result.waitFor();  // wait for the result.
+  const data = JSON.parse(await result.textContent());  // get the result data.
+  await expect(data.fails.length).toBe(0);  // ensure no test failed.
+  await result.waitFor()
+});
+
+test('Python unit tests - Pyodide on MAIN thread', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/integration/python/index.html?type=py');
+  test.setTimeout(120*1000);  // Increase timeout for this test.
+  const result = page.locator("#result");  // Payload for results will be here.
+  await result.waitFor();  // wait for the result.
+  const data = JSON.parse(await result.textContent());  // get the result data.
+  await expect(data.fails.length).toBe(0);  // ensure no test failed.
+  await result.waitFor()
+});
+
+test('Python unit tests - MicroPython on WORKER', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/integration/python/index.html?worker=1');
+  test.setTimeout(120*1000);  // Increase timeout for this test.
+  const result = page.locator("#result");  // Payload for results will be here.
+  await result.waitFor();  // wait for the result.
+  const data = JSON.parse(await result.textContent());  // get the result data.
+  await expect(data.fails.length).toBe(0);  // ensure no test failed.
+  await result.waitFor()
+});
+
+test('Python unit tests - Pyodide on WORKER', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/integration/python/index.html?type=py&worker=1');
+  test.setTimeout(120*1000);  // Increase timeout for this test.
+  const result = page.locator("#result");  // Payload for results will be here.
+  await result.waitFor();  // wait for the result.
+  const data = JSON.parse(await result.textContent());  // get the result data.
+  await expect(data.fails.length).toBe(0);  // ensure no test failed.
+  await result.waitFor()
+});
+
 test('MicroPython display', async ({ page }) => {
   await page.goto('http://localhost:8080/tests/js-integration/mpy.html');
   await page.waitForSelector('html.done.worker');
@@ -94,6 +134,7 @@ test('MicroPython + JS Storage', async ({ page }) => {
 });
 
 test('MicroPython + workers', async ({ page }) => {
+  test.setTimeout(120*1000);  // Increase timeout for this test.
   await page.goto('http://localhost:8080/tests/js-integration/workers/index.html');
   await page.waitForSelector('html.mpy.py');
 });
