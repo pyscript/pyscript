@@ -1,15 +1,19 @@
 """
 Tests for the display function in PyScript.
 """
-
+import asyncio
 import upytest
 from pyscript import HTML, RUNNING_IN_WORKER, display, py_import, web
 
 
-def get_display_container():
+async def get_display_container():
     """
     Get the element that contains the output of the display function.
     """
+    if RUNNING_IN_WORKER:
+        # Needed to ensure the DOM has time to catch up with the display calls
+        # made in the worker thread.
+        await asyncio.sleep(0.01)
     py_display = web.page.find("script-py")
     if len(py_display) == 1:
         return py_display[0]
@@ -24,7 +28,7 @@ async def setup():
     Setup function for the test_display.py module. Remove all references to the
     display output in the DOM so we always start from a clean state.
     """
-    container = get_display_container()
+    container = await get_display_container()
     if container:
         container.replaceChildren()
     target_container = web.page.find("#test-element-container")[0]
@@ -35,19 +39,19 @@ async def teardown():
     """
     Like setup.
     """
-    container = get_display_container()
+    container = await get_display_container()
     if container:
         container.replaceChildren()
     target_container = web.page.find("#test-element-container")[0]
     target_container.innerHTML = ""
 
 
-def test_simple_display():
+async def test_simple_display():
     """
     Test the display function with a simple string.
     """
     display("Hello, world")
-    container = get_display_container()
+    container = await get_display_container()
     assert len(container.children) == 1, "Expected one child in the display container."
     assert (
         container.children[0].tagName == "DIV"
@@ -55,13 +59,13 @@ def test_simple_display():
     assert container.children[0].innerHTML == "Hello, world"
 
 
-def test_consecutive_display():
+async def test_consecutive_display():
     """
     Display order should be preserved.
     """
     display("hello 1")
     display("hello 2")
-    container = get_display_container()
+    container = await get_display_container()
     assert (
         len(container.children) == 2
     ), "Expected two children in the display container."
@@ -117,14 +121,14 @@ def test_non_string_target_values_raise_typerror():
     assert str(exc.exception) == "target must be str or None, not int"
 
 
-def test_tag_target_attribute():
+async def test_tag_target_attribute():
     """
     The order and arrangement of the display calls (including targets) should be preserved.
     """
     display("item 1")
     display("item 2", target="test-element-container")
     display("item 3")
-    container = get_display_container()
+    container = await get_display_container()
     assert (
         len(container.children) == 2
     ), "Expected two children in the display container."
@@ -134,13 +138,13 @@ def test_tag_target_attribute():
     assert target.innerText == "item 2"
 
 
-def test_multiple_display_calls_same_tag():
+async def test_multiple_display_calls_same_tag():
     """
     Multiple display calls in the same script tag should be displayed in order.
     """
     display("item 1")
     display("item 2")
-    container = get_display_container()
+    container = await get_display_container()
     assert (
         len(container.children) == 2
     ), "Expected two children in the display container."
@@ -148,13 +152,13 @@ def test_multiple_display_calls_same_tag():
     assert container.children[1].innerHTML == "item 2"
 
 
-def test_append_true():
+async def test_append_true():
     """
     Explicit append flag as true should append to the expected container element.
     """
     display("item 1", append=True)
     display("item 2", append=True)
-    container = get_display_container()
+    container = await get_display_container()
     assert (
         len(container.children) == 2
     ), "Expected two children in the display container."
@@ -162,13 +166,13 @@ def test_append_true():
     assert container.children[1].innerHTML == "item 2"
 
 
-def test_append_false():
+async def test_append_false():
     """
     Explicit append flag as false should replace the expected container element.
     """
     display("item 1", append=False)
     display("item 2", append=False)
-    container = get_display_container()
+    container = await get_display_container()
     assert container.innerText == "item 2"
 
 
@@ -177,13 +181,13 @@ async def test_display_multiple_values():
     Display multiple values in the same call.
     """
     display("hello", "world")
-    container = get_display_container()
+    container = await get_display_container()
     assert container.innerText == "hello\nworld", container.innerText
 
 
-def test_display_multiple_append_false():
+async def test_display_multiple_append_false():
     display("hello", "world", append=False)
-    container = get_display_container()
+    container = await get_display_container()
     assert container.innerText == "world"
 
 
@@ -221,23 +225,23 @@ async def test_display_list_dict_tuple():
     d = {"B": 2, "List": l}
     t = ("C", 3, "!")
     display(l, d, t)
-    container = get_display_container()
+    container = await get_display_container()
     l2, d2, t2 = container.innerText.split("\n")
     assert l == eval(l2)
     assert d == eval(d2)
     assert t == eval(t2)
 
 
-def test_display_should_escape():
+async def test_display_should_escape():
     display("<p>hello world</p>")
-    container = get_display_container()
+    container = await get_display_container()
     assert container[0].innerHTML == "&lt;p&gt;hello world&lt;/p&gt;"
     assert container.innerText == "<p>hello world</p>"
 
 
 async def test_display_HTML():
     display(HTML("<p>hello world</p>"))
-    container = get_display_container()
+    container = await get_display_container()
     assert container[0].innerHTML == "<p>hello world</p>"
     assert container.innerText == "hello world"
 
@@ -257,7 +261,7 @@ async def test_image_display():
     ypoints = [1, 2, 3]
     plt.plot(xpoints, ypoints)
     display(plt)
-    container = get_display_container()
+    container = await get_display_container()
     img = container.find("img")[0]
     img_src = img.getAttribute("src").replace(
         "data:image/png;charset=utf-8;base64,", ""

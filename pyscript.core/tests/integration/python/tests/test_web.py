@@ -229,6 +229,7 @@ class TestCollection:
 
     async def test_when_decorator(self):
         called = False
+        call_flag = asyncio.Event()
 
         buttons_collection = web.page.find("button")
 
@@ -236,14 +237,17 @@ class TestCollection:
         def on_click(event):
             nonlocal called
             called = True
+            call_flag.set()
 
         # Now let's simulate a click on the button (using the low level JS API)
         # so we don't risk dom getting in the way
         assert not called
         for button in buttons_collection:
             button._dom_element.click()
+            await call_flag.wait()
             assert called
             called = False
+            call_flag.clear()
 
 
 class TestCreation:
@@ -754,18 +758,52 @@ class TestElements:
         }
         self._create_el_and_basic_asserts("iframe", properties=properties)
 
-    # @upytest.skip(
-    #    "CHECK: This test is failing if running in a worker",
-    #    skip_when=RUNNING_IN_WORKER,
-    # )
-    def test_img(self):
+
+    async def test_img(self):
+        """
+        This test contains a bespoke version of the _create_el_and_basic_asserts
+        function so we can await asyncio.sleep if in a worker, so the DOM state
+        is in sync with the worker before property based asserts can happen.
+        """
         properties = {
-            "src": "https://placehold.co/600x400",
+            "src": "https://picsum.photos/600/400",
             "alt": "some image",
             "width": 250,
             "height": 200,
         }
-        self._create_el_and_basic_asserts("img", properties=properties)
+
+        def parse_value(v):
+            if isinstance(v, bool):
+                return str(v)
+
+            return f"{v}"
+
+        args = []
+        kwargs = {}
+
+        if properties:
+            kwargs = {k: parse_value(v) for k, v in properties.items()}
+
+        # Let's make sure the target div to contain the element is empty.
+        container = web.page["#test-element-container"][0]
+        container.innerHTML = ""
+        assert container.innerHTML == "", container.innerHTML
+        # Let's create the element
+        try:
+            klass = getattr(web, "img")
+            el = klass(*args, **kwargs)
+            container.append(el)
+        except Exception as e:
+            assert False, f"Failed to create element img: {e}"
+
+        if RUNNING_IN_WORKER:
+            # Needed to sync the DOM with the worker.
+            await asyncio.sleep(0.1)
+
+        # Check the img element was created correctly and all its properties
+        # were set correctly.
+        for k, v in properties.items():
+            assert v == getattr(el, k), f"{k} should be {v} but is {getattr(el, k)}"
 
     def test_input(self):
         # TODO: we need multiple input tests
