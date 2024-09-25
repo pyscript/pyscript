@@ -3,11 +3,11 @@
 There are three aspects to our test suite. These are reflected in the layout of
 the test directory:
 
-1. `python` - contains the Python based test suite to exercise Python code 
+1. `python` - contains the Python based test suite to exercise Python code
    **within** PyScript. These tests are run four differeng ways to ensure all
    combination of MicroPython/Pyodide and main thread/worker contexts are
    checked.
-2. `javascript` - contains JavaScript tests to exercise PyScript _itself_, in 
+2. `javascript` - contains JavaScript tests to exercise PyScript _itself_, in
    the browser.
 3. `manual` - contains tests to run manually in a browser, due to the complex
    nature of the tests.
@@ -29,7 +29,7 @@ PyScript source directory.
 Similarly, some tests can only be run manually (due to their nature or
 underlying complexity). These are in the `manual` directory and are in the form
 of separate directories (each containing an `index.html`) or individual `*.html`
-files to which you point your browser. Each separate test may exercise 
+files to which you point your browser. Each separate test may exercise
 JavaScript or Python code (or both), and the context for each separate test is
 kept carefully isolated.
 
