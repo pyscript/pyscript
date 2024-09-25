@@ -12,7 +12,7 @@ all:
 	@echo "make clean - clean up auto-generated assets."
 	@echo "make build - build PyScript."
 	@echo "make precommit-check - run the precommit checks (run eslint)."
-	@echo "make test-integration - run all integration tests sequentially."
+	@echo "make test - run all automated tests in playwright."
 	@echo "make fmt - format the code."
 	@echo "make fmt-check - check the code formatting.\n"
 
@@ -62,8 +62,8 @@ build:
 precommit-check:
 	pre-commit run --all-files
 
-# Run all integration tests sequentially.
-test-integration:
+# Run all automated tests in playwright.
+test:
 	cd pyscript.core && npm run test:integration
 
 # Format the code.

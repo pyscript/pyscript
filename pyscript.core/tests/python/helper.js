@@ -7,10 +7,10 @@ const src = qs.has('src') ? qs.get('src') : './main.py';
 const config = qs.has('config') ? qs.get('config') : './settings.json';
 
 // terminal=0 to NOT have a terminal
-const terminal = qs.get('terminal') !== '0';
+const terminal = qs.has('terminal');
 
 // worker=1 to have a worker
-const worker = qs.get('worker') == '1';
+const worker = qs.has('worker');
 
 const script = document.createElement('script');
 script.type = qs.get('type') || 'mpy';
