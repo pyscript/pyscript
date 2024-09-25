@@ -37,12 +37,24 @@ make setup
 
 This will create a tests environment [in the root of the project, named `./env`]and install all the dependencies needed to run the tests.
 
-After the command has completed and the tests environment has been created, you can run the **integration tests** with
+After the command has completed and the tests environment has been created, you can run the **automated tests** with
 the following command:
 
 ```
-make test-integration
+make test
 ```
+
+(This essentially runs the `npm run test:integration` command in the right place. This is defined in PyScript's `package.json` file.)
+
+Tests are found in the `tests` directory. These are organised into three locations:
+
+1. `python` - the Python based test suite to exercise Python code **within** PyScript.
+2. `javascript` - JavaScript tests to exercise PyScript itself, in the browser.
+3. `manual` - containing tests to run manually in a browser, due to the complex nature of the tests.
+
+We use [Playwright](https://playwright.dev/) to automate the running of the Python and JavaScript test suites. We use [uPyTest](https://github.com/ntoll/upytest) as a test framework for the Python test suite. uPyTest is a "PyTest inspired" framework for running tests in the browser on both MicroPython and Pyodide.
+
+The automated (Playwright) tests are specified in the `tests/integration.spec.js` file.
 
 ## `pyscript` python package
 

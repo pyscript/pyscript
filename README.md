@@ -71,6 +71,8 @@ Read the [contributing guide](https://docs.pyscript.net/latest/contributing/) to
 
 Check out the [developing process](https://docs.pyscript.net/latest/developers/) documentation for more information on how to setup your development environment.
 
+For technical details of the code, please see the [README](pyscript.core/README) in `pyscript.core`.
+
 ## Governance
 
 The [PyScript organization governance](https://github.com/pyscript/governance) is documented in a separate repository.

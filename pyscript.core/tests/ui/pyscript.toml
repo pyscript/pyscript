@@ -1,8 +1,0 @@
-packages = []
-
-[files]
-"./examples.py" = "./examples.py"
-"./tictactoe.py" = "./tictactoe.py"
-"./styles.py" = "./styles.py"
-"./shoelace.py" = "./shoelace.py"
-"./markdown.py" = "./markdown.py"
