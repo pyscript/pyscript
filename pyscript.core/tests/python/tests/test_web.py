@@ -758,7 +758,10 @@ class TestElements:
         }
         self._create_el_and_basic_asserts("iframe", properties=properties)
 
-    @upytest.skip("Flakey on Pyodide in worker.", skip_when=RUNNING_IN_WORKER and not upytest.is_micropython)
+    @upytest.skip(
+        "Flakey on Pyodide in worker.",
+        skip_when=RUNNING_IN_WORKER and not upytest.is_micropython,
+    )
     async def test_img(self):
         """
         This test contains a bespoke version of the _create_el_and_basic_asserts
