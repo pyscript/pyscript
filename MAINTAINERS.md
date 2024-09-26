@@ -17,6 +17,7 @@ This document lists the Maintainers of the Project. Maintainers may be added onc
 | Paul Everitt         |                  |
 | Fabio Rosado         | Anaconda, Inc    |
 | Andrea Giammarchi    | Anaconda, Inc    |
+| Nasrin               |                  |
 
 ---
 
