@@ -3,6 +3,7 @@ Tests for the pyscript.config dictionary.
 """
 
 from pyscript import config, document, fetch
+from upytest import is_micropython
 
 
 async def test_config_reads_expected_settings_correctly():
@@ -12,7 +13,8 @@ async def test_config_reads_expected_settings_correctly():
     Just grab the raw JSON for the settings and compare it to the config
     dictionary.
     """
-    url = document.location.href.rsplit("/", 1)[0] + "/settings.json"
+    settings = "/settings_mpy.json" if is_micropython else "/settings_py.json"
+    url = document.location.href.rsplit("/", 1)[0] + settings
     raw_config = await fetch(url).json()
     for key, value in raw_config.items():
         assert config[key] == value, f"Expected {key} to be {value}, got {config[key]}"

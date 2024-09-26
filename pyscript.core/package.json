@@ -40,7 +40,7 @@
         "build:3rd-party": "node rollup/3rd-party.cjs",
         "build:tests-index": "node rollup/build_test_index.cjs",
         "clean:3rd-party": "rm src/3rd-party/*.js && rm src/3rd-party/*.css",
-        "test:integration": "static-handler --coi . 2>/dev/null & SH_PID=$!; EXIT_CODE=0; playwright test --fully-parallel tests/integration.spec.js || EXIT_CODE=$?; kill $SH_PID 2>/dev/null; exit $EXIT_CODE",
+        "test:integration": "static-handler --coi . 2>/dev/null & SH_PID=$!; EXIT_CODE=0; playwright test --fully-parallel tests/js_tests.spec.js tests/py_tests.spec.js || EXIT_CODE=$?; kill $SH_PID 2>/dev/null; exit $EXIT_CODE",
         "test:ws": "bun tests/ws/index.js & playwright test tests/ws.spec.js",
         "dev": "node dev.cjs",
         "release": "npm run build && npm run zip",

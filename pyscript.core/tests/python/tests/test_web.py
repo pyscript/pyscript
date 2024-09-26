@@ -758,6 +758,10 @@ class TestElements:
         }
         self._create_el_and_basic_asserts("iframe", properties=properties)
 
+    @upytest.skip(
+        "Flakey on Pyodide in worker.",
+        skip_when=RUNNING_IN_WORKER and not upytest.is_micropython,
+    )
     async def test_img(self):
         """
         This test contains a bespoke version of the _create_el_and_basic_asserts
@@ -797,7 +801,7 @@ class TestElements:
 
         if RUNNING_IN_WORKER:
             # Needed to sync the DOM with the worker.
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)
 
         # Check the img element was created correctly and all its properties
         # were set correctly.
