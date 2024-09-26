@@ -1,19 +1,20 @@
 const qs = new URLSearchParams(location.search);
 
-// src= to NOT have a config
-const src = qs.has('src') ? qs.get('src') : './main.py';
-
-// config= to NOT have a src
-const config = qs.has('config') ? qs.get('config') : './settings.json';
+const src = './main.py';
+let config = './settings_mpy.json';
 
 // terminal=0 to NOT have a terminal
-const terminal = qs.has('terminal');
-
+const terminal = qs.has('terminal') ? qs.get('terminal') : 1;
 // worker=1 to have a worker
 const worker = qs.has('worker');
 
+const interpreter = qs.get('type') || 'mpy';
+if (interpreter === 'py') {
+    config = "./settings_py.json";
+}
+
 const script = document.createElement('script');
-script.type = qs.get('type') || 'mpy';
+script.type = interpreter;
 if (src) script.src = src;
 if (config) script.setAttribute('config', config);
 script.toggleAttribute('terminal', terminal);
