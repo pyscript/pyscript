@@ -64,7 +64,7 @@ jobs:
 
             - name: Generate index.html in snapshot
               working-directory: .
-              run: sed 's#_PATH_#https://pyscript.net/unstable/#' ./public/index.html > ./pyscript.core/dist/index.html
+              run: sed -e 's#_PATH_#./#' -e 's#_VERSION_#latest#' -e 's#_DOC_VERSION_#latest#' -e 's#_TAG_VERSION_##' ./public/index.html > ./pyscript.core/dist/index.html
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4

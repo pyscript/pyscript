@@ -4,51 +4,115 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="https://unpkg.com/mvp.css@1.12/mvp.css" />
         <link rel="stylesheet" href="_PATH_core.css" />
         <script type="module" src="_PATH_core.js"></script>
-        <title>PyScript</title>
+        <title>PyScript Release: _VERSION_</title>
+        <style>
+        body {
+            background-color: #2D2E35;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        main {
+            padding-top: 32px;
+            width: 80%;
+            margin: 0 auto;
+        }
+        a,
+        a:visited {
+            color: #FDA703;
+        }
+        pre {
+            background-color: #111;
+            color: #fff;
+            font-family: 'Roboto Mono', monospace;
+            padding: 1em;
+            border: 1px solid #000000;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        #header {
+            text-align: center;
+        }
+        #header p {
+            font-size: 1.4em;
+        }
+        </style>
+        <script>
+            function copyToClipboard() {
+                var copyText = document.getElementById("example").innerText;
+                navigator.clipboard.writeText(copyText).then(() => {
+                    alert("Copied to clipboard");
+                });
+            }
+        </script>
     </head>
 
     <body>
         <main>
-            <h1>&lt;py-script&gt;</h1>
+            <div id="header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="512" height="173" viewBox="0 0 512 173"><path fill="#fda703" d="M170.14 16.147c12.97-12.966 34.252-21.918 51.437-11.75c3.776 2.234 7.3 5.063 10.242 8.321c9.075 10.047 11.853 24.04 11.915 37.193c.125 26.222-9.355 56.093-34.555 68.782c-9.635 4.851-20.398 6.592-31.126 6.122c-6.042-.265-12.118-1.49-18.162-1.568l-.567-.004v46.425h-20.047V3.222h20.047v26.642h.264c2.19-5.078 6.687-9.854 10.551-13.717m1.43 20.312c-1.706 1.975-3.301 4.022-4.862 6.111l-1.033 1.386c-2.247 3-4.878 6.491-6.095 9.912c-.91 2.559-.256 6.27-.256 8.969v42.469l.845.173c13.804 2.808 27.723 4.557 40.305-3.454c17.28-11.002 22.71-32.58 21.39-51.85l-.04-.559c-.678-9.13-2.678-18.348-9.484-25.017c-13.438-13.167-31.313.912-40.77 11.86M261.67 3.222c.852 2.961 2.596 5.653 3.875 8.441c3.134 6.827 6.502 13.549 9.773 20.311c9.214 19.044 18.41 38.111 27.444 57.24c2.807 5.944 5.718 11.838 8.551 17.768l1.21 2.544c1.239 2.626 3.65 5.807 4.053 8.705c.196 1.397-.933 3.115-1.467 4.396l-.036.088a79.5 79.5 0 0 1-5.605 11.343l-.86 1.439c-1.961 3.273-4.013 6.592-6.603 9.376l-.392.42c-2.033 2.167-4.196 4.296-6.706 5.896c-11.047 7.047-23.326 5.408-35.347 2.652v17.674l.842.107c13.763 1.742 27.7 2.564 40.572-3.871c13.107-6.554 21-19.512 27.502-32.11c11.882-23.024 20.787-47.708 30.778-71.61l.39-.93C365.137 50.016 370.51 36.88 376 23.797c1.806-4.304 3.56-8.631 5.389-12.925c1.036-2.433 2.49-5.036 2.94-7.65h-14.243c-1.433 0-4.197-.528-5.437.271c-1.488.96-2.137 4.48-2.815 6.06c-2.363 5.496-4.505 11.088-6.787 16.618c-6.304 15.28-12.598 30.568-18.778 45.898c-2.72 6.742-6.71 13.77-8.389 20.839h-.527l-3.89-8.177l-6.857-13.98l-21.368-43.789l-8.31-16.882l-3.532-6.587l-5.898-.27zM0 64.683c2.398 1.987 5.918 3.156 8.705 4.55l71.748 35.874c7.172 3.586 14.3 7.25 21.46 10.856l3.072 1.542c3.547 1.773 7.697 4.777 11.606 5.474v-12.925l-.27-5.173l-6.06-3.334l-15.3-7.65l-40.358-20.31l-17.674-8.904l17.674-8.77l40.095-19.917l15.563-7.78l6.06-3.268l.27-5.108V6.651c-4.078.727-8.432 3.888-12.134 5.738L26.378 51.43C17.63 55.804 8.446 59.754 0 64.683M395.672 6.651v12.926c0 1.382-.496 3.972.272 5.172c.958 1.5 4.234 2.423 5.795 3.203l15.036 7.517c13.292 6.646 26.536 13.4 39.83 20.047c5.92 2.96 12.1 7.333 18.466 9.167v.528c-6.835 1.969-13.68 6.511-20.048 9.695l-38.512 19.256c-4.635 2.317-9.224 4.866-13.98 6.923l-.184.078c-1.805.75-5.401 1.885-6.403 3.454c-.768 1.2-.272 3.79-.272 5.173v13.189l14.508-7.057l77.025-38.512L512 64.947c-2.654-2.68-7.705-4.182-11.079-5.868L404.905 11.07c-2.965-1.483-6.044-3.5-9.233-4.419"/></svg>
+                <h1>PyScript version: _VERSION_</h1>
+                <p><a href="https://pyscript.net/">Home</a> | <a href="https://docs.pyscript.net/_DOC_VERSION_/">Docs</a> | <a href="https://github.com/pyscript/pyscript">Code</a> | <a href="https://github.com/pyscript/pyscript/releases_TAG_VERSION_">Changes</a></p>
+            </div>
+            <h2>Files</h2>
             <ul>
+                <li><a href="core.css">core.css</a></li>
                 <li><a href="core.js">core.js</a></li>
                 <li><a href="core.js.map">core.js.map</a></li>
-                <li><a href="core.css">core.css</a></li>
             </ul>
             <div id="out"></div>
-            <py-script>
+            <script type="py">
                 from pyscript import display
                 import sys
                 display(sys.version)
-            </py-script>
+            </script>
+            <script type="mpy">
+                from pyscript import display
+                import sys
+                display(sys.version)
+            </script>
 
-            <h2>Example</h2>
-            <pre style="padding: 1em; border: 1px solid #000000">
+            <h2>
+                Example
+                <a href="javascript:void(0);" onclick="copyToClipboard()" title="Copy to clipboard"><svg fill="#fff" xmlns="http://www.w3.org/2000/svg" 
+                    width="22px" height="22px" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve">
+               <g>
+                   <path d="M17.4,11.6h17.3c0.9,0,1.6-0.7,1.6-1.6V6.8c0-2.6-2.1-4.8-4.7-4.8h-11c-2.6,0-4.7,2.2-4.7,4.8V10
+                       C15.8,10.9,16.5,11.6,17.4,11.6z"/>
+                   <path d="M43.3,6h-1.6c-0.5,0-0.8,0.3-0.8,0.8V10c0,3.5-2.8,6.4-6.3,6.4H17.4c-3.5,0-6.3-2.9-6.3-6.4V6.8
+                       c0-0.5-0.3-0.8-0.8-0.8H8.7C6.1,6,4,8.2,4,10.8v34.4C4,47.8,6.1,50,8.7,50h34.6c2.6,0,4.7-2.2,4.7-4.8V10.8C48,8.2,45.9,6,43.3,6z"
+                       />
+               </g>
+               </svg></a>
+            </h2>
+            <pre id="example">
 &lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
     &lt;head&gt;
-    &lt;meta charset=&quot;utf-8&quot; /&gt;
-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot; /&gt;
-    &lt;title&gt;PyScript Hello World&lt;/title&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;_PATH_core.css&quot; /&gt;
-    &lt;script type=&quot;module&quot; src=&quot;_PATH_core.js&quot;&gt;&lt;/script&gt;
+        &lt;meta charset=&quot;utf-8&quot; /&gt;
+        &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot; /&gt;
+        &lt;title&gt;PyScript _VERSION_&lt;/title&gt;
+        &lt;link rel=&quot;stylesheet&quot; href=&quot;_PATH_core.css&quot; /&gt;
+        &lt;script type=&quot;module&quot; src=&quot;_PATH_core.js&quot;&gt;&lt;/script&gt;
     &lt;/head&gt;
-
     &lt;body&gt;
-    Hello world! &lt;br&gt;
-    This is the current date and time, as computed by Python:
-    &lt;py-script&gt;
-from pyscript import display
-from datetime import datetime
-now = datetime.now()
-display(now.strftime(&quot;%m/%d/%Y, %H:%M:%S&quot;))
-    &lt;/py-script&gt;
+        &lt;h1&gt;Hello world!&lt;/h1&gt;
+        &lt;p&gt;These are the Python interpreters in PyScript _VERSION_:&lt;/p&gt;
+        &lt;script type=&quot;py&quot;&gt;  &lt;!-- Pyodide --&gt;
+            from pyscript import display
+            import sys
+            display(sys.version)
+        &lt;/script&gt;
+        &lt;script type=&quot;mpy&quot;&gt;  &lt;!-- MicroPython --&gt;
+            from pyscript import display
+            import sys
+            display(sys.version)
+        &lt;/script&gt;
     &lt;/body&gt;
-&lt;/html&gt;</pre
-            >
+&lt;/html&gt;</pre>
         </main>
     </body>
 </html>
