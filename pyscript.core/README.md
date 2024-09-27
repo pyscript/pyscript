@@ -35,9 +35,19 @@ Before running the tests, we need to create a tests environment first. To do so 
 make setup
 ```
 
-This will create a tests environment [in the root of the project, named `./env`]and install all the dependencies needed to run the tests.
+This will create a tests environment [in the root of the project, named `./env`] and install all the dependencies needed to run the tests.
 
-After the command has completed and the tests environment has been created, you can run the **automated tests** with
+A lot of problems related to `make setup` are related to node and npm being outdated. Once npm and node are updated, `make setup` should work. You can follow the steps on the [npm documentation](https://docs.npmjs.com/try-the-latest-stable-version-of-npm) to update npm (the update command for Linux should work for Mac as well). Once npm has been updated you can continue to the instructions to update node below.
+
+To update Node run the following commands in order (most likely you'll be prompted for your user password, this is normal):
+
+```
+sudo npm cache clean -f
+sudo npm install -g n
+sudo n stable
+```
+
+After the `make setup` command has completed, you can run the **automated tests** with
 the following command:
 
 ```
