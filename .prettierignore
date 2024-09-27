@@ -1,5 +1,3 @@
 ISSUE_TEMPLATE
 *.min.*
 package-lock.json
-docs
-examples/panel.html
