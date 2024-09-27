@@ -11,5 +11,4 @@
 <!-- Note: Only user-facing changes require a changelog entry. Internal-only API changes do not require a changelog entry. Changes in documentation do not require a changelog entry. -->
 
 -   [ ] All tests pass locally
--   [ ] I have updated `CHANGELOG.md`
--   [ ] I have created documentation for this(if applicable)
+-   [ ] I have created / updated documentation for this (if applicable)
