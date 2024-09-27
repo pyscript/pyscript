@@ -52,7 +52,7 @@ jobs:
                       ${{ runner.os }}-
 
             - name: npm install
-              run: npm install && npx playwright install
+              run: npm install && npx playwright install chromium
 
             - name: build
               run: npm run build

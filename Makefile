@@ -45,7 +45,6 @@ ifeq ($(VIRTUAL_ENV),)
 	false
 else
 	python -m pip install -r requirements.txt
-	playwright install
 endif
 
 # Clean up generated assets.
@@ -56,7 +55,7 @@ clean:
 
 # Build PyScript.
 build:
-	cd pyscript.core && npx playwright install && npm run build
+	cd pyscript.core && npx playwright install chromium && npm run build
 
 # Run the precommit checks (run eslint).
 precommit-check:

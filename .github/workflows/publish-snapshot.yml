@@ -56,7 +56,7 @@ jobs:
                       ${{ runner.os }}-
 
             - name: Install Dependencies
-              run: npm install && npx playwright install
+              run: npm install && npx playwright install chromium
 
             - name: Build Pyscript.core
               run: npm run build
