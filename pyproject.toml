@@ -1,0 +1,3 @@
+[tool.codespell]
+ignore-words-list = "afterall"
+skip = "*.js,*.json"
