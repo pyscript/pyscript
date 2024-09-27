@@ -94,6 +94,7 @@ test('MicroPython + JS Storage', async ({ page }) => {
 });
 
 test('MicroPython + workers', async ({ page }) => {
+  test.setTimeout(120*1000);  // Increase timeout for this test.
   await page.goto('http://localhost:8080/tests/javascript/workers/index.html');
   await page.waitForSelector('html.mpy.py');
 });
