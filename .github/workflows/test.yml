@@ -5,14 +5,14 @@ on:
         branches:
             - main
         paths:
-            - pyscript.core/**
+            - core/**
             - .github/workflows/test.yml
 
     pull_request: # Only run on merges into main that modify certain files
         branches:
             - main
         paths:
-            - pyscript.core/**
+            - core/**
             - .github/workflows/test.yml
     workflow_dispatch:
 
@@ -75,6 +75,6 @@ jobs:
               with:
                   name: pyscript
                   path: |
-                      pyscript.core/dist/
+                      core/dist/
                   if-no-files-found: error
                   retention-days: 7

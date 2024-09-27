@@ -4,11 +4,11 @@ We have moved and renamed previous _core_ module as [polyscript](https://github.
 
 ## Documentation
 
-Please read [core documentation](./docs/README.md) to know more about this project.
+Please read [core documentation](https://docs.pyscript.net/) to know more about this project.
 
 ## Development
 
-Clone this repository then run `npm install` within its folder.
+Clone this repository then run `npm install` within this folder.
 
 Use `npm run build` to create all artifacts and _dist_ files.
 

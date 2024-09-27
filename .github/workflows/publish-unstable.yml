@@ -1,11 +1,11 @@
 name: "Publish Unstable"
 
 on:
-    push: # Only run on merges into main that modify files under pyscript.core/ and examples/
+    push: # Only run on merges into main that modify files under core/ and examples/
         branches:
             - main
         paths:
-            - pyscript.core/**
+            - core/**
             - examples/**
 
     workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
             contents: read
         defaults:
             run:
-                working-directory: ./pyscript.core
+                working-directory: ./core
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
 
             - name: Generate index.html in snapshot
               working-directory: .
-              run: sed -e 's#_PATH_#./#' -e 's#_VERSION_#latest#' -e 's#_DOC_VERSION_#latest#' -e 's#_TAG_VERSION_##' ./public/index.html > ./pyscript.core/dist/index.html
+              run: sed -e 's#_PATH_#./#' -e 's#_VERSION_#latest#' -e 's#_DOC_VERSION_#latest#' -e 's#_TAG_VERSION_##' ./public/index.html > ./core/dist/index.html
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4

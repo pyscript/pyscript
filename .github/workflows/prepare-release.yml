@@ -7,7 +7,7 @@ on:
 
 defaults:
     run:
-        working-directory: ./pyscript.core
+        working-directory: ./core
 
 jobs:
     prepare-release:
@@ -57,7 +57,7 @@ jobs:
 
             - name: Generate index.html
               working-directory: .
-              run: sed -e 's#_PATH_#./#' -e 's#_VERSION_#latest#' -e 's#_DOC_VERSION_#latest#' -e 's#_TAG_VERSION_##' ./public/index.html > ./pyscript.core/dist/index.html
+              run: sed -e 's#_PATH_#./#' -e 's#_VERSION_#latest#' -e 's#_DOC_VERSION_#latest#' -e 's#_TAG_VERSION_##' ./public/index.html > ./core/dist/index.html
 
             - name: Zip dist folder
               run: zip -r -q ./build.zip ./dist
