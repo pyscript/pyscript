@@ -142,11 +142,11 @@ coverage/
 test_results
 
 # @pyscript/core npm artifacts
-pyscript.core/test-results/*
-pyscript.core/core.*
-pyscript.core/dist
-pyscript.core/dist.zip
-pyscript.core/src/plugins.js
-pyscript.core/src/stdlib/pyscript.js
-pyscript.core/src/3rd-party/*
-!pyscript.core/src/3rd-party/READMEmd
+core/test-results/*
+core/core.*
+core/dist
+core/dist.zip
+core/src/plugins.js
+core/src/stdlib/pyscript.js
+core/src/3rd-party/*
+!core/src/3rd-party/READMEmd
