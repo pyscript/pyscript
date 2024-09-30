@@ -57,7 +57,7 @@ jobs:
 
             - name: Generate index.html
               working-directory: .
-              run: sed -e 's#_PATH_#./#' -e 's#_VERSION_#latest#' -e 's#_DOC_VERSION_#latest#' -e 's#_TAG_VERSION_##' ./public/index.html > ./core/dist/index.html
+              run: sed -e 's#_PATH_#./#' -e 's#_DOC_VERSION_#latest#' -e 's#_TAG_VERSION_##' -e 's#_VERSION_#latest#' ./public/index.html > ./core/dist/index.html
 
             - name: Zip dist folder
               run: zip -r -q ./build.zip ./dist
