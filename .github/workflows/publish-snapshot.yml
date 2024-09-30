@@ -14,7 +14,7 @@ defaults:
 
 jobs:
     publish-snapshot:
-        runs-on: ubuntu-latest-4core
+        runs-on: ubuntu-latest-8core
         permissions:
             contents: read
             id-token: write
