@@ -13,7 +13,12 @@ for (const file of readdirSync(join(__dirname, "..", "src", "plugins"))) {
         plugins.push(
             // this comment is needed to avoid bundlers eagerly embedding lazy
             // dependencies, causing all sort of issues once in production
-            `    ${key}: () => import(/* webpackIgnore: true */ ${value}),`,
+            // ⚠️ THIS HAS TO BE LIKE THIS or prettier changes it every single time
+            `    ${key}: () =>
+        import(
+            /* webpackIgnore: true */
+            ${value}
+        ),`,
         );
     }
 }

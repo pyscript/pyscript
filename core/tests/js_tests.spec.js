@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+test.setTimeout(120 * 1000);
+
 test('MicroPython display', async ({ page }) => {
   await page.goto('http://localhost:8080/tests/javascript/mpy.html');
   await page.waitForSelector('html.done.worker');
@@ -94,7 +96,6 @@ test('MicroPython + JS Storage', async ({ page }) => {
 });
 
 test('MicroPython + workers', async ({ page }) => {
-  test.setTimeout(120*1000);  // Increase timeout for this test.
   await page.goto('http://localhost:8080/tests/javascript/workers/index.html');
   await page.waitForSelector('html.mpy.py');
 });
