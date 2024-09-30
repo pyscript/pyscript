@@ -18,7 +18,7 @@ on:
 
 jobs:
     BuildAndTest:
-        runs-on: ubuntu-latest-8core
+        runs-on: ubuntu-latest-4core
         env:
             MINICONDA_PYTHON_VERSION: py38
             MINICONDA_VERSION: 4.11.0

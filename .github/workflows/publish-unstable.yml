@@ -12,7 +12,7 @@ on:
 
 jobs:
     publish-unstable:
-        runs-on: ubuntu-latest-8core
+        runs-on: ubuntu-latest-4core
         permissions:
             id-token: write
             contents: read
