@@ -10,7 +10,7 @@ on:
 
 defaults:
     run:
-        working-directory: ./pyscript.core
+        working-directory: ./core
 
 jobs:
     publish-snapshot:
@@ -69,7 +69,7 @@ jobs:
 
             - name: Generate index.html in snapshot
               working-directory: .
-              run: sed 's#_PATH_#https://pyscript.net/snapshots/${{ inputs.snapshot_version }}/#' ./public/index.html > ./pyscript.core/dist/index.html
+              run: sed -e 's#_PATH_#https://pyscript.net/snapshots/${{ inputs.snapshot_version }}/#' -e 's#_VERSION_#${{ inputs.snapshot_version }}#'  -e 's#_DOC_VERSION_#${{ inputs.snapshot_version }}#' -e 's#_TAG_VERSION_#/tag/${{ inputs.snapshot_version }}#' ./public/index.html > ./core/dist/index.html
 
             - name: Copy to Snapshot
               run: >

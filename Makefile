@@ -39,7 +39,7 @@ check-python:
 
 # Check the environment, install the dependencies.
 setup: check-node check-npm check-python
-	cd pyscript.core && npm install && cd ..
+	cd core && npm install && cd ..
 ifeq ($(VIRTUAL_ENV),)
 	echo "\n\n\033[0;31mCannot install Python dependencies. Your virtualenv is not activated.\033[0m"
 	false
@@ -55,7 +55,7 @@ clean:
 
 # Build PyScript.
 build:
-	cd pyscript.core && npx playwright install chromium && npm run build
+	cd core && npx playwright install chromium && npm run build
 
 # Run the precommit checks (run eslint).
 precommit-check:
@@ -63,7 +63,7 @@ precommit-check:
 
 # Run all automated tests in playwright.
 test:
-	cd pyscript.core && npm run test:integration
+	cd core && npm run test:integration
 
 # Format the code.
 fmt: fmt-py

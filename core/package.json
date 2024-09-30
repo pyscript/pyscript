@@ -8,6 +8,9 @@
     "jsdelivr": "./jsdelivr.js",
     "browser": "./index.js",
     "main": "./index.js",
+    "engines": {
+        "node": ">=20"
+    },
     "files": [
         "./dist/",
         "./src/",
