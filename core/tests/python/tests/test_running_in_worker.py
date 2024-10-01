@@ -3,7 +3,6 @@ Ensure the pyscript.RUNNING_IN_WORKER flag is set correctly (a sanity check).
 """
 
 import upytest
-
 from pyscript import RUNNING_IN_WORKER, document
 
 # In the test suite, running in a worker is flagged by the presence of the

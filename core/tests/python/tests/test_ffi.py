@@ -3,7 +3,6 @@ Exercise (as much as is possible) the pyscript.ffi namespace.
 """
 
 import upytest
-
 from pyscript import ffi
 
 

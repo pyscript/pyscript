@@ -1,5 +1,4 @@
 import js
-
 from pyscript.ffi import create_proxy
 from pyscript.util import as_bytearray
 

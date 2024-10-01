@@ -5,7 +5,6 @@ Tests for the pyscript.when decorator.
 import asyncio
 
 import upytest
-
 from pyscript import RUNNING_IN_WORKER, web
 
 

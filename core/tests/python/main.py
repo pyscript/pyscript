@@ -1,7 +1,6 @@
 import json
 
 import upytest
-
 from pyscript import web
 
 result = await upytest.run("./tests", random=True)
