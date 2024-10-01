@@ -3,30 +3,30 @@
 ## PyScrcipt is an open source platform for Python in the browser.
 
 PyScript enables the creation of rich Python applications in the browser using
-[Pyodide](https://pyodide.org/en/stable/) (a version of 
-[CPython](https://python.org/)), [MicroPython](https://micropython.org/), 
+[Pyodide](https://pyodide.org/en/stable/) (a version of
+[CPython](https://python.org/)), [MicroPython](https://micropython.org/),
 [WASM](https://webassembly.org/), and modern web technologies. It means Python
 now runs anywhere a browser runs: desktop, laptop, mobile, tablet, or any other
 browser enabled device.
 
-To start building, read the 
+To start building, read the
 [Beginning PyScript tutorial](https://docs.pyscript.net/latest/beginning-pyscript/).
 
 For example applications, see [here](https://pyscript.com/@examples).
 
 Other useful resources:
-  
-- Our [Home Page](https://pyscript.net/) as an open source project.
-- The [official technical docs](https://docs.pyscript.net/).
-- A [YouTube channel](https://www.youtube.com/@PyScriptTV) with helpful videos 
-  and community content.
-- A free-to-use [online IDE](https://pyscript.com/) for trying PyScript.
-- Our community [Discord Channel](https://discord.gg/BYB2kvyFwm), to keep in 
-  touch .
+
+-   Our [Home Page](https://pyscript.net/) as an open source project.
+-   The [official technical docs](https://docs.pyscript.net/).
+-   A [YouTube channel](https://www.youtube.com/@PyScriptTV) with helpful videos
+    and community content.
+-   A free-to-use [online IDE](https://pyscript.com/) for trying PyScript.
+-   Our community [Discord Channel](https://discord.gg/BYB2kvyFwm), to keep in
+    touch .
 
 Every Tuesday at 15:30 UTC there is the _PyScript Community Call_ on zoom,
-where we can talk about PyScript development in the open. Most of the 
-maintainers regularly participate in the call, and everybody is welcome to 
+where we can talk about PyScript development in the open. Most of the
+maintainers regularly participate in the call, and everybody is welcome to
 join. This meeting is recorded and uploaded to our YouTube channel.
 
 Every other Thursday at 16:00 UTC there is the _PyScript FUN_ call: the focus
@@ -45,8 +45,8 @@ official calendar:
 For technical details of the code, please see the [README](core/README) in the
 `core` directory.
 
-Read the [contributing guide](https://docs.pyscript.net/latest/contributing/) 
-to learn about our development process, reporting bugs and improvements, 
+Read the [contributing guide](https://docs.pyscript.net/latest/contributing/)
+to learn about our development process, reporting bugs and improvements,
 creating issues and asking questions.
 
 Check out the [developing process](https://docs.pyscript.net/latest/developers/)
@@ -54,14 +54,14 @@ documentation for more information on how to setup your development environment.
 
 ## Governance
 
-The [PyScript organization governance](https://github.com/pyscript/governance) 
+The [PyScript organization governance](https://github.com/pyscript/governance)
 is documented in a separate repository.
 
 ## Release
 
 To cut a new release of PyScript simply
 [add a new release](https://github.com/pyscript/pyscript/releases) while
-remembering to write a comprehensive changelog. A 
+remembering to write a comprehensive changelog. A
 [GitHub action](https://github.com/pyscript/pyscript/blob/main/.github/workflows/publish-release.yml)
 will kick in and ensure the release is described and deployed to a URL with the
 pattern: https://pyscript.net/releases/YYYY.M.v/ (year/month/version - as per
@@ -69,10 +69,10 @@ our [CalVer](https://calver.org/) versioning scheme).
 
 Then, the following three separate repositories need updating:
 
-- [Documentation](https://github.com/pyscript/docs) - Change the `version.json`
-  file in the root of the directory and then `node version-update.js`.
-- [Homepage](https://github.com/pyscript/pyscript.net) - Ensure the version
-  referenced in `index.html` is the latest version.
-- [PSDC](https://pyscript.com) - Use discord or Anaconda Slack (if you work at
-  Anaconda) to let the PSDC team know there's a new version, so they can update
-  their project templates.
+-   [Documentation](https://github.com/pyscript/docs) - Change the `version.json`
+    file in the root of the directory and then `node version-update.js`.
+-   [Homepage](https://github.com/pyscript/pyscript.net) - Ensure the version
+    referenced in `index.html` is the latest version.
+-   [PSDC](https://pyscript.com) - Use discord or Anaconda Slack (if you work at
+    Anaconda) to let the PSDC team know there's a new version, so they can update
+    their project templates.
