@@ -1,10 +1,62 @@
 # @pyscript/core
 
-We have moved and renamed previous _core_ module as [polyscript](https://github.com/pyscript/polyscript/#readme), which is the base module used in here to build up _PyScript Next_, now hosted in this folder.
+PyScript brings two Python interpreters to the browser:
 
-## Documentation
+* [MicroPython](https://micropython.org/) - a lean and efficient implementation 
+  of the Python 3 programming language that includes a small subset of the 
+  Python standard library and is optimised to run on microcontrollers and in 
+  constrained environments (like the browser).
+* [Pyodide](https://pyodide.org)) - a port of all CPython to WebAssembly.
 
-Please read [core documentation](https://docs.pyscript.net/) to know more about this project.
+These interpreters are compiled to [WebAssembly](https://webassembly.org/)
+(shortened to WASM). The browser provides a secure WASM computing sandbox. Both
+interpreters are compiled to web assembly with
+[Emscripten](https://emscripten.org/). PyScript core maintainers work closely
+with the core maintainers of both MicroPython and Pyodide (and CPython). We
+work hard to ensure PyScript works efficiently in browsers on all platforms:
+desktop, mobile, or elsewhere.
+
+Our technical documentation for using this project can be
+[found here](https://docs.pyscript.net/).
+
+PyScript sits on two further projects (both written in JavaScript):
+
+1. [polyscript](https://github.com/pyscript/polyscript/#readme) - used to
+   bootstrap WASM compiled interpreters in a browser.
+2. [coincident](https://github.com/WebReflection/coincident) - used to simplify
+   worker based tasks.
+
+PyScript itself is mostly written in JavaScript. The test suite for JavaScript
+is in two parts: automated tests run in [playwright](https://playwright.dev/), 
+and manual tests you have to run in a browser and check yourself. PyScript also
+has a plugin system so third parties can extend its capabilities with
+JavaScript. Our built-in core plugins can be found in the `src/plugins`
+directory. We describe how to write third party plugins in our 
+[developer documentation](https://docs.pyscript.net/2024.9.2/user-guide/plugins/).
+
+We provide a `pyscript` namespace containing Python modules for common browser
+based APIs and features (i.e. you can `import pyscript` in Python code running
+inside PyScript, to access these features). The Python code for the `pyscript`
+namespace is in  `src/stdlib/pyscript` with the associated test suite in 
+`tests/python`. The tests use the browser friendly 
+[uPyTest](https://github.com/ntoll/upytest) test framework for checking Python
+code running *within* PyScript. All the Python tests are run in each each
+available interpreter in both the main thread and a web worker (i.e. the
+test suite is run four times, accounting for each combination of interpreter
+and main/worker context).
+
+When you create a local build all the automated tests (JavaScript and Python)
+are run.
+
+## Setup
+
+## Build
+
+## Test
+
+## Plugins
+
+## Python
 
 ## Development
 
