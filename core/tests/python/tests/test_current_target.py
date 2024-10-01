@@ -3,8 +3,9 @@ Ensure the pyscript.current_target function returns the expected target
 element's id.
 """
 
-from pyscript import RUNNING_IN_WORKER, current_target
 from upytest import is_micropython
+
+from pyscript import RUNNING_IN_WORKER, current_target
 
 
 def test_current_target():

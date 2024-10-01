@@ -2,8 +2,9 @@
 Tests for the pyscript.config dictionary.
 """
 
-from pyscript import config, document, fetch
 from upytest import is_micropython
+
+from pyscript import config, document, fetch
 
 
 async def test_config_reads_expected_settings_correctly():

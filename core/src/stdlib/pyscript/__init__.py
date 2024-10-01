@@ -30,6 +30,7 @@
 #     as it works transparently in both the main thread and worker cases.
 
 from polyscript import lazy_py_modules as py_import
+
 from pyscript.display import HTML, display
 from pyscript.fetch import fetch
 from pyscript.magic_js import (

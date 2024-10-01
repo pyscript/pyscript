@@ -5,6 +5,7 @@ Tests for the pyscript.web module.
 import asyncio
 
 import upytest
+
 from pyscript import RUNNING_IN_WORKER, document, web, when
 
 

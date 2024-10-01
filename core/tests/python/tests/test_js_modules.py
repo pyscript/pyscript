@@ -4,6 +4,7 @@ object.
 """
 
 import upytest
+
 from pyscript import RUNNING_IN_WORKER
 
 
