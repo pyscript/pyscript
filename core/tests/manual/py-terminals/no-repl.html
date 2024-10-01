@@ -3,24 +3,16 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PyTerminal Prompt: REPL</title>
-        <script type="module" src="../../dist/core.js"></script>
+        <title>PyTerminal Prompt: NO REPL</title>
+        <script type="module" src="../../../dist/core.js"></script>
         <style>.xterm { padding: .5rem; }</style>
     </head>
     <body>
         <script type="mpy" worker terminal>
-            import code
-            code.interact()
-
             prompt = input("Say something: ")
             print("You said, ", prompt)
         </script>
         <script type="py" worker terminal>
-            import code
-            code.interact()
-
-            # Pyodide won't execute this ... ever
-            # this should be tested manually
             prompt = input("Say something: ")
             print("You said, ", prompt)
         </script>

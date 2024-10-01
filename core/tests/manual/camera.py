@@ -1,9 +1,8 @@
-from pyodide.ffi import create_proxy
-from pyscript import display, document, when, window
-from pyweb import media, pydom
+from pyscript import display, document, media, when, window
+from pyscript.web import page
 
-devicesSelect = pydom["#devices"][0]
-video = pydom["video"][0]
+devicesSelect = page["#devices"][0]
+video = page["video"][0]
 devices = {}
 
 
@@ -20,7 +19,7 @@ async def list_media_devices(event=None):
 async def connect_to_device(e):
     """Connect to the selected device."""
     device = devices[devicesSelect.value]
-    video._js.srcObject = await device.get_stream()
+    video.srcObject = await device.get_stream()
 
 
 @when("click", "#snap")

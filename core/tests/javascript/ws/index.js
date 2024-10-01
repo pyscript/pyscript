@@ -14,7 +14,7 @@ serve({
     const url = new URL(req.url);
     let { pathname } = url;
     if (pathname === '/') pathname = '/index.html';
-    else if (/^\/dist\//.test(pathname)) pathname = `/../..${pathname}`;
+    else if (/^\/dist\//.test(pathname)) pathname = `/../../..${pathname}`;
     else if (pathname === '/favicon.ico')
       return new Response('Not Found', { status: 404 });
     const response = new Response(file(`${dir}${pathname}`));
