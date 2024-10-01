@@ -28,7 +28,7 @@ repos:
       rev: 24.8.0
       hooks:
           - id: black
-            exclude: core/src/stdlib/pyscript/__init__\.py
+            args: [-l, 88, --skip-string-normalization]
 
     - repo: https://github.com/codespell-project/codespell
       rev: v2.3.0

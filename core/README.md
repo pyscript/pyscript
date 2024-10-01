@@ -32,7 +32,7 @@ and manual tests you have to run in a browser and check yourself. PyScript also
 has a plugin system so third parties can extend its capabilities with
 JavaScript. Our built-in core plugins can be found in the `src/plugins`
 directory. We describe how to write third party plugins in our 
-[developer documentation](https://docs.pyscript.net/2024.9.2/user-guide/plugins/).
+[developer documentation](https://docs.pyscript.net/latest/user-guide/plugins/).
 
 We provide a `pyscript` namespace containing Python modules for common browser
 based APIs and features (i.e. you can `import pyscript` in Python code running
@@ -48,11 +48,28 @@ and main/worker context).
 When you create a local build all the automated tests (JavaScript and Python)
 are run.
 
-## Setup
+## Developer Guide
 
-## Build
+Full instructions for setting up a working development environment, how to
+build PyScript and how to test it can be
+[found in our official docs](https://docs.pyscript.net/latest/developers/).
 
-## Test
+Once set up, you should be able to run the most common activities via the
+`make` command:
+
+```
+$ make
+
+There is no default Makefile target right now. Try:
+
+make setup - check your environment and install the dependencies.
+make clean - clean up auto-generated assets.
+make build - build PyScript.
+make precommit-check - run the precommit checks (run eslint).
+make test - run all automated tests in playwright.
+make fmt - format the code.
+make fmt-check - check the code formatting.
+```
 
 ## Plugins
 
