@@ -4,11 +4,10 @@
 
 ## Changes
 
-<!-- List the changes done to fix a bug or introduce a new feature.Please note both user-facing changes and changes to internal API's here -->
+<!-- List the technical changes done to fix a bug or introduce a new feature. -->
 
 ## Checklist
 
-<!-- Note: Only user-facing changes require a changelog entry. Internal-only API changes do not require a changelog entry. Changes in documentation do not require a changelog entry. -->
-
--   [ ] All tests pass locally
--   [ ] I have created / updated documentation for this (if applicable)
+-   [ ] I have checked `make build` works locally.
+-   [ ] The `make precommit-check` passes without failures.
+-   [ ] I have created / updated documentation for this change (if applicable).
