@@ -2,6 +2,33 @@
 
 ## PyScrcipt is an open source platform for Python in the browser.
 
+Using PyScript is as simple as:
+
+```html
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>PyScript!</title>
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/snapshots/2024.9.2/core.css"
+        />
+        <script
+            type="module"
+            src="https://pyscript.net/snapshots/2024.9.2/core.js"
+        ></script>
+    </head>
+    <body>
+        <!-- Use MicroPython to evaluate some Python -->
+        <script type="mpy" terminal>
+            print("Hello, world!")
+        </script>
+    </body>
+</html>
+```
+
 PyScript enables the creation of rich Python applications in the browser using
 [Pyodide](https://pyodide.org/en/stable/) (a version of
 [CPython](https://python.org/)), [MicroPython](https://micropython.org/),
@@ -56,23 +83,3 @@ documentation for more information on how to setup your development environment.
 
 The [PyScript organization governance](https://github.com/pyscript/governance)
 is documented in a separate repository.
-
-## Release
-
-To cut a new release of PyScript simply
-[add a new release](https://github.com/pyscript/pyscript/releases) while
-remembering to write a comprehensive changelog. A
-[GitHub action](https://github.com/pyscript/pyscript/blob/main/.github/workflows/publish-release.yml)
-will kick in and ensure the release is described and deployed to a URL with the
-pattern: https://pyscript.net/releases/YYYY.M.v/ (year/month/version - as per
-our [CalVer](https://calver.org/) versioning scheme).
-
-Then, the following three separate repositories need updating:
-
--   [Documentation](https://github.com/pyscript/docs) - Change the `version.json`
-    file in the root of the directory and then `node version-update.js`.
--   [Homepage](https://github.com/pyscript/pyscript.net) - Ensure the version
-    referenced in `index.html` is the latest version.
--   [PSDC](https://pyscript.com) - Use discord or Anaconda Slack (if you work at
-    Anaconda) to let the PSDC team know there's a new version, so they can update
-    their project templates.
