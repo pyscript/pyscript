@@ -82,7 +82,6 @@ fmt-check: fmt-py-check
 # Format Python code.
 fmt-py:
 	black -l 88 --skip-string-normalization .
-	isort --profile black .
 
 # Check the format of Python code.
 fmt-py-check:

@@ -44,10 +44,3 @@ repos:
           - id: prettier
             exclude: core/test|core/dist|core/types|core/src/stdlib/pyscript.js|pyscript\.sw/|core/src/3rd-party
             args: [--tab-width, "4"]
-
-    - repo: https://github.com/pycqa/isort
-      rev: 5.13.2
-      hooks:
-          - id: isort
-            name: isort (python)
-            args: [--profile, black]
