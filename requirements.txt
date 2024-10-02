@@ -1,5 +1,4 @@
-black==24.4.2
-isort==5.13.2
+black==24.8.0
 pre-commit==3.7.1
 python-minifier==2.11.0
 setuptools==72.1.0

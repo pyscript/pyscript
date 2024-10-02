@@ -28,7 +28,7 @@ repos:
       rev: 24.8.0
       hooks:
           - id: black
-            exclude: core/src/stdlib/pyscript/__init__\.py
+            args: ["-l", "88", "--skip-string-normalization"]
 
     - repo: https://github.com/codespell-project/codespell
       rev: v2.3.0
@@ -44,10 +44,3 @@ repos:
           - id: prettier
             exclude: core/test|core/dist|core/types|core/src/stdlib/pyscript.js|pyscript\.sw/|core/src/3rd-party
             args: [--tab-width, "4"]
-
-    - repo: https://github.com/pycqa/isort
-      rev: 5.13.2
-      hooks:
-          - id: isort
-            name: isort (python)
-            args: [--profile, black]

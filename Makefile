@@ -9,6 +9,7 @@ PY_OK        := $(shell python3 -c "print(int($(PY3_VER) >= $(MIN_PY3_VER)))")
 all:
 	@echo "\nThere is no default Makefile target right now. Try:\n"
 	@echo "make setup - check your environment and install the dependencies."
+	@echo "make update - update dependencies."
 	@echo "make clean - clean up auto-generated assets."
 	@echo "make build - build PyScript."
 	@echo "make precommit-check - run the precommit checks (run eslint)."
@@ -57,6 +58,11 @@ clean:
 build:
 	cd core && npx playwright install chromium && npm run build
 
+# Update the dependencies.
+update:
+	cd core && npm update && cd ..
+	python -m pip install -r requirements.txt --upgrade
+
 # Run the precommit checks (run eslint).
 precommit-check:
 	pre-commit run --all-files
@@ -76,7 +82,6 @@ fmt-check: fmt-py-check
 # Format Python code.
 fmt-py:
 	black -l 88 --skip-string-normalization .
-	isort --profile black .
 
 # Check the format of Python code.
 fmt-py-check:
