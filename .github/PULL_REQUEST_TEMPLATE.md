@@ -9,5 +9,4 @@
 ## Checklist
 
 -   [ ] I have checked `make build` works locally.
--   [ ] The `make precommit-check` passes without failures.
 -   [ ] I have created / updated documentation for this change (if applicable).
