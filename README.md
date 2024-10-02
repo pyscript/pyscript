@@ -69,8 +69,8 @@ official calendar:
 
 ## Contribute
 
-For technical details of the code, please see the [README](core/README) in the
-`core` directory.
+For technical details of the code, please see the [README](core/README.md) in
+the `core` directory.
 
 Read the [contributing guide](https://docs.pyscript.net/latest/contributing/)
 to learn about our development process, reporting bugs and improvements,
