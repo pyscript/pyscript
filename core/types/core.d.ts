@@ -1,3 +1,4 @@
+export function donkey(options: any): Promise<any>;
 export function offline_interpreter(config: any): string;
 import { stdlib } from "./stdlib.js";
 import { optional } from "./stdlib.js";

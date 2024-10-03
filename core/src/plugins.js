@@ -5,6 +5,11 @@ export default {
             /* webpackIgnore: true */
             "./plugins/deprecations-manager.js"
         ),
+    donkey: () =>
+        import(
+            /* webpackIgnore: true */
+            "./plugins/donkey.js"
+        ),
     error: () =>
         import(
             /* webpackIgnore: true */
