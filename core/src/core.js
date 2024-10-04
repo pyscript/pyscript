@@ -37,9 +37,10 @@ import {
 import { stdlib, optional } from "./stdlib.js";
 export { stdlib, optional, inputFailure };
 
-export const donkey = options => import(
-    /* webpackIgnore: true */ "./plugins/donkey.js"
-).then(module => module.default(options));
+export const donkey = (options) =>
+    import(/* webpackIgnore: true */ "./plugins/donkey.js").then((module) =>
+        module.default(options),
+    );
 
 // generic helper to disambiguate between custom element and script
 const isScript = ({ tagName }) => tagName === "SCRIPT";
