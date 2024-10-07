@@ -121,3 +121,10 @@ test('Py and Mpy config["type"]', async ({ page }) => {
   await page.goto('http://localhost:8080/tests/javascript/config_type.html');
   await page.waitForSelector('html.mpy.py');
 });
+
+test('Pyodide lockFileURL vs CDN', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/javascript/pyodide-cache/');
+  await page.waitForSelector('html.done');
+  const body = await page.evaluate(() => document.body.textContent);
+  await expect(body).toBe('OK');
+});

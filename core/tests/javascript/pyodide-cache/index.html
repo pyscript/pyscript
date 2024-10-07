@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../../dist/core.css">
+  <script type="module">
+    import '../../../dist/core.js';
+
+    addEventListener('py:progress', ({ detail }) => {
+      console.log(detail);
+    });
+
+    test([]);
+
+    function test($) {
+      const script = document.createElement('script');
+      script.type = 'py';
+      script.src = 'index.py';
+      script.toggleAttribute('worker', true);
+      script.setAttribute('config', `${$.length ? 'cached' : 'never'}.toml`);
+      script.addEventListener(
+        'py:done',
+        () => {
+          if ($.push(performance.now() - time) === 3) {
+            const [_, justCDN, lockFile] = $;
+            console.log({ justCDN, lockFile });
+            document.body.textContent = justCDN > lockFile ? 'OK' : 'NO';
+            document.documentElement.classList.add('done');
+          }
+          else setTimeout(test, 0, $);
+          script.remove();
+        },
+        { once: true },
+      );
+      document.body.append(script);
+      const time = performance.now();
+    }
+  </script>
+</head>
+</html>

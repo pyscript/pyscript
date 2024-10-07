@@ -68,7 +68,7 @@
         "type-checked-collections": "^0.1.7"
     },
     "devDependencies": {
-        "@codemirror/commands": "^6.6.2",
+        "@codemirror/commands": "^6.7.0",
         "@codemirror/lang-python": "^6.1.6",
         "@codemirror/language": "^6.10.3",
         "@codemirror/state": "^6.4.1",
@@ -84,7 +84,7 @@
         "chokidar": "^4.0.1",
         "codedent": "^0.1.2",
         "codemirror": "^6.0.1",
-        "eslint": "^9.11.1",
+        "eslint": "^9.12.0",
         "flatted": "^3.3.1",
         "rollup": "^4.24.0",
         "rollup-plugin-postcss": "^4.0.2",
