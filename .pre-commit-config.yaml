@@ -4,10 +4,10 @@ ci:
     #skip: [eslint]
     autoupdate_schedule: monthly
 
-default_stages: [commit]
+default_stages: [Nonepre-commitNone]
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v4.6.0
+      rev: v5.0.0
       hooks:
           - id: check-builtin-literals
           - id: check-case-conflict
@@ -25,7 +25,7 @@ repos:
           - id: trailing-whitespace
 
     - repo: https://github.com/psf/black
-      rev: 24.8.0
+      rev: 24.10.0
       hooks:
           - id: black
             args: ["-l", "88", "--skip-string-normalization"]
