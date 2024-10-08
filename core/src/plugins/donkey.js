@@ -16,8 +16,8 @@ export default (options = {}) => {
                 if config["type"] == "py":
                     import sys
                     def __error__(_):
-                    info = sys.exc_info()
-                    return __message__(info[0], info[1])
+                        info = sys.exc_info()
+                        return __message__(info[0], info[1])
                 else:
                     __error__ = lambda e: __message__(e.__class__, e.value)
                 def execute(code):
