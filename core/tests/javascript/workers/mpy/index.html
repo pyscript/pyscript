@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>mpy using py named worker</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <script type="module" src="../../../../dist/core.js"></script>
+    </head>
+    <body>
+        <script type="mpy" config="../config.toml">
+          from test import test
+          await test("pyodide_version")
+        </script>
+        <script type="py" src="../worker.py" name="pyodide_version" worker></script>
+    </body>
+</html>
