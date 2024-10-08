@@ -4,7 +4,7 @@ ci:
     #skip: [eslint]
     autoupdate_schedule: monthly
 
-default_stages: [Nonepre-commitNone]
+default_stages: [pre-commit]
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v5.0.0
