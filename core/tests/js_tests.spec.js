@@ -95,9 +95,19 @@ test('MicroPython + JS Storage', async ({ page }) => {
   await page.waitForSelector('html.ok');
 });
 
-test('MicroPython + workers', async ({ page }) => {
-  await page.goto('http://localhost:8080/tests/javascript/workers/index.html');
-  await page.waitForSelector('html.mpy.py');
+test('MicroPython using named Pyodide Worker', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/javascript/workers/mpy/index.html');
+  await page.waitForSelector('html.pyodide_version');
+});
+
+test('MicroPython creating a named Pyodide Worker', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/javascript/workers/create_named/index.html');
+  await page.waitForSelector('html.pyodide_version');
+});
+
+test('Pyodide using named MicroPython Worker', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/javascript/workers/py/index.html');
+  await page.waitForSelector('html.micropython_version');
 });
 
 test('MicroPython Editor setup error', async ({ page }) => {
