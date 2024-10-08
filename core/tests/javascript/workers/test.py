@@ -1,5 +1,6 @@
 from pyscript import document, workers
 
+
 async def test(name):
     # retrieve sync utilities from the named worker
     named = await workers[name]
