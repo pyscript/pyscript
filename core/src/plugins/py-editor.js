@@ -77,6 +77,19 @@ async function execute({ currentTarget }) {
 
         const xworker = XWorker.call(new Hook(null, hooks), srcLink, details);
 
+        // expose xworker like in terminal or other workers to allow
+        // creation and destruction of editors on the fly
+        if (hasRunButton) {
+            for (const type of TYPES.keys()) {
+                const editor = currentTarget.closest(`.${type}-editor-box`);
+                const script = editor?.parentNode?.previousElementSibling;
+                if (script) {
+                    defineProperties(script, { xworker: { value: xworker } });
+                    break;
+                }
+            }
+        }
+
         const { sync } = xworker;
         const { promise, resolve } = Promise.withResolvers();
         envs.set(env, promise);
