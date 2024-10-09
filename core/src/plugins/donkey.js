@@ -2,7 +2,7 @@ import { assign, dedent } from "polyscript/exports";
 
 const invoke = (name, args) => `${name}(code, ${args.join(", ")})`;
 
-export default (options = {}) => {
+const donkey = (options = {}) => {
     const type = options.type || "py";
     const args = options.persistent
         ? ["globals()", "__locals__"]
@@ -44,21 +44,53 @@ export default (options = {}) => {
         script.addEventListener(`${type}:done`, (event) => {
             event.stopPropagation();
             URL.revokeObjectURL(src);
+            let executed = true;
+            let evaluated = true;
             const { xworker, process, terminal } = script;
             const { execute, evaluate } = xworker.sync;
-            script.remove();
-            resolve({
+            const kill = () => {
+                xworker.terminate();
+                terminal.dispose();
+            };
+            const farmer = {
                 process,
-                execute: (code) => execute(dedent(code)),
-                evaluate: (code) => evaluate(dedent(code)),
+                execute: async (code) => {
+                  if (!executed) {
+                    kill();
+                    assign(farmer, await donkey(options));
+                    return farmer.execute(code);
+                  }
+                  executed = false;
+                  try {
+                    const result = await execute(dedent(code));
+                    executed = true;
+                    return result;
+                  }
+                  catch (e) { console.error(e); }
+                },
+                evaluate: async (code) => {
+                  if (!evaluated) {
+                    kill();
+                    assign(farmer, await donkey(options));
+                    return farmer.evaluate(code);
+                  }
+                  evaluated = false;
+                  try {
+                    const result = await evaluate(dedent(code));
+                    evaluated = true;
+                    return result;
+                  }
+                  catch (e) { console.error(e); }
+                },
                 clear: () => terminal.clear(),
                 reset: () => terminal.reset(),
-                kill: () => {
-                    xworker.terminate();
-                    terminal.dispose();
-                },
-            });
+                kill,
+            };
+            resolve(farmer);
+            script.remove();
         });
         document.body.append(script);
     });
 };
+
+export default donkey;

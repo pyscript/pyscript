@@ -1,2 +1,2 @@
-declare function _default(options?: {}): Promise<any>;
-export default _default;
+export default donkey;
+declare function donkey(options?: {}): Promise<any>;
