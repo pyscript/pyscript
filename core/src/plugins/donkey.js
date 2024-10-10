@@ -55,32 +55,34 @@ const donkey = (options = {}) => {
             const farmer = {
                 process,
                 execute: async (code) => {
-                  if (!executed) {
-                    kill();
-                    assign(farmer, await donkey(options));
-                    return farmer.execute(code);
-                  }
-                  executed = false;
-                  try {
-                    const result = await execute(dedent(code));
-                    executed = true;
-                    return result;
-                  }
-                  catch (e) { console.error(e); }
+                    if (!executed) {
+                        kill();
+                        assign(farmer, await donkey(options));
+                        return farmer.execute(code);
+                    }
+                    executed = false;
+                    try {
+                        const result = await execute(dedent(code));
+                        executed = true;
+                        return result;
+                    } catch (e) {
+                        console.error(e);
+                    }
                 },
                 evaluate: async (code) => {
-                  if (!evaluated) {
-                    kill();
-                    assign(farmer, await donkey(options));
-                    return farmer.evaluate(code);
-                  }
-                  evaluated = false;
-                  try {
-                    const result = await evaluate(dedent(code));
-                    evaluated = true;
-                    return result;
-                  }
-                  catch (e) { console.error(e); }
+                    if (!evaluated) {
+                        kill();
+                        assign(farmer, await donkey(options));
+                        return farmer.evaluate(code);
+                    }
+                    evaluated = false;
+                    try {
+                        const result = await evaluate(dedent(code));
+                        evaluated = true;
+                        return result;
+                    } catch (e) {
+                        console.error(e);
+                    }
                 },
                 clear: () => terminal.clear(),
                 reset: () => terminal.reset(),
