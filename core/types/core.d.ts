@@ -1,4 +1,11 @@
-export function donkey(options: any): Promise<any>;
+export function donkey(options: any): Promise<{
+    process: (code: any) => Promise<any>;
+    execute: (code: any) => Promise<any>;
+    evaluate: (code: any) => Promise<any>;
+    clear: () => any;
+    reset: () => any;
+    kill: () => void;
+}>;
 export function offline_interpreter(config: any): string;
 import { stdlib } from "./stdlib.js";
 import { optional } from "./stdlib.js";
