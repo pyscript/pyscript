@@ -1,4 +1,11 @@
-export function donkey(options: any): Promise<any>;
+export function donkey(options: any): Promise<{
+    process: (code: any) => Promise<any>;
+    execute: (code: any) => Promise<any>;
+    evaluate: (code: any) => Promise<any>;
+    clear: () => any;
+    reset: () => any;
+    kill: () => void;
+}>;
 export function offline_interpreter(config: any): string;
 import { stdlib } from "./stdlib.js";
 import { optional } from "./stdlib.js";
@@ -55,5 +62,5 @@ declare const exportedHooks: {
     };
 };
 declare const exportedConfig: {};
-declare const exportedWhenDefined: (type: string) => Promise<object>;
+declare const exportedWhenDefined: any;
 export { stdlib, optional, inputFailure, TYPES, relative_url, exportedPyWorker as PyWorker, exportedMPWorker as MPWorker, exportedHooks as hooks, exportedConfig as config, exportedWhenDefined as whenDefined };
