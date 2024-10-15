@@ -231,7 +231,7 @@ def test_when_decorates_a_whenable():
             self.handler = None
             self.args = None
             self.kwargs = None
-        
+
         def trigger(self):
             """
             Triggers the whenable object, resulting in the handler being
@@ -242,7 +242,7 @@ def test_when_decorates_a_whenable():
                     "args": self.args,
                     "kwargs": self.kwargs,
                 }
-                self.handler(result) # call the handler
+                self.handler(result)  # call the handler
 
         def __when__(self, handler, *args, **kwargs):
             """
@@ -269,7 +269,7 @@ def test_when_decorates_a_whenable():
         counter += 1
         assert result["args"] == ("foo", "bar")
         assert result["kwargs"] == {"baz": "qux"}
-    
+
     # The function should not be called until the whenable object is triggered.
     assert counter == 0
     # Trigger the whenable object.
@@ -294,7 +294,7 @@ def test_when_called_with_a_whenable():
             self.handler = None
             self.args = None
             self.kwargs = None
-        
+
         def trigger(self):
             """
             Triggers the whenable object, resulting in the handler being
@@ -305,7 +305,7 @@ def test_when_called_with_a_whenable():
                     "args": self.args,
                     "kwargs": self.kwargs,
                 }
-                self.handler(result) # call the handler
+                self.handler(result)  # call the handler
 
         def __when__(self, handler, *args, **kwargs):
             """
@@ -330,7 +330,7 @@ def test_when_called_with_a_whenable():
         counter += 1
         assert result["args"] == ("foo", "bar")
         assert result["kwargs"] == {"baz": "qux"}
-    
+
     # When as a function.
     web.when(whenable, handler, "foo", "bar", baz="qux")
 
