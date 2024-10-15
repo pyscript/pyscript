@@ -98,7 +98,7 @@ export default async (options = {}) => {
             working = false;
         }
     };
-    const asyncMethod = method => async () => {
+    const asyncMethod = (method) => async () => {
         if (working) await reload();
         else farmer?.terminal[method]();
     };
