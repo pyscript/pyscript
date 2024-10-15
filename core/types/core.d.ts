@@ -2,8 +2,8 @@ export function donkey(options: any): Promise<{
     process: (code: any) => Promise<any>;
     execute: (code: any) => Promise<any>;
     evaluate: (code: any) => Promise<any>;
-    clear: () => any;
-    reset: () => any;
+    clear: () => Promise<void>;
+    reset: () => Promise<void>;
     kill: () => void;
 }>;
 export function offline_interpreter(config: any): string;

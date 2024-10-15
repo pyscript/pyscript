@@ -1,6 +1,6 @@
 # PyScript
 
-## PyScrcipt is an open source platform for Python in the browser.
+## PyScript is an open source platform for Python in the browser.
 
 Using PyScript is as simple as:
 

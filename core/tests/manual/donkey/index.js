@@ -12,13 +12,23 @@ const {
   kill,
 } = await donkey({ terminal: '#container' });
 
-clearButton.onclick = clear;
-killButton.onclick = kill;
+clearButton.onclick = async () => {
+  killButton.disabled = true;
+  clearButton.disabled = true;
+  await clear();
+  runButton.disabled = false;
+};
+killButton.onclick = () => {
+  killButton.disabled = true;
+  clearButton.disabled = true;
+  runButton.disabled = true;
+  kill();
+};
 
 runButton.disabled = false;
 runButton.onclick = async () => {
   killButton.disabled = false;
-  clearButton.disabled = true;
+  clearButton.disabled = false;
   runButton.disabled = true;
   // multiline code
   await execute(`
@@ -29,6 +39,5 @@ runButton.onclick = async () => {
   const name = await evaluate('input("what is your name? ")');
   alert(`Hello ${name}`);
   killButton.disabled = true;
-  clearButton.disabled = false;
   runButton.disabled = false;
 };
