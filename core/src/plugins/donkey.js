@@ -73,13 +73,22 @@ const utils = async (options) => {
 export default async (options = {}) => {
     let farmer = await utils(options);
     let working = false;
+    const kill = () => {
+        if (farmer) {
+            farmer.xworker.terminate();
+            farmer.terminal.dispose();
+            farmer = null;
+        }
+        working = false;
+    };
+    const reload = async () => {
+        kill();
+        farmer = await utils(options);
+    };
     const asyncTask = (method) => async (code) => {
         // race condition ... a new task has been
         // assigned while the previous one didn't finish
-        if (working) {
-            kill();
-            farmer = await utils(options);
-        }
+        if (working) await reload();
         working = true;
         try {
             return await farmer[method](dedent(code));
@@ -89,20 +98,16 @@ export default async (options = {}) => {
             working = false;
         }
     };
-    const kill = () => {
-        if (farmer) {
-            farmer.xworker.terminate();
-            farmer.terminal.dispose();
-            farmer = null;
-            working = false;
-        }
+    const asyncMethod = (method) => async () => {
+        if (working) await reload();
+        else farmer?.terminal[method]();
     };
     return {
         process: asyncTask("process"),
         execute: asyncTask("execute"),
         evaluate: asyncTask("evaluate"),
-        clear: () => farmer?.terminal.clear(),
-        reset: () => farmer?.terminal.reset(),
+        clear: asyncMethod("clear"),
+        reset: asyncMethod("reset"),
         kill,
     };
 };
