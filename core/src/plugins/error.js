@@ -4,7 +4,7 @@ import { hooks } from "../core.js";
 
 let dontBotherDOM = false;
 export function notOnDOM() {
-  dontBotherDOM = true;
+    dontBotherDOM = true;
 }
 
 hooks.main.onReady.add(function override(pyScript) {
@@ -21,7 +21,7 @@ hooks.main.onReady.add(function override(pyScript) {
     };
 
     // override it with our own logic
-    pyScript.io.stderr = pyScript.type === 'py' ? cb : buffered(cb);
+    pyScript.io.stderr = pyScript.type === "py" ? cb : buffered(cb);
 
     // be sure uncaught Python errors are also visible
     addEventListener("error", ({ message }) => {
