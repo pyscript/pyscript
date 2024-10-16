@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript Error Bug?</title>
+  <link rel="stylesheet" href="../../../dist/core.css">
+  <script type="module" src="../../../dist/core.js"></script>
+</head>
+<body>
+  <py-config>
+      plugins = ["!error"]
+  </py-config>
+  <script type="py">
+    import sys
+    print("This is normal content")
+    print("This is error content", file=sys.stderr)
+  </script>
+  <!-- Attempt 2; inline config
+  <script type="py" config='plugins=["!error"]'>
+    import sys
+    print("This is normal content")
+    print("This is error content", file=sys.stderr)
+  </script> -->
+  <!-- Attempt 3; external pyscript.toml
+  <script type="py" config="pyscript.toml">
+    import sys
+    print("This is normal content")
+    print("This is error content", file=sys.stderr)
+  </script> -->
+  <!-- Attempt 4; micropython
+  <script type="mpy">
+    import sys
+    print("This is normal content")
+    print("This is error content", file=sys.stderr)
+  </script> -->
+  <div id="result"></div>
+</body>
+</html>

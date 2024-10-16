@@ -1,5 +1,11 @@
 // PyScript Error Plugin
+import { buffered } from "polyscript/exports";
 import { hooks } from "../core.js";
+
+let dontBotherDOM = false;
+export function notOnDOM() {
+  dontBotherDOM = true;
+}
 
 hooks.main.onReady.add(function override(pyScript) {
     // be sure this override happens only once
@@ -8,12 +14,14 @@ hooks.main.onReady.add(function override(pyScript) {
     // trap generic `stderr` to propagate to it regardless
     const { stderr } = pyScript.io;
 
-    // override it with our own logic
-    pyScript.io.stderr = (error, ...rest) => {
+    const cb = (error, ...rest) => {
         notify(error.message || error);
         // let other plugins or stderr hook, if any, do the rest
         return stderr(error, ...rest);
     };
+
+    // override it with our own logic
+    pyScript.io.stderr = pyScript.type === 'py' ? cb : buffered(cb);
 
     // be sure uncaught Python errors are also visible
     addEventListener("error", ({ message }) => {
@@ -30,6 +38,7 @@ hooks.main.onReady.add(function override(pyScript) {
  * @param {string} message
  */
 export function notify(message) {
+    if (dontBotherDOM) return;
     const div = document.createElement("div");
     div.className = "py-error";
     div.textContent = message;

@@ -146,6 +146,8 @@ for (const [TYPE] of TYPES) {
             }
         } else if (!parsed?.plugins?.includes(`!${key}`)) {
             toBeAwaited.push(value().then(({ default: p }) => p));
+        } else if (key === "error") {
+            toBeAwaited.push(value().then(({ notOnDOM }) => notOnDOM()));
         }
     }
 
