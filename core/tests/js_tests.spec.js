@@ -138,3 +138,17 @@ test('Pyodide lockFileURL vs CDN', async ({ page }) => {
   const body = await page.evaluate(() => document.body.textContent);
   await expect(body).toBe('OK');
 });
+
+test('MicroPython buffered error', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/javascript/mpy-error.html');
+  await page.waitForSelector('html.ok');
+  const body = await page.evaluate(() => document.body.textContent.trim());
+  await expect(body).toBe('This is an error');
+});
+
+test('MicroPython buffered NO error', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/javascript/mpy-no-error.html');
+  await page.waitForSelector('html.ok');
+  const body = await page.evaluate(() => document.body.textContent.trim());
+  await expect(body).toBe('');
+});
