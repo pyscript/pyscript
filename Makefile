@@ -70,6 +70,10 @@ precommit-check:
 test:
 	cd core && npm run test:integration
 
+# Serve the repository with the correct headers.
+serve:
+	npx mini-coi .
+
 # Format the code.
 fmt: fmt-py
 	@echo "Format completed"

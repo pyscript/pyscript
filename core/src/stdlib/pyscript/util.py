@@ -1,7 +1,13 @@
 import js
+import sys
+import inspect
 
 
 def as_bytearray(buffer):
+    """
+    Given a JavaScript ArrayBuffer, convert it to a Python bytearray in a
+    MicroPython friendly manner.
+    """
     ui8a = js.Uint8Array.new(buffer)
     size = ui8a.length
     ba = bytearray(size)
@@ -31,3 +37,20 @@ class NotSupported:
 
     def __call__(self, *args):
         raise TypeError(self.error)
+
+
+def is_awaitable(obj):
+    """
+    Returns a boolean indication if the passed in obj is an awaitable
+    function. (MicroPython treats awaitables as generator functions, and if
+    the object is a closure containing an async function we need to work
+    carefully.)
+    """
+    if "micropython" in sys.version.lower():
+        # MicroPython doesn't appear to have a way to determine if a closure is
+        # an async function except via the repr. This is a bit hacky.
+        if "<closure <generator>" in repr(obj):
+            return True
+        return inspect.isgeneratorfunction(obj)
+
+    return inspect.iscoroutinefunction(obj)

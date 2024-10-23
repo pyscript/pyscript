@@ -30,6 +30,7 @@
 #     as it works transparently in both the main thread and worker cases.
 
 from polyscript import lazy_py_modules as py_import
+from pyscript.events import when, Event
 from pyscript.display import HTML, display
 from pyscript.fetch import fetch
 from pyscript.magic_js import (
@@ -48,14 +49,3 @@ from pyscript.websocket import WebSocket
 
 if not RUNNING_IN_WORKER:
     from pyscript.workers import create_named_worker, workers
-
-try:
-    from pyscript.event_handling import when
-except:
-    # TODO: should we remove this? Or at the very least, we should capture
-    # the traceback otherwise it's very hard to debug
-    from pyscript.util import NotSupported
-
-    when = NotSupported(
-        "pyscript.when", "pyscript.when currently not available with this interpreter"
-    )
