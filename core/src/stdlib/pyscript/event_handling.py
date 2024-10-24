@@ -20,8 +20,8 @@ def when(target, *args, **kwargs):
 
     disconnect(whenable, handler)
 
-    
-    """   
+
+    """
     # If "when" is called as a function, try to grab the handler from the
     # arguments. If there's no handler, this must be a decorator based call.
     handler = None
@@ -35,7 +35,7 @@ def when(target, *args, **kwargs):
     whenable = hasattr(target, "__when__")
     # If not when-able, the DOM selector for the target event.
     if not whenable:
-        # The target is an event linked to a DOM selector. Extract the 
+        # The target is an event linked to a DOM selector. Extract the
         # selector from the arguments or keyword arguments.
         if args:
             selector = args[0]
@@ -68,11 +68,15 @@ def when(target, *args, **kwargs):
             if not sig.parameters:
                 # Function is async: must be awaited
                 if inspect.iscoroutinefunction(func):
+
                     async def wrapper(*args, **kwargs):
                         await func()
+
                 else:
+
                     def wrapper(*args, **kwargs):
                         func()
+
             else:
                 wrapper = func
         except AttributeError:
