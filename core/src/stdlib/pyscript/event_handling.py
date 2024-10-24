@@ -14,13 +14,16 @@ from pyscript.magic_js import document
 
 def when(target, *args, **kwargs):
     """
+    A decorator and function for attaching event handlers to DOM elements or
+    whenable objects.
 
+    When used as a decorator, the target is the object that will trigger the
+    event. The handler function is the decorated function. The handler function
+    will be called when the target is triggered.
 
-    unwhen(whenable, handler)
-
-    disconnect(whenable, handler)
-
-
+    When used as a function, the target is the object that will trigger the
+    event. The handler function is the next argument. The remaining arguments
+    and keyword arguments are passed to the target when it is triggered.
     """
     # If "when" is called as a function, try to grab the handler from the
     # arguments. If there's no handler, this must be a decorator based call.
