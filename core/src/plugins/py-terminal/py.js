@@ -1,6 +1,6 @@
 // PyScript py-terminal plugin
-import { hooks } from "../../core.js";
 import { defineProperties } from "polyscript/exports";
+import { hooks } from "../../core.js";
 
 const bootstrapped = new WeakSet();
 

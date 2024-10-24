@@ -1,6 +1,6 @@
 // PyScript Derepcations Plugin
-import { hooks } from "../core.js";
 import { notify } from "./error.js";
+import { hooks } from "../core.js";
 
 // react lazily on PyScript bootstrap
 hooks.main.onReady.add(checkDeprecations);

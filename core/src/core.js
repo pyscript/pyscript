@@ -179,7 +179,7 @@ for (const [TYPE, interpreter] of TYPES) {
         // ensure plugins are bootstrapped already before custom type definition
         // NOTE: we cannot top-level await in here as plugins import other utilities
         //       from core.js itself so that custom definition should not be blocking.
-        plugins.then(() => {
+        plugins().then(() => {
             // possible early errors sent by polyscript
             const errors = new Map();
 
