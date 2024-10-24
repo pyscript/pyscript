@@ -12,14 +12,42 @@ except ImportError:
 from pyscript.magic_js import document
 
 
-def when(event_type=None, selector=None):
+def when(target, *args, **kwargs):
     """
-    Decorates a function and passes py-* events to the decorated function
-    The events might or not be an argument of the decorated function
+    A decorator and function for attaching event handlers to DOM elements or
+    whenable objects.
+
+    When used as a decorator, the target is the object that will trigger the
+    event. The handler function is the decorated function. The handler function
+    will be called when the target is triggered.
+
+    When used as a function, the target is the object that will trigger the
+    event. The handler function is the next argument. The remaining arguments
+    and keyword arguments are passed to the target when it is triggered.
     """
+    # If "when" is called as a function, try to grab the handler from the
+    # arguments. If there's no handler, this must be a decorator based call.
+    handler = None
+    if args and callable(args[0]):
+        handler = args[0]
+        args = args[1:]
+    elif callable(kwargs.get("handler")):
+        handler = kwargs.pop("handler")
 
-    def decorator(func):
-
+    # Does the target implement the when protocol?
+    whenable = hasattr(target, "__when__")
+    # If not when-able, the DOM selector for the target event.
+    if not whenable:
+        # The target is an event linked to a DOM selector. Extract the
+        # selector from the arguments or keyword arguments.
+        if args:
+            selector = args[0]
+        elif kwargs:
+            selector = kwargs.get("selector")
+        if not selector:
+            # There must be a selector if the target is not when-able.
+            raise ValueError("No selector provided.")
+        # Grab the DOM elements to which the target event will be attached.
         from pyscript.web import Element, ElementCollection
 
         if isinstance(selector, str):
@@ -36,11 +64,11 @@ def when(event_type=None, selector=None):
             else:
                 elements = [selector]
 
+    def decorator(func):
         try:
             sig = inspect.signature(func)
             # Function doesn't receive events
             if not sig.parameters:
-
                 # Function is async: must be awaited
                 if inspect.iscoroutinefunction(func):
 
@@ -54,7 +82,6 @@ def when(event_type=None, selector=None):
 
             else:
                 wrapper = func
-
         except AttributeError:
             # TODO: this is very ugly hack to get micropython working because inspect.signature
             #       doesn't exist, but we need to actually properly replace inspect.signature.
@@ -68,9 +95,15 @@ def when(event_type=None, selector=None):
 
                     raise
 
-        for el in elements:
-            add_event_listener(el, event_type, wrapper)
+        if whenable:
+            target.__when__(wrapper, *args, **kwargs)
+        else:
+            for el in elements:
+                add_event_listener(el, target, wrapper)
 
         return func
 
-    return decorator
+    if handler:
+        decorator(handler)
+    else:
+        return decorator
