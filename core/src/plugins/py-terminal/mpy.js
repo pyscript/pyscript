@@ -1,6 +1,6 @@
 // PyScript pyodide terminal plugin
-import { hooks, inputFailure } from "../../core.js";
 import { defineProperties } from "polyscript/exports";
+import { hooks, inputFailure } from "../../core.js";
 
 const bootstrapped = new WeakSet();
 

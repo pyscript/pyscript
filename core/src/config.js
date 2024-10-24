@@ -56,7 +56,7 @@ const syntaxError = (type, url, { message }) => {
 const configs = new Map();
 
 for (const [TYPE] of TYPES) {
-    /** @type {Promise<[...any]>} A Promise wrapping any plugins which should be loaded. */
+    /** @type {() => Promise<[...any]>} A Promise wrapping any plugins which should be loaded. */
     let plugins;
 
     /** @type {any} The PyScript configuration parsed from the JSON or TOML object*. May be any of the return types of JSON.parse() or toml-j0.4's parse() ( {number | string | boolean | null | object | Array} ) */
@@ -135,24 +135,24 @@ for (const [TYPE] of TYPES) {
 
     // parse all plugins and optionally ignore only
     // those flagged as "undesired" via `!` prefix
-    const toBeAwaited = [];
-    for (const [key, value] of Object.entries(allPlugins)) {
-        if (error) {
-            if (key === "error") {
-                // show on page the config is broken, meaning that
-                // it was not possible to disable error plugin neither
-                // as that part wasn't correctly parsed anyway
-                value().then(({ notify }) => notify(error.message));
+    plugins = async () => {
+        const toBeAwaited = [];
+        for (const [key, value] of Object.entries(allPlugins)) {
+            if (error) {
+                if (key === "error") {
+                    // show on page the config is broken, meaning that
+                    // it was not possible to disable error plugin neither
+                    // as that part wasn't correctly parsed anyway
+                    value().then(({ notify }) => notify(error.message));
+                }
+            } else if (!parsed?.plugins?.includes(`!${key}`)) {
+                toBeAwaited.push(value().then(({ default: p }) => p));
+            } else if (key === "error") {
+                toBeAwaited.push(value().then(({ notOnDOM }) => notOnDOM()));
             }
-        } else if (!parsed?.plugins?.includes(`!${key}`)) {
-            toBeAwaited.push(value().then(({ default: p }) => p));
-        } else if (key === "error") {
-            toBeAwaited.push(value().then(({ notOnDOM }) => notOnDOM()));
         }
-    }
-
-    // assign plugins as Promise.all only if needed
-    plugins = Promise.all(toBeAwaited);
+        return await Promise.all(toBeAwaited);
+    };
 
     configs.set(TYPE, { config: parsed, configURL, plugins, error });
 }
