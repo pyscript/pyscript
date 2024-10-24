@@ -55,7 +55,7 @@ clean:
 	rm -rf .pytest_cache .coverage coverage.xml
 
 # Build PyScript.
-build:
+build: precommit-check
 	cd core && npx playwright install chromium && npm run build
 
 # Update the dependencies.
