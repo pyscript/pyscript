@@ -39,6 +39,15 @@
             #header p {
                 font-size: 1.4em;
             }
+            #header > svg {
+                max-width : 480px;
+            }
+            @media only screen and (max-width : 400px) {
+                #header > svg {
+                    width: 256px;
+                    height: 87px;
+                }
+            }
         </style>
         <script>
             function copyToClipboard() {
@@ -55,8 +64,6 @@
             <div id="header">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="256"
-                    height="87"
                     viewBox="0 0 512 173"
                 >
                     <path
