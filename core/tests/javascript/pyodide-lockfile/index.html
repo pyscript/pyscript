@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../../dist/core.css">
+  <script type="module" src="../../../dist/core.js"></script>
+</head>
+<body>
+  <script type="py" config='{"packages":["jsonpointer==3.0.0"]}'>
+    import jsonpointer
+    from pyscript import document
+    document.documentElement.classList.add("done")
+    document.body.append("OK")
+  </script>
+</body>
+</html>
