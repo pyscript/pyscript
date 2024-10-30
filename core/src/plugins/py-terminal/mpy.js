@@ -34,6 +34,8 @@ const workerReady = ({ interpreter, io, run, type }, { sync }) => {
         pyterminal_write(String(error.message || error));
     };
 
+    sync.pyterminal_stream_write = () => {};
+
     // tiny shim of the code module with only interact
     // to bootstrap a REPL like environment
     interpreter.registerJsModule("code", {
