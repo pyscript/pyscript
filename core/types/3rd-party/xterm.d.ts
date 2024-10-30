@@ -1,4 +1,4 @@
-declare var i: any;
-declare var s: any;
-declare var t: {};
-export { i as Terminal, s as __esModule, t as default };
+declare var D: any;
+declare var R: any;
+declare var L: {};
+export { D as Terminal, R as __esModule, L as default };
