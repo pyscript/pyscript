@@ -267,11 +267,15 @@ class TestCollection:
             assert el.style["background-color"] != "red"
             assert elements[i].style["background-color"] != "red"
 
+    @upytest.skip(
+        "Flakey in Pyodide on Worker",
+        skip_when=RUNNING_IN_WORKER and not upytest.is_micropython,
+    )
     async def test_when_decorator(self):
         called = False
         call_flag = asyncio.Event()
 
-        buttons_collection = web.page.find("button")
+        buttons_collection = web.page["button"]
 
         @when("click", buttons_collection)
         def on_click(event):
