@@ -19,6 +19,7 @@ class Event:
         """
         for listener in self._listeners:
             if is_awaitable(listener):
+                # Use create task to avoid making this an async function.
                 asyncio.create_task(listener(result))
             else:
                 listener(result)
