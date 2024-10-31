@@ -1,5 +1,5 @@
 """
-Tests for the pyscript.when decorator.
+Tests for the when function and Event class.
 """
 
 import asyncio
@@ -83,6 +83,28 @@ def test_event_trigger():
     event.add_listener(listener)
     assert counter == 0  # The listener has not been triggered yet.
     event.trigger("ok")
+    assert counter == 1  # The listener has been triggered with the expected result.
+
+
+async def test_event_trigger_with_awaitable():
+    """
+    Triggering an event with an awaitable listener should call the listener
+    with the provided arguments.
+    """
+    call_flag = asyncio.Event()
+    event = Event()
+    counter = 0
+
+    async def listener(x):
+        nonlocal counter
+        counter += 1
+        assert x == "ok"
+        call_flag.set()
+
+    event.add_listener(listener)
+    assert counter == 0  # The listener has not been triggered yet.
+    event.trigger("ok")
+    await call_flag.wait()
     assert counter == 1  # The listener has been triggered with the expected result.
 
 
