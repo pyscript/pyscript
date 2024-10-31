@@ -204,6 +204,17 @@ class TestElement:
         await call_flag.wait()
         assert called
 
+    def test_on_event_must_be_actual_event(self):
+        """
+        Any onFOO event must relate to an actual FOO event on the element.
+        """
+        b = web.button("Click me")
+        # Non-existent event causes a ValueError
+        with upytest.raises(ValueError):
+            b.onchicken
+        # Buttons have an underlying "click" event so this will work.
+        assert b.onclick
+
     def test_inner_html_attribute(self):
         # GIVEN an existing element on the page with a known empty text content
         div = web.page.find("#element_attribute_tests")[0]

@@ -153,6 +153,9 @@ class Element:
         """
         if not name.startswith("on"):
             raise ValueError("Event names must start with 'on'.")
+        event_name = name[2:]  # Remove the "on" prefix.
+        if not hasattr(self._dom_element, event_name):
+            raise ValueError(f"Element has no '{event_name}' event.")
         if name in self._on_events:
             return self._on_events[name]
         # Such an on-event exists in the DOM element, but we haven't yet
@@ -161,7 +164,6 @@ class Element:
         # will be triggered too.
         ev = Event()
         self._on_events[name] = ev
-        event_name = name[2:]  # Remove the "on" prefix.
         self._dom_element.addEventListener(event_name, create_proxy(ev.trigger))
         return ev
 
