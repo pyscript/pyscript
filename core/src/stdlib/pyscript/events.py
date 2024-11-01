@@ -60,7 +60,8 @@ def when(target, *args, **kwargs):
 
     If a (third) handler argument is provided, it will be called when the event
     is triggered; thus allowing this to be used as both a function and a
-    decorator."""
+    decorator.
+    """
     # If "when" is called as a function, try to grab the handler from the
     # arguments. If there's no handler, this must be a decorator based call.
     handler = None

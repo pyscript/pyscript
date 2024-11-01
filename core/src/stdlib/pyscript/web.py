@@ -69,7 +69,7 @@ class Element:
             type(self).get_tag_name()
         )
 
-        # HTML onevents attached to the element become pyscript.Event instances.
+        # HTML on_events attached to the element become pyscript.Event instances.
         self._on_events = {}
 
         # Handle kwargs for handling named events with a default handler function.
