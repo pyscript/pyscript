@@ -75,7 +75,7 @@ class Element:
         # Handle kwargs for handling named events with a default handler function.
         properties = {}
         for name, handler in kwargs.items():
-            if name.startswith("on"):
+            if name.startswith("on_"):
                 ev = self.get_event(name)  # Create the default Event instance.
                 ev.add_listener(handler)
             else:
@@ -109,11 +109,11 @@ class Element:
         """
         Get an attribute from the element.
 
-        If the attribute is an event (e.g. "onclick"), we wrap it in an `Event`
+        If the attribute is an event (e.g. "on_click"), we wrap it in an `Event`
         instance and return that. Otherwise, we return the attribute from the
         underlying DOM element.
         """
-        if name.startswith("on"):
+        if name.startswith("on_"):
             return self.get_event(name)
         # This allows us to get attributes on the underlying DOM element that clash
         # with Python keywords or built-ins (e.g. the output element has an
@@ -140,7 +140,7 @@ class Element:
             if name.endswith("_"):
                 name = name[:-1]
 
-            if name.startswith("on"):
+            if name.startswith("on_"):
                 # Ensure on-events are cached in the _on_events dict if the
                 # user is setting them directly.
                 self._on_events[name] = value
@@ -151,9 +151,9 @@ class Element:
         """
         Get an `Event` instance for the specified event name.
         """
-        if not name.startswith("on"):
-            raise ValueError("Event names must start with 'on'.")
-        event_name = name[2:]  # Remove the "on" prefix.
+        if not name.startswith("on_"):
+            raise ValueError("Event names must start with 'on_'.")
+        event_name = name[3:]  # Remove the "on_" prefix.
         if not hasattr(self._dom_element, event_name):
             raise ValueError(f"Element has no '{event_name}' event.")
         if name in self._on_events:

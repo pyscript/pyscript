@@ -170,10 +170,10 @@ class TestElement:
         another_button = web.page.find("#another-test-button")[0]
         call_flag = asyncio.Event()
 
-        assert another_button.onclick is not None
-        assert isinstance(another_button.onclick, web.Event)
+        assert another_button.on_click is not None
+        assert isinstance(another_button.on_click, web.Event)
 
-        @when(another_button.onclick)
+        @when(another_button.on_click)
         def on_click(event):
             nonlocal called
             called = True
@@ -195,7 +195,7 @@ class TestElement:
             called = True
             call_flag.set()
 
-        b = web.button("Click me", onclick=handler)
+        b = web.button("Click me", on_click=handler)
 
         # Now let's simulate a click on the button (using the low level JS API)
         # so we don't risk dom getting in the way
@@ -206,14 +206,14 @@ class TestElement:
 
     def test_on_event_must_be_actual_event(self):
         """
-        Any onFOO event must relate to an actual FOO event on the element.
+        Any on_FOO event must relate to an actual FOO event on the element.
         """
         b = web.button("Click me")
         # Non-existent event causes a ValueError
         with upytest.raises(ValueError):
-            b.onchicken
+            b.on_chicken
         # Buttons have an underlying "click" event so this will work.
-        assert b.onclick
+        assert b.on_click
 
     def test_inner_html_attribute(self):
         # GIVEN an existing element on the page with a known empty text content
@@ -311,7 +311,7 @@ class TestCollection:
         buttons_collection = web.page.find("button")
         number_of_clicks = len(buttons_collection)
 
-        @when(buttons_collection.onclick)
+        @when(buttons_collection.on_click)
         def on_click(event):
             nonlocal call_counter
             call_counter += 1
