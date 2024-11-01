@@ -131,6 +131,29 @@ async def test_when_decorator_with_event():
     assert called.target.id == "foo_id"
 
 
+async def test_when_decorator_without_event():
+    """
+    When the decorated function takes no parameters (not including 'self'),
+    it should be called without the event object
+    """
+    btn = web.button("foo_button", id="foo_id")
+    container = get_container()
+    container.append(btn)
+
+    called = False
+    call_flag = asyncio.Event()
+
+    @web.when("click", selector="#foo_id")
+    def foo():
+        nonlocal called
+        called = True
+        call_flag.set()
+
+    btn.click()
+    await call_flag.wait()
+    assert called is True
+
+
 async def test_two_when_decorators():
     """
     When decorating a function twice, both should function
