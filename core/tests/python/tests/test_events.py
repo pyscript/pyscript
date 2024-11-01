@@ -111,7 +111,7 @@ async def test_event_trigger_with_awaitable():
 async def test_when_decorator_with_event():
     """
     When the decorated function takes a single parameter,
-    it should be passed the event object
+    it should be passed the event object.
     """
     btn = web.button("foo_button", id="foo_id")
     container = get_container()
@@ -134,7 +134,7 @@ async def test_when_decorator_with_event():
 async def test_when_decorator_without_event():
     """
     When the decorated function takes no parameters (not including 'self'),
-    it should be called without the event object
+    it should be called without the event object.
     """
     btn = web.button("foo_button", id="foo_id")
     container = get_container()
@@ -157,7 +157,7 @@ async def test_when_decorator_without_event():
 async def test_when_decorator_with_event_as_async_handler():
     """
     When the decorated function takes a single parameter,
-    it should be passed the event object
+    it should be passed the event object. Async version.
     """
     btn = web.button("foo_button", id="foo_id")
     container = get_container()
@@ -180,7 +180,7 @@ async def test_when_decorator_with_event_as_async_handler():
 async def test_when_decorator_without_event_as_async_handler():
     """
     When the decorated function takes no parameters (not including 'self'),
-    it should be called without the event object
+    it should be called without the event object. Async version.
     """
     btn = web.button("foo_button", id="foo_id")
     container = get_container()
