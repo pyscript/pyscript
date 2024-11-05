@@ -2,7 +2,7 @@ declare namespace _default {
     let pyscript: {
         "__init__.py": string;
         "display.py": string;
-        "event_handling.py": string;
+        "events.py": string;
         "fetch.py": string;
         "ffi.py": string;
         "flatted.py": string;

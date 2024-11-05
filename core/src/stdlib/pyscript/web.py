@@ -2,7 +2,8 @@
 
 # `when` is not used in this module. It is imported here save the user an additional
 # import (i.e. they can get what they need from `pyscript.web`).
-from pyscript import document, when  # NOQA
+from pyscript import document, when, Event  # NOQA
+from pyscript.ffi import create_proxy
 
 
 def wrap_dom_element(dom_element):
@@ -68,6 +69,18 @@ class Element:
             type(self).get_tag_name()
         )
 
+        # HTML on_events attached to the element become pyscript.Event instances.
+        self._on_events = {}
+
+        # Handle kwargs for handling named events with a default handler function.
+        properties = {}
+        for name, handler in kwargs.items():
+            if name.startswith("on_"):
+                ev = self.get_event(name)  # Create the default Event instance.
+                ev.add_listener(handler)
+            else:
+                properties[name] = handler
+
         # A set-like interface to the element's `classList`.
         self._classes = Classes(self)
 
@@ -75,7 +88,7 @@ class Element:
         self._style = Style(self)
 
         # Set any specified classes, styles, and DOM properties.
-        self.update(classes=classes, style=style, **kwargs)
+        self.update(classes=classes, style=style, **properties)
 
     def __eq__(self, obj):
         """Check for equality by comparing the underlying DOM element."""
@@ -93,13 +106,21 @@ class Element:
         return self.find(key)
 
     def __getattr__(self, name):
+        """
+        Get an attribute from the element.
+
+        If the attribute is an event (e.g. "on_click"), we wrap it in an `Event`
+        instance and return that. Otherwise, we return the attribute from the
+        underlying DOM element.
+        """
+        if name.startswith("on_"):
+            return self.get_event(name)
         # This allows us to get attributes on the underlying DOM element that clash
         # with Python keywords or built-ins (e.g. the output element has an
         # attribute `for` which is a Python keyword, so you can access it on the
         # Element instance via `for_`).
         if name.endswith("_"):
             name = name[:-1]
-
         return getattr(self._dom_element, name)
 
     def __setattr__(self, name, value):
@@ -119,7 +140,32 @@ class Element:
             if name.endswith("_"):
                 name = name[:-1]
 
+            if name.startswith("on_"):
+                # Ensure on-events are cached in the _on_events dict if the
+                # user is setting them directly.
+                self._on_events[name] = value
+
             setattr(self._dom_element, name, value)
+
+    def get_event(self, name):
+        """
+        Get an `Event` instance for the specified event name.
+        """
+        if not name.startswith("on_"):
+            raise ValueError("Event names must start with 'on_'.")
+        event_name = name[3:]  # Remove the "on_" prefix.
+        if not hasattr(self._dom_element, event_name):
+            raise ValueError(f"Element has no '{event_name}' event.")
+        if name in self._on_events:
+            return self._on_events[name]
+        # Such an on-event exists in the DOM element, but we haven't yet
+        # wrapped it in an Event instance. Let's do that now. When the
+        # underlying DOM element's event is triggered, the Event instance
+        # will be triggered too.
+        ev = Event()
+        self._on_events[name] = ev
+        self._dom_element.addEventListener(event_name, create_proxy(ev.trigger))
+        return ev
 
     @property
     def children(self):

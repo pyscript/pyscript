@@ -164,6 +164,57 @@ class TestElement:
         await call_flag.wait()
         assert called
 
+    async def test_when_decorator_on_event(self):
+        called = False
+
+        another_button = web.page.find("#another-test-button")[0]
+        call_flag = asyncio.Event()
+
+        assert another_button.on_click is not None
+        assert isinstance(another_button.on_click, web.Event)
+
+        @when(another_button.on_click)
+        def on_click(event):
+            nonlocal called
+            called = True
+            call_flag.set()
+
+        # Now let's simulate a click on the button (using the low level JS API)
+        # so we don't risk dom getting in the way
+        assert not called
+        another_button._dom_element.click()
+        await call_flag.wait()
+        assert called
+
+    async def test_on_event_with_default_handler(self):
+        called = False
+        call_flag = asyncio.Event()
+
+        def handler(event):
+            nonlocal called
+            called = True
+            call_flag.set()
+
+        b = web.button("Click me", on_click=handler)
+
+        # Now let's simulate a click on the button (using the low level JS API)
+        # so we don't risk dom getting in the way
+        assert not called
+        b._dom_element.click()
+        await call_flag.wait()
+        assert called
+
+    def test_on_event_must_be_actual_event(self):
+        """
+        Any on_FOO event must relate to an actual FOO event on the element.
+        """
+        b = web.button("Click me")
+        # Non-existent event causes a ValueError
+        with upytest.raises(ValueError):
+            b.on_chicken
+        # Buttons have an underlying "click" event so this will work.
+        assert b.on_click
+
     def test_inner_html_attribute(self):
         # GIVEN an existing element on the page with a known empty text content
         div = web.page.find("#element_attribute_tests")[0]
@@ -227,11 +278,15 @@ class TestCollection:
             assert el.style["background-color"] != "red"
             assert elements[i].style["background-color"] != "red"
 
+    @upytest.skip(
+        "Flakey in Pyodide on Worker",
+        skip_when=RUNNING_IN_WORKER and not upytest.is_micropython,
+    )
     async def test_when_decorator(self):
         called = False
         call_flag = asyncio.Event()
 
-        buttons_collection = web.page.find("button")
+        buttons_collection = web.page["button"]
 
         @when("click", buttons_collection)
         def on_click(event):
@@ -248,6 +303,28 @@ class TestCollection:
             assert called
             called = False
             call_flag.clear()
+
+    async def test_when_decorator_on_event(self):
+        call_counter = 0
+        call_flag = asyncio.Event()
+
+        buttons_collection = web.page.find("button")
+        number_of_clicks = len(buttons_collection)
+
+        @when(buttons_collection.on_click)
+        def on_click(event):
+            nonlocal call_counter
+            call_counter += 1
+            if call_counter == number_of_clicks:
+                call_flag.set()
+
+        # Now let's simulate a click on the button (using the low level JS API)
+        # so we don't risk dom getting in the way
+        assert call_counter == 0
+        for button in buttons_collection:
+            button._dom_element.click()
+        await call_flag.wait()
+        assert call_counter == number_of_clicks
 
 
 class TestCreation:
@@ -759,14 +836,13 @@ class TestElements:
         self._create_el_and_basic_asserts("iframe", properties=properties)
 
     @upytest.skip(
-        "Flakey on Pyodide in worker.",
-        skip_when=RUNNING_IN_WORKER and not upytest.is_micropython,
+        "Flakey in worker.",
+        skip_when=RUNNING_IN_WORKER,
     )
     async def test_img(self):
         """
-        This test contains a bespoke version of the _create_el_and_basic_asserts
-        function so we can await asyncio.sleep if in a worker, so the DOM state
-        is in sync with the worker before property based asserts can happen.
+        This test, thanks to downloading an image from the internet, is flakey
+        when run in a worker. It's skipped when running in a worker.
         """
         properties = {
             "src": "https://picsum.photos/600/400",
@@ -774,39 +850,7 @@ class TestElements:
             "width": 250,
             "height": 200,
         }
-
-        def parse_value(v):
-            if isinstance(v, bool):
-                return str(v)
-
-            return f"{v}"
-
-        args = []
-        kwargs = {}
-
-        if properties:
-            kwargs = {k: parse_value(v) for k, v in properties.items()}
-
-        # Let's make sure the target div to contain the element is empty.
-        container = web.page["#test-element-container"][0]
-        container.innerHTML = ""
-        assert container.innerHTML == "", container.innerHTML
-        # Let's create the element
-        try:
-            klass = getattr(web, "img")
-            el = klass(*args, **kwargs)
-            container.append(el)
-        except Exception as e:
-            assert False, f"Failed to create element img: {e}"
-
-        if RUNNING_IN_WORKER:
-            # Needed to sync the DOM with the worker.
-            await asyncio.sleep(0.5)
-
-        # Check the img element was created correctly and all its properties
-        # were set correctly.
-        for k, v in properties.items():
-            assert v == getattr(el, k), f"{k} should be {v} but is {getattr(el, k)}"
+        self._create_el_and_basic_asserts("img", properties=properties)
 
     def test_input(self):
         # TODO: we need multiple input tests
