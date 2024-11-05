@@ -6,6 +6,7 @@ from functools import wraps
 from pyscript.magic_js import document
 from pyscript.ffi import create_proxy
 from pyscript.util import is_awaitable
+from pyscript import config
 
 
 class Event:
@@ -89,7 +90,7 @@ def when(target, *args, **kwargs):
             elements = selector if isinstance(selector, list) else [selector]
 
     def decorator(func):
-        if "micropython" in sys.version.lower():
+        if config["type"] == "mpy":  # Is MicroPython?
             if is_awaitable(func):
 
                 async def wrapper(*args, **kwargs):

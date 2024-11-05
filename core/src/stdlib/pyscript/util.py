@@ -46,7 +46,9 @@ def is_awaitable(obj):
     the object is a closure containing an async function we need to work
     carefully.)
     """
-    if "micropython" in sys.version.lower():
+    from pyscript import config
+
+    if config["type"] == "mpy":  # Is MicroPython?
         # MicroPython doesn't appear to have a way to determine if a closure is
         # an async function except via the repr. This is a bit hacky.
         if "<closure <generator>" in repr(obj):

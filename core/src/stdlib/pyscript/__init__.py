@@ -30,9 +30,6 @@
 #     as it works transparently in both the main thread and worker cases.
 
 from polyscript import lazy_py_modules as py_import
-from pyscript.events import when, Event
-from pyscript.display import HTML, display
-from pyscript.fetch import fetch
 from pyscript.magic_js import (
     RUNNING_IN_WORKER,
     PyWorker,
@@ -44,8 +41,11 @@ from pyscript.magic_js import (
     sync,
     window,
 )
+from pyscript.display import HTML, display
+from pyscript.fetch import fetch
 from pyscript.storage import Storage, storage
 from pyscript.websocket import WebSocket
+from pyscript.events import when, Event
 
 if not RUNNING_IN_WORKER:
     from pyscript.workers import create_named_worker, workers
