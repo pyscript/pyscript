@@ -54,9 +54,9 @@ const modules = {
     "xterm_addon-web-links.js": fetch(
         `${CDN}/@xterm/addon-web-links/+esm`,
     ).then((b) => b.text()),
-    "xterm.css": fetch(`${CDN}/@xterm/xterm@${v("@xterm/xterm")}/css/xterm.min.css`).then(
-        (b) => b.text(),
-    ),
+    "xterm.css": fetch(
+        `${CDN}/@xterm/xterm@${v("@xterm/xterm")}/css/xterm.min.css`,
+    ).then((b) => b.text()),
 
     // codemirror
     "codemirror.js": reBundle("codemirror"),
