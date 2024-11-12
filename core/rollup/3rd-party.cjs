@@ -46,7 +46,7 @@ const modules = {
     "toml.js": join(node_modules, "@webreflection", "toml-j0.4", "toml.js"),
 
     // xterm
-    "xterm.js": resolve("xterm"),
+    "xterm.js": resolve("@xterm/xterm"),
     "xterm-readline.js": resolve("xterm-readline"),
     "xterm_addon-fit.js": fetch(`${CDN}/@xterm/addon-fit/+esm`).then((b) =>
         b.text(),
@@ -54,9 +54,9 @@ const modules = {
     "xterm_addon-web-links.js": fetch(
         `${CDN}/@xterm/addon-web-links/+esm`,
     ).then((b) => b.text()),
-    "xterm.css": fetch(`${CDN}/xterm@${v("xterm")}/css/xterm.min.css`).then(
-        (b) => b.text(),
-    ),
+    "xterm.css": fetch(
+        `${CDN}/@xterm/xterm@${v("@xterm/xterm")}/css/xterm.min.css`,
+    ).then((b) => b.text()),
 
     // codemirror
     "codemirror.js": reBundle("codemirror"),

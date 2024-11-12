@@ -1,6 +1,6 @@
-declare var b: any;
-declare var I: boolean;
-declare namespace r {
+declare var v: any;
+declare var k: boolean;
+declare namespace i {
     export let __esModule: boolean;
     export { Readline };
 }
@@ -57,7 +57,7 @@ declare class Readline {
         highlighter: any;
         history: any;
         promptSize: any;
-        layout: p;
+        layout: c;
         buffer(): string;
         shouldHighlight(): boolean;
         clearScreen(): void;
@@ -124,15 +124,15 @@ declare class Readline {
     readPaste(t: any): void;
     readKey(t: any): void;
 }
-declare class p {
+declare class c {
     constructor(t: any);
     promptSize: any;
-    cursor: c;
-    end: c;
+    cursor: u;
+    end: u;
 }
-declare class c {
+declare class u {
     constructor(t: any, e: any);
     row: any;
     col: any;
 }
-export { b as Readline, I as __esModule, r as default };
+export { v as Readline, k as __esModule, i as default };
