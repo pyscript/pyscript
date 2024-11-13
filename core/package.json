@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.6.16",
+    "version": "0.6.17",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -88,7 +88,7 @@
         "codemirror": "^6.0.1",
         "eslint": "^9.14.0",
         "flatted": "^3.3.1",
-        "rollup": "^4.25.0",
+        "rollup": "^4.26.0",
         "rollup-plugin-postcss": "^4.0.2",
         "rollup-plugin-string": "^3.0.0",
         "static-handler": "^0.5.3",
