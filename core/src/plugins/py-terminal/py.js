@@ -126,6 +126,7 @@ export default async (element) => {
                 disableStdin: false,
                 cursorBlink: true,
                 cursorStyle: "block",
+                lineHeight: 1.2,
             });
 
             xworker.sync.is_pyterminal = () => true;
