@@ -1,44 +1,35 @@
+__all__ = ["t"]
+
+
 class Interpolation:
     def __init__(self, expr):
+        self.value = eval(expr)
         self.expr = expr
-    def __getattr__(self, name):
-        expr = getattr(self, "expr")
-        if name == "value":
-            return eval(expr)
-        if name == "expr":
-            return expr
-        if name == "conv":
-            return None
-        if name == "format_spec":
-            return ""
+        self.format_spec = ""
+        self.conv = None
+
 
 class Template:
     def __init__(self, args):
-        self.args = tuple(args)
-    def __getattr__(self, name):
-        args = getattr(self, "args")
-        if name == "args":
-            return args
-        if name == "strings":
-            return args[::2]
-        if name == "values":
-            return [i.value for i in args[1::2]]
-        if name == "interpolations":
-            return args[1::2]
+        self.args = args
+        self.strings = args[::2]
+        self.values = [i.value for i in args[1::2]]
+        self.interpolations = args[1::2]
+  
     def __str__(self):
         out = []
         i = 0
-        for arg in getattr(self, "args"):
+        for arg in self.args:
             out.append(i % 2 and str(arg.value) or arg)
             i += 1
         return "".join(out)
 
+
 drop = lambda s: s.replace("{{", "\x01").replace("}}", "\x02")
 add = lambda s: s.replace("\x01", "{{").replace("\x02", "}}")
 
-"""
-PEP750 shim for MicroPython or Pyodide until it lands
-"""
+
+# PEP750 shim as function for MicroPython or Pyodide until it lands
 def t(content):
     # sanitize brackets (drop double brackets)
     content = drop(content)
@@ -61,10 +52,8 @@ def t(content):
             opened -= 1
             if opened == 0:
                 args.append(add(content[start:j:]))
-                args.append(Interpolation(add(content[j+1:i:])))
+                args.append(Interpolation(add(content[j + 1 : i :])))
                 start = i + 1
         i += 1
     args.append(add(content[start::]))
-    return Template(args)
-
-__all__ = ["t"]
+    return Template(tuple(args))
