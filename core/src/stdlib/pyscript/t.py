@@ -15,7 +15,7 @@ class Template:
         self.strings = args[::2]
         self.values = [i.value for i in args[1::2]]
         self.interpolations = args[1::2]
-  
+
     def __str__(self):
         out = []
         i = 0
