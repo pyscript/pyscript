@@ -1,5 +1,10 @@
 // ⚠️ This file is an artifact: DO NOT MODIFY
 export default {
+    codemirror: () =>
+        import(
+            /* webpackIgnore: true */
+            "./plugins/codemirror.js"
+        ),
     ["deprecations-manager"]: () =>
         import(
             /* webpackIgnore: true */

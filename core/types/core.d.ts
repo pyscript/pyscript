@@ -7,6 +7,7 @@ export function donkey(options: any): Promise<{
     kill: () => void;
 }>;
 export function offline_interpreter(config: any): string;
+import codemirror from './plugins/codemirror.js';
 import { stdlib } from "./stdlib.js";
 import { optional } from "./stdlib.js";
 import { inputFailure } from "./hooks.js";
@@ -63,4 +64,4 @@ declare const exportedHooks: {
 };
 declare const exportedConfig: {};
 declare const exportedWhenDefined: any;
-export { stdlib, optional, inputFailure, TYPES, relative_url, exportedPyWorker as PyWorker, exportedMPWorker as MPWorker, exportedHooks as hooks, exportedConfig as config, exportedWhenDefined as whenDefined };
+export { codemirror, stdlib, optional, inputFailure, TYPES, relative_url, exportedPyWorker as PyWorker, exportedMPWorker as MPWorker, exportedHooks as hooks, exportedConfig as config, exportedWhenDefined as whenDefined };
