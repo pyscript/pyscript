@@ -137,6 +137,18 @@ export default async (element) => {
         // setup remote thread JS/Python code for whenever the
         // worker is ready to become a terminal
         hooks.worker.onReady.add(workerReady);
+
+        // @see https://github.com/pyscript/pyscript/issues/2246
+        const patchInput = [
+            "import builtins as _b",
+            "from pyscript import sync as _s",
+            "_b.input = _s.pyterminal_read",
+            "del _b",
+            "del _s",
+        ].join("\n");
+
+        hooks.worker.codeBeforeRun.add(patchInput);
+        hooks.worker.codeBeforeRunAsync.add(patchInput);
     } else {
         // in the main case, just bootstrap XTerm without
         // allowing any input as that's not possible / awkward
