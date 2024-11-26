@@ -34,6 +34,9 @@ import {
     inputFailure,
 } from "./hooks.js";
 
+import codemirror from "./plugins/codemirror.js";
+export { codemirror };
+
 import { stdlib, optional } from "./stdlib.js";
 export { stdlib, optional, inputFailure };
 

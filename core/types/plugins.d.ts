@@ -1,4 +1,5 @@
 declare const _default: {
+    codemirror: () => Promise<typeof import("./plugins/codemirror.js")>;
     "deprecations-manager": () => Promise<typeof import("./plugins/deprecations-manager.js")>;
     donkey: () => Promise<typeof import("./plugins/donkey.js")>;
     error: () => Promise<typeof import("./plugins/error.js")>;
