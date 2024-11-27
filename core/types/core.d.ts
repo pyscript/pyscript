@@ -7,7 +7,7 @@ export function donkey(options: any): Promise<{
     kill: () => void;
 }>;
 export function offline_interpreter(config: any): string;
-import codemirror from './plugins/codemirror.js';
+import codemirror from "./plugins/codemirror.js";
 import { stdlib } from "./stdlib.js";
 import { optional } from "./stdlib.js";
 import { inputFailure } from "./hooks.js";
