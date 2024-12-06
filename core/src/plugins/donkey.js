@@ -6,7 +6,8 @@ const { stringify } = JSON;
 const invoke = (name, args) => `${name}(code, ${args.join(", ")})`;
 
 const donkey = ({ type = "py", persistent, terminal, config }) => {
-    const args = persistent ? ["globals()", "__locals__"] : ["{}", "{}"];
+    const globals = terminal ? '{"__terminal__":__terminal__}' : "{}";
+    const args = persistent ? ["globals()", "__locals__"] : [globals, "{}"];
 
     const src = URL.createObjectURL(
         new Blob([
