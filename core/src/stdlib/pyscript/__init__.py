@@ -46,6 +46,7 @@ from pyscript.fetch import fetch
 from pyscript.storage import Storage, storage
 from pyscript.websocket import WebSocket
 from pyscript.events import when, Event
+from pyscript.t import t
 
 if not RUNNING_IN_WORKER:
     from pyscript.workers import create_named_worker, workers
