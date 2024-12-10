@@ -45,6 +45,8 @@ if RUNNING_IN_WORKER:
 
         window = polyscript.xworker.window
         document = window.document
+        # weird + not worth it as it does not work anyway
+        js.screen = window.screen
         js.document = document
         # this is the same as js_import on main and it lands modules on main
         js_import = window.Function(

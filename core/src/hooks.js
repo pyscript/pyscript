@@ -84,7 +84,19 @@ export const hooks = {
     },
     worker: {
         /** @type {Set<function>} */
-        onReady: new SetFunction(),
+        onReady: new SetFunction([
+          (wrap, xworker) => {
+            if (wrap.type === "py") {
+              const { interpreter } = wrap;
+              const element = wrap.run('from polyscript import currentScript;currentScript');
+              const canvas2D = element.getAttribute("canvas2d") || element.getAttribute("canvas");
+              if (canvas2D) {
+                const canvas = element.ownerDocument.getElementById(canvas2D);
+                interpreter.canvas.setCanvas2D(canvas);
+              }
+            }
+          }
+        ]),
         /** @type {Set<function>} */
         onBeforeRun: new SetFunction(),
         /** @type {Set<function>} */

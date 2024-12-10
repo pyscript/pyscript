@@ -223,6 +223,13 @@ for (const [TYPE, interpreter] of TYPES) {
                                 else element.after(show);
                             }
                             if (!show.id) show.id = getID();
+                            if (TYPE === "py") {
+                              const canvas2D = element.getAttribute("canvas2d") || element.getAttribute("canvas");
+                              if (canvas2D) {
+                                const canvas = queryTarget(document, canvas2D);
+                                wrap.interpreter.canvas.setCanvas2D(canvas);
+                              }
+                            }
 
                             // allows the code to retrieve the target element via
                             // document.currentScript.target if needed
