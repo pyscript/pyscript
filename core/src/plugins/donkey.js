@@ -5,7 +5,13 @@ const { stringify } = JSON;
 
 const invoke = (name, args) => `${name}(code, ${args.join(", ")})`;
 
-const donkey = ({ type = "py", persistent, terminal, config, serviceWorker }) => {
+const donkey = ({
+    type = "py",
+    persistent,
+    terminal,
+    config,
+    serviceWorker,
+}) => {
     const globals = terminal ? '{"__terminal__":__terminal__}' : "{}";
     const args = persistent ? ["globals()", "__locals__"] : [globals, "{}"];
 
