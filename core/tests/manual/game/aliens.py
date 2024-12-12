@@ -22,6 +22,7 @@ Controls
 * f key to toggle between fullscreen.
 
 """
+
 import asyncio
 import random
 import os
@@ -47,6 +48,7 @@ SCORE = 0
 
 
 main_dir = str(pathlib.Path(pygame.__file__).parent / "examples")
+
 
 def load_image(file):
     """loads an image, prepares it for play"""
@@ -392,5 +394,6 @@ async def main(winstyle=0):
 
     if pygame.mixer:
         pygame.mixer.music.fadeout(1000)
+
 
 main()
