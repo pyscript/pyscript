@@ -1,0 +1,30 @@
+/* (c) https://github.com/ryanking13/pyodide-pygame-demo/blob/main/examples/aliens.html */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+}
+.demo {
+    background-color: #fff;
+    margin: 20px auto;
+    max-width: 1000px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.demo-header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 15px 20px;
+    font-size: 20px;
+}
+.demo-content {
+    padding: 20px;
+}
+
+#canvas {
+    margin: 0 auto;
+    display: block;
+}
