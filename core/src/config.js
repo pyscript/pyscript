@@ -25,7 +25,7 @@ const badURL = (url, expected = "") => {
  * @param {string?} type the optional type to enforce
  * @returns {{json: boolean, toml: boolean, text: string}}
  */
-const configDetails = async (config, type) => {
+export const configDetails = async (config, type) => {
     let text = config?.trim();
     // we only support an object as root config
     let url = "",
