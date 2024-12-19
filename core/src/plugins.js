@@ -25,6 +25,11 @@ export default {
             /* webpackIgnore: true */
             "./plugins/py-editor.js"
         ),
+    ["py-game"]: () =>
+        import(
+            /* webpackIgnore: true */
+            "./plugins/py-game.js"
+        ),
     ["py-terminal"]: () =>
         import(
             /* webpackIgnore: true */
