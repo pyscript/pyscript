@@ -18,7 +18,7 @@ on:
 
 jobs:
     BuildAndTest:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04-arm
         env:
             MINICONDA_PYTHON_VERSION: py38
             MINICONDA_VERSION: 4.11.0
