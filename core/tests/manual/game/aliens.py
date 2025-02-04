@@ -1,4 +1,4 @@
-""" (c) https://github.com/ryanking13/pyodide-pygame-demo/blob/main/examples/aliens.html
+"""(c) https://github.com/ryanking13/pyodide-pygame-demo/blob/main/examples/aliens.html
 pygame.examples.aliens
 
 Shows a mini game where you have to defend against aliens.
