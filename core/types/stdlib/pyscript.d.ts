@@ -6,6 +6,7 @@ declare namespace _default {
         "fetch.py": string;
         "ffi.py": string;
         "flatted.py": string;
+        "fs.py": string;
         "magic_js.py": string;
         "media.py": string;
         "storage.py": string;

@@ -78,3 +78,13 @@ py-terminal span,
 mpy-terminal span {
     letter-spacing: 0 !important;
 }
+
+dialog.pyscript-fs {
+    border-radius: 8px;
+    border-width: 1px;
+}
+
+dialog.pyscript-fs > div {
+    display: flex;
+    justify-content: space-between;
+}
