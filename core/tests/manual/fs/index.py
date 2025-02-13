@@ -34,6 +34,7 @@ elif not RUNNING_IN_WORKER:
             explicit.disabled = True
         except:
             import js
+
             js.alert("unable to grant access")
 
     explicit.onclick = mount

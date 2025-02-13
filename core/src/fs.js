@@ -54,20 +54,20 @@ export const getFileSystemDirectoryHandle = async (options) => {
                 "<button title='cancel'>❌</button></div>",
             ].join(""),
         });
-    
+
         const [ok, cancel] = $$("button", dialog);
-    
+
         ok.addEventListener("click", async (event) => {
             stop(event);
-            if ((await transient())) dialog.close();
+            if (await transient()) dialog.close();
         });
-    
+
         cancel.addEventListener("click", async (event) => {
             stop(event);
             reject(new Error(ERROR));
             dialog.close();
         });
-    
+
         document.body.appendChild(dialog).showModal();
     }
 
