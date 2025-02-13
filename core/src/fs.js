@@ -20,6 +20,12 @@ export const idb = new IDBMap(NAMESPACE);
  * @returns {Promise<FileSystemDirectoryHandle>}
  */
 export const getFileSystemDirectoryHandle = async (options) => {
+    if (!("showDirectoryPicker" in globalThis)) {
+        return Promise.reject(
+            new Error("showDirectoryPicker is not supported"),
+        );
+    }
+
     const { promise, resolve, reject } = Promise.withResolvers();
 
     const how = { id: "pyscript", mode: "readwrite", ...options };

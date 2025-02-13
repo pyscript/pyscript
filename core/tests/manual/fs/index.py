@@ -16,7 +16,6 @@ if TEST == "implicit":
 
     with open("/persistent/random.txt", "w") as f:
         f.write(str(random()))
-        f.close()
 
     await fs.sync("/persistent")
 
