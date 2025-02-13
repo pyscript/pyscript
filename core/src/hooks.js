@@ -95,11 +95,11 @@ export const hooks = {
                     // because this code is stringified
                     fs: {
                         ERROR: "storage permissions not granted",
-                        NAMESPACE: "@pyscript.fs"
+                        NAMESPACE: "@pyscript.fs",
                     },
                     interpreter,
                 });
-            }
+            },
         ]),
         /** @type {Set<function>} */
         onAfterRun: new SetFunction(),

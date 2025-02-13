@@ -1,6 +1,8 @@
 mounted = {}
 
-async def mount(path, mode = "readwrite", root = "", id = "pyscript"):
+
+async def mount(path, mode="readwrite", root="", id="pyscript"):
+    import js
     from _pyscript import fs, interpreter
     from pyscript.ffi import to_js
     from pyscript.magic_js import (
@@ -8,9 +10,11 @@ async def mount(path, mode = "readwrite", root = "", id = "pyscript"):
         sync,
     )
 
+    js.console.warn("experimental pyscript.fs ⚠️")
+
     handler = None
 
-    options = { "id": id, "mode": mode }
+    options = {"id": id, "mode": mode}
     if root != "":
         options["startIn"] = root
 
@@ -18,6 +22,7 @@ async def mount(path, mode = "readwrite", root = "", id = "pyscript"):
         success = await sync.storeFSHandler(path, to_js(options))
         if success:
             from polyscript import IDBMap
+
             idb = IDBMap.new(fs.NAMESPACE)
             handler = await idb.get(path)
         else:
@@ -33,6 +38,7 @@ async def mount(path, mode = "readwrite", root = "", id = "pyscript"):
             await fs.idb.set(path, handler)
 
     mounted[path] = await interpreter.mountNativeFS(path, handler)
+
 
 async def sync(path):
     await mounted[path].syncfs()

@@ -1,4 +1,4 @@
-import IDBMap from '@webreflection/idb-map';
+import IDBMap from "@webreflection/idb-map";
 import { assign } from "polyscript/exports";
 import { $$ } from "basic-devtools";
 
@@ -19,47 +19,57 @@ export const idb = new IDBMap(NAMESPACE);
  * @param {{id?:string, mode?:"read"|"readwrite", hint?:"desktop"|"documents"|"downloads"|"music"|"pictures"|"videos"}} options
  * @returns {Promise<FileSystemDirectoryHandle>}
  */
-export const getFileSystemDirectoryHandle = (options) => {
+export const getFileSystemDirectoryHandle = async (options) => {
     const { promise, resolve, reject } = Promise.withResolvers();
 
     const how = { id: "pyscript", mode: "readwrite", ...options };
     if (options.hint) how.startIn = options.hint;
 
-    const dialog = assign(document.createElement("dialog"), {
-        className: "pyscript-fs",
-        innerHTML: [
-            "<strong>ℹ️ Persistent FileSystem</strong><hr>",
-            "<p><small>PyScript would like to access a local folder.</small></p>",
-            "<div><button title='ok'>✅ Authorize</button>",
-            "<button title='cancel'>❌</button></div>",
-        ].join("")
-    });
-
-    const [ok, cancel] = $$("button", dialog);
-
-    ok.addEventListener("click", async event => {
-        stop(event);
+    const transient = async () => {
         try {
             /* eslint-disable */
             const handler = await showDirectoryPicker(how);
             /* eslint-enable */
-            if (await handler.requestPermission(how) === "granted") {
+            if ((await handler.requestPermission(how)) === "granted") {
                 resolve(handler);
-                dialog.close();
+                return true;
             }
-        }
-        catch ({ message }) {
+        } catch ({ message }) {
             console.warn(message);
         }
-    });
+        return false;
+    };
 
-    cancel.addEventListener("click", async event => {
-      stop(event);
-      reject(new Error(ERROR));
-      dialog.close();
-    });
-
-    document.body.appendChild(dialog).showModal();
+    // in case the user decided to attach the event itself
+    // as opposite of relying our dialog walkthrough
+    if (navigator.userActivation?.isActive) {
+        if (!(await transient())) reject(new Error(ERROR));
+    } else {
+        const dialog = assign(document.createElement("dialog"), {
+            className: "pyscript-fs",
+            innerHTML: [
+                "<strong>ℹ️ Persistent FileSystem</strong><hr>",
+                "<p><small>PyScript would like to access a local folder.</small></p>",
+                "<div><button title='ok'>✅ Authorize</button>",
+                "<button title='cancel'>❌</button></div>",
+            ].join(""),
+        });
+    
+        const [ok, cancel] = $$("button", dialog);
+    
+        ok.addEventListener("click", async (event) => {
+            stop(event);
+            if ((await transient())) dialog.close();
+        });
+    
+        cancel.addEventListener("click", async (event) => {
+            stop(event);
+            reject(new Error(ERROR));
+            dialog.close();
+        });
+    
+        document.body.appendChild(dialog).showModal();
+    }
 
     return promise;
 };

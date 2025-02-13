@@ -1,4 +1,4 @@
-import { idb, getFileSystemDirectoryHandle } from './fs.js';
+import { idb, getFileSystemDirectoryHandle } from "./fs.js";
 
 export default {
     // allow pyterminal checks to bootstrap
