@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.6.28",
+    "version": "0.6.29",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -24,6 +24,10 @@
         ".": {
             "types": "./types/core.d.ts",
             "import": "./src/core.js"
+        },
+        "./js": {
+            "types": "./types/core.d.ts",
+            "import": "./dist/core.js"
         },
         "./css": {
             "import": "./dist/core.css"
