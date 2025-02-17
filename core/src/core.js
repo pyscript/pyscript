@@ -33,6 +33,7 @@ import {
     createFunction,
     inputFailure,
 } from "./hooks.js";
+import * as fs from "./fs.js";
 
 import codemirror from "./plugins/codemirror.js";
 export { codemirror };
@@ -167,6 +168,8 @@ for (const [TYPE, interpreter] of TYPES) {
         // enrich the Python env with some JS utility for main
         interpreter.registerJsModule("_pyscript", {
             PyWorker,
+            fs,
+            interpreter,
             js_import: (...urls) => Promise.all(urls.map((url) => import(url))),
             get target() {
                 return isScript(currentElement)

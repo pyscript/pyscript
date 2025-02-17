@@ -34,7 +34,7 @@ repos:
       rev: v2.4.1
       hooks:
           - id: codespell # See 'pyproject.toml' for args
-            exclude: \.js\.map$
+            exclude: fs\.py|\.js\.map$
             additional_dependencies:
                 - tomli
 

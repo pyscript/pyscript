@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.6.26",
+    "version": "0.6.30",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -24,6 +24,10 @@
         ".": {
             "types": "./types/core.d.ts",
             "import": "./src/core.js"
+        },
+        "./js": {
+            "types": "./types/core.d.ts",
+            "import": "./dist/core.js"
         },
         "./css": {
             "import": "./dist/core.css"
@@ -62,7 +66,7 @@
         "@webreflection/idb-map": "^0.3.2",
         "add-promise-listener": "^0.1.3",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.16.11",
+        "polyscript": "^0.16.13",
         "sabayon": "^0.6.6",
         "sticky-module": "^0.1.1",
         "to-json-callback": "^0.1.1",
@@ -86,9 +90,9 @@
         "chokidar": "^4.0.3",
         "codedent": "^0.1.2",
         "codemirror": "^6.0.1",
-        "eslint": "^9.19.0",
+        "eslint": "^9.20.1",
         "flatted": "^3.3.2",
-        "rollup": "^4.34.4",
+        "rollup": "^4.34.7",
         "rollup-plugin-postcss": "^4.0.2",
         "rollup-plugin-string": "^3.0.0",
         "static-handler": "^0.5.3",
