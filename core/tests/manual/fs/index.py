@@ -8,7 +8,7 @@ if TEST == "implicit":
     await fs.mount("/persistent")
 
     print(
-        RUNNING_IN_WORKER and "Worker" or "Main",
+        (RUNNING_IN_WORKER and "Worker") or "Main",
         os.listdir("/persistent"),
     )
 

@@ -25,6 +25,7 @@ class JSModule:
         # avoid pyodide looking for non existent fields
         if not field.startswith("_"):
             return getattr(getattr(js_modules, self.name), field)
+        return None
 
 
 # generate N modules in the system that will proxy the real value

@@ -65,7 +65,6 @@ async def test_storage_types():
     assert test_store["string"] == "hello"
     assert isinstance(test_store["string"], str)
     assert test_store["none"] is None
-    assert isinstance(test_store["none"], type(None))
     assert test_store["list"] == [1, 2, 3]
     assert isinstance(test_store["list"], list)
     assert test_store["dict"] == {"a": 1, "b": 2}

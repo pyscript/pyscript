@@ -35,7 +35,8 @@ import pygame
 
 # see if we can load more than standard BMP
 if not pygame.image.get_extended():
-    raise SystemExit("Sorry, extended image module required")
+    msg = "Sorry, extended image module required"
+    raise SystemExit(msg)
 
 
 # game constants
@@ -56,7 +57,8 @@ def load_image(file):
     try:
         surface = pygame.image.load(file)
     except pygame.error:
-        raise SystemExit(f'Could not load image "{file}" {pygame.get_error()}')
+        msg = f'Could not load image "{file}" {pygame.get_error()}'
+        raise SystemExit(msg)
     return surface.convert()
 
 
@@ -66,8 +68,7 @@ def load_sound(file):
         return None
     file = os.path.join(main_dir, "data", file)
     try:
-        sound = pygame.mixer.Sound(file)
-        return sound
+        return pygame.mixer.Sound(file)
     except pygame.error:
         print(f"Warning, unable to load, {file}")
     return None
@@ -227,7 +228,7 @@ class Score(pygame.sprite.Sprite):
 
     def update(self):
         """We only update the score in update() when it has changed."""
-        if SCORE != self.lastscore:
+        if self.lastscore != SCORE:
             self.lastscore = SCORE
             msg = "Score: %d" % SCORE
             self.image = self.font.render(msg, 0, self.color)
@@ -296,7 +297,7 @@ async def main(winstyle=0):
     # Create Some Starting Values
     global score
     alienreload = ALIEN_RELOAD
-    clock = pygame.Clock()
+    _clock = pygame.Clock()
 
     # initialize our starting sprites
     global SCORE
@@ -313,24 +314,23 @@ async def main(winstyle=0):
                 return
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 return
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_f:
-                    if not fullscreen:
-                        print("Changing to FULLSCREEN")
-                        screen_backup = screen.copy()
-                        screen = pygame.display.set_mode(
-                            SCREENRECT.size, winstyle | pygame.FULLSCREEN, bestdepth
-                        )
-                        screen.blit(screen_backup, (0, 0))
-                    else:
-                        print("Changing to windowed mode")
-                        screen_backup = screen.copy()
-                        screen = pygame.display.set_mode(
-                            SCREENRECT.size, winstyle, bestdepth
-                        )
-                        screen.blit(screen_backup, (0, 0))
-                    pygame.display.flip()
-                    fullscreen = not fullscreen
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_f:
+                if not fullscreen:
+                    print("Changing to FULLSCREEN")
+                    screen_backup = screen.copy()
+                    screen = pygame.display.set_mode(
+                        SCREENRECT.size, winstyle | pygame.FULLSCREEN, bestdepth
+                    )
+                    screen.blit(screen_backup, (0, 0))
+                else:
+                    print("Changing to windowed mode")
+                    screen_backup = screen.copy()
+                    screen = pygame.display.set_mode(
+                        SCREENRECT.size, winstyle, bestdepth
+                    )
+                    screen.blit(screen_backup, (0, 0))
+                pygame.display.flip()
+                fullscreen = not fullscreen
 
         keystate = pygame.key.get_pressed()
 
@@ -371,7 +371,7 @@ async def main(winstyle=0):
             player.kill()
 
         # See if shots hit the aliens.
-        for alien in pygame.sprite.groupcollide(aliens, shots, 1, 1).keys():
+        for alien in pygame.sprite.groupcollide(aliens, shots, 1, 1):
             if pygame.mixer:
                 boom_sound.play()
             Explosion(alien)

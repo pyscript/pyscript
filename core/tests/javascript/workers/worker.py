@@ -4,4 +4,4 @@ def runtime_version():
     return sys.version
 
 
-__export__ = ['runtime_version']
+__export__ = ["runtime_version"]

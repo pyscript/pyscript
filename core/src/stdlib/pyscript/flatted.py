@@ -31,7 +31,7 @@ def _object_keys(value):
 
 
 def _is_array(value):
-    return isinstance(value, list) or isinstance(value, tuple)
+    return isinstance(value, (list, tuple))
 
 
 def _is_object(value):
@@ -60,10 +60,10 @@ def _loop(keys, input, known, output):
 
 
 def _ref(key, value, input, known, output):
-    if _is_array(value) and not value in known:
+    if _is_array(value) and value not in known:
         known.append(value)
         value = _loop(_array_keys(value), input, known, value)
-    elif _is_object(value) and not value in known:
+    elif _is_object(value) and value not in known:
         known.append(value)
         value = _loop(_object_keys(value), input, known, value)
 
