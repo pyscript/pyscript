@@ -55,5 +55,6 @@ async def sync(path):
 
 async def unmount(path):
     from _pyscript import interpreter
+
     await sync(path)
     interpreter._module.FS.unmount(path)
