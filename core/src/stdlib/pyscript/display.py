@@ -164,9 +164,7 @@ def display(*values, target=None, append=True):
     # If target cannot be found on the page, a ValueError is raised
     if element is None:
         msg = f"Invalid selector with id={target}. Cannot be found in the page."
-        raise ValueError(
-            msg
-        )
+        raise ValueError(msg)
 
     # if element is a <script type="py">, it has a 'target' attribute which
     # points to the visual element holding the displayed values. In that case,

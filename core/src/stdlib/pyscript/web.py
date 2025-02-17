@@ -232,9 +232,7 @@ class Element:
                             f'Element "{item}" is a proxy object, "'
                             f"but not a valid element or a NodeList."
                         )
-                        raise TypeError(
-                            msg
-                        )
+                        raise TypeError(msg)
 
     def clone(self, clone_id=None):
         """Make a clone of the element (clones the underlying DOM object too)."""
