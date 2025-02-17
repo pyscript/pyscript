@@ -14,31 +14,46 @@ async def mount(path, mode="readwrite", root="", id="pyscript"):
 
     handler = None
 
+    uid = f"{path}@{id}"
+
     options = {"id": id, "mode": mode}
     if root != "":
         options["startIn"] = root
 
     if RUNNING_IN_WORKER:
-        success = await sync.storeFSHandler(path, to_js(options))
+        fsh = sync.storeFSHandler(uid, to_js(options))
+
+        # allow both async and/or SharedArrayBuffer use case
+        if isinstance(fsh, bool):
+            success = fsh
+        else:
+            success = await fsh
+
         if success:
             from polyscript import IDBMap
 
             idb = IDBMap.new(fs.NAMESPACE)
-            handler = await idb.get(path)
+            handler = await idb.get(uid)
         else:
-            raise Error(fs.ERROR)
+            raise RuntimeError(fs.ERROR)
 
     else:
-        success = await fs.idb.has(path)
+        success = await fs.idb.has(uid)
 
         if success:
-            handler = await fs.idb.get(path)
+            handler = await fs.idb.get(uid)
         else:
             handler = await fs.getFileSystemDirectoryHandle(to_js(options))
-            await fs.idb.set(path, handler)
+            await fs.idb.set(uid, handler)
 
     mounted[path] = await interpreter.mountNativeFS(path, handler)
 
 
 async def sync(path):
     await mounted[path].syncfs()
+
+
+async def unmount(path):
+    from _pyscript import interpreter
+    await sync(path)
+    interpreter._module.FS.unmount(path)

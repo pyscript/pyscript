@@ -14,15 +14,15 @@ export default {
 
     /**
      * Ask a user action via dialog and returns the directory handler once granted.
-     * @param {string} path
+     * @param {string} uid
      * @param {{id?:string, mode?:"read"|"readwrite", hint?:"desktop"|"documents"|"downloads"|"music"|"pictures"|"videos"}} options
      * @returns {boolean}
      */
-    async storeFSHandler(path, options = {}) {
-        if (await idb.has(path)) return true;
+    async storeFSHandler(uid, options = {}) {
+        if (await idb.has(uid)) return true;
         return getFileSystemDirectoryHandle(options).then(
             async (handler) => {
-                await idb.set(path, handler);
+                await idb.set(uid, handler);
                 return true;
             },
             () => false,

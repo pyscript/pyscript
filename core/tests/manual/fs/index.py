@@ -22,18 +22,25 @@ if TEST == "implicit":
 elif not RUNNING_IN_WORKER:
     from pyscript import document
 
-    explicit = document.createElement("button")
-    explicit.textContent = "grant access"
-    document.body.append(explicit)
+    button = document.createElement("button")
+    button.textContent = "mount"
+    document.body.append(button)
 
     async def mount(event):
         try:
             await fs.mount("/persistent")
             print(os.listdir("/persistent"))
-            explicit.disabled = True
+            button.textContent = "unmount"
+            button.onclick = unmount
+
         except:
             import js
 
             js.alert("unable to grant access")
 
-    explicit.onclick = mount
+    async def unmount(event):
+        await fs.unmount("/persistent")
+        button.textContent = "mount"
+        button.onclick = mount
+
+    button.onclick = mount

@@ -7,11 +7,11 @@ declare namespace _default {
     function sleep(seconds: number): Promise<any>;
     /**
      * Ask a user action via dialog and returns the directory handler once granted.
-     * @param {string} path
+     * @param {string} uid
      * @param {{id?:string, mode?:"read"|"readwrite", hint?:"desktop"|"documents"|"downloads"|"music"|"pictures"|"videos"}} options
      * @returns {boolean}
      */
-    function storeFSHandler(path: string, options?: {
+    function storeFSHandler(uid: string, options?: {
         id?: string;
         mode?: "read" | "readwrite";
         hint?: "desktop" | "documents" | "downloads" | "music" | "pictures" | "videos";
