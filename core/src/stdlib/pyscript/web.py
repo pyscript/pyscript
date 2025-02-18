@@ -2,8 +2,10 @@
 
 # `when` is not used in this module. It is imported here save the user an additional
 # import (i.e. they can get what they need from `pyscript.web`).
-from __future__ import annotations
-from pyscript import document, when, Event  # NOQA
+
+# from __future__ import annotations  # CAUTION: This is not supported in MicroPython.
+
+from pyscript import document, when, Event  # noqa: F401
 from pyscript.ffi import create_proxy
 
 
