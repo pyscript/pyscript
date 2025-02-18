@@ -122,7 +122,8 @@ class Element:
         # with Python keywords or built-ins (e.g. the output element has an
         # attribute `for` which is a Python keyword, so you can access it on the
         # Element instance via `for_`).
-        name = name.removesuffix("_")
+        if name.endswith("_"):
+            name = name[:-1]  # noqa: FURB188 No str.removesuffix() in MicroPython.
         return getattr(self._dom_element, name)
 
     def __setattr__(self, name, value):
@@ -139,7 +140,8 @@ class Element:
             # with Python keywords or built-ins (e.g. the output element has an
             # attribute `for` which is a Python keyword, so you can access it on the
             # Element instance via `for_`).
-            name = name.removesuffix("_")
+            if name.endswith("_"):
+                name = name[:-1]  # noqa: FURB188 No str.removesuffix() in MicroPython.
 
             if name.startswith("on_"):
                 # Ensure on-events are cached in the _on_events dict if the

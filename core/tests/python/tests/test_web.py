@@ -625,7 +625,7 @@ class TestElements:
 
         # Let's keep the tag in 2 variables, one for the selector and another to
         # check the return tag from the selector
-        locator_type = el_tag = el_type.removesuffix("_")
+        locator_type = el_tag = el_type[:-1] if el_type.endswith("_") else el_type
         if additional_selector_rules:
             locator_type += f"{additional_selector_rules}"
 
