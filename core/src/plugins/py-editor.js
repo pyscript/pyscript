@@ -4,13 +4,15 @@ import { TYPES, offline_interpreter, relative_url, stdlib } from "../core.js";
 import { notify } from "./error.js";
 import codemirror from "./codemirror.js";
 
-const RUN_BUTTON = `<svg style="height:20px;width:20px;vertical-align:-.125em;transform-origin:center;overflow:visible;color:green" viewBox="0 0 384 512" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg"><g transform="translate(192 256)" transform-origin="96 0"><g transform="translate(0,0) scale(1,1)"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z" fill="currentColor" transform="translate(-192 -256)"></path></g></g></svg>`;
+const RUN_BUTTON = `<svg style="height:24px;width:24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,12a1,1,0,0,1-.55.89l-10,5A1,1,0,0,1,8,18a1,1,0,0,1-.53-.15A1,1,0,0,1,7,17V7a1,1,0,0,1,1.45-.89l10,5A1,1,0,0,1,19,12Z" fill="#464646"/></svg>`;
+const STOP_BUTTON = `<svg style="height:24px;width:24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 7h10v10H7z" style="fill:#464646;stroke:#464646;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;paint-order:normal"/></svg>`;
 
 let id = 0;
 const getID = (type) => `${type}-editor-${id++}`;
 
 const envs = new Map();
 const configs = new Map();
+const editors = new WeakMap();
 
 const hooks = {
     worker: {
@@ -30,12 +32,18 @@ const validate = (config, result) => {
     return result;
 };
 
+const getRelatedScript = (target, type) => {
+    const editor = target.closest(`.${type}-editor-box`);
+    return editor?.parentNode?.previousElementSibling;
+};
+
 async function execute({ currentTarget }) {
     const { env, pySrc, outDiv } = this;
     const hasRunButton = !!currentTarget;
 
     if (hasRunButton) {
-        currentTarget.disabled = true;
+        currentTarget.classList.add("running");
+        currentTarget.innerHTML = STOP_BUTTON;
         outDiv.innerHTML = "";
     }
 
@@ -82,8 +90,7 @@ async function execute({ currentTarget }) {
         // creation and destruction of editors on the fly
         if (hasRunButton) {
             for (const type of TYPES.keys()) {
-                const editor = currentTarget.closest(`.${type}-editor-box`);
-                const script = editor?.parentNode?.previousElementSibling;
+                const script = getRelatedScript(currentTarget, type);
                 if (script) {
                     defineProperties(script, { xworker: { value: xworker } });
                     break;
@@ -116,7 +123,10 @@ async function execute({ currentTarget }) {
         };
 
         const enable = () => {
-            if (hasRunButton) currentTarget.disabled = false;
+            if (hasRunButton) {
+                currentTarget.classList.remove("running");
+                currentTarget.innerHTML = RUN_BUTTON;
+            }
         };
         const { sync } = xworker;
         sync.write = (str) => {
@@ -144,6 +154,24 @@ const makeRunButton = (handler, type) => {
     runButton.innerHTML = RUN_BUTTON;
     runButton.setAttribute("aria-label", "Python Script Run Button");
     runButton.addEventListener("click", async (event) => {
+        if (
+            runButton.classList.contains("running") &&
+            confirm("Stop evaluating this code?")
+        ) {
+            const script = getRelatedScript(runButton, type);
+            if (script) {
+                const editor = editors.get(script);
+                const content = editor.state.doc.toString();
+                const clone = script.cloneNode(true);
+                clone.type = `${type}-editor`;
+                clone.textContent = content;
+                script.xworker.terminate();
+                script.nextElementSibling.remove();
+                script.replaceWith(clone);
+                editors.delete(script);
+            }
+            return;
+        }
         runButton.blur();
         await handler.handleEvent(event);
     });
@@ -387,6 +415,7 @@ const init = async (script, type, interpreter) => {
         doc,
     });
 
+    editors.set(script, editor);
     editor.focus();
     notifyEditor();
 };
