@@ -38,6 +38,11 @@ repos:
             additional_dependencies:
                 - tomli
 
+    - repo: https://github.com/astral-sh/ruff-pre-commit
+      rev: v0.9.6
+      hooks:
+          - id: ruff
+
     - repo: https://github.com/hoodmane/pyscript-prettier-precommit
       rev: "v3.0.0-alpha.6"
       hooks:

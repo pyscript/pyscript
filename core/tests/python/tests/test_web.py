@@ -248,7 +248,7 @@ class TestCollection:
 
     def test_iter_eq_children(self):
         elements = web.page.find(".multi-elems")
-        assert [el for el in elements] == [el for el in elements.elements]
+        assert list(elements) == list(elements.elements)
         assert len(elements) == 3
 
     def test_slices(self):
@@ -427,18 +427,18 @@ class TestInput:
 class TestSelect:
 
     def test_select_options_iter(self):
-        select = web.page.find(f"#test_select_element_w_options")[0]
+        select = web.page.find("#test_select_element_w_options")[0]
 
         for i, option in enumerate(select.options, 1):
             assert option.value == f"{i}"
             assert option.innerHTML == f"Option {i}"
 
     def test_select_options_len(self):
-        select = web.page.find(f"#test_select_element_w_options")[0]
+        select = web.page.find("#test_select_element_w_options")[0]
         assert len(select.options) == 2
 
     def test_select_options_clear(self):
-        select = web.page.find(f"#test_select_element_to_clear")[0]
+        select = web.page.find("#test_select_element_to_clear")[0]
         assert len(select.options) == 3
 
         select.options.clear()
@@ -447,7 +447,7 @@ class TestSelect:
 
     def test_select_element_add(self):
         # GIVEN the existing select element with no options
-        select = web.page.find(f"#test_select_element")[0]
+        select = web.page.find("#test_select_element")[0]
 
         # EXPECT the select element to have no options
         assert len(select.options) == 0
@@ -498,20 +498,14 @@ class TestSelect:
         # EXPECT the middle option to have the value and html we passed in
         assert select.options[0].value == "1"
         assert select.options[0].innerHTML == "Option 1"
-        assert (
-            select.options[0].selected
-            == select.options[0]._dom_element.selected
-            == False
-        )
+        assert select.options[0].selected == select.options[0]._dom_element.selected
+        assert select.options[0].selected is False
         assert select.options[1].value == "2"
         assert select.options[1].innerHTML == "Option 2"
         assert select.options[2].value == "3"
         assert select.options[2].innerHTML == "Option 3"
-        assert (
-            select.options[2].selected
-            == select.options[2]._dom_element.selected
-            == True
-        )
+        assert select.options[2].selected == select.options[2]._dom_element.selected
+        assert select.options[2].selected is True
         assert select.options[3].value == ""
         assert select.options[3].innerHTML == ""
 
@@ -538,7 +532,7 @@ class TestSelect:
 
     def test_select_options_remove(self):
         # GIVEN the existing select element with 3 options
-        select = web.page.find(f"#test_select_element_to_remove")[0]
+        select = web.page.find("#test_select_element_to_remove")[0]
 
         # EXPECT the select element to have 3 options
         assert len(select.options) == 4
@@ -560,7 +554,7 @@ class TestSelect:
 
     def test_select_get_selected_option(self):
         # GIVEN the existing select element with one selected option
-        select = web.page.find(f"#test_select_element_w_options")[0]
+        select = web.page.find("#test_select_element_w_options")[0]
 
         # WHEN we get the selected option
         selected_option = select.options.selected
@@ -568,7 +562,8 @@ class TestSelect:
         # EXPECT the selected option to be correct
         assert selected_option.value == "2"
         assert selected_option.innerHTML == "Option 2"
-        assert selected_option.selected == selected_option._dom_element.selected == True
+        assert selected_option.selected == selected_option._dom_element.selected
+        assert selected_option.selected is True
 
 
 class TestElements:
@@ -625,7 +620,8 @@ class TestElements:
             el = klass(*args, **kwargs)
             container.append(el)
         except Exception as e:
-            assert False, f"Failed to create element {el_type}: {e}"
+            msg = f"Failed to create element {el_type}: {e}"
+            raise AssertionError(msg)
 
         # Let's keep the tag in 2 variables, one for the selector and another to
         # check the return tag from the selector

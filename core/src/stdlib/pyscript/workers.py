@@ -25,10 +25,12 @@ async def create_named_worker(src="", name="", config=None, type="py"):
     from json import dumps
 
     if not src:
-        raise ValueError("Named workers require src")
+        msg = "Named workers require src"
+        raise ValueError(msg)
 
     if not name:
-        raise ValueError("Named workers require a name")
+        msg = "Named workers require a name"
+        raise ValueError(msg)
 
     s = _js.document.createElement("script")
     s.type = type
@@ -37,7 +39,7 @@ async def create_named_worker(src="", name="", config=None, type="py"):
     _set(s, "name", name)
 
     if config:
-        _set(s, "config", isinstance(config, str) and config or dumps(config))
+        _set(s, "config", (isinstance(config, str) and config) or dumps(config))
 
     _js.document.body.append(s)
     return await workers[name]

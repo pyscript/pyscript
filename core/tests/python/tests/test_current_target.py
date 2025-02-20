@@ -13,10 +13,7 @@ def test_current_target():
     """
     expected = "py-0"
     if is_micropython:
-        if RUNNING_IN_WORKER:
-            expected = "mpy-w0-target"
-        else:
-            expected = "mpy-0"
+        expected = "mpy-w0-target" if RUNNING_IN_WORKER else "mpy-0"
     elif RUNNING_IN_WORKER:
         expected = "py-w0-target"
     assert current_target() == expected, f"Expected {expected} got {current_target()}"
