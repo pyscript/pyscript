@@ -83,3 +83,12 @@ documentation for more information on how to setup your development environment.
 
 The [PyScript organization governance](https://github.com/pyscript/governance)
 is documented in a separate repository.
+
+## Supporters
+
+PyScript is an independent open source project.
+
+However, PyScript was born at [Anaconda Inc](https://anaconda.com/) and its
+core contributors are currently employed by Anaconda to work on PyScript. We
+would like to acknowledge and celebrate Anaconda's continued support of this
+project. Thank you [Anaconda Inc](https://anaconda.com/)!
