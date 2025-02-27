@@ -73,14 +73,14 @@ def _eval_formatter(obj, print_method):
     """
     if print_method == "__repr__":
         return repr(obj)
-    elif hasattr(obj, print_method):
+    if hasattr(obj, print_method):
         if print_method == "savefig":
             buf = io.BytesIO()
             obj.savefig(buf, format="png")
             buf.seek(0)
             return base64.b64encode(buf.read()).decode("utf-8")
         return getattr(obj, print_method)()
-    elif print_method == "_repr_mimebundle_":
+    if print_method == "_repr_mimebundle_":
         return {}, {}
     return None
 
@@ -107,7 +107,7 @@ def _format_mime(obj):
 
         if output is None:
             continue
-        elif mime_type not in _MIME_RENDERERS:
+        if mime_type not in _MIME_RENDERERS:
             not_available.append(mime_type)
             continue
         break
@@ -149,9 +149,11 @@ def display(*values, target=None, append=True):
     if target is None:
         target = current_target()
     elif not isinstance(target, str):
-        raise TypeError(f"target must be str or None, not {target.__class__.__name__}")
+        msg = f"target must be str or None, not {target.__class__.__name__}"
+        raise TypeError(msg)
     elif target == "":
-        raise ValueError("Cannot have an empty target")
+        msg = "Cannot have an empty target"
+        raise ValueError(msg)
     elif target.startswith("#"):
         # note: here target is str and not None!
         # align with @when behavior
@@ -161,9 +163,8 @@ def display(*values, target=None, append=True):
 
     # If target cannot be found on the page, a ValueError is raised
     if element is None:
-        raise ValueError(
-            f"Invalid selector with id={target}. Cannot be found in the page."
-        )
+        msg = f"Invalid selector with id={target}. Cannot be found in the page."
+        raise ValueError(msg)
 
     # if element is a <script type="py">, it has a 'target' attribute which
     # points to the visual element holding the displayed values. In that case,

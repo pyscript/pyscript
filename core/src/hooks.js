@@ -88,7 +88,19 @@ export const hooks = {
         /** @type {Set<function>} */
         onBeforeRun: new SetFunction(),
         /** @type {Set<function>} */
-        onBeforeRunAsync: new SetFunction(),
+        onBeforeRunAsync: new SetFunction([
+            ({ interpreter }) => {
+                interpreter.registerJsModule("_pyscript", {
+                    // cannot be imported from fs.js
+                    // because this code is stringified
+                    fs: {
+                        ERROR: "storage permissions not granted",
+                        NAMESPACE: "@pyscript.fs",
+                    },
+                    interpreter,
+                });
+            },
+        ]),
         /** @type {Set<function>} */
         onAfterRun: new SetFunction(),
         /** @type {Set<function>} */

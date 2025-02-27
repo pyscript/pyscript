@@ -2,7 +2,10 @@
 
 # `when` is not used in this module. It is imported here save the user an additional
 # import (i.e. they can get what they need from `pyscript.web`).
-from pyscript import document, when, Event  # NOQA
+
+# from __future__ import annotations  # CAUTION: This is not supported in MicroPython.
+
+from pyscript import document, when, Event  # noqa: F401
 from pyscript.ffi import create_proxy
 
 
@@ -100,7 +103,7 @@ class Element:
         If `key` is an integer or a slice we use it to index/slice the element's
         children. Otherwise, we use `key` as a query selector.
         """
-        if isinstance(key, int) or isinstance(key, slice):
+        if isinstance(key, (int, slice)):
             return self.children[key]
 
         return self.find(key)
@@ -120,7 +123,7 @@ class Element:
         # attribute `for` which is a Python keyword, so you can access it on the
         # Element instance via `for_`).
         if name.endswith("_"):
-            name = name[:-1]
+            name = name[:-1]  # noqa: FURB188 No str.removesuffix() in MicroPython.
         return getattr(self._dom_element, name)
 
     def __setattr__(self, name, value):
@@ -138,7 +141,7 @@ class Element:
             # attribute `for` which is a Python keyword, so you can access it on the
             # Element instance via `for_`).
             if name.endswith("_"):
-                name = name[:-1]
+                name = name[:-1]  # noqa: FURB188 No str.removesuffix() in MicroPython.
 
             if name.startswith("on_"):
                 # Ensure on-events are cached in the _on_events dict if the
@@ -152,10 +155,12 @@ class Element:
         Get an `Event` instance for the specified event name.
         """
         if not name.startswith("on_"):
-            raise ValueError("Event names must start with 'on_'.")
+            msg = "Event names must start with 'on_'."
+            raise ValueError(msg)
         event_name = name[3:]  # Remove the "on_" prefix.
         if not hasattr(self._dom_element, event_name):
-            raise ValueError(f"Element has no '{event_name}' event.")
+            msg = f"Element has no '{event_name}' event."
+            raise ValueError(msg)
         if name in self._on_events:
             return self._on_events[name]
         # Such an on-event exists in the DOM element, but we haven't yet
@@ -203,7 +208,7 @@ class Element:
             # We check for list/tuple here and NOT for any iterable as it will match
             # a JS Nodelist which is handled explicitly below.
             # NodeList.
-            elif isinstance(item, list) or isinstance(item, tuple):
+            elif isinstance(item, (list, tuple)):
                 for child in item:
                     self.append(child)
 
@@ -227,10 +232,11 @@ class Element:
 
                     except AttributeError:
                         # Nope! This is not an element or a NodeList.
-                        raise TypeError(
+                        msg = (
                             f'Element "{item}" is a proxy object, "'
                             f"but not a valid element or a NodeList."
                         )
+                        raise TypeError(msg)
 
     def clone(self, clone_id=None):
         """Make a clone of the element (clones the underlying DOM object too)."""
@@ -401,9 +407,8 @@ class Options:
 
         new_option = option(**kwargs)
 
-        if before:
-            if isinstance(before, Element):
-                before = before._dom_element
+        if before and isinstance(before, Element):
+            before = before._dom_element
 
         self._element._dom_element.add(new_option._dom_element, before)
 
@@ -463,7 +468,7 @@ class ContainerElement(Element):
         )
 
         for child in list(args) + (children or []):
-            if isinstance(child, Element) or isinstance(child, ElementCollection):
+            if isinstance(child, (Element, ElementCollection)):
                 self.append(child)
 
             else:
@@ -493,14 +498,13 @@ class ClassesCollection:
         )
 
     def __iter__(self):
-        for class_name in self._all_class_names():
-            yield class_name
+        yield from self._all_class_names()
 
     def __len__(self):
         return len(self._all_class_names())
 
     def __repr__(self):
-        return f"ClassesCollection({repr(self._collection)})"
+        return f"ClassesCollection({self._collection!r})"
 
     def __str__(self):
         return " ".join(self._all_class_names())
@@ -553,7 +557,7 @@ class StyleCollection:
             element.style[key] = value
 
     def __repr__(self):
-        return f"StyleCollection({repr(self._collection)})"
+        return f"StyleCollection({self._collection!r})"
 
     def remove(self, key):
         """Remove a CSS property from the elements in the collection."""
@@ -588,7 +592,7 @@ class ElementCollection:
         if isinstance(key, int):
             return self._elements[key]
 
-        elif isinstance(key, slice):
+        if isinstance(key, slice):
             return ElementCollection(self._elements[key])
 
         return self.find(key)
@@ -1125,7 +1129,8 @@ class video(ContainerElement):
 
         elif isinstance(to, Element):
             if to.tag != "canvas":
-                raise TypeError("Element to snap to must be a canvas.")
+                msg = "Element to snap to must be a canvas."
+                raise TypeError(msg)
 
         elif getattr(to, "tagName", "") == "CANVAS":
             to = canvas(dom_element=to)
@@ -1134,10 +1139,12 @@ class video(ContainerElement):
         elif isinstance(to, str):
             nodelist = document.querySelectorAll(to)  # NOQA
             if nodelist.length == 0:
-                raise TypeError("No element with selector {to} to snap to.")
+                msg = "No element with selector {to} to snap to."
+                raise TypeError(msg)
 
             if nodelist[0].tagName != "CANVAS":
-                raise TypeError("Element to snap to must be a canvas.")
+                msg = "Element to snap to must be a canvas."
+                raise TypeError(msg)
 
             to = canvas(dom_element=nodelist[0])
 

@@ -28,53 +28,34 @@ mpy-config {
 .py-editor-run-button,
 .mpy-editor-run-button {
     position: absolute;
+    display: flex;
     right: 0.5rem;
     bottom: 0.5rem;
     opacity: 0;
     transition: opacity 0.25s;
     z-index: 1;
+    padding: 0;
 }
 .py-editor-box:hover .py-editor-run-button,
 .mpy-editor-box:hover .mpy-editor-run-button,
 .py-editor-run-button:focus,
-.py-editor-run-button:disabled,
+.py-editor-run-button.running,
 .mpy-editor-run-button:focus,
-.mpy-editor-run-button:disabled {
+.mpy-editor-run-button.running {
     opacity: 1;
-}
-
-@keyframes spinner {
-    to {
-        transform: rotate(360deg);
-    }
-}
-.py-editor-run-button:disabled > *,
-.mpy-editor-run-button:disabled > * {
-    display: none; /* hide all the child elements of the run button when it is disabled */
-}
-.py-editor-run-button:disabled,
-.mpy-editor-run-button:disabled {
-    border-width: 0;
-}
-.py-editor-run-button:disabled::before,
-.mpy-editor-run-button:disabled::before {
-    content: "";
-    box-sizing: border-box;
-    position: absolute;
-    top: 100%;
-    left: 100%;
-    width: 20px;
-    height: 20px;
-    margin-top: -23px; /* hardcoded value to center the spinner on the run button */
-    margin-left: -26px; /* hardcoded value to center the spinner on the run button */
-    border-radius: 50%;
-    border: 2px solid #aaa;
-    border-top-color: #000;
-    background-color: #fff;
-    animation: spinner 0.6s linear infinite;
 }
 
 py-terminal span,
 mpy-terminal span {
     letter-spacing: 0 !important;
+}
+
+dialog.pyscript-fs {
+    border-radius: 8px;
+    border-width: 1px;
+}
+
+dialog.pyscript-fs > div {
+    display: flex;
+    justify-content: space-between;
 }

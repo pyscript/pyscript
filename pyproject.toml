@@ -1,3 +1,9 @@
 [tool.codespell]
 ignore-words-list = "afterall"
 skip = "*.js,*.json"
+
+[tool.ruff]
+line-length = 114
+lint.select = ["C4", "C90", "E", "EM", "F", "PIE", "PYI", "PLC", "Q", "RET", "W"]
+lint.ignore = ["E402", "E722", "E731", "E741", "F401", "F704", "F811", "F821"]
+lint.mccabe.max-complexity = 27

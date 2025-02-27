@@ -256,7 +256,7 @@ async def test_image_display():
     """
     Check an image is displayed correctly.
     """
-    mpl = await py_import("matplotlib")
+    _mpl = await py_import("matplotlib")
     import matplotlib.pyplot as plt
 
     xpoints = [3, 6, 9]

@@ -1,6 +1,6 @@
-import numpy
-import matplotlib
+import numpy as np
+import matplotlib as mpl
 
 # just do something with the packages
-print(len(dir(numpy)))
-print(len(dir(matplotlib)))
+print(len(dir(np)))
+print(len(dir(mpl)))

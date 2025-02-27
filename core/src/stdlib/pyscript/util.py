@@ -11,7 +11,7 @@ def as_bytearray(buffer):
     ui8a = js.Uint8Array.new(buffer)
     size = ui8a.length
     ba = bytearray(size)
-    for i in range(0, size):
+    for i in range(size):
         ba[i] = ui8a[i]
     return ba
 

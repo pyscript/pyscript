@@ -36,7 +36,8 @@ class Event:
             if listener not in self._listeners:
                 self._listeners.append(listener)
         else:
-            raise ValueError("Listener must be callable or awaitable.")
+            msg = "Listener must be callable or awaitable."
+            raise ValueError(msg)
 
     def remove_listener(self, *args):
         """
@@ -76,7 +77,8 @@ def when(target, *args, **kwargs):
         # Extract the selector from the arguments or keyword arguments.
         selector = args[0] if args else kwargs.pop("selector")
         if not selector:
-            raise ValueError("No selector provided.")
+            msg = "No selector provided."
+            raise ValueError(msg)
         # Grab the DOM elements to which the target event will be attached.
         from pyscript.web import Element, ElementCollection
 

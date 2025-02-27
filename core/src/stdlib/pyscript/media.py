@@ -44,8 +44,7 @@ class Device:
             for k in video:
                 setattr(options.video, k, to_js(video[k]))
 
-        stream = await window.navigator.mediaDevices.getUserMedia(options)
-        return stream
+        return await window.navigator.mediaDevices.getUserMedia(options)
 
     async def get_stream(self):
         key = self.kind.replace("input", "").replace("output", "")
