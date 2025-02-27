@@ -13,10 +13,11 @@ const hooks = {
                 toBeWarned = false;
                 console.warn("⚠️ EXPERIMENTAL `py-game` FEATURE");
             }
+
+            let config = {};
             if (script.hasAttribute("config")) {
                 const value = script.getAttribute("config");
                 const { json, toml, text } = configDetails(value);
-                let config = {};
                 if (json) config = JSON.parse(text);
                 else if (toml) {
                     const { parse } = await import(
@@ -54,7 +55,23 @@ const hooks = {
             const target = script.getAttribute("target") || "canvas";
             const canvas = document.getElementById(target);
             wrap.interpreter.canvas.setCanvas2D(canvas);
-            await wrap.interpreter.runPythonAsync(code);
+
+            // allow 3rd party to hook themselves right before
+            // the code gets executed
+            const event = new CustomEvent("py-game", {
+                bubbles: true,
+                cancelable: true,
+                detail: {
+                    canvas,
+                    code,
+                    config,
+                    wrap,
+                },
+            });
+            script.dispatchEvent(event);
+            // run only if the default was not prevented
+            if (!event.defaultPrevented)
+                await wrap.interpreter.runPythonAsync(code);
         },
     },
 };
