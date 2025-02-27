@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Genuary</title>
+
+    <!-- Recommended meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <!-- PyScript CSS -->
+    <link rel="stylesheet" href="../../../dist/core.css">
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #4a315e;
+            color: white;
+            font-family: Inconsolata, Consolas, Monaco, Courier New;
+        }
+
+        .gutter {
+            background-color: #eee;
+            background-repeat: no-repeat;
+            background-position: 50%;
+        }
+
+        .gutter.gutter-vertical {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
+            cursor: row-resize;
+        }
+
+        py-terminal {
+            max-height: 7em;
+            max-width: calc(100vw - 90px);
+        }
+
+        #pyterm {
+            background-color: #191a1a;
+        }
+
+        #pyterm,
+        #threejs {
+            position: relative;
+            overflow: hidden;
+        }
+    </style>
+
+    <!-- This script tag bootstraps PyScript -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@v0.173.0/build/three.module.js"
+        }
+    }
+    </script>
+    <script type="module" src="../../../dist/core.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
+</head>
+<body>
+    <div id="stats"></div>
+    <div id="stats-off"></div>
+    <div class="split">
+        <div id="pyterm"></div>
+        <div id="threejs"></div>
+    </div>
+    <script type="py" src="./main.py" config="./pyscript.toml" async terminal></script>
+</body>
+</html>
