@@ -44,13 +44,13 @@ def update_height_map(z):
 def crossfade_height_map():
     for y in range(grid_hs):
         for x in range(crossfade_range):
-            pos_i = y*grid_ws + x            
+            pos_i = y*grid_ws + x
             neg_i = y*grid_ws + grid_ws - crossfade_range + x
             weight = x/crossfade_range
             old_pos = height_map[pos_i]
             old_neg = height_map[neg_i]
             height_map[neg_i] = height_map[pos_i] = weight * old_pos + (1.0 - weight) * old_neg
-            
+
 
 def _crossfade_height_map():
     for y in range(grid_hs):
@@ -90,7 +90,7 @@ def marching_squares(height_map, sq_threshold):
             tr = height_map[y*grid_ws + x+1]
             bl = height_map[(y+1)*grid_ws + x]
             br = height_map[(y+1)*grid_ws + x+1]
-    
+
             sq_idx = 0
             if tl > sq_threshold:
                 sq_idx |= 8
@@ -100,14 +100,14 @@ def marching_squares(height_map, sq_threshold):
                 sq_idx |= 2
             if bl > sq_threshold:
                 sq_idx |= 1
-    
+
             edge_points = [
                 (x + interpolate(sq_threshold, tl, tr), y),
                 (x + 1, y + interpolate(sq_threshold, tr, br)),
                 (x + interpolate(sq_threshold, bl, br), y + 1),
                 (x, y + interpolate(sq_threshold, tl, bl)),
             ]
-    
+
             for a, b in edge_table[sq_idx]:
                 append_p(lines, edge_points[a], edge_points[b])
 

@@ -17,7 +17,7 @@ class SoundPlayer:
     on_stop: Callable[[], None] = field(default=lambda: None)
 
     _start_time: float = -1.0
-    
+
     def play(self):
         self.sound.stop()
         self.on_start()
@@ -34,7 +34,7 @@ class SoundPlayer:
             self.stop()
         else:
             self.play()
-    
+
     @property
     def running_time(self):
         if self.sound.isPlaying:
@@ -72,7 +72,7 @@ def get_renderer():
         elementStyle=split_element_style,
         minSize=0,
         maxSize=to_js([120, 10000]),
-    )       
+    )
     return renderer
 
 def get_ortho_camera(view_size):
@@ -93,28 +93,28 @@ def get_ortho_camera(view_size):
 def get_loading_manager():
     loading_mgr = new(THREE.LoadingManager)
     ev = asyncio.Event()
-    
+
     @create_proxy
     def on_start(url, itemsLoaded, itemsTotal):
         print(f'[{itemsLoaded}/{itemsTotal}] Started loading file: {url}')
     loading_mgr.onStart = on_start
-    
+
     @create_proxy
     def on_progress(url, itemsLoaded, itemsTotal):
         print(f'[{itemsLoaded}/{itemsTotal}] Loading file: {url}')
     loading_mgr.onProgress = on_progress
-    
+
     @create_proxy
     def on_error(url):
         print(f'There was a problem loading {url}')
     loading_mgr.onError = on_error
-    
+
     @create_proxy
     def on_load():
         print('Loading assets complete!')
         ev.set()
     loading_mgr.onLoad = on_load
-    
+
     return loading_mgr, ev
 
 
@@ -160,7 +160,7 @@ def clear():
         document.getElementById("pyterm").style.height = "115px"
         document.getElementById("threejs").style.height = "calc(100vh - 120px)"
         for e in document.getElementsByClassName("gutter"):
-            e.style.removeProperty("display")    
+            e.style.removeProperty("display")
         for e in document.getElementsByClassName("xterm-helper-textarea"):
             e.focus()
             break

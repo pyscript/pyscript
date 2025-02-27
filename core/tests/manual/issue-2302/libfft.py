@@ -8,7 +8,7 @@ class BeatSync:
     on_beat: bool = False
     beat: int = -1
     since_last_beat: float = sys.maxsize
-    
+
     _prev: int = 0
     _count: int = 0
     _bins: list[int] = field(default_factory=list)
@@ -18,7 +18,7 @@ class BeatSync:
     _cooldown: float = 0.2
 
     _highest: int = 0
-    
+
     def __post_init__(self):
         self._bins = [int(13/16*self.fft_res/2)+17, int(13/16*self.fft_res/2)+18]
 
@@ -29,7 +29,7 @@ class BeatSync:
         self._last_detection = -1.0
         self.since_last_beat = sys.maxsize
         # print('bs reset')
-    
+
     def update(self, data, running_time):
         self._count += 1
         self.since_last_beat = running_time - self._last_detection
@@ -61,14 +61,14 @@ class FreqIntensity:
     _bin_indexes: list[int] = field(default_factory=list)
     _harmonics: int = 8
     _slew_factor: float = 0.8
-    
+
     def __post_init__(self):
         self._bin_indexes = [
             round((harmonic+1) * self.freq / self._sample_rate * self.fft_res / 2)
             for harmonic in range(self._harmonics)
         ]
         print(self._bin_indexes)
-    
+
     def update(self, data):
         intensity = 0.0
         for bin in range(self._harmonics):

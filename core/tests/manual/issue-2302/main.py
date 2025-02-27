@@ -94,11 +94,11 @@ def draw_lines(line_coords, mat_name, spy=False):
         mat = grid_mat
     else:
         mat = other_mat
-    
+
     geo = new(THREE.BufferGeometry)
     geo.setAttribute('position', new(THREE.BufferAttribute, line_coords_f32a, 3))
     seg = new(THREE.LineSegments, geo, line_basic_mat)
-    
+
     lsg = new(lsgeo.LineSegmentsGeometry)
     lsg.fromLineSegments(seg)
     l1 = new(line2.Line2, lsg, mat)
@@ -107,7 +107,7 @@ def draw_lines(line_coords, mat_name, spy=False):
     l2.computeLineDistances()
     lines[0].add(l1)
     lines[1].add(l2)
-    
+
     seg.geometry.dispose()
     del geo
     del seg
@@ -159,7 +159,7 @@ def initial_calc():
     noise_factor = 500
     grid_hs = int(grid_h/grid_scale)
     grid_ws = int(grid_w/grid_scale)
-    crossfade_range = int(grid_ws/12.5)    
+    crossfade_range = int(grid_ws/12.5)
 
     def grid_lines():
         lines = array("d")
@@ -172,7 +172,7 @@ def initial_calc():
         for y in range(0, grid_hs, grid_goal):
             append_p(lines, (0, y), (grid_ws-crossfade_range, y))
         return lines
-    
+
     import perlin
     spy_perlin = perlin.lib
     spy_perlin.init()
@@ -221,7 +221,7 @@ def on_key_down(event):
     element = document.activeElement
     _class = element.getAttribute("class")
     in_xterm = element.tagName != "BODY" and _class and "xterm" in _class
-    
+
     if event.code == "Backquote":
         # Screenshot mode.
         clear()
@@ -259,7 +259,7 @@ def animate(now=0.0):
     if grid_width:
         offset = -((20 * audio_now) % grid_width)
         scale_lines(offset=offset)
-    
+
     renderer.render(scene, camera)
     stats_gl.update()
 

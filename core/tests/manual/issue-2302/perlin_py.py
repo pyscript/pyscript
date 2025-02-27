@@ -10,13 +10,13 @@ class V3:
 
     def __repr__(self):
         return f"V3({self.x}, {self.y}, {self.z})"
-    
+
     def dot2(self, x, y):
         return self.x * x + self.y * y
 
     def dot3(self, x, y, z):
         return self.x * x + self.y * y + self.z * z
-    
+
     def to_js(self, scale=1.0):
         return new(THREE.Vector3, self.x * scale, self.y * scale, self.z * scale)
 
@@ -42,7 +42,7 @@ V3_I = [V3(1, 1, 0), V3(-1, 1, 0), V3(1, -1, 0), V3(-1, -1, 0),
 def seed(s):
     if isinstance(s, float) and 0.0 < s < 1.0:
         s *= 65536
-    
+
     s = int(s)
     if s < 256:
         s |= s << 8
@@ -85,7 +85,7 @@ def perlin3(x, y, z):
     n100 = V3_P[x_c + 1 + PERM[y_c + PERM[z_c]]].dot3(x - 1, y, z)
     n101 = V3_P[x_c + 1 + PERM[y_c + PERM[z_c + 1]]].dot3(x - 1, y, z - 1)
     n110 = V3_P[x_c + 1 + PERM[y_c + 1 + PERM[z_c]]].dot3(x - 1, y - 1, z)
-    n111 = V3_P[x_c + 1 + PERM[y_c + 1 + PERM[z_c + 1]]].dot3(x - 1, y - 1, z - 1)  
+    n111 = V3_P[x_c + 1 + PERM[y_c + 1 + PERM[z_c + 1]]].dot3(x - 1, y - 1, z - 1)
     # fade curve
     u = fade(x)
     v = fade(y)
