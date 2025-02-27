@@ -1,0 +1,16 @@
+name = "Marching Squares with SPy Copy Copy"
+packages = [ "cffi", "./glue/perlin-0.0.0-cp312-cp312-pyodide_2024_0_wasm32.whl",]
+
+[files]
+"./libthree.py" = ""
+"./libfft.py" = ""
+"./perlin_py.py" = ""
+"./worker.py" = ""
+"./glue/multipyjs.py" = "./multipyjs.py"
+
+[js_modules.main]
+"https://cdn.jsdelivr.net/npm/three@v0.173.0/build/three.module.js" = "three"
+"https://cdn.jsdelivr.net/npm/three@v0.173.0/examples/jsm/lines/LineMaterial.js" = "linemat"
+"https://cdn.jsdelivr.net/npm/three@v0.173.0/examples/jsm/lines/Line2.js" = "line2"
+"https://cdn.jsdelivr.net/npm/three@v0.173.0/examples/jsm/lines/LineSegmentsGeometry.js" = "lsgeo"
+"https://cdn.jsdelivr.net/npm/stats-gl@3.6.0/dist/main.js" = "stats_gl"
