@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pyodide Media Module Test</title>
+  <link rel="stylesheet" href="../../dist/core.css">
+  <script type="module" src="../../dist/core.js"></script>
+</head>
+<body>
+<h1>Pyodide Media Module Test</h1>
+<div id="test-results">Running tests...</div>
+
+<script type="py" terminal>
+  from pyscript import window, document
+  from pyscript import media
+
+  async def run_tests():
+      # Test basic module structure
+      assert hasattr(media, "Device"), "media module should have Device class"
+      assert hasattr(media, "list_devices"), "media module should have list_devices function"
+
+      # Test device enumeration
+      devices = await media.list_devices()
+      assert isinstance(devices, list), "list_devices should return a list"
+
+      # If we have devices, test properties of one
+      if devices:
+          device = devices[0]
+          assert hasattr(device, "id"), "Device should have id property"
+          assert hasattr(device, "group"), "Device should have group property"
+          assert hasattr(device, "kind"), "Device should have kind property"
+          assert hasattr(device, "label"), "Device should have label property"
+
+      document.getElementById('test-results').innerText = "Success!"
+      document.documentElement.classList.add('media-ok')
+
+  await run_tests()
+</script>
+</body>
+</html>

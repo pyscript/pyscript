@@ -171,3 +171,24 @@ test('MicroPython buffered NO error', async ({ page }) => {
   const body = await page.evaluate(() => document.body.textContent.trim());
   await expect(body).toBe('');
 });
+
+test('Pyodide media module', async ({ page }) => {
+  await page.context().grantPermissions(['camera', 'microphone']);
+  await page.context().addInitScript(() => {
+    const originalEnumerateDevices = navigator.mediaDevices.enumerateDevices;
+    navigator.mediaDevices.enumerateDevices = async function() {
+      const realDevices = await originalEnumerateDevices.call(this);
+      if (!realDevices || realDevices.length === 0) {
+        return [
+          { deviceId: 'camera1', groupId: 'group1', kind: 'videoinput', label: 'Simulated Camera' },
+          { deviceId: 'mic1', groupId: 'group2', kind: 'audioinput', label: 'Simulated Microphone' }
+        ];
+      }
+      return realDevices;
+    };
+  });
+  await page.goto('http://localhost:8080/tests/javascript/media.html');
+  await page.waitForSelector('html.media-ok', { timeout: 10000 });
+  const isSuccess = await page.evaluate(() => document.documentElement.classList.contains('media-ok'));
+  expect(isSuccess).toBe(true);
+});
