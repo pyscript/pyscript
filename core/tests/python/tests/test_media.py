@@ -86,20 +86,16 @@ def test_device_getitem():
 )
 async def test_list_devices():
     """Test that list_devices returns a list of Device objects."""
-    try:
-        devices = await media.list_devices()
-        assert isinstance(devices, list), "list_devices should return a list"
+    devices = await media.list_devices()
+    assert isinstance(devices, list), "list_devices should return a list"
 
-        # We don't assert on the number of devices since that's environment-dependent
-        if devices:
-            device = devices[0]
-            assert hasattr(device, "id"), "Device should have id property"
-            assert hasattr(device, "group"), "Device should have group property"
-            assert hasattr(device, "kind"), "Device should have kind property"
-            assert hasattr(device, "label"), "Device should have label property"
-    except Exception as e:
-        # Ensure test passes even if there's a permission issue
-        assert True, f"list_devices failed but test passes: {str(e)}"
+    # We don't assert on the number of devices since that's environment-dependent
+    if devices:
+        device = devices[0]
+        assert hasattr(device, "id"), "Device should have id property"
+        assert hasattr(device, "group"), "Device should have group property"
+        assert hasattr(device, "kind"), "Device should have kind property"
+        assert hasattr(device, "label"), "Device should have label property"
 
 
 @upytest.skip(
@@ -108,12 +104,8 @@ async def test_list_devices():
 )
 async def test_device_load():
     """Test that Device.load returns a media stream."""
-    try:
-        stream = await media.Device.load(video=True)
-        assert hasattr(stream, "active"), "Stream should have active property"
-    except Exception as e:
-        # Ensure test passes even if there's a permission issue
-        assert True, f"Device.load failed but test passes: {str(e)}"
+    stream = await media.Device.load(video=True)
+    assert hasattr(stream, "active"), "Stream should have active property"
 
 
 @upytest.skip(
