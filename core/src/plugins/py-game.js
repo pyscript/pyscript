@@ -33,6 +33,7 @@ const hooks = {
                     config = parse(text);
                 }
                 if (config.packages) {
+                    await wrap.interpreter.loadPackage("micropip");
                     const micropip = wrap.interpreter.pyimport("micropip");
                     await micropip.install(config.packages, {
                         keep_going: true,
