@@ -1,8 +1,15 @@
-import { dedent, define } from "polyscript/exports";
+import {
+    dedent,
+    define,
+    createProgress,
+    loadProgress,
+} from "polyscript/exports";
 
 import { stdlib } from "../core.js";
 import { configDetails } from "../config.js";
 import { getText } from "../fetch.js";
+
+const progress = createProgress("py-game");
 
 let toBeWarned = true;
 
@@ -17,7 +24,7 @@ const hooks = {
             let config = {};
             if (script.hasAttribute("config")) {
                 const value = script.getAttribute("config");
-                const { json, toml, text } = configDetails(value);
+                const { json, toml, text, url } = await configDetails(value);
                 if (json) config = JSON.parse(text);
                 else if (toml) {
                     const { parse } = await import(
@@ -32,6 +39,13 @@ const hooks = {
                     });
                     micropip.destroy();
                 }
+                await loadProgress(
+                    "py-game",
+                    progress,
+                    wrap.interpreter,
+                    config,
+                    url || location.href,
+                );
             }
 
             wrap.interpreter.registerJsModule("_pyscript", {
