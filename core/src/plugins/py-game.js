@@ -45,7 +45,7 @@ const hooks = {
                     progress,
                     wrap.interpreter,
                     config,
-                    url || location.href,
+                    url ? new URL(url, location.href).href : location.href,
                 );
             }
 
