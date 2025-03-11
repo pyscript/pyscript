@@ -11,6 +11,17 @@ import { getText } from "../fetch.js";
 
 const progress = createProgress("py-game");
 
+const inputPatch = `
+import builtins
+def input(prompt=""):
+    import js
+    return js.prompt(prompt)
+
+builtins.input = input
+del builtins
+del input
+`;
+
 let toBeWarned = true;
 
 const hooks = {
@@ -63,6 +74,7 @@ const hooks = {
             });
 
             await wrap.interpreter.runPythonAsync(stdlib);
+            wrap.interpreter.runPython(inputPatch);
 
             let code = dedent(script.textContent);
             if (script.src) code = await fetch(script.src).then(getText);

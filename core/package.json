@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.6.36",
+    "version": "0.6.39",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
