@@ -1,0 +1,2 @@
+name = "PyGame Numpy Minimal Example Copy"
+packages = [ "numpy", ]

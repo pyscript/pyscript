@@ -1,8 +1,26 @@
-import { dedent, define } from "polyscript/exports";
+import {
+    dedent,
+    define,
+    createProgress,
+    loadProgress,
+} from "polyscript/exports";
 
 import { stdlib } from "../core.js";
 import { configDetails } from "../config.js";
 import { getText } from "../fetch.js";
+
+const progress = createProgress("py-game");
+
+const inputPatch = `
+import builtins
+def input(prompt=""):
+    import js
+    return js.prompt(prompt)
+
+builtins.input = input
+del builtins
+del input
+`;
 
 let toBeWarned = true;
 
@@ -17,7 +35,7 @@ const hooks = {
             let config = {};
             if (script.hasAttribute("config")) {
                 const value = script.getAttribute("config");
-                const { json, toml, text } = configDetails(value);
+                const { json, toml, text, url } = await configDetails(value);
                 if (json) config = JSON.parse(text);
                 else if (toml) {
                     const { parse } = await import(
@@ -26,12 +44,20 @@ const hooks = {
                     config = parse(text);
                 }
                 if (config.packages) {
+                    await wrap.interpreter.loadPackage("micropip");
                     const micropip = wrap.interpreter.pyimport("micropip");
                     await micropip.install(config.packages, {
                         keep_going: true,
                     });
                     micropip.destroy();
                 }
+                await loadProgress(
+                    "py-game",
+                    progress,
+                    wrap.interpreter,
+                    config,
+                    url ? new URL(url, location.href).href : location.href,
+                );
             }
 
             wrap.interpreter.registerJsModule("_pyscript", {
@@ -48,6 +74,7 @@ const hooks = {
             });
 
             await wrap.interpreter.runPythonAsync(stdlib);
+            wrap.interpreter.runPython(inputPatch);
 
             let code = dedent(script.textContent);
             if (script.src) code = await fetch(script.src).then(getText);
