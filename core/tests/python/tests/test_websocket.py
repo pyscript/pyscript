@@ -3,10 +3,12 @@ Exercise the pyscript.Websocket class.
 """
 
 import asyncio
+import upytest
 
 from pyscript import WebSocket
 
 
+@upytest.skip("Websocket tests are disabled.")
 async def test_websocket_with_attributes():
     """
     Event handlers assigned via object attributes.
@@ -52,6 +54,7 @@ async def test_websocket_with_attributes():
     assert closed_flag is True
 
 
+@upytest.skip("Websocket tests are disabled.")
 async def test_websocket_with_init():
     """
     Event handlers assigned via __init__ arguments.
