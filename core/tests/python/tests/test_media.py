@@ -6,10 +6,6 @@ from pyscript import media
 import upytest
 
 
-@upytest.skip(
-    "Uses Pyodide-specific to_js function in MicroPython",
-    skip_when=upytest.is_micropython,
-)
 async def test_device_enumeration():
     """Test enumerating media devices."""
     devices = await media.list_devices()
@@ -23,18 +19,21 @@ async def test_device_enumeration():
         # Browser security might restrict actual values until permissions are granted
         assert hasattr(device, "id"), "Device should have id property"
         assert hasattr(device, "kind"), "Device should have kind property"
-        assert device.kind in ["videoinput", "audioinput", "audiooutput"], \
-            f"Device should have a valid kind, got: {device.kind}"
+        assert device.kind in [
+            "videoinput",
+            "audioinput",
+            "audiooutput",
+        ], f"Device should have a valid kind, got: {device.kind}"
 
         # Verify dictionary access works with actual device
-        assert device["id"] == device.id, "Dictionary access should match property access"
-        assert device["kind"] == device.kind, "Dictionary access should match property access"
+        assert (
+            device["id"] == device.id
+        ), "Dictionary access should match property access"
+        assert (
+            device["kind"] == device.kind
+        ), "Dictionary access should match property access"
 
 
-@upytest.skip(
-    "Uses Pyodide-specific to_js function in MicroPython",
-    skip_when=upytest.is_micropython,
-)
 async def test_video_stream_acquisition():
     """Test video stream."""
     try:
@@ -52,21 +51,16 @@ async def test_video_stream_acquisition():
     except Exception as e:
         # If the browser blocks access, the test should still pass
         # This is because we're testing the API works, not that permissions are granted
-        assert True, f"Stream acquisition attempted but may require permissions: {str(e)}"
+        assert (
+            True
+        ), f"Stream acquisition attempted but may require permissions: {str(e)}"
 
 
-@upytest.skip(
-    "Uses Pyodide-specific to_js function in MicroPython",
-    skip_when=upytest.is_micropython,
-)
 async def test_custom_video_constraints():
     """Test loading video with custom constraints."""
     try:
         # Define custom constraints
-        constraints = {
-            "width": 640,
-            "height": 480
-        }
+        constraints = {"width": 640, "height": 480}
 
         # Load stream with custom constraints
         stream = await media.Device.load(video=constraints)

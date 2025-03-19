@@ -31,25 +31,22 @@ class Device:
 
     @classmethod
     async def load(cls, audio=False, video=True):
-        """Load the device stream."""
-        options = window.Object.new()
-        options.audio = audio
+        """
+        Load the device stream.
+        """
+        options = {}
+        options["audio"] = audio
         if isinstance(video, bool):
-            options.video = video
+            options["video"] = video
         else:
-            # TODO: Think this can be simplified but need to check it on the pyodide side
-
-            # TODO: this is pyodide specific. shouldn't be!
-            options.video = window.Object.new()
+            options["video"] = {}
             for k in video:
-                setattr(options.video, k, to_js(video[k]))
-
-        return await window.navigator.mediaDevices.getUserMedia(options)
+                options["video"][k] = video[k]
+        return await window.navigator.mediaDevices.getUserMedia(to_js(options))
 
     async def get_stream(self):
         key = self.kind.replace("input", "").replace("output", "")
         options = {key: {"deviceId": {"exact": self.id}}}
-
         return await self.load(**options)
 
 
