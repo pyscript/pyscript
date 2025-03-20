@@ -41,8 +41,8 @@ check-python:
 # Check the environment, install the dependencies.
 setup: check-node check-npm check-python
 	cd core && npm ci && cd ..
-ifeq ($(VIRTUAL_ENV),)
-	echo "\n\n\033[0;31mCannot install Python dependencies. Your virtualenv is not activated.\033[0m"
+ifeq (,$(VIRTUAL_ENV)$(CONDA_PREFIX))
+	echo "\n\n\033[0;31mCannot install Python dependencies. Your virtualenv or conda env is not activated.\033[0m"
 	false
 else
 	python -m pip install -r requirements.txt
