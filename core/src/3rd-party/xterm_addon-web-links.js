@@ -1,5 +1,5 @@
 /**
- * Bundled by jsDelivr using Rollup v2.79.1 and Terser v5.19.2.
+ * Bundled by jsDelivr using Rollup v2.79.2 and Terser v5.37.0.
  * Original file: /npm/@xterm/addon-web-links@0.11.0/lib/addon-web-links.js
  *
  * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
