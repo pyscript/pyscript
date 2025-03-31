@@ -22,6 +22,17 @@ def teardown():
     container.innerHTML = ""
 
 
+def test_event_no_result():
+    """
+    If an event has not been triggered with a result, accessing the result
+    parameter raises a ValueError.
+    """
+    event = Event()
+    with upytest.raises(ValueError) as e:
+        event.result
+    assert str(e.exception) == "Event has not been triggered yet. No result available."
+
+
 def test_event_add_listener():
     """
     Adding a listener to an event should add it to the list of listeners. It
@@ -33,6 +44,52 @@ def test_event_add_listener():
     event.add_listener(listener)
     assert len(event._listeners) == 1  # Only one item added.
     assert listener in event._listeners  # The item is the expected listener.
+
+
+def test_event_add_invalid_listener():
+    """
+    Adding an invalid listener should raise a ValueError.
+    """
+    event = Event()
+    with upytest.raises(ValueError) as e:
+        event.add_listener("invalid")
+    assert str(e.exception) == "Listener must be callable or awaitable."
+
+
+def test_event_add_listener_triggered():
+    """
+    Adding a listener to an event that has already been triggered should call
+    the listener immediately with the result.
+    """
+    event = Event()
+    counter = 0
+
+    def listener(x):
+        nonlocal counter
+        counter += 1
+        assert x == "ok"
+
+    event.trigger("ok")
+    event.add_listener(listener)
+    assert counter == 1  # The listener has been triggered with the expected result.
+
+
+def test_event_add_listener_multiple_times():
+    """
+    Adding the same listener multiple times should not call it multiple times.
+    """
+    event = Event()
+    counter = 0
+
+    def listener(x):
+        nonlocal counter
+        counter += 1
+        assert x == "ok"
+
+    event.add_listener(listener)
+    event.add_listener(listener)
+    event.trigger("ok")
+    assert counter == 1  # The listener has been triggered only once.
 
 
 def test_event_remove_listener():

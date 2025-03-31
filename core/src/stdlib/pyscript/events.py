@@ -1,6 +1,5 @@
 import asyncio
 import inspect
-import sys
 
 from functools import wraps
 from pyscript.magic_js import document
@@ -11,44 +10,102 @@ from pyscript import config
 
 class Event:
     """
-    Represents something that may happen at some point in the future.
+    Events represent something that may happen at some point in time (usually
+    the future). They're used to coordinate code when the timing of an event is
+    not known in advance (e.g. a button click or a network response).
+
+    An event is triggered with an arbitrary result. If no result is given, then
+    None is assumed as the result.
+
+    Add listener functions to the event, to be called with the result when the
+    event is triggered. The listener functions can be callable or awaitable. If
+    the listener is added several times, it will be called only once.
+
+    If the event was triggered before a listener is added, the listener will be
+    called as soon as it is added, with the result of the event.
+
+    If the event is never triggered, then its listeners will never be called.
+    It's also possible to remove listeners from the event.
+
+    If the result of the event is not available, a ValueError will be raised
+    when trying to access the result property. A RuntimeError will be raised if
+    the event is triggered more than once.
     """
 
     def __init__(self):
+        # To contain the listeners to be called when the event is triggered.
         self._listeners = []
+        # The result associated with the event.
+        self._result = None
+        # A flag to indicate if the event has been triggered.
+        self._triggered = False
 
-    def trigger(self, result):
+    @property
+    def triggered(self):
         """
-        Trigger the event with a result to pass into the handlers.
+        A boolean flag to indicate if the event has been triggered.
         """
+        return self._triggered
+
+    @property
+    def result(self):
+        """
+        The result of the event.
+        """
+        if self.triggered:
+            return self._result
+        msg = "Event has not been triggered yet. No result available."
+        raise ValueError(msg)
+
+    def trigger(self, result=None):
+        """
+        Trigger the event with an arbitrary result to pass into the listeners.
+        An event may only be triggered once (otherwise a RuntimeError is
+        raised).
+        """
+        if self.triggered:
+            msg = "Event has already been triggered."
+            raise RuntimeError(msg)
+        self._triggered = True
+        self._result = result
         for listener in self._listeners:
-            if is_awaitable(listener):
-                # Use create task to avoid making this an async function.
-                asyncio.create_task(listener(result))
-            else:
-                listener(result)
+            self._call_listener(listener)
 
     def add_listener(self, listener):
         """
-        Add a callable/awaitable to listen to when this event is triggered.
+        Add a callable/awaitable that listens for the result, when this event
+        is triggered.
         """
         if is_awaitable(listener) or callable(listener):
             if listener not in self._listeners:
                 self._listeners.append(listener)
+                if self.triggered:
+                    # If the event was already triggered, call the listener
+                    # immediately with the result.
+                    self._call_listener(listener)
         else:
             msg = "Listener must be callable or awaitable."
             raise ValueError(msg)
 
     def remove_listener(self, *args):
         """
-        Clear the specified handler functions in *args. If no handlers
-        provided, clear all handlers.
+        Clear the specified listener functions in *args. If no listeners are
+        provided, clear all the listeners.
         """
         if args:
             for listener in args:
                 self._listeners.remove(listener)
         else:
             self._listeners = []
+
+    def _call_listener(self, listener):
+        """
+        Call the referenced listener with the event's result.
+        """
+        if is_awaitable(listener):
+            asyncio.create_task(listener(self._result))
+        else:
+            listener(self._result)
 
 
 def when(target, *args, **kwargs):
