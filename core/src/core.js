@@ -1,5 +1,6 @@
 /*! (c) PyScript Development Team */
 
+import "./zero-redirect.js";
 import stickyModule from "sticky-module";
 import "@ungap/with-resolvers";
 
