@@ -126,6 +126,15 @@ async function execute({ currentTarget }) {
             if (hasRunButton) {
                 currentTarget.classList.remove("running");
                 currentTarget.innerHTML = RUN_BUTTON;
+                const { previousElementSibling } = currentTarget.closest(
+                    "[data-env]"
+                ).parentElement;
+                previousElementSibling?.dispatchEvent(
+                    new Event("py-editor:done", {
+                        bubbles: true,
+                        cancelable: true,
+                    })
+                );
             }
         };
         const { sync } = xworker;
