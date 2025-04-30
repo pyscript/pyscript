@@ -1,6 +1,6 @@
 {
     "name": "@pyscript/core",
-    "version": "0.6.46",
+    "version": "0.6.48",
     "type": "module",
     "description": "PyScript",
     "module": "./index.js",
@@ -35,6 +35,9 @@
         "./storage": {
             "import": "./dist/storage.js"
         },
+        "./service-worker": {
+            "import": "./dist/service-worker.js"
+        },
         "./package.json": "./package.json"
     },
     "scripts": {
@@ -64,20 +67,20 @@
     "dependencies": {
         "@ungap/with-resolvers": "^0.1.0",
         "@webreflection/idb-map": "^0.3.2",
+        "@webreflection/utils": "^0.1.0",
         "add-promise-listener": "^0.1.3",
         "basic-devtools": "^0.1.6",
-        "polyscript": "^0.17.8",
-        "sabayon": "^0.7.2",
+        "polyscript": "^0.17.12",
         "sticky-module": "^0.1.1",
         "to-json-callback": "^0.1.1",
         "type-checked-collections": "^0.1.7"
     },
     "devDependencies": {
         "@codemirror/commands": "^6.8.1",
-        "@codemirror/lang-python": "^6.1.7",
+        "@codemirror/lang-python": "^6.2.0",
         "@codemirror/language": "^6.11.0",
         "@codemirror/state": "^6.5.2",
-        "@codemirror/view": "^6.36.5",
+        "@codemirror/view": "^6.36.6",
         "@playwright/test": "^1.52.0",
         "@rollup/plugin-commonjs": "^28.0.3",
         "@rollup/plugin-node-resolve": "^16.0.1",
@@ -86,13 +89,13 @@
         "@xterm/addon-fit": "^0.10.0",
         "@xterm/addon-web-links": "^0.11.0",
         "@xterm/xterm": "^5.5.0",
-        "bun": "^1.2.10",
+        "bun": "^1.2.11",
         "chokidar": "^4.0.3",
         "codedent": "^0.1.2",
         "codemirror": "^6.0.1",
         "eslint": "^9.25.1",
         "flatted": "^3.3.3",
-        "rollup": "^4.40.0",
+        "rollup": "^4.40.1",
         "rollup-plugin-postcss": "^4.0.2",
         "rollup-plugin-string": "^3.0.0",
         "static-handler": "^0.5.3",

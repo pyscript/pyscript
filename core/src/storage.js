@@ -1,13 +1,14 @@
-import { ArrayBuffer, TypedArray } from "sabayon/shared";
 import IDBMapSync from "@webreflection/idb-map/sync";
 import { parse, stringify } from "flatted";
+
+const { isView } = ArrayBuffer;
 
 const to_idb = (value) => {
     if (value == null) return stringify(["null", 0]);
     /* eslint-disable no-fallthrough */
     switch (typeof value) {
         case "object": {
-            if (value instanceof TypedArray)
+            if (isView(value))
                 return stringify(["memoryview", [...value]]);
             if (value instanceof ArrayBuffer)
                 return stringify(["bytearray", [...new Uint8Array(value)]]);
