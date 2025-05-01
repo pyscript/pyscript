@@ -8,8 +8,7 @@ const to_idb = (value) => {
     /* eslint-disable no-fallthrough */
     switch (typeof value) {
         case "object": {
-            if (isView(value))
-                return stringify(["memoryview", [...value]]);
+            if (isView(value)) return stringify(["memoryview", [...value]]);
             if (value instanceof ArrayBuffer)
                 return stringify(["bytearray", [...new Uint8Array(value)]]);
         }

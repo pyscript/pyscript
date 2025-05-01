@@ -1,1 +1,1 @@
-import 'polyscript/service-worker';
+import "polyscript/service-worker";
