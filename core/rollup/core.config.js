@@ -53,4 +53,15 @@ export default [
             sourcemap: true,
         },
     },
+    {
+        input: "./src/service-worker.js",
+        plugins: plugins.concat(
+            process.env.NO_MIN
+                ? [nodeResolve(), commonjs()]
+                : [nodeResolve(), commonjs(), terser()],
+        ),
+        output: {
+            file: "./dist/service-worker.js",
+        },
+    },
 ];

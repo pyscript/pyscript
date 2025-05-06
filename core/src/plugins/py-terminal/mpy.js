@@ -1,4 +1,5 @@
 // PyScript pyodide terminal plugin
+import withResolvers from "@webreflection/utils/with-resolvers";
 import { defineProperties } from "polyscript/exports";
 import { hooks, inputFailure } from "../../core.js";
 
@@ -146,7 +147,7 @@ export default async (element) => {
             // frees the worker on \r
             sync.pyterminal_read = (buffer) => {
                 terminal.write(buffer);
-                promisedChunks = Promise.withResolvers();
+                promisedChunks = withResolvers();
                 return promisedChunks.promise;
             };
 

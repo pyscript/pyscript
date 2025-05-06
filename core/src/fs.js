@@ -1,4 +1,5 @@
 import IDBMap from "@webreflection/idb-map";
+import withResolvers from "@webreflection/utils/with-resolvers";
 import { assign } from "polyscript/exports";
 import { $$ } from "basic-devtools";
 
@@ -26,7 +27,7 @@ export const getFileSystemDirectoryHandle = async (options) => {
         );
     }
 
-    const { promise, resolve, reject } = Promise.withResolvers();
+    const { promise, resolve, reject } = withResolvers();
 
     const how = { id: "pyscript", mode: "readwrite", ...options };
     if (options.hint) how.startIn = options.hint;

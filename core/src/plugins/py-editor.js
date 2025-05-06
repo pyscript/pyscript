@@ -1,4 +1,5 @@
 // PyScript py-editor plugin
+import withResolvers from "@webreflection/utils/with-resolvers";
 import { Hook, XWorker, dedent, defineProperties } from "polyscript/exports";
 import { TYPES, offline_interpreter, relative_url, stdlib } from "../core.js";
 import { notify } from "./error.js";
@@ -99,7 +100,7 @@ async function execute({ currentTarget }) {
         }
 
         const { sync } = xworker;
-        const { promise, resolve } = Promise.withResolvers();
+        const { promise, resolve } = withResolvers();
         envs.set(env, promise);
         sync.revoke = () => {
             URL.revokeObjectURL(srcLink);

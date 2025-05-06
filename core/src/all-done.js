@@ -1,3 +1,4 @@
+import withResolvers from "@webreflection/utils/with-resolvers";
 import TYPES from "./types.js";
 
 const waitForIt = [];
@@ -5,7 +6,7 @@ const waitForIt = [];
 for (const [TYPE] of TYPES) {
     const selectors = [`script[type="${TYPE}"]`, `${TYPE}-script`];
     for (const element of document.querySelectorAll(selectors.join(","))) {
-        const { promise, resolve } = Promise.withResolvers();
+        const { promise, resolve } = withResolvers();
         waitForIt.push(promise);
         element.addEventListener(`${TYPE}:done`, resolve, { once: true });
     }
