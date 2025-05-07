@@ -4,4 +4,4 @@ A namespace where libraries and ports related to `@pyscript/core` are developed 
 
 ### Current Libraries
 
-  * **[alien_signals](./alien_signals)**
+-   **[alien_signals](./alien_signals)**

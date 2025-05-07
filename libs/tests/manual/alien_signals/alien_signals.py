@@ -1,11 +1,19 @@
-from alien_signals import signal, computed, effect, effect_scope, pause_tracking, resume_tracking
+from alien_signals import (
+    signal,
+    computed,
+    effect,
+    effect_scope,
+    pause_tracking,
+    resume_tracking,
+)
+
 
 class expect:
-  def __init__(self, value):
-    self.value = value
+    def __init__(self, value):
+        self.value = value
 
-  def to_be(self, value):
-    assert self.value == value
+    def to_be(self, value):
+        assert self.value == value
 
 
 print('should correctly propagate changes through computed signals')
@@ -15,9 +23,9 @@ c2 = computed(lambda _: c1())
 c3 = computed(lambda _: c2())
 
 c3()
-src(1) # c1 -> dirty, c2 -> toCheckDirty, c3 -> toCheckDirty
-c2() # c1 -> none, c2 -> none
-src(3) # c1 -> dirty, c2 -> toCheckDirty
+src(1)  # c1 -> dirty, c2 -> toCheckDirty, c3 -> toCheckDirty
+c2()  # c1 -> none, c2 -> none
+src(3)  # c1 -> dirty, c2 -> toCheckDirty
 
 expect(c3()).to_be(1)
 
@@ -40,15 +48,19 @@ print('should handle flags are indirectly updated during checkDirty')
 a = signal(False)
 b = computed(lambda _: a())
 
+
 def c(_):
-  b()
-  return 0
+    b()
+    return 0
+
 
 c = computed(c)
 
+
 def d(_):
-  c()
-  return b()
+    c()
+    return b()
+
 
 d = computed(d)
 
@@ -64,21 +76,23 @@ count = signal(1)
 triggers = 0
 effect1 = None
 
+
 def stop_scope():
-  def effect1():
-    global triggers
-    triggers += 1
-    count()
+    def effect1():
+        global triggers
+        triggers += 1
+        count()
 
-  effect1 = effect(effect1)
-  expect(triggers).to_be(1)
+    effect1 = effect(effect1)
+    expect(triggers).to_be(1)
 
-  count(2)
-  expect(triggers).to_be(2)
+    count(2)
+    expect(triggers).to_be(2)
+
 
 stop_scope = effect_scope(stop_scope)
 
-count(3);
+count(3)
 expect(triggers).to_be(3)
 stop_scope()
 count(4)
@@ -89,11 +103,13 @@ print('should pause tracking')
 
 src = signal(0)
 
+
 def c(_):
-  pause_tracking()
-  value = src()
-  resume_tracking()
-  return value
+    pause_tracking()
+    value = src()
+    resume_tracking()
+    return value
+
 
 c = computed(c)
 expect(c()).to_be(0)
@@ -102,5 +118,6 @@ src(1)
 expect(c()).to_be(0)
 
 from pyscript import document
+
 document.documentElement.classList.add('done')
 document.body.textContent = 'OK'
