@@ -284,7 +284,9 @@ def create_reactive_system(update_computed, notify_effect):
                     elif (dep_flags & (COMPUTED | PENDING_COMPUTED)) == (
                         COMPUTED | PENDING_COMPUTED
                     ):
-                        if (current.next_sub is not None) or (current.prev_sub is not None):
+                        if (current.next_sub is not None) or (
+                            current.prev_sub is not None
+                        ):
                             prev_links = Branch(current, prev_links)
                         current = dep.deps
                         check_depth += 1
