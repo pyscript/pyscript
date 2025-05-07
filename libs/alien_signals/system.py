@@ -122,7 +122,7 @@ def create_reactive_system(update_computed, notify_effect):
 
         def propagate(self, current):
             next = current.next_sub
-            branchs = None
+            branches = None
             branch_depth = 0
             target_flag = DIRTY
             while True:
@@ -146,7 +146,7 @@ def create_reactive_system(update_computed, notify_effect):
                     if sub_subs != None:
                         current = sub_subs
                         if sub_subs.next_sub != None:
-                            branchs = Branch(next, branchs)
+                            branches = Branch(next, branches)
                             branch_depth += 1
                             next = current.next_sub
                             target_flag = PENDING_COMPUTED
@@ -181,8 +181,8 @@ def create_reactive_system(update_computed, notify_effect):
 
                 while branch_depth:
                     branch_depth -= 1
-                    current = branchs.target
-                    branchs = branchs.linked
+                    current = branches.target
+                    branches = branches.linked
                     if current != None:
                         next = current.next_sub
                         target_flag = PENDING_COMPUTED if branch_depth else DIRTY
