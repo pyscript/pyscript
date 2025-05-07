@@ -11,7 +11,7 @@
     ],
     "scripts": {
         "build": "npm run build:alien-signals",
-        "build:alien-signals": "tar -czvf alien_signals.tar.gz alien_signals"
+        "build:alien-signals": "tar -czf ./alien_signals.tar.gz ./alien_signals"
     },
     "keywords": [
         "pyscript",

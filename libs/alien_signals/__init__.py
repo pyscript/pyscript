@@ -4,14 +4,14 @@ from .flags import COMPUTED, EFFECT, DIRTY, PENDING_COMPUTED, PENDING_EFFECT
 from .system import create_reactive_system
 
 __all__ = [
-    'start_batch',
-    'end_batch',
-    'pause_tracking',
-    'resume_tracking',
-    'signal',
-    'computed',
-    'effect',
-    'effect_scope',
+    "start_batch",
+    "end_batch",
+    "pause_tracking",
+    "resume_tracking",
+    "signal",
+    "computed",
+    "effect",
+    "effect_scope",
 ]
 
 
@@ -44,7 +44,7 @@ def update_computed(computed):
 
 rs = create_reactive_system(
     update_computed,
-    lambda e: notify_effect_scope(e) if hasattr(e, 'is_scope') else notify_effect(e),
+    lambda e: notify_effect_scope(e) if hasattr(e, "is_scope") else notify_effect(e),
 )
 
 link = rs.link
@@ -83,14 +83,15 @@ class _Signal:
         self.subs_tail = None
 
     def __call__(self, *args):
-        if len(args):
+        if len(args) > 0:
             self.value = args[0]
+            return
         else:
             return self.value
 
     @property
     def value(self):
-        if _.active_sub != None:
+        if _.active_sub is not None:
             link(self, _.active_sub)
         return self.current_value
 
@@ -98,7 +99,7 @@ class _Signal:
     def value(self, value):
         if self.current_value != value:
             self.current_value = value
-            if self.subs != None:
+            if self.subs is not None:
                 propagate(self.subs)
                 if not _.bacth_depth:
                     process_effect_notifications()
@@ -124,9 +125,9 @@ class _Computed:
     def value(self):
         if self.flags & (DIRTY | PENDING_COMPUTED):
             process_computed_update(self, self.flags)
-        if _.active_sub != None:
+        if _.active_sub is not None:
             link(self, _.active_sub)
-        elif _.active_scope != None:
+        elif _.active_scope is not None:
             link(self, _.active_scope)
 
         return self.current_value
@@ -155,9 +156,9 @@ class _Effect:
 
 def effect(fn):
     e = _Effect(fn)
-    if _.active_sub != None:
+    if _.active_sub is not None:
         link(e, _.active_sub)
-    elif _.active_scope != None:
+    elif _.active_scope is not None:
         link(e, _.active_scope)
     prev_sub = _.active_sub
     _.active_sub = e

@@ -16,7 +16,7 @@ class expect:
         assert self.value == value
 
 
-print('should correctly propagate changes through computed signals')
+print("should correctly propagate changes through computed signals")
 src = signal(0)
 c1 = computed(lambda _: src() % 2)
 c2 = computed(lambda _: c1())
@@ -30,7 +30,7 @@ src(3)  # c1 -> dirty, c2 -> toCheckDirty
 expect(c3()).to_be(1)
 
 
-print('should propagate updated source value through chained computations')
+print("should propagate updated source value through chained computations")
 
 src = signal(0)
 a = computed(lambda _: src())
@@ -43,7 +43,7 @@ src(2)
 expect(d()).to_be(2)
 
 
-print('should handle flags are indirectly updated during checkDirty')
+print("should handle flags are indirectly updated during checkDirty")
 
 a = signal(False)
 b = computed(lambda _: a())
@@ -69,7 +69,7 @@ a(True)
 expect(d()).to_be(True)
 
 
-print('should not trigger after stop')
+print("should not trigger after stop")
 
 count = signal(1)
 
@@ -99,7 +99,7 @@ count(4)
 expect(triggers).to_be(3)
 
 
-print('should pause tracking')
+print("should pause tracking")
 
 src = signal(0)
 
@@ -119,5 +119,5 @@ expect(c()).to_be(0)
 
 from pyscript import document
 
-document.documentElement.classList.add('done')
-document.body.textContent = 'OK'
+document.documentElement.classList.add("done")
+document.body.textContent = "OK"

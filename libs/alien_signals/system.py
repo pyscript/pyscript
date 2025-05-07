@@ -30,7 +30,7 @@ class LinkDep:
 
 def is_valid_link(check_link, sub):
     deps_tail = sub.deps_tail
-    if deps_tail != None:
+    if deps_tail is not None:
         link = sub.deps
         while True:
             if link == check_link:
@@ -38,7 +38,7 @@ def is_valid_link(check_link, sub):
             if link == deps_tail:
                 break
             link = link.next_dep
-            if link == None:
+            if link is None:
                 break
 
     return False
@@ -46,12 +46,12 @@ def is_valid_link(check_link, sub):
 
 def link_new_dep(dep, sub, next_dep, deps_tail):
     new_link = LinkDep(dep, sub, next_dep)
-    if deps_tail == None:
+    if deps_tail is None:
         sub.deps = new_link
     else:
         deps_tail.next_dep = new_link
 
-    if dep.subs == None:
+    if dep.subs is None:
         dep.subs = new_link
     else:
         old_tail = dep.subs_tail
@@ -70,23 +70,23 @@ def clear_tracking(link):
         next_sub = link.next_sub
         prev_sub = link.prev_sub
 
-        if next_sub != None:
+        if next_sub is not None:
             next_sub.prev_sub = prev_sub
         else:
             dep.subs_tail = prev_sub
 
-        if prev_sub != None:
+        if prev_sub is not None:
             prev_sub.next_sub = next_sub
         else:
             dep.subs = next_sub
 
-        if dep.subs == None and hasattr(dep, 'deps'):
+        if dep.subs is None and hasattr(dep, "deps"):
             dep_flags = dep.flags
             if not (dep_flags & DIRTY):
                 dep.flags = dep_flags | DIRTY
 
             dep_deps = dep.deps
-            if dep_deps != None:
+            if dep_deps is not None:
                 link = dep_deps
                 dep.deps_tail.next_dep = next_dep
                 dep.deps = None
@@ -94,7 +94,7 @@ def clear_tracking(link):
                 continue
 
         link = next_dep
-        if link == None:
+        if link is None:
             break
 
 
@@ -105,15 +105,15 @@ def create_reactive_system(update_computed, notify_effect):
 
         def link(self, dep, sub):
             current_dep = sub.deps_tail
-            if current_dep != None and current_dep.dep == dep:
+            if current_dep is not None and current_dep.dep == dep:
                 return
-            next_dep = current_dep.next_dep if current_dep != None else sub.deps
-            if next_dep != None and next_dep.dep == dep:
+            next_dep = current_dep.next_dep if current_dep is not None else sub.deps
+            if next_dep is not None and next_dep.dep == dep:
                 sub.deps_tail = next_dep
                 return
             dep_last_sub = dep.subs_tail
             if (
-                dep_last_sub != None
+                dep_last_sub is not None
                 and dep_last_sub.sub == sub
                 and is_valid_link(dep_last_sub, sub)
             ):
@@ -139,13 +139,13 @@ def create_reactive_system(update_computed, notify_effect):
                     should_notify = True
                 elif (not (sub_flags & PROPAGATED)) and is_valid_link(current, sub):
                     sub.flags = sub_flags | RECURSED | target_flag | NOTIFIED
-                    should_notify = sub.subs != None
+                    should_notify = sub.subs is not None
 
                 if should_notify:
                     sub_subs = sub.subs
-                    if sub_subs != None:
+                    if sub_subs is not None:
                         current = sub_subs
-                        if sub_subs.next_sub != None:
+                        if sub_subs.next_sub is not None:
                             branches = Branch(next, branches)
                             branch_depth += 1
                             next = current.next_sub
@@ -174,7 +174,7 @@ def create_reactive_system(update_computed, notify_effect):
                     sub.flags = sub_flags | target_flag
 
                 current = next
-                if current != None:
+                if current is not None:
                     next = current.next_sub
                     target_flag = PENDING_COMPUTED if branch_depth else DIRTY
                     continue
@@ -183,7 +183,7 @@ def create_reactive_system(update_computed, notify_effect):
                     branch_depth -= 1
                     current = branches.target
                     branches = branches.linked
-                    if current != None:
+                    if current is not None:
                         next = current.next_sub
                         target_flag = PENDING_COMPUTED if branch_depth else DIRTY
                         one_more_time = True
@@ -196,9 +196,9 @@ def create_reactive_system(update_computed, notify_effect):
             if self.check_dirty(sub.deps):
                 sub.flags = flags | DIRTY
                 return True
-            else:
-                sub.flags = flags & ~PENDING_COMPUTED
-                return False
+
+            sub.flags = flags & ~PENDING_COMPUTED
+            return False
 
         def start_tracking(self, sub):
             sub.deps_tail = None
@@ -206,13 +206,13 @@ def create_reactive_system(update_computed, notify_effect):
 
         def end_tracking(self, sub):
             deps_tail = sub.deps_tail
-            if deps_tail != None:
+            if deps_tail is not None:
                 next_dep = deps_tail.next_dep
-                if next_dep != None:
+                if next_dep is not None:
                     clear_tracking(next_dep)
                     deps_tail.next_dep = None
 
-            elif sub.deps != None:
+            elif sub.deps is not None:
                 clear_tracking(sub.deps)
                 sub.deps = None
 
@@ -229,7 +229,7 @@ def create_reactive_system(update_computed, notify_effect):
             if (flags & DIRTY) or self.check_dirty(computed.deps):
                 if update_computed(computed):
                     subs = computed.subs
-                    if subs != None:
+                    if subs is not None:
                         self.shallow_propagate(subs)
             else:
                 computed.flags = flags & ~PENDING_COMPUTED
@@ -241,14 +241,14 @@ def create_reactive_system(update_computed, notify_effect):
                 while True:
                     dep = link.dep
                     if (
-                        hasattr(dep, 'flags')
+                        hasattr(dep, "flags")
                         and (dep.flags & EFFECT)
                         and (dep.flags & PROPAGATED)
                     ):
                         notify_effect(dep)
 
                     link = link.next_dep
-                    if link == None:
+                    if link is None:
                         break
 
         def shallow_propagate(self, link):
@@ -261,7 +261,7 @@ def create_reactive_system(update_computed, notify_effect):
                         self.notify_buffer.append(sub)
 
                 link = link.next_sub
-                if link == None:
+                if link is None:
                     break
 
         def check_dirty(self, current):
@@ -273,24 +273,24 @@ def create_reactive_system(update_computed, notify_effect):
                 dep = current.dep
                 if current.sub.flags & DIRTY:
                     dirty = True
-                elif hasattr(dep, 'flags'):
+                elif hasattr(dep, "flags"):
                     dep_flags = dep.flags
                     if (dep_flags & (COMPUTED | DIRTY)) == (COMPUTED | DIRTY):
                         if update_computed(dep):
                             subs = dep.subs
-                            if subs.next_sub != None:
+                            if subs.next_sub is not None:
                                 self.shallow_propagate(subs)
                             dirty = True
                     elif (dep_flags & (COMPUTED | PENDING_COMPUTED)) == (
                         COMPUTED | PENDING_COMPUTED
                     ):
-                        if (current.next_sub != None) or (current.prev_sub != None):
+                        if (current.next_sub is not None) or (current.prev_sub is not None):
                             prev_links = Branch(current, prev_links)
                         current = dep.deps
                         check_depth += 1
                         continue
 
-                if (not dirty) and current.next_dep != None:
+                if (not dirty) and current.next_dep is not None:
                     current = current.next_dep
                     continue
 
@@ -300,7 +300,7 @@ def create_reactive_system(update_computed, notify_effect):
                     first_sub = sub.subs
                     if dirty:
                         if update_computed(sub):
-                            if first_sub.next_sub != None:
+                            if first_sub.next_sub is not None:
                                 current = prev_links.target
                                 prev_links = prev_links.linked
                                 self.shallow_propagate(first_sub)
@@ -310,13 +310,13 @@ def create_reactive_system(update_computed, notify_effect):
                     else:
                         sub.flags &= ~PENDING_COMPUTED
 
-                    if first_sub.next_sub != None:
+                    if first_sub.next_sub is not None:
                         current = prev_links.target
                         prev_links = prev_links.linked
                     else:
                         current = first_sub
 
-                    if current.next_dep != None:
+                    if current.next_dep is not None:
                         current = current.next_dep
                         one_more_time = True
                         break
