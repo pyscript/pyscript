@@ -2,7 +2,7 @@
 
 import "./zero-redirect.js";
 import stickyModule from "sticky-module";
-import "@ungap/with-resolvers";
+import withResolvers from "@webreflection/utils/with-resolvers";
 
 import {
     INVALID_CONTENT,
@@ -328,7 +328,7 @@ for (const [TYPE, interpreter] of TYPES) {
                 class extends HTMLElement {
                     constructor() {
                         assign(super(), {
-                            _wrap: Promise.withResolvers(),
+                            _wrap: withResolvers(),
                             srcCode: "",
                             executed: false,
                         });
