@@ -137,12 +137,14 @@
     &lt;body&gt;
         &lt;h1&gt;Hello world!&lt;/h1&gt;
         &lt;p&gt;These are the Python interpreters in PyScript _VERSION_:&lt;/p&gt;
-        &lt;script type=&quot;py&quot;&gt;  &lt;!-- Pyodide --&gt;
+        &lt;script type=&quot;py&quot;&gt;
+            # Pyodide
             from pyscript import display
             import sys
             display(sys.version)
         &lt;/script&gt;
-        &lt;script type=&quot;mpy&quot;&gt;  &lt;!-- MicroPython --&gt;
+        &lt;script type=&quot;mpy&quot;&gt;
+            # MicroPython
             from pyscript import display
             import sys
             display(sys.version)
