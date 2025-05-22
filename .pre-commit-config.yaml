@@ -43,7 +43,7 @@ repos:
       rev: v0.11.8
       hooks:
           - id: ruff
-            exclude: core/tests
+            exclude: core/tests|libs/alien_signals
 
     - repo: https://github.com/hoodmane/pyscript-prettier-precommit
       rev: "v3.0.0-alpha.6"
