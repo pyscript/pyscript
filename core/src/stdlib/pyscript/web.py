@@ -124,6 +124,11 @@ class Element:
         # Element instance via `for_`).
         if name.endswith("_"):
             name = name[:-1]  # noqa: FURB188 No str.removesuffix() in MicroPython.
+        if name == "for":
+            # The `for` attribute is a special case as it is a keyword in both
+            # Python and JavaScript.
+            # We need to get it from the underlying DOM element as `htmlFor`.
+            name = "htmlFor"
         return getattr(self._dom_element, name)
 
     def __setattr__(self, name, value):
@@ -142,6 +147,11 @@ class Element:
             # Element instance via `for_`).
             if name.endswith("_"):
                 name = name[:-1]  # noqa: FURB188 No str.removesuffix() in MicroPython.
+            if name == "for":
+                # The `for` attribute is a special case as it is a keyword in both
+                # Python and JavaScript.
+                # We need to set it on the underlying DOM element as `htmlFor`.
+                name = "htmlFor"
 
             if name.startswith("on_"):
                 # Ensure on-events are cached in the _on_events dict if the
