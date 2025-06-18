@@ -871,7 +871,17 @@ class TestElements:
         self._create_el_and_basic_asserts("kbd", "some text")
 
     def test_label(self):
-        self._create_el_and_basic_asserts("label", "some text")
+        label_text = "Luke, I am your father"
+        label_for = "some-id"
+        # Let's create the element
+        el = web.label(label_text, for_=label_for)
+        # Let's check the element was configured correctly.
+        assert isinstance(el, web.label), "The new element should be a label."
+        assert el.textContent == label_text, "The label text should match."
+        assert el._dom_element.tagName == "LABEL"
+        assert el.for_ == label_for, "The label should have the correct for attribute."
+        # Ensure the label element is rendered with the correct "for" attribute
+        assert f'for="{label_for}"' in el.outerHTML, "The label should have the correct 'for' attribute in its HTML."
 
     def test_legend(self):
         self._create_el_and_basic_asserts("legend", "some text")
