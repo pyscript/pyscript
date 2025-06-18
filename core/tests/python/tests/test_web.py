@@ -875,7 +875,7 @@ class TestElements:
         label_for = "some-id"
         # Let's create the element
         el = web.label(label_text, for_=label_for)
-        # Let's check the element was
+        # Let's check the element was configured correctly.
         assert isinstance(el, web.label), "The new element should be a label."
         assert el.textContent == label_text, "The label text should match."
         assert el._dom_element.tagName == "LABEL"
