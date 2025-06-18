@@ -42,6 +42,7 @@ The [test.js](./test/test.js) files uses the following defaults:
   * `type` as `"mpy"`
   * `worker` as `false`
   * `config` as `undefined`
+  * `env` as `undefined`
 
 To test any variant use query string parameters so that `?type=py` will use `py` instead, `worker` will use a worker and `config` will use a basic *config* that brings in another file from the same folder which exposes the version.
 

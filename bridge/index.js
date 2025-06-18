@@ -48,13 +48,15 @@ const cache = new Map;
  * @param {boolean} [options.worker=true] - Whether to use a worker, `true` by default.
  * @param {string|Object} [options.config=null] - The configuration for the bridge, `null` by default.
  * @param {string} [options.env=null] - The optional shared environment to use.
+ * @param {string} [options.serviceWorker=null] - The optional service worker to use as fallback.
  * @returns {Object} - The bridge to the Python module.
  */
 export default (url, {
   type = 'py',
   worker = true,
   config = null,
-  env = null
+  env = null,
+  serviceWorker = null,
 } = {}) => {
   const { protocol, host, pathname } = new URL(url);
   const py = pathname.replace(/\.m?js(?:\/\+\w+)?$/, '.py');
@@ -98,6 +100,7 @@ export default (url, {
                 }
 
                 if (env) script.setAttribute('env', env);
+                if (serviceWorker) script.setAttribute('service-worker', serviceWorker);
 
                 // augment the code with the previously accessed fields at the end
                 script.textContent = [
