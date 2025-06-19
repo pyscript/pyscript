@@ -1,3 +1,4 @@
 ISSUE_TEMPLATE
 *.min.*
 package-lock.json
+bridge/
