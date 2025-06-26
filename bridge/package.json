@@ -1,0 +1,27 @@
+{
+  "name": "@pyscript/bridge",
+  "version": "0.1.0",
+  "description": "A JS based way to use PyScript modules",
+  "type": "module",
+  "module": "./index.js",
+  "unpkg": "./index.js",
+  "jsdelivr": "./jsdelivr.js",
+  "browser": "./index.js",
+  "main": "./index.js",
+  "keywords": [
+    "PyScript",
+    "JS",
+    "Python",
+    "bridge"
+  ],
+  "author": "Anaconda Inc.",
+  "license": "APACHE-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pyscript/pyscript.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pyscript/pyscript/issues"
+  },
+  "homepage": "https://github.com/pyscript/pyscript#readme"
+}
