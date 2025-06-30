@@ -16,3 +16,27 @@ except:
 
 create_proxy = _cp
 to_js = _tjs
+
+try:
+    from polyscript import ffi as _ffi
+
+    direct = _ffi.direct
+    gather = _ffi.gather
+    query = _ffi.query
+
+    def assign(source, *args):
+        for arg in args:
+            _ffi.assign(source, to_js(arg))
+        return source
+
+except:
+    import js
+    _assign = js.Object.assign
+
+    direct = lambda source: source
+
+    def assign(source, *args):
+        for arg in args:
+            _assign(source, to_js(arg))
+        return source
+
