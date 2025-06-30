@@ -31,6 +31,7 @@ try:
 
 except:
     import js
+
     _assign = js.Object.assign
 
     direct = lambda source: source
@@ -39,4 +40,3 @@ except:
         for arg in args:
             _assign(source, to_js(arg))
         return source
-
