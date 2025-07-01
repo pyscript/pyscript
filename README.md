@@ -13,15 +13,15 @@ Using PyScript is as simple as:
         <title>PyScript!</title>
         <link
             rel="stylesheet"
-            href="https://pyscript.net/snapshots/2024.9.2/core.css"
+            href="https://pyscript.net/releases/2025.7.1/core.css"
         />
         <script
             type="module"
-            src="https://pyscript.net/snapshots/2024.9.2/core.js"
+            src="https://pyscript.net/releases/2025.7.1/core.js"
         ></script>
     </head>
     <body>
-        <!-- Use MicroPython to evaluate some Python -->
+        <!-- type mpy (MicroPython) or py (Pyodide) to run some Python -->
         <script type="mpy" terminal>
             print("Hello, world!")
         </script>
