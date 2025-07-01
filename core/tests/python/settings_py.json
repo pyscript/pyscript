@@ -24,5 +24,6 @@
             "./example_js_worker_module.js": "greeting_worker"
         }
     },
-    "packages": ["Pillow" ]
+    "packages": ["Pillow" ],
+    "experimental_ffi_timeout": 0
 }

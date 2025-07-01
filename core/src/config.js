@@ -154,6 +154,9 @@ for (const [TYPE] of TYPES) {
         return await Promise.all(toBeAwaited);
     };
 
+    if (Number.isSafeInteger(parsed?.experimental_ffi_timeout))
+        globalThis.reflected_ffi_timeout = parsed?.experimental_ffi_timeout;
+
     configs.set(TYPE, { config: parsed, configURL, plugins, error });
 }
 
