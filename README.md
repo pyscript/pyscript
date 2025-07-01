@@ -11,8 +11,14 @@ Using PyScript is as simple as:
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>PyScript!</title>
-        <link rel="stylesheet" href="https://pyscript.net/releases/2025.7.1/core.css">
-        <script type="module" src="https://pyscript.net/releases/2025.7.1/core.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/releases/2025.7.1/core.css"
+        />
+        <script
+            type="module"
+            src="https://pyscript.net/releases/2025.7.1/core.js"
+        ></script>
     </head>
     <body>
         <!-- type mpy (MicroPython) or py (Pyodide) to run some Python -->
