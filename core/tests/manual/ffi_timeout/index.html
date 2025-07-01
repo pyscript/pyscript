@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <link rel="stylesheet" href="../../../dist/core.css">
+      <script>
+        window.Worker = class extends Worker {
+          constructor(url, ...rest) {
+            console.log(rest[0]);
+            return super(url, ...rest);
+          }
+        };
+        window.start = Date.now();
+      </script>
+      <script type="module" src="../../../dist/core.js"></script>
+  </head>
+  <body>
+    <script type="py" config="./index.toml" src="index.py" worker></script>
+  </body>
+</html>
