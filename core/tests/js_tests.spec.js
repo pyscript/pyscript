@@ -59,6 +59,11 @@ test('MicroPython + configURL', async ({ page }) => {
   await page.waitForSelector('html.main.worker');
 });
 
+test('MicroPython + Symbols', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/javascript/worker-symbols.html');
+  await page.waitForSelector('html.main.worker');
+});
+
 test('Pyodide + terminal on Main', async ({ page }) => {
   await page.goto('http://localhost:8080/tests/javascript/py-terminal-main.html');
   await page.waitForSelector('html.ok');

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyScript VS Symbols</title>
+  <script>
+    globalThis.hasSymbol = (symbol, ref) => symbol in ref;
+    globalThis.getSymbol = (symbol, ref) => ref[symbol];
+
+    // some 3rd party JS library might use symbols to brand-check
+    // so it's not about symbols traveling from MicroPython
+    // it's about MicroPython proxies traps not understanding symbols
+    globalThis.hasIterator = ref => Symbol.iterator in ref;
+  </script>
+  <link rel="stylesheet" href="../../dist/core.css">
+  <script type="module" src="../../dist/core.js"></script>
+  <script type="mpy">
+    import js
+
+    symbol = js.Symbol.iterator
+
+    if js.getSymbol(symbol, []) and js.hasSymbol(symbol, []) and js.hasIterator([]):
+      js.document.documentElement.classList.add("main")
+  </script>
+  <script type="mpy" worker>
+    from pyscript import window
+    import js
+
+    symbol = js.Symbol.iterator
+
+    if window.getSymbol(symbol, []) and window.hasSymbol(symbol, []) and window.hasIterator([]):
+      window.document.documentElement.classList.add("worker")
+  </script>
+</head>
+</html>
