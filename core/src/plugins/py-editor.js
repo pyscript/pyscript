@@ -38,7 +38,7 @@ const getRelatedScript = (target, type) => {
     return editor?.parentNode?.previousElementSibling;
 };
 
-async function execute({ currentTarget }) {
+async function execute({ currentTarget, script }) {
     const { env, pySrc, outDiv } = this;
     const hasRunButton = !!currentTarget;
 
@@ -91,13 +91,12 @@ async function execute({ currentTarget }) {
         // creation and destruction of editors on the fly
         if (hasRunButton) {
             for (const type of TYPES.keys()) {
-                const script = getRelatedScript(currentTarget, type);
-                if (script) {
-                    defineProperties(script, { xworker: { value: xworker } });
-                    break;
-                }
+                script = getRelatedScript(currentTarget, type);
+                if (script) break;
             }
         }
+
+        defineProperties(script, { xworker: { value: xworker } });
 
         const { sync } = xworker;
         const { promise, resolve } = withResolvers();
@@ -157,6 +156,20 @@ async function execute({ currentTarget }) {
     });
 }
 
+const replaceScript = (script, type) => {
+    script.xworker?.terminate();
+    const clone = script.cloneNode(true);
+    clone.type = `${type}-editor`;
+    const editor = editors.get(script);
+    if (editor) {
+        const content = editor.state.doc.toString();
+        clone.textContent = content;
+        editors.delete(script);
+        script.nextElementSibling.remove();
+    }
+    script.replaceWith(clone);
+};
+
 const makeRunButton = (handler, type) => {
     const runButton = document.createElement("button");
     runButton.className = `absolute ${type}-editor-run-button`;
@@ -169,15 +182,25 @@ const makeRunButton = (handler, type) => {
         ) {
             const script = getRelatedScript(runButton, type);
             if (script) {
-                const editor = editors.get(script);
-                const content = editor.state.doc.toString();
-                const clone = script.cloneNode(true);
-                clone.type = `${type}-editor`;
-                clone.textContent = content;
-                script.xworker.terminate();
-                script.nextElementSibling.remove();
-                script.replaceWith(clone);
-                editors.delete(script);
+                const env = script.getAttribute("env");
+                // remove the bootstrapped env which could be one or shared
+                if (env) {
+                    for (const [key, value] of TYPES) {
+                        if (key === type) {
+                            configs.delete(`${value}-${env}`);
+                            envs.delete(`${value}-${env}`);
+                            break;
+                        }
+                    }
+                }
+                // lonley script without setup node should be replaced
+                if (script.xworker) replaceScript(script, type);
+                // all scripts sharing the same env should be replaced
+                else {
+                    const sel = `script[type^="${type}-editor"][env="${env}"]`;
+                    for (const script of document.querySelectorAll(sel))
+                        replaceScript(script, type);
+                }
             }
             return;
         }
@@ -365,7 +388,7 @@ const init = async (script, type, interpreter) => {
     };
 
     if (isSetup) {
-        await context.handleEvent({ currentTarget: null });
+        await context.handleEvent({ currentTarget: null, script });
         notifyEditor();
         return;
     }
