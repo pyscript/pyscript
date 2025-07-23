@@ -12,6 +12,7 @@ def add_listener(socket, onevent, listener):
     p = create_proxy(listener)
 
     if is_awaitable(listener):
+
         async def wrapper(e):
             await p(EventMessage(e))
 
