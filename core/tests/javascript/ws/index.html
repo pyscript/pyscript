@@ -14,7 +14,7 @@
         print(event.type)
         ws.send("hello")
 
-    def onmessage(event):
+    async def onmessage(event):
         print(event.type, event.data)
         ws.close()
 

@@ -1,11 +1,27 @@
 import js
 from pyscript.ffi import create_proxy
-from pyscript.util import as_bytearray
+from pyscript.util import as_bytearray, is_awaitable
 
 code = "code"
 protocols = "protocols"
 reason = "reason"
 methods = ["onclose", "onerror", "onmessage", "onopen"]
+
+
+def add_listener(socket, onevent, listener):
+    p = create_proxy(listener)
+
+    if is_awaitable(listener):
+        async def wrapper(e):
+            await p(EventMessage(e))
+
+        m = wrapper
+
+    else:
+        m = lambda e: p(EventMessage(e))
+
+    # Pyodide fails at setting socket[onevent] directly
+    setattr(socket, onevent, m)
 
 
 class EventMessage:
@@ -36,20 +52,20 @@ class WebSocket:
             socket = js.WebSocket.new(url, kw[protocols])
         else:
             socket = js.WebSocket.new(url)
+
+        socket.binaryType = "arraybuffer"
         object.__setattr__(self, "_ws", socket)
 
         for t in methods:
             if t in kw:
-                # Pyodide fails at setting socket[t] directly
-                setattr(socket, t, create_proxy(kw[t]))
+                add_listener(socket, t, kw[t])
 
     def __getattr__(self, attr):
         return getattr(self._ws, attr)
 
     def __setattr__(self, attr, value):
         if attr in methods:
-            m = lambda e: value(EventMessage(e))
-            setattr(self._ws, attr, create_proxy(m))
+            add_listener(self._ws, attr, value)
         else:
             setattr(self._ws, attr, value)
 
