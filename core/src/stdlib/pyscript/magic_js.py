@@ -67,7 +67,11 @@ if RUNNING_IN_WORKER:
 
 else:
     import _pyscript
-    from _pyscript import PyWorker, js_import
+    from _pyscript import PyWorker as _PyWorker, js_import
+    from pyscript.ffi import to_js
+
+    def PyWorker(url, **kw):
+        return _PyWorker(url, to_js(kw))
 
     window = globalThis
     document = globalThis.document
