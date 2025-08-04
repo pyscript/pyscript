@@ -19,6 +19,8 @@ if TEST == "implicit":
 
     await fs.sync("/persistent")
 
+    # await fs.revoke("/persistent")
+
 elif not RUNNING_IN_WORKER:
     from pyscript import document
 
@@ -39,7 +41,7 @@ elif not RUNNING_IN_WORKER:
             js.alert("unable to grant access")
 
     async def unmount(event):
-        await fs.unmount("/persistent")
+        await fs.revoke("/persistent")
         button.textContent = "mount"
         button.onclick = mount
 
