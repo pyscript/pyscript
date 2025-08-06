@@ -5,7 +5,7 @@ try:
     from pyodide.ffi import jsnull
 
     from_entries = js.Object.fromEntries
-    is_null = lambda value: value is None or value is jsnull
+    is_none = lambda value: value is None or value is jsnull
 
     def _tjs(value, **kw):
         if not hasattr(kw, "dict_converter"):
@@ -18,7 +18,7 @@ except:
     import js
 
     jsnull = js.Object.getPrototypeOf(js.Object.prototype)
-    is_null = lambda value: value is None or value is jsnull
+    is_none = lambda value: value is None or value is jsnull
 
 create_proxy = _cp
 to_js = _tjs

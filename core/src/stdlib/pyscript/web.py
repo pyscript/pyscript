@@ -6,7 +6,7 @@
 # from __future__ import annotations  # CAUTION: This is not supported in MicroPython.
 
 from pyscript import document, when, Event  # noqa: F401
-from pyscript.ffi import create_proxy, is_null
+from pyscript.ffi import create_proxy, is_none
 
 
 def wrap_dom_element(dom_element):
@@ -70,7 +70,7 @@ class Element:
         """
         self._dom_element = (
             document.createElement(type(self).get_tag_name())
-            if is_null(dom_element)
+            if is_none(dom_element)
             else dom_element
         )
 
@@ -197,7 +197,7 @@ class Element:
     @property
     def parent(self):
         """Return the element's `parent `Element`."""
-        if is_null(self._dom_element.parentElement):
+        if is_none(self._dom_element.parentElement):
             return None
 
         return Element.wrap_dom_element(self._dom_element.parentElement)
@@ -1136,7 +1136,7 @@ class video(ContainerElement):
         width = width if width is not None else self.videoWidth
         height = height if height is not None else self.videoHeight
 
-        if is_null(to):
+        if is_none(to):
             to = canvas(width=width, height=height)
 
         elif isinstance(to, Element):

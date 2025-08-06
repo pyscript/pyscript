@@ -1,12 +1,12 @@
 from polyscript import storage as _storage
 from pyscript.flatted import parse as _parse
 from pyscript.flatted import stringify as _stringify
-from pyscript.ffi import is_null
+from pyscript.ffi import is_none
 
 
 # convert a Python value into an IndexedDB compatible entry
 def _to_idb(value):
-    if is_null(value):
+    if is_none(value):
         return _stringify(["null", 0])
     if isinstance(value, (bool, float, int, str, list, dict, tuple)):
         return _stringify(["generic", value])
