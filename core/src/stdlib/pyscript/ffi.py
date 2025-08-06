@@ -16,6 +16,7 @@ except:
     from jsffi import create_proxy as _cp
     from jsffi import to_js as _tjs
     import js
+
     jsnull = js.Object.getPrototypeOf(js.Object.prototype)
     is_null = lambda value: value is None or value is jsnull
 
