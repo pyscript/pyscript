@@ -16,7 +16,7 @@ export default {
      * Ask a user action via dialog and returns the directory handler once granted.
      * @param {string} uid
      * @param {{id?:string, mode?:"read"|"readwrite", hint?:"desktop"|"documents"|"downloads"|"music"|"pictures"|"videos"}} options
-     * @returns {boolean}
+     * @returns {Promise<boolean>}
      */
     async storeFSHandler(uid, options = {}) {
         if (await idb.has(uid)) return true;
@@ -27,5 +27,16 @@ export default {
             },
             () => false,
         );
+    },
+
+    /**
+     * Explicitly remove the unique identifier for the FS handler.
+     * @param {string} uid
+     * @returns {Promise<boolean>}
+     */
+    async deleteFSHandler(uid) {
+        const had = await idb.has(uid);
+        if (had) await idb.delete(uid);
+        return had;
     },
 };
