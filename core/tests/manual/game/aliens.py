@@ -318,16 +318,12 @@ async def main(winstyle=0):
                 if not fullscreen:
                     print("Changing to FULLSCREEN")
                     screen_backup = screen.copy()
-                    screen = pygame.display.set_mode(
-                        SCREENRECT.size, winstyle | pygame.FULLSCREEN, bestdepth
-                    )
+                    screen = pygame.display.set_mode(SCREENRECT.size, winstyle | pygame.FULLSCREEN)
                     screen.blit(screen_backup, (0, 0))
                 else:
                     print("Changing to windowed mode")
                     screen_backup = screen.copy()
-                    screen = pygame.display.set_mode(
-                        SCREENRECT.size, winstyle, bestdepth
-                    )
+                    screen = pygame.display.set_mode(SCREENRECT.size, winstyle)
                     screen.blit(screen_backup, (0, 0))
                 pygame.display.flip()
                 fullscreen = not fullscreen
