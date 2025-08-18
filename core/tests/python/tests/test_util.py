@@ -11,7 +11,7 @@ def test_as_bytearray():
     msg = b"Hello, world!"
     buffer = js.ArrayBuffer.new(len(msg))
     ui8a = js.Uint8Array.new(buffer)
-    for b in msg:
+    for i, b in enumerate(msg):
         ui8a[i] = b
     ba = util.as_bytearray(buffer)
     assert isinstance(ba, bytearray)

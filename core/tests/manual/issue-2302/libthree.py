@@ -140,7 +140,7 @@ def get_stats_gl(renderer):
 
 def bg_from_v(*vertices):
     geometry = new(THREE.BufferGeometry)
-    vertices_f32a = new(Float32Array, vertices)
+    vertices_f32a = new(Float32Array, vertices)  # noqa: F821 Float32Array is defined in js
     attr = new(THREE.Float32BufferAttribute, vertices_f32a, 3)
     return geometry.setAttribute('position', attr)
 
