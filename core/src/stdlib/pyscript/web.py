@@ -6,7 +6,7 @@
 # from __future__ import annotations  # CAUTION: This is not supported in MicroPython.
 
 from pyscript import document, when, Event  # noqa: F401
-from pyscript.ffi import create_proxy
+from pyscript.ffi import create_proxy, is_none
 
 
 def wrap_dom_element(dom_element):
@@ -68,8 +68,10 @@ class Element:
         If `dom_element` is None we are being called to *create* a new element.
         Otherwise, we are being called to *wrap* an existing DOM element.
         """
-        self._dom_element = dom_element or document.createElement(
-            type(self).get_tag_name()
+        self._dom_element = (
+            document.createElement(type(self).get_tag_name())
+            if is_none(dom_element)
+            else dom_element
         )
 
         # HTML on_events attached to the element become pyscript.Event instances.
@@ -195,7 +197,7 @@ class Element:
     @property
     def parent(self):
         """Return the element's `parent `Element`."""
-        if self._dom_element.parentElement is None:
+        if is_none(self._dom_element.parentElement):
             return None
 
         return Element.wrap_dom_element(self._dom_element.parentElement)
@@ -1134,7 +1136,7 @@ class video(ContainerElement):
         width = width if width is not None else self.videoWidth
         height = height if height is not None else self.videoHeight
 
-        if to is None:
+        if is_none(to):
             to = canvas(width=width, height=height)
 
         elif isinstance(to, Element):

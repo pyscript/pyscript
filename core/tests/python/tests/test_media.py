@@ -2,7 +2,6 @@
 Tests for the PyScript media module.
 """
 
-from pyscript import media
 import upytest
 
 from pyscript import media

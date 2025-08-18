@@ -4,6 +4,7 @@ import io
 import re
 
 from pyscript.magic_js import current_target, document, window
+from pyscript.ffi import is_none
 
 _MIME_METHODS = {
     "savefig": "image/png",
@@ -105,13 +106,13 @@ def _format_mime(obj):
         else:
             output = _eval_formatter(obj, method)
 
-        if output is None:
+        if is_none(output):
             continue
         if mime_type not in _MIME_RENDERERS:
             not_available.append(mime_type)
             continue
         break
-    if output is None:
+    if is_none(output):
         if not_available:
             window.console.warn(
                 f"Rendered object requested unavailable MIME renderers: {not_available}"
@@ -135,7 +136,7 @@ def _write(element, value, append=False):
         element.append(out_element)
     else:
         out_element = element.lastElementChild
-        if out_element is None:
+        if is_none(out_element):
             out_element = element
 
     if mime_type in ("application/javascript", "text/html"):
@@ -146,7 +147,7 @@ def _write(element, value, append=False):
 
 
 def display(*values, target=None, append=True):
-    if target is None:
+    if is_none(target):
         target = current_target()
     elif not isinstance(target, str):
         msg = f"target must be str or None, not {target.__class__.__name__}"
@@ -162,7 +163,7 @@ def display(*values, target=None, append=True):
     element = document.getElementById(target)
 
     # If target cannot be found on the page, a ValueError is raised
-    if element is None:
+    if is_none(element):
         msg = f"Invalid selector with id={target}. Cannot be found in the page."
         raise ValueError(msg)
 
