@@ -10,7 +10,7 @@ from pyscript import document, window, PyWorker
 from libthree import THREE, clear, SoundPlayer
 from libthree import get_renderer, get_ortho_camera
 from libthree import get_loading_manager, get_stats_gl
-from libthree import lsgeo, line2, linemat, lsgeo
+from libthree import line2, linemat, lsgeo
 from libfft import BeatSync
 
 from multipyjs import MICROPYTHON, new, call, to_js, create_proxy

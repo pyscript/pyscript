@@ -32,7 +32,7 @@ def test_js_module_is_available_on_worker():
 
 
 @upytest.skip("Worker only.", skip_when=not RUNNING_IN_WORKER)
-def test_js_module_is_available_on_worker():
+def test_js_module_is_available_on_greeting_worker():
     """
     The "hello" function in the example_js_worker_module.js file is available
     via the js_modules object while running in a worker.
