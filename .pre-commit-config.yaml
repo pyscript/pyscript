@@ -7,7 +7,7 @@ ci:
 default_stages: [pre-commit]
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v5.0.0
+      rev: v6.0.0
       hooks:
           - id: check-builtin-literals
           - id: check-case-conflict
@@ -40,7 +40,7 @@ repos:
                 - tomli
 
     - repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: v0.12.8
+      rev: v0.12.11
       hooks:
           - id: ruff
             exclude: core/tests
