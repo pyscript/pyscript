@@ -1,6 +1,6 @@
 {
   "name": "@pyscript/bridge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A JS based way to use PyScript modules",
   "type": "module",
   "module": "./index.js",
