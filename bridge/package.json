@@ -1,6 +1,6 @@
 {
   "name": "@pyscript/bridge",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "A JS based way to use PyScript modules",
   "type": "module",
   "module": "./index.js",
@@ -13,6 +13,10 @@
     "JS",
     "Python",
     "bridge"
+  ],
+  "files": [
+    "index.js",
+    "README.md"
   ],
   "author": "Anaconda Inc.",
   "license": "APACHE-2.0",
