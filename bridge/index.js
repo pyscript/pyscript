@@ -131,6 +131,24 @@ export default (url, {
                 // return a promise that will resolve only once the event
                 // has been emitted and the interpreter evaluated the code
                 const { promise, resolve } = Promise.withResolvers();
+
+                // ⚠️ This is just a *fallback* !!!
+                //     Please always use an explicit PyScript release !!!
+                if (!(Symbol.for('@pyscript/core') in globalThis)) {
+                  // bring in PyScript via the `npm` developers' channel
+                  const cdn = 'https://cdn.jsdelivr.net/npm/@pyscript/core/dist';
+                  document.head.appendChild(
+                    Object.assign(
+                      document.createElement('link'),
+                      {
+                        rel: 'stylesheet',
+                        href: `${cdn}/core.css`,
+                      }
+                    )
+                  );
+                  try { await import(`${cdn}/core.js`) }
+                  catch {}
+                }
                 return promise;
               });
             }
