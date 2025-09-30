@@ -1,7 +1,9 @@
 /*! (c) PyScript Development Team */
 
 const { stringify } = JSON;
-const { create, entries } = Object;
+const { assign, create, entries } = Object;
+
+const el = (name, props) => assign(document.createElement(name), props);
 
 /**
  * Transform a list of keys into a Python dictionary.
@@ -57,6 +59,7 @@ export default (url, {
   config = null,
   env = null,
   serviceWorker = null,
+  pyscript = null,
 } = {}) => {
   const { protocol, host, pathname } = new URL(url);
   const py = pathname.replace(/\.m?js(?:\/\+\w+)?$/, '.py');
@@ -88,8 +91,17 @@ export default (url, {
                 // create the arguments for the `dispatchEvent` call
                 const eventArgs = `${stringify(name)},${name}to_ts(${detail})`;
                 // bootstrap the script element type and its attributes
-                const script = document.createElement('script');
-                script.type = type;
+                const script = el('script', { type, textContent: [
+                  '\n', code, '\n',
+                  // this is to avoid local scope name clashing
+                  `from pyscript import window as ${name}`,
+                  `from pyscript.ffi import to_js as ${name}to_ts`,
+                  `${name}.dispatchEvent(${name}.CustomEvent.new(${eventArgs}))`,
+                  // remove these references even if non-clashing to keep
+                  // the local scope clean from undesired entries
+                  `del ${name}`,
+                  `del ${name}to_ts`,
+                ].join('\n') });
 
                 // if config is provided it needs to be a worker to avoid
                 // conflicting with main config on the main thread (just like always)
@@ -101,19 +113,6 @@ export default (url, {
 
                 if (env) script.setAttribute('env', env);
                 if (serviceWorker) script.setAttribute('service-worker', serviceWorker);
-
-                // augment the code with the previously accessed fields at the end
-                script.textContent = [
-                  '\n', code, '\n',
-                  // this is to avoid local scope name clashing
-                  `from pyscript import window as ${name}`,
-                  `from pyscript.ffi import to_js as ${name}to_ts`,
-                  `${name}.dispatchEvent(${name}.CustomEvent.new(${eventArgs}))`,
-                  // remove these references even if non-clashing to keep
-                  // the local scope clean from undesired entries
-                  `del ${name}`,
-                  `del ${name}to_ts`,
-                ].join('\n');
 
                 // let PyScript resolve and execute this script
                 document.body.appendChild(script);
@@ -132,19 +131,15 @@ export default (url, {
                 // has been emitted and the interpreter evaluated the code
                 const { promise, resolve } = Promise.withResolvers();
 
-                // ⚠️ This is just a *fallback* !!!
-                //     Please always use an explicit PyScript release !!!
                 if (!(Symbol.for('@pyscript/core') in globalThis)) {
-                  // bring in PyScript via the `npm` developers' channel
-                  const cdn = 'https://cdn.jsdelivr.net/npm/@pyscript/core/dist';
+                  // bring in PyScript if not available already
+                  const cdn = pyscript ?
+                    `https://pyscript.net/releases/${pyscript}` :
+                    // ⚠️ fallback to developers' channel !!!
+                    'https://cdn.jsdelivr.net/npm/@pyscript/core/dist'
+                    ;
                   document.head.appendChild(
-                    Object.assign(
-                      document.createElement('link'),
-                      {
-                        rel: 'stylesheet',
-                        href: `${cdn}/core.css`,
-                      }
-                    )
+                    el('link', { rel: 'stylesheet', href: `${cdn}/core.css` }),
                   );
                   try { await import(`${cdn}/core.js`) }
                   catch {}

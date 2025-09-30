@@ -21,6 +21,7 @@ def func_b():
 
 ### Options
 
+  * **pyscript**: the release version to automatically import if not already available on the page. If no version is provided the *developers' channel* version will be used instead (for developers' purposes only).
   * **type**: `py` by default to bootstrap *Pyodide*.
   * **worker**: `true` by default to bootstrap in a *Web Worker*.
   * **config**: either a *string* or a PyScript compatible config *JS literal* to make it possible to bootstrap files and whatnot. If specified, the `worker` becomes implicitly `true` to avoid multiple configs conflicting on the main thread.
@@ -39,6 +40,7 @@ no config
 
 The [test.js](./test/test.js) files uses the following defaults:
 
+  * `pyscript` as `"2025.8.1"`
   * `type` as `"mpy"`
   * `worker` as `false`
   * `config` as `undefined`

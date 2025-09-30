@@ -5,6 +5,7 @@ const { searchParams } = new URL(location.href);
 
 // the named (or default) export for test.py
 export const ffi = bridge(import.meta.url, {
+  pyscript: "2025.8.1",
   env: searchParams.get("env"),
   type: searchParams.get("type") || "mpy",
   worker: searchParams.has("worker"),
