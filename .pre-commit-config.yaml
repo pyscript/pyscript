@@ -24,8 +24,8 @@ repos:
             exclude: core/dist|\.min\.js$
           - id: trailing-whitespace
 
-    - repo: https://github.com/psf/black
-      rev: 25.1.0
+    - repo: https://github.com/psf/black-pre-commit-mirror
+      rev: 25.9.0
       hooks:
           - id: black
             exclude: core/tests
@@ -40,7 +40,7 @@ repos:
                 - tomli
 
     - repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: v0.12.11
+      rev: v0.13.3
       hooks:
           - id: ruff
             exclude: core/tests
