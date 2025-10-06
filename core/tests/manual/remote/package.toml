@@ -1,0 +1,4 @@
+experimental_remote_packages = true
+
+packages = ['https://webreflection.github.io/examples/pyscript/module/package.toml']
+
