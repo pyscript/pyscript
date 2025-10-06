@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>PyScript Custom Package</title>
+        <style>
+            body {
+                font-family: system-ui, sans-serif;
+            }
+        </style>
+        <script>
+            const track = ({ detail }) => {
+                if (/^(Loading|Loaded)/.test(detail)) {
+                    const state = RegExp.$1;
+                    const what = detail.slice(state.length + 1);
+                    if (state === 'Loading') console.time(what);
+                    else console.timeEnd(what);
+                }
+            };
+            addEventListener("py:progress", track);
+            addEventListener("mpy:progress", track);
+        </script>
+        <!-- PyScript (locally) -->
+        <link rel="stylesheet" href="../../../dist/core.css">
+        <script type="module" src="../../../dist/core.js"></script>
+    </head>
+    <body>
+        <div>loading ...</div>
+        <script type="py" config="./package.toml">
+            import custom_package
+      </script>
+    </body>
+</html>
