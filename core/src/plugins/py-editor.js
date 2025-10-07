@@ -253,7 +253,7 @@ const init = async (script, type, interpreter) => {
         { python },
         { indentUnit },
         { keymap },
-        { defaultKeymap, indentWithTab },
+        { indentWithTab },
     ] = await Promise.all([
         codemirror.core,
         codemirror.state,
@@ -432,7 +432,6 @@ const init = async (script, type, interpreter) => {
             indentUnit.of(indentation),
             new Compartment().of(python()),
             keymap.of([
-                ...defaultKeymap,
                 { key: "Ctrl-Enter", run: listener, preventDefault: true },
                 { key: "Cmd-Enter", run: listener, preventDefault: true },
                 { key: "Shift-Enter", run: listener, preventDefault: true },
