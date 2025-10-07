@@ -374,7 +374,7 @@ def test_when_on_different_callables():
     def func(x=1):
         # A simple function.
         return x
-    
+
     async def a_func(x=1):
         # A simple async function.
         return x
