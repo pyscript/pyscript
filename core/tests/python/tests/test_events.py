@@ -361,7 +361,7 @@ def test_when_called_with_an_event_and_handler():
 
 def test_when_on_different_callables():
     """
-    The when function work with:
+    The when function works with:
 
     * Synchronous functions
     * Asynchronous functions
@@ -432,3 +432,5 @@ def test_when_on_different_callables():
     when(whenable, inner_a_func)
     when(whenable, cl_func)
     when(whenable, cl_a_func)
+    # If we get here, everything worked.
+    assert True
