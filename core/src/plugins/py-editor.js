@@ -426,16 +426,17 @@ const init = async (script, type, interpreter) => {
     // preserve user indentation, if any
     const indentation = /^([ \t]+)/m.test(doc) ? RegExp.$1 : "    ";
 
-    const listener = () => runButton.click();
+    const listener = () => !runButton.click();
     const editor = new EditorView({
         extensions: [
             indentUnit.of(indentation),
             new Compartment().of(python()),
             keymap.of([
-                ...defaultKeymap,
                 { key: "Ctrl-Enter", run: listener, preventDefault: true },
                 { key: "Cmd-Enter", run: listener, preventDefault: true },
                 { key: "Shift-Enter", run: listener, preventDefault: true },
+                // Consider removing defaultKeymap as likely redundant with basicSetup
+                ...defaultKeymap,
                 // @see https://codemirror.net/examples/tab/
                 indentWithTab,
             ]),

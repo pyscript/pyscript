@@ -92,60 +92,26 @@ def when(target, *args, **kwargs):
             elements = selector if isinstance(selector, list) else [selector]
 
     def decorator(func):
-        if config["type"] == "mpy":  # Is MicroPython?
+        sig = inspect.signature(func)
+        if sig.parameters:
+            if is_awaitable(func):
+
+                async def wrapper(event):
+                    return await func(event)
+
+            else:
+                wrapper = func
+        else:
+            # Function doesn't receive events.
             if is_awaitable(func):
 
                 async def wrapper(*args, **kwargs):
-                    """
-                    This is  a very ugly hack to get micropython working because
-                    `inspect.signature` doesn't exist. It may be actually better
-                    to not try any magic for now and raise the error.
-                    """
-                    try:
-                        return await func(*args, **kwargs)
-
-                    except TypeError as e:
-                        if "takes" in str(e) and "positional arguments" in str(e):
-                            return await func()
-                        raise
+                    return await func()
 
             else:
 
                 def wrapper(*args, **kwargs):
-                    """
-                    This is  a very ugly hack to get micropython working because
-                    `inspect.signature` doesn't exist. It may be actually better
-                    to not try any magic for now and raise the error.
-                    """
-                    try:
-                        return func(*args, **kwargs)
-
-                    except TypeError as e:
-                        if "takes" in str(e) and "positional arguments" in str(e):
-                            return func()
-                        raise
-
-        else:
-            sig = inspect.signature(func)
-            if sig.parameters:
-                if is_awaitable(func):
-
-                    async def wrapper(event):
-                        return await func(event)
-
-                else:
-                    wrapper = func
-            else:
-                # Function doesn't receive events.
-                if is_awaitable(func):
-
-                    async def wrapper(*args, **kwargs):
-                        return await func()
-
-                else:
-
-                    def wrapper(*args, **kwargs):
-                        return func()
+                    return func()
 
         wrapper = wraps(func)(wrapper)
         if isinstance(target, Event):
