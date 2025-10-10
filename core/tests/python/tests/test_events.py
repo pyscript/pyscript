@@ -358,3 +358,79 @@ def test_when_called_with_an_event_and_handler():
     # The function should have been called when the whenable object was
     # triggered.
     assert counter == 1
+
+def test_when_on_different_callables():
+    """
+    The when function works with:
+
+    * Synchronous functions
+    * Asynchronous functions
+    * Inner functions
+    * Async inner functions
+    * Closure functions
+    * Async closure functions
+    """
+
+    def func(x=1):
+        # A simple function.
+        return x
+
+    async def a_func(x=1):
+        # A simple async function.
+        return x
+
+    def make_inner_func():
+        # Creates a simple inner function.
+
+        def inner_func(x=1):
+            return x
+
+        return inner_func
+
+
+    def make_inner_a_func():
+        # Creates a simple async inner function.
+
+        async def inner_a_func(x=1):
+            return x
+
+        return inner_a_func
+
+
+    def make_closure():
+        # Creates a simple closure function.
+        a = 1
+
+        def closure_func(x=1):
+            return a + x
+
+        return closure_func
+
+
+    def make_a_closure():
+        # Creates a simple async closure function.
+        a = 1
+
+        async def closure_a_func(x=1):
+            return a + x
+
+        return closure_a_func
+
+
+    inner_func = make_inner_func()
+    inner_a_func = make_inner_a_func()
+    cl_func = make_closure()
+    cl_a_func = make_a_closure()
+
+
+    whenable  = Event()
+
+    # Each of these should work with the when function.
+    when(whenable, func)
+    when(whenable, a_func)
+    when(whenable, inner_func)
+    when(whenable, inner_a_func)
+    when(whenable, cl_func)
+    when(whenable, cl_a_func)
+    # If we get here, everything worked.
+    assert True
