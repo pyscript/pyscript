@@ -70,6 +70,7 @@ for (const [TYPE] of TYPES) {
 
     let config,
         type,
+        parser,
         pyElement,
         pyConfigs = $$(`${TYPE}-config`),
         attrConfigs = $$(
@@ -92,9 +93,11 @@ for (const [TYPE] of TYPES) {
             [pyElement] = pyConfigs;
             config = pyElement.getAttribute("src") || pyElement.textContent;
             type = pyElement.getAttribute("type");
+            parser = pyElement.getAttribute("config-parser");
         } else if (attrConfigs.length) {
             [pyElement, ...attrConfigs] = attrConfigs;
             config = pyElement.getAttribute("config");
+            parser = pyElement.getAttribute("config-parser");
             // throw an error if dirrent scripts use different configs
             if (
                 attrConfigs.some((el) => el.getAttribute("config") !== config)
@@ -120,9 +123,10 @@ for (const [TYPE] of TYPES) {
                 }
             } else if (toml || type === "toml") {
                 try {
-                    const { parse } = await import(
+                    const module = parser ? await import(parser) : await import(
                         /* webpackIgnore: true */ "./3rd-party/toml.js"
                     );
+                    const parse = module.parse || module.default;
                     parsed = parse(text);
                 } catch (e) {
                     error = syntaxError("TOML", url, e);

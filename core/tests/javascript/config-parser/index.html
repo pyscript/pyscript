@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../../dist/core.css">
+  <script type="module" src="../../../dist/core.js"></script>
+</head>
+<body>
+  <py-config config-parser="https://esm.run/basic-toml">
+    [files]
+    'file.py' = ""
+  </py-config>
+  <script type="py">
+    import file
+    from pyscript import document
+    document.documentElement.classList.add("done")
+    document.body.append("OK")
+  </script>
+</body>
+</html>

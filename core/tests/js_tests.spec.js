@@ -2,6 +2,13 @@ import { test, expect } from '@playwright/test';
 
 test.setTimeout(120 * 1000);
 
+test('config-parser custom TOML', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/javascript/config-parser/index.html');
+  await page.waitForSelector('html.done');
+  const body = await page.evaluate(() => document.body.innerText);
+  await expect(body.trim()).toBe('OK');
+});
+
 test('MicroPython display', async ({ page }) => {
   await page.goto('http://localhost:8080/tests/javascript/mpy.html');
   await page.waitForSelector('html.done.worker');
