@@ -123,9 +123,11 @@ for (const [TYPE] of TYPES) {
                 }
             } else if (toml || type === "toml") {
                 try {
-                    const module = parser ? await import(parser) : await import(
-                        /* webpackIgnore: true */ "./3rd-party/toml.js"
-                    );
+                    const module = parser
+                        ? await import(parser)
+                        : await import(
+                              /* webpackIgnore: true */ "./3rd-party/toml.js"
+                          );
                     const parse = module.parse || module.default;
                     parsed = parse(text);
                 } catch (e) {
