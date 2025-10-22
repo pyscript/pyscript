@@ -1,34 +1,38 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PyTerminal Process Test</title>
-        <link rel="stylesheet" href="../../dist/core.css">
-        <script type="module" src="../../dist/core.js"></script>
-        <style>.xterm { padding: .5rem; }</style>
-    </head>
-    <body>
-        <script type="py" worker terminal id="py-terminal-test"></script>
-        <script type="module">
-            // Wait for the terminal to be ready
-            addEventListener('py-terminal-test', async ({ target }) => {
-                // Test the process method with leading spaces
-                const testCode = [
-                    "result = []",
-                    "result.append('  leading spaces')",
-                    "result.append('    more spaces')",
-                    "result.append('no spaces')",
-                    "from pyscript import document",
-                    "# Check if spaces are preserved",
-                    "if result[0] == '  leading spaces' and result[1] == '    more spaces':",
-                    "    document.documentElement.classList.add('ok')",
-                    "else:",
-                    "    document.documentElement.classList.add('error')",
-                ].join('\n');
-                
-                await target.process(testCode);
-            });
-        </script>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PyTerminal Process Test</title>
+    <link rel="stylesheet" href="../../dist/core.css" />
+    <script type="module" src="../../dist/core.js"></script>
+    <style>
+      .xterm {
+        padding: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="py" worker terminal id="py-terminal-test"></script>
+    <script type="module">
+      // Wait for the terminal to be ready
+      addEventListener("py-terminal-test", async ({ target }) => {
+        // Test the process method with leading spaces
+        const testCode = [
+          "result = []",
+          "result.append('  leading spaces')",
+          "result.append('    more spaces')",
+          "result.append('no spaces')",
+          "from pyscript import document",
+          "# Check if spaces are preserved",
+          "if result[0] == '  leading spaces' and result[1] == '    more spaces':",
+          "    document.documentElement.classList.add('ok')",
+          "else:",
+          "    document.documentElement.classList.add('error')",
+        ].join("\n");
+
+        await target.process(testCode);
+      });
+    </script>
+  </body>
 </html>
