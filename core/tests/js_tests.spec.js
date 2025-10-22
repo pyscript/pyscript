@@ -87,6 +87,11 @@ test('Pyodide + multiple terminals via Worker', async ({ page }) => {
   await page.waitForSelector('html.first.second');
 });
 
+test('Pyodide + terminal process with leading spaces', async ({ page }) => {
+  await page.goto('http://localhost:8080/tests/javascript/py-terminal-process.html');
+  await page.waitForSelector('html.ok');
+});
+
 test('MicroPython + Pyodide fetch', async ({ page }) => {
   await page.goto('http://localhost:8080/tests/javascript/fetch/index.html');
   await page.waitForSelector('html.mpy.py');
