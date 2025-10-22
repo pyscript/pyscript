@@ -17,15 +17,22 @@
     <script type="module">
       // Wait for the terminal to be ready
       addEventListener("py-terminal-test", async ({ target }) => {
-        // Test the process method with leading spaces
+        // Test the process method preserves leading spaces in input lines
+        // This simulates pasting multi-line code with indentation
         const testCode = [
-          "result = []",
-          "result.append('  leading spaces')",
-          "result.append('    more spaces')",
-          "result.append('no spaces')",
+          "def test_function():",
+          "    # This function has proper indentation",
+          "    result = []",
+          "    result.append('line1')",
+          "    result.append('line2')",
+          "    return result",
+          "",
+          "# Call the function",
+          "data = test_function()",
+          "",
+          "# Import and verify",
           "from pyscript import document",
-          "# Check if spaces are preserved",
-          "if result[0] == '  leading spaces' and result[1] == '    more spaces':",
+          "if len(data) == 2 and data[0] == 'line1' and data[1] == 'line2':",
           "    document.documentElement.classList.add('ok')",
           "else:",
           "    document.documentElement.classList.add('error')",
