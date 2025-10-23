@@ -12,7 +12,7 @@ export default {
         return new Promise(($) => setTimeout($, seconds * 1000));
     },
 
-    getFSHandler: options => getFileSystemDirectoryHandle(options),
+    getFSHandler: (options) => getFileSystemDirectoryHandle(options),
 
     /**
      * Ask a user action via dialog and returns the directory handler once granted.

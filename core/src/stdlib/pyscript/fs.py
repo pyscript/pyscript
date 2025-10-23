@@ -1,5 +1,6 @@
 mounted = {}
 
+
 async def get_handler(details):
     handler = details.handler
     options = details.options
@@ -62,7 +63,7 @@ async def mount(path, mode="readwrite", root="", id="pyscript"):
         else:
             js_options = to_js(options)
             handler = await fs.getFileSystemDirectoryHandle(js_options)
-            details = { "handler": handler, "options": js_options }
+            details = {"handler": handler, "options": js_options}
             await fs.idb.set(uid, to_js(details))
 
     mounted[path] = await interpreter.mountNativeFS(path, handler)
