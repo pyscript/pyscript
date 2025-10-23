@@ -1,5 +1,11 @@
 mounted = {}
 
+async def get_handler(details):
+    handler = details.handler
+    options = details.options
+    permission = await handler.queryPermission(options)
+    return handler if permission == "granted" else None
+
 
 async def mount(path, mode="readwrite", root="", id="pyscript"):
     import js
@@ -12,6 +18,7 @@ async def mount(path, mode="readwrite", root="", id="pyscript"):
 
     js.console.warn("experimental pyscript.fs ⚠️")
 
+    details = None
     handler = None
 
     uid = f"{path}@{id}"
@@ -31,9 +38,16 @@ async def mount(path, mode="readwrite", root="", id="pyscript"):
 
         if success:
             from polyscript import IDBMap
+            from pyscript import window
 
-            idb = IDBMap.new(fs.NAMESPACE)
-            handler = await idb.get(uid)
+            idbm = IDBMap.new(fs.NAMESPACE)
+            details = await idbm.get(uid)
+            handler = await get_handler(details)
+            if handler is None:
+                # force await in either async or sync scenario
+                await js.Promise.resolve(sync.getFSHandler(details.options))
+                handler = details.handler
+
         else:
             raise RuntimeError(fs.ERROR)
 
@@ -41,10 +55,15 @@ async def mount(path, mode="readwrite", root="", id="pyscript"):
         success = await fs.idb.has(uid)
 
         if success:
-            handler = await fs.idb.get(uid)
+            details = await fs.idb.get(uid)
+            handler = await get_handler(details)
+            if handler is None:
+                handler = await fs.getFileSystemDirectoryHandle(details.options)
         else:
-            handler = await fs.getFileSystemDirectoryHandle(to_js(options))
-            await fs.idb.set(uid, handler)
+            js_options = to_js(options)
+            handler = await fs.getFileSystemDirectoryHandle(js_options)
+            details = { "handler": handler, "options": js_options }
+            await fs.idb.set(uid, to_js(details))
 
     mounted[path] = await interpreter.mountNativeFS(path, handler)
 

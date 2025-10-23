@@ -12,6 +12,8 @@ export default {
         return new Promise(($) => setTimeout($, seconds * 1000));
     },
 
+    getFSHandler: options => getFileSystemDirectoryHandle(options),
+
     /**
      * Ask a user action via dialog and returns the directory handler once granted.
      * @param {string} uid
@@ -22,7 +24,7 @@ export default {
         if (await idb.has(uid)) return true;
         return getFileSystemDirectoryHandle(options).then(
             async (handler) => {
-                await idb.set(uid, handler);
+                await idb.set(uid, { handler, options });
                 return true;
             },
             () => false,
