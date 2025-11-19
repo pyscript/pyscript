@@ -23,7 +23,7 @@
 #
 # The last empty key with `null` value is used just to close the JSON object.
 # One could remove manually that entry as long as there are no dangling commas.
-# 
+#
 
 current_pyscript=$(git branch | grep \\* | cut -d ' ' -f2)
 
