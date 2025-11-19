@@ -10,6 +10,9 @@ RUNNING_IN_WORKER = not hasattr(globalThis, "document")
 
 config = json.loads(globalThis.JSON.stringify(_config))
 
+if isinstance(config, str):
+    config = {}
+
 if "MicroPython" in sys.version:
     config["type"] = "mpy"
 else:
