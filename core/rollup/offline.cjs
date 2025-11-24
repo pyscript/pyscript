@@ -1,13 +1,21 @@
 const { readFileSync, writeFileSync } = require("node:fs");
 const { join, resolve } = require("node:path");
 
-const versions = resolve(__dirname, '..', 'node_modules', 'polyscript', 'versions');
-let pyodide = String(readFileSync(join(versions, 'pyodide'), 'utf8')).trim();
-let micropython = String(readFileSync(join(versions, 'micropython'), 'utf8')).trim();
+const versions = resolve(
+    __dirname,
+    "..",
+    "node_modules",
+    "polyscript",
+    "versions",
+);
+let pyodide = String(readFileSync(join(versions, "pyodide"), "utf8")).trim();
+let micropython = String(
+    readFileSync(join(versions, "micropython"), "utf8"),
+).trim();
 
 writeFileSync(
-  join(process.cwd(), 'offline.html'),
-`<!doctype html>
+    join(process.cwd(), "offline.html"),
+    `<!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -31,7 +39,7 @@ writeFileSync(
     </body>
 </html>
 `,
-  'utf8'
+    "utf8",
 );
 
 let bash = `#!/usr/bin/env bash

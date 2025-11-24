@@ -316,7 +316,7 @@ for (const [TYPE, interpreter] of TYPES) {
             if (!version) {
                 const css = "script[type='module'][offline]";
                 const s = document.querySelector(css)?.src;
-                if (s && import.meta.url.startsWith(s.replace(/\.js$/, ''))) {
+                if (s && import.meta.url.startsWith(s.replace(/\.js$/, ""))) {
                     version = `./pyscript/${interpreter}/${interpreter}.mjs`;
                     version = offline_interpreter({ interpreter: version });
                 }
