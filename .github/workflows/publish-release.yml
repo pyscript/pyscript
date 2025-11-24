@@ -69,9 +69,9 @@ jobs:
               run: tar -cvf ../release.tar * && mv ../release.tar .
 
             - name: Upload offline.zip to release
-              uses: softprops/action-gh-release@v2
-              with:
-                  files: ./core/dist/offline.zip
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: gh release upload ${{ github.ref_name }} ./dist/offline.zip
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v5
