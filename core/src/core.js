@@ -117,7 +117,7 @@ for (const [TYPE, interpreter] of TYPES) {
         else dispatch(element, TYPE, "done");
     };
 
-    const { config, configURL, plugins, error } = configs.get(TYPE);
+    let { config, configURL, plugins, error } = configs.get(TYPE);
 
     // create a unique identifier when/if needed
     let id = 0;
@@ -311,13 +311,24 @@ for (const [TYPE, interpreter] of TYPES) {
 
             hooked.set(TYPE, hooks);
 
+            // allow offline interpreter detection via [offline] attribute
+            let version = offline_interpreter(config);
+            if (!version) {
+                const css = "script[type='module'][offline]";
+                const s = document.querySelector(css)?.src;
+                if (s && import.meta.url.startsWith(s.replace(/\.js$/, ''))) {
+                    version = `./pyscript/${interpreter}/${interpreter}.mjs`;
+                    version = offline_interpreter({ interpreter: version });
+                }
+            }
+
             define(TYPE, {
                 config,
                 configURL,
                 interpreter,
                 hooks,
+                version,
                 env: `${TYPE}-script`,
-                version: offline_interpreter(config),
                 onerror(error, element) {
                     errors.set(element, error);
                 },
