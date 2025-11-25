@@ -13,7 +13,7 @@ jobs:
         runs-on: ubuntu-latest
         permissions:
             id-token: write
-            contents: read
+            contents: write
         steps:
             - name: Checkout
               uses: actions/checkout@v5
@@ -57,6 +57,9 @@ jobs:
             - name: build
               run: npm run build
 
+            - name: build offline
+              run: npm run build:offline
+
             - name: Generate index.html in snapshot
               working-directory: .
               run: sed -e 's#_PATH_#https://pyscript.net/releases/${{ github.ref_name }}/#' -e 's#_DOC_VERSION_#${{ github.ref_name }}#' -e 's#_TAG_VERSION_#/tag/${{ github.ref_name }}#' -e 's#_VERSION_#${{ github.ref_name }}#' ./public/index.html > ./core/dist/index.html
@@ -64,6 +67,11 @@ jobs:
             - name: Generate release.tar from snapshot and put it in dist/
               working-directory: .
               run: tar -cvf ../release.tar * && mv ../release.tar .
+
+            - name: Upload offline.zip to release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: gh release upload ${{ github.ref_name }} ./dist/offline.zip
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v5
@@ -73,6 +81,5 @@ jobs:
 
             - name: Sync to S3
               run:
-                  | # Update /latest and create an explicitly versioned directory under releases/YYYY.MM.MICRO/
-                  aws s3 sync --quiet ./dist/ s3://pyscript.net/latest/
+                  | # Create an explicitly versioned directory under releases/YYYY.MM.MICRO/
                   aws s3 sync --quiet ./dist/ s3://pyscript.net/releases/${{ github.ref_name }}/
