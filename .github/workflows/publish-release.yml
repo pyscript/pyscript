@@ -65,7 +65,7 @@ jobs:
 
             - name: Generate index.html in snapshot
               working-directory: .
-              run: sed -e 's#_PATH_#https://pyscript.net/releases/${{ github.ref_name }}/#' -e 's#_DOC_VERSION_#${{ github.ref_name }}#' -e 's#_TAG_VERSION_#/tag/${{ github.ref_name }}#' -e 's#_VERSION_#${{ github.ref_name }}#' ./public/index.html > ./core/dist/index.html
+              run: sed -e 's#_PATH_#https://pyscript.net/releases/${{ github.ref_name }}/#g' -e 's#_DOC_VERSION_#${{ github.ref_name }}#g' -e 's#_TAG_VERSION_#/tag/${{ github.ref_name }}#g' -e 's#_VERSION_#${{ github.ref_name }}#g' ./public/index.html > ./core/dist/index.html
 
             - name: Generate release.tar from snapshot and put it in dist/
               working-directory: .
