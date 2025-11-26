@@ -60,6 +60,9 @@ jobs:
             - name: build offline
               run: npm run build:offline
 
+            - name: Rename offline.zip with version metadata
+              run: mv ./dist/offline.zip ./dist/offline_${{ github.ref_name }}.zip
+
             - name: Generate index.html in snapshot
               working-directory: .
               run: sed -e 's#_PATH_#https://pyscript.net/releases/${{ github.ref_name }}/#' -e 's#_DOC_VERSION_#${{ github.ref_name }}#' -e 's#_TAG_VERSION_#/tag/${{ github.ref_name }}#' -e 's#_VERSION_#${{ github.ref_name }}#' ./public/index.html > ./core/dist/index.html
@@ -71,7 +74,7 @@ jobs:
             - name: Upload offline.zip to release
               env:
                   GH_TOKEN: ${{ github.token }}
-              run: gh release upload ${{ github.ref_name }} ./dist/offline.zip
+              run: gh release upload ${{ github.ref_name }} ./dist/offline_${{ github.ref_name }}.zip
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v5
