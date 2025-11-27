@@ -20,7 +20,7 @@ The `display()` function uses standard Python representation methods
 Object can provide a `_repr_mimebundle_` method to specify preferred formats
 like this:
 
-```
+```python
 def _repr_mimebundle_(self):
     return {
         "text/html": "<b>Bold HTML</b>",
@@ -28,7 +28,9 @@ def _repr_mimebundle_(self):
     }
 ```
 
-Heavily inspired by IPython's rich display system.
+Heavily inspired by IPython's rich display system. See: 
+
+https://ipython.readthedocs.io/en/stable/api/generated/IPython.display.html
 """
 
 import base64
@@ -62,6 +64,7 @@ _MIME_TO_RENDERERS = {
     "application/javascript": lambda v, m: f"<script>{v}<\\/script>",
 }
 
+
 # Maps Python representation methods to MIME types.
 _METHOD_TO_MIME = {
     "savefig": "image/png",
@@ -80,7 +83,7 @@ class HTML:
     Wrap a string to render as unescaped HTML in `display()`. This is
     necessary because plain strings are automatically HTML-escaped for safety:
 
-    ```
+    ```python
     from pyscript import HTML, display
 
 
