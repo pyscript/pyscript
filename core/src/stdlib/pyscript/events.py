@@ -1,12 +1,9 @@
 import asyncio
 import inspect
-import sys
-
 from functools import wraps
 from pyscript.magic_js import document
 from pyscript.ffi import create_proxy
 from pyscript.util import is_awaitable
-from pyscript import config
 
 
 class Event:
