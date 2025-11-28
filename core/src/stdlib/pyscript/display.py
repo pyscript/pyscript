@@ -28,7 +28,7 @@ def _repr_mimebundle_(self):
     }
 ```
 
-Heavily inspired by IPython's rich display system. See: 
+Heavily inspired by IPython's rich display system. See:
 
 https://ipython.readthedocs.io/en/stable/api/generated/IPython.display.html
 """
@@ -196,9 +196,7 @@ def _write_to_dom(element, value, append):
     else:
         container = element
     if mime_type in ("application/javascript", "text/html"):
-        container.append(
-            document.createRange().createContextualFragment(html_content)
-        )
+        container.append(document.createRange().createContextualFragment(html_content))
     else:
         container.innerHTML = html_content
 
@@ -250,9 +248,7 @@ def display(*values, target=None, append=True):
         target = current_target()
     element = document.getElementById(target)
     if is_none(element):
-        raise ValueError(
-            f"Cannot find element with id='{target}' in the page."
-        )
+        raise ValueError(f"Cannot find element with id='{target}' in the page.")
     # If possible, use a script tag's target attribute.
     if element.tagName == "SCRIPT" and hasattr(element, "target"):
         element = element.target
