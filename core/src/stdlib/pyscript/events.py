@@ -1,3 +1,17 @@
+"""
+Event handling for PyScript.
+
+This module provides two complementary systems:
+
+1. The `Event` class: A simple publish-subscribe pattern for custom events
+   within your Python code.
+
+2. The `@when` decorator: Connects Python functions to browser DOM events,
+   or instances of the `Event` class, allowing you to respond to user
+   interactions like clicks, key presses and form submissions, or to custom
+   events defined in your Python code.
+"""
+
 import asyncio
 import inspect
 from functools import wraps
@@ -8,7 +22,26 @@ from pyscript.util import is_awaitable
 
 class Event:
     """
-    Represents something that may happen at some point in the future.
+    A custom event that can notify multiple listeners when triggered.
+
+    Use this class to create your own event system within Python code.
+    Listeners can be either regular functions or async functions.
+
+    ```python
+    from pyscript.events import Event
+
+    # Create a custom event.
+    data_loaded = Event()
+
+    # Add a listener.
+    def on_data_loaded(result):
+        print(f"Data loaded: {result}")
+
+    data_loaded.add_listener(on_data_loaded)
+
+    # Trigger the event.
+    data_loaded.trigger("My data")
+    ```
     """
 
     def __init__(self):
@@ -16,34 +49,37 @@ class Event:
 
     def trigger(self, result):
         """
-        Trigger the event with a result to pass into the handlers.
+        Trigger the event and notify all listeners with the given result.
         """
         for listener in self._listeners:
             if is_awaitable(listener):
-                # Use create task to avoid making this an async function.
                 asyncio.create_task(listener(result))
             else:
                 listener(result)
 
     def add_listener(self, listener):
         """
-        Add a callable/awaitable to listen to when this event is triggered.
-        """
-        if is_awaitable(listener) or callable(listener):
-            if listener not in self._listeners:
-                self._listeners.append(listener)
-        else:
-            msg = "Listener must be callable or awaitable."
-            raise ValueError(msg)
+        Add a function to be called when this event is triggered.
 
-    def remove_listener(self, *args):
+        The listener must be callable. It can be either a regular function
+        or an async function. Duplicate listeners are ignored.
         """
-        Clear the specified handler functions in *args. If no handlers
-        provided, clear all handlers.
+        if not callable(listener):
+            msg = "Listener must be callable."
+            raise ValueError(msg)
+        if listener not in self._listeners:
+            self._listeners.append(listener)
+
+    def remove_listener(self, *listeners):
         """
-        if args:
-            for listener in args:
-                self._listeners.remove(listener)
+        Remove specified listeners. If none specified, remove all listeners.
+        """
+        if listeners:
+            for listener in listeners:
+                try:
+                    self._listeners.remove(listener)
+                except ValueError:
+                    pass  # Silently ignore listeners not in the list.
         else:
             self._listeners = []
 

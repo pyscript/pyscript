@@ -24,15 +24,26 @@ def teardown():
 
 def test_event_add_listener():
     """
-    Adding a listener to an event should add it to the list of listeners. It
-    should only be added once.
+    Adding a listener to an event should add it to the list of listeners.
+    It should only be added once.
     """
     event = Event()
     listener = lambda x: x
     event.add_listener(listener)
     event.add_listener(listener)
-    assert len(event._listeners) == 1  # Only one item added.
-    assert listener in event._listeners  # The item is the expected listener.
+    assert len(event._listeners) == 1
+    assert listener in event._listeners
+
+
+def test_event_add_non_callable_listener():
+    """
+    Adding a non-callable listener should raise a ValueError.
+    """
+    event = Event()
+    with upytest.raises(ValueError):
+        event.add_listener("not a callable")
+    with upytest.raises(ValueError):
+        event.add_listener(123)
 
 
 def test_event_remove_listener():
@@ -45,12 +56,25 @@ def test_event_remove_listener():
     listener2 = lambda x: x
     event.add_listener(listener1)
     event.add_listener(listener2)
-    assert len(event._listeners) == 2  # Two listeners added.
-    assert listener1 in event._listeners  # The first listener is in the list.
-    assert listener2 in event._listeners  # The second listener is in the list.
+    assert len(event._listeners) == 2
+    assert listener1 in event._listeners
+    assert listener2 in event._listeners
     event.remove_listener(listener1)
-    assert len(event._listeners) == 1  # Only one item remains.
-    assert listener2 in event._listeners  # The second listener is in the list.
+    assert len(event._listeners) == 1
+    assert listener2 in event._listeners
+
+
+def test_event_remove_nonexistent_listener():
+    """
+    Removing a listener that doesn't exist should be silently ignored.
+    """
+    event = Event()
+    listener1 = lambda x: x
+    listener2 = lambda x: x
+    event.add_listener(listener1)
+    event.remove_listener(listener2)
+    assert len(event._listeners) == 1
+    assert listener1 in event._listeners
 
 
 def test_event_remove_all_listeners():
@@ -62,15 +86,15 @@ def test_event_remove_all_listeners():
     listener2 = lambda x: x
     event.add_listener(listener1)
     event.add_listener(listener2)
-    assert len(event._listeners) == 2  # Two listeners added.
+    assert len(event._listeners) == 2
     event.remove_listener()
-    assert len(event._listeners) == 0  # No listeners remain.
+    assert len(event._listeners) == 0
 
 
 def test_event_trigger():
     """
     Triggering an event should call all of the listeners with the provided
-    arguments.
+    result.
     """
     event = Event()
     counter = 0
@@ -81,15 +105,45 @@ def test_event_trigger():
         assert x == "ok"
 
     event.add_listener(listener)
-    assert counter == 0  # The listener has not been triggered yet.
+    assert counter == 0
     event.trigger("ok")
-    assert counter == 1  # The listener has been triggered with the expected result.
+    assert counter == 1
+
+
+def test_event_trigger_no_listeners():
+    """
+    Triggering an event with no listeners should not raise an error.
+    """
+    event = Event()
+    event.trigger("test")
+
+
+def test_event_trigger_multiple_listeners():
+    """
+    Triggering an event should call all registered listeners.
+    """
+    event = Event()
+    results = []
+
+    def listener1(x):
+        results.append(f"listener1: {x}")
+
+    def listener2(x):
+        results.append(f"listener2: {x}")
+
+    event.add_listener(listener1)
+    event.add_listener(listener2)
+    event.trigger("test")
+
+    assert len(results) == 2
+    assert "listener1: test" in results
+    assert "listener2: test" in results
 
 
 async def test_event_trigger_with_awaitable():
     """
     Triggering an event with an awaitable listener should call the listener
-    with the provided arguments.
+    with the provided result.
     """
     call_flag = asyncio.Event()
     event = Event()
@@ -102,10 +156,113 @@ async def test_event_trigger_with_awaitable():
         call_flag.set()
 
     event.add_listener(listener)
-    assert counter == 0  # The listener has not been triggered yet.
+    assert counter == 0
     event.trigger("ok")
     await call_flag.wait()
-    assert counter == 1  # The listener has been triggered with the expected result.
+    assert counter == 1
+
+
+async def test_event_trigger_mixed_listeners():
+    """
+    Triggering an event with both sync and async listeners should work.
+    """
+    event = Event()
+    sync_called = False
+    async_flag = asyncio.Event()
+
+    def sync_listener(x):
+        nonlocal sync_called
+        sync_called = True
+        assert x == "mixed"
+
+    async def async_listener(x):
+        assert x == "mixed"
+        async_flag.set()
+
+    event.add_listener(sync_listener)
+    event.add_listener(async_listener)
+    event.trigger("mixed")
+
+    assert sync_called
+    await async_flag.wait()
+
+
+def test_event_listener_exception():
+    """
+    If a listener raises an exception, it should propagate and not be
+    silently ignored.
+    """
+    event = Event()
+
+    def bad_listener(x):
+        raise RuntimeError("Listener error")
+
+    event.add_listener(bad_listener)
+
+    with upytest.raises(RuntimeError):
+        event.trigger("test")
+
+
+def test_event_listener_exception_stops_other_listeners():
+    """
+    If a listener raises an exception, subsequent listeners should not be
+    called. There's a problem with the user's code that needs to be addressed!
+    """
+    event = Event()
+    called = []
+
+    def listener1(x):
+        called.append("listener1")
+
+    def bad_listener(x):
+        called.append("bad_listener")
+        raise RuntimeError("Listener error")
+
+    def listener3(x):
+        called.append("listener3")
+
+    event.add_listener(listener1)
+    event.add_listener(bad_listener)
+    event.add_listener(listener3)
+
+    with upytest.raises(RuntimeError):
+        event.trigger("test")
+
+    assert "listener1" in called
+    assert "bad_listener" in called
+    assert "listener3" not in called
+
+
+async def test_event_async_listener_exception():
+    """
+    If an async listener raises an exception, it cannot prevent other
+    listeners from being called, as async listeners run as tasks. This
+    is different behavior from sync listeners, but the simplest model
+    for users to understand.
+
+    This test ensures that even if one async listener fails, others
+    still run as per this expected behaviour. In MicroPython, the
+    exception will be reported to the user.
+    """
+    event = Event()
+    call_flag = asyncio.Event()
+    called = []
+
+    async def bad_listener(x):
+        called.append("bad_listener")
+        raise RuntimeError("Async listener error")
+
+    async def good_listener(x):
+        called.append("good_listener")
+        call_flag.set()
+
+    event.add_listener(bad_listener)
+    event.add_listener(good_listener)
+    event.trigger("test")
+
+    await call_flag.wait()
+    assert "bad_listener" in called
+    assert "good_listener" in called
 
 
 async def test_when_decorator_with_event():
@@ -359,6 +516,7 @@ def test_when_called_with_an_event_and_handler():
     # triggered.
     assert counter == 1
 
+
 def test_when_on_different_callables():
     """
     The when function works with:
@@ -387,7 +545,6 @@ def test_when_on_different_callables():
 
         return inner_func
 
-
     def make_inner_a_func():
         # Creates a simple async inner function.
 
@@ -395,7 +552,6 @@ def test_when_on_different_callables():
             return x
 
         return inner_a_func
-
 
     def make_closure():
         # Creates a simple closure function.
@@ -406,7 +562,6 @@ def test_when_on_different_callables():
 
         return closure_func
 
-
     def make_a_closure():
         # Creates a simple async closure function.
         a = 1
@@ -416,14 +571,12 @@ def test_when_on_different_callables():
 
         return closure_a_func
 
-
     inner_func = make_inner_func()
     inner_a_func = make_inner_a_func()
     cl_func = make_closure()
     cl_a_func = make_a_closure()
 
-
-    whenable  = Event()
+    whenable = Event()
 
     # Each of these should work with the when function.
     when(whenable, func)
