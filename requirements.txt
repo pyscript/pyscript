@@ -1,4 +1,4 @@
 black==24.10.0
 pre-commit==3.7.1
-python-minifier==2.11.0
+python-minifier==3.1.0
 setuptools==72.1.0
