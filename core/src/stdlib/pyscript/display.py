@@ -1,5 +1,5 @@
 """
-Display content in the browser.
+Display Pythonic content in the browser.
 
 This module provides the `display()` function for rendering Python objects
 in the web page. The function introspects objects to determine the appropriate
@@ -36,6 +36,7 @@ https://ipython.readthedocs.io/en/stable/api/generated/IPython.display.html
 import base64
 import html
 import io
+from collections import OrderedDict
 from pyscript.magic_js import current_target, document, window
 from pyscript.ffi import is_none
 
@@ -65,17 +66,21 @@ _MIME_TO_RENDERERS = {
 }
 
 
-# Maps Python representation methods to MIME types.
-_METHOD_TO_MIME = {
-    "savefig": "image/png",
-    "_repr_javascript_": "application/javascript",
-    "_repr_json_": "application/json",
-    "_repr_png_": "image/png",
-    "_repr_jpeg_": "image/jpeg",
-    "_repr_svg_": "image/svg+xml",
-    "_repr_html_": "text/html",
-    "__repr__": "text/plain",
-}
+# Maps Python representation methods to MIME types. This is an ordered dict
+# because the order defines preference when multiple methods are available,
+# and MicroPython's limited dicts don't preserve insertion order.
+_METHOD_TO_MIME = OrderedDict(
+    [
+        ("savefig", "image/png"),
+        ("_repr_png_", "image/png"),
+        ("_repr_jpeg_", "image/jpeg"),
+        ("_repr_svg_", "image/svg+xml"),
+        ("_repr_html_", "text/html"),
+        ("_repr_json_", "application/json"),
+        ("_repr_javascript_", "application/javascript"),
+        ("__repr__", "text/plain"),
+    ]
+)
 
 
 class HTML:
@@ -183,6 +188,8 @@ def _write_to_dom(element, value, append):
     structure.
     """
     html_content, mime_type = _get_content_and_mime(value)
+    if not html_content.strip():
+        return
     if append:
         container = document.createElement("div")
         element.append(container)
@@ -242,13 +249,13 @@ def display(*values, target=None, append=True):
     elif is_none(target):
         target = current_target()
     element = document.getElementById(target)
-    # If possible, use a script tag's target attribute.
-    if element.tagName == "SCRIPT" and hasattr(element, "target"):
-        element = element.target
     if is_none(element):
         raise ValueError(
             f"Cannot find element with id='{target}' in the page."
         )
+    # If possible, use a script tag's target attribute.
+    if element.tagName == "SCRIPT" and hasattr(element, "target"):
+        element = element.target
     # Clear before displaying all values when not appending.
     if not append:
         element.replaceChildren()

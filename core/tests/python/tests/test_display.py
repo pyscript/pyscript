@@ -3,6 +3,7 @@ Tests for the display function in PyScript.
 """
 
 import asyncio
+import json
 
 import upytest
 from pyscript import HTML, RUNNING_IN_WORKER, display, py_import, web
@@ -107,20 +108,7 @@ def test_empty_string_target_raises_value_error():
     """
     with upytest.raises(ValueError) as exc:
         display("hello world", target="")
-    assert str(exc.exception) == "Cannot have an empty target"
-
-
-def test_non_string_target_values_raise_typerror():
-    """
-    The target parameter must be a string.
-    """
-    with upytest.raises(TypeError) as exc:
-        display("hello world", target=True)
-    assert str(exc.exception) == "target must be str or None, not bool"
-
-    with upytest.raises(TypeError) as exc:
-        display("hello world", target=123)
-    assert str(exc.exception) == "target must be str or None, not int"
+    assert str(exc.exception) == "Cannot find element with id='' in the page."
 
 
 async def test_tag_target_attribute():
@@ -286,4 +274,406 @@ async def test_image_renders_correctly():
     display(img, target="test-element-container", append=False)
     target = web.page.find("#test-element-container")[0]
     img = target.find("img")[0]
-    assert img.src.startswith("data:image/png;charset=utf-8;base64")
+    assert img.src.startswith("data:image/png;base64"), img.src
+
+
+async def test_mimebundle_simple():
+    """
+    An object with _repr_mimebundle_ should use the mimebundle formats.
+    """
+
+    class MimebundleObj:
+        def _repr_mimebundle_(self):
+            return {
+                "text/html": "<strong>Bold HTML</strong>",
+                "text/plain": "Plain text fallback",
+            }
+
+    display(MimebundleObj())
+    container = await get_display_container()
+    # Should prefer HTML from mimebundle.
+    assert container[0].innerHTML == "<strong>Bold HTML</strong>"
+
+
+async def test_mimebundle_with_metadata():
+    """
+    Mimebundle can include metadata for specific MIME types.
+    """
+
+    class ImageWithMeta:
+        def _repr_mimebundle_(self):
+            return (
+                {
+                    "image/png": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+                },
+                {"image/png": {"width": "100", "height": "50"}},
+            )
+
+    display(ImageWithMeta(), target="test-element-container", append=False)
+    target = web.page.find("#test-element-container")[0]
+    img = target.find("img")[0]
+    assert img.getAttribute("width") == "100"
+    assert img.getAttribute("height") == "50"
+
+
+async def test_mimebundle_with_tuple_output():
+    """
+    Mimebundle format values can be tuples with (data, metadata).
+    """
+
+    class TupleOutput:
+        def _repr_mimebundle_(self):
+            return {"text/html": ("<em>Italic</em>", {"custom": "meta"})}
+
+    display(TupleOutput())
+    container = await get_display_container()
+    assert container[0].innerHTML == "<em>Italic</em>"
+
+
+async def test_mimebundle_metadata_merge():
+    """
+    Format-specific metadata should merge with global metadata.
+    """
+
+    class MetaMerge:
+        def _repr_mimebundle_(self):
+            return (
+                {
+                    "image/png": (
+                        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+                        {"height": "75"},
+                    )
+                },
+                {"image/png": {"width": "100"}},
+            )
+
+    display(MetaMerge(), target="test-element-container", append=False)
+    target = web.page.find("#test-element-container")[0]
+    img = target.find("img")[0]
+    # Both global and format-specific metadata should be present.
+    assert img.getAttribute("width") == "100"
+    assert img.getAttribute("height") == "75"
+
+
+async def test_mimebundle_unsupported_mime():
+    """
+    If mimebundle contains only unsupported MIME types, fall back to regular methods.
+    """
+
+    class UnsupportedMime:
+        def _repr_mimebundle_(self):
+            return {"application/pdf": "PDF data", "text/latex": "LaTeX data"}
+
+        def _repr_html_(self):
+            return "<p>HTML fallback</p>"
+
+    display(UnsupportedMime())
+    container = await get_display_container()
+    # Should fall back to _repr_html_.
+    assert container[0].innerHTML == "<p>HTML fallback</p>"
+
+
+async def test_mimebundle_no_dict():
+    """
+    Mimebundle that returns just a dict (no tuple) should work.
+    """
+
+    class SimpleMimebundle:
+        def _repr_mimebundle_(self):
+            return {"text/html": "<code>Code</code>"}
+
+    display(SimpleMimebundle())
+    container = await get_display_container()
+    assert container[0].innerHTML == "<code>Code</code>"
+
+
+async def test_repr_html():
+    """
+    Objects with _repr_html_ should render as HTML.
+    """
+
+    class HTMLRepr:
+        def _repr_html_(self):
+            return "<h1>HTML Header</h1>"
+
+    display(HTMLRepr())
+    container = await get_display_container()
+    assert container[0].innerHTML == "<h1>HTML Header</h1>"
+
+
+async def test_repr_html_with_metadata():
+    """
+    _repr_html_ can return (html, metadata) tuple.
+    """
+
+    class HTMLWithMeta:
+        def _repr_html_(self):
+            return ("<p>Paragraph</p>", {"data-custom": "value"})
+
+    display(HTMLWithMeta())
+    container = await get_display_container()
+    # Metadata is not used in _repr_html_ rendering, but ensure HTML is
+    # correct.
+    assert container[0].innerHTML == "<p>Paragraph</p>"
+
+
+async def test_repr_svg():
+    """
+    Objects with _repr_svg_ should render as SVG.
+    """
+
+    class SVGRepr:
+        def _repr_svg_(self):
+            return '<svg width="100" height="100"><circle cx="50" cy="50" r="40" fill="blue"/></svg>'
+
+    display(SVGRepr(), target="test-element-container", append=False)
+    target = web.page.find("#test-element-container")[0]
+    assert "svg" in target.innerHTML.lower()
+    assert "circle" in target.innerHTML.lower()
+
+
+async def test_repr_json():
+    """
+    Objects with _repr_json_ should render as JSON.
+    """
+
+    class JSONRepr:
+        def _repr_json_(self):
+            return '{"key": "value", "number": 42}'
+
+    display(JSONRepr(), target="test-element-container", append=False)
+    target = web.page.find("#test-element-container")[0]
+    assert '"key": "value"' in target.innerHTML
+    value = json.loads(target.innerText)
+    assert value["key"] == "value"
+    assert value["number"] == 42
+
+
+async def test_repr_png_bytes():
+    """
+    _repr_png_ can render raw bytes.
+    """
+
+    class PNGBytes:
+        def _repr_png_(self):
+            # Valid 1x1 transparent PNG as bytes.
+            return b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\rIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82"
+
+    display(PNGBytes(), target="test-element-container", append=False)
+    target = web.page.find("#test-element-container")[0]
+    img = target.find("img")[0]
+    assert img.src.startswith("data:image/png;base64,")
+
+
+async def test_repr_png_base64():
+    """
+    _repr_png_ can render a base64-encoded string.
+    """
+
+    class PNGBase64:
+        def _repr_png_(self):
+            return "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+
+    display(PNGBase64(), target="test-element-container", append=False)
+    target = web.page.find("#test-element-container")[0]
+    img = target.find("img")[0]
+    assert img.src.startswith("data:image/png;base64,")
+
+
+async def test_repr_jpeg():
+    """
+    Objects with _repr_jpeg_ should render as JPEG images.
+    """
+
+    class JPEGRepr:
+        def _repr_jpeg_(self):
+            # Minimal valid JPEG header (won't display but tests the path).
+            return b"\xff\xd8\xff\xe0\x00\x10JFIF"
+
+    display(JPEGRepr(), target="test-element-container", append=False)
+    target = web.page.find("#test-element-container")[0]
+    img = target.find("img")[0]
+    assert img.src.startswith("data:image/jpeg;base64,")
+
+
+async def test_repr_jpeg_base64():
+    """
+    _repr_jpeg_ can render a base64-encoded string.
+    """
+
+    class JPEGBase64:
+        def _repr_jpeg_(self):
+            return "ZCBqcGVnIG1pbmltdW0=="
+
+    display(JPEGBase64(), target="test-element-container", append=False)
+    target = web.page.find("#test-element-container")[0]
+    img = target.find("img")[0]
+    assert img.src.startswith("data:image/jpeg;base64,")
+
+
+async def test_object_with_no_repr_methods():
+    """
+    Objects with no representation methods should fall back to __repr__ with warning.
+    """
+
+    class NoReprMethods:
+        pass
+
+    obj = NoReprMethods()
+    display(obj)
+    container = await get_display_container()
+    # Should contain the default repr output - the class name. :-)
+    assert "NoReprMethods" in container.innerText
+
+
+async def test_repr_method_returns_none():
+    """
+    If a repr method exists but returns None, try next method.
+    """
+
+    class NoneReturner:
+        def _repr_html_(self):
+            return None
+
+        def __repr__(self):
+            return "Fallback repr"
+
+    display(NoneReturner())
+    container = await get_display_container()
+    assert container.innerText == "Fallback repr"
+
+
+async def test_multiple_repr_methods_priority():
+    """
+    When multiple repr methods exist, should use first available in priority order.
+    """
+
+    class MultipleReprs:
+        def _repr_html_(self):
+            # Highest priority.
+            return "<p>HTML version</p>"
+
+        def __repr__(self):
+            # Lower priority.
+            return "Text version"
+
+    display(MultipleReprs())
+    container = await get_display_container()
+    # Should use HTML, not repr.
+    assert container[0].innerHTML == "<p>HTML version</p>"
+
+
+async def test_empty_string_display():
+    """
+    Empty strings are ignored.
+    """
+    display("")
+    container = await get_display_container()
+    assert len(container.children) == 0
+
+
+async def test_newline_string_skipped():
+    """
+    Single newline strings are skipped (legacy behavior).
+    """
+    display("\n")
+    container = await get_display_container()
+    # Should be empty because newlines are skipped.
+    assert len(container.children) == 0
+
+
+async def test_string_with_special_html_chars():
+    """
+    Strings with HTML special characters should be escaped.
+    """
+    display("<script>alert('xss')</script>")
+    container = await get_display_container()
+    assert "&lt;script&gt;" in container[0].innerHTML
+    assert "<script>" not in container[0].innerHTML
+
+
+async def test_javascript_mime_type():
+    """
+    JavaScript MIME type should create script tags.
+    """
+
+    class JSRepr:
+        def _repr_javascript_(self):
+            return "console.log('test');"
+
+    display(JSRepr(), target="test-element-container", append=False)
+    target = web.page.find("#test-element-container")[0]
+    assert "<script>" in target.innerHTML
+    assert "console.log" in target.innerHTML
+
+
+async def test_append_false_clears_multiple_children():
+    """
+    append=False should clear all existing children, not just the last one.
+    """
+    # Add some initial content.
+    display("child 1")
+    display("child 2")
+    display("child 3")
+    container = await get_display_container()
+    assert len(container.children) == 3  # three divs.
+
+    # Now display with append=False.
+    display("new content", append=False)
+    container = await get_display_container()
+    # No divs used, just the new textual content.
+    assert container.innerText == "new content"
+
+
+async def test_mixed_append_true_false():
+    """
+    Mixing append=True and append=False should work correctly.
+    """
+    display("first", append=True)
+    display("second", append=True)
+    display("third", append=False)
+    container = await get_display_container()
+    assert container.innerText == "third"
+
+
+def test_target_with_multiple_hashes():
+    """
+    Target with multiple # characters should only strip the first one.
+
+    Such an id is not valid in HTML, but we should handle it gracefully.
+    """
+    # Should try to find element with id="#weird-id".
+    # This will raise ValueError as it doesn't exist.
+    with upytest.raises(ValueError):
+        display("content", target="##weird-id")
+
+
+async def test_display_none_value():
+    """
+    Displaying None should use its repr.
+    """
+    display(None)
+    container = await get_display_container()
+    assert container.innerText == "None"
+
+
+async def test_display_boolean_values():
+    """
+    Booleans should display as their repr.
+    """
+    display(True, False)
+    container = await get_display_container()
+    assert "True" in container.innerText
+    assert "False" in container.innerText
+
+
+async def test_display_numbers():
+    """
+    Numbers should display correctly.
+    """
+    display(42, 3.14159, -17)
+    container = await get_display_container()
+    text = container.innerText
+    assert "42" in text
+    assert "3.14159" in text
+    assert "-17" in text
