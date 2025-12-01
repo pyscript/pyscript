@@ -37,7 +37,7 @@ import base64
 import html
 import io
 from collections import OrderedDict
-from pyscript.magic_js import current_target, document, window
+from pyscript.context import current_target, document, window
 from pyscript.ffi import is_none
 
 

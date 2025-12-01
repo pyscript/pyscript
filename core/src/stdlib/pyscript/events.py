@@ -15,7 +15,7 @@ This module provides two complementary systems:
 import asyncio
 import inspect
 from functools import wraps
-from pyscript.magic_js import document
+from pyscript.context import document
 from pyscript.ffi import create_proxy
 from pyscript.util import is_awaitable
 

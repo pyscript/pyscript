@@ -16,10 +16,7 @@ The module maintains a `mounted` dictionary that tracks all currently mounted
 paths and their associated filesystem handles.
 
 ```python
-from pyscript import fs
-from pyscript import document
-
-my_button = document.getElementById("mount-button")
+from pyscript import fs, document, when
 
 # Mount a local directory to the `/local` mount point in the browser's
 # virtual filesystem (may prompt user for permission).
@@ -28,10 +25,9 @@ await fs.mount("/local")
 # Alternatively, mount on a button click event. This is important because
 # if the call to `fs.mount` happens after a click or other transient event,
 # the confirmation dialog will not be shown.
+@when("click", "#mount-button")
 async def handler(event):
     await fs.mount("/another_dir")
-
-my_button.onclick = handler
 
 # Work with files in the mounted directory as usual.
 with open("/local/example.txt", "w") as f:
@@ -49,11 +45,11 @@ import js
 from _pyscript import fs as _fs, interpreter
 from pyscript import window
 from pyscript.ffi import to_js
-from pyscript.magic_js import RUNNING_IN_WORKER
+from pyscript.context import RUNNING_IN_WORKER
 
 # Worker-specific imports.
 if RUNNING_IN_WORKER:
-    from pyscript.magic_js import sync as sync_with_worker
+    from pyscript.context import sync as sync_with_worker
     from polyscript import IDBMap
 
 # Global dictionary tracking mounted paths and their filesystem handles.

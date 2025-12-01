@@ -27,7 +27,7 @@ This is the JS `globalThis`, as exported by Pyodide and/or Micropython's
 foreign function interface (FFI). As such, it contains different things in
 the main thread or in a worker, as defined by web standards.
 
-`import pyscript.magic_js`
+`import pyscript.context`
 
 This submodule abstracts away some of the differences between the main
 thread and a worker. In particular, it defines `window` and `document`
@@ -38,12 +38,12 @@ thanks to [coincident](https://github.com/WebReflection/coincident).
 `from pyscript import window, document`
 
 These are just the `window` and `document` objects as defined by
-`pyscript.magic_js`. This is the blessed way to access them from `pyscript`,
+`pyscript.context`. This is the blessed way to access them from `pyscript`,
 as it works transparently in both the main thread and worker cases.
 """
 
 from polyscript import lazy_py_modules as py_import
-from pyscript.magic_js import (
+from pyscript.context import (
     RUNNING_IN_WORKER,
     PyWorker,
     config,
