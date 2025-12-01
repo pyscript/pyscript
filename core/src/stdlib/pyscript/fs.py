@@ -136,9 +136,7 @@ async def mount(path, mode="readwrite", root="", id="pyscript"):
             handler = await _check_permission(details)
             if handler is None:
                 # Force await in either async or sync scenario.
-                await js.Promise.resolve(
-                    sync_with_worker.getFSHandler(details.options)
-                )
+                await js.Promise.resolve(sync_with_worker.getFSHandler(details.options))
                 handler = details.handler
         else:
             raise RuntimeError(_fs.ERROR)
@@ -150,9 +148,7 @@ async def mount(path, mode="readwrite", root="", id="pyscript"):
             details = await _fs.idb.get(mount_key)
             handler = await _check_permission(details)
             if handler is None:
-                handler = await _fs.getFileSystemDirectoryHandle(
-                    details.options
-                )
+                handler = await _fs.getFileSystemDirectoryHandle(details.options)
         else:
             js_options = to_js(options)
             handler = await _fs.getFileSystemDirectoryHandle(js_options)
@@ -187,8 +183,7 @@ async def sync(path):
     """
     if path not in mounted:
         raise KeyError(
-            f"Path '{path}' is not mounted. "
-            f"Use fs.mount() to mount it first."
+            f"Path '{path}' is not mounted. " f"Use fs.mount() to mount it first."
         )
     await mounted[path].syncfs()
 
@@ -216,9 +211,7 @@ async def unmount(path):
     is lost.
     """
     if path not in mounted:
-        raise KeyError(
-            f"Path '{path}' is not mounted. Cannot unmount."
-        )
+        raise KeyError(f"Path '{path}' is not mounted. Cannot unmount.")
 
     await sync(path)
     interpreter._module.FS.unmount(path)
