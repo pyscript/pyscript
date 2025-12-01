@@ -139,6 +139,8 @@ except:
 
     _assign = js.Object.assign
 
+    direct = lambda source: source
+
 
 def assign(source, *args):
     """
