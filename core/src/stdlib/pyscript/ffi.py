@@ -19,7 +19,7 @@ The following utilities are specific to worker contexts:
 - `query`: Query objects in worker contexts.
 
 More details of the `direct`, `gather`, and `query` utilities can be found
-here: 
+here:
 
 https://github.com/WebReflection/reflected-ffi?tab=readme-ov-file#remote-extra-utilities
 """
