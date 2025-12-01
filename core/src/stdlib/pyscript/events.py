@@ -4,7 +4,7 @@ Event handling for PyScript.
 This module provides two complementary systems:
 
 1. The `Event` class: A simple publish-subscribe pattern for custom events
-   within your Python code.
+   within *your* Python code.
 
 2. The `@when` decorator: Connects Python functions to browser DOM events,
    or instances of the `Event` class, allowing you to respond to user
@@ -39,8 +39,8 @@ class Event:
 
     data_loaded.add_listener(on_data_loaded)
 
-    # Trigger the event.
-    data_loaded.trigger("My data")
+    # Time passes.... trigger the event.
+    data_loaded.trigger({"data": 123})
     ```
     """
 
@@ -122,6 +122,11 @@ def when(event_type, selector=None):
 
     # Attach the same handler to multiple events but not as a decorator.
     when([my_event, another_event])(another_handler)
+
+    # Trigger an Event instance from a DOM event via @when.
+    @when("click", "#my-button")
+    def handle_click(event):
+        another_event.trigger("Button clicked!")
 
     # Stacked decorators also work.
     @when("mouseover", "#my-div")
