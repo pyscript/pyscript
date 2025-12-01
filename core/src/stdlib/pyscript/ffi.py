@@ -60,8 +60,9 @@ def create_proxy(func):
 
     ```python
     from pyscript import ffi
+    from pyscript import document
 
-    my_button = js.document.getElementById("my-button")
+    my_button = document.getElementById("my-button")
 
     def py_callback(x):
         print(f"Callback called with {x}")
