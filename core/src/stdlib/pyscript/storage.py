@@ -143,10 +143,9 @@ class Storage(dict):
         Create a Storage instance wrapping an IndexedDB `store` (a JS
         proxy).
         """
-        super().__init__({
-            key: _convert_from_idb(value)
-            for key, value in store.entries()
-        })
+        super().__init__(
+            {key: _convert_from_idb(value) for key, value in store.entries()}
+        )
         self._store = store
 
     def __delitem__(self, key):
