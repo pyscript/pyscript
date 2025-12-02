@@ -2,7 +2,7 @@
 A Pythonic wrapper around JavaScript's fetch API.
 
 This module provides a Python-friendly interface to the browser's fetch API,
-returning native Python data types and supportd directly awaiting the promise
+returning native Python data types and supported directly awaiting the promise
 and chaining method calls directly on the promise.
 
 ```python

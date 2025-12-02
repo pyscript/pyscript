@@ -34,7 +34,7 @@ try:
     from_entries = js.Object.fromEntries
 
     def _to_js_wrapper(value, **kw):
-        if not "dict_converter" in kw:
+        if "dict_converter" not in kw:
             kw["dict_converter"] = from_entries
         return _py_tjs(value, **kw)
 

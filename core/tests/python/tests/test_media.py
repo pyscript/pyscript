@@ -25,16 +25,16 @@ async def test_device_properties():
     """
     try:
         devices = await media.list_devices()
-    
+
         if devices:
             device = devices[0]
-            
+
             # Test all properties exist.
             assert hasattr(device, "id")
             assert hasattr(device, "kind")
             assert hasattr(device, "label")
             assert hasattr(device, "group")
-            
+
             # Test kind has valid value.
             assert device.kind in [
                 "videoinput",
@@ -52,10 +52,10 @@ async def test_device_dict_access():
     """
     try:
         devices = await media.list_devices()
-        
+
         if devices:
             device = devices[0]
-            
+
             # Dictionary access should match property access.
             assert device["id"] == device.id
             assert device["kind"] == device.kind
@@ -137,10 +137,10 @@ async def test_device_get_stream():
     """
     try:
         devices = await media.list_devices()
-        
+
         # Find a video input device to test with.
         video_devices = [d for d in devices if d.kind == "videoinput"]
-        
+
         if video_devices:
             stream = await video_devices[0].get_stream()
             assert hasattr(stream, "active")
@@ -155,18 +155,18 @@ async def test_device_filtering_by_kind():
     """
     try:
         devices = await media.list_devices()
-        
+
         video_inputs = [d for d in devices if d.kind == "videoinput"]
         audio_inputs = [d for d in devices if d.kind == "audioinput"]
         audio_outputs = [d for d in devices if d.kind == "audiooutput"]
-        
+
         # All filtered devices should have correct kind.
         for device in video_inputs:
             assert device.kind == "videoinput"
-        
+
         for device in audio_inputs:
             assert device.kind == "audioinput"
-        
+
         for device in audio_outputs:
             assert device.kind == "audiooutput"
     except Exception:
