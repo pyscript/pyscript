@@ -1,20 +1,21 @@
 {
     "files": {
-        "https://raw.githubusercontent.com/ntoll/upytest/1.0.9/upytest.py": "",
+        "https://raw.githubusercontent.com/ntoll/upytest/1.0.11/upytest.py": "",
         "./tests/test_config.py": "tests/test_config.py",
         "./tests/test_context.py": "tests/test_context.py",
         "./tests/test_current_target.py": "tests/test_current_target.py",
         "./tests/test_display.py": "tests/test_display.py",
         "./tests/test_document.py": "tests/test_document.py",
+        "./tests/test_events.py": "tests/test_events.py",
         "./tests/test_fetch.py": "tests/test_fetch.py",
         "./tests/test_ffi.py": "tests/test_ffi.py",
         "./tests/test_fs.py": "tests/test_fs.py",
         "./tests/test_media.py": "tests/test_media.py",
         "./tests/test_storage.py": "tests/test_storage.py",
+        "./tests/test_util.py": "tests/test_util.py",
         "./tests/test_running_in_worker.py": "tests/test_running_in_worker.py",
         "./tests/test_web.py": "tests/test_web.py",
         "./tests/test_websocket.py": "tests/test_websocket.py",
-        "./tests/test_events.py": "tests/test_events.py",
         "./tests/test_window.py": "tests/test_window.py"
     },
     "js_modules": {
