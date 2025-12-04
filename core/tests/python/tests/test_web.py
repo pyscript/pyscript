@@ -169,7 +169,7 @@ class TestHelperFunctions:
             web.p("Para 1", classes=["test-para"]),
             web.p("Para 2", classes=["test-para"]),
             web.p("Para 3", classes=["test-para"]),
-            id="find-wrap-container"
+            id="find-wrap-container",
         )
         web.page.body.append(container)
 
@@ -440,11 +440,7 @@ class TestElement:
     def test_update_combined(self):
         """Test updating classes, styles, and attributes together."""
         div = web.div()
-        div.update(
-            classes=["foo"],
-            style={"color": "red"},
-            id="test-id"
-        )
+        div.update(classes=["foo"], style={"color": "red"}, id="test-id")
         assert "foo" in div.classes
         assert div.style["color"] == "red"
         assert div.id == "test-id"
@@ -457,11 +453,7 @@ class TestElement:
 
     def test_getitem_slice(self):
         """Test slicing children."""
-        parent = web.div(
-            web.p("Child 1"),
-            web.p("Child 2"),
-            web.p("Child 3")
-        )
+        parent = web.div(web.p("Child 1"), web.p("Child 2"), web.p("Child 3"))
         sliced = parent[0:2]
         assert len(sliced) == 2
         assert sliced[0].innerHTML == "Child 1"
@@ -541,6 +533,7 @@ class TestContainerElement:
         assert "Bold text" in parent.innerHTML
         assert "<b>" in parent.innerHTML
 
+
 class TestCollection:
 
     def test_iter_eq_children(self):
@@ -617,6 +610,7 @@ class TestCollection:
         result = collection["find-me"]
         assert result is not None
         assert result.id == "find-me"
+
 
 class TestCreation:
 
@@ -1136,7 +1130,9 @@ class TestElements:
         assert el._dom_element.tagName == "LABEL"
         assert el.for_ == label_for, "The label should have the correct for attribute."
         # Ensure the label element is rendered with the correct "for" attribute
-        assert f'for="{label_for}"' in el.outerHTML, "The label should have the correct 'for' attribute in its HTML."
+        assert (
+            f'for="{label_for}"' in el.outerHTML
+        ), "The label should have the correct 'for' attribute in its HTML."
 
     def test_legend(self):
         self._create_el_and_basic_asserts("legend", "some text")
@@ -1450,6 +1446,7 @@ class TestElements:
         assert el.children[1].id == "child2"
         assert el.children[1].parentNode.textContent == parent_full_content
         assert el.children[1].textContent == p2_text_content
+
 
 class TestPageObject:
     """Test the Page object."""

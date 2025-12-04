@@ -45,6 +45,7 @@ async def test_device_properties():
         # Permission denied or no devices available - test passes.
         pass
 
+
 async def test_device_dict_access():
     """
     Device objects should support dictionary-style access for JavaScript
@@ -125,6 +126,7 @@ async def test_load_backwards_compatibility():
     except Exception:
         # Permission denied or no devices available - test passes.
         pass
+
 
 @upytest.skip(
     "Blocks on Pyodide due to permission dialog.",
