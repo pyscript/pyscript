@@ -10,7 +10,7 @@ from pyscript import WebSocket
 
 # Websocket tests are disabled by default because they don't reliably work in
 # playwright based tests. Feel free to set this to False to enable them when
-# running tests locally in an actualy browser (they all pass there).
+# running tests locally in an actual browser (they all pass there).
 SKIP_WEBSOCKET_TESTS = True
 
 

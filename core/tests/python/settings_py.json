@@ -16,16 +16,13 @@
         "./tests/test_running_in_worker.py": "tests/test_running_in_worker.py",
         "./tests/test_web.py": "tests/test_web.py",
         "./tests/test_websocket.py": "tests/test_websocket.py",
-        "./tests/test_window.py": "tests/test_window.py"
+        "./tests/test_window.py": "tests/test_window.py",
+        "./tests/test_workers.py": "tests/test_workers.py"
     },
     "js_modules": {
-        "main": {
-            "./example_js_module.js": "greeting"
-        },
-        "worker": {
-            "./example_js_worker_module.js": "greeting_worker"
-        }
+        "main": {"./example_js_module.js": "greeting"},
+        "worker": {"./example_js_worker_module.js": "greeting_worker"}
     },
-    "packages": ["Pillow" ],
+    "packages": ["Pillow"],
     "experimental_ffi_timeout": 0
 }
