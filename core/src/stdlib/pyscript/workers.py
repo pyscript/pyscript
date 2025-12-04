@@ -71,7 +71,7 @@ class _ReadOnlyWorkersProxy:
     This provides dictionary-like access to named workers defined in
     the page. It handles differences between Pyodide and MicroPython
     implementations transparently.
-    
+
     (See: https://github.com/pyscript/pyscript/issues/2106 for context.)
 
     The proxy is read-only to prevent accidental modification of the
