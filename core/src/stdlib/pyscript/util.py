@@ -1,5 +1,20 @@
+"""
+Utility functions for PyScript.
+
+This module contains general-purpose utility functions that don't fit into
+more specific modules. These utilities handle cross-platform compatibility
+between Pyodide and MicroPython, feature detection, and common type
+conversions:
+
+- `as_bytearray`: Convert JavaScript `ArrayBuffer` to Python `bytearray`.
+- `NotSupported`: Placeholder for unavailable features in specific contexts.
+- `is_awaitable`: Detect `async` functions across Python implementations.
+
+These utilities are primarily used internally by PyScript but are available
+for use in application code when needed.
+"""
+
 import js
-import sys
 import inspect
 
 
@@ -51,7 +66,11 @@ def is_awaitable(obj):
     if config["type"] == "mpy":  # Is MicroPython?
         # MicroPython doesn't appear to have a way to determine if a closure is
         # an async function except via the repr. This is a bit hacky.
-        if "<closure <generator>" in repr(obj):
+        r = repr(obj)
+        if "<closure <generator>" in r:
+            return True
+        # Same applies to bound methods.
+        if "<bound_method" in r and "<generator>" in r:
             return True
         return inspect.isgeneratorfunction(obj)
 

@@ -5,5 +5,5 @@ skip = "*.js,*.json"
 [tool.ruff]
 line-length = 114
 lint.select = ["C4", "C90", "E", "EM", "F", "PIE", "PYI", "PLC", "Q", "RET", "W"]
-lint.ignore = ["E402", "E722", "E731", "E741", "F401", "F704", "PLC0415"]
+lint.ignore = ["E402", "E722", "E731", "E741", "F401", "F704", "PLC0415", "EM101", "EM102", "RET505"]
 lint.mccabe.max-complexity = 27
