@@ -212,7 +212,7 @@ class WebSocket:
         ```
         """
         # Create underlying JavaScript WebSocket.
-        if protocols is not None:
+        if protocols:
             js_websocket = js.WebSocket.new(url, protocols)
         else:
             js_websocket = js.WebSocket.new(url)

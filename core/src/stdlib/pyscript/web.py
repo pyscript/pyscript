@@ -910,11 +910,11 @@ class Options:
         be an `Element` or index to insert before. The `**kwargs` are additional
         arbitrary attributes for the new option element.
         """
-        if value is not None:
+        if value:
             kwargs["value"] = value
-        if html is not None:
+        if html:
             kwargs["innerHTML"] = html
-        if text is not None:
+        if text:
             kwargs["text"] = text
 
         # The `option` element class is dynamically created below.
@@ -1075,7 +1075,7 @@ class ElementCollection:
         if isinstance(key, str):
             for element in self._elements:
                 result = _find_by_id(element._dom_element, key)
-                if result is not None:
+                if result:
                     return result
             return None
         raise TypeError(
@@ -1190,8 +1190,8 @@ class video(ContainerElement):
         If no canvas is provided, this will create one. The to parameter
         can be a canvas Element, raw DOM canvas, or CSS selector string.
         """
-        width = width if width is not None else self.videoWidth
-        height = height if height is not None else self.videoHeight
+        width = width if width else self.videoWidth
+        height = height if height else self.videoHeight
         if is_none(to):
             to = canvas(width=width, height=height)
         elif isinstance(to, Element):

@@ -142,7 +142,7 @@ def _get_content_and_mime(obj):
         return html.escape(obj), "text/plain"
     # Prefer an object's mimebundle.
     mimebundle = _get_representation(obj, "_repr_mimebundle_")
-    if mimebundle is not None:
+    if mimebundle:
         if isinstance(mimebundle, tuple):
             # Grab global metadata.
             format_dict, global_meta = mimebundle
