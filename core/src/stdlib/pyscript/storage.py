@@ -1,9 +1,8 @@
 """
-Persistent browser storage with a Pythonic dict-like interface.
-
-This module wraps the browser's IndexedDB persistent storage to provide a
-familiar Python dictionary API. Data is automatically serialized and
-persisted, surviving page reloads and browser restarts.
+This module wraps the browser's
+[IndexedDB persistent storage](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
+to provide a familiar Python dictionary API. Data is automatically
+serialized and persisted, surviving page reloads and browser restarts.
 
 Storage is persistent per origin (domain), isolated between different sites
 for security. Browsers typically allow each origin to store up to 10-60% of
@@ -11,13 +10,14 @@ total disk space, depending on browser and configuration.
 
 What this module provides:
 
-- Dict-like API (get, set, delete, iterate).
+- A `dict`-like API (get, set, delete, iterate).
 - Automatic serialization of common Python types.
 - Background persistence with optional explicit `sync()`.
 - Support for custom `Storage` subclasses.
 
 ```python
 from pyscript import storage
+
 
 # Create or open a named storage.
 my_data = await storage("user-preferences")
@@ -35,16 +35,17 @@ await my_data.sync()
 theme = my_data.get("theme", "light")
 ```
 
-Common types are automatically serialized: bool, int, float, str, None,
-list, dict, tuple. Binary data (bytearray, memoryview) can be stored as
+Common types are automatically serialized: `bool`, `int`, `float`, `str`, `None`,
+`list`, `dict`, `tuple`. Binary data (`bytearray`, `memoryview`) can be stored as
 single values but not nested in structures.
 
 Tuples are deserialized as lists due to IndexedDB limitations.
 
-Browsers typically allow 10-60% of total disk space per origin. Chrome
-and Edge allow up to 60%, Firefox up to 10 GiB (or 10% of disk, whichever
-is smaller). Safari varies by app type. These limits are unlikely to be
-reached in typical usage.
+!!! info
+    Browsers typically allow 10-60% of total disk space per origin. Chrome
+    and Edge allow up to 60%, Firefox up to 10 GiB (or 10% of disk, whichever
+    is smaller). Safari varies by app type. These limits are unlikely to be
+    reached in typical usage.
 """
 
 from polyscript import storage as _polyscript_storage
@@ -97,7 +98,7 @@ def _convert_from_idb(value):
 
 class Storage(dict):
     """
-    A persistent dictionary backed by browser IndexedDB.
+    A persistent dictionary backed by the browser's IndexedDB.
 
     This class provides a dict-like interface with automatic persistence.
     Changes are queued for background writing, with optional explicit
@@ -107,6 +108,7 @@ class Storage(dict):
 
     ```python
     from pyscript import storage
+
 
     # Open a storage.
     prefs = await storage("preferences")
@@ -127,6 +129,7 @@ class Storage(dict):
 
     ```python
     from pyscript import storage, Storage, window
+
 
     class LoggingStorage(Storage):
         def __setitem__(self, key, value):
@@ -173,7 +176,7 @@ class Storage(dict):
         """
         Remove all items from storage.
 
-        The clear operation is queued for persistence. Use `sync()` to ensure
+        The `clear()` operation is queued for persistence. Use `sync()` to ensure
         immediate completion.
         """
         self._store.clear()
@@ -184,7 +187,7 @@ class Storage(dict):
         Force immediate synchronization to IndexedDB.
 
         By default, storage operations are queued and written asynchronously.
-        Call `sync()` when you need to guarantee data is persisted immediately,
+        Call `sync()` when you need to guarantee changes are persisted immediately,
         such as before critical operations or page unload.
 
         ```python
@@ -210,12 +213,13 @@ async def storage(name="", storage_class=Storage):
     If the storage doesn't exist, it will be created. If it does exist,
     its current contents will be loaded.
 
-    This function returns a Storage instance (or custom subclass instance)
-    acting as a persistent dictionary. A ValueError is raised if `name` is
+    This function returns a `Storage` instance (or custom subclass instance)
+    acting as a persistent dictionary. A `ValueError` is raised if `name` is
     empty or not provided.
 
     ```python
     from pyscript import storage
+
 
     # Basic usage.
     user_data = await storage("user-profile")
@@ -236,7 +240,7 @@ async def storage(name="", storage_class=Storage):
     validated = await storage("validated-data", ValidatingStorage)
     ```
 
-    Storage names are automatically prefixed with "@pyscript/" to
+    Storage names are automatically prefixed with `"@pyscript/"` to
     namespace them within IndexedDB.
     """
     if not name:

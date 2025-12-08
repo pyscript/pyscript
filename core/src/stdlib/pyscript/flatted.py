@@ -1,10 +1,8 @@
 """
-Circular JSON parser for Python.
-
-This module is a Python implementation of the Flatted JavaScript library
-(https://www.npmjs.com/package/flatted), which provides a super light and
-fast way to serialize and deserialize JSON structures that contain circular
-references.
+This module is a Python implementation of the
+[Flatted JavaScript library](https://www.npmjs.com/package/flatted), which
+provides a light and fast way to serialize and deserialize JSON structures
+that contain circular references.
 
 Standard JSON cannot handle circular references - attempting to serialize an
 object that references itself will cause an error. Flatted solves this by
@@ -12,12 +10,14 @@ transforming circular structures into a flat array format that can be safely
 serialized and later reconstructed.
 
 Common use cases:
-- Serializing complex object graphs with circular references
-- Working with DOM-like structures that contain parent/child references
-- Preserving object identity when serializing data structures
+
+- Serializing complex object graphs with circular references.
+- Working with DOM-like structures that contain parent/child references.
+- Preserving object identity when serializing data structures.
 
 ```python
 from pyscript import flatted
+
 
 # Create a circular structure.
 obj = {"name": "parent"}
@@ -157,6 +157,7 @@ def parse(value, *args, **kwargs):
     ```python
     from pyscript import flatted
 
+
     # Parse a Flatted JSON string.
     json_string = '[{"name": "1", "self": "0"}, "parent"]'
     obj = flatted.parse(json_string)
@@ -200,6 +201,7 @@ def stringify(value, *args, **kwargs):
 
     ```python
     from pyscript import flatted
+
 
     # Create an object with a circular reference.
     parent = {"name": "parent", "children": []}

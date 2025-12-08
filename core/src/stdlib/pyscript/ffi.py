@@ -1,9 +1,8 @@
 """
-Consistent Foreign Function Interface (FFI) utilities for PyScript.
-
-This module provides a unified FFI layer that works consistently across both
-Pyodide and MicroPython, and in worker or main thread contexts, abstracting
-away the differences in their JavaScript interop APIs.
+This module provides a unified Foreign Function Interface (FFI) layer that
+works consistently across both Pyodide and MicroPython, and in worker or main
+thread contexts, abstracting away the differences in their JavaScript interop
+APIs.
 
 The following utilities work on both the main thread and in worker contexts:
 
@@ -18,10 +17,8 @@ The following utilities are specific to worker contexts:
 - `gather`: Collect multiple values from worker contexts.
 - `query`: Query objects in worker contexts.
 
-More details of the `direct`, `gather`, and `query` utilities can be found
-here:
-
-https://github.com/WebReflection/reflected-ffi?tab=readme-ov-file#remote-extra-utilities
+More details of the `direct`, `gather`, and `query` utilities
+[can be found here](https://github.com/WebReflection/reflected-ffi?tab=readme-ov-file#remote-extra-utilities).
 """
 
 try:
@@ -77,15 +74,18 @@ def to_js(value, **kw):
     """
     Convert Python objects to JavaScript objects.
 
-    This ensures Python dicts become proper JavaScript objects rather
-    than Maps, which is more intuitive for most use cases.
+    This ensures a Python `dict` becomes a
+    [proper JavaScript object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
+    rather a JavaScript [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map),
+    which is more intuitive for most use cases.
 
-    Where required, the underlying to_js uses Object.fromEntries for dict
-    conversion.
+    Where required, the underlying `to_js` uses `Object.fromEntries` for
+    `dict` conversion.
 
     ```python
     from pyscript import ffi
     import js
+
 
     note = {
         "body": "This is a notification",
@@ -110,6 +110,7 @@ def is_none(value):
     ```python
     from pyscript import ffi
     import js
+
 
     val1 = None
     val2 = js.null
@@ -145,7 +146,8 @@ except:
 
 def assign(source, *args):
     """
-    Merge JavaScript objects (like Object.assign).
+    Merge JavaScript objects (like
+    [Object.assign](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)).
 
     Takes a target object and merges properties from one or more source
     objects into it, returning the modified target.

@@ -3,21 +3,22 @@ Display Pythonic content in the browser.
 
 This module provides the `display()` function for rendering Python objects
 in the web page. The function introspects objects to determine the appropriate
-MIME type and rendering method.
+[MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types)
+and rendering method.
 
 Supported MIME types:
 
-    - `text/plain`: Plain text (HTML-escaped)
-    - `text/html`: HTML content
-    - `image/png`: PNG images as data URLs
-    - `image/jpeg`: JPEG images as data URLs
-    - `image/svg+xml`: SVG graphics
-    - `application/json`: JSON data
-    - `application/javascript`: JavaScript code (discouraged)
+- `text/plain`: Plain text (HTML-escaped)
+- `text/html`: HTML content
+- `image/png`: PNG images as data URLs
+- `image/jpeg`: JPEG images as data URLs
+- `image/svg+xml`: SVG graphics
+- `application/json`: JSON data
+- `application/javascript`: JavaScript code (discouraged)
 
 The `display()` function uses standard Python representation methods
 (`_repr_html_`, `_repr_png_`, etc.) to determine how to render objects.
-Object can provide a `_repr_mimebundle_` method to specify preferred formats
+Objects can provide a `_repr_mimebundle_` method to specify preferred formats
 like this:
 
 ```python
@@ -28,9 +29,8 @@ def _repr_mimebundle_(self):
     }
 ```
 
-Heavily inspired by IPython's rich display system. See:
-
-https://ipython.readthedocs.io/en/stable/api/generated/IPython.display.html
+Heavily inspired by
+[IPython's rich display system](https://ipython.readthedocs.io/en/stable/api/generated/IPython.display.html).
 """
 
 import base64
@@ -95,7 +95,8 @@ class HTML:
     display(HTML("<h1>Hello World</h1>"))
     ```
 
-    Inspired by IPython.display.HTML.
+    Inspired by
+    [`IPython.display.HTML`](https://ipython.readthedocs.io/en/stable/api/generated/IPython.display.html#IPython.display.HTML).
     """
 
     def __init__(self, html):

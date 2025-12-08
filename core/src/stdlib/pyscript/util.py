@@ -1,6 +1,4 @@
 """
-Utility functions for PyScript.
-
 This module contains general-purpose utility functions that don't fit into
 more specific modules. These utilities handle cross-platform compatibility
 between Pyodide and MicroPython, feature detection, and common type
@@ -20,7 +18,7 @@ import inspect
 
 def as_bytearray(buffer):
     """
-    Given a JavaScript ArrayBuffer, convert it to a Python bytearray in a
+    Given a JavaScript `ArrayBuffer`, convert it to a Python `bytearray` in a
     MicroPython friendly manner.
     """
     ui8a = js.Uint8Array.new(buffer)
@@ -57,13 +55,16 @@ class NotSupported:
 def is_awaitable(obj):
     """
     Returns a boolean indication if the passed in obj is an awaitable
-    function. (MicroPython treats awaitables as generator functions, and if
-    the object is a closure containing an async function we need to work
-    carefully.)
+    function. This is interpreter agnostic.
+
+    !!! info
+        MicroPython treats awaitables as generator functions, and if
+        the object is a closure containing an async function or a bound method
+        we need to work carefully.
     """
     from pyscript import config
 
-    if config["type"] == "mpy":  # Is MicroPython?
+    if config["type"] == "mpy":
         # MicroPython doesn't appear to have a way to determine if a closure is
         # an async function except via the repr. This is a bit hacky.
         r = repr(obj)
@@ -72,6 +73,7 @@ def is_awaitable(obj):
         # Same applies to bound methods.
         if "<bound_method" in r and "<generator>" in r:
             return True
+        # In MicroPython, generator functions are awaitable.
         return inspect.isgeneratorfunction(obj)
 
     return inspect.iscoroutinefunction(obj)

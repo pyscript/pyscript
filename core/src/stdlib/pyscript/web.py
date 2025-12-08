@@ -1,12 +1,15 @@
 """
 A lightweight Pythonic interface to the DOM and HTML elements that helps you
-to interact with web pages, making it easy to find, create, manipulate, and
+interact with web pages, making it easy to find, create, manipulate, and
 compose HTML elements from Python.
+
+Highlights include:
 
 Use the `page` object to find elements on the current page:
 
 ```python
 from pyscript import web
+
 
 # Find by CSS selector (returns an ElementCollection).
 divs = web.page.find("div")
@@ -67,7 +70,7 @@ element.update(
 )
 ```
 
-An element's CSS classes behave like Python sets:
+An element's CSS classes behave like a Python `set`:
 
 ```python
 # Add and remove classes
@@ -86,7 +89,7 @@ element.classes.clear()
 element.classes.discard("maybe-not-there")
 ```
 
-An element's styles behave like Python dictionaries:
+An element's styles behave like a Python `dict`:
 
 ```python
 # Set individual styles.
@@ -102,7 +105,7 @@ if "color" in element.style:
     print(f"Color is {element.style['color']}")
 ```
 
-Update multiple elements at once via an ElementCollection:
+Update multiple elements at once via an `ElementCollection`:
 
 ```python
 # Find multiple elements (returns an ElementCollection).
@@ -177,7 +180,7 @@ button.on_click.add_listener(another_handler)
 button = web.button("Click", on_click=handle_click)
 ```
 
-All Element instances provide direct access to the underlying DOM element
+All `Element` instances provide direct access to the underlying DOM element
 via attribute delegation:
 
 ```python
@@ -186,7 +189,7 @@ element.scrollIntoView()
 element.focus()
 element.blur()
 
-# But we do have a convenience method for scrolling into view.
+# But we do have a historic convenience method for scrolling into view.
 element.show_me()  # Calls scrollIntoView()
 
 # Access the raw DOM element when needed for special cases.
@@ -235,13 +238,14 @@ def _find_and_wrap(dom_node, selector):
 
 class Element:
     """
-    The base class for all HTML elements.
+    The base class for all [HTML elements](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements).
 
     Provides a Pythonic interface to DOM elements with support for attributes,
     events, styles, classes, and DOM manipulation. It can create new elements
     or wrap existing DOM elements.
 
-    Elements are typically created using the tag-specific classes:
+    Elements are typically created using the tag-specific classes found
+    within this namespace (e.g. `web.div`, `web.span`, `web.button`):
 
     ```python
     from pyscript import web
@@ -262,13 +266,22 @@ class Element:
     )
     ```
 
+    !!! info
+
+        Some elements have an underscore suffix in their class names (e.g.
+        `select_`, `input_`).
+
+        This is to avoid clashes with Python keywords. The underscore is removed
+        when determining the actual HTML tag name.
+
     Wrap existing DOM elements found on the page:
 
     ```python
-    # Find and wrap an element.
-    existing = web.page.find("#my-element")[0]
+    # Find and wrap an element by CSS selector.
+    existing = web.page.find(".my_class")[0]
 
-    # Or, better, just use direct ID lookup.
+    # Or, better, just use direct ID lookup (with or without the
+    # leading '#').
     existing = web.page["my-element"]
     ```
 
@@ -290,7 +303,7 @@ class Element:
     div.textContent = "Plain text"
     ```
 
-    CSS classes are managed through a set-like interface:
+    CSS classes are managed through a `set`-like interface:
 
     ```python
     # Add classes.
@@ -310,7 +323,7 @@ class Element:
         print(cls)
     ```
 
-    Explicit CSS styles are managed through a dict-like interface:
+    Explicit CSS styles are managed through a `dict`-like interface:
 
     ```python
     # Set styles using CSS property names (hyphenated).
@@ -380,14 +393,17 @@ class Element:
     )
     ```
 
-    **Some HTML attributes clash with Python keywords and use trailing
-    underscores**:
+    !!! warning
+        **Some HTML attributes clash with Python keywords and use trailing
+        underscores**.
+
+    Use `for_` instead of `for`, and `class_` instead of `class`.
 
     ```python
     # The 'for' attribute (on labels)
     label = web.label("Username", for_="username-input")
 
-    # The 'class' attribute (though 'classes' is preferred)
+    # The 'class' attribute (although 'classes' is preferred)
     div.class_ = "my-class"
     ```
 
@@ -522,7 +538,8 @@ class Element:
         Set an attribute on the element.
 
         Private attributes (starting with `_`) are set on the Python object.
-        Public attributes are set on the underlying DOM element.
+        Public attributes are set on the underlying DOM element. Attributes
+        starting with `on_` are treated as events.
         """
         if name.startswith("_"):
             super().__setattr__(name, value)
@@ -578,7 +595,7 @@ class Element:
     @property
     def classes(self):
         """
-        Return the element's CSS classes as a set-like object.
+        Return the element's CSS classes as a `set`-like `Classes` object.
 
         Supports set operations: `add`, `remove`, `discard`, `clear`.
         Check membership with `in`, iterate with `for`, get length with `len()`.
@@ -596,9 +613,10 @@ class Element:
     @property
     def style(self):
         """
-        Return the element's CSS styles as a dict-like object.
+        Return the element's CSS styles as a `dict`-like `Style` object.
 
-        Access using dict-style syntax with CSS property names (hyphenated).
+        Access using `dict`-style syntax with standard
+        [CSS property names (hyphenated)](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference).
 
         ```python
         element.style["background-color"] = "red"
@@ -657,7 +675,8 @@ class Element:
 
     def find(self, selector):
         """
-        Find all descendant elements matching the CSS selector.
+        Find all descendant elements matching the
+        [CSS `selector`](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors).
 
         Returns an `ElementCollection` (possibly empty).
 
@@ -698,10 +717,8 @@ class Element:
 
 class Classes(set):
     """
-    A set of CSS class names that syncs with the DOM.
-
-    Behaves like a Python set with changes automatically reflected in the
-    element's classList.
+    Behaves like a Python `set` with changes automatically reflected in the
+    element's `classList`.
 
     ```python
     # Add and remove classes.
@@ -723,6 +740,7 @@ class Classes(set):
     """
 
     def __init__(self, element):
+        """Initialise the Classes set for the given element."""
         self._class_list = element._dom_element.classList
         super().__init__(self._class_list)
 
@@ -766,10 +784,8 @@ class Classes(set):
 
 class Style(dict):
     """
-    A dictionary of CSS styles that syncs with the DOM.
-
-    Behaves like a Python dict with changes automatically reflected in the
-    element's style attribute.
+    Behaves like a Python `dict` with changes automatically reflected in the
+    element's `style` attribute.
 
     ```python
     # Set and get styles using CSS property names (hyphenated).
@@ -790,6 +806,7 @@ class Style(dict):
     """
 
     def __init__(self, element):
+        """Initialise the Style dict for the given element."""
         self._style = element._dom_element.style
         super().__init__()
 
@@ -808,7 +825,7 @@ class HasOptions:
     """
     Mixin for elements with options (`datalist`, `optgroup`, `select`).
 
-    Provides an options property that returns an `Options` instance. Used
+    Provides an `options` property that returns an `Options` instance. Used
     in conjunction with the `Options` class.
 
     ```python
@@ -833,7 +850,7 @@ class HasOptions:
 
     @property
     def options(self):
-        """Return this element's options as an Options instance."""
+        """Return this element's options as an `Options` instance."""
         if not hasattr(self, "_options"):
             self._options = Options(self)
         return self._options
@@ -933,7 +950,7 @@ class Options:
 
     def remove(self, index):
         """
-        Remove the option at the specified index.
+        Remove the option at the specified `index`.
         """
         self._element._dom_element.remove(index)
 
@@ -978,8 +995,9 @@ class ContainerElement(Element):
         Create a container element with optional `children`.
 
         Children can be passed as positional `*args` or via the `children`
-        keyword argument. String children are inserted as HTML. The `style`,
-        `classes`, and `**kwargs` are passed to the base `Element` initializer.
+        keyword argument. String children are inserted as unescaped HTML. The
+        `style`, `classes`, and `**kwargs` are passed to the base `Element`
+        initializer.
         """
         super().__init__(
             dom_element=dom_element, style=style, classes=classes, **kwargs
@@ -997,7 +1015,7 @@ class ContainerElement(Element):
 
 class ElementCollection:
     """
-    A collection of Element instances with list-like operations.
+    A collection of Element instances with `list`-like operations.
 
     Supports iteration, indexing, slicing, and finding descendants.
     For bulk operations, iterate over the collection explicitly or use
@@ -1022,7 +1040,7 @@ class ElementCollection:
         item.innerHTML = "Updated"
         item.classes.add("processed")
 
-    # Bulk update all elements.
+    # Bulk update all contained elements.
     items.update_all(innerHTML="Hello", className="updated")
 
     # Find matches within the collection.
@@ -1036,7 +1054,7 @@ class ElementCollection:
     @classmethod
     def wrap_dom_elements(cls, dom_elements):
         """
-        Wrap an iterable of DOM elements in an ElementCollection.
+        Wrap an iterable of DOM elements in an `ElementCollection`.
         """
         return cls(
             [Element.wrap_dom_element(dom_element) for dom_element in dom_elements]
@@ -1098,13 +1116,14 @@ class ElementCollection:
     @property
     def elements(self):
         """
-        Return the underlying list of elements.
+        Return the underlying `list` of elements.
         """
         return self._elements
 
     def find(self, selector):
         """
-        Find all descendants matching the CSS selector.
+        Find all descendants matching the
+        [CSS `selector`](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors).
 
         Searches within all elements in the collection.
 
@@ -1138,9 +1157,9 @@ class ElementCollection:
 
 class canvas(ContainerElement):
     """
-    HTML canvas element with drawing and download capabilities.
-
-    Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas
+    A bespoke
+    [HTML canvas element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas)
+    with Pythonic drawing and download capabilities.
     """
 
     def download(self, filename="snapped.png"):
@@ -1177,9 +1196,9 @@ class canvas(ContainerElement):
 
 class video(ContainerElement):
     """
-    HTML video element with snapshot capability.
-
-    Ref: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video
+    A bespoke
+    [HTML video element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video)
+    with Pythonic snapshot capability (to render an image to a canvas).
     """
 
     def snap(self, to=None, width=None, height=None):
@@ -1262,6 +1281,10 @@ CONTAINER_TAGS = [
     "var",
     "wbr",
 ]
+"""
+Container elements that can have children. Each becomes a class in the
+`pyscript.web` namespace and corresponds to an HTML tag.
+"""
 # fmt: on
 
 # Void elements that cannot have children.
@@ -1278,6 +1301,10 @@ VOID_TAGS = [
     "source",
     "track",
 ]
+"""
+Void elements that cannot have children. Each becomes a class in the
+`pyscript.web` namespace and corresponds to an HTML tag.
+"""
 
 
 def _create_element_classes():
@@ -1321,8 +1348,8 @@ class Page:
     """
     Represents the current web page.
 
-    Provides access to the document's html, head, and body elements, plus
-    convenience methods for finding elements and appending to the body.
+    Provides access to the document's `html`, `head`, and `body` elements,
+    plus convenience methods for finding elements and appending to the body.
 
     ```python
     from pyscript import web
@@ -1372,20 +1399,20 @@ class Page:
     @property
     def title(self):
         """
-        Get the page title.
+        Get the page `title`.
         """
         return document.title
 
     @title.setter
     def title(self, value):
         """
-        Set the page title.
+        Set the page `title`.
         """
         document.title = value
 
     def append(self, *items):
         """
-        Append items to the page body.
+        Append items to the page `body`.
 
         Shortcut for `page.body.append(*items)`.
         """
@@ -1393,7 +1420,8 @@ class Page:
 
     def find(self, selector):
         """
-        Find all elements matching the CSS selector.
+        Find all elements matching the
+        [CSS `selector`](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors).
 
         Returns an `ElementCollection` of matching elements.
 
@@ -1408,3 +1436,4 @@ class Page:
 
 
 page = Page()
+"""A reference to the current web page. An instance of the `Page` class."""

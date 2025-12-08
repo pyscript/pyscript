@@ -86,13 +86,14 @@ class Event:
 
 def when(event_type, selector=None):
     """
-    A decorator to handle DOM events or custom Event objects.
+    A decorator to handle DOM events or custom `Event` objects.
 
     For DOM events, specify the `event_type` (e.g. `"click"`) and a `selector`
     for target elements. For custom `Event` objects, just pass the `Event`
     instance as the `event_type`. It's also possible to pass a list of `Event`
     objects. The `selector` is required only for DOM events. It should be a
-    CSS selector string, Element, ElementCollection, or list of DOM elements.
+    [CSS selector string](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors),
+    `Element`, `ElementCollection`, or list of DOM elements.
 
     The decorated function can be either a regular function or an async
     function. If the function accepts an argument, it will receive the event

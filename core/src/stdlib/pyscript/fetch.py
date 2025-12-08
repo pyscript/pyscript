@@ -1,8 +1,7 @@
 """
-A Pythonic wrapper around JavaScript's fetch API.
-
-This module provides a Python-friendly interface to the browser's fetch API,
-returning native Python data types and supported directly awaiting the promise
+This module provides a Python-friendly interface to the
+[browser's fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API),
+returning native Python data types and supporting directly awaiting the promise
 and chaining method calls directly on the promise.
 
 ```python
@@ -11,7 +10,10 @@ url = "https://api.example.com/data"
 
 # Pattern 1: Await the response, then extract data.
 response = await fetch(url)
-data = await response.json()
+if response.ok:
+    data = await response.json()
+else:
+    raise NetworkError(f"Fetch failed: {response.status}")
 
 # Pattern 2: Chain method calls directly on the promise.
 data = await fetch(url).json()
@@ -160,8 +162,8 @@ def fetch(url, **options):
     - `headers`: Dict of request headers.
     - `body`: Request body (string, dict for JSON, etc.)
 
-    See the MDN documentation for details:
-    https://developer.mozilla.org/en-US/docs/Web/API/RequestInit
+    See [this documentation](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit)
+    for more details of these web standards.
 
     The function returns a promise that resolves to a Response-like object
     with Pythonic methods to extract data:

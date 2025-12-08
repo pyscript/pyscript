@@ -1,7 +1,6 @@
 """
-WebSocket support for PyScript.
-
-This module provides a Pythonic wrapper around the browser's WebSocket API,
+This module provides a Pythonic wrapper around the browser's
+[WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket),
 enabling two-way communication with WebSocket servers.
 
 Use this for real-time applications:
@@ -15,9 +14,9 @@ Use this for real-time applications:
 - Naming deliberately follows the JavaScript WebSocket API closely for
   familiarity.
 
-See the Python docs for an explanation of memoryview:
+See the Python docs for
+[an explanation of memoryview](https://docs.python.org/3/library/stdtypes.html#memoryview).
 
-https://docs.python.org/3/library/stdtypes.html#memoryview
 
 ```python
 from pyscript import WebSocket
@@ -38,9 +37,6 @@ ws.onopen = on_open
 ws.onmessage = on_message
 ws.onclose = on_close
 ```
-
-For more information about the underlying WebSocket API, see:
-https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
 """
 
 import js
@@ -73,7 +69,8 @@ def _attach_event_handler(websocket, handler_name, handler_function):
 
 class WebSocketEvent:
     """
-    A read-only wrapper for WebSocket event objects.
+    A read-only wrapper for
+    [WebSocket event objects](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent).
 
     This class wraps browser WebSocket events and provides convenient access
     to event properties. It handles the conversion of binary data from
@@ -105,7 +102,7 @@ class WebSocketEvent:
         Get an attribute `attr` from the underlying event object.
 
         Handles special conversion of binary data from JavaScript typed
-        arrays to Python memoryview objects.
+        arrays to Python `memoryview` objects.
         """
         value = getattr(self._event, attr)
         if attr == "data" and not isinstance(value, str):
@@ -124,11 +121,10 @@ class WebSocket:
     handling communication with WebSocket servers. It supports both text and
     binary data transmission.
 
-    It's possible to access the underlying WebSocket methods and properties
-    directly if needed. However, the wrapper provides a more Pythonic API.
-
-    If you need to work with the raw JavaScript WebSocket instance, you can
-    access it via the `_js_websocket` attribute.
+    Access the underlying WebSocket methods and properties directly if needed.
+    However, the wrapper provides a more Pythonic API. If you need to work
+    with the raw JavaScript WebSocket instance, you can access it via the
+    `_js_websocket` attribute.
 
     Using textual (`str`) data:
 
@@ -169,7 +165,8 @@ class WebSocket:
     ws.send(data)
     ```
 
-    See: https://docs.python.org/3/library/stdtypes.html#memoryview
+    Read more about Python's
+    [`memoryview` here](https://docs.python.org/3/library/stdtypes.html#memoryview).
     """
 
     # WebSocket ready state constants.
@@ -180,15 +177,14 @@ class WebSocket:
 
     def __init__(self, url, protocols=None, **handlers):
         """
-        Create a new WebSocket connection from the given `url` (ws:// or
-        wss://). Optionally specify `protocols` (a string or a list of
-        protocol strings) and event handlers (onopen, onmessage, etc.) as
+        Create a new WebSocket connection from the given `url` (`ws://` or
+        `wss://`). Optionally specify `protocols` (a string or a list of
+        protocol strings) and event handlers (`onopen`, `onmessage`, etc.) as
         keyword arguments.
 
-        These arguments and naming conventions mirror those of the underlying
-        JavaScript WebSocket API for familiarity.
-
-        https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+        These arguments and naming conventions mirror those of the
+        [underlying JavaScript WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
+        for familiarity.
 
         If you need access to the underlying JavaScript WebSocket instance,
         you can get it via the `_js_websocket` attribute.
@@ -230,7 +226,7 @@ class WebSocket:
         Get an attribute `attr` from the underlying WebSocket.
 
         This allows transparent access to WebSocket properties like
-        readyState, url, bufferedAmount, etc.
+        `readyState`, `url`, `bufferedAmount`, etc.
         """
         return getattr(self._js_websocket, attr)
 
@@ -238,7 +234,7 @@ class WebSocket:
         """
         Set an attribute `attr` on the WebSocket to the given `value`.
 
-        Event handler attributes (onopen, onmessage, etc.) are specially
+        Event handler attributes (`onopen`, `onmessage`, etc.) are specially
         handled to create proper proxies. Other attributes are set on the
         underlying WebSocket directly.
         """
@@ -249,10 +245,10 @@ class WebSocket:
 
     def send(self, data):
         """
-        Send data through the WebSocket.
+        Send `data` through the WebSocket.
 
-        Accepts both text (str) and binary data (bytes, bytearray, etc.).
-        Binary data is automatically converted to a JavaScript Uint8Array.
+        Accepts both text (`str`) and binary data (`bytes`, `bytearray`, etc.).
+        Binary data is automatically converted to a JavaScript `Uint8Array`.
 
         ```python
         # Send text.
@@ -263,7 +259,9 @@ class WebSocket:
         ws.send(bytearray([5, 6, 7, 8]))
         ```
 
-        The WebSocket **must be in the OPEN state to send data**.
+        !!! warning
+
+            The WebSocket **must be in the OPEN state to send data**.
         """
         if isinstance(data, str):
             self._js_websocket.send(data)
@@ -275,8 +273,8 @@ class WebSocket:
 
     def close(self, code=None, reason=None):
         """
-        Close the WebSocket connection. Optionally specify a `code` (integer)
-        and a `reason` (string) for closing the connection.
+        Close the WebSocket connection. Optionally specify a `code` (`int`)
+        and a `reason` (`str`) for closing the connection.
 
         ```python
         # Normal close.
@@ -286,9 +284,8 @@ class WebSocket:
         ws.close(code=1000, reason="Task completed")
         ```
 
-        Usage and values for `code` and `reasons` are explained here:
-
-        https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close
+        Usage and values for `code` and `reasons`
+        [are explained here](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close).
         """
         if code and reason:
             self._js_websocket.close(code, reason)

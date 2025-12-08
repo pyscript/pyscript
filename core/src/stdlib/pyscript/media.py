@@ -1,8 +1,7 @@
 """
-Media device access for PyScript.
-
-This module provides classes and functions for interacting with media devices
-and streams in the browser, enabling you to work with cameras, microphones,
+This module provides classes and functions for interacting with
+[media devices and streams](https://developer.mozilla.org/en-US/docs/Web/API/Media_Capture_and_Streams_API)
+in the browser, enabling you to work with cameras, microphones,
 and other media input/output devices directly from Python.
 
 Use this module for:
@@ -12,10 +11,10 @@ Use this module for:
 - Enumerating available media devices.
 - Applying constraints to media streams (resolution, frame rate, etc.).
 
-
 ```python
 from pyscript import document
 from pyscript.media import Device, list_devices
+
 
 # Get a video stream from the default camera.
 stream = await Device.request_stream(video=True)
@@ -42,15 +41,17 @@ class Device:
     """
     Represents a media input or output device.
 
-    This class wraps a browser MediaDeviceInfo object, providing Pythonic
-    access to device properties like ID, label, and kind (audio/video
-    input/output).
+    This class wraps a browser
+    [MediaDeviceInfo object](https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo),
+    providing Pythonic access to device properties like `ID`, `label`, and
+    `kind` (audio/video, input/output).
 
-    Devices are typically obtained via `list_devices()` rather than
-    constructed directly.
+    Devices are typically obtained via the `list_devices()` function in this
+    module, rather than constructed directly.
 
     ```python
     from pyscript.media import list_devices
+
 
     # Get all available devices.
     devices = await list_devices()
@@ -75,7 +76,7 @@ class Device:
         """
         Unique identifier for this device.
 
-        This ID persists across sessions but is reset when the user clears
+        This `ID` persists across sessions but is reset when the user clears
         cookies. It's unique to the origin of the calling application.
         """
         return self._device_info.deviceId
@@ -86,14 +87,14 @@ class Device:
         Group identifier for related devices.
 
         Devices belonging to the same physical device (e.g., a monitor with
-        both a camera and microphone) share the same group ID.
+        both a camera and microphone) share the same `group ID`.
         """
         return self._device_info.groupId
 
     @property
     def kind(self):
         """
-        Device type: "videoinput", "audioinput", or "audiooutput".
+        Device type: `"videoinput"`, `"audioinput"`, or `"audiooutput"`.
         """
         return self._device_info.kind
 
@@ -102,7 +103,7 @@ class Device:
         """
         Human-readable description of the device.
 
-        Example: "External USB Webcam" or "Built-in Microphone".
+        Example: `"External USB Webcam"` or `"Built-in Microphone"`.
         """
         return self._device_info.label
 
@@ -110,7 +111,7 @@ class Device:
         """
         Support bracket notation for JavaScript interop.
 
-        Allows accessing properties via device["id"] syntax. Necessary
+        Allows accessing properties via `device["id"]` syntax. Necessary
         when Device instances are proxied to JavaScript.
         """
         return getattr(self, key)
@@ -127,13 +128,13 @@ class Device:
 
         Simple boolean constraints for `audio` and `video` can be used to
         request default devices. More complex constraints can be specified as
-        dictionaries conforming to the MediaTrackConstraints interface. See:
-
-        https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
+        dictionaries conforming to
+        [the MediaTrackConstraints interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints).
 
         ```python
         from pyscript import document
         from pyscript.media import Device
+
 
         # Get default video stream.
         stream = await Device.request_stream()
@@ -169,10 +170,11 @@ class Device:
     @classmethod
     async def load(cls, audio=False, video=True):
         """
-        Deprecated: Use request_stream() instead.
+        !!! warning
+            **Deprecated: Use `request_stream()` instead.**
 
-        This method is retained for backwards compatibility but will be
-        removed in a future release. Please use request_stream() instead.
+            This method is retained for backwards compatibility but will be
+            removed in a future release. Please use `request_stream()` instead.
         """
         return await cls.request_stream(audio=audio, video=video)
 
@@ -182,6 +184,7 @@ class Device:
 
         ```python
         from pyscript.media import list_devices
+
 
         # List all devices.
         devices = await list_devices()
@@ -210,13 +213,12 @@ class Device:
 
 async def list_devices():
     """
-    List all available media input and output devices.
-
     Returns a list of all media devices currently available to the browser,
     such as microphones, cameras, and speakers.
 
     ```python
     from pyscript.media import list_devices
+
 
     # Get all devices.
     devices = await list_devices()
@@ -232,13 +234,14 @@ async def list_devices():
     ```
 
     The returned list will omit devices that are blocked by the document
-    Permission Policy (microphone, camera, speaker-selection) or for
+    [Permission Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy)
+    (microphone, camera, speaker-selection) or for
     which the user has not granted explicit permission.
 
     For security and privacy, device labels may be empty strings until
-    permission is granted. See:
-
-    https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
+    permission is granted. See
+    [this document](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices)
+    for more information about this web standard.
     """
     device_infos = await window.navigator.mediaDevices.enumerateDevices()
     return [Device(device_info) for device_info in device_infos]

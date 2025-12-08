@@ -1,8 +1,8 @@
 """
-Worker management for PyScript.
-
-This module provides access to named web workers defined in script tags, and
-utilities for dynamically creating workers from Python code.
+This module provides access to named
+[web workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)
+defined in `<script>` tags, and utilities for dynamically creating workers
+from Python code.
 
 Named workers are Python web workers defined in HTML with a `name` attribute
 that can be referenced from the main thread or other workers. This module
@@ -49,11 +49,11 @@ print(result)
 ```
 
 Key features:
-- Access (await) named workers via dictionary-like syntax.
+- Access (`await`) named workers via dictionary-like syntax.
 - Dynamically create workers from Python.
 - Cross-interpreter support (Pyodide and MicroPython).
 
-Worker access is asynchronous - you must await `workers[name]` to get
+Worker access is asynchronous - you must `await workers[name]` to get
 a reference to the worker. This is because workers may not be ready
 immediately at startup.
 """
@@ -66,7 +66,7 @@ from polyscript import workers as _polyscript_workers
 class _ReadOnlyWorkersProxy:
     """
     A read-only proxy for accessing named web workers. Use
-    create_named_worker() to create new workers found in this proxy.
+    `create_named_worker()` to create new workers found in this proxy.
 
     This provides dictionary-like access to named workers defined in
     the page. It handles differences between Pyodide and MicroPython
@@ -127,6 +127,7 @@ class _ReadOnlyWorkersProxy:
 
 # Global workers proxy for accessing named workers.
 workers = _ReadOnlyWorkersProxy()
+"""Global proxy for accessing named web workers."""
 
 
 async def create_named_worker(src, name, config=None, type="py"):
@@ -135,7 +136,7 @@ async def create_named_worker(src, name, config=None, type="py"):
     `name` and optional `config` (dict or JSON string) and `type` (`py`
     for Pyodide or `mpy` for MicroPython, the default is `py`).
 
-    This function creates a new web worker by injecting a script tag into
+    This function creates a new web worker by injecting a `<script>` tag into
     the document. The worker will be accessible via the `workers` proxy once
     it's ready.
 
@@ -169,8 +170,10 @@ async def create_named_worker(src, name, config=None, type="py"):
     )
     ```
 
-    **The worker script should define** `__export__` to specify which
-    functions or objects are accessible from the main thread.
+    !!! info
+
+        **The worker script should define** `__export__` to specify which
+        functions or objects are accessible from the main thread.
     """
     # Create script element for the worker.
     script = js.document.createElement("script")

@@ -1,22 +1,19 @@
 """
-Filesystem mounting for Chromium-based browsers.
-
 This module provides an API for mounting directories from the user's local
-filesystem into the browser's virtual filesystem. This allows Python code
-running in the browser to read and write files on the user's local machine.
+filesystem into the browser's virtual filesystem. This means Python code,
+running in the browser, can read and write files on the user's local machine.
 
-**Important:** This API only works in Chromium-based browsers (Chrome, Edge,
-Opera, Brave, etc.) that support the File System Access API.
-
-For technical details of the underlying Chromium based API, see:
-
-https://wicg.github.io/file-system-access/
+!!! warning
+    **This API only works in Chromium-based browsers** (Chrome, Edge,
+    Opera, Brave, etc.) that support the
+    [File System Access API](https://wicg.github.io/file-system-access/).
 
 The module maintains a `mounted` dictionary that tracks all currently mounted
 paths and their associated filesystem handles.
 
 ```python
 from pyscript import fs, document, when
+
 
 # Mount a local directory to the `/local` mount point in the browser's
 # virtual filesystem (may prompt user for permission).
@@ -52,8 +49,8 @@ if RUNNING_IN_WORKER:
     from pyscript.context import sync as sync_with_worker
     from polyscript import IDBMap
 
-# Global dictionary tracking mounted paths and their filesystem handles.
 mounted = {}
+"""Global dictionary tracking mounted paths and their filesystem handles."""
 
 
 async def _check_permission(details):
@@ -80,6 +77,7 @@ async def mount(path, mode="readwrite", root="", id="pyscript"):
 
     ```python
     from pyscript import fs
+
 
     # Basic mount with default settings.
     await fs.mount("/local")
@@ -164,6 +162,7 @@ async def sync(path):
     ```python
     from pyscript import fs
 
+
     await fs.mount("/local")
 
     # Make changes to files.
@@ -195,6 +194,7 @@ async def unmount(path):
     ```python
     from pyscript import fs
 
+
     await fs.mount("/local")
     # ... work with files ...
     await fs.unmount("/local")
@@ -203,7 +203,7 @@ async def unmount(path):
     await fs.mount("/local", id="different-folder")
     ```
 
-    This automatically calls sync() before unmounting to ensure no data
+    This automatically calls `sync()` before unmounting to ensure no data
     is lost.
     """
     if path not in mounted:
@@ -220,12 +220,13 @@ async def revoke(path, id="pyscript"):
     `path` and `id` combination.
 
     This removes the stored permission for accessing the user's local
-    filesystem at the specified path and ID. Unlike unmount(), which only
-    removes the mount point, revoke() also clears the permission so the
+    filesystem at the specified path and ID. Unlike `unmount()`, which only
+    removes the mount point, `revoke()` also clears the permission so the
     user will be prompted again on next mount.
 
     ```python
     from pyscript import fs
+
 
     await fs.mount("/local", id="my-app")
     # ... work with files ...
@@ -238,7 +239,7 @@ async def revoke(path, id="pyscript"):
     ```
 
     After revoking, the user will need to grant permission again and
-    select a directory when mount() is called next time.
+    select a directory when `mount()` is called next time.
     """
     mount_key = f"{path}@{id}"
 
