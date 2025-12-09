@@ -49,7 +49,7 @@ class Event:
 
     def trigger(self, result):
         """
-        Trigger the event and notify all listeners with the given result.
+        Trigger the event and notify all listeners with the given `result`.
         """
         for listener in self._listeners:
             if is_awaitable(listener):
@@ -61,7 +61,7 @@ class Event:
         """
         Add a function to be called when this event is triggered.
 
-        The listener must be callable. It can be either a regular function
+        The `listener` must be callable. It can be either a regular function
         or an async function. Duplicate listeners are ignored.
         """
         if not callable(listener):
@@ -72,7 +72,7 @@ class Event:
 
     def remove_listener(self, *listeners):
         """
-        Remove specified listeners. If none specified, remove all listeners.
+        Remove specified `listeners`. If none specified, remove all listeners.
         """
         if listeners:
             for listener in listeners:
@@ -166,7 +166,7 @@ def when(event_type, selector=None):
 
 def _get_elements(selector):
     """
-    Convert various selector types into a list of DOM elements.
+    Convert various `selector` types into a list of DOM elements.
     """
     from pyscript.web import Element, ElementCollection
 
@@ -184,7 +184,7 @@ def _get_elements(selector):
 
 def _create_wrapper(func):
     """
-    Create an appropriate wrapper for the given function.
+    Create an appropriate wrapper for the given function, `func`.
 
     The wrapper handles both sync and async functions, and respects whether
     the function expects to receive event arguments.

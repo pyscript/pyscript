@@ -70,10 +70,11 @@ respective submodule documentation for more details on each component.
     import js
     ```
 
-    The `js` object is the JS `globalThis`, as exported by Pyodide and/or
-    Micropython's foreign function interface (FFI). As such, it contains
-    different things in the main thread or in a worker, as defined by web
-    standards.
+    The `js` object is
+    [the JS `globalThis`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis),
+    as exported by Pyodide and/or Micropython's foreign function interface
+    (FFI). As such, it contains different things in the main thread or in a
+    worker, as defined by web standards.
 
     ```python
     import pyscript.context

@@ -1,8 +1,9 @@
 """
-This module provides a unified Foreign Function Interface (FFI) layer that
-works consistently across both Pyodide and MicroPython, and in worker or main
-thread contexts, abstracting away the differences in their JavaScript interop
-APIs.
+This module provides a unified
+[Foreign Function Interface (FFI)](https://en.wikipedia.org/wiki/Foreign_function_interface)
+layer for Python/JavaScript interactions, that works consistently across both
+Pyodide and MicroPython, and in a worker or main thread context, abstracting
+away the differences in their JavaScript interop APIs.
 
 The following utilities work on both the main thread and in worker contexts:
 

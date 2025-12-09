@@ -5,7 +5,7 @@ running in the browser, can read and write files on the user's local machine.
 
 !!! warning
     **This API only works in Chromium-based browsers** (Chrome, Edge,
-    Opera, Brave, etc.) that support the
+    Vivaldi, Brave, etc.) that support the
     [File System Access API](https://wicg.github.io/file-system-access/).
 
 The module maintains a `mounted` dictionary that tracks all currently mounted
