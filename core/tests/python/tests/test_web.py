@@ -6,6 +6,7 @@ import asyncio
 
 import upytest
 from pyscript import RUNNING_IN_WORKER, document, web, when
+from pyscript.ffi import to_js
 
 
 def setup():
@@ -22,14 +23,22 @@ def test_getitem_by_id():
     """
     An element with an id in the DOM can be retrieved by id.
     """
-    result = web.page.find("#div-no-classes")
-    # There is a single result.
-    assert len(result) == 1
+    result = web.page["#div-no-classes"]
     # The result is a div.
-    assert result[0].get_tag_name() == "div"
+    assert result.get_tag_name() == "div"
+    # The result has the expected id.
+    assert result.id == "div-no-classes"
+    # Now do the same but without the '#'
+    result = web.page["div-no-classes"]
+    assert result.get_tag_name() == "div"
+    assert result.id == "div-no-classes"
 
 
-def test_getitem_by_class():
+def test_find_item_by_class():
+    """
+    Elements with a given class in the DOM can be retrieved by class via the
+    find method.
+    """
     ids = [
         "test_class_selector",
         "test_selector_w_children",
@@ -37,35 +46,188 @@ def test_getitem_by_class():
     ]
     expected_class = "a-test-class"
     result = web.page.find(f".{expected_class}")
-
     # EXPECT to find exact number of elements with the class in the page (== 3)
     assert len(result) == 3
-
     # EXPECT that all element ids are in the expected list
     assert [el.id for el in result] == ids
 
 
 def test_read_n_write_collection_elements():
+    """
+    Elements with a given class in the DOM can be retrieved by class via the
+    find method. They can be bulk updated via the update_all method.
+    """
     elements = web.page.find(".multi-elems")
-
     for element in elements:
         assert element.innerHTML == f"Content {element.id.replace('#', '')}"
-
     new_content = "New Content"
-    elements.innerHTML = new_content
+    elements.update_all(innerHTML=new_content)
     for element in elements:
         assert element.innerHTML == new_content
 
 
+class TestHelperFunctions:
+    """
+    Test the internal helper functions.
+    """
+
+    def test_wrap_if_not_none_with_element(self):
+        """
+        Test wrapping a valid DOM element.
+        """
+
+        # Create a DOM element.
+        dom_div = document.createElement("div")
+        dom_div.id = "test-wrap"
+
+        # Wrap it.
+        result = web._wrap_if_not_none(dom_div)
+
+        # Should return an Element instance.
+        assert isinstance(result, web.Element)
+        assert result.id == "test-wrap"
+
+    def test_wrap_if_not_none_with_none(self):
+        """
+        Test wrapping None returns None.
+        """
+
+        # Pass None (as a JS null).
+        result = web._wrap_if_not_none(to_js(None))
+
+        # Should return None.
+        assert result is None
+
+    def test_find_by_id_without_hash(self):
+        """
+        Test finding element by id without # prefix.
+        """
+
+        # Create and append an element with an id.
+        test_div = web.div("Test content", id="helper-test-id")
+        web.page.body.append(test_div)
+
+        # Find it using the helper.
+        result = web._find_by_id(document, "helper-test-id")
+
+        # Should find the element.
+        assert result is not None
+        assert result.id == "helper-test-id"
+        assert result.innerHTML == "Test content"
+
+    def test_find_by_id_with_hash(self):
+        """
+        Test finding element by id with # prefix.
+        """
+
+        # Create and append an element with an id.
+        test_div = web.div("Test content", id="helper-test-id-hash")
+        web.page.body.append(test_div)
+
+        # Find it using the helper with # prefix.
+        result = web._find_by_id(document, "#helper-test-id-hash")
+
+        # Should find the element.
+        assert result is not None
+        assert result.id == "helper-test-id-hash"
+
+    def test_find_by_id_not_found(self):
+        """
+        Test finding non-existent id returns None.
+        """
+
+        # Try to find non-existent element.
+        result = web._find_by_id(document, "this-id-does-not-exist")
+
+        # Should return None.
+        assert result is None
+
+    def test_find_by_id_within_element(self):
+        """
+        Test finding by id within a specific element.
+        """
+
+        # Create a container with a child.
+        child = web.p("Child", id="child-in-container")
+        container = web.div(child, id="container-for-search")
+        web.page.body.append(container)
+
+        # Find the child within the container.
+        result = web._find_by_id(container._dom_element, "child-in-container")
+
+        # Should find the child.
+        assert result is not None
+        assert result.id == "child-in-container"
+
+    def test_find_and_wrap_with_results(self):
+        """
+        Test finding elements by selector.
+        """
+
+        # Create multiple elements with same class.
+        container = web.div(
+            web.p("Para 1", classes=["test-para"]),
+            web.p("Para 2", classes=["test-para"]),
+            web.p("Para 3", classes=["test-para"]),
+            id="find-wrap-container",
+        )
+        web.page.body.append(container)
+
+        # Find them using the helper.
+        result = web._find_and_wrap(container._dom_element, ".test-para")
+
+        # Should return an ElementCollection.
+        assert isinstance(result, web.ElementCollection)
+        assert len(result) == 3
+        assert result[0].innerHTML == "Para 1"
+        assert result[1].innerHTML == "Para 2"
+        assert result[2].innerHTML == "Para 3"
+
+    def test_find_and_wrap_no_results(self):
+        """
+        Test finding with selector that matches nothing.
+        """
+
+        # Create a container.
+        container = web.div(id="empty-container")
+        web.page.body.append(container)
+
+        # Find with selector that matches nothing.
+        result = web._find_and_wrap(container._dom_element, ".does-not-exist")
+
+        # Should return empty collection.
+        assert isinstance(result, web.ElementCollection)
+        assert len(result) == 0
+
+    def test_find_and_wrap_on_document(self):
+        """
+        Test finding elements in entire document.
+        """
+
+        # Create elements in the document.
+        web.page.body.append(web.span("Span 1", classes=["doc-span"]))
+        web.page.body.append(web.span("Span 2", classes=["doc-span"]))
+
+        # Find them in the entire document.
+        result = web._find_and_wrap(document, ".doc-span")
+
+        # Should find both.
+        assert isinstance(result, web.ElementCollection)
+        assert len(result) >= 2  # May have others from previous tests.
+
+
 class TestElement:
+    """
+    Test the base Element class functionality.
+    """
 
     def test_query(self):
         # GIVEN an existing element on the page, with at least 1 child element
         id_ = "test_selector_w_children"
-        parent_div = web.page.find(f"#{id_}")[0]
+        parent_div = web.page[f"#{id_}"]
 
         # EXPECT it to be able to query for the first child element
-        div = parent_div.find("div")[0]
+        div = parent_div[0]
 
         # EXPECT the new element to be associated with the parent
         assert (
@@ -101,7 +263,7 @@ class TestElement:
 
     def test_append_element(self):
         id_ = "element-append-tests"
-        div = web.page.find(f"#{id_}")[0]
+        div = web.page[f"#{id_}"]
         len_children_before = len(div.children)
         new_el = web.p("new element")
         div.append(new_el)
@@ -110,7 +272,7 @@ class TestElement:
 
     def test_append_dom_element_element(self):
         id_ = "element-append-tests"
-        div = web.page.find(f"#{id_}")[0]
+        div = web.page[f"#{id_}"]
         len_children_before = len(div.children)
         new_el = web.p("new element")
         div.append(new_el._dom_element)
@@ -119,7 +281,7 @@ class TestElement:
 
     def test_append_collection(self):
         id_ = "element-append-tests"
-        div = web.page.find(f"#{id_}")[0]
+        div = web.page[f"#{id_}"]
         len_children_before = len(div.children)
         collection = web.page.find(".collection")
         div.append(collection)
@@ -131,19 +293,24 @@ class TestElement:
     def test_read_classes(self):
         id_ = "test_class_selector"
         expected_class = "a-test-class"
-        div = web.page.find(f"#{id_}")[0]
-        assert div.classes == [expected_class]
+        div = web.page[f"#{id_}"]
+        assert div.classes == {expected_class}
 
     def test_add_remove_class(self):
         id_ = "div-no-classes"
         classname = "tester-class"
-        div = web.page.find(f"#{id_}")[0]
+        div = web.page[f"#{id_}"]
         assert not div.classes
         div.classes.add(classname)
-        same_div = web.page.find(f"#{id_}")[0]
-        assert div.classes == [classname] == same_div.classes
+        assert div.classes == {classname}
         div.classes.remove(classname)
-        assert div.classes == [] == same_div.classes
+        assert div.classes == set()
+        # Handle multiple classes in a single string
+        multiple_classes = "class1 class2 class3"
+        div.classes.add(multiple_classes)
+        assert div.classes == {"class1", "class2", "class3"}
+        div.classes.remove("class2 class3")
+        assert div.classes == {"class1"}
 
     async def test_when_decorator(self):
         called = False
@@ -243,6 +410,129 @@ class TestElement:
         )
         assert div.textContent == div._dom_element.textContent == "<b>New Content</b>"
 
+    def test_update_classes(self):
+        """Test updating classes via update()."""
+        div = web.div()
+        div.update(classes=["foo", "bar"])
+        assert "foo" in div.classes
+        assert "bar" in div.classes
+
+    def test_update_single_class(self):
+        """Test updating single class string via update()."""
+        div = web.div()
+        div.update(classes="foo")
+        assert "foo" in div.classes
+
+    def test_update_style(self):
+        """Test updating styles via update()."""
+        div = web.div()
+        div.update(style={"color": "red", "font-size": "16px"})
+        assert div.style["color"] == "red", div.style["color"]
+        assert div.style["font-size"] == "16px"
+
+    def test_update_attributes(self):
+        """Test updating attributes via update()."""
+        div = web.div()
+        div.update(id="test-id", title="Test Title")
+        assert div.id == "test-id"
+        assert div.title == "Test Title"
+
+    def test_update_combined(self):
+        """Test updating classes, styles, and attributes together."""
+        div = web.div()
+        div.update(classes=["foo"], style={"color": "red"}, id="test-id")
+        assert "foo" in div.classes
+        assert div.style["color"] == "red"
+        assert div.id == "test-id"
+
+    def test_getitem_integer_index(self):
+        """Test indexing children by integer."""
+        parent = web.div(web.p("Child 1"), web.p("Child 2"))
+        assert parent[0].innerHTML == "Child 1"
+        assert parent[1].innerHTML == "Child 2"
+
+    def test_getitem_slice(self):
+        """Test slicing children."""
+        parent = web.div(web.p("Child 1"), web.p("Child 2"), web.p("Child 3"))
+        sliced = parent[0:2]
+        assert len(sliced) == 2
+        assert sliced[0].innerHTML == "Child 1"
+        assert sliced[1].innerHTML == "Child 2"
+
+    def test_getitem_by_id(self):
+        """Test looking up descendant by id."""
+        child = web.p("Child", id="child-id")
+        parent = web.div(child)
+        web.page.body.append(parent)
+
+        result = parent["child-id"]
+        assert result is not None
+        assert result.id == "child-id"
+
+    def test_getitem_by_id_with_hash(self):
+        """Test looking up descendant by id with # prefix."""
+        child = web.p("Child", id="child-id-2")
+        parent = web.div(child)
+        web.page.body.append(parent)
+
+        result = parent["#child-id-2"]
+        assert result is not None
+        assert result.id == "child-id-2"
+
+    def test_clone_basic(self):
+        """Test cloning an element."""
+        original = web.div("Content", id="original")
+        original.classes.add("test-class")
+
+        clone = original.clone()
+        assert clone.innerHTML == original.innerHTML
+        assert "test-class" in clone.classes
+        assert clone is not original
+        assert clone._dom_element is not original._dom_element
+
+    def test_clone_with_id(self):
+        """Test cloning with new id."""
+        original = web.div("Content", id="original")
+        clone = original.clone(clone_id="cloned")
+        assert clone.id == "cloned"
+        assert original.id == "original"
+
+    def test_for_attribute(self):
+        """Test that for_ maps to htmlFor."""
+        label = web.label("Test", for_="input-id")
+        assert label.for_ == "input-id"
+        assert 'for="input-id"' in label.outerHTML
+
+    def test_trailing_underscore_removal(self):
+        """Test that trailing underscores are removed."""
+        div = web.div()
+        div.class_ = "test-class"
+        # Setting class_ should set the className, which affects classes
+        assert "test-class" in div.classes
+        assert div.className == "test-class"
+
+
+class TestContainerElement:
+    """Test ContainerElement specific functionality."""
+
+    def test_container_iteration(self):
+        """Test iterating over container's children."""
+        parent = web.div(web.p("1"), web.p("2"), web.p("3"))
+        children = list(parent)
+        assert len(children) == 3
+        assert children[0].innerHTML == "1"
+
+    def test_container_children_kwarg(self):
+        """Test creating container with children kwarg."""
+        parent = web.div(children=[web.p("1"), web.p("2")])
+        assert len(parent.children) == 2
+
+    def test_container_html_string(self):
+        """Test inserting HTML string as child."""
+        parent = web.div("<b>Bold text</b>")
+        assert "Bold text" in parent.innerHTML
+        assert "<b>" in parent.innerHTML
+
 
 class TestCollection:
 
@@ -260,24 +550,6 @@ class TestCollection:
             assert el == elements[i]
         assert elements[:] == elements
 
-    def test_style_rule(self):
-        selector = ".multi-elems"
-        elements = web.page.find(selector)
-        for el in elements:
-            assert el.style["background-color"] != "red"
-
-        elements.style["background-color"] = "red"
-
-        for i, el in enumerate(web.page.find(selector)):
-            assert elements[i].style["background-color"] == "red"
-            assert el.style["background-color"] == "red"
-
-        elements.style.remove("background-color")
-
-        for i, el in enumerate(web.page.find(selector)):
-            assert el.style["background-color"] != "red"
-            assert elements[i].style["background-color"] != "red"
-
     @upytest.skip(
         "Flakey in Pyodide on Worker",
         skip_when=RUNNING_IN_WORKER and not upytest.is_micropython,
@@ -286,7 +558,7 @@ class TestCollection:
         called = False
         call_flag = asyncio.Event()
 
-        buttons_collection = web.page["button"]
+        buttons_collection = web.page.find("button")
 
         @when("click", buttons_collection)
         def on_click(event):
@@ -304,27 +576,40 @@ class TestCollection:
             called = False
             call_flag.clear()
 
-    async def test_when_decorator_on_event(self):
-        call_counter = 0
-        call_flag = asyncio.Event()
+    def test_update_all_single_attribute(self):
+        """Test updating single attribute on all elements."""
+        div1 = web.div("Content 1")
+        div2 = web.div("Content 2")
+        collection = web.ElementCollection([div1, div2])
 
-        buttons_collection = web.page.find("button")
-        number_of_clicks = len(buttons_collection)
+        collection.update_all(className="updated")
+        assert div1.className == "updated"
+        assert div2.className == "updated"
 
-        @when(buttons_collection.on_click)
-        def on_click(event):
-            nonlocal call_counter
-            call_counter += 1
-            if call_counter == number_of_clicks:
-                call_flag.set()
+    def test_update_all_multiple_attributes(self):
+        """Test updating multiple attributes on all elements."""
+        div1 = web.div()
+        div2 = web.div()
+        collection = web.ElementCollection([div1, div2])
 
-        # Now let's simulate a click on the button (using the low level JS API)
-        # so we don't risk dom getting in the way
-        assert call_counter == 0
-        for button in buttons_collection:
-            button._dom_element.click()
-        await call_flag.wait()
-        assert call_counter == number_of_clicks
+        collection.update_all(innerHTML="Hello", title="Test")
+        assert div1.innerHTML == "Hello"
+        assert div1.title == "Test"
+        assert div2.innerHTML == "Hello"
+        assert div2.title == "Test"
+
+    def test_collection_getitem_by_id(self):
+        """Test looking up element by id in collection."""
+        div1 = web.div(web.p("Child", id="find-me"))
+        div2 = web.div(web.p("Child 2"))
+        collection = web.ElementCollection([div1, div2])
+
+        web.page.body.append(div1)
+        web.page.body.append(div2)
+
+        result = collection["find-me"]
+        assert result is not None
+        assert result.id == "find-me"
 
 
 class TestCreation:
@@ -376,8 +661,7 @@ class TestInput:
     def test_value(self):
         for id_ in self.input_ids:
             expected_type = id_.split("_")[-1]
-            result = web.page.find(f"#{id_}")
-            input_el = result[0]
+            input_el = web.page[f"#{id_}"]
             assert input_el._dom_element.type == expected_type
             assert (
                 input_el.value == f"Content {id_}" == input_el._dom_element.value
@@ -387,41 +671,6 @@ class TestInput:
             new_value = f"New Value {expected_type}"
             input_el.value = new_value
             assert input_el.value == new_value
-
-            # Check that we can set the value back to the original using
-            # the collection
-            new_value = f"Content {id_}"
-            result.value = new_value
-            assert input_el.value == new_value
-
-    def test_set_value_collection(self):
-        for id_ in self.input_ids:
-            input_el = web.page.find(f"#{id_}")
-
-            assert input_el.value[0] == f"Content {id_}" == input_el[0].value
-
-            new_value = f"New Value {id_}"
-            input_el.value = new_value
-            assert (
-                input_el.value[0] == new_value == input_el[0].value
-            ), f"Expected '{input_el.value}' to be 'Content {id_}' to be '{input_el._dom_element.value}'"
-
-            new_value = f"Content {id_}"
-            input_el.value = new_value
-
-    # TODO: We only attach attributes to the classes that have them now which means we
-    # would have to have some other way to help users if using attributes that aren't
-    # actually on the class. Maybe a job for  __setattr__?
-    #
-    # def test_element_without_value(self):
-    #     result = web.page.find(f"#tests-terminal"][0]
-    #     with upytest.raises(AttributeError):
-    #         result.value = "some value"
-    #
-    # def test_element_without_value_via_collection(self):
-    #     result = web.page.find(f"#tests-terminal"]
-    #     with upytest.raises(AttributeError):
-    #         result.value = "some value"
 
 
 class TestSelect:
@@ -532,7 +781,7 @@ class TestSelect:
 
     def test_select_options_remove(self):
         # GIVEN the existing select element with 3 options
-        select = web.page.find("#test_select_element_to_remove")[0]
+        select = web.page["#test_select_element_to_remove"]
 
         # EXPECT the select element to have 3 options
         assert len(select.options) == 4
@@ -610,7 +859,7 @@ class TestElements:
             kwargs = {k: parse_value(v) for k, v in properties.items()}
 
         # Let's make sure the target div to contain the element is empty.
-        container = web.page["#test-element-container"][0]
+        container = web.page["#test-element-container"]
         container.innerHTML = ""
         assert container.innerHTML == "", container.innerHTML
 
@@ -881,7 +1130,9 @@ class TestElements:
         assert el._dom_element.tagName == "LABEL"
         assert el.for_ == label_for, "The label should have the correct for attribute."
         # Ensure the label element is rendered with the correct "for" attribute
-        assert f'for="{label_for}"' in el.outerHTML, "The label should have the correct 'for' attribute in its HTML."
+        assert (
+            f'for="{label_for}"' in el.outerHTML
+        ), "The label should have the correct 'for' attribute in its HTML."
 
     def test_legend(self):
         self._create_el_and_basic_asserts("legend", "some text")
@@ -1195,3 +1446,58 @@ class TestElements:
         assert el.children[1].id == "child2"
         assert el.children[1].parentNode.textContent == parent_full_content
         assert el.children[1].textContent == p2_text_content
+
+
+class TestPageObject:
+    """Test the Page object."""
+
+    def test_page_getitem_with_id(self):
+        """Test looking up element by id using page[id]."""
+        result = web.page["test_id_selector"]
+        assert result is not None
+        assert result.id == "test_id_selector"
+
+    def test_page_getitem_with_hash(self):
+        """Test looking up element by id with # prefix."""
+        result = web.page["#test_id_selector"]
+        assert result is not None
+        assert result.id == "test_id_selector"
+
+    def test_page_getitem_nonexistent(self):
+        """Test looking up nonexistent id returns None."""
+        result = web.page["nonexistent-id"]
+        assert result is None
+
+    def test_page_title_get(self):
+        """Test getting page title."""
+        original_title = web.page.title
+        assert isinstance(original_title, str)
+
+    def test_page_title_set(self):
+        """Test setting page title."""
+        original = web.page.title
+        web.page.title = "Test Title"
+        assert web.page.title == "Test Title"
+        web.page.title = original  # Restore
+
+
+class TestErrorCases:
+    """Test error handling."""
+
+    def test_invalid_event_name(self):
+        """Test that invalid event names raise ValueError."""
+        div = web.div()
+        with upytest.raises(ValueError):
+            div.on_nonexistent_event
+
+    def test_invalid_append_type(self):
+        """Test that appending invalid types raises TypeError."""
+        div = web.div()
+        with upytest.raises(TypeError):
+            div.append(12345)  # Numbers can't be appended
+
+    def test_event_name_without_on_prefix(self):
+        """Test that get_event requires on_ prefix."""
+        div = web.div()
+        with upytest.raises(ValueError):
+            div.get_event("click")  # Should be "on_click"
