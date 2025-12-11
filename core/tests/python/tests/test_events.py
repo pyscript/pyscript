@@ -726,3 +726,50 @@ async def test_when_on_different_callables():
     assert "inner_a_func" in results
     assert "closure_func:1" in results
     assert "closure_a_func:1" in results
+
+
+async def test_when_dom_event_with_options():
+    """
+    Options should be passed to addEventListener for DOM events.
+    """
+    click_count = 0
+    call_flag = asyncio.Event()
+
+    @when("click", "#button-for-event-testing", once=True)
+    def handle_click(event):
+        nonlocal click_count
+        click_count += 1
+        call_flag.set()
+
+    btn = web.page["#button-for-event-testing"]
+    btn.click()
+    await call_flag.wait()
+    assert click_count == 1
+
+    # Click again - should not increment due to once=True.
+    btn.click()
+    # Bit of a bodge - a brief wait to ensure no handler fires.
+    await asyncio.sleep(0.01)
+    assert click_count == 1
+
+
+async def test_when_custom_event_options_ignored():
+    """
+    Options should be silently ignored for custom Event objects.
+    """
+    my_event = Event()
+    trigger_count = 0
+    call_flag = asyncio.Event()
+
+    @when(my_event, once=True)
+    def handler(result):
+        nonlocal trigger_count
+        trigger_count += 1
+        if trigger_count == 2:
+            call_flag.set()
+
+    # Should trigger multiple times despite once=True being ignored.
+    my_event.trigger("first")
+    my_event.trigger("second")
+    await call_flag.wait()
+    assert trigger_count == 2

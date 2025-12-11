@@ -16,7 +16,7 @@ import asyncio
 import inspect
 from functools import wraps
 from pyscript.context import document
-from pyscript.ffi import create_proxy
+from pyscript.ffi import create_proxy, to_js
 from pyscript.util import is_awaitable
 
 
@@ -84,7 +84,7 @@ class Event:
             self._listeners = []
 
 
-def when(event_type, selector=None):
+def when(event_type, selector=None, **options):
     """
     A decorator to handle DOM events or custom `Event` objects.
 
@@ -94,6 +94,10 @@ def when(event_type, selector=None):
     objects. The `selector` is required only for DOM events. It should be a
     [CSS selector string](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors),
     `Element`, `ElementCollection`, or list of DOM elements.
+
+    For DOM events only, you can specify optional
+    [addEventListener options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options):
+    `capture`, `once`, `passive`, or `signal`.
 
     The decorated function can be either a regular function or an async
     function. If the function accepts an argument, it will receive the event
@@ -107,6 +111,11 @@ def when(event_type, selector=None):
     @when("click", "#my-button")
     def handle_click(event):
         display("Button clicked!")
+
+    # Handle DOM events with options.
+    @when("click", "#my-button", once=True)
+    def handle_click_once(event):
+        display("Button clicked once!")
 
     # Handle custom events.
     my_event = Event()
@@ -158,7 +167,9 @@ def when(event_type, selector=None):
         else:
             # DOM event - attach to all matched elements.
             for element in elements:
-                element.addEventListener(event_type, create_proxy(wrapper))
+                element.addEventListener(
+                    event_type, create_proxy(wrapper), to_js(options)
+                )
         return wrapper
 
     return decorator
