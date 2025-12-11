@@ -168,7 +168,9 @@ def when(event_type, selector=None, **options):
             # DOM event - attach to all matched elements.
             for element in elements:
                 element.addEventListener(
-                    event_type, create_proxy(wrapper), to_js(options)
+                    event_type,
+                    create_proxy(wrapper),
+                    to_js(options) if options else False,
                 )
         return wrapper
 
