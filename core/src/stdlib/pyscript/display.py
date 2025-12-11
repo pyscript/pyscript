@@ -46,7 +46,9 @@ def _render_image(mime, value, meta):
     Render image (`mime`) data (`value`) as an HTML img element with data URL.
     Any `meta` attributes are added to the img tag.
 
-    Accepts both raw bytes and base64-encoded strings for flexibility.
+    Accepts both raw bytes and base64-encoded strings for flexibility. This
+    only handles PNG and JPEG images. SVG images are handled separately as
+    their raw XML content (which the browser can render directly).
     """
     if isinstance(value, bytes):
         value = base64.b64encode(value).decode("utf-8")
