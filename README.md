@@ -13,11 +13,11 @@ Using PyScript is as simple as:
         <title>PyScript!</title>
         <link
             rel="stylesheet"
-            href="https://pyscript.net/releases/2025.11.2/core.css"
+            href="https://pyscript.net/releases/2026.1.1/core.css"
         />
         <script
             type="module"
-            src="https://pyscript.net/releases/2025.11.2/core.js"
+            src="https://pyscript.net/releases/2026.1.1/core.js"
         ></script>
     </head>
     <body>
