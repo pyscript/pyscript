@@ -15,4 +15,9 @@ def get_message():
     return "Hello from worker"
 
 
-__export__ = ["add", "multiply", "get_message"]
+def dijkstra_path(g, a, b):
+    from networkx import from_dict_of_dicts, dijkstra_path
+    return dijkstra_path(from_dict_of_dicts(g), a, b)
+
+
+__export__ = ["add", "multiply", "get_message", "dijkstra_path"]
