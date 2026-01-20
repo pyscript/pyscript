@@ -103,3 +103,51 @@ async def test_create_named_worker_micropython():
     # Verify functionality.
     result = await worker.add(100, 200)
     assert result == 300
+
+
+@upytest.skip("Main thread only", skip_when=RUNNING_IN_WORKER)
+async def test_find_path_networkx_parallel():
+    """
+    Inter-thread sync should send and receive NetworkX graphs.
+
+    The output from :func:`networkx.to_dict_of_dicts` is nicely JSON
+    serializable; there should be no issue.
+
+    Pathfinding is done with three workers in parallel. That's the way you
+    want to do it in a real-time strategy game, for instance.
+
+    """
+    from random import Random
+    from networkx import to_dict_of_dicts
+    from networkx.exception import NetworkXNoPath
+    from networkx.generators.classic import barbell_graph, complete_graph, circular_ladder_graph
+    from pyscript import create_named_worker
+
+    random = Random()
+    random.seed(0)
+    worker0 = await create_named_worker(src="./worker_functions.py", name="mpy-worker0", type="mpy")
+    assert worker0 is not None
+    worker1 = await create_named_worker(src="./worker_functions.py", name="mpy-worker1", type="mpy")
+    assert worker1 is not None
+    worker2 = await create_named_worker(src="./worker_functions.py", name="mpy-worker2", type="mpy")
+    assert worker2 is not None
+    our_workers = [worker0, worker1, worker2]
+
+    for graph in (barbell_graph(3,5), complete_graph(5), circular_ladder_graph(5)):
+        print(f"Will find paths in {graph}")
+        nodes = list(graph.nodes)
+        random.shuffle(nodes)
+        coros = []
+        nodepairs = []
+        graph_d = to_dict_of_dicts(graph)
+        for worker in our_workers:
+            a = nodes.pop()
+            b = nodes.pop()
+            nodepairs.append((a, b))
+            coros.append(worker.dijkstra_path(graph_d, a, b))
+        for coro, (a, b) in zip(coros, nodepairs):
+            try:
+                the_path = await coro
+                print(f"path from {a} to {b} found: {the_path}")
+            except NetworkXNoPath:
+                print(f"no path from {a} to {b}")
