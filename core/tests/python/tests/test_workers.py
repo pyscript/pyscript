@@ -106,7 +106,7 @@ async def test_create_named_worker_micropython():
 
 
 @upytest.skip("Main thread only", skip_when=RUNNING_IN_WORKER)
-async def test_find_path_networkx_parallel():
+async def test_find_path_networkx_parallel_pyodide():
     """
     Inter-thread sync should send and receive NetworkX graphs.
 
@@ -125,11 +125,11 @@ async def test_find_path_networkx_parallel():
 
     random = Random()
     random.seed(0)
-    worker0 = await create_named_worker(src="./worker_functions.py", name="mpy-worker0", type="mpy")
+    worker0 = await create_named_worker(src="./worker_functions.py", name="mpy-worker0", config={"packages": ["networkx"]}, type="py")
     assert worker0 is not None
-    worker1 = await create_named_worker(src="./worker_functions.py", name="mpy-worker1", type="mpy")
+    worker1 = await create_named_worker(src="./worker_functions.py", name="mpy-worker1", config={"packages": ["networkx"]}, type="py")
     assert worker1 is not None
-    worker2 = await create_named_worker(src="./worker_functions.py", name="mpy-worker2", type="mpy")
+    worker2 = await create_named_worker(src="./worker_functions.py", name="mpy-worker2", config={"packages": ["networkx"]}, type="py")
     assert worker2 is not None
     our_workers = [worker0, worker1, worker2]
 
