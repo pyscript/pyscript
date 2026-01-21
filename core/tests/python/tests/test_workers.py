@@ -156,8 +156,11 @@ async def test_find_path_networkx_parallel_pyodide():
 
     for name, graph_d in graphs.items():
         print(f"Will find paths in {name}")
-        nodes = list(graph_d.keys())
-        random.shuffle(nodes)
+        nodes_nonrandom = list(graph_d.keys())
+        nodes = []
+        while len(nodes_nonrandom) > 1:
+            nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
+        nodes.append(nodes_nonrandom.pop())
         coros = []
         nodepairs = []
         for worker in our_workers:
