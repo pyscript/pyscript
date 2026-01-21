@@ -117,13 +117,12 @@ async def test_find_path_networkx_parallel_pyodide():
     want to do it in a real-time strategy game, for instance.
 
     """
-    from random import Random
+    import random
     from networkx import to_dict_of_dicts
     from networkx.exception import NetworkXNoPath
     from networkx.generators.classic import barbell_graph, complete_graph, circular_ladder_graph
     from pyscript import create_named_worker
 
-    random = Random()
     random.seed(0)
     worker0 = await create_named_worker(src="./worker_functions.py", name="mpy-worker0", config={"packages": ["networkx"]}, type="py")
     assert worker0 is not None
