@@ -117,6 +117,9 @@ async def test_find_path_networkx_parallel_pyodide():
     want to do it in a real-time strategy game, for instance.
 
     """
+    import mip
+
+    mip.install("github:clayote/networkx")
     import random
     from networkx import to_dict_of_dicts
     from networkx.exception import NetworkXNoPath
