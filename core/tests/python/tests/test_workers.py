@@ -164,9 +164,6 @@ async def test_find_path_parallel():
     want to do it in a real-time strategy game, for instance.
 
     """
-    import mip
-
-    mip.install("github:clayote/networkx")
     import random
 
     from pyscript import create_named_worker
