@@ -124,11 +124,11 @@ async def test_find_path_networkx_parallel_pyodide():
     from pyscript import create_named_worker
 
     random.seed(0)
-    worker0 = await create_named_worker(src="./worker_functions.py", name="py-worker0", config={"packages": ["networkx"]}, type="py")
+    worker0 = await create_named_worker(src="./worker_functions.py", name="py-worker0", config='{"packages": ["networkx"]}', type="py")
     assert worker0 is not None
-    worker1 = await create_named_worker(src="./worker_functions.py", name="py-worker1", config={"packages": ["networkx"]}, type="py")
+    worker1 = await create_named_worker(src="./worker_functions.py", name="py-worker1", config='{"packages": ["networkx"]}', type="py")
     assert worker1 is not None
-    worker2 = await create_named_worker(src="./worker_functions.py", name="py-worker2", config={"packages": ["networkx"]}, type="py")
+    worker2 = await create_named_worker(src="./worker_functions.py", name="py-worker2", config='{"packages": ["networkx"]}', type="py")
     assert worker2 is not None
     our_workers = [worker0, worker1, worker2]
 
