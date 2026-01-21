@@ -23,6 +23,6 @@
         "main": {"./example_js_module.js": "greeting"},
         "worker": {"./example_js_worker_module.js": "greeting_worker"}
     },
-    "packages": ["Pillow", "random"],
+    "packages": ["Pillow"],
     "experimental_ffi_timeout": 0
 }
