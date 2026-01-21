@@ -117,13 +117,7 @@ async def test_find_path_networkx_parallel_pyodide():
     want to do it in a real-time strategy game, for instance.
 
     """
-    import mip
-
-    mip.install("github:clayote/networkx")
     import random
-    from networkx import to_dict_of_dicts
-    from networkx.exception import NetworkXNoPath
-    from networkx.generators.classic import barbell_graph, complete_graph, circular_ladder_graph
     from pyscript import create_named_worker
 
     random.seed(0)
@@ -135,21 +129,45 @@ async def test_find_path_networkx_parallel_pyodide():
     assert worker2 is not None
     our_workers = [worker0, worker1, worker2]
 
-    for graph in (barbell_graph(3,5), complete_graph(5), circular_ladder_graph(5)):
-        print(f"Will find paths in {graph}")
-        nodes = list(graph.nodes)
+    graphs = {
+        "barbell_graph": {0: {1: {}, 2: {}}, 1: {0: {}, 2: {}},
+                          2: {0: {}, 1: {}, 3: {}}, 3: {4: {}, 2: {}},
+                          4: {3: {}, 5: {}}, 5: {4: {}, 6: {}},
+                          6: {5: {}, 7: {}}, 7: {6: {}, 8: {}},
+                          8: {9: {}, 10: {}, 7: {}}, 9: {8: {}, 10: {}},
+                          10: {8: {}, 9: {}}},
+        "complete_graph": {0: {1: {}, 2: {}, 3: {}, 4: {}},
+                           1: {0: {}, 2: {}, 3: {}, 4: {}},
+                           2: {0: {}, 1: {}, 3: {}, 4: {}},
+                           3: {0: {}, 1: {}, 2: {}, 4: {}},
+                           4: {0: {}, 1: {}, 2: {}, 3: {}}},
+        "circular_ladder_graph": {0: {1: {}, 5: {}, 4: {}},
+                                  1: {0: {}, 2: {}, 6: {}},
+                                  2: {1: {}, 3: {}, 7: {}},
+                                  3: {2: {}, 4: {}, 8: {}},
+                                  4: {3: {}, 9: {}, 0: {}},
+                                  5: {6: {}, 0: {}, 9: {}},
+                                  6: {5: {}, 7: {}, 1: {}},
+                                  7: {6: {}, 8: {}, 2: {}},
+                                  8: {7: {}, 9: {}, 3: {}},
+                                  9: {8: {}, 4: {}, 5: {}}}
+    }
+
+
+    for name, graph_d in graphs.items():
+        print(f"Will find paths in {name}")
+        nodes = list(graph_d.keys())
         random.shuffle(nodes)
         coros = []
         nodepairs = []
-        graph_d = to_dict_of_dicts(graph)
         for worker in our_workers:
             a = nodes.pop()
             b = nodes.pop()
             nodepairs.append((a, b))
             coros.append(worker.dijkstra_path(graph_d, a, b))
         for coro, (a, b) in zip(coros, nodepairs):
-            try:
-                the_path = await coro
+            the_path = await coro
+            if the_path is None:
+                print(f"there is no path from {a} to {b}")
+            else:
                 print(f"path from {a} to {b} found: {the_path}")
-            except NetworkXNoPath:
-                print(f"no path from {a} to {b}")
