@@ -1,6 +1,8 @@
 """
 Numpty test code to run in a worker for pyscript.workers module tests.
 """
+from heapq import heappush, heappop
+from itertools import count
 from math import log, fmod
 from operator import mul, pow
 
@@ -17,12 +19,39 @@ def get_message():
     return "Hello from worker"
 
 
-def dijkstra_path(g, a, b):
-    from networkx import from_dict_of_dicts, dijkstra_path, NetworkXNoPath
-    try:
-        return dijkstra_path(from_dict_of_dicts(g), a, b)
-    except NetworkXNoPath:
-        return None
+def dijkstra_path(graph_dict, source, target):
+    # Based on the implementation in networkx
+    pred_dict = {}
+    paths = {source: [source]}
+    dist = {}
+    seen = {source: 0}
+    c = count()
+    fringe = []
+    heappush(fringe, (0, next(c), source))
+    while fringe:
+        (dist_v, _, v) = heappop(fringe)
+        if v in dist:
+            continue
+        dist[v] = dist_v
+        if v == target:
+            break
+        for u, e in graph_dict[v].items():
+            vu_dist = dist_v + 1
+            if u in dist:
+                u_dist = dist[u]
+                if vu_dist < u_dist:
+                    return ValueError("Contradictory paths found:", "negative weights?")
+                elif vu_dist == u_dist:
+                    pred_dict[u].append(v)
+            elif u not in seen or vu_dist < seen[u]:
+                seen[u] = vu_dist
+                heappush(fringe, (vu_dist, next(c), u))
+                pred_dict[u] = [v]
+    path = paths[target] = []
+    while (current_preds := pred_dict.get(path[-1])) is not None:
+        path.append(current_preds[0])
+    path.reverse()
+    return path
 
 def _some_table(oper, a, b):
     ret = []
