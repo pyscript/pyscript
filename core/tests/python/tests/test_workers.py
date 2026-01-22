@@ -174,3 +174,26 @@ async def test_find_path_networkx_parallel_pyodide():
                 print(f"there is no path from {a} to {b}")
             else:
                 print(f"path from {a} to {b} found: {the_path}")
+
+@upytest.skip("Main thread only", skip_when=RUNNING_IN_WORKER)
+async def test_parallel_math():
+    """
+    We should be able to do expensive computations in parallel.
+
+    """
+    from pyscript import create_named_worker
+
+    our_workers = [
+        await create_named_worker(src="./worker_functions.py", name="mpy-worker0", type="mpy"),
+        await create_named_worker(src="./worker_functions.py", name="mpy-worker1", type="mpy"),
+        await create_named_worker(src="./worker_functions.py", name="mpy-worker2", type="mpy"),
+        await create_named_worker(src="./worker-functions.py", name="mpy-worker3", type="mpy")
+    ]
+    assert all(our_workers)
+
+    coros = []
+    for worker, func_name in zip(our_workers, ("times_table", "power_table", "log_table", "mod_table")):
+        func = getattr(worker, func_name)
+        coros.append(func(1000, 1000))
+    for coro in coros:
+        assert await coro
