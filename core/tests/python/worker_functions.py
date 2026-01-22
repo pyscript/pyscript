@@ -6,6 +6,8 @@ from itertools import count
 from math import log, fmod
 from operator import mul, pow
 
+from pyscript import sync
+
 
 def add(a, b):
     return a + b
@@ -19,8 +21,9 @@ def get_message():
     return "Hello from worker"
 
 
-def dijkstra_path(graph_dict, source, target):
+def dijkstra_path(source, target):
     # Based on the implementation in networkx
+    graph_dict = sync.graph_dict
     pred_dict = {}
     paths = {source: [source]}
     dist = {}
