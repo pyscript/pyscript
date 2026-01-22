@@ -180,201 +180,189 @@ for (const [TYPE, interpreter] of TYPES) {
         });
     };
 
-    // define the module as both `<script type="py">` and `<py-script>`
-    // but only if the config didn't throw an error
-    if (!error) {
-        // ensure plugins are bootstrapped already before custom type definition
-        // NOTE: we cannot top-level await in here as plugins import other utilities
-        //       from core.js itself so that custom definition should not be blocking.
-        plugins().then(() => {
-            // possible early errors sent by polyscript
-            const errors = new Map();
+    // ensure plugins are bootstrapped already before custom type definition
+    // NOTE: we cannot top-level await in here as plugins import other utilities
+    //       from core.js itself so that custom definition should not be blocking.
+    plugins().then(() => {
+        // let plugins logic decide how to show the error but stop here if any
+        if (error) return;
 
-            // specific main and worker hooks
-            const hooks = {
-                main: {
-                    ...codeFor(main, TYPE),
-                    async onReady(wrap, element) {
-                        registerModule(wrap);
+        // possible early errors sent by polyscript
+        const errors = new Map();
 
-                        // allows plugins to do whatever they want with the element
-                        // before regular stuff happens in here
-                        for (const callback of main("onReady"))
-                            await callback(wrap, element);
+        // specific main and worker hooks
+        const hooks = {
+            main: {
+                ...codeFor(main, TYPE),
+                async onReady(wrap, element) {
+                    registerModule(wrap);
 
-                        // now that all possible plugins are configured,
-                        // bail out if polyscript encountered an error
-                        if (errors.has(element)) {
-                            let { message } = errors.get(element);
-                            errors.delete(element);
-                            const clone = message === INVALID_CONTENT;
-                            message = `(${ErrorCode.CONFLICTING_CODE}) ${message} for `;
-                            message += element.cloneNode(clone).outerHTML;
-                            wrap.io.stderr(message);
-                            return;
+                    // allows plugins to do whatever they want with the element
+                    // before regular stuff happens in here
+                    for (const callback of main("onReady"))
+                        await callback(wrap, element);
+
+                    // now that all possible plugins are configured,
+                    // bail out if polyscript encountered an error
+                    if (errors.has(element)) {
+                        let { message } = errors.get(element);
+                        errors.delete(element);
+                        const clone = message === INVALID_CONTENT;
+                        message = `(${ErrorCode.CONFLICTING_CODE}) ${message} for `;
+                        message += element.cloneNode(clone).outerHTML;
+                        wrap.io.stderr(message);
+                        return;
+                    }
+
+                    if (isScript(element)) {
+                        const isAsync = !isSync(element);
+                        const target = element.getAttribute("target");
+                        const show = target
+                            ? queryTarget(element, target)
+                            : document.createElement("script-py");
+
+                        if (!target) {
+                            const { head, body } = document;
+                            if (head.contains(element)) body.append(show);
+                            else element.after(show);
                         }
+                        if (!show.id) show.id = getID();
 
-                        if (isScript(element)) {
-                            const isAsync = !isSync(element);
-                            const target = element.getAttribute("target");
-                            const show = target
-                                ? queryTarget(element, target)
-                                : document.createElement("script-py");
+                        // allows the code to retrieve the target element via
+                        // document.currentScript.target if needed
+                        defineProperty(element, "target", { value: show });
 
-                            if (!target) {
-                                const { head, body } = document;
-                                if (head.contains(element)) body.append(show);
-                                else element.after(show);
-                            }
-                            if (!show.id) show.id = getID();
-
-                            // allows the code to retrieve the target element via
-                            // document.currentScript.target if needed
-                            defineProperty(element, "target", { value: show });
-
-                            // notify before the code runs
-                            dispatch(element, TYPE, "ready");
-                            dispatchDone(
-                                element,
-                                isAsync,
-                                wrap[`run${isAsync ? "Async" : ""}`](
-                                    await fetchSource(element, wrap.io, true),
-                                ),
-                            );
-                        } else {
-                            // resolve PyScriptElement to allow connectedCallback
-                            element._wrap.resolve(wrap);
-                        }
-                        console.debug("[pyscript/main] PyScript Ready");
-                    },
-                    onWorker(_, xworker) {
-                        assign(xworker.sync, sync);
-                        for (const callback of main("onWorker"))
-                            callback(_, xworker);
-                    },
-                    onBeforeRun(wrap, element) {
-                        currentElement = element;
-                        bootstrapNodeAndPlugins(
-                            main,
-                            wrap,
+                        // notify before the code runs
+                        dispatch(element, TYPE, "ready");
+                        dispatchDone(
                             element,
-                            "onBeforeRun",
+                            isAsync,
+                            wrap[`run${isAsync ? "Async" : ""}`](
+                                await fetchSource(element, wrap.io, true),
+                            ),
                         );
-                    },
-                    onBeforeRunAsync(wrap, element) {
-                        currentElement = element;
-                        return bootstrapNodeAndPlugins(
-                            main,
-                            wrap,
-                            element,
-                            "onBeforeRunAsync",
-                        );
-                    },
-                    onAfterRun(wrap, element) {
-                        bootstrapNodeAndPlugins(
-                            main,
-                            wrap,
-                            element,
-                            "onAfterRun",
-                        );
-                    },
-                    onAfterRunAsync(wrap, element) {
-                        return bootstrapNodeAndPlugins(
-                            main,
-                            wrap,
-                            element,
-                            "onAfterRunAsync",
-                        );
-                    },
+                    } else {
+                        // resolve PyScriptElement to allow connectedCallback
+                        element._wrap.resolve(wrap);
+                    }
+                    console.debug("[pyscript/main] PyScript Ready");
                 },
-                worker: {
-                    ...codeFor(worker, TYPE),
-                    // these are lazy getters that returns a composition
-                    // of the current hooks or undefined, if no hook is present
-                    get onReady() {
-                        return createFunction(this, "onReady", true);
-                    },
-                    get onBeforeRun() {
-                        return createFunction(this, "onBeforeRun", false);
-                    },
-                    get onBeforeRunAsync() {
-                        return createFunction(this, "onBeforeRunAsync", true);
-                    },
-                    get onAfterRun() {
-                        return createFunction(this, "onAfterRun", false);
-                    },
-                    get onAfterRunAsync() {
-                        return createFunction(this, "onAfterRunAsync", true);
-                    },
+                onWorker(_, xworker) {
+                    assign(xworker.sync, sync);
+                    for (const callback of main("onWorker"))
+                        callback(_, xworker);
                 },
-            };
+                onBeforeRun(wrap, element) {
+                    currentElement = element;
+                    bootstrapNodeAndPlugins(main, wrap, element, "onBeforeRun");
+                },
+                onBeforeRunAsync(wrap, element) {
+                    currentElement = element;
+                    return bootstrapNodeAndPlugins(
+                        main,
+                        wrap,
+                        element,
+                        "onBeforeRunAsync",
+                    );
+                },
+                onAfterRun(wrap, element) {
+                    bootstrapNodeAndPlugins(main, wrap, element, "onAfterRun");
+                },
+                onAfterRunAsync(wrap, element) {
+                    return bootstrapNodeAndPlugins(
+                        main,
+                        wrap,
+                        element,
+                        "onAfterRunAsync",
+                    );
+                },
+            },
+            worker: {
+                ...codeFor(worker, TYPE),
+                // these are lazy getters that returns a composition
+                // of the current hooks or undefined, if no hook is present
+                get onReady() {
+                    return createFunction(this, "onReady", true);
+                },
+                get onBeforeRun() {
+                    return createFunction(this, "onBeforeRun", false);
+                },
+                get onBeforeRunAsync() {
+                    return createFunction(this, "onBeforeRunAsync", true);
+                },
+                get onAfterRun() {
+                    return createFunction(this, "onAfterRun", false);
+                },
+                get onAfterRunAsync() {
+                    return createFunction(this, "onAfterRunAsync", true);
+                },
+            },
+        };
 
-            hooked.set(TYPE, hooks);
+        hooked.set(TYPE, hooks);
 
-            // allow offline interpreter detection via [offline] attribute
-            let version = offline_interpreter(config);
-            if (!version) {
-                const css = "script[type='module'][offline]";
-                const s = document.querySelector(css)?.src;
-                if (s && import.meta.url.startsWith(s.replace(/\.js$/, ""))) {
-                    version = `./pyscript/${interpreter}/${interpreter}.mjs`;
-                    version = offline_interpreter({ interpreter: version });
-                }
+        // allow offline interpreter detection via [offline] attribute
+        let version = offline_interpreter(config);
+        if (!version) {
+            const css = "script[type='module'][offline]";
+            const s = document.querySelector(css)?.src;
+            if (s && import.meta.url.startsWith(s.replace(/\.js$/, ""))) {
+                version = `./pyscript/${interpreter}/${interpreter}.mjs`;
+                version = offline_interpreter({ interpreter: version });
             }
+        }
 
-            define(TYPE, {
-                config,
-                configURL,
-                interpreter,
-                hooks,
-                version,
-                env: `${TYPE}-script`,
-                onerror(error, element) {
-                    errors.set(element, error);
-                },
-            });
-
-            customElements.define(
-                `${TYPE}-script`,
-                class extends HTMLElement {
-                    constructor() {
-                        assign(super(), {
-                            _wrap: withResolvers(),
-                            srcCode: "",
-                            executed: false,
-                        });
-                    }
-                    get id() {
-                        return super.id || (super.id = getID());
-                    }
-                    set id(value) {
-                        super.id = value;
-                    }
-                    async connectedCallback() {
-                        if (!this.executed) {
-                            this.executed = true;
-                            const isAsync = !isSync(this);
-                            const { io, run, runAsync } = await this._wrap
-                                .promise;
-                            this.srcCode = await fetchSource(
-                                this,
-                                io,
-                                !this.childElementCount,
-                            );
-                            this.replaceChildren();
-                            this.style.display = "block";
-                            dispatch(this, TYPE, "ready");
-                            dispatchDone(
-                                this,
-                                isAsync,
-                                (isAsync ? runAsync : run)(this.srcCode),
-                            );
-                        }
-                    }
-                },
-            );
+        define(TYPE, {
+            config,
+            configURL,
+            interpreter,
+            hooks,
+            version,
+            env: `${TYPE}-script`,
+            onerror(error, element) {
+                errors.set(element, error);
+            },
         });
-    }
+
+        customElements.define(
+            `${TYPE}-script`,
+            class extends HTMLElement {
+                constructor() {
+                    assign(super(), {
+                        _wrap: withResolvers(),
+                        srcCode: "",
+                        executed: false,
+                    });
+                }
+                get id() {
+                    return super.id || (super.id = getID());
+                }
+                set id(value) {
+                    super.id = value;
+                }
+                async connectedCallback() {
+                    if (!this.executed) {
+                        this.executed = true;
+                        const isAsync = !isSync(this);
+                        const { io, run, runAsync } = await this._wrap.promise;
+                        this.srcCode = await fetchSource(
+                            this,
+                            io,
+                            !this.childElementCount,
+                        );
+                        this.replaceChildren();
+                        this.style.display = "block";
+                        dispatch(this, TYPE, "ready");
+                        dispatchDone(
+                            this,
+                            isAsync,
+                            (isAsync ? runAsync : run)(this.srcCode),
+                        );
+                    }
+                }
+            },
+        );
+    });
 
     // export the used config without allowing leaks through it
     exportedConfig[TYPE] = structuredClone(config);
