@@ -20,10 +20,10 @@ def multiply(a, b):
 def get_message():
     return "Hello from worker"
 
+graph_dict = {}
 
 def dijkstra_path(source, target):
     # Based on the implementation in networkx
-    graph_dict = sync.graph_dict
     pred_dict = {}
     paths = {source: [source]}
     dist = {}
@@ -56,6 +56,10 @@ def dijkstra_path(source, target):
     path.reverse()
     return path
 
+def upd_graph(graph_d):
+    global graph_dict
+    graph_dict = graph_d
+
 def _some_table(oper, a, b):
     ret = []
     for x in range(a):
@@ -80,4 +84,4 @@ def log_table(a, b):
 def mod_table(a, b):
     return _some_table(fmod, a, b)
 
-__export__ = ["add", "multiply", "get_message", "dijkstra_path", "times_table", "power_table", "log_table", "mod_table"]
+__export__ = ["add", "multiply", "get_message", "upd_graph", "dijkstra_path", "times_table", "power_table", "log_table", "mod_table"]
