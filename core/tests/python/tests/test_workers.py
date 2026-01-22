@@ -162,11 +162,15 @@ async def test_find_path_parallel():
         nodes.append(nodes_nonrandom.pop())
         coros = []
         nodepairs = []
+        # first make sure the workers have the latest graph
+        for worker in our_workers:
+            worker.sync.graph_dict = graph_d
+        # then submit nodes for them to find paths between
         for worker in our_workers:
             a = nodes.pop()
             b = nodes.pop()
             nodepairs.append((a, b))
-            coros.append(worker.dijkstra_path(graph_d, a, b))
+            coros.append(worker.dijkstra_path(a, b))
         for coro, (a, b) in zip(coros, nodepairs):
             the_path = await coro
             if the_path is None:
