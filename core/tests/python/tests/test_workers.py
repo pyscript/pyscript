@@ -269,4 +269,4 @@ async def test_parallel_math():
         coros.append(func(1000, 1000))
     for coro, func, expected in zip(coros, funcs, expectations):
         calculated = await coro
-        assert calculated == expected, f"{func.__name__}(1000, 1000) should equal {expected}, not {calculated}"
+assert calculated == expected, f"{func.__name__}(1000, 1000) should equal {expected}, not {calculated}"
