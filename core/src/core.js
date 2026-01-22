@@ -254,12 +254,7 @@ for (const [TYPE, interpreter] of TYPES) {
                 },
                 onBeforeRun(wrap, element) {
                     currentElement = element;
-                    bootstrapNodeAndPlugins(
-                        main,
-                        wrap,
-                        element,
-                        "onBeforeRun",
-                    );
+                    bootstrapNodeAndPlugins(main, wrap, element, "onBeforeRun");
                 },
                 onBeforeRunAsync(wrap, element) {
                     currentElement = element;
@@ -271,12 +266,7 @@ for (const [TYPE, interpreter] of TYPES) {
                     );
                 },
                 onAfterRun(wrap, element) {
-                    bootstrapNodeAndPlugins(
-                        main,
-                        wrap,
-                        element,
-                        "onAfterRun",
-                    );
+                    bootstrapNodeAndPlugins(main, wrap, element, "onAfterRun");
                 },
                 onAfterRunAsync(wrap, element) {
                     return bootstrapNodeAndPlugins(
@@ -354,8 +344,7 @@ for (const [TYPE, interpreter] of TYPES) {
                     if (!this.executed) {
                         this.executed = true;
                         const isAsync = !isSync(this);
-                        const { io, run, runAsync } = await this._wrap
-                            .promise;
+                        const { io, run, runAsync } = await this._wrap.promise;
                         this.srcCode = await fetchSource(
                             this,
                             io,
