@@ -118,16 +118,16 @@ async def test_find_path_networkx_parallel_pyodide():
 
     """
     import random
-    from pyscript import create_named_worker
 
-    random.seed(0)
-    worker0 = await create_named_worker(src="./worker_functions.py", name="py-worker0", config='{"packages": ["networkx"]}', type="py")
-    assert worker0 is not None
-    worker1 = await create_named_worker(src="./worker_functions.py", name="py-worker1", config='{"packages": ["networkx"]}', type="py")
-    assert worker1 is not None
-    worker2 = await create_named_worker(src="./worker_functions.py", name="py-worker2", config='{"packages": ["networkx"]}', type="py")
-    assert worker2 is not None
-    our_workers = [worker0, worker1, worker2]
+    from pyscript import create_named_worker
+    import js
+
+    our_workers = await js.Promise.all([
+        create_named_worker(src="./worker_functions.py", name="py-worker0", config='{"packages": ["networkx"]}', type="py"),
+        create_named_worker(src="./worker_functions.py", name="py-worker1", config='{"packages": ["networkx"]}', type="py"),
+        create_named_worker(src="./worker_functions.py", name="py-worker2", config='{"packages": ["networkx"]}', type="py"),
+    ])
+    assert all(our_workers)
 
     graphs = {
         "barbell_graph": {0: {1: {}, 2: {}}, 1: {0: {}, 2: {}},
@@ -182,13 +182,14 @@ async def test_parallel_math():
 
     """
     from pyscript import create_named_worker
+    import js
 
-    our_workers = [
-        await create_named_worker(src="./worker_functions.py", name="mpy-worker0", type="mpy"),
-        await create_named_worker(src="./worker_functions.py", name="mpy-worker1", type="mpy"),
-        await create_named_worker(src="./worker_functions.py", name="mpy-worker2", type="mpy"),
-        await create_named_worker(src="./worker-functions.py", name="mpy-worker3", type="mpy")
-    ]
+    our_workers = await js.Promise.all([
+        create_named_worker(src="./worker_functions.py", name="mpy-worker0", type="mpy"),
+        create_named_worker(src="./worker_functions.py", name="mpy-worker1", type="mpy"),
+        create_named_worker(src="./worker_functions.py", name="mpy-worker2", type="mpy"),
+        create_named_worker(src="./worker_functions.py", name="mpy-worker3", type="mpy")
+    ])
     assert all(our_workers)
 
     coros = []
