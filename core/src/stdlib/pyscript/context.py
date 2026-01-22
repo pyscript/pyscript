@@ -139,7 +139,10 @@ if RUNNING_IN_WORKER:
             "This requires SharedArrayBuffer support. "
             "See: https://docs.pyscript.net/latest/faq/#sharedarraybuffer"
         )
-        js.console.warn(sab_error_message)
+
+        if not config.get("sync_main_only", False):
+            js.console.warn(sab_error_message)
+
         window = NotSupported("pyscript.window", sab_error_message)
         document = NotSupported("pyscript.document", sab_error_message)
 
