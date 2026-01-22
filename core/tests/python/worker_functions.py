@@ -80,4 +80,4 @@ def log_table(a, b):
 def mod_table(a, b):
     return _some_table(fmod, a, b)
 
-__export__ = ["add", "multiply", "get_message", "dijkstra_path", "times_table", "power_table", "log_table"]
+__export__ = ["add", "multiply", "get_message", "dijkstra_path", "times_table", "power_table", "log_table", "mod_table"]
