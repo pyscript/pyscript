@@ -1,17 +1,47 @@
+"""
+Event handling for PyScript.
+
+This module provides two complementary systems:
+
+1. The `Event` class: A simple publish-subscribe pattern for custom events
+   within *your* Python code.
+
+2. The `@when` decorator: Connects Python functions to browser DOM events,
+   or instances of the `Event` class, allowing you to respond to user
+   interactions like clicks, key presses and form submissions, or to custom
+   events defined in your Python code.
+"""
+
 import asyncio
 import inspect
-import sys
-
 from functools import wraps
-from pyscript.magic_js import document
-from pyscript.ffi import create_proxy
+from pyscript.context import document
+from pyscript.ffi import create_proxy, to_js
 from pyscript.util import is_awaitable
-from pyscript import config
 
 
 class Event:
     """
-    Represents something that may happen at some point in the future.
+    A custom event that can notify multiple listeners when triggered.
+
+    Use this class to create your own event system within Python code.
+    Listeners can be either regular functions or async functions.
+
+    ```python
+    from pyscript.events import Event
+
+    # Create a custom event.
+    data_loaded = Event()
+
+    # Add a listener.
+    def on_data_loaded(result):
+        print(f"Data loaded: {result}")
+
+    data_loaded.add_listener(on_data_loaded)
+
+    # Time passes.... trigger the event.
+    data_loaded.trigger({"data": 123})
+    ```
     """
 
     def __init__(self):
@@ -19,116 +49,189 @@ class Event:
 
     def trigger(self, result):
         """
-        Trigger the event with a result to pass into the handlers.
+        Trigger the event and notify all listeners with the given `result`.
         """
         for listener in self._listeners:
             if is_awaitable(listener):
-                # Use create task to avoid making this an async function.
                 asyncio.create_task(listener(result))
             else:
                 listener(result)
 
     def add_listener(self, listener):
         """
-        Add a callable/awaitable to listen to when this event is triggered.
-        """
-        if is_awaitable(listener) or callable(listener):
-            if listener not in self._listeners:
-                self._listeners.append(listener)
-        else:
-            msg = "Listener must be callable or awaitable."
-            raise ValueError(msg)
+        Add a function to be called when this event is triggered.
 
-    def remove_listener(self, *args):
+        The `listener` must be callable. It can be either a regular function
+        or an async function. Duplicate listeners are ignored.
         """
-        Clear the specified handler functions in *args. If no handlers
-        provided, clear all handlers.
+        if not callable(listener):
+            msg = "Listener must be callable."
+            raise ValueError(msg)
+        if listener not in self._listeners:
+            self._listeners.append(listener)
+
+    def remove_listener(self, *listeners):
         """
-        if args:
-            for listener in args:
-                self._listeners.remove(listener)
+        Remove specified `listeners`. If none specified, remove all listeners.
+        """
+        if listeners:
+            for listener in listeners:
+                try:
+                    self._listeners.remove(listener)
+                except ValueError:
+                    pass  # Silently ignore listeners not in the list.
         else:
             self._listeners = []
 
 
-def when(target, *args, **kwargs):
+def when(event_type, selector=None, **options):
     """
-    Add an event listener to the target element(s) for the specified event type.
+    A decorator to handle DOM events or custom `Event` objects.
 
-    The target can be a string representing the event type, or an Event object.
-    If the target is an Event object, the event listener will be added to that
-    object. If the target is a string, the event listener will be added to the
-    element(s) that match the (second) selector argument.
+    For DOM events, specify the `event_type` (e.g. `"click"`) and a `selector`
+    for target elements. For custom `Event` objects, just pass the `Event`
+    instance as the `event_type`. It's also possible to pass a list of `Event`
+    objects. The `selector` is required only for DOM events. It should be a
+    [CSS selector string](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors),
+    `Element`, `ElementCollection`, or list of DOM elements.
 
-    If a (third) handler argument is provided, it will be called when the event
-    is triggered; thus allowing this to be used as both a function and a
-    decorator.
+    For DOM events only, you can specify optional
+    [addEventListener options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options):
+    `capture`, `once`, `passive`, or `signal`.
+
+    The decorated function can be either a regular function or an async
+    function. If the function accepts an argument, it will receive the event
+    object (for DOM events) or the Event's result (for custom events). A
+    function does not need to accept any arguments if it doesn't require them.
+
+    ```python
+    from pyscript import when, display
+
+    # Handle DOM events.
+    @when("click", "#my-button")
+    def handle_click(event):
+        display("Button clicked!")
+
+    # Handle DOM events with options.
+    @when("click", "#my-button", once=True)
+    def handle_click_once(event):
+        display("Button clicked once!")
+
+    # Handle custom events.
+    my_event = Event()
+
+    @when(my_event)
+    def handle_custom():  # No event argument needed.
+        display("Custom event triggered!")
+
+    # Handle multiple custom events.
+    another_event = Event()
+
+    def another_handler():
+        display("Another custom event handler.")
+
+    # Attach the same handler to multiple events but not as a decorator.
+    when([my_event, another_event])(another_handler)
+
+    # Trigger an Event instance from a DOM event via @when.
+    @when("click", "#my-button")
+    def handle_click(event):
+        another_event.trigger("Button clicked!")
+
+    # Stacked decorators also work.
+    @when("mouseover", "#my-div")
+    @when(my_event)
+    def handle_both(event):
+        display("Either mouseover or custom event triggered!")
+    ```
     """
-    # If "when" is called as a function, try to grab the handler from the
-    # arguments. If there's no handler, this must be a decorator based call.
-    handler = None
-    if args and (callable(args[0]) or is_awaitable(args[0])):
-        handler = args[0]
-    elif callable(kwargs.get("handler")) or is_awaitable(kwargs.get("handler")):
-        handler = kwargs.pop("handler")
-    # If the target is a string, it is the "older" use of `when` where it
-    # represents the name of a DOM event.
-    if isinstance(target, str):
-        # Extract the selector from the arguments or keyword arguments.
-        selector = args[0] if args else kwargs.pop("selector")
+    if isinstance(event_type, str):
+        # This is a DOM event to handle, so check and use the selector.
         if not selector:
-            msg = "No selector provided."
-            raise ValueError(msg)
-        # Grab the DOM elements to which the target event will be attached.
-        from pyscript.web import Element, ElementCollection
-
-        if isinstance(selector, str):
-            elements = document.querySelectorAll(selector)
-        elif isinstance(selector, Element):
-            elements = [selector._dom_element]
-        elif isinstance(selector, ElementCollection):
-            elements = [el._dom_element for el in selector]
-        else:
-            elements = selector if isinstance(selector, list) else [selector]
+            raise ValueError("Selector required for DOM event handling.")
+        elements = _get_elements(selector)
+        if not elements:
+            raise ValueError(f"No elements found for selector: {selector}")
 
     def decorator(func):
-        sig = inspect.signature(func)
-        if sig.parameters:
-            if is_awaitable(func):
-
-                async def wrapper(event):
-                    return await func(event)
-
-            else:
-                wrapper = func
+        wrapper = _create_wrapper(func)
+        if isinstance(event_type, Event):
+            # Custom Event - add listener.
+            event_type.add_listener(wrapper)
+        elif isinstance(event_type, list) and all(
+            isinstance(t, Event) for t in event_type
+        ):
+            # List of custom Events - add listener to each.
+            for event in event_type:
+                event.add_listener(wrapper)
         else:
-            # Function doesn't receive events.
-            if is_awaitable(func):
-
-                async def wrapper(*args, **kwargs):
-                    return await func()
-
-            else:
-
-                def wrapper(*args, **kwargs):
-                    return func()
-
-        wrapper = wraps(func)(wrapper)
-        if isinstance(target, Event):
-            # The target is a single Event object.
-            target.add_listener(wrapper)
-        elif isinstance(target, list) and all(isinstance(t, Event) for t in target):
-            # The target is a list of Event objects.
-            for evt in target:
-                evt.add_listener(wrapper)
-        else:
-            # The target is a string representing an event type, and so a
-            # DOM element or collection of elements is found in "elements".
-            for el in elements:
-                el.addEventListener(target, create_proxy(wrapper))
+            # DOM event - attach to all matched elements.
+            for element in elements:
+                element.addEventListener(
+                    event_type,
+                    create_proxy(wrapper),
+                    to_js(options) if options else False,
+                )
         return wrapper
 
-    # If "when" was called as a decorator, return the decorator function,
-    # otherwise just call the internal decorator function with the supplied
-    # handler.
-    return decorator(handler) if handler else decorator
+    return decorator
+
+
+def _get_elements(selector):
+    """
+    Convert various `selector` types into a list of DOM elements.
+    """
+    from pyscript.web import Element, ElementCollection
+
+    if isinstance(selector, str):
+        return list(document.querySelectorAll(selector))
+    elif isinstance(selector, Element):
+        return [selector._dom_element]
+    elif isinstance(selector, ElementCollection):
+        return [el._dom_element for el in selector]
+    elif isinstance(selector, list):
+        return selector
+    else:
+        return [selector]
+
+
+def _create_wrapper(func):
+    """
+    Create an appropriate wrapper for the given function, `func`.
+
+    The wrapper handles both sync and async functions, and respects whether
+    the function expects to receive event arguments.
+    """
+    # Get the original function if it's been wrapped. This avoids wrapper
+    # loops when stacking decorators.
+    original_func = func
+    while hasattr(original_func, "__wrapped__"):
+        original_func = original_func.__wrapped__
+    # Inspect the original function signature.
+    sig = inspect.signature(original_func)
+    accepts_args = bool(sig.parameters)
+    if is_awaitable(func):
+        if accepts_args:
+
+            async def wrapper(event):
+                return await func(event)
+
+        else:
+
+            async def wrapper(*args, **kwargs):
+                return await func()
+
+    else:
+        if accepts_args:
+            # Always create a new wrapper function to avoid issues with
+            # stacked decorators getting into an infinite loop.
+
+            def wrapper(event):
+                return func(event)
+
+        else:
+
+            def wrapper(*args, **kwargs):
+                return func()
+
+    return wraps(func)(wrapper)

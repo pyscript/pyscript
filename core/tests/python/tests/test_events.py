@@ -24,15 +24,26 @@ def teardown():
 
 def test_event_add_listener():
     """
-    Adding a listener to an event should add it to the list of listeners. It
-    should only be added once.
+    Adding a listener to an event should add it to the list of listeners.
+    It should only be added once.
     """
     event = Event()
     listener = lambda x: x
     event.add_listener(listener)
     event.add_listener(listener)
-    assert len(event._listeners) == 1  # Only one item added.
-    assert listener in event._listeners  # The item is the expected listener.
+    assert len(event._listeners) == 1
+    assert listener in event._listeners
+
+
+def test_event_add_non_callable_listener():
+    """
+    Adding a non-callable listener should raise a ValueError.
+    """
+    event = Event()
+    with upytest.raises(ValueError):
+        event.add_listener("not a callable")
+    with upytest.raises(ValueError):
+        event.add_listener(123)
 
 
 def test_event_remove_listener():
@@ -45,12 +56,25 @@ def test_event_remove_listener():
     listener2 = lambda x: x
     event.add_listener(listener1)
     event.add_listener(listener2)
-    assert len(event._listeners) == 2  # Two listeners added.
-    assert listener1 in event._listeners  # The first listener is in the list.
-    assert listener2 in event._listeners  # The second listener is in the list.
+    assert len(event._listeners) == 2
+    assert listener1 in event._listeners
+    assert listener2 in event._listeners
     event.remove_listener(listener1)
-    assert len(event._listeners) == 1  # Only one item remains.
-    assert listener2 in event._listeners  # The second listener is in the list.
+    assert len(event._listeners) == 1
+    assert listener2 in event._listeners
+
+
+def test_event_remove_nonexistent_listener():
+    """
+    Removing a listener that doesn't exist should be silently ignored.
+    """
+    event = Event()
+    listener1 = lambda x: x
+    listener2 = lambda x: x
+    event.add_listener(listener1)
+    event.remove_listener(listener2)
+    assert len(event._listeners) == 1
+    assert listener1 in event._listeners
 
 
 def test_event_remove_all_listeners():
@@ -62,15 +86,15 @@ def test_event_remove_all_listeners():
     listener2 = lambda x: x
     event.add_listener(listener1)
     event.add_listener(listener2)
-    assert len(event._listeners) == 2  # Two listeners added.
+    assert len(event._listeners) == 2
     event.remove_listener()
-    assert len(event._listeners) == 0  # No listeners remain.
+    assert len(event._listeners) == 0
 
 
 def test_event_trigger():
     """
     Triggering an event should call all of the listeners with the provided
-    arguments.
+    result.
     """
     event = Event()
     counter = 0
@@ -81,15 +105,45 @@ def test_event_trigger():
         assert x == "ok"
 
     event.add_listener(listener)
-    assert counter == 0  # The listener has not been triggered yet.
+    assert counter == 0
     event.trigger("ok")
-    assert counter == 1  # The listener has been triggered with the expected result.
+    assert counter == 1
+
+
+def test_event_trigger_no_listeners():
+    """
+    Triggering an event with no listeners should not raise an error.
+    """
+    event = Event()
+    event.trigger("test")
+
+
+def test_event_trigger_multiple_listeners():
+    """
+    Triggering an event should call all registered listeners.
+    """
+    event = Event()
+    results = []
+
+    def listener1(x):
+        results.append(f"listener1: {x}")
+
+    def listener2(x):
+        results.append(f"listener2: {x}")
+
+    event.add_listener(listener1)
+    event.add_listener(listener2)
+    event.trigger("test")
+
+    assert len(results) == 2
+    assert "listener1: test" in results
+    assert "listener2: test" in results
 
 
 async def test_event_trigger_with_awaitable():
     """
     Triggering an event with an awaitable listener should call the listener
-    with the provided arguments.
+    with the provided result.
     """
     call_flag = asyncio.Event()
     event = Event()
@@ -102,16 +156,119 @@ async def test_event_trigger_with_awaitable():
         call_flag.set()
 
     event.add_listener(listener)
-    assert counter == 0  # The listener has not been triggered yet.
+    assert counter == 0
     event.trigger("ok")
     await call_flag.wait()
-    assert counter == 1  # The listener has been triggered with the expected result.
+    assert counter == 1
+
+
+async def test_event_trigger_mixed_listeners():
+    """
+    Triggering an event with both sync and async listeners should work.
+    """
+    event = Event()
+    sync_called = False
+    async_flag = asyncio.Event()
+
+    def sync_listener(x):
+        nonlocal sync_called
+        sync_called = True
+        assert x == "mixed"
+
+    async def async_listener(x):
+        assert x == "mixed"
+        async_flag.set()
+
+    event.add_listener(sync_listener)
+    event.add_listener(async_listener)
+    event.trigger("mixed")
+
+    assert sync_called
+    await async_flag.wait()
+
+
+def test_event_listener_exception():
+    """
+    If a listener raises an exception, it should propagate and not be
+    silently ignored.
+    """
+    event = Event()
+
+    def bad_listener(x):
+        raise RuntimeError("Listener error")
+
+    event.add_listener(bad_listener)
+
+    with upytest.raises(RuntimeError):
+        event.trigger("test")
+
+
+def test_event_listener_exception_stops_other_listeners():
+    """
+    If a listener raises an exception, subsequent listeners should not be
+    called. There's a problem with the user's code that needs to be addressed!
+    """
+    event = Event()
+    called = []
+
+    def listener1(x):
+        called.append("listener1")
+
+    def bad_listener(x):
+        called.append("bad_listener")
+        raise RuntimeError("Listener error")
+
+    def listener3(x):
+        called.append("listener3")
+
+    event.add_listener(listener1)
+    event.add_listener(bad_listener)
+    event.add_listener(listener3)
+
+    with upytest.raises(RuntimeError):
+        event.trigger("test")
+
+    assert "listener1" in called
+    assert "bad_listener" in called
+    assert "listener3" not in called
+
+
+async def test_event_async_listener_exception():
+    """
+    If an async listener raises an exception, it cannot prevent other
+    listeners from being called, as async listeners run as tasks. This
+    is different behavior from sync listeners, but the simplest model
+    for users to understand.
+
+    This test ensures that even if one async listener fails, others
+    still run as per this expected behaviour. In MicroPython, the
+    exception will be reported to the user.
+    """
+    event = Event()
+    call_flag = asyncio.Event()
+    called = []
+
+    async def bad_listener(x):
+        called.append("bad_listener")
+        raise RuntimeError("Async listener error")
+
+    async def good_listener(x):
+        called.append("good_listener")
+        call_flag.set()
+
+    event.add_listener(bad_listener)
+    event.add_listener(good_listener)
+    event.trigger("test")
+
+    await call_flag.wait()
+    assert "bad_listener" in called
+    assert "good_listener" in called
 
 
 async def test_when_decorator_with_event():
     """
-    When the decorated function takes a single parameter,
-    it should be passed the event object.
+    When the decorated function takes a single parameter, it should be
+    passed the event object.
     """
     btn = web.button("foo_button", id="foo_id")
     container = get_container()
@@ -133,8 +290,8 @@ async def test_when_decorator_with_event():
 
 async def test_when_decorator_without_event():
     """
-    When the decorated function takes no parameters (not including 'self'),
-    it should be called without the event object.
+    When the decorated function takes no parameters, it should be called
+    without the event object.
     """
     btn = web.button("foo_button", id="foo_id")
     container = get_container()
@@ -143,7 +300,7 @@ async def test_when_decorator_without_event():
     called = False
     call_flag = asyncio.Event()
 
-    @web.when("click", selector="#foo_id")
+    @when("click", selector="#foo_id")
     def foo():
         nonlocal called
         called = True
@@ -156,8 +313,8 @@ async def test_when_decorator_without_event():
 
 async def test_when_decorator_with_event_as_async_handler():
     """
-    When the decorated function takes a single parameter,
-    it should be passed the event object. Async version.
+    When the decorated function takes a single parameter, it should be
+    passed the event object. Async version.
     """
     btn = web.button("foo_button", id="foo_id")
     container = get_container()
@@ -179,8 +336,8 @@ async def test_when_decorator_with_event_as_async_handler():
 
 async def test_when_decorator_without_event_as_async_handler():
     """
-    When the decorated function takes no parameters (not including 'self'),
-    it should be called without the event object. Async version.
+    When the decorated function takes no parameters, it should be called
+    without the event object. Async version.
     """
     btn = web.button("foo_button", id="foo_id")
     container = get_container()
@@ -189,7 +346,7 @@ async def test_when_decorator_without_event_as_async_handler():
     called = False
     call_flag = asyncio.Event()
 
-    @web.when("click", selector="#foo_id")
+    @when("click", selector="#foo_id")
     async def foo():
         nonlocal called
         called = True
@@ -202,7 +359,7 @@ async def test_when_decorator_without_event_as_async_handler():
 
 async def test_two_when_decorators():
     """
-    When decorating a function twice, both should function
+    When decorating a function twice, both should function independently.
     """
     btn = web.button("foo_button", id="foo_id")
     container = get_container()
@@ -235,7 +392,7 @@ async def test_two_when_decorators():
 async def test_when_decorator_multiple_elements():
     """
     The @when decorator's selector should successfully select multiple
-    DOM elements
+    DOM elements.
     """
     btn1 = web.button(
         "foo_button1",
@@ -283,7 +440,8 @@ async def test_when_decorator_multiple_elements():
 )
 def test_when_decorator_invalid_selector():
     """
-    When the selector parameter of @when is invalid, it should raise an error.
+    When the selector parameter of @when is invalid, it should raise an
+    error.
     """
     if upytest.is_micropython:
         from jsffi import JsException
@@ -298,139 +456,320 @@ def test_when_decorator_invalid_selector():
     assert "'#.bad' is not a valid selector" in str(e.exception), str(e.exception)
 
 
+def test_when_missing_selector_for_dom_event():
+    """
+    When using @when with a DOM event but no selector, should raise
+    ValueError.
+    """
+    with upytest.raises(ValueError):
+
+        @when("click")
+        def handler(event):
+            pass
+
+
+def test_when_empty_selector_finds_no_elements():
+    """
+    When selector matches no elements, should raise ValueError.
+    """
+    with upytest.raises(ValueError):
+
+        @when("click", "#nonexistent-element-id-12345")
+        def handler(event):
+            pass
+
+
 def test_when_decorates_an_event():
     """
-    When the @when decorator is used on a function to handle an Event instance,
-    the function should be called when the Event object is triggered.
+    When the @when decorator is used on a function to handle an Event
+    instance, the function should be called when the Event object is
+    triggered.
     """
-
     whenable = Event()
     counter = 0
 
-    # When as a decorator.
     @when(whenable)
     def handler(result):
         """
-        A function that should be called when the whenable object is triggered.
-
-        The result generated by the whenable object should be passed to the
-        function.
+        A function that should be called when the whenable object is
+        triggered.
         """
         nonlocal counter
         counter += 1
         assert result == "ok"
 
-    # The function should not be called until the whenable object is triggered.
     assert counter == 0
-    # Trigger the whenable object.
     whenable.trigger("ok")
-    # The function should have been called when the whenable object was
-    # triggered.
     assert counter == 1
 
 
-def test_when_called_with_an_event_and_handler():
+async def test_when_with_list_of_events():
     """
-    The when function should be able to be called with an Event object,
-    and a handler function.
+    The @when decorator should handle a list of Event objects.
     """
-    whenable = Event()
+    event1 = Event()
+    event2 = Event()
     counter = 0
 
+    @when([event1, event2])
     def handler(result):
-        """
-        A function that should be called when the whenable object is triggered.
-
-        The result generated by the whenable object should be passed to the
-        function.
-        """
         nonlocal counter
         counter += 1
-        assert result == "ok"
 
-    # When as a function.
-    when(whenable, handler)
-
-    # The function should not be called until the whenable object is triggered.
     assert counter == 0
-    # Trigger the whenable object.
-    whenable.trigger("ok")
-    # The function should have been called when the whenable object was
-    # triggered.
+    event1.trigger("test1")
+    assert counter == 1
+    event2.trigger("test2")
+    assert counter == 2
+
+
+async def test_when_with_async_event_handler():
+    """
+    Async handlers should work with custom Event objects.
+    """
+    event = Event()
+    call_flag = asyncio.Event()
+    counter = 0
+
+    @when(event)
+    async def handler(result):
+        nonlocal counter
+        counter += 1
+        assert result == "async test"
+        call_flag.set()
+
+    assert counter == 0
+    event.trigger("async test")
+    await call_flag.wait()
     assert counter == 1
 
-def test_when_on_different_callables():
+
+async def test_when_with_element_selector():
     """
-    The when function works with:
-
-    * Synchronous functions
-    * Asynchronous functions
-    * Inner functions
-    * Async inner functions
-    * Closure functions
-    * Async closure functions
+    The @when decorator should accept an Element object as selector.
     """
+    btn = web.button("test", id="elem_selector_test")
+    container = get_container()
+    container.append(btn)
 
-    def func(x=1):
-        # A simple function.
-        return x
+    called = False
+    call_flag = asyncio.Event()
 
-    async def a_func(x=1):
-        # A simple async function.
-        return x
+    @when("click", btn)
+    def handler(event):
+        nonlocal called
+        called = True
+        call_flag.set()
+
+    btn.click()
+    await call_flag.wait()
+    assert called
+
+
+async def test_when_with_element_collection_selector():
+    """
+    The @when decorator should accept an ElementCollection as selector.
+    """
+    btn1 = web.button("btn1", id="col_test_1", classes=["test-class"])
+    btn2 = web.button("btn2", id="col_test_2", classes=["test-class"])
+    container = get_container()
+    container.append(btn1)
+    container.append(btn2)
+
+    collection = web.page.find(".test-class")
+    counter = 0
+    call_flag = asyncio.Event()
+
+    @when("click", collection)
+    def handler(event):
+        nonlocal counter
+        counter += 1
+        if counter == 2:
+            call_flag.set()
+
+    btn1.click()
+    btn2.click()
+    await call_flag.wait()
+    assert counter == 2
+
+
+async def test_when_with_list_of_elements():
+    """
+    The @when decorator should accept a list of DOM elements as selector.
+    """
+    btn1 = web.button("btn1", id="list_test_1")
+    btn2 = web.button("btn2", id="list_test_2")
+    container = get_container()
+    container.append(btn1)
+    container.append(btn2)
+
+    elements = [btn1._dom_element, btn2._dom_element]
+    counter = 0
+    call_flag = asyncio.Event()
+
+    @when("click", elements)
+    def handler(event):
+        nonlocal counter
+        counter += 1
+        if counter == 2:
+            call_flag.set()
+
+    btn1.click()
+    btn2.click()
+    await call_flag.wait()
+    assert counter == 2
+
+
+def test_when_decorator_returns_wrapper():
+    """
+    The @when decorator should return the wrapped function.
+    """
+    event = Event()
+
+    @when(event)
+    def handler(result):
+        return result
+
+    assert callable(handler)
+
+
+def test_when_multiple_events_on_same_handler():
+    """
+    Multiple @when decorators can be stacked on the same function.
+    """
+    event1 = Event()
+    event2 = Event()
+    counter = 0
+
+    @when(event1)
+    @when(event2)
+    def handler(result):
+        nonlocal counter
+        counter += 1
+
+    assert counter == 0
+    event1.trigger("test")
+    assert counter == 1
+    event2.trigger("test")
+    assert counter == 2
+
+
+async def test_when_on_different_callables():
+    """
+    The @when decorator works with various callable types.
+    """
+    results = []
+
+    def func(x):
+        results.append("func")
+
+    async def a_func(x):
+        results.append("a_func")
 
     def make_inner_func():
-        # Creates a simple inner function.
-
-        def inner_func(x=1):
-            return x
+        def inner_func(x):
+            results.append("inner_func")
 
         return inner_func
 
-
     def make_inner_a_func():
-        # Creates a simple async inner function.
-
-        async def inner_a_func(x=1):
-            return x
+        async def inner_a_func(x):
+            results.append("inner_a_func")
 
         return inner_a_func
 
-
     def make_closure():
-        # Creates a simple closure function.
         a = 1
 
-        def closure_func(x=1):
-            return a + x
+        def closure_func(x):
+            results.append(f"closure_func:{a}")
 
         return closure_func
 
-
     def make_a_closure():
-        # Creates a simple async closure function.
         a = 1
 
-        async def closure_a_func(x=1):
-            return a + x
+        async def closure_a_func(x):
+            results.append(f"closure_a_func:{a}")
 
         return closure_a_func
-
 
     inner_func = make_inner_func()
     inner_a_func = make_inner_a_func()
     cl_func = make_closure()
     cl_a_func = make_a_closure()
 
+    whenable = Event()
 
-    whenable  = Event()
+    # Each of these should work with the @when decorator.
+    when(whenable)(func)
+    when(whenable)(a_func)
+    when(whenable)(inner_func)
+    when(whenable)(inner_a_func)
+    when(whenable)(cl_func)
+    when(whenable)(cl_a_func)
 
-    # Each of these should work with the when function.
-    when(whenable, func)
-    when(whenable, a_func)
-    when(whenable, inner_func)
-    when(whenable, inner_a_func)
-    when(whenable, cl_func)
-    when(whenable, cl_a_func)
-    # If we get here, everything worked.
-    assert True
+    # Verify no handlers have been called yet.
+    assert len(results) == 0
+
+    # Trigger the event.
+    whenable.trigger("test")
+
+    # Wait for async handlers to complete.
+    await asyncio.sleep(0.1)
+
+    # Verify all handlers were called.
+    assert len(results) == 6
+    assert "func" in results
+    assert "a_func" in results
+    assert "inner_func" in results
+    assert "inner_a_func" in results
+    assert "closure_func:1" in results
+    assert "closure_a_func:1" in results
+
+
+async def test_when_dom_event_with_options():
+    """
+    Options should be passed to addEventListener for DOM events.
+    """
+    click_count = 0
+    call_flag = asyncio.Event()
+
+    @when("click", "#button-for-event-testing", once=True)
+    def handle_click(event):
+        nonlocal click_count
+        click_count += 1
+        call_flag.set()
+
+    btn = web.page["#button-for-event-testing"]
+    btn.click()
+    await call_flag.wait()
+    assert click_count == 1
+
+    # Click again - should not increment due to once=True.
+    btn.click()
+    # Bit of a bodge - a brief wait to ensure no handler fires.
+    await asyncio.sleep(0.01)
+    assert click_count == 1
+
+
+async def test_when_custom_event_options_ignored():
+    """
+    Options should be silently ignored for custom Event objects.
+    """
+    my_event = Event()
+    trigger_count = 0
+    call_flag = asyncio.Event()
+
+    @when(my_event, once=True)
+    def handler(result):
+        nonlocal trigger_count
+        trigger_count += 1
+        if trigger_count == 2:
+            call_flag.set()
+
+    # Should trigger multiple times despite once=True being ignored.
+    my_event.trigger("first")
+    my_event.trigger("second")
+    await call_flag.wait()
+    assert trigger_count == 2

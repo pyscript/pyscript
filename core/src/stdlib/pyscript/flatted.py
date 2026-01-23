@@ -1,4 +1,36 @@
-# https://www.npmjs.com/package/flatted
+"""
+This module is a Python implementation of the
+[Flatted JavaScript library](https://www.npmjs.com/package/flatted), which
+provides a light and fast way to serialize and deserialize JSON structures
+that contain circular references.
+
+Standard JSON cannot handle circular references - attempting to serialize an
+object that references itself will cause an error. Flatted solves this by
+transforming circular structures into a flat array format that can be safely
+serialized and later reconstructed.
+
+Common use cases:
+
+- Serializing complex object graphs with circular references.
+- Working with DOM-like structures that contain parent/child references.
+- Preserving object identity when serializing data structures.
+
+```python
+from pyscript import flatted
+
+
+# Create a circular structure.
+obj = {"name": "parent"}
+obj["self"] = obj  # Circular reference!
+
+# Standard json.dumps would fail here.
+serialized = flatted.stringify(obj)
+
+# Reconstruct the original structure.
+restored = flatted.parse(serialized)
+assert restored["self"] is restored  # Circular reference preserved!
+```
+"""
 
 import json as _json
 
@@ -114,6 +146,26 @@ def _wrap(value):
 
 
 def parse(value, *args, **kwargs):
+    """
+    Parse a Flatted JSON string and reconstruct the original structure.
+
+    This function takes a `value` containing a JSON string created by
+    Flatted's stringify() and reconstructs the original Python object,
+    including any circular references. The `*args` and `**kwargs` are passed
+    to json.loads() for additional customization.
+
+    ```python
+    from pyscript import flatted
+
+
+    # Parse a Flatted JSON string.
+    json_string = '[{"name": "1", "self": "0"}, "parent"]'
+    obj = flatted.parse(json_string)
+
+    # Circular references are preserved.
+    assert obj["self"] is obj
+    ```
+    """
     json = _json.loads(value, *args, **kwargs)
     wrapped = []
     for value in json:
@@ -138,6 +190,31 @@ def parse(value, *args, **kwargs):
 
 
 def stringify(value, *args, **kwargs):
+    """
+    Serialize a Python object to a Flatted JSON string.
+
+    This function converts `value`, a Python object (including those with
+    circular references), into a JSON string that can be safely transmitted
+    or stored. The resulting string can be reconstructed using Flatted's
+    parse(). The `*args` and `**kwargs` are passed to json.dumps() for
+    additional customization.
+
+    ```python
+    from pyscript import flatted
+
+
+    # Create an object with a circular reference.
+    parent = {"name": "parent", "children": []}
+    child = {"name": "child", "parent": parent}
+    parent["children"].append(child)
+
+    # Serialize it (standard json.dumps would fail here).
+    json_string = flatted.stringify(parent)
+
+    # Can optionally pretty-print via JSON indentation etc.
+    pretty = flatted.stringify(parent, indent=2)
+    ```
+    """
     known = _Known()
     input = []
     output = []

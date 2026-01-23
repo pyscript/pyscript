@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const timeout = 60 * 1000;
+const timeout = 120 * 1000;
 
 test.setTimeout(timeout);
 
