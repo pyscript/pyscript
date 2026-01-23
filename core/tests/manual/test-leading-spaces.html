@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Leading Spaces in Process Method</title>
+    <link rel="stylesheet" href="../../dist/core.css" />
+    <script type="module" src="../../dist/core.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #333;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 10px 5px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      #output {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        min-height: 50px;
+      }
+      .success {
+        color: green;
+        font-weight: bold;
+      }
+      .error {
+        color: red;
+        font-weight: bold;
+      }
+      code {
+        background-color: #f4f4f4;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+      pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+      .xterm {
+        padding: 0.5rem;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test: Leading Spaces in Terminal Process Method</h1>
+
+    <div class="test-section">
+      <h2>About This Test</h2>
+      <p>This page tests whether the <code>process()</code> method preserves leading spaces when processing Python code.</p>
+      <p>The fix changes <code>terminal.paste()</code> to <code>terminal.write()</code> to prevent trimming of leading spaces.</p>
+    </div>
+
+    <div class="test-section">
+      <h2>Test 1: Function with Indentation</h2>
+      <p>Click the button to test processing a Python function with proper indentation:</p>
+      <button id="test1">Run Test 1</button>
+      <pre>def greet(name):
+    message = f"Hello, {name}!"
+    return message
+
+result = greet("World")
+print(result)</pre>
+    </div>
+
+    <div class="test-section">
+      <h2>Test 2: Nested Indentation</h2>
+      <p>Click the button to test processing nested indentation:</p>
+      <button id="test2">Run Test 2</button>
+      <pre>def calculate():
+    x = 10
+    if x > 5:
+        result = x * 2
+        print(f"Result: {result}")
+    return result
+
+calculate()</pre>
+    </div>
+
+    <div class="test-section">
+      <h2>Test 3: Class Definition</h2>
+      <p>Click the button to test processing a class with methods:</p>
+      <button id="test3">Run Test 3</button>
+      <pre>class Counter:
+    def __init__(self):
+        self.count = 0
+
+    def increment(self):
+        self.count += 1
+        return self.count
+
+c = Counter()
+print(c.increment())
+print(c.increment())</pre>
+    </div>
+
+    <div id="output">
+      <p><strong>Output will appear here...</strong></p>
+    </div>
+
+    <script type="py" worker terminal id="py-terminal"></script>
+
+    <script type="module">
+      const output = document.getElementById("output");
+
+      function log(message, isError = false) {
+        const p = document.createElement("p");
+        p.className = isError ? "error" : "success";
+        p.textContent = message;
+        output.appendChild(p);
+      }
+
+      function clearOutput() {
+        output.innerHTML = "<p><strong>Running test...</strong></p>";
+      }
+
+      addEventListener("py-terminal", async ({ target }) => {
+        const terminal = target;
+
+        document.getElementById("test1").addEventListener("click", async () => {
+          clearOutput();
+          try {
+            const code = `def greet(name):
+    message = f"Hello, {name}!"
+    return message
+
+result = greet("World")
+print(result)`;
+            await terminal.process(code);
+            log("✓ Test 1 passed: Function with indentation executed successfully!");
+          } catch (error) {
+            log(`✗ Test 1 failed: ${error.message}`, true);
+          }
+        });
+
+        document.getElementById("test2").addEventListener("click", async () => {
+          clearOutput();
+          try {
+            const code = `def calculate():
+    x = 10
+    if x > 5:
+        result = x * 2
+        print(f"Result: {result}")
+    return result
+
+calculate()`;
+            await terminal.process(code);
+            log("✓ Test 2 passed: Nested indentation executed successfully!");
+          } catch (error) {
+            log(`✗ Test 2 failed: ${error.message}`, true);
+          }
+        });
+
+        document.getElementById("test3").addEventListener("click", async () => {
+          clearOutput();
+          try {
+            const code = `class Counter:
+    def __init__(self):
+        self.count = 0
+
+    def increment(self):
+        self.count += 1
+        return self.count
+
+c = Counter()
+print(c.increment())
+print(c.increment())`;
+            await terminal.process(code);
+            log("✓ Test 3 passed: Class definition executed successfully!");
+          } catch (error) {
+            log(`✗ Test 3 failed: ${error.message}`, true);
+          }
+        });
+
+        log("Terminal ready! Click any test button above to run tests.");
+      });
+    </script>
+  </body>
+</html>
