@@ -117,7 +117,7 @@ for (const [TYPE, interpreter] of TYPES) {
         else dispatch(element, TYPE, "done");
     };
 
-    let { config, configURL, plugins, error } = configs.get(TYPE);
+    let { config, configURL, parser, plugins, error } = configs.get(TYPE);
 
     // create a unique identifier when/if needed
     let id = 0;
@@ -319,6 +319,7 @@ for (const [TYPE, interpreter] of TYPES) {
             hooks,
             version,
             env: `${TYPE}-script`,
+            parser: parser && new URL(parser, location.href).href,
             onerror(error, element) {
                 errors.set(element, error);
             },
