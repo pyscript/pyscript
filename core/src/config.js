@@ -44,7 +44,7 @@ export const configDetails = async (config, type) => {
     return { json, toml: toml || (!json && !!text), text, url };
 };
 
-const configParser = pyElement => {
+const configParser = (pyElement) => {
     const parser = pyElement.getAttribute("config-parser");
     return parser ? new URL(parser, location.href).href : undefined;
 };
@@ -131,7 +131,9 @@ for (const [TYPE] of TYPES) {
                 try {
                     const module = parser
                         ? await import(parser)
-                        : await tomlParser(text).then(json => ({ parse: () => json }));
+                        : await tomlParser(text).then((json) => ({
+                              parse: () => json,
+                          }));
                     parsed = (module.parse || module.default)(text);
                 } catch (e) {
                     error = syntaxError("TOML", url, e);
