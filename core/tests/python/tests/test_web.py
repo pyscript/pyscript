@@ -289,7 +289,7 @@ class TestElement:
 
         for i in range(len(collection)):
             assert div.children[-1 - i].id == collection[-1 - i].id
-    
+
     """
     Ensure that appending a string adds a text node.
     """

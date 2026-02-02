@@ -647,6 +647,7 @@ class Element:
         for item in items:
             if isinstance(item, str):
                 from pyscript.web import span
+
                 item = span(item)
             if isinstance(item, Element):
                 self._dom_element.appendChild(item._dom_element)
