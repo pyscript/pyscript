@@ -289,6 +289,34 @@ class TestElement:
 
         for i in range(len(collection)):
             assert div.children[-1 - i].id == collection[-1 - i].id
+    
+    """
+    Ensure that appending a string adds a text node.
+    """
+    def test_append_string(self):
+        id_ = "element-append-tests"
+        div = web.page[f"#{id_}"]
+        len_children_before = len(div.children)
+        text_to_append = "This is a text node"
+        div.append(text_to_append)
+        assert len(div.children) == len_children_before + 1
+        assert div.children[-1].innerHTML == text_to_append
+
+    """
+    Test that appending a string does not overwrite existing children.
+    """
+    def test_append_multiple_mixed_types(self):
+        id_ = "element-append-tests"
+        div = web.page[f"#{id_}"]
+        initial_count = len(div.children)
+        new_el = web.p("First item")
+        new_el.id = "first-child-id"
+        div.append(new_el)
+        text_to_append = "Second item as string"
+        div.append(text_to_append)
+        assert len(div.children) == initial_count + 2
+        assert div.children[-2].id == "first-child-id"
+        assert div.children[-1].innerHTML == text_to_append
 
     def test_read_classes(self):
         id_ = "test_class_selector"

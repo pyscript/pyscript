@@ -204,7 +204,6 @@ like `page.find()` for querying the DOM.
 from pyscript import document, when, Event  # noqa: F401
 from pyscript.ffi import create_proxy, is_none
 
-
 # Utility functions for finding and wrapping DOM elements.
 
 
@@ -645,6 +644,9 @@ class Element:
         tuples, raw DOM elements, and NodeLists.
         """
         for item in items:
+            if isinstance(item, str):
+                from pyscript.web import span
+                item = span(item)
             if isinstance(item, Element):
                 self._dom_element.appendChild(item._dom_element)
             elif isinstance(item, ElementCollection):
