@@ -204,6 +204,7 @@ like `page.find()` for querying the DOM.
 from pyscript import document, when, Event  # noqa: F401
 from pyscript.ffi import create_proxy, is_none
 
+
 # Utility functions for finding and wrapping DOM elements.
 
 
