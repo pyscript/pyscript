@@ -65,7 +65,7 @@ for (const [TYPE] of TYPES) {
     /** @type {() => Promise<[...any]>} A Promise wrapping any plugins which should be loaded. */
     let plugins;
 
-    /** @type {any} The PyScript configuration parsed from the JSON or TOML object*. May be any of the return types of JSON.parse() or toml-j0.4's parse() ( {number | string | boolean | null | object | Array} ) */
+    /** @type {any} The PyScript configuration parsed from the JSON or TOML object*. May be any of the return types of JSON.parse() or basic-toml's parse() ( {number | string | boolean | null | object | Array} ) */
     let parsed;
 
     /** @type {Error | undefined} The error thrown when parsing the PyScript config, if any.*/
