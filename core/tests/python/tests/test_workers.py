@@ -120,6 +120,7 @@ async def test_find_path_parallel():
 
     from pyscript import create_named_worker
     from pyscript.ffi import to_js
+    from ..worker_functions import upd_graph, dijkstra_path
     import js
 
     our_workers = await js.Promise.all([
@@ -152,10 +153,24 @@ async def test_find_path_parallel():
                                   8: {7: {}, 9: {}, 3: {}},
                                   9: {8: {}, 4: {}, 5: {}}}
     }
-
+    expectations = {}
+    # First, find paths serially, so we know what to expect from the workers
+    for name, graph_d in graphs.items():
+        nodes_nonrandom = list(graph_d.keys())
+        nodes = []
+        # this does the same thing as random.shuffle(), which micropython
+        # does not have
+        while len(nodes_nonrandom) > 1:
+            nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
+        nodes.append(nodes_nonrandom.pop())
+        upd_graph(graph_d)
+        expectation = expectations[name] = []
+        for _ in range(len(our_workers)):
+            a = nodes.pop()
+            b = nodes.pop()
+            expectation.append(dijkstra_path(a, b))
 
     for name, graph_d in graphs.items():
-        print(f"Will find paths in {name}")
         nodes_nonrandom = list(graph_d.keys())
         nodes = []
         while len(nodes_nonrandom) > 1:
@@ -172,12 +187,9 @@ async def test_find_path_parallel():
             b = nodes.pop()
             nodepairs.append((a, b))
             coros.append(worker.dijkstra_path(a, b))
-        for coro, (a, b) in zip(coros, nodepairs):
+        for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
             the_path = await coro
-            if the_path is None:
-                print(f"there is no path from {a} to {b}")
-            else:
-                print(f"path from {a} to {b} found: {the_path}")
+            assert the_path == expected, f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
 
 @upytest.skip("Main thread only", skip_when=RUNNING_IN_WORKER)
 async def test_parallel_math():
@@ -186,6 +198,7 @@ async def test_parallel_math():
 
     """
     from pyscript import create_named_worker
+    from ..worker_functions import times_table, power_table, log_table, mod_table
     import js
 
     our_workers = await js.Promise.all([
@@ -197,8 +210,14 @@ async def test_parallel_math():
     assert all(our_workers)
 
     coros = []
-    for worker, func_name in zip(our_workers, ("times_table", "power_table", "log_table", "mod_table")):
-        func = getattr(worker, func_name)
+    expectations = {}
+    funcs = (times_table, power_table, log_table, mod_table)
+    # Calculate the correct result serially, so we know what to expect
+    for func in funcs:
+        expectations[func.__name__] = func(1000, 1000)
+    for worker, func in zip(our_workers, funcs):
+        func = getattr(worker, func.__name__)
         coros.append(func(1000, 1000))
-    for coro in coros:
-        assert await coro
+    for coro, func, expected in zip(coros, funcs, expectations):
+        calculated = await coro
+        assert calculated == expected, f"{func.__name__}(1000, 1000) should equal {expected}, not {calculated}"
