@@ -642,7 +642,7 @@ class Element:
         Append items to this element's `children`.
 
         Accepts `Element` instances, `ElementCollection` instances, lists,
-        tuples, raw DOM elements, and NodeLists.
+        tuples, raw DOM elements, NodeLists, str, int, float, and bool.
         """
         for item in items:
             if isinstance(item, Element):
