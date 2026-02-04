@@ -642,7 +642,7 @@ class Element:
         Append items to this element's `children`.
 
         Accepts `Element` instances, `ElementCollection` instances, lists,
-        tuples, raw DOM elements, and NodeLists.
+        tuples, raw DOM elements, NodeLists, str, int, float, and bool.
         """
         for item in items:
             if isinstance(item, Element):
@@ -660,6 +660,8 @@ class Element:
                 # NodeList or similar iterable.
                 for element in item:
                     self._dom_element.appendChild(element)
+            elif isinstance(item, (str, int, float, bool)):
+                self._dom_element.append(item)
             else:
                 raise TypeError(f"Cannot append {type(item).__name__} to element.")
 

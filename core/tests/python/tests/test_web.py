@@ -290,6 +290,32 @@ class TestElement:
         for i in range(len(collection)):
             assert div.children[-1 - i].id == collection[-1 - i].id
 
+    """
+    Ensure that appending a string adds a text node.
+    """
+    def test_append_string(self):
+        id_ = "element-append-tests"
+        div = web.page[f"#{id_}"]
+        len_children_before = len(div.children)
+        text_to_append = "a simple string"
+        div.append(text_to_append)
+        assert len(div.children) == len_children_before
+        assert div._dom_element.textContent.endswith(text_to_append)
+
+    """
+    Test that appending a string does not overwrite existing children.
+    """
+    def test_append_multiple_mixed_types(self):
+        id_ = "element-append-tests"
+        div = web.page[f"#{id_}"]
+        new_el = web.p("First item", id="first-p")
+        div.append(new_el)
+        text_to_append = "Second item"
+        div.append(text_to_append)
+        assert div.children[-1].id == "first-p"
+        assert "First item" in div._dom_element.textContent
+        assert div._dom_element.textContent.endswith(text_to_append)
+
     def test_read_classes(self):
         id_ = "test_class_selector"
         expected_class = "a-test-class"
@@ -1490,11 +1516,11 @@ class TestErrorCases:
         with upytest.raises(ValueError):
             div.on_nonexistent_event
 
-    def test_invalid_append_type(self):
-        """Test that appending invalid types raises TypeError."""
+    def test_append_number(self):
+        """Test that appending numbers is supported and renders as text."""
         div = web.div()
-        with upytest.raises(TypeError):
-            div.append(12345)  # Numbers can't be appended
+        div.append(12345)
+        assert div._dom_element.textContent == "12345"
 
     def test_event_name_without_on_prefix(self):
         """Test that get_event requires on_ prefix."""
