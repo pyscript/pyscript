@@ -4,7 +4,6 @@ Numpty test code to run in a worker for pyscript.workers module tests.
 from heapq import heappush, heappop
 from itertools import count
 from math import log, fmod
-from operator import mul, pow
 
 from pyscript import sync
 
@@ -15,6 +14,10 @@ def add(a, b):
 
 def multiply(a, b):
     return a * b
+
+
+def power(a, b):
+    return a ** b
 
 
 def get_message():
@@ -73,10 +76,10 @@ def _some_table(oper, a, b):
     return ret
 
 def times_table(a, b):
-    return _some_table(mul, a, b)
+    return _some_table(multiply, a, b)
 
 def power_table(a, b):
-    return _some_table(pow, a, b)
+    return _some_table(power, a, b)
 
 def log_table(a, b):
     return _some_table(log, a, b)
