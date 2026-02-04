@@ -645,9 +645,6 @@ class Element:
         tuples, raw DOM elements, and NodeLists.
         """
         for item in items:
-            if isinstance(item, str):
-                from pyscript.web import span
-                item = span(item)
             if isinstance(item, Element):
                 self._dom_element.appendChild(item._dom_element)
             elif isinstance(item, ElementCollection):
@@ -663,6 +660,8 @@ class Element:
                 # NodeList or similar iterable.
                 for element in item:
                     self._dom_element.appendChild(element)
+            elif isinstance(item, (str, int, float, bool)):
+                self._dom_element.append(item)
             else:
                 raise TypeError(f"Cannot append {type(item).__name__} to element.")
 
