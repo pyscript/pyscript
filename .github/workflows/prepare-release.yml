@@ -14,10 +14,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v6
 
             - name: Install node
-              uses: actions/setup-node@v5
+              uses: actions/setup-node@v6
               with:
                   node-version: 20.x
 
@@ -37,7 +37,7 @@ jobs:
               run: pip install setuptools
 
             - name: Cache node modules
-              uses: actions/cache@v4
+              uses: actions/cache@v5
               env:
                   cache-name: cache-node-modules
               with:
