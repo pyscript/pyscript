@@ -120,7 +120,7 @@ async def test_find_path_parallel():
 
     from pyscript import create_named_worker
     from pyscript.ffi import to_js
-    from ..worker_functions import upd_graph, dijkstra_path
+    from worker_functions import upd_graph, dijkstra_path
     import js
 
     our_workers = await js.Promise.all([
@@ -198,7 +198,7 @@ async def test_parallel_math():
 
     """
     from pyscript import create_named_worker
-    from ..worker_functions import times_table, power_table, log_table, mod_table
+    from worker_functions import times_table, power_table, log_table, mod_table
     import js
 
     our_workers = await js.Promise.all([
