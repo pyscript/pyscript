@@ -201,7 +201,7 @@ document and provides access to common elements like `page.body` and methods
 like `page.find()` for querying the DOM.
 """
 
-import js
+from js import console
 from pyscript import document, Event  # noqa: F401
 from pyscript.ffi import create_proxy, is_none
 
@@ -783,7 +783,7 @@ class Classes(set):
                 super().remove(name)
                 self._class_list.remove(name)
             else:
-                js.console.warn(f"Class '{name}' not found in element classes.")
+                console.warn(f"Class '{name}' not found in element classes.")
 
 
     def discard(self, class_name):
