@@ -337,6 +337,10 @@ class TestElement:
         assert div.classes == {"class1", "class2", "class3"}
         div.classes.remove("class2 class3")
         assert div.classes == {"class1"}
+        # Remove the final class
+        div.classes.remove("class1")
+        # Removing a non-existent class should not raise an error.
+        div.classes.remove("non-existent-class")
 
     async def test_when_decorator(self):
         called = False
