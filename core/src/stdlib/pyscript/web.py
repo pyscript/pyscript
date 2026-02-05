@@ -721,7 +721,7 @@ class Element:
 class Classes(set):
     """
     Manages CSS classes for an element.
-    
+
     Behaves like a Python `set` with changes automatically reflected in the
     element's `classList`.
 
@@ -774,7 +774,7 @@ class Classes(set):
     def remove(self, class_name):
         """
         Remove a CSS class.
-        
+
         Will log a warning if the class is not present, but will not raise an
         error.
         """
@@ -784,7 +784,6 @@ class Classes(set):
                 self._class_list.remove(name)
             else:
                 console.warn(f"Class '{name}' not found in element classes.")
-
 
     def discard(self, class_name):
         """
