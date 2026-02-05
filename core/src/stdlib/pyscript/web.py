@@ -201,7 +201,8 @@ document and provides access to common elements like `page.body` and methods
 like `page.find()` for querying the DOM.
 """
 
-from pyscript import document, when, Event  # noqa: F401
+from js import console
+from pyscript import document, Event  # noqa: F401
 from pyscript.ffi import create_proxy, is_none
 
 
@@ -719,13 +720,15 @@ class Element:
 
 class Classes(set):
     """
+    Manages CSS classes for an element.
+
     Behaves like a Python `set` with changes automatically reflected in the
     element's `classList`.
 
     ```python
     # Add and remove classes.
     element.classes.add("active")
-    element.classes.remove("inactive")
+    element.classes.remove("inactive")  # Warns if not present.
     element.classes.discard("maybe-missing")  # No error if absent.
 
     # Check membership.
@@ -742,7 +745,9 @@ class Classes(set):
     """
 
     def __init__(self, element):
-        """Initialise the Classes set for the given element."""
+        """
+        Initialise the CSS Classes set for the given element.
+        """
         self._class_list = element._dom_element.classList
         super().__init__(self._class_list)
 
@@ -759,26 +764,40 @@ class Classes(set):
         )
 
     def add(self, class_name):
-        """Add a class."""
+        """
+        Add a CSS class.
+        """
         for name in self._extract_class_names(class_name):
             super().add(name)
             self._class_list.add(name)
 
     def remove(self, class_name):
-        """Remove a class."""
+        """
+        Remove a CSS class.
+
+        Will log a warning if the class is not present, but will not raise an
+        error.
+        """
         for name in self._extract_class_names(class_name):
-            super().remove(name)
-            self._class_list.remove(name)
+            if name in self:
+                super().remove(name)
+                self._class_list.remove(name)
+            else:
+                console.warn(f"Class '{name}' not found in element classes.")
 
     def discard(self, class_name):
-        """Remove a class if present."""
+        """
+        Remove a CSS class if present.
+        """
         for name in self._extract_class_names(class_name):
             super().discard(name)
             if name in self._class_list:
                 self._class_list.remove(name)
 
     def clear(self):
-        """Remove all classes."""
+        """
+        Remove all CSS classes.
+        """
         super().clear()
         while self._class_list.length > 0:
             self._class_list.remove(self._class_list.item(0))
