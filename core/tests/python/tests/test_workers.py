@@ -166,7 +166,9 @@ async def test_find_path_parallel():
         expectation = expectations[name] = []
         for _ in range(len(our_workers)):
             a = nodes.pop()
+            nodes.insert(0, a)
             b = nodes.pop()
+            nodes.insert(0, b)
             expectation.append(dijkstra_path(a, b))
 
     for name, graph_d in graphs.items():
