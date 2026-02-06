@@ -185,7 +185,9 @@ async def test_find_path_parallel():
         # then submit nodes for them to find paths between
         for worker in our_workers:
             a = nodes.pop()
+            nodes.insert(0, a)
             b = nodes.pop()
+            nodes.insert(0, b)
             nodepairs.append((a, b))
             coros.append(worker.dijkstra_path(a, b))
         for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
