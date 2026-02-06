@@ -25,7 +25,7 @@ def get_message():
 
 graph_dict = {}
 
-def dijkstra_path(source, target):
+def dijkstra_path(graph_d, source, target):
     # Based on the implementation in networkx
     pred_dict = {}
     paths = {source: [source]}
@@ -41,7 +41,7 @@ def dijkstra_path(source, target):
         dist[v] = dist_v
         if v == target:
             break
-        for u, e in graph_dict[v].items():
+        for u, e in graph_d[v].items():
             vu_dist = dist_v + 1
             if u in dist:
                 u_dist = dist[u]
@@ -59,9 +59,17 @@ def dijkstra_path(source, target):
     path.reverse()
     return path
 
+def dijkstra_path_de_novo(graph_d, source, target):
+    return dijkstra_path(dict(graph_d), source, target)
+
+def dijkstra_path_persistent(source, target):
+    global graph_dict
+    return dijkstra_path(graph_dict, source, target)
+
 def upd_graph(graph_d):
     global graph_dict
-    graph_dict = graph_d
+    graph_dict.clear()
+    graph_dict.update(dict(graph_d))
 
 def _some_table(oper, a, b):
     ret = []
@@ -87,4 +95,4 @@ def log_table(a, b):
 def mod_table(a, b):
     return _some_table(fmod, a, b)
 
-__export__ = ["add", "multiply", "get_message", "upd_graph", "dijkstra_path", "times_table", "power_table", "log_table", "mod_table"]
+__export__ = ["add", "multiply", "get_message", "upd_graph", "dijkstra_path_de_novo", "dijkstra_path_persistent", "times_table", "power_table", "log_table", "mod_table"]
