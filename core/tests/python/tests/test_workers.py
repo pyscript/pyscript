@@ -154,6 +154,7 @@ async def test_find_path_parallel():
     }
     expectations = {}
     # First, find paths serially, so we know what to expect from the workers
+    random.seed(0)
     for name, graph_d in graphs.items():
         nodes_nonrandom = list(graph_d.keys())
         nodes = []
@@ -171,6 +172,8 @@ async def test_find_path_parallel():
             nodes.insert(0, b)
             expectation.append(dijkstra_path(a, b))
 
+    # Now, find paths in parallel
+    random.seed(0)
     for name, graph_d in graphs.items():
         nodes_nonrandom = list(graph_d.keys())
         nodes = []
@@ -190,6 +193,32 @@ async def test_find_path_parallel():
             nodes.insert(0, b)
             nodepairs.append((a, b))
             coros.append(worker.dijkstra_path(a, b))
+        for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
+            the_path = await coro
+            assert the_path == expected, f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
+    # And finally, find paths in parallel while keeping the graph in the worker"
+    random.seed(0)
+    for name, graph_d in graphs.items():
+        print(name)
+        nodes_nonrandom = list(graph_d.keys())
+        nodes = []
+        while len(nodes_nonrandom) > 1:
+            nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
+        nodes.append(nodes_nonrandom.pop())
+        print("nodes", nodes)
+        coros = []
+        nodepairs = []
+        # first make sure the workers have the latest graph
+        for worker in our_workers:
+            await worker.upd_graph(to_js(graph_d))
+        # then submit nodes for them to find paths between
+        for worker in our_workers:
+            a = nodes.pop()
+            nodes.insert(0, a)
+            b = nodes.pop()
+            nodes.insert(0, b)
+            nodepairs.append((a, b))
+            coros.append(worker.dijkstra_path_persistent(a, b))
         for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
             the_path = await coro
             assert the_path == expected, f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
