@@ -53,7 +53,7 @@ def dijkstra_path(source, target):
                 seen[u] = vu_dist
                 heappush(fringe, (vu_dist, next(c), u))
                 pred_dict[u] = [v]
-    path = paths[target] = []
+    path = paths[target] = [target]
     while (current_preds := pred_dict.get(path[-1])) is not None:
         path.append(current_preds[0])
     path.reverse()
