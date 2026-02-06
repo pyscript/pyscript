@@ -43,7 +43,7 @@ const reBundle = (name) => Promise.resolve(`export * from "${name}";\n`);
 //    Promise<string> as resolved content
 const modules = {
     // toml
-    "toml.js": join(node_modules, "@webreflection", "toml-j0.4", "toml.js"),
+    // "toml.js": join(node_modules, "@webreflection", "toml-j0.4", "toml.js"),
 
     // xterm
     "xterm.js": resolve("@xterm/xterm"),
