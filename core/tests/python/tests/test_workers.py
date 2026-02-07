@@ -244,16 +244,29 @@ async def test_find_path_parallel_persistent():
         for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
             the_path = await coro
             assert the_path == expected, f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
-    # And finally, find paths in parallel while keeping the graph in the worker"
+
+async def test_find_path_parallel_persistent():
+    import random
+    from pyscript import create_named_worker
+    from pyscript.ffi import to_js
+    from worker_functions import dijkstra_path
+    import js
+
+    our_workers = await js.Promise.all([
+        create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
+        create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
+    ])
+    assert all(our_workers)
+    expectations = _gen_expected_paths(GRAPHS, len(our_workers))
+
     random.seed(0)
-    for name, graph_d in graphs.items():
+    for name, graph_d in GRAPHS.items():
         print(name)
         nodes_nonrandom = list(graph_d.keys())
         nodes = []
         while len(nodes_nonrandom) > 1:
             nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
         nodes.append(nodes_nonrandom.pop())
-        print("nodes", nodes)
         coros = []
         nodepairs = []
         # first make sure the workers have the latest graph
