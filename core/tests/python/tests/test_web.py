@@ -628,6 +628,48 @@ class TestCollection:
         assert div2.innerHTML == "Hello"
         assert div2.title == "Test"
 
+    def test_update_all_classes_parameter(self):
+        """Test updating the class list of all elements."""
+        div1 = web.div()
+        div2 = web.div()
+        collection = web.ElementCollection([div1, div2])
+
+        collection.update_all(classes="active")
+
+        assert "active" in div1.className
+        assert "active" in div2.className
+
+    def test_update_all_style_parameter(self):
+        """Test updating the style of all elements."""
+        div1 = web.div()
+        div2 = web.div()
+        collection = web.ElementCollection([div1, div2])
+
+        collection.update_all(style={"color": "red"})
+
+        assert div1.style["color"] == "red"
+        assert div2.style["color"] == "red"
+
+    def test_update_all_combined(self):
+        """Test updating classes, styles, and content together."""
+        div1 = web.div()
+        div2 = web.div()
+        collection = web.ElementCollection([div1, div2])
+
+        collection.update_all(
+            classes="active",
+            style={"color": "blue"},
+            innerHTML="Hi"
+        )
+
+        assert "active" in div1.className
+        assert div1.innerHTML == "Hi"
+        assert div1.style["color"] == "blue"
+
+        assert "active" in div2.className
+        assert div2.innerHTML == "Hi"
+        assert div2.style["color"] == "blue"
+
     def test_collection_getitem_by_id(self):
         """Test looking up element by id in collection."""
         div1 = web.div(web.p("Child", id="find-me"))
