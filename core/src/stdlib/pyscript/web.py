@@ -1162,9 +1162,7 @@ class ElementCollection:
     def update_all(self, classes=None, style=None, **kwargs):
         """
         Explicitly update all elements with the given `classes`, `style`, and
-        `attributes` (via arbitrary `**kwargs`).
-
-        Delegates to each element's `update` method.
+        `attributes`. Delegates to each element's `update` method.
 
         ```python
         collection.update_all(innerHTML="Hello")
