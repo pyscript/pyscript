@@ -290,6 +290,32 @@ class TestElement:
         for i in range(len(collection)):
             assert div.children[-1 - i].id == collection[-1 - i].id
 
+    """
+    Ensure that appending a string adds a text node.
+    """
+    def test_append_string(self):
+        id_ = "element-append-tests"
+        div = web.page[f"#{id_}"]
+        len_children_before = len(div.children)
+        text_to_append = "a simple string"
+        div.append(text_to_append)
+        assert len(div.children) == len_children_before
+        assert div._dom_element.textContent.endswith(text_to_append)
+
+    """
+    Test that appending a string does not overwrite existing children.
+    """
+    def test_append_multiple_mixed_types(self):
+        id_ = "element-append-tests"
+        div = web.page[f"#{id_}"]
+        new_el = web.p("First item", id="first-p")
+        div.append(new_el)
+        text_to_append = "Second item"
+        div.append(text_to_append)
+        assert div.children[-1].id == "first-p"
+        assert "First item" in div._dom_element.textContent
+        assert div._dom_element.textContent.endswith(text_to_append)
+
     def test_read_classes(self):
         id_ = "test_class_selector"
         expected_class = "a-test-class"
@@ -311,6 +337,10 @@ class TestElement:
         assert div.classes == {"class1", "class2", "class3"}
         div.classes.remove("class2 class3")
         assert div.classes == {"class1"}
+        # Remove the final class
+        div.classes.remove("class1")
+        # Removing a non-existent class should not raise an error.
+        div.classes.remove("non-existent-class")
 
     async def test_when_decorator(self):
         called = False
@@ -597,6 +627,48 @@ class TestCollection:
         assert div1.title == "Test"
         assert div2.innerHTML == "Hello"
         assert div2.title == "Test"
+
+    def test_update_all_classes_parameter(self):
+        """Test updating the class list of all elements."""
+        div1 = web.div()
+        div2 = web.div()
+        collection = web.ElementCollection([div1, div2])
+
+        collection.update_all(classes="active")
+
+        assert "active" in div1.className
+        assert "active" in div2.className
+
+    def test_update_all_style_parameter(self):
+        """Test updating the style of all elements."""
+        div1 = web.div()
+        div2 = web.div()
+        collection = web.ElementCollection([div1, div2])
+
+        collection.update_all(style={"color": "red"})
+
+        assert div1.style["color"] == "red"
+        assert div2.style["color"] == "red"
+
+    def test_update_all_combined(self):
+        """Test updating classes, styles, and content together."""
+        div1 = web.div()
+        div2 = web.div()
+        collection = web.ElementCollection([div1, div2])
+
+        collection.update_all(
+            classes="active",
+            style={"color": "blue"},
+            innerHTML="Hi"
+        )
+
+        assert "active" in div1.className
+        assert div1.innerHTML == "Hi"
+        assert div1.style["color"] == "blue"
+
+        assert "active" in div2.className
+        assert div2.innerHTML == "Hi"
+        assert div2.style["color"] == "blue"
 
     def test_collection_getitem_by_id(self):
         """Test looking up element by id in collection."""
@@ -1490,11 +1562,11 @@ class TestErrorCases:
         with upytest.raises(ValueError):
             div.on_nonexistent_event
 
-    def test_invalid_append_type(self):
-        """Test that appending invalid types raises TypeError."""
+    def test_append_number(self):
+        """Test that appending numbers is supported and renders as text."""
         div = web.div()
-        with upytest.raises(TypeError):
-            div.append(12345)  # Numbers can't be appended
+        div.append(12345)
+        assert div._dom_element.textContent == "12345"
 
     def test_event_name_without_on_prefix(self):
         """Test that get_event requires on_ prefix."""
