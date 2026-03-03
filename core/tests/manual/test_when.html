@@ -11,14 +11,25 @@
         <p>Click for a hi!</p>
 
         <py-script>
-            from pyscript import window, when
-            @when("click", selector="#say-hi")
+            from pyscript import window, document, web, when
 
+            i = 0
+
+            @when("click", "#add-hi")
+            def add_hi():
+                global i
+                i += 1
+                button = web.button(f"Click Me {i}", classes=["say-hi"])
+                document.body.prepend(document.createElement("br"))
+                document.body.prepend(button._dom_element)
+
+            @when("click", selector=".say-hi", live=True)
             def say_hi(event):
                 window.alert("Hi! 🤗")
         </py-script>
 
-        <button id="say-hi">Click Me</button>
+        <button class="say-hi">Click Me</button>
+        <button id="add-hi">Add</button>
 
     </body>
 </html>

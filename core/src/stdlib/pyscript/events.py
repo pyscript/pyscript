@@ -84,6 +84,30 @@ class Event:
             self._listeners = []
 
 
+from _pyscript import QSAO
+
+def handle(element, connected, selector):
+    for entries in Selectors[selector]:
+        event_type, proxy, options, = entries
+        if connected:
+            element.addEventListener(
+                event_type,
+                proxy,
+                to_js(options) if options else False
+            )
+        else:
+            element.removeEventListener(event_type, proxy)
+
+Observed = to_js([])
+Selectors = {}
+
+QSAO = QSAO(
+    to_js({
+        "query": Observed,
+        "handle": handle
+    })
+)
+
 def when(event_type, selector=None, **options):
     """
     A decorator to handle DOM events or custom `Event` objects.
@@ -165,13 +189,27 @@ def when(event_type, selector=None, **options):
             for event in event_type:
                 event.add_listener(wrapper)
         else:
-            # DOM event - attach to all matched elements.
-            for element in elements:
-                element.addEventListener(
-                    event_type,
-                    create_proxy(wrapper),
-                    to_js(options) if options else False,
-                )
+            proxy = create_proxy(wrapper)
+
+            if "live" in options and options["live"]:
+                if selector not in Selectors:
+                    Selectors[selector] = []
+
+                Selectors[selector].append([event_type, proxy, options])
+
+                if not Observed.includes(selector):
+                    Observed.push(selector)
+                    QSAO.parse(elements)
+
+            else:
+                # DOM event - attach to all matched elements.
+                for element in elements:
+                    element.addEventListener(
+                        event_type,
+                        proxy,
+                        to_js(options) if options else False,
+                    )
+
         return wrapper
 
     return decorator
