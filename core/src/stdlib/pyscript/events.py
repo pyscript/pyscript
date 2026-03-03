@@ -86,27 +86,27 @@ class Event:
 
 from _pyscript import QSAO
 
+
 def handle(element, connected, selector):
     for entries in Selectors[selector]:
-        event_type, proxy, options, = entries
+        (
+            event_type,
+            proxy,
+            options,
+        ) = entries
         if connected:
             element.addEventListener(
-                event_type,
-                proxy,
-                to_js(options) if options else False
+                event_type, proxy, to_js(options) if options else False
             )
         else:
             element.removeEventListener(event_type, proxy)
 
+
 Observed = to_js([])
 Selectors = {}
 
-QSAO = QSAO(
-    to_js({
-        "query": Observed,
-        "handle": handle
-    })
-)
+QSAO = QSAO(to_js({"query": Observed, "handle": handle}))
+
 
 def when(event_type, selector=None, **options):
     """
