@@ -19,9 +19,6 @@ on:
 jobs:
     BuildAndTest:
         runs-on: ubuntu-latest
-        env:
-            MINICONDA_PYTHON_VERSION: py38
-            MINICONDA_VERSION: 4.11.0
         steps:
             - name: Checkout
               uses: actions/checkout@v5
@@ -35,6 +32,12 @@ jobs:
             # 'fetch-depth: 3' above.
             - name: git log
               run: git log --graph -3
+
+            - name: Setup Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: 3.14
+                  cache: "pip"
 
             - name: Install node
               uses: actions/setup-node@v5
@@ -54,12 +57,9 @@ jobs:
                       ${{ runner.os }}-build-
                       ${{ runner.os }}-
 
-            - name: setup Miniconda
-              uses: conda-incubator/setup-miniconda@v3
-
             - name: Create and activate virtual environment
               run: |
-                  python3 -m venv test_venv
+                  python3.14 -m venv test_venv
                   source test_venv/bin/activate
                   echo PATH=$PATH >> $GITHUB_ENV
                   echo VIRTUAL_ENV=$VIRTUAL_ENV >> $GITHUB_ENV
