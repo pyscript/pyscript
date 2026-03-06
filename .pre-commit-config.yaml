@@ -4,6 +4,9 @@ ci:
     #skip: [eslint]
     autoupdate_schedule: monthly
 
+default_language_version:
+    python: python3.14
+
 default_stages: [pre-commit]
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -24,14 +27,14 @@ repos:
           - id: trailing-whitespace
 
     - repo: https://github.com/psf/black-pre-commit-mirror
-      rev: 25.9.0
+      rev: 26.1.0
       hooks:
           - id: black
             exclude: core/tests
             args: ["-l", "88", "--skip-string-normalization"]
 
     - repo: https://github.com/codespell-project/codespell
-      rev: v2.4.1
+      rev: v2.4.2
       hooks:
           - id: codespell # See 'pyproject.toml' for args
             exclude: fs\.py|\.js\.map$
@@ -39,7 +42,7 @@ repos:
                 - tomli
 
     - repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: v0.13.3
+      rev: v0.15.5
       hooks:
           - id: ruff
             exclude: core/tests

@@ -205,7 +205,6 @@ from js import console
 from pyscript import document, Event  # noqa: F401
 from pyscript.ffi import create_proxy, is_none
 
-
 # Utility functions for finding and wrapping DOM elements.
 
 
