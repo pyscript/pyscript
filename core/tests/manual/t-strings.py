@@ -9,7 +9,7 @@ def domdom(template):
     strings = template.strings
     if strings in already_parsed:
         content = already_parsed[strings].cloneNode(True)
-    else: 
+    else:
         interpolations = template.interpolations
         el = document.createElement('template')
 
