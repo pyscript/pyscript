@@ -3,6 +3,7 @@
 import "./zero-redirect.js";
 import stickyModule from "sticky-module";
 import withResolvers from "@webreflection/utils/with-resolvers";
+import QSAO from "qsa-observer";
 
 import {
     INVALID_CONTENT,
@@ -171,6 +172,7 @@ for (const [TYPE, interpreter] of TYPES) {
             PyWorker,
             fs,
             interpreter,
+            QSAO,
             js_import: (...urls) => Promise.all(urls.map((url) => import(url))),
             get target() {
                 return isScript(currentElement)
