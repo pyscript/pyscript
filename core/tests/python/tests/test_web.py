@@ -673,15 +673,28 @@ class TestCollection:
     def test_collection_getitem_by_id(self):
         """Test looking up element by id in collection."""
         div1 = web.div(web.p("Child", id="find-me"))
-        div2 = web.div(web.p("Child 2"))
+        div2 = web.div(web.p("Child 2"), id="other-div")
         collection = web.ElementCollection([div1, div2])
 
         web.page.body.append(div1)
         web.page.body.append(div2)
 
+        # Find a child element by id.
         result = collection["find-me"]
         assert result is not None
         assert result.id == "find-me"
+        # Find an element contained within the collection by id.
+        result = collection["other-div"]
+        assert result is not None
+        assert result.id == "other-div"
+        # Check with # prefix as well.
+        result = collection["#find-me"]
+        assert result is not None
+        assert result.id == "find-me"
+        # And for the other one too.
+        result = collection["#other-div"]
+        assert result is not None
+        assert result.id == "other-div"
 
 
 class TestCreation:
