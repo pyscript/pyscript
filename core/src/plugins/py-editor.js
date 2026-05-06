@@ -38,7 +38,7 @@ const getRelatedScript = (target, type) => {
     return editor?.parentNode?.previousElementSibling;
 };
 
-async function execute({ currentTarget, script }, onBeforeRun = '') {
+async function execute({ currentTarget, script }, onBeforeRun = "") {
     const { env, pySrc, outDiv } = this;
     const hasRunButton = !!currentTarget;
 
@@ -152,7 +152,7 @@ async function execute({ currentTarget, script }, onBeforeRun = '') {
                 console.error(str);
             }
         };
-        if (onBeforeRun) onBeforeRun += ';';
+        if (onBeforeRun) onBeforeRun += ";";
         sync.runAsync(onBeforeRun + pySrc).then(enable, enable);
     });
 }
@@ -206,7 +206,10 @@ const makeRunButton = (handler, type) => {
             return;
         }
         runButton.blur();
-        await handler.handleEvent(event, script?.getAttribute("onbeforerun") || "");
+        await handler.handleEvent(
+            event,
+            script?.getAttribute("onbeforerun") || "",
+        );
     });
     return runButton;
 };
@@ -341,7 +344,11 @@ const init = async (script, type, interpreter) => {
                         });
                         // avoid executing the default handler if the override returned `false`
                         if ((await callback(event)) !== false)
-                            await execute.call(context, { currentTarget }, onBeforeRun);
+                            await execute.call(
+                                context,
+                                { currentTarget },
+                                onBeforeRun,
+                            );
                     };
                 }
             },
@@ -419,10 +426,10 @@ const init = async (script, type, interpreter) => {
     const inputChild = boxDiv.querySelector(`.${type}-editor-input > div`);
     const parent = inputChild.attachShadow({ mode: "open" });
     // avoid inheriting styles from the outer component
-    const styles = [':host { all: initial; }'];
+    const styles = [":host { all: initial; }"];
     const rows = script.getAttribute("rows");
     if (rows) {
-        const maxHeight = Math.floor(parseInt(rows) * 18.5) + 'px';
+        const maxHeight = Math.floor(parseInt(rows) * 18.5) + "px";
         styles.push(`.cm-editor { height: auto; max-height: ${maxHeight}; }`);
     }
     parent.innerHTML = `<style>${styles.join("\n")}</style>`;
