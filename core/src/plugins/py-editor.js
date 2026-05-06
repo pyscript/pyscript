@@ -38,7 +38,7 @@ const getRelatedScript = (target, type) => {
     return editor?.parentNode?.previousElementSibling;
 };
 
-async function execute({ currentTarget, script }) {
+async function execute({ currentTarget, script }, onBeforeRun = '') {
     const { env, pySrc, outDiv } = this;
     const hasRunButton = !!currentTarget;
 
@@ -152,7 +152,8 @@ async function execute({ currentTarget, script }) {
                 console.error(str);
             }
         };
-        sync.runAsync(pySrc).then(enable, enable);
+        if (onBeforeRun) onBeforeRun += ';';
+        sync.runAsync(onBeforeRun + pySrc).then(enable, enable);
     });
 }
 
@@ -176,11 +177,11 @@ const makeRunButton = (handler, type) => {
     runButton.innerHTML = RUN_BUTTON;
     runButton.setAttribute("aria-label", "Python Script Run Button");
     runButton.addEventListener("click", async (event) => {
+        const script = getRelatedScript(runButton, type);
         if (
             runButton.classList.contains("running") &&
             confirm("Stop evaluating this code?")
         ) {
-            const script = getRelatedScript(runButton, type);
             if (script) {
                 const env = script.getAttribute("env");
                 // remove the bootstrapped env which could be one or shared
@@ -205,7 +206,7 @@ const makeRunButton = (handler, type) => {
             return;
         }
         runButton.blur();
-        await handler.handleEvent(event);
+        await handler.handleEvent(event, script?.getAttribute("onbeforerun") || "");
     });
     return runButton;
 };
@@ -276,7 +277,9 @@ const init = async (script, type, interpreter) => {
         }).onmessage = ({ target }) => target.terminate();
     }
 
-    if (hasConfig && configs.has(env)) {
+    // allow bootstrap with same env for repeated editor creation
+    // only if `env-override` is explicitly set as attribute
+    if (hasConfig && configs.has(env) && !script.hasAttribute("env-override")) {
         throw new SyntaxError(
             configs.get(env)
                 ? `duplicated config for env: ${env}`
@@ -328,7 +331,7 @@ const init = async (script, type, interpreter) => {
                 // in every other case be sure that if the listener override returned
                 // `false` nothing happens, otherwise keep doing what it always did
                 else {
-                    context.handleEvent = async (event) => {
+                    context.handleEvent = async (event, onBeforeRun) => {
                         // trap the currentTarget ASAP (if any)
                         // otherwise it gets lost asynchronously
                         const { currentTarget } = event;
@@ -338,7 +341,7 @@ const init = async (script, type, interpreter) => {
                         });
                         // avoid executing the default handler if the override returned `false`
                         if ((await callback(event)) !== false)
-                            await execute.call(context, { currentTarget });
+                            await execute.call(context, { currentTarget }, onBeforeRun);
                     };
                 }
             },
@@ -388,8 +391,7 @@ const init = async (script, type, interpreter) => {
     };
 
     if (isSetup) {
-        await context.handleEvent({ currentTarget: null, script });
-        notifyEditor();
+        context.handleEvent({ currentTarget: null, script }).then(notifyEditor);
         return;
     }
 
@@ -417,7 +419,13 @@ const init = async (script, type, interpreter) => {
     const inputChild = boxDiv.querySelector(`.${type}-editor-input > div`);
     const parent = inputChild.attachShadow({ mode: "open" });
     // avoid inheriting styles from the outer component
-    parent.innerHTML = `<style> :host { all: initial; }</style>`;
+    const styles = [':host { all: initial; }'];
+    const rows = script.getAttribute("rows");
+    if (rows) {
+        const maxHeight = Math.floor(parseInt(rows) * 18.5) + 'px';
+        styles.push(`.cm-editor { height: auto; max-height: ${maxHeight}; }`);
+    }
+    parent.innerHTML = `<style>${styles.join("\n")}</style>`;
 
     target.appendChild(boxDiv);
 
