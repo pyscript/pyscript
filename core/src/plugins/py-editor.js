@@ -282,12 +282,19 @@ const init = async (script, type, interpreter) => {
 
     // allow bootstrap with same env for repeated editor creation
     // only if `env-override` is explicitly set as attribute
-    if (hasConfig && configs.has(env) && !script.hasAttribute("env-override")) {
-        throw new SyntaxError(
-            configs.get(env)
-                ? `duplicated config for env: ${env}`
-                : `unable to add a config to the env: ${env}`,
-        );
+    if (hasConfig && configs.has(env)) {
+        if (script.hasAttribute("env-override")) {
+            // in this case we need to bootstrap the env again
+            // because otherwise each env would leak
+            envs.delete(env);
+        }
+        else {
+            throw new SyntaxError(
+                configs.get(env)
+                    ? `duplicated config for env: ${env}`
+                    : `unable to add a config to the env: ${env}`,
+            );
+        }
     }
 
     configs.set(env, hasConfig);
