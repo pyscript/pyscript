@@ -239,12 +239,13 @@ const makeOutDiv = (type) => {
     return outDiv;
 };
 
-const makeBoxDiv = (handler, type) => {
+const makeBoxDiv = (handler, type, output) => {
     const boxDiv = document.createElement("div");
     boxDiv.className = `${type}-editor-box`;
 
     const editorDiv = makeEditorDiv(handler, type);
-    const outDiv = makeOutDiv(type);
+    const outDiv = output ? document.getElementById(output) : makeOutDiv(type);
+    if (output) outDiv.classList.add(`${type}-editor-output`);
     boxDiv.append(editorDiv, outDiv);
 
     return [boxDiv, outDiv, editorDiv.querySelector("button")];
@@ -427,7 +428,7 @@ const init = async (script, type, interpreter) => {
     if (!target.hasAttribute("root")) target.setAttribute("root", target.id);
 
     // @see https://github.com/JeffersGlass/mkdocs-pyscript/blob/main/mkdocs_pyscript/js/makeblocks.js
-    const [boxDiv, outDiv, runButton] = makeBoxDiv(context, type);
+    const [boxDiv, outDiv, runButton] = makeBoxDiv(context, type, script.getAttribute("output"));
     boxDiv.dataset.env = script.hasAttribute("env") ? env : interpreter;
 
     const inputChild = boxDiv.querySelector(`.${type}-editor-input > div`);
