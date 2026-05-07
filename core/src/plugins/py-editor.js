@@ -288,8 +288,7 @@ const init = async (script, type, interpreter) => {
             // in this case we need to bootstrap the env again
             // because otherwise each env would leak
             envs.delete(env);
-        }
-        else {
+        } else {
             throw new SyntaxError(
                 configs.get(env)
                     ? `duplicated config for env: ${env}`
@@ -428,7 +427,11 @@ const init = async (script, type, interpreter) => {
     if (!target.hasAttribute("root")) target.setAttribute("root", target.id);
 
     // @see https://github.com/JeffersGlass/mkdocs-pyscript/blob/main/mkdocs_pyscript/js/makeblocks.js
-    const [boxDiv, outDiv, runButton] = makeBoxDiv(context, type, script.getAttribute("output"));
+    const [boxDiv, outDiv, runButton] = makeBoxDiv(
+        context,
+        type,
+        script.getAttribute("output"),
+    );
     boxDiv.dataset.env = script.hasAttribute("env") ? env : interpreter;
 
     const inputChild = boxDiv.querySelector(`.${type}-editor-input > div`);
