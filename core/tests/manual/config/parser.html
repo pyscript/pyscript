@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PyScript Next</title>
+        <link rel="stylesheet" href="../../../dist/core.css">
+        <script type="module" src="../../../dist/core.js"></script>
+    </head>
+    <body>
+        <mpy-config config-parser="./toml.js">name = first</mpy-config>
+        <script type="mpy">
+          from pyscript import RUNNING_IN_WORKER
+          print('main', RUNNING_IN_WORKER)
+        </script>
+        <script type="mpy" worker>
+          from pyscript import RUNNING_IN_WORKER
+          print('worker', RUNNING_IN_WORKER)
+        </script>
+    </body>
+</html>

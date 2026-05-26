@@ -9,6 +9,7 @@ import TYPES from "./types.js";
 import allPlugins from "./plugins.js";
 import { robustFetch as fetch, getText } from "./fetch.js";
 import { ErrorCode } from "./exceptions.js";
+import { toml as tomlParser } from "polyscript/exports";
 
 const { BAD_CONFIG, CONFLICTING_CODE } = ErrorCode;
 
@@ -43,6 +44,11 @@ export const configDetails = async (config, type) => {
     return { json, toml: toml || (!json && !!text), text, url };
 };
 
+const configParser = (pyElement) => {
+    const parser = pyElement.getAttribute("config-parser");
+    return parser ? new URL(parser, location.href).href : undefined;
+};
+
 const conflictError = (reason) => new Error(`(${CONFLICTING_CODE}): ${reason}`);
 
 const relative_url = (url, base = location.href) => new URL(url, base).href;
@@ -59,7 +65,7 @@ for (const [TYPE] of TYPES) {
     /** @type {() => Promise<[...any]>} A Promise wrapping any plugins which should be loaded. */
     let plugins;
 
-    /** @type {any} The PyScript configuration parsed from the JSON or TOML object*. May be any of the return types of JSON.parse() or toml-j0.4's parse() ( {number | string | boolean | null | object | Array} ) */
+    /** @type {any} The PyScript configuration parsed from the JSON or TOML object*. May be any of the return types of JSON.parse() or basic-toml's parse() ( {number | string | boolean | null | object | Array} ) */
     let parsed;
 
     /** @type {Error | undefined} The error thrown when parsing the PyScript config, if any.*/
@@ -93,11 +99,11 @@ for (const [TYPE] of TYPES) {
             [pyElement] = pyConfigs;
             config = pyElement.getAttribute("src") || pyElement.textContent;
             type = pyElement.getAttribute("type");
-            parser = pyElement.getAttribute("config-parser");
+            parser = configParser(pyElement);
         } else if (attrConfigs.length) {
             [pyElement, ...attrConfigs] = attrConfigs;
             config = pyElement.getAttribute("config");
-            parser = pyElement.getAttribute("config-parser");
+            parser = configParser(pyElement);
             // throw an error if dirrent scripts use different configs
             if (
                 attrConfigs.some((el) => el.getAttribute("config") !== config)
@@ -125,11 +131,10 @@ for (const [TYPE] of TYPES) {
                 try {
                     const module = parser
                         ? await import(parser)
-                        : await import(
-                              /* webpackIgnore: true */ "./3rd-party/toml.js"
-                          );
-                    const parse = module.parse || module.default;
-                    parsed = parse(text);
+                        : await tomlParser(text).then((json) => ({
+                              parse: () => json,
+                          }));
+                    parsed = (module.parse || module.default)(text);
                 } catch (e) {
                     error = syntaxError("TOML", url, e);
                 }
@@ -163,7 +168,7 @@ for (const [TYPE] of TYPES) {
     if (Number.isSafeInteger(parsed?.experimental_ffi_timeout))
         globalThis.reflected_ffi_timeout = parsed?.experimental_ffi_timeout;
 
-    configs.set(TYPE, { config: parsed, configURL, plugins, error });
+    configs.set(TYPE, { config: parsed, configURL, parser, plugins, error });
 }
 
 export { configs, relative_url };

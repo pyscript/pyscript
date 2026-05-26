@@ -1,9 +1,12 @@
 """
 Numpty test code to run in a worker for pyscript.workers module tests.
 """
+
 from heapq import heappush, heappop
 from itertools import count
 from math import log, fmod
+
+from pyscript import sync
 
 
 def add(a, b):
@@ -15,13 +18,15 @@ def multiply(a, b):
 
 
 def power(a, b):
-    return a ** b
+    return a**b
 
 
 def get_message():
     return "Hello from worker"
 
+
 graph_dict = {}
+
 
 def dijkstra_path(graph_d, source, target):
     # Based on the implementation in networkx
@@ -57,17 +62,21 @@ def dijkstra_path(graph_d, source, target):
     path.reverse()
     return path
 
+
 def dijkstra_path_de_novo(graph_d, source, target):
     return dijkstra_path(dict(graph_d), source, target)
+
 
 def dijkstra_path_persistent(source, target):
     global graph_dict
     return dijkstra_path(graph_dict, source, target)
 
+
 def upd_graph(graph_d):
     global graph_dict
     graph_dict.clear()
     graph_dict.update(dict(graph_d))
+
 
 def _some_table(oper, a, b):
     ret = []
@@ -81,16 +90,32 @@ def _some_table(oper, a, b):
         ret.append(xs)
     return ret
 
+
 def times_table(a, b):
     return _some_table(multiply, a, b)
+
 
 def power_table(a, b):
     return _some_table(power, a, b)
 
+
 def log_table(a, b):
     return _some_table(log, a, b)
+
 
 def mod_table(a, b):
     return _some_table(fmod, a, b)
 
-__export__ = ["add", "multiply", "get_message", "upd_graph", "dijkstra_path_de_novo", "dijkstra_path_persistent", "times_table", "power_table", "log_table", "mod_table"]
+
+__export__ = [
+    "add",
+    "multiply",
+    "get_message",
+    "upd_graph",
+    "dijkstra_path_de_novo",
+    "dijkstra_path_persistent",
+    "times_table",
+    "power_table",
+    "log_table",
+    "mod_table",
+]

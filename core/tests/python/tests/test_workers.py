@@ -179,7 +179,6 @@ async def test_find_path_parallel():
     expectations = _gen_expected_paths(GRAPHS, len(our_workers))
 
     random.seed(0)
-    random.seed(0)
     for name, graph_d in GRAPHS.items():
         nodes_nonrandom = list(graph_d.keys())
         nodes = []
@@ -245,6 +244,7 @@ async def test_find_path_parallel_persistent():
             the_path = await coro
             assert the_path == expected, f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
 
+<<<<<<< HEAD
 async def test_find_path_parallel_persistent():
     import random
     from pyscript import create_named_worker
@@ -284,6 +284,8 @@ async def test_find_path_parallel_persistent():
             the_path = await coro
             assert the_path == expected, f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
 
+=======
+>>>>>>> refs/remotes/origin/networkx
 @upytest.skip("Main thread only", skip_when=RUNNING_IN_WORKER)
 async def test_parallel_math():
     """
@@ -313,4 +315,8 @@ async def test_parallel_math():
         coros.append(func(1000, 1000))
     for coro, func, expected in zip(coros, funcs, expectations):
         calculated = await coro
+<<<<<<< HEAD
         assert calculated == expected, f"{func.__name__}(1000, 1000) should equal {expected}, not {calculated}"
+=======
+        assert calculated == expected, f"{func.__name__}(1000, 1000) should equal {expected}, not {calculated}"
+>>>>>>> refs/remotes/origin/networkx

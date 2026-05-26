@@ -49,6 +49,7 @@ print(result)
 ```
 
 Key features:
+
 - Access (`await`) named workers via dictionary-like syntax.
 - Dynamically create workers from Python.
 - Cross-interpreter support (Pyodide and MicroPython).
