@@ -205,7 +205,6 @@ from js import console
 from pyscript import document, Event  # noqa: F401
 from pyscript.ffi import create_proxy, is_none
 
-
 # Utility functions for finding and wrapping DOM elements.
 
 
@@ -1113,7 +1112,10 @@ class ElementCollection:
             return ElementCollection(self._elements[key])
         if isinstance(key, str):
             for element in self._elements:
-                result = _find_by_id(element._dom_element, key)
+                element_id = key[1:] if key.startswith("#") else key
+                if element.id == element_id:
+                    return element
+                result = _find_by_id(element._dom_element, element_id)
                 if result:
                     return result
             return None
