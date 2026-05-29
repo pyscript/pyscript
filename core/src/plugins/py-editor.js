@@ -445,7 +445,8 @@ const init = async (script, type, interpreter) => {
     const rows = script.getAttribute("rows");
     if (rows) {
         const maxHeight = Math.floor(parseInt(rows) * 18.5) + "px";
-        styles.push(`.cm-editor { height: auto; max-height: ${maxHeight}; }`);
+        const minHeight = Math.floor(3 * 18.5) + "px";
+        styles.push(`.cm-editor { height: auto; max-height: ${maxHeight}; min-height: ${minHeight}; }`);
     }
     parent.innerHTML = `<style>${styles.join("\n")}</style>`;
 
