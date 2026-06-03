@@ -23,7 +23,7 @@ mpy-config {
 }
 .py-editor-output,
 .mpy-editor-output {
-    white-space: pre;
+    white-space: pre-wrap;
 }
 .py-editor-run-button,
 .mpy-editor-run-button {
