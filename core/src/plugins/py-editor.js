@@ -5,8 +5,11 @@ import { TYPES, offline_interpreter, relative_url, stdlib } from "../core.js";
 import { notify } from "./error.js";
 import codemirror from "./codemirror.js";
 
-const RUN_BUTTON = `<svg style="height:24px;width:24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,12a1,1,0,0,1-.55.89l-10,5A1,1,0,0,1,8,18a1,1,0,0,1-.53-.15A1,1,0,0,1,7,17V7a1,1,0,0,1,1.45-.89l10,5A1,1,0,0,1,19,12Z" fill="#464646"/></svg>`;
-const STOP_BUTTON = `<svg style="height:24px;width:24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 7h10v10H7z" style="fill:#464646;stroke:#464646;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;paint-order:normal"/></svg>`;
+// Define the run and stop buttons as SVG icons
+// These can be replaced with custom icons if desired
+// through `data-run` and `data-stop` (dataset) attributes.
+let RUN_BUTTON = `<svg style="height:24px;width:24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,12a1,1,0,0,1-.55.89l-10,5A1,1,0,0,1,8,18a1,1,0,0,1-.53-.15A1,1,0,0,1,7,17V7a1,1,0,0,1,1.45-.89l10,5A1,1,0,0,1,19,12Z" fill="#464646"/></svg>`;
+let STOP_BUTTON = `<svg style="height:24px;width:24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 7h10v10H7z" style="fill:#464646;stroke:#464646;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;paint-order:normal"/></svg>`;
 
 let id = 0;
 const getID = (type) => `${type}-editor-${id++}`;
@@ -38,7 +41,7 @@ const getRelatedScript = (target, type) => {
     return editor?.parentNode?.previousElementSibling;
 };
 
-async function execute({ currentTarget, script }) {
+async function execute({ currentTarget, script }, onBeforeRun = "") {
     const { env, pySrc, outDiv } = this;
     const hasRunButton = !!currentTarget;
 
@@ -152,7 +155,8 @@ async function execute({ currentTarget, script }) {
                 console.error(str);
             }
         };
-        sync.runAsync(pySrc).then(enable, enable);
+        if (onBeforeRun) onBeforeRun += ";";
+        sync.runAsync(onBeforeRun + pySrc).then(enable, enable);
     });
 }
 
@@ -176,11 +180,11 @@ const makeRunButton = (handler, type) => {
     runButton.innerHTML = RUN_BUTTON;
     runButton.setAttribute("aria-label", "Python Script Run Button");
     runButton.addEventListener("click", async (event) => {
+        const script = getRelatedScript(runButton, type);
         if (
             runButton.classList.contains("running") &&
             confirm("Stop evaluating this code?")
         ) {
-            const script = getRelatedScript(runButton, type);
             if (script) {
                 const env = script.getAttribute("env");
                 // remove the bootstrapped env which could be one or shared
@@ -205,7 +209,10 @@ const makeRunButton = (handler, type) => {
             return;
         }
         runButton.blur();
-        await handler.handleEvent(event);
+        await handler.handleEvent(
+            event,
+            script?.getAttribute("onbeforerun") || "",
+        );
     });
     return runButton;
 };
@@ -235,12 +242,14 @@ const makeOutDiv = (type) => {
     return outDiv;
 };
 
-const makeBoxDiv = (handler, type) => {
+const makeBoxDiv = (handler, type, output) => {
     const boxDiv = document.createElement("div");
     boxDiv.className = `${type}-editor-box`;
 
     const editorDiv = makeEditorDiv(handler, type);
-    const outDiv = makeOutDiv(type);
+    // allow specifying an existing output div by id
+    const outDiv = output ? document.getElementById(output) : makeOutDiv(type);
+    if (output) outDiv.classList.add(`${type}-editor-output`);
     boxDiv.append(editorDiv, outDiv);
 
     return [boxDiv, outDiv, editorDiv.querySelector("button")];
@@ -268,6 +277,11 @@ const init = async (script, type, interpreter) => {
     const serviceWorker = script.getAttribute("service-worker");
     const env = `${interpreter}-${script.getAttribute("env") || getID(type)}`;
 
+    // allow specifying custom run and stop buttons through dataset attributes
+    const { dataset } = script;
+    if (dataset.run) RUN_BUTTON = dataset.run;
+    if (dataset.stop) STOP_BUTTON = dataset.stop;
+
     // helps preventing too lazy ServiceWorker initialization on button run
     if (serviceWorker) {
         new XWorker("data:application/javascript,postMessage(0)", {
@@ -276,12 +290,20 @@ const init = async (script, type, interpreter) => {
         }).onmessage = ({ target }) => target.terminate();
     }
 
+    // allow bootstrap with same env for repeated editor creation
+    // only if `env-override` is explicitly set as attribute
     if (hasConfig && configs.has(env)) {
-        throw new SyntaxError(
-            configs.get(env)
-                ? `duplicated config for env: ${env}`
-                : `unable to add a config to the env: ${env}`,
-        );
+        if (script.hasAttribute("env-override")) {
+            // in this case we need to bootstrap the env again
+            // because otherwise each env would leak
+            envs.delete(env);
+        } else {
+            throw new SyntaxError(
+                configs.get(env)
+                    ? `duplicated config for env: ${env}`
+                    : `unable to add a config to the env: ${env}`,
+            );
+        }
     }
 
     configs.set(env, hasConfig);
@@ -328,7 +350,7 @@ const init = async (script, type, interpreter) => {
                 // in every other case be sure that if the listener override returned
                 // `false` nothing happens, otherwise keep doing what it always did
                 else {
-                    context.handleEvent = async (event) => {
+                    context.handleEvent = async (event, onBeforeRun) => {
                         // trap the currentTarget ASAP (if any)
                         // otherwise it gets lost asynchronously
                         const { currentTarget } = event;
@@ -338,7 +360,11 @@ const init = async (script, type, interpreter) => {
                         });
                         // avoid executing the default handler if the override returned `false`
                         if ((await callback(event)) !== false)
-                            await execute.call(context, { currentTarget });
+                            await execute.call(
+                                context,
+                                { currentTarget },
+                                onBeforeRun,
+                            );
                     };
                 }
             },
@@ -388,8 +414,7 @@ const init = async (script, type, interpreter) => {
     };
 
     if (isSetup) {
-        await context.handleEvent({ currentTarget: null, script });
-        notifyEditor();
+        context.handleEvent({ currentTarget: null, script }).then(notifyEditor);
         return;
     }
 
@@ -411,13 +436,30 @@ const init = async (script, type, interpreter) => {
     if (!target.hasAttribute("root")) target.setAttribute("root", target.id);
 
     // @see https://github.com/JeffersGlass/mkdocs-pyscript/blob/main/mkdocs_pyscript/js/makeblocks.js
-    const [boxDiv, outDiv, runButton] = makeBoxDiv(context, type);
+    const [boxDiv, outDiv, runButton] = makeBoxDiv(
+        context,
+        type,
+        script.getAttribute("output"),
+    );
     boxDiv.dataset.env = script.hasAttribute("env") ? env : interpreter;
 
     const inputChild = boxDiv.querySelector(`.${type}-editor-input > div`);
     const parent = inputChild.attachShadow({ mode: "open" });
     // avoid inheriting styles from the outer component
-    parent.innerHTML = `<style> :host { all: initial; }</style>`;
+    const styles = [":host { all: initial; }"];
+    // allows max-rows which also enables min-rows
+    // the editor grows up to all code in it by default otherwise
+    const rows = script.getAttribute("rows");
+    if (rows) {
+        const maxHeight = Math.floor(parseInt(rows) * 18.5) + "px";
+        const minHeight = Math.floor(3 * 18.5) + "px";
+        styles.push(
+            `.cm-editor { height: auto; max-height: ${maxHeight}; min-height: ${minHeight}; }`,
+        );
+    }
+
+    // inject the styles into the shadow DOM
+    parent.innerHTML = `<style>${styles.join("\n")}</style>`;
 
     target.appendChild(boxDiv);
 
