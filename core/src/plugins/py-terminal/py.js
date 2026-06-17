@@ -94,7 +94,7 @@ export default async (element) => {
             process: {
                 value: async (code) => {
                     for (const line of code.split(/(?:\r\n|\r|\n)/)) {
-                        terminal.paste(`${line}`);
+                        terminal.write(`${line}`);
                         terminal.write("\r\n");
                         do {
                             await new Promise((resolve) =>

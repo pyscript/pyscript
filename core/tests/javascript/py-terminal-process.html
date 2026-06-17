@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PyTerminal Process Test</title>
+    <link rel="stylesheet" href="../../dist/core.css" />
+    <script type="module" src="../../dist/core.js"></script>
+    <style>
+      .xterm {
+        padding: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="py" worker terminal id="py-terminal-test"></script>
+    <script type="module">
+      // Wait for the terminal to be ready
+      addEventListener("py-terminal-test", async ({ target }) => {
+        // Test the process method preserves leading spaces in input lines
+        // This simulates pasting multi-line code with indentation
+        const testCode = [
+          "def test_function():",
+          "    # This function has proper indentation",
+          "    result = []",
+          "    result.append('line1')",
+          "    result.append('line2')",
+          "    return result",
+          "",
+          "# Call the function",
+          "data = test_function()",
+          "",
+          "# Import and verify",
+          "from pyscript import document",
+          "if len(data) == 2 and data[0] == 'line1' and data[1] == 'line2':",
+          "    document.documentElement.classList.add('ok')",
+          "else:",
+          "    document.documentElement.classList.add('error')",
+        ].join("\n");
+
+        await target.process(testCode);
+      });
+    </script>
+  </body>
+</html>
