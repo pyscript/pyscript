@@ -56,9 +56,7 @@ async def test_create_named_worker_basic():
     """
     from pyscript import create_named_worker, workers
 
-    worker = await create_named_worker(
-        src="./worker_functions.py", name="dynamic-test-worker"
-    )
+    worker = await create_named_worker(src="./worker_functions.py", name="dynamic-test-worker")
 
     assert worker is not None
     # Verify we can call its functions.
@@ -96,13 +94,12 @@ async def test_create_named_worker_micropython():
     """
     from pyscript import create_named_worker
 
-    worker = await create_named_worker(
-        src="./worker_functions.py", name="mpy-worker", type="mpy"
-    )
+    worker = await create_named_worker(src="./worker_functions.py", name="mpy-worker", type="mpy")
     assert worker is not None
     # Verify functionality.
     result = await worker.add(100, 200)
     assert result == 300
+
 
 def _gen_expected_paths(graphs, n_workers):
     """Find paths serially, so we know what to expect from the workers"""
@@ -130,28 +127,40 @@ def _gen_expected_paths(graphs, n_workers):
 
 
 GRAPHS = {
-    "barbell_graph": {0: {1: {}, 2: {}}, 1: {0: {}, 2: {}},
-                      2: {0: {}, 1: {}, 3: {}}, 3: {4: {}, 2: {}},
-                      4: {3: {}, 5: {}}, 5: {4: {}, 6: {}},
-                      6: {5: {}, 7: {}}, 7: {6: {}, 8: {}},
-                      8: {9: {}, 10: {}, 7: {}}, 9: {8: {}, 10: {}},
-                      10: {8: {}, 9: {}}},
-    "complete_graph": {0: {1: {}, 2: {}, 3: {}, 4: {}},
-                       1: {0: {}, 2: {}, 3: {}, 4: {}},
-                       2: {0: {}, 1: {}, 3: {}, 4: {}},
-                       3: {0: {}, 1: {}, 2: {}, 4: {}},
-                       4: {0: {}, 1: {}, 2: {}, 3: {}}},
-    "circular_ladder_graph": {0: {1: {}, 5: {}, 4: {}},
-                              1: {0: {}, 2: {}, 6: {}},
-                              2: {1: {}, 3: {}, 7: {}},
-                              3: {2: {}, 4: {}, 8: {}},
-                              4: {3: {}, 9: {}, 0: {}},
-                              5: {6: {}, 0: {}, 9: {}},
-                              6: {5: {}, 7: {}, 1: {}},
-                              7: {6: {}, 8: {}, 2: {}},
-                              8: {7: {}, 9: {}, 3: {}},
-                              9: {8: {}, 4: {}, 5: {}}}
+    "barbell_graph": {
+        0: {1: {}, 2: {}},
+        1: {0: {}, 2: {}},
+        2: {0: {}, 1: {}, 3: {}},
+        3: {4: {}, 2: {}},
+        4: {3: {}, 5: {}},
+        5: {4: {}, 6: {}},
+        6: {5: {}, 7: {}},
+        7: {6: {}, 8: {}},
+        8: {9: {}, 10: {}, 7: {}},
+        9: {8: {}, 10: {}},
+        10: {8: {}, 9: {}},
+    },
+    "complete_graph": {
+        0: {1: {}, 2: {}, 3: {}, 4: {}},
+        1: {0: {}, 2: {}, 3: {}, 4: {}},
+        2: {0: {}, 1: {}, 3: {}, 4: {}},
+        3: {0: {}, 1: {}, 2: {}, 4: {}},
+        4: {0: {}, 1: {}, 2: {}, 3: {}},
+    },
+    "circular_ladder_graph": {
+        0: {1: {}, 5: {}, 4: {}},
+        1: {0: {}, 2: {}, 6: {}},
+        2: {1: {}, 3: {}, 7: {}},
+        3: {2: {}, 4: {}, 8: {}},
+        4: {3: {}, 9: {}, 0: {}},
+        5: {6: {}, 0: {}, 9: {}},
+        6: {5: {}, 7: {}, 1: {}},
+        7: {6: {}, 8: {}, 2: {}},
+        8: {7: {}, 9: {}, 3: {}},
+        9: {8: {}, 4: {}, 5: {}},
+    },
 }
+
 
 @upytest.skip("Main thread only", skip_when=RUNNING_IN_WORKER)
 async def test_find_path_parallel():
@@ -171,10 +180,12 @@ async def test_find_path_parallel():
     from worker_functions import dijkstra_path
     import js
 
-    our_workers = await js.Promise.all([
-        create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
-        create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
-    ])
+    our_workers = await js.Promise.all(
+        [
+            create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
+            create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
+        ]
+    )
     assert all(our_workers)
     expectations = _gen_expected_paths(GRAPHS, len(our_workers))
 
@@ -200,7 +211,10 @@ async def test_find_path_parallel():
             coros.append(worker.dijkstra_path(a, b))
         for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
             the_path = await coro
-            assert the_path == expected, f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
+            assert the_path == expected, (
+                f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
+            )
+
 
 async def test_find_path_parallel_persistent():
     """
@@ -212,10 +226,12 @@ async def test_find_path_parallel_persistent():
     from worker_functions import dijkstra_path
     import js
 
-    our_workers = await js.Promise.all([
-        create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
-        create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
-    ])
+    our_workers = await js.Promise.all(
+        [
+            create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
+            create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
+        ]
+    )
     assert all(our_workers)
     expectations = _gen_expected_paths(GRAPHS, len(our_workers))
 
@@ -242,9 +258,11 @@ async def test_find_path_parallel_persistent():
             coros.append(worker.dijkstra_path_persistent(a, b))
         for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
             the_path = await coro
-            assert the_path == expected, f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
+            assert the_path == expected, (
+                f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
+            )
 
-<<<<<<< HEAD
+
 async def test_find_path_parallel_persistent():
     import random
     from pyscript import create_named_worker
@@ -252,10 +270,12 @@ async def test_find_path_parallel_persistent():
     from worker_functions import dijkstra_path
     import js
 
-    our_workers = await js.Promise.all([
-        create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
-        create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
-    ])
+    our_workers = await js.Promise.all(
+        [
+            create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
+            create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
+        ]
+    )
     assert all(our_workers)
     expectations = _gen_expected_paths(GRAPHS, len(our_workers))
 
@@ -282,10 +302,11 @@ async def test_find_path_parallel_persistent():
             coros.append(worker.dijkstra_path_persistent(a, b))
         for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
             the_path = await coro
-            assert the_path == expected, f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
+            assert the_path == expected, (
+                f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
+            )
 
-=======
->>>>>>> refs/remotes/origin/networkx
+
 @upytest.skip("Main thread only", skip_when=RUNNING_IN_WORKER)
 async def test_parallel_math():
     """
@@ -296,12 +317,14 @@ async def test_parallel_math():
     from worker_functions import times_table, power_table, log_table, mod_table
     import js
 
-    our_workers = await js.Promise.all([
-        create_named_worker(src="./worker_functions.py", name="mpy-worker0", type="mpy"),
-        create_named_worker(src="./worker_functions.py", name="mpy-worker1", type="mpy"),
-        create_named_worker(src="./worker_functions.py", name="mpy-worker2", type="mpy"),
-        create_named_worker(src="./worker_functions.py", name="mpy-worker3", type="mpy")
-    ])
+    our_workers = await js.Promise.all(
+        [
+            create_named_worker(src="./worker_functions.py", name="mpy-worker0", type="mpy"),
+            create_named_worker(src="./worker_functions.py", name="mpy-worker1", type="mpy"),
+            create_named_worker(src="./worker_functions.py", name="mpy-worker2", type="mpy"),
+            create_named_worker(src="./worker_functions.py", name="mpy-worker3", type="mpy"),
+        ]
+    )
     assert all(our_workers)
 
     coros = []
@@ -315,8 +338,4 @@ async def test_parallel_math():
         coros.append(func(1000, 1000))
     for coro, func, expected in zip(coros, funcs, expectations):
         calculated = await coro
-<<<<<<< HEAD
         assert calculated == expected, f"{func.__name__}(1000, 1000) should equal {expected}, not {calculated}"
-=======
-        assert calculated == expected, f"{func.__name__}(1000, 1000) should equal {expected}, not {calculated}"
->>>>>>> refs/remotes/origin/networkx
