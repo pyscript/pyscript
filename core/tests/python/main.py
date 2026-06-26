@@ -1,8 +1,3 @@
-import json
+from tests.test_workers import test_find_path_parallel_cheating
 
-import upytest
-from pyscript import web
-
-result = await upytest.run("./tests", random=True)
-output = web.div(json.dumps(result), id="result")
-web.page.append(output)
+await test_find_path_parallel_cheating()
