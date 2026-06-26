@@ -211,7 +211,7 @@ async def find_path_parallel(find_path_name):
             nodepairs.append((a, b))
             print(f"{name}. {a}->{b}...")
 
-            worker.set_cheats(cheats)
+            worker.set_cheats(to_js(cheats))
             print("set cheats")
             fun = getattr(worker, find_path_name)
             print(f"got function {find_path_name}")
