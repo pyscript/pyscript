@@ -188,6 +188,7 @@ async def find_path_parallel(find_path_name):
     await js.Promise.all(our_workers)
     assert all(our_workers)
     expectations = _gen_expected_paths(len(our_workers))
+    print(f"expectations = {expectations}")
     cheats = _gen_cheats(expectations)
     print(f"cheats = {cheats}")
     random.seed(0)
