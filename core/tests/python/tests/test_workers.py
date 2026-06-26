@@ -101,31 +101,6 @@ async def test_create_named_worker_micropython():
     assert result == 300
 
 
-def _gen_expected_paths(graphs, n_workers):
-    """Find paths serially, so we know what to expect from the workers"""
-    import random
-    from worker_functions import dijkstra_path
-
-    expectations = {}
-    random.seed(0)
-    for name, graph_d in graphs.items():
-        nodes_nonrandom = list(graph_d.keys())
-        nodes = []
-        # this does the same thing as random.shuffle(), which micropython
-        # does not have
-        while len(nodes_nonrandom) > 1:
-            nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
-        nodes.append(nodes_nonrandom.pop())
-        expectation = expectations[name] = []
-        for _ in range(n_workers):
-            a = nodes.pop()
-            nodes.insert(0, a)
-            b = nodes.pop()
-            nodes.insert(0, b)
-            expectation.append(dijkstra_path(a, b))
-    return expectations
-
-
 GRAPHS = {
     "barbell_graph": {
         0: {1: {}, 2: {}},
@@ -162,6 +137,34 @@ GRAPHS = {
 }
 
 
+def _gen_expected_paths():
+    import random
+    from worker_functions import dijkstra_path
+
+    expectations = {}
+    random.seed(0)
+    for name, graph_d in GRAPHS.items():
+        nodes_nonrandom = list(graph_d.keys())
+        nodes = []
+
+        # this does the same thing as random.shuffle(), which micropython
+        # does not have
+        while len(nodes_nonrandom) > 1:
+            nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
+        nodes.append(nodes_nonrandom.pop())
+
+        expectation = expectations[name] = []
+        a = nodes.pop()
+
+        nodes.insert(0, a)
+        b = nodes.pop()
+
+        nodes.insert(0, b)
+        expectation.append(dijkstra_path(graph_d, a, b))
+
+    return expectations
+
+
 @upytest.skip("Main thread only", skip_when=RUNNING_IN_WORKER)
 async def test_find_path_parallel():
     """
@@ -173,6 +176,7 @@ async def test_find_path_parallel():
     want to do it in a real-time strategy game, for instance.
 
     """
+
     import random
 
     from pyscript import create_named_worker
@@ -187,30 +191,34 @@ async def test_find_path_parallel():
         ]
     )
     assert all(our_workers)
-    expectations = _gen_expected_paths(GRAPHS, len(our_workers))
+
+    expectations = _gen_expected_paths()
 
     random.seed(0)
     for name, graph_d in GRAPHS.items():
         nodes_nonrandom = list(graph_d.keys())
+
         nodes = []
         while len(nodes_nonrandom) > 1:
             nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
         nodes.append(nodes_nonrandom.pop())
+
         coros = []
         nodepairs = []
-        # first make sure the workers have the latest graph
-        for worker in our_workers:
-            worker.upd_graph(graph_d)
         # then submit nodes for them to find paths between
         for worker in our_workers:
             a = nodes.pop()
+
             nodes.insert(0, a)
             b = nodes.pop()
+
             nodes.insert(0, b)
             nodepairs.append((a, b))
-            coros.append(worker.dijkstra_path(a, b))
+
+            coros.append(worker.dijkstra_path(graph_d, a, b))
         for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
             the_path = await coro
+
             assert the_path == expected, (
                 f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
             )
@@ -233,55 +241,10 @@ async def test_find_path_parallel_persistent():
         ]
     )
     assert all(our_workers)
-    expectations = _gen_expected_paths(GRAPHS, len(our_workers))
+    expectations = _gen_expected_paths()
 
     random.seed(0)
     for name, graph_d in GRAPHS.items():
-        print(name)
-        nodes_nonrandom = list(graph_d.keys())
-        nodes = []
-        while len(nodes_nonrandom) > 1:
-            nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
-        nodes.append(nodes_nonrandom.pop())
-        coros = []
-        nodepairs = []
-        # first make sure the workers have the latest graph
-        for worker in our_workers:
-            await worker.upd_graph(to_js(graph_d))
-        # then submit nodes for them to find paths between
-        for worker in our_workers:
-            a = nodes.pop()
-            nodes.insert(0, a)
-            b = nodes.pop()
-            nodes.insert(0, b)
-            nodepairs.append((a, b))
-            coros.append(worker.dijkstra_path_persistent(a, b))
-        for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
-            the_path = await coro
-            assert the_path == expected, (
-                f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
-            )
-
-
-async def test_find_path_parallel_persistent():
-    import random
-    from pyscript import create_named_worker
-    from pyscript.ffi import to_js
-    from worker_functions import dijkstra_path
-    import js
-
-    our_workers = await js.Promise.all(
-        [
-            create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
-            create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
-        ]
-    )
-    assert all(our_workers)
-    expectations = _gen_expected_paths(GRAPHS, len(our_workers))
-
-    random.seed(0)
-    for name, graph_d in GRAPHS.items():
-        print(name)
         nodes_nonrandom = list(graph_d.keys())
         nodes = []
         while len(nodes_nonrandom) > 1:
