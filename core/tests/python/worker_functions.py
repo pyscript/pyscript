@@ -26,6 +26,24 @@ def get_message():
 graph_dict = {}
 
 
+def graph_d_pairs(d):
+    for o, ds in d.items():
+        for d in ds:
+            yield (o, d)
+
+
+cheats = {}
+
+
+def set_cheats(c):
+    cheats.clear()
+    cheats.update(c)
+
+
+def cheating_dijkstra_path(graph_d, source, target):
+    return cheats[tuple(graph_d_pairs(graph_d))][source, target]
+
+
 def dijkstra_path(graph_d, source, target):
     # Based on the implementation in networkx
     pred_dict = {}
@@ -110,6 +128,8 @@ __export__ = [
     "multiply",
     "get_message",
     "upd_graph",
+    "set_cheats",
+    "cheating_dijkstra_path",
     "dijkstra_path_de_novo",
     "dijkstra_path_persistent",
     "times_table",
