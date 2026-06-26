@@ -140,7 +140,7 @@ GRAPHS = {
 def _gen_expected_paths(n):
     import random
 
-    from worker_functions import dijkstra_path_de_novo
+    from worker_functions import dijkstra_path
 
     expectations = {}
     random.seed(0)
@@ -155,73 +155,51 @@ def _gen_expected_paths(n):
         nodes.append(nodes_nonrandom.pop())
         expectation = expectations[name] = {}
         for i in range(n):
-            print(f"worker {i}")
             a = nodes.pop()
 
             nodes.insert(0, a)
             b = nodes.pop()
             nodes.insert(0, b)
-            expectation[a, b] = dijkstra_path_de_novo(graph_d, a, b)
+            expectation[a, b] = dijkstra_path(graph_d, a, b)
 
     return expectations
 
 
-def _gen_cheats(expectations):
-    from worker_functions import graph_d_pairs
-
-    cheats = {}
-    for name, paths in expectations.items():
-        cheats[tuple(graph_d_pairs(GRAPHS[name]))] = paths
-    return cheats
-
-
 async def find_path_parallel(find_path_name):
-    import random
-
     from pyscript import create_named_worker
     from pyscript.ffi import js, to_js
 
     our_workers = [
-        create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
-        create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
+        await create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
+        await create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
     ]
-    await js.Promise.all(our_workers)
     assert all(our_workers)
     expectations = _gen_expected_paths(len(our_workers))
-    cheats = _gen_cheats(expectations)
-    random.seed(0)
-    for name, graph_d in GRAPHS.items():
-        nodes_nonrandom = list(graph_d.keys())
 
+    if "cheating" in find_path_name:
+        for i, worker in enumerate(our_workers):
+            awaited = await worker.set_cheats(to_js(repr(expectations)))
+            assert awaited, f"Cheats not set in worker {i}"
+    for name in GRAPHS:
         nodes = []
-        while len(nodes_nonrandom) > 1:
-            nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
-        nodes.append(nodes_nonrandom.pop())
-
         coros = []
-        nodepairs = []
         # then submit nodes for them to find paths between
+        expected = expectations[name]
+        nodepairs = list(expected)
         for worker in our_workers:
-            a = nodes.pop()
-
-            nodes.insert(0, a)
-            b = nodes.pop()
-
-            nodes.insert(0, b)
-            nodepairs.append((a, b))
-            print(f"{name}. {a}->{b}...")
-
-            worker.set_cheats(cheats)
-            print("set cheats")
+            (a, b) = nodepairs.pop()
             fun = getattr(worker, find_path_name)
-            print(f"got function {find_path_name}")
-            coros.append(fun(graph_d, a, b))
-            print(f"made coro {a}->{b}")
-        for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
-            the_path = await coro
+            coro = fun(name, a, b)
+            coro.graph = name
+            coro.origin = a
+            coro.destination = b
+            coro.expected = expected[a, b]
+            coros.append(coro)
+        for coro in coros:
+            the_path = eval(await coro)
 
-            assert the_path == expected, (
-                f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
+            assert the_path == coro.expected, (
+                f"The path from {coro.origin} to {coro.destination} in {coro.graph} should be {coro.expected}; instead, got {the_path}"
             )
 
 

@@ -26,22 +26,20 @@ def get_message():
 graph_dict = {}
 
 
-def graph_d_pairs(d):
-    for o, ds in d.items():
-        for d in ds:
-            yield (o, d)
-
-
 cheats = {}
 
 
 def set_cheats(c):
+    print(f"will set cheats to {c}")
     cheats.clear()
-    cheats.update(c)
+    cheats.update(eval(c))
+    print(f"cheats are now: {cheats}")
+    return True
 
 
-def cheating_dijkstra_path(graph_d, source, target):
-    return cheats[tuple(graph_d_pairs(graph_d))][source, target]
+def cheating_dijkstra_path(graph, source, target):
+    print(f"will cheat {source}→{target} in {graph}")
+    return repr(cheats[graph][source, target])
 
 
 def dijkstra_path(graph_d, source, target):
@@ -79,19 +77,20 @@ def dijkstra_path(graph_d, source, target):
     return path
 
 
-def dijkstra_path_de_novo(graph_d, source, target):
-    return dijkstra_path(dict(graph_d), source, target)
+def dijkstra_path_de_novo(graph_d_str, source, target):
+    return repr(dijkstra_path(eval(graph_d_str), source, target))
 
 
 def dijkstra_path_persistent(source, target):
     global graph_dict
-    return dijkstra_path(graph_dict, source, target)
+    return repr(dijkstra_path(graph_dict, source, target))
 
 
-def upd_graph(graph_d):
+def upd_graph(graph_d_str):
     global graph_dict
     graph_dict.clear()
-    graph_dict.update(dict(graph_d))
+    graph_dict.update(eval(graph_d))
+    return True
 
 
 def _some_table(oper, a, b):
