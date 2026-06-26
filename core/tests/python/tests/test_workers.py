@@ -189,6 +189,7 @@ async def find_path_parallel(find_path_name):
     assert all(our_workers)
     expectations = _gen_expected_paths(len(our_workers))
     cheats = _gen_cheats(expectations)
+    print(f"cheats = {cheats}")
     random.seed(0)
     for name, graph_d in GRAPHS.items():
         nodes_nonrandom = list(graph_d.keys())
