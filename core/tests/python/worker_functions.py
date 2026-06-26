@@ -6,8 +6,6 @@ from heapq import heappush, heappop
 from itertools import count
 from math import log, fmod
 
-from pyscript import sync
-
 
 def add(a, b):
     return a + b
