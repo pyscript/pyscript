@@ -36,8 +36,12 @@ cheats = {}
 
 
 def set_cheats(c):
+    import ast
+
+    print(f"will set cheats to {c}")
     cheats.clear()
-    cheats.update(c)
+    cheats.update(ast.literal_eval(c))
+    print(f"cheats are now: {cheats}")
 
 
 def cheating_dijkstra_path(graph_d, source, target):

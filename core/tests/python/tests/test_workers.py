@@ -211,8 +211,8 @@ async def find_path_parallel(find_path_name):
             nodepairs.append((a, b))
             print(f"{name}. {a}->{b}...")
 
-            worker.set_cheats(to_js(cheats))
-            print("set cheats")
+            worker.set_cheats(repr(cheats))
+            print("cheats have been set")
             fun = getattr(worker, find_path_name)
             print(f"got function {find_path_name}")
             coros.append(fun(graph_d, a, b))
