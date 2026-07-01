@@ -34,9 +34,7 @@ export const getFileSystemDirectoryHandle = async (options) => {
 
     const transient = async () => {
         try {
-            /* eslint-disable */
             const handler = await showDirectoryPicker(how);
-            /* eslint-enable */
             if ((await handler.requestPermission(how)) === "granted") {
                 resolve(handler);
                 return true;
