@@ -83,7 +83,7 @@ export default async (element) => {
     // or main case, bootstrapping the terminal on its target
     const init = () => {
         let target = element;
-        const selector = element.getAttribute("target");
+        const selector = target.getAttribute("target");
         if (selector) {
             target =
                 document.getElementById(selector) ||
