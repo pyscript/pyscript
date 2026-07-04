@@ -253,16 +253,14 @@ async def test_parallel_math():
     """
     from pyscript import create_named_worker
     from worker_functions import times_table, power_table, log_table, mod_table
-    import js
 
-    our_workers = await js.Promise.all(
-        [
-            create_named_worker(src="./worker_functions.py", name="mpy-worker0", type="mpy"),
-            create_named_worker(src="./worker_functions.py", name="mpy-worker1", type="mpy"),
-            create_named_worker(src="./worker_functions.py", name="mpy-worker2", type="mpy"),
-            create_named_worker(src="./worker_functions.py", name="mpy-worker3", type="mpy"),
-        ]
-    )
+    our_workers = [
+        await create_named_worker(src="./worker_functions.py", name="mpy-worker0", type="mpy"),
+        await create_named_worker(src="./worker_functions.py", name="mpy-worker1", type="mpy"),
+        await create_named_worker(src="./worker_functions.py", name="mpy-worker2", type="mpy"),
+        await create_named_worker(src="./worker_functions.py", name="mpy-worker3", type="mpy"),
+    ]
+
     assert all(our_workers)
 
     coros = []
