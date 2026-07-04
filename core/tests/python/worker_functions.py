@@ -30,16 +30,13 @@ cheats = {}
 
 
 def set_cheats(c):
-    print(f"will set cheats to {c}")
     cheats.clear()
     cheats.update(eval(c))
-    print(f"cheats are now: {cheats}")
     return True
 
 
-def cheating_dijkstra_path(graph, source, target):
-    print(f"will cheat {source}→{target} in {graph}")
-    return repr(cheats[graph][source, target])
+def cheating_dijkstra_path(source, target):
+    return repr(cheats[source, target])
 
 
 def dijkstra_path(graph_d, source, target):
@@ -77,8 +74,11 @@ def dijkstra_path(graph_d, source, target):
     return path
 
 
-def dijkstra_path_de_novo(graph_d_str, source, target):
-    return repr(dijkstra_path(eval(graph_d_str), source, target))
+def dijkstra_path_de_novo(graph_str, source, target):
+    try:
+        return repr(dijkstra_path(eval(graph_str), source, target))
+    except Exception as ex:
+        return repr(ex)
 
 
 def dijkstra_path_persistent(source, target):
@@ -89,7 +89,7 @@ def dijkstra_path_persistent(source, target):
 def upd_graph(graph_d_str):
     global graph_dict
     graph_dict.clear()
-    graph_dict.update(eval(graph_d))
+    graph_dict.update(eval(graph_d_str))
     return True
 
 

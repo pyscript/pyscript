@@ -137,35 +137,35 @@ GRAPHS = {
 }
 
 
-def _gen_expected_paths(n):
+def _gen_expected_paths(name, n):
     import random
 
     from worker_functions import dijkstra_path
 
-    expectations = {}
     random.seed(0)
-    for name, graph_d in GRAPHS.items():
-        nodes_nonrandom = list(graph_d.keys())
-        nodes = []
+    graph_d = GRAPHS[name]
+    nodes_nonrandom = list(graph_d.keys())
+    nodes = []
 
-        # this does the same thing as random.shuffle(), which micropython
-        # does not have
-        while len(nodes_nonrandom) > 1:
-            nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
-        nodes.append(nodes_nonrandom.pop())
-        expectation = expectations[name] = {}
-        for i in range(n):
-            a = nodes.pop()
+    # this does the same thing as random.shuffle(), which micropython
+    # does not have
+    while len(nodes_nonrandom) > 1:
+        nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
+    nodes.append(nodes_nonrandom.pop())
+    expectation = {}
+    for i in range(n):
+        a = nodes.pop()
 
-            nodes.insert(0, a)
-            b = nodes.pop()
-            nodes.insert(0, b)
-            expectation[a, b] = dijkstra_path(graph_d, a, b)
+        nodes.insert(0, a)
+        b = nodes.pop()
+        nodes.insert(0, b)
+        expectation[a, b] = dijkstra_path(graph_d, a, b)
 
-    return expectations
+    return expectation
 
 
 async def find_path_parallel(find_path_name):
+    from functools import partial
     from pyscript import create_named_worker
     from pyscript.ffi import js, to_js
 
@@ -174,29 +174,38 @@ async def find_path_parallel(find_path_name):
         await create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
     ]
     assert all(our_workers)
-    expectations = _gen_expected_paths(len(our_workers))
 
-    if "cheating" in find_path_name:
-        for i, worker in enumerate(our_workers):
-            awaited = await worker.set_cheats(to_js(repr(expectations)))
-            assert awaited, f"Cheats not set in worker {i}"
     for name in GRAPHS:
-        nodes = []
         coros = []
-        # then submit nodes for them to find paths between
-        expected = expectations[name]
+        expected = _gen_expected_paths(name, len(our_workers))
         nodepairs = list(expected)
+        # first, update the state of the worker, if needed
+        for i, worker in enumerate(our_workers):
+            if "persistent" in find_path_name:
+                awaited = await worker.upd_graph(to_js(repr(GRAPHS[name])))
+                assert awaited, f"Graph {name} not set in worker {i}"
+            elif "cheating" in find_path_name:
+                awaited = await worker.set_cheats(to_js(repr(expected)))
+                assert awaited, f"Cheats for {name} not set in worker {i}"
+        # then, distribute paths between the workers
         for worker in our_workers:
+            if "persistent" in find_path_name:
+                fun = worker.dijkstra_path_persistent
+            elif "cheating" in find_path_name:
+                fun = worker.cheating_dijkstra_path
+            else:
+                fun = partial(worker.dijkstra_path_de_novo, to_js(repr(GRAPHS[name])))
             (a, b) = nodepairs.pop()
-            fun = getattr(worker, find_path_name)
-            coro = fun(name, a, b)
+            coro = fun(a, b)
             coro.graph = name
             coro.origin = a
             coro.destination = b
             coro.expected = expected[a, b]
             coros.append(coro)
+        # await the workers to find the paths
         for coro in coros:
-            the_path = eval(await coro)
+            awaited = await coro
+            the_path = eval(awaited)
 
             assert the_path == coro.expected, (
                 f"The path from {coro.origin} to {coro.destination} in {coro.graph} should be {coro.expected}; instead, got {the_path}"
@@ -233,46 +242,7 @@ async def test_find_path_parallel_persistent():
     """
     Worker state persists between calls
     """
-    import random
-    from pyscript import create_named_worker
-    from pyscript.ffi import to_js
-    from worker_functions import dijkstra_path
-    import js
-
-    our_workers = await js.Promise.all(
-        [
-            create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
-            create_named_worker(src="./worker_functions.py", name="py-worker1", type="mpy"),
-        ]
-    )
-    assert all(our_workers)
-    expectations = _gen_expected_paths()
-
-    random.seed(0)
-    for name, graph_d in GRAPHS.items():
-        nodes_nonrandom = list(graph_d.keys())
-        nodes = []
-        while len(nodes_nonrandom) > 1:
-            nodes.append(nodes_nonrandom.pop(random.randint(0, len(nodes_nonrandom) - 1)))
-        nodes.append(nodes_nonrandom.pop())
-        coros = []
-        nodepairs = []
-        # first make sure the workers have the latest graph
-        for worker in our_workers:
-            await worker.upd_graph(to_js(graph_d))
-        # then submit nodes for them to find paths between
-        for worker in our_workers:
-            a = nodes.pop()
-            nodes.insert(0, a)
-            b = nodes.pop()
-            nodes.insert(0, b)
-            nodepairs.append((a, b))
-            coros.append(worker.dijkstra_path_persistent(a, b))
-        for coro, (a, b), expected in zip(coros, nodepairs, expectations[name]):
-            the_path = await coro
-            assert the_path == expected, (
-                f"The path from {a} to {b} in {name} should be {expected}; instead, got {the_path}"
-            )
+    await find_path_parallel("dijkstra_path_persistent")
 
 
 @upytest.skip("Main thread only", skip_when=RUNNING_IN_WORKER)
