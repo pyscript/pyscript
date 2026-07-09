@@ -172,7 +172,8 @@ const replaceScript = (script, type) => {
         // avoid throwing errors if the output was specified
         const output = script.getAttribute("output");
         const { nextElementSibling } = script;
-        if (output) nextElementSibling.replaceWith(document.getElementById(output));
+        if (output)
+            nextElementSibling.replaceWith(document.getElementById(output));
         else nextElementSibling.remove();
     }
     script.replaceWith(clone);
