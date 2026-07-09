@@ -169,7 +169,12 @@ const replaceScript = (script, type) => {
         const content = editor.state.doc.toString();
         clone.textContent = content;
         editors.delete(script);
-        script.nextElementSibling.remove();
+        // avoid throwing errors if the output was specified
+        const output = script.getAttribute("output");
+        const { nextElementSibling } = script;
+        if (output)
+            nextElementSibling.replaceWith(document.getElementById(output));
+        else nextElementSibling.remove();
     }
     script.replaceWith(clone);
 };
