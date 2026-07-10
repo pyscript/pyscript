@@ -167,7 +167,7 @@ def _gen_expected_paths(name, n):
 async def find_path_parallel(find_path_name):
     from functools import partial
     from pyscript import create_named_worker
-    from pyscript.ffi import js, to_js
+    from pyscript.ffi import to_js
 
     our_workers = [
         await create_named_worker(src="./worker_functions.py", name="py-worker0", type="mpy"),
