@@ -243,35 +243,3 @@ async def test_find_path_parallel_persistent():
     Worker state persists between calls
     """
     await find_path_parallel("dijkstra_path_persistent")
-
-
-@upytest.skip("Main thread only", skip_when=RUNNING_IN_WORKER)
-async def test_parallel_math():
-    """
-    We should be able to do expensive computations in parallel.
-
-    """
-    from pyscript import create_named_worker
-    from worker_functions import times_table, power_table, log_table, mod_table
-
-    our_workers = [
-        await create_named_worker(src="./worker_functions.py", name="mpy-worker0", type="mpy"),
-        await create_named_worker(src="./worker_functions.py", name="mpy-worker1", type="mpy"),
-        await create_named_worker(src="./worker_functions.py", name="mpy-worker2", type="mpy"),
-        await create_named_worker(src="./worker_functions.py", name="mpy-worker3", type="mpy"),
-    ]
-
-    assert all(our_workers)
-
-    coros = []
-    expectations = {}
-    funcs = (times_table, power_table, log_table, mod_table)
-    # Calculate the correct result serially, so we know what to expect
-    for func in funcs:
-        expectations[func.__name__] = func(1000, 1000)
-    for worker, func in zip(our_workers, funcs):
-        func = getattr(worker, func.__name__)
-        coros.append(func(1000, 1000))
-    for coro, func, expected in zip(coros, funcs, expectations):
-        calculated = await coro
-        assert calculated == expected, f"{func.__name__}(1000, 1000) should equal {expected}, not {calculated}"

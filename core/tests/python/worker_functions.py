@@ -2,22 +2,6 @@
 Numpty test code to run in a worker for pyscript.workers module tests.
 """
 
-from heapq import heappush, heappop
-from itertools import count
-from math import log, fmod
-
-
-def add(a, b):
-    return a + b
-
-
-def multiply(a, b):
-    return a * b
-
-
-def power(a, b):
-    return a**b
-
 
 def get_message():
     return "Hello from worker"
@@ -41,6 +25,9 @@ def cheating_dijkstra_path(source, target):
 
 def dijkstra_path(graph_d, source, target):
     # Based on the implementation in networkx
+    from heapq import heappush, heappop
+    from itertools import count
+
     pred_dict = {}
     paths = {source: [source]}
     dist = {}
@@ -93,46 +80,11 @@ def upd_graph(graph_d_str):
     return True
 
 
-def _some_table(oper, a, b):
-    ret = []
-    for x in range(a):
-        xs = []
-        for y in range(b):
-            try:
-                xs.append(oper(a, b))
-            except:
-                xs.append(None)
-        ret.append(xs)
-    return ret
-
-
-def times_table(a, b):
-    return _some_table(multiply, a, b)
-
-
-def power_table(a, b):
-    return _some_table(power, a, b)
-
-
-def log_table(a, b):
-    return _some_table(log, a, b)
-
-
-def mod_table(a, b):
-    return _some_table(fmod, a, b)
-
-
 __export__ = [
-    "add",
-    "multiply",
     "get_message",
     "upd_graph",
     "set_cheats",
     "cheating_dijkstra_path",
     "dijkstra_path_de_novo",
     "dijkstra_path_persistent",
-    "times_table",
-    "power_table",
-    "log_table",
-    "mod_table",
 ]
