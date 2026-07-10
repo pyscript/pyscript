@@ -238,6 +238,7 @@ async def test_find_path_parallel():
     await find_path_parallel("dijkstra_path_de_novo")
 
 
+@upytest.skip("Main thread only", skip_when=RUNNING_IN_WORKER)
 async def test_find_path_parallel_persistent():
     """
     Worker state persists between calls
