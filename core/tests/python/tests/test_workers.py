@@ -56,7 +56,9 @@ async def test_create_named_worker_basic():
     """
     from pyscript import create_named_worker, workers
 
-    worker = await create_named_worker(src="./worker_functions.py", name="dynamic-test-worker")
+    worker = await create_named_worker(
+        src="./worker_functions.py", name="dynamic-test-worker"
+    )
 
     assert worker is not None
     # Verify we can call its functions.
@@ -94,7 +96,9 @@ async def test_create_named_worker_micropython():
     """
     from pyscript import create_named_worker
 
-    worker = await create_named_worker(src="./worker_functions.py", name="mpy-worker", type="mpy")
+    worker = await create_named_worker(
+        src="./worker_functions.py", name="mpy-worker", type="mpy"
+    )
     assert worker is not None
     # Verify functionality.
     result = await worker.add(100, 200)
