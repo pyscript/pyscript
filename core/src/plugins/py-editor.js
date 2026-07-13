@@ -155,8 +155,9 @@ async function execute({ currentTarget, script }, onBeforeRun = "") {
                 console.error(str);
             }
         };
-        if (onBeforeRun) onBeforeRun += ";";
-        sync.runAsync(onBeforeRun + pySrc).then(enable, enable);
+
+        const run = onBeforeRun ? sync.runAsync(onBeforeRun) : Promise.resolve();
+        run.then(() => sync.runAsync(pySrc), enable).then(enable, enable);
     });
 }
 
