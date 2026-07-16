@@ -59,6 +59,21 @@ export const inputFailure = `
     del input
 `;
 
+export const inputPatch = `
+    import builtins, asyncio, inspect, sys
+    inputs = input
+    def _input(prompt=""):
+        """Asks for user input"""
+        result = inputs(str(prompt))
+        if inspect.isawaitable(result):
+            return asyncio.run(result)
+        else:
+            return result
+    builtins.input = _input
+    sys.input = inputs
+    del sys, asyncio, inspect, builtins, inputs, _input
+`;
+
 export const hooks = {
     main: {
         /** @type {Set<function>} */
@@ -106,7 +121,7 @@ export const hooks = {
         /** @type {Set<function>} */
         onAfterRunAsync: new SetFunction(),
         /** @type {Set<string>} */
-        codeBeforeRun: new SetString(),
+        codeBeforeRun: new SetString([inputPatch]),
         /** @type {Set<string>} */
         codeBeforeRunAsync: new SetString(),
         /** @type {Set<string>} */
