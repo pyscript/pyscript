@@ -82,7 +82,7 @@ export const syncAsync = `
         try:
             if cRs():
                 return asynch(coroutine)
-        except (BaseException, Exception) as e: 
+        except (BaseException, Exception) as e:
             if "stack" in str(e).lower():
                 pass
             else:
@@ -92,7 +92,7 @@ export const syncAsync = `
                 return False, await coroutine
             except (BaseException, Exception) as e:
                 return True, e
-            
+
         coro = cP(coro_wrap).callPromising(args)
         while not coro.done():
             time.sleep(.0825)
