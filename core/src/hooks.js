@@ -75,10 +75,10 @@ export const inputPatch = `
 `;
 
 export const syncAsync = `
+    from asyncio import run as asynch
     def a(coroutine):
         """Awaits coroutine"""
         from pyodide.ffi import can_run_sync as cRs, create_proxy as cP
-        from asyncio import run as asynch
         try:
             if cRs():
                 return asynch(coroutine)
@@ -92,7 +92,6 @@ export const syncAsync = `
                 return False, await coroutine
             except (BaseException, Exception) as e:
                 return True, e
-
         coro = cP(coro_wrap).callPromising(args)
         while not coro.done():
             time.sleep(.0825)
@@ -100,7 +99,6 @@ export const syncAsync = `
         if status:
             raise info
         return info
-
     import asyncio
     from pyodide import ffi
     asyncio.run = a
