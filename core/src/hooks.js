@@ -103,7 +103,7 @@ export const syncAsync = `
     from pyodide import ffi
     asyncio.run = a
     ffi.run_sync = a
-    del a, ffi, asyncio
+    del a, ffi, asyncio, asynch
 `;
 
 export const hooks = {
