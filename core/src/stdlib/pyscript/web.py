@@ -1199,7 +1199,7 @@ class canvas(ContainerElement):
         self.append(download_link)
         download_link._dom_element.click()
 
-    def draw(self, what, width=None, height=None):
+    def draw(self, what, width=None, height=None, x=0, y=0):
         """
         Draw a 2d image source (`what`) onto the canvas. Optionally scale to
         `width` and `height`.
@@ -1213,9 +1213,9 @@ class canvas(ContainerElement):
 
         ctx = self._dom_element.getContext("2d")
         if width or height:
-            ctx.drawImage(what, 0, 0, width, height)
+            ctx.drawImage(what, x, y, width, height)
         else:
-            ctx.drawImage(what, 0, 0)
+            ctx.drawImage(what, x, y)
 
 
 class video(ContainerElement):
