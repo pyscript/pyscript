@@ -94,7 +94,7 @@ make setup - check your environment and install the dependencies.
 make update - update dependencies.
 make clean - clean up auto-generated assets.
 make build - build PyScript.
-make precommit-check - run the precommit checks (run eslint).
+make precommit-check - run the precommit checks.
 make test - run all automated tests in playwright.
 make fmt - format the code.
 make fmt-check - check the code formatting.
