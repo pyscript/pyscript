@@ -59,6 +59,53 @@ export const inputFailure = `
     del input
 `;
 
+export const inputPatch = `
+    import builtins, asyncio, inspect, sys
+    inputs = input
+    def _input(prompt=""):
+        """Asks for user input"""
+        result = inputs(str(prompt))
+        if inspect.isawaitable(result):
+            return asyncio.run(result)
+        else:
+            return result
+    builtins.input = _input
+    sys.input = inputs
+    del sys, asyncio, inspect, builtins, inputs, _input
+`;
+
+export const syncAsync = `
+    from asyncio import run as asynch
+    def a(coroutine):
+        """Awaits coroutine"""
+        from pyodide.ffi import can_run_sync as cRs, create_proxy as cP
+        try:
+            if cRs():
+                return asynch(coroutine)
+        except (BaseException, Exception) as e:
+            if "stack" in str(e).lower():
+                pass
+            else:
+                raise
+        async def coro_wrap():
+            try:
+                return False, await coroutine
+            except (BaseException, Exception) as e:
+                return True, e
+        coro = cP(coro_wrap).callPromising(args)
+        while not coro.done():
+            time.sleep(.0825)
+        status, info = coro.result()
+        if status:
+            raise info
+        return info
+    import asyncio
+    from pyodide import ffi
+    asyncio.run = a
+    ffi.run_sync = a
+    del a, ffi, asyncio, asynch
+`;
+
 export const hooks = {
     main: {
         /** @type {Set<function>} */
@@ -106,7 +153,7 @@ export const hooks = {
         /** @type {Set<function>} */
         onAfterRunAsync: new SetFunction(),
         /** @type {Set<string>} */
-        codeBeforeRun: new SetString(),
+        codeBeforeRun: new SetString([inputPatch, syncAsync]),
         /** @type {Set<string>} */
         codeBeforeRunAsync: new SetString(),
         /** @type {Set<string>} */
