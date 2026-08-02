@@ -1,6 +1,7 @@
 {
     "files": {
         "https://raw.githubusercontent.com/ntoll/upytest/1.0.11/upytest.py": "",
+        "./worker_functions.py": "worker_functions.py",
         "./tests/test_config.py": "tests/test_config.py",
         "./tests/test_context.py": "tests/test_context.py",
         "./tests/test_current_target.py": "tests/test_current_target.py",
