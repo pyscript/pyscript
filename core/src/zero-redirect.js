@@ -1,4 +1,4 @@
-/* eslint no-unused-vars: 0 */
+/* eslint-disable no-unused-vars */
 try {
     crypto.randomUUID();
 } catch (_) {
