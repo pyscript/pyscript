@@ -27,14 +27,14 @@ repos:
           - id: trailing-whitespace
 
     - repo: https://github.com/psf/black-pre-commit-mirror
-      rev: 26.1.0
+      rev: 26.5.1
       hooks:
           - id: black
             exclude: core/tests
             args: ["-l", "88", "--skip-string-normalization"]
 
     - repo: https://github.com/codespell-project/codespell
-      rev: v2.4.2
+      rev: v2.4.3
       hooks:
           - id: codespell # See 'pyproject.toml' for args
             exclude: fs\.py|\.js\.map$
@@ -42,7 +42,7 @@ repos:
                 - tomli
 
     - repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: v0.15.5
+      rev: v0.16.1
       hooks:
           - id: ruff
             exclude: core/tests
