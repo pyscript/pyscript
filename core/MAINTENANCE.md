@@ -36,33 +36,33 @@ Keep this environment activated for the rest of the build.
 
 1. Check out a new branch, using the Polyscript version you are bumping to:
 
-   ```sh
-   git checkout -b polyscript-X.Y.Z
-   ```
+    ```sh
+    git checkout -b polyscript-X.Y.Z
+    ```
 
 2. Install dependencies from the lockfile:
 
-   ```sh
-   npm ci
-   ```
+    ```sh
+    npm ci
+    ```
 
 3. Install the new Polyscript (this is what brings in the latest Pyodide):
 
-   ```sh
-   npm i polyscript@X.Y.Z
-   ```
+    ```sh
+    npm i polyscript@X.Y.Z
+    ```
 
 4. Build the package and wait for tests to pass:
 
-   ```sh
-   npm run build
-   ```
+    ```sh
+    npm run build
+    ```
 
-   If Playwright cannot start, install Chromium first:
+    If Playwright cannot start, install Chromium first:
 
-   ```sh
-   npx playwright install chromium
-   ```
+    ```sh
+    npx playwright install chromium
+    ```
 
 Once tests are green, commit and open a pull request:
 
@@ -93,14 +93,14 @@ Publishing to npm is **not required**. The CDN release is what most users consum
 
 If you do publish:
 
-- Bump the npm (SemVer) version in `package.json` **without** creating a git tag. PyScript releases are [CalVer](https://calver.org/), not [SemVer](https://semver.org/). A second tag scheme in this repo (for example `v0.7.32` next to `2026.8.1`) is confusing, and the GitHub release already creates the tag that other repos and the CDN depend on.
+-   Bump the npm (SemVer) version in `package.json` **without** creating a git tag. PyScript releases are [CalVer](https://calver.org/), not [SemVer](https://semver.org/). A second tag scheme in this repo (for example `v0.7.32` next to `2026.8.1`) is confusing, and the GitHub release already creates the tag that other repos and the CDN depend on.
 
-  ```sh
-  npm version patch --no-git-tag-version
-  ```
+    ```sh
+    npm version patch --no-git-tag-version
+    ```
 
-- Commit the `package.json` / `package-lock.json` version bump if you have not already, then publish (replace `42` with your 2FA OTP):
+-   Commit the `package.json` / `package-lock.json` version bump if you have not already, then publish (replace `42` with your 2FA OTP):
 
-  ```sh
-  npm publish --otp=42
-  ```
+    ```sh
+    npm publish --otp=42
+    ```
