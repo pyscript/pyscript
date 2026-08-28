@@ -15,7 +15,7 @@ all:
 	@echo "make precommit-check - run the precommit checks (run eslint)."
 	@echo "make test - run all automated tests in playwright."
 	@echo "make fmt - format the code."
-    @echo "make offline - build PyScript offline"
+	@echo "make offline - build PyScript offline"
 	@echo "make fmt-check - check the code formatting.\n"
 
 .PHONY: check-node
@@ -61,7 +61,7 @@ build: precommit-check
 
 # Build offline
 offline: build
-    npm run build:offline
+	npm run build:offline
 
 # Update the dependencies.
 update:
