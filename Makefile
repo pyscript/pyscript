@@ -15,6 +15,7 @@ all:
 	@echo "make precommit-check - run the precommit checks (run eslint)."
 	@echo "make test - run all automated tests in playwright."
 	@echo "make fmt - format the code."
+    @echo "make offline - build PyScript offline"
 	@echo "make fmt-check - check the code formatting.\n"
 
 .PHONY: check-node
@@ -57,6 +58,10 @@ clean:
 # Build PyScript.
 build: precommit-check
 	cd core && npx playwright install chromium && npm run build
+
+# Build offline
+offline: build
+    npm run build:offline
 
 # Update the dependencies.
 update:
