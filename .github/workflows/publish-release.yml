@@ -16,10 +16,10 @@ jobs:
             contents: write
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v6
 
             - name: Install node
-              uses: actions/setup-node@v5
+              uses: actions/setup-node@v6
               with:
                   node-version: 20.x
 
@@ -39,7 +39,7 @@ jobs:
               run: pip install setuptools
 
             - name: Cache node modules
-              uses: actions/cache@v4
+              uses: actions/cache@v5
               env:
                   cache-name: cache-node-modules
               with:
@@ -77,7 +77,7 @@ jobs:
               run: gh release upload ${{ github.ref_name }} ./dist/offline_${{ github.ref_name }}.zip
 
             - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v5
+              uses: aws-actions/configure-aws-credentials@v6
               with:
                   aws-region: ${{ secrets.AWS_REGION }}
                   role-to-assume: ${{ secrets.AWS_OIDC_RUNNER_ROLE }}
